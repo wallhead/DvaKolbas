@@ -7,6 +7,8 @@
 
 struct OverlayUI::FrameView
 {
+    bool fsrActive{};
+    TheosRenderPipeline::SettingsActionStatus fsrStatus;
     TextureProviderBridge::Telemetry textureTelemetry{};
     bool textureProviderAvailable{};
     VideoMemoryTelemetry::Snapshot memorySnapshot{};

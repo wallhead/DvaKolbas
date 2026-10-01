@@ -186,11 +186,20 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	if (baselineIni.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") < 0) {
 		util::report_and_fail("Theo's Render Pipeline: SKSE/Plugins/TheosRenderPipeline.ini is missing or unreadable. Install the packaged TheosRenderPipeline.ini and restart Skyrim.");
 	}
-	// FSR stays unavailable until its ordinary host and temporal GPU path exist.
-	if (const auto* error = TheosRenderPipeline::ValidateRendererConfiguration(baselineIni, false)) {
+    constexpr bool fsrBuilt =
+#if defined(TRP_ENABLE_FSR)
+        true;
+#else
+        false;
+#endif
+	if (const auto* error = TheosRenderPipeline::ValidateRendererConfiguration(baselineIni, fsrBuilt)) {
 		util::report_and_fail(std::format("Theo's Render Pipeline configuration error:\n\n{}\n\nCorrect SKSE/Plugins/TheosRenderPipeline.ini and restart Skyrim.", error));
 	}
 	logger::info("{} {}", Plugin::DISPLAY_NAME, Plugin::RELEASE_VERSION);
+    if (baselineIni.GetLongValue("Settings", "UpscaleType", 0)==FSR) {
+        const auto settings=TheosRenderPipeline::Upscaling::ReadFsrSettings(baselineIni);
+        if(!settings)util::report_and_fail(std::format("Theo's Render Pipeline FSR configuration error: {}",settings.error().message));
+    }
 
 	// Capture the engine callee before post-load renderer hooks replace its call.
 	TheosRenderPipeline::CommunityShaders::RememberEngineBoundary();

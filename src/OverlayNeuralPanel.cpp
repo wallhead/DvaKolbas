@@ -338,6 +338,10 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
         return;
     if (BeginSettingsColumns("neural", height, view))
     {
+        if(view.fsrActive) {
+            ImGui::TextWrapped("Neural Rendering is unavailable with FSR. Set FSR sharpness in the Image tab.");
+            EndSettingsColumns();ImGui::EndTabItem();return;
+        }
         const auto applied = TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();
         const auto& state = view.sourceNeural;
         DrawStatusLabel(state.failed      ? "NR failed"

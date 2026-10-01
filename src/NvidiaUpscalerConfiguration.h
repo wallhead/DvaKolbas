@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DLSSPreset.h"
+#include "Upscaling/FSRSettings.h"
 #include <algorithm>
 
 namespace TheosRenderPipeline::Upscaler
@@ -10,6 +11,7 @@ namespace TheosRenderPipeline::Upscaler
     {
         int mode{0}, quality{2}, preset{11};
         bool sharpening{true}, autoExposure{true};
+        Upscaling::FsrSettings fsr;
         bool operator==(const Creation&) const = default;
         int AllocationQuality() const { return mode == 3 ? 5 : quality; }
     };
@@ -45,13 +47,19 @@ namespace TheosRenderPipeline::Upscaler
         bool NeedsRestart() const
         {
             return requested_.mode != startup_.mode ||
-                (requested_.mode != 3 && requested_.quality != startup_.quality);
+                (requested_.mode == 4 ? requested_.fsr.quality != startup_.fsr.quality || requested_.fsr.providerPolicy != startup_.fsr.providerPolicy :
+                requested_.mode != 3 && requested_.quality != startup_.quality);
         }
         Creation LiveCandidate() const
         {
             auto value = requested_;
             value.mode = startup_.mode;
             value.quality = startup_.quality;
+            value.fsr.quality = startup_.fsr.quality;
+            value.fsr.providerPolicy = startup_.fsr.providerPolicy;
+            if (startup_.mode == 4) {
+                value.preset = startup_.preset; value.autoExposure = startup_.autoExposure; value.sharpening = startup_.sharpening;
+            } else { value.fsr = startup_.fsr; }
             return value;
         }
         bool NeedsLiveChange() const { return Ready() && LiveCandidate() != effective_; }

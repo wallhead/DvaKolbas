@@ -17,6 +17,7 @@ class SourceFrameGeneration
     struct Settings
     {
         bool enabled{true}; // Initial interpolation request; the NVIDIA host is always required.
+        long generationBackend{1};
         bool sourceDLSSGMFGUnlock{true}; // Matches the packaged default; explicit false is preserved.
         bool sourceDLSSGMFGUnlockPresent{};
         std::string sourceDLSSGStreamlineDirectory;
@@ -33,6 +34,7 @@ class SourceFrameGeneration
     template<class Ini> void LoadStartupPreferences(const Ini& ini)
     {
         settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", true);
+        settings.generationBackend = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
         RequestRuntimeInterpolation(settings.enabled);
         settings.sourceDLSSGMFGUnlockPresent = ini.GetValue("Experimental", "SourceDLSSGMFGUnlock", nullptr) != nullptr;
         settings.sourceDLSSGMFGUnlock = ini.GetBoolValue("Experimental", "SourceDLSSGMFGUnlock", true);

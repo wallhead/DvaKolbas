@@ -42,7 +42,9 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
 
     auto* nvidiaHost = NvidiaHost::GetSingleton();
     view.nvidiaHostActive = nvidiaHost->ProxyActive();
-    view.sourceDLSSGActive = view.nvidiaHostActive && nvidiaHost->StartupConfigured();
+    view.fsrActive = nvidiaHost->FsrActive();
+    view.fsrStatus = nvidiaHost->FsrStatus();
+    view.sourceDLSSGActive = view.nvidiaHostActive && nvidiaHost->StartupConfigured() && !view.fsrActive;
     const bool dlssgEnabled = view.sourceDLSSGActive && TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().GenerationActive();
     view.frameGenerationRuntimeActive = dlssgEnabled;
     view.activeDisplayMultiplier = view.frameGenerationRuntimeActive && view.sourceDLSSGActive
@@ -114,7 +116,7 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
         view.upscaleTitle = "CS upscaling";
         std::snprintf(view.upscaleDetail, sizeof(view.upscaleDetail), "%.0f%%", view.proxyScale * 100.0f);
     }
-    const auto neural = TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();
+    const auto neural = view.sourceDLSSGActive ? TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration() : TheosRenderPipeline::SourceDLSSG::NeuralOptions{};
     view.neuralEnabled = neural.enabled;
     view.neuralBeforeUpscaling = neural.beforeUpscaling;
     if (!neural.enabled || view.sourceNeural.failed)
@@ -150,6 +152,15 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
         view.activeUpscaleStage = view.sourceNeural.active ? "CS upscaling + TRP NR" : "CS upscaling";
     }
 
+    if(view.fsrActive) {
+        view.activeUpscaleStage=view.fsrStatus.kind==TheosRenderPipeline::SettingsStatusKind::Success?"TRP FSR":"FSR pending / spatial recovery";
+        std::snprintf(view.upscaleDetail,sizeof(view.upscaleDetail),"%.0f%% | %s",view.proxyScale*100.0f,TheosRenderPipeline::Upscaling::QualityName(effective.fsr.quality));
+        std::snprintf(view.generationTitle,sizeof(view.generationTitle),"Unavailable with FSR");
+        if(!TheosRenderPipeline::CommunityShaders::Active() && view.fsrStatus.kind!=TheosRenderPipeline::SettingsStatusKind::Success) {
+            view.upscaleHealth=view.fsrStatus.kind==TheosRenderPipeline::SettingsStatusKind::Error?UIHealth::kError:UIHealth::kWarning;
+            view.pipelineHealth=view.upscaleHealth;view.pipelineLabel="Attention required";
+        }
+    }
     return view;
 }
 

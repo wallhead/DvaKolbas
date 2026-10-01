@@ -21,6 +21,10 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                             requestedPage == SettingsPage::FrameGeneration ? ImGuiTabItemFlags_SetSelected
                                                                            : ImGuiTabItemFlags_None))
     {
+        if(view.fsrActive) {
+            ImGui::TextWrapped("Frame generation and Reflex are unavailable with FSR. Ordinary presentation is active.");
+            ImGui::EndTabItem();return;
+        }
         auto& sourceBackend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
         const auto& sourceState = sourceBackend.Snapshot();
         const auto& unlock = sourceBackend.MFGState();

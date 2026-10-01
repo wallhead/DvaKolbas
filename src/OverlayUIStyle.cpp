@@ -161,6 +161,8 @@ const char* ModeName(int a_mode)
 {
     switch (a_mode)
     {
+    case FSR:
+        return "FSR";
     case DLAA:
         return "DLAA";
     default:

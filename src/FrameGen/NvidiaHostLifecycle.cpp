@@ -116,6 +116,7 @@ void NvidiaHost::ResetSessionAfterRetirement()
 #if defined(TRP_ENABLE_FSR)
     fsrFrame_.reset();
     fsrResources_.reset();
+    lastFsrTemporal_=false;
 #endif
     ordinaryPresentation_.ResetAfterRetirement();
     outputWindow_ = nullptr;
@@ -144,6 +145,7 @@ void NvidiaHost::ReleaseSourceUpscaler()
         const auto retired = fsrResources_->Retire();
         if (!retired) { status_ = retired.error().message; FailLifecycle(E_FAIL, "FSR feature release"); return; }
         fsrFrame_.reset();
+        lastFsrTemporal_=false;
     }
 #endif
     TheosRenderPipeline::ReShadeIntegration::Get().ResetAfterRetirement();

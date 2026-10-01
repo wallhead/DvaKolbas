@@ -5,6 +5,7 @@
 #include "NeuralRenderingMode.h"
 #include "FrameGen/SourceDLSSGSettings.h"
 #include "WeatherAppearance.h"
+#include "Upscaling/FSRSettings.h"
 #include <array>
 #include <cmath>
 
@@ -19,6 +20,9 @@ struct RendererSettingsDraft
     bool autoExposure{true};
     bool sharpening{true};
     float sharpness{0.672f};
+    Upscaling::FsrSettings fsr;
+    bool generationEnabled{true}, dynamicResolution{};
+    long generationBackend{1};
     bool enableJitter{true};
     bool nativeUI{true};
     bool requestLoadingArtwork{true};
@@ -58,6 +62,10 @@ inline int CountRendererSettingsChanges(const RendererSettingsDraft& draft, cons
         count += draft.*field != current.*field;
     }
     count += std::abs(draft.sharpness - current.sharpness) > 0.0001f;
+    count += draft.fsr != current.fsr;
+    count += draft.generationEnabled != current.generationEnabled;
+    count += draft.generationBackend != current.generationBackend;
+    count += draft.dynamicResolution != current.dynamicResolution;
     count += draft.sourceDLSSG != current.sourceDLSSG;
     count += draft.appearance != current.appearance;
     if (draft.textureProviderConnected && current.textureProviderConnected)
@@ -75,6 +83,7 @@ struct RendererSettingsCapabilities
 {
     bool sourceHost{}, neuralRuntime{}, dedicatedUI{}, externalWorld{};
     bool neuralOperational{true};
+    bool fsrBuilt{};
 };
 
 inline bool CanEditNeuralEnabled(bool enabled, bool available) { return enabled || available; }
@@ -105,12 +114,20 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
 {
     if (!capabilities.sourceHost)
     {
-        return "NVIDIA host is unavailable; settings were not applied.";
+        return "Presentation host is unavailable; settings were not applied.";
     }
-    if (draft.upscaleType != DLSS && draft.upscaleType != DLAA)
+    if (draft.upscaleType != DLSS && draft.upscaleType != DLAA && draft.upscaleType != FSR)
     {
-        return "Choose DLSS or DLAA.";
+        return "Choose DLSS, DLAA or FSR.";
     }
+    if (draft.upscaleType == FSR) {
+        if (!capabilities.fsrBuilt) return "FSR is not included in this build.";
+        if (!Upscaling::ValidFsrSettings(draft.fsr)) return "FSR quality/provider/sharpness is invalid.";
+        if (draft.generationEnabled || draft.generationBackend!=0) return "FSR frame generation is unavailable; disable generation and choose ordinary backend 0.";
+        if (draft.sourceDLSSG.neuralEnabled) return "Neural Rendering is unavailable with FSR.";
+        if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";
+        if (draft.dynamicResolution) return "Dynamic resolution is unavailable with FSR.";
+    } else if (draft.generationBackend!=1) return "DLSS/DLAA require the NVIDIA presentation backend; choose backend 1.";
     if (!Appearance::ValidHours(draft.appearance.hours)) {
         return "Preset times must increase from Night to Dusk and stay between 0 and 24 hours.";
     }

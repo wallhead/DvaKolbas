@@ -6,6 +6,7 @@
 
 #include <PCH.h>
 #include "UpscaleType.h"
+#include "Upscaling/FSRSettings.h"
 
 #include <RE/BSGraphics.h>
 #include <d3d11.h>
@@ -81,6 +82,8 @@ public:
 	float mRenderScale{ 1.0f };
 
 	int   mUpscaleType{ 0 };
+    TheosRenderPipeline::Upscaling::FsrSettings mFsrSettings;
+    bool mDynamicResolutionRequested{};
 	int   mQualityLevel{ 2 };
 	float mMipLodBias{ 0 };
 

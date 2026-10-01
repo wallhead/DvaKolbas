@@ -25,12 +25,14 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     const auto* upscalerSettings = RenderPipeline::GetSingleton();
     sourceUpscalerSettings_.Initialize(
         {upscalerSettings->mUpscaleType, upscalerSettings->mQualityLevel, upscalerSettings->mDLSSPreset,
-         upscalerSettings->mSharpening, upscalerSettings->mAutoExposure});
+         upscalerSettings->mSharpening, upscalerSettings->mAutoExposure, upscalerSettings->mFsrSettings});
     const auto& generation=SourceFrameGeneration::GetSingleton()->settings;
     TheosRenderPipeline::Upscaling::BackendConfiguration requested;
     requested.backend=upscalerSettings->mUpscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
         upscalerSettings->mUpscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
-    requested.generationEnabled=generation.enabled;requested.generationBackend=FsrActive()?0:1;
+    requested.generationEnabled=generation.enabled;requested.generationBackend=generation.generationBackend;
+    requested.quality=upscalerSettings->mFsrSettings.quality;requested.providerPolicy=upscalerSettings->mFsrSettings.providerPolicy;
+    requested.sharpness=upscalerSettings->mFsrSettings.sharpness;requested.dynamicResolution=upscalerSettings->mDynamicResolutionRequested;
     requested.neuralRendering=generation.sourceDLSSG.neuralEnabled;requested.hdr=generation.sourceDLSSG.hdrOutput.enabled;
 #if defined(TRP_ENABLE_FSR)
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,true);
@@ -177,6 +179,8 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     if(FsrActive() && !TheosRenderPipeline::CommunityShaders::Active()) {
         TheosRenderPipeline::Upscaling::BackendConfiguration config;
         config.backend=TheosRenderPipeline::Upscaling::BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;
+        config.quality=sourceUpscalerSettings_.Startup().fsr.quality;config.providerPolicy=sourceUpscalerSettings_.Startup().fsr.providerPolicy;
+        config.sharpness=sourceUpscalerSettings_.Startup().fsr.sharpness;
         auto render=fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_});
         if(!render){status_=render.error().message;logger::error("[FSR] {}",status_);return false;}
         queriedRenderWidth=render->width;queriedRenderHeight=render->height;sized=true;

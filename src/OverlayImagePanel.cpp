@@ -72,6 +72,9 @@ void ApplyTexturePreset(TextureProviderBridge::Settings& a_settings, int a_prese
 
 void OverlayUI::DrawHDROutputSettings()
 {
+    if(NvidiaHost::GetSingleton()->FsrActive() || settingsDraft.upscaleType==FSR) {
+        ImGui::TextWrapped("HDR output is unavailable with FSR.");return;
+    }
     namespace HDR = TheosRenderPipeline::HDROutput;
     auto& hdr = settingsDraft.sourceDLSSG.hdrOutput;
     const auto state = TheosRenderPipeline::SourceDLSSG::Backend::Get().HDRState();
@@ -172,15 +175,33 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         {
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Mode");
-            const char* modes[]{"DLSS", "DLAA"};
-            int mode = settingsDraft.upscaleType == DLAA ? 1 : 0;
+            const char* modes[]{"DLSS", "DLAA", "FSR (SR only)"};
+            int mode = settingsDraft.upscaleType == FSR ? 2 : settingsDraft.upscaleType == DLAA ? 1 : 0;
+            constexpr int modeCount =
+#if defined(TRP_ENABLE_FSR)
+                3;
+#else
+                2;
+#endif
             ImGui::SetNextItemWidth(-1);
-            if (ImGui::Combo("##mode", &mode, modes, 2))
+            if (ImGui::Combo("##mode", &mode, modes, modeCount))
             {
-                settingsDraft.upscaleType = mode ? DLAA : DLSS;
+                settingsDraft.upscaleType = mode==2?FSR:mode==1?DLAA:DLSS;
+                settingsDraft.generationBackend = mode==2?0:1;
+                if(mode==2) {
+                    settingsDraft.generationEnabled=false;
+                    settingsDraft.sourceDLSSG.neuralEnabled=false;
+                    settingsDraft.sourceDLSSG.hdrOutput.enabled=false;
+                }
             }
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Render scale");
+            if(settingsDraft.upscaleType==FSR) {
+                const char* qualities[]{"67% | Quality","59% | Balanced","50% | Performance","100% | NativeAA"};
+                int quality=static_cast<int>(settingsDraft.fsr.quality);
+                ImGui::SetNextItemWidth(-1);
+                if(ImGui::Combo("##fsrQuality",&quality,qualities,4))settingsDraft.fsr.quality=static_cast<TheosRenderPipeline::Upscaling::Quality>(quality);
+            } else {
             const char* scales[]{"50% | Performance", "58% | Balanced", "67% | Quality", "33% | Ultra Performance",
                                  "78% | Ultra Quality"};
             const bool native = settingsDraft.upscaleType == DLAA;
@@ -199,11 +220,12 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
                 ImGui::EndCombo();
             }
             ImGui::EndDisabled();
+            }
             ImGui::EndTable();
         }
         DrawSettingsHelp(
             "DLAA uses native resolution. Lower DLSS render scales reduce the size of the rendered world.");
-        if (view.sourceDLSSGActive)
+        if (view.sourceDLSSGActive || view.fsrActive)
         {
             const auto& configuration = host->SourceUpscalerSettings();
             if (configuration.NeedsRestart())
@@ -221,9 +243,19 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         }
         else
         {
-            ImGui::TextColored(kRust, "NVIDIA host is unavailable.");
+            ImGui::TextColored(kRust, "Presentation host is unavailable.");
         }
-
+        if(view.fsrActive || settingsDraft.upscaleType==FSR) {
+            ImGui::TextWrapped("%s",view.fsrStatus.text.c_str());
+            DrawSettingsHelp("FSR (SR only) sets generation off, ordinary backend 0, NR off and HDR off. Save and restart to change mode, quality or provider. Sharpness applies after Present.");
+        }
+        if(settingsDraft.upscaleType==FSR) {
+            const char* policies[]{"Analytical (3.1.5)","Compatible (runtime selected)"};
+            int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);
+            if(ImGui::Combo("Provider##fsr",&policy,policies,2))settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
+            ImGui::SliderFloat("Sharpness##fsr",&settingsDraft.fsr.sharpness,0,1,"%.2f");
+            ImGui::TextWrapped("Reactive and transparency masks are unavailable. Auto exposure is enabled. Camera jitter uses the selected provider.");
+        } else {
         ImGui::Separator();
         ImGui::TextUnformatted("DLSS model preset");
         ImGui::SetNextItemWidth(-1);
@@ -260,6 +292,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         ImGui::Checkbox("Camera jitter", &settingsDraft.enableJitter);
         ImGui::Separator();
         DrawHDROutputSettings();
+        }
 
         if (showDeveloperControls)
         {

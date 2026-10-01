@@ -4,8 +4,29 @@
 #include "GameCameraMeasurements.h"
 #include "SourceFrameEvaluator.h"
 #include "PerformanceTuning.h"
+#include "CommunityShaderIntegration.h"
 #include <optional>
 #include <utility>
+TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrStatus() const
+{
+    using namespace TheosRenderPipeline;using namespace Upscaling;
+    BackendConfiguration requested;
+    const auto& creation=sourceUpscalerSettings_.Requested();
+    requested.backend=creation.mode==FSR?BackendKind::Fsr:creation.mode==DLAA?BackendKind::Dlaa:BackendKind::Dlss;
+    auto active=backendDecision_;active.valid=false;
+    const ProviderInfo* provider=nullptr;const RuntimeError* error=nullptr;
+#if defined(TRP_ENABLE_FSR)
+    if(FsrActive()) {
+        if(CommunityShaders::Active())return {"Community Shaders owns upscaling; TRP FSR and frame generation are inactive.",SettingsStatusKind::Neutral};
+        active.valid=UpscalerReady() && lastFsrTemporal_;
+        active.diagnostic=evaluationCount_ ? "FSR spatial recovery; temporal history remains pending." : "FSR requested; waiting for first temporal frame.";
+        if(fsrResources_ && fsrResources_->FeatureReady())provider=&fsrResources_->Provider();
+        if(fsrFrame_)error=fsrFrame_->LastError();
+        if(FAILED(FailureResult()))return {status_,SettingsStatusKind::Error};
+    }
+#endif
+    return DescribeFsrStatus(requested,active,provider,sourceUpscalerSettings_.NeedsRestart(),error);
+}
 #if defined(TRP_ENABLE_FSR)
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
@@ -26,6 +47,7 @@ struct NvidiaHost::SourceFsrEvaluationOperations
     }
     Result<UpscaleOutcome> EvaluateUpscaler(UpscaleFrame frame)
     {
+        frame.sharpness=host.sourceUpscalerSettings_.Effective().fsr.sharpness;
         auto makeAdapter=[&]{
             if(!host.fsrFrame_)host.fsrFrame_=std::make_unique<FsrFrameAdapter>(*host.fsrResources_->Upscaler(),host.fsrResources_->Bridge(),host.fsrResources_->Resources(),
                 host.fsrResources_->Color11(),host.fsrResources_->Depth11(),host.fsrResources_->Motion11(),host.fsrResources_->Output11(),ColorEncoding::Gamma22);

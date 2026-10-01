@@ -21,6 +21,10 @@ RendererSettingsDraft RendererSettingsController::Capture([[maybe_unused]] bool 
     RendererSettingsDraft settingsDraft;
     settingsDraft.valid = true;
     settingsDraft.upscaleType = upscaler_.mUpscaleType;
+    settingsDraft.fsr = upscaler_.mFsrSettings;
+    settingsDraft.generationEnabled = frameGen_.RuntimeInterpolationRequested();
+    settingsDraft.generationBackend = frameGen_.settings.generationBackend;
+    settingsDraft.dynamicResolution = upscaler_.mDynamicResolutionRequested;
     settingsDraft.qualityLevel = upscaler_.mQualityLevel;
     settingsDraft.dlssPreset = upscaler_.mDLSSPreset;
     settingsDraft.autoExposure = upscaler_.mAutoExposure;
@@ -34,6 +38,7 @@ RendererSettingsDraft RendererSettingsController::Capture([[maybe_unused]] bool 
     {
         const auto& requested = host_.SourceUpscalerSettings().Requested();
         settingsDraft.upscaleType = requested.mode;
+        settingsDraft.fsr = requested.fsr;
         settingsDraft.qualityLevel = requested.quality;
         settingsDraft.dlssPreset = requested.preset;
         settingsDraft.sharpening = requested.sharpening;
@@ -87,9 +92,14 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     const bool sourceUpscaler = host_.StartupConfigured();
     RendererSettingsCapabilities capabilities{sourceUpscaler, false, host_.DedicatedUITextureMode(), CommunityShaders::Active()};
 #if !defined(TRP_NO_NEURAL_RENDERING)
+    if (!host_.FsrActive()) {
     capabilities.neuralRuntime =
         TheosRenderPipeline::SourceDLSSG::NeuralRuntimePresent(frameGen_.settings.neuralRenderingRuntimePath);
     capabilities.neuralOperational = SourceDLSSG::Backend::Get().Ready() && !SourceDLSSG::Backend::Get().NeuralState().failed;
+    }
+#endif
+#if defined(TRP_ENABLE_FSR)
+    capabilities.fsrBuilt = true;
 #endif
     const auto current = Capture(capabilities.neuralRuntime, false);
     if (const char* error = ValidateRendererSettings(settingsDraft, capabilities, &current))
@@ -104,6 +114,9 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
             [](const std::string& message) { logger::error("{}", message); });
     }
     upscaler_.mUpscaleType = settingsDraft.upscaleType;
+    upscaler_.mFsrSettings = settingsDraft.fsr;
+    frameGen_.settings.generationBackend = settingsDraft.generationBackend;
+    frameGen_.RequestRuntimeInterpolation(settingsDraft.generationEnabled);
     upscaler_.mQualityLevel = std::clamp(settingsDraft.qualityLevel, 0, 4);
     upscaler_.mDLSSPreset = settingsDraft.dlssPreset;
     upscaler_.mAutoExposure = settingsDraft.autoExposure;
@@ -117,7 +130,7 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     // The host stages allocation changes and applies live changes after a completed Present.
     host_.RequestSourceUpscalerSettings({settingsDraft.upscaleType, settingsDraft.qualityLevel,
                                          settingsDraft.dlssPreset, settingsDraft.sharpening,
-                                         settingsDraft.autoExposure});
+                                         settingsDraft.autoExposure,settingsDraft.fsr});
     auto performanceSettings = performance_.settings;
     performanceSettings.enableGPUTimings = settingsDraft.enableGPUTimings;
     performanceSettings.enableFrameTrace = settingsDraft.enableFrameTrace;
@@ -125,7 +138,7 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     performanceSettings.directDLSSOutput = settingsDraft.directDLSSOutput;
     performance_.ApplySettings(performanceSettings);
     frameGen_.settings.sourceDLSSG = TheosRenderPipeline::SourceDLSSG::SanitizePreferences(settingsDraft.sourceDLSSG);
-    if (host_.StartupConfigured())
+    if (host_.StartupConfigured() && !host_.FsrActive())
     {
         auto& source = TheosRenderPipeline::SourceDLSSG::Backend::Get();
         source.ConfigureReflex(static_cast<sl::ReflexMode>(frameGen_.settings.sourceDLSSG.reflexMode));
@@ -197,6 +210,7 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
 
 RendererSettingsResult RendererSettingsController::SetNeuralRenderingEnabled(bool enabled)
 {
+    if (host_.FsrActive()) { return {"Neural Rendering is unavailable with FSR.", true}; }
 #if defined(TRP_NO_NEURAL_RENDERING)
     (void)enabled;
     return {"Neural Rendering is not included in this build.", true};

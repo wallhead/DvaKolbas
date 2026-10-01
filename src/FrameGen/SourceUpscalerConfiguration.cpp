@@ -15,6 +15,7 @@ void NvidiaHost::AdoptEffectiveSourceUpscalerSettings() const
     settings->mDLSSPreset = effective.preset;
     settings->mAutoExposure = effective.autoExposure;
     settings->mSharpening = effective.sharpening;
+    settings->mFsrSettings = effective.fsr;
 }
 
 void NvidiaHost::RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request)
@@ -27,8 +28,12 @@ void NvidiaHost::RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Cr
 
 void NvidiaHost::ApplySourceUpscalerSettingsAfterPresent()
 {
-    if (FsrActive()) { return; } // Fixed FSR allocations are changed only after restart.
     if (FAILED(FailureResult()) || !sourceUpscalerSettings_.NeedsLiveChange() || nativeUIPass_.Active() || nativeUIPass_.HasEarlyEvaluation()) { return; }
+    if (FsrActive()) {
+        // Only dispatch sharpness changes live; fixed allocation/provider stay at startup values.
+        sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);
+        AdoptEffectiveSourceUpscalerSettings();return;
+    }
     auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
     auto* dlss = DLSSBackend::GetSingleton();
     D3D11_TEXTURE2D_DESC inputDesc{};

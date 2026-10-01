@@ -83,6 +83,7 @@ class NvidiaHost
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
     bool QueryFsrJitter(std::uint64_t sourceId,float& x,float& y);
+    TheosRenderPipeline::SettingsActionStatus FsrStatus() const;
     bool StartupConfigured() const { return sourceUpscalerSettings_.Initialized(); }
     const TheosRenderPipeline::Upscaler::Configuration& SourceUpscalerSettings() const { return sourceUpscalerSettings_; }
     void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request);

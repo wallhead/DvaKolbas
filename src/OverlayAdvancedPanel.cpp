@@ -15,14 +15,14 @@ using namespace TheosRenderPipeline::Overlay;
 void OverlayUI::DrawImageMeasurements(const FrameView& view)
 {
     auto* upscaler = RenderPipeline::GetSingleton();
-    auto* backend = DLSSBackend::GetSingleton();
+    auto* backend = view.fsrActive ? nullptr : DLSSBackend::GetSingleton();
     auto* host = NvidiaHost::GetSingleton();
     const bool cs = TheosRenderPipeline::CommunityShaders::Active();
     DrawStatusLabel(cs ? "Community Shaders" : ModeName(host->SourceUpscalerSettings().Effective().mode),
                     view.upscaleHealth);
     DrawSettingsValue("Render", std::format("{} x {}", host->RenderWidth(), host->RenderHeight()).c_str());
     DrawSettingsValue("Output", std::format("{} x {}", view.nativeWidth, view.nativeHeight).c_str());
-    if (!cs)
+    if (!cs && !view.fsrActive)
         DrawSettingsValue("Preset request", TheosRenderPipeline::DLSSPreset::ShortName(
                                                 host->SourceUpscalerSettings().Effective().preset));
     ImGui::Separator();
@@ -67,7 +67,7 @@ void OverlayUI::DrawImageMeasurements(const FrameView& view)
                     view.nativeWidth > 0
                         ? static_cast<float>(upscaler->mRenderSizeX) / static_cast<float>(view.nativeWidth) * 100.0f
                         : 100.0f);
-        if (!TheosRenderPipeline::CommunityShaders::Active())
+        if (!TheosRenderPipeline::CommunityShaders::Active() && !view.fsrActive)
         {
             ImGui::Text("Jitter: (%.4f, %.4f) | phases: %d", upscaler->mJitterOffsets[0], upscaler->mJitterOffsets[1],
                         backend->GetJitterPhaseCount());
@@ -248,7 +248,7 @@ void OverlayUI::DrawReportingDetails(const FrameView& view)
     if (ImGui::CollapsingHeader("Reporting a problem"))
     {
         const auto& upscaler = NvidiaHost::GetSingleton()->SourceUpscalerSettings().Effective();
-        const auto neural = TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();
+        const auto neural = view.fsrActive ? TheosRenderPipeline::SourceDLSSG::NeuralOptions{} : TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();
         if (!TheosRenderPipeline::CommunityShaders::Active())
         {
             ImGui::Text("Upscaling: %s | requested preset %s", ModeName(upscaler.mode),

@@ -32,6 +32,8 @@ void RenderPipeline::LoadINI()
 		logger::warn("Could not load Data\\SKSE\\Plugins\\TheosRenderPipeline.ini (rc={}), using defaults", static_cast<int>(loadResult));
 	}
 	mUpscaleType = (int)ini.GetLongValue("Settings", "UpscaleType", 0);
+    if (const auto fsr=TheosRenderPipeline::Upscaling::ReadFsrSettings(ini)) { mFsrSettings=*fsr; }
+    else if(mUpscaleType==FSR) { logger::error("[FSR] {}",fsr.error().message); }
 	mQualityLevel = (int)ini.GetLongValue("Settings", "QualityLevel", 2);
 	mUseOptimalMipLodBias = ini.GetBoolValue("Settings", "UseOptimalMipLodBias", true);
 	mMipLodBias = (float)ini.GetDoubleValue("Settings", "MipLodBias", 0.0);
@@ -53,6 +55,7 @@ void RenderPipeline::LoadINI()
 	const bool unsupportedDynamicResolution = ini.GetBoolValue("DynamicResolution", "Enabled", false) ||
 		ini.GetBoolValue("DynamicResolution", "Oscillate", false);
 	if (unsupportedDynamicResolution) {
+        mDynamicResolutionRequested = true;
 		logger::error(
 			"[DynRes] ignored unsupported DynamicResolution request: TheosRenderPipeline's scaled-proxy path upscales at Present and requires a fixed full proxy input");
 	}
@@ -102,7 +105,8 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 	auto* sourceHost = NvidiaHost::GetSingleton();
 	const auto creation = sourceHost->StartupConfigured() ?
 		sourceHost->SourceUpscalerSettings().Requested() :
-		TheosRenderPipeline::Upscaler::Creation{mUpscaleType, mQualityLevel, mDLSSPreset, mSharpening, mAutoExposure};
+		TheosRenderPipeline::Upscaler::Creation{mUpscaleType, mQualityLevel, mDLSSPreset, mSharpening, mAutoExposure, mFsrSettings};
+    TheosRenderPipeline::Upscaling::StoreFsrSettings(ini,creation.fsr);
 	ini.SetLongValue("Settings", "UpscaleType", creation.mode);
 	ini.SetLongValue("Settings", "QualityLevel", creation.quality);
 	ini.SetBoolValue("Settings", "UseOptimalMipLodBias", mUseOptimalMipLodBias);
@@ -124,6 +128,7 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
     // Preserve unrecognized and retired research keys from the loaded INI.
     const auto* frameGeneration = SourceFrameGeneration::GetSingleton();
     ini.SetBoolValue("FrameGeneration", "Enabled", frameGeneration->RuntimeInterpolationRequested());
+    ini.SetLongValue("Experimental", "FrameGenerationBackend", frameGeneration->settings.generationBackend);
     const auto& sourceSettings = frameGeneration->settings;
     frameGeneration->StoreRuntimePaths(ini);
     frameGeneration->StoreUIComposition(ini);

@@ -267,7 +267,7 @@ void OverlayUI::UpdateFrameStats()
 	// again from the menu because it consumes the delta.
 	TheosRenderPipeline::Telemetry::OutputCounter output{};
 
-		if (NvidiaHost::GetSingleton()->StartupConfigured()) {
+		if (NvidiaHost::GetSingleton()->StartupConfigured() && !NvidiaHost::GetSingleton()->FsrActive()) {
 			const auto& source = TheosRenderPipeline::SourceDLSSG::Backend::Get();
 			const auto& session = source.Snapshot();
 			output = { TheosRenderPipeline::Telemetry::OutputSource::Streamline,
@@ -285,6 +285,7 @@ void OverlayUI::RefreshNeuralRuntimeAvailability()
 {
 #if !defined(TRP_NO_NEURAL_RENDERING)
     // Refresh on menu open/settings actions, not on every rendered frame.
+    if(NvidiaHost::GetSingleton()->FsrActive()){nrRuntimePresent=false;return;}
     nrRuntimePresent = TheosRenderPipeline::SourceDLSSG::NeuralRuntimePresent(
         SourceFrameGeneration::GetSingleton()->settings.neuralRenderingRuntimePath);
     settingsDraft.sourceDLSSG.neuralEnabled &= nrRuntimePresent;
