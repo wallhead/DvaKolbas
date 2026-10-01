@@ -2,7 +2,7 @@
 
 Starting revision: `246d152c42a83308beb7a6f4930e7c472ef0d4ce` (TRP 0.3.5).
 Branch: `codex/fsr-sr`.
-Status: approved SR design executing inline. Backend/frame contracts implemented; startup still rejects FSR until the ordinary host and GPU integration are ready. FSR is not installed in Skyrim.
+Status: approved SR design executing inline. Backend/frame contracts and optional runtime/provider boundary implemented; startup still rejects FSR until the ordinary host and GPU integration are ready. FSR is not installed in Skyrim.
 
 The user approved shared buffers/native UI, NVIDIA-independent FSR SR first, then FSR FG, and the [written spec](superpowers/specs/2026-10-01-fsr-sr-design.md). The [implementation plan](superpowers/plans/2026-10-01-fsr-sr.md) defines eight tested increments. The user’s “next step” continued implementation inline in the existing FSR worktree. Pushes to `https://github.com/wallhead/DvaKolbas` are authorized. This record will gain executed commands, artifacts, hashes, and acceptance outcomes as implementation proceeds.
 
@@ -64,3 +64,17 @@ Both FSR-disabled Standard and Universal Release plugins built. Verification: `C
 The first Standard attempt overlapped Universal’s vcpkg regeneration in a shared dependency directory and encountered temporarily missing dependency headers. Retrying after regeneration completed built successfully; future configurations sharing that installation run sequentially.
 
 SDK research downloaded the pinned official v2.3.0 archive under ignored `out/research`, with its expected SHA-256 verified. The two SR DLLs are x64 and have valid Advanced Micro Devices signatures. No runtime DLL was loaded or installed into the game during this increment. Acquisition, loader/provider tests, and dispatch remain later increments.
+
+## Executed increment 2: optional FidelityFX runtime boundary
+
+Added `TRP_ENABLE_FSR` (OFF by default), pinned-header SHA checks, dynamic typed C exports, safe absolute plugin-relative `FSR/` DLL loading, foreign-module collision rejection, bounded provider enumeration with copied names, provider sizing, and actual-context provider verification. No FidelityFX import library is linked. `tools/fsr/Acquire-Runtime.ps1` verifies the release archive, headers/license, runtime sizes/hashes, x64 machine type, file versions, and the pinned valid AMD signer. Metadata is in `tools/fsr/runtime-pin.json`; runtime DLLs remain ignored local artifacts.
+
+Official release: SDK v2.3.0 at `60f4ea81909200d8542eca14dccb2628b763a9a3`. Archive SHA-256: `f90890b9323bb2f4f2404ac4cdc9395e8495ecdac6f7aa0bcdf1ad1848422273`. Loader file version: 2.3.0.2740; upscaler file version/API header: 4.1.1.2740 / 4.1.1. The SDK binary license is retained under `Kits/FidelityFX/docs/license.md`; the C API headers carry separate MIT notices.
+
+Standalone official-runtime probe used the actual D3D11 adapter to create the matching D3D12 device (LUID `00000000:00010541`). It discovered SR providers `3.1.5` and `2.3.4`; analytical selection chose discovered ID `17700776140660019205`. Performance sizing returned 960x540 for 1921x1081 output. Official context creation, queried actual provider identity, and destruction succeeded. The ID is recorded evidence, never a constant in production selection. The probe recorded/dispatched no GPU commands, so it provides no FSR image-output or product-startup acceptance.
+
+Loader fixtures exercise missing runtime, relative paths, wrong architecture, each missing export, partial module cleanup, foreign basename collisions, unsupported ABI, empty/unstable/oversized provider lists, copied name lifetime, null names/device, quality/dimension rejection, sizing/create override agreement, and actual provider mismatch. Acquisition checks exercise altered archive/header rejection and verified reuse. Header-pin rejection was observed failing before the hash check and passing after it.
+
+Verification command: `C:/Python314/python.exe out/research/run_task2_tests.py`. FSR-enabled Standard Release: 104/104 runnable CTest cases passed. FSR-disabled Standard and Universal Release: 103/103 each passed, configured with deliberately nonexistent `C:/deliberately-missing-fidelityfx-sdk`. All three builds completed; three Graphics Tools-dependent checks remain SKIPPED in each. Acquisition integrity and the official provider/context probe also passed. Import inspection found no static FidelityFX imports in the Standard DLL or standalone probe. This does not satisfy the later clean-process FSR product startup gate.
+
+Reproducible provider-only probe: configure `cmake -S tools/fsr -B out/build/fsr-provider-probe -A x64 -DTRP_FSR_SDK_DIR=<verified SDK root>`, build Release, then run `TRPFsrProviderProbe.exe <absolute plugin root>` where `<plugin root>/FSR/` contains the two verified SR DLLs. The supplied tool uses the actual D3D11 adapter for D3D12 and checks the matching LUID. For acquisition/check scripts, the tested shell is PowerShell 7 (`pwsh`). SDK binaries and generated receipts are not checked into Git.
