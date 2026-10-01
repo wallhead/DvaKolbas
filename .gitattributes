@@ -25,6 +25,7 @@ CMakeLists.txt text eol=lf
 research/aio18/supplied-v2/** -text -whitespace
 research/aio18/supplied-v3/** -text -whitespace
 research/aio18/supplied-v4/** -text -whitespace
+research/aio18/supplied-v5/** -text -whitespace
 research/aio18/local-analysis/** -text -whitespace
 research/aio18/local-tools/** -text -whitespace
 research/dlss-baseline/** -text -whitespace

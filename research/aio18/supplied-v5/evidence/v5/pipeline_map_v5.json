@@ -1,0 +1,54 @@
+{
+  "revision": 5,
+  "prepared_resources": {
+    "depth": "host +0xB50",
+    "motion_vectors": "host +0xBA8"
+  },
+  "raw_resources": {
+    "depth": "host +0x7D0 (fallback)",
+    "motion_vectors": "host +0x828"
+  },
+  "community_shaders": {
+    "runtime_hook": "SkyrimUpscaler +0x19DCC0",
+    "prepare": "SkyrimUpscaler +0x2654B0",
+    "capture": "SkyrimUpscaler +0x2A15B0",
+    "transform_helper": "SkyrimUpscaler +0x2A1240",
+    "render_dimensions": [
+      "host +0x34C",
+      "host +0x350"
+    ],
+    "capture_scales": [
+      "host +0x1618",
+      "host +0x161C"
+    ]
+  },
+  "generic_fallback": {
+    "setup_motion": "SkyrimUpscaler +0x293820",
+    "setup_depth": "SkyrimUpscaler +0x293C30"
+  },
+  "sr": {
+    "producer": "SkyrimUpscaler +0x2949C0",
+    "prepared_depth_read": "+0x294CF5",
+    "prepared_motion_read": "+0x294D03",
+    "reactive_common_payload_offset": "0x20",
+    "reactive_on_normal_producer": "null",
+    "evaluate_call": "+0x294FBD",
+    "dx11_external_exposure": "null",
+    "dx11_transparency_composition": "null",
+    "dx11_context_base_flags": [
+      "0x220",
+      "0x228 when inverted"
+    ]
+  },
+  "fg": {
+    "producer": "SkyrimUpscaler +0x2941A0",
+    "prepared_depth_read": "+0x2944D9",
+    "prepared_motion_read": "+0x2944E7"
+  },
+  "confidence": {
+    "prepared guide convergence": "STATIC_OBSERVED",
+    "reactive null on normal producer": "STATIC_OBSERVED",
+    "auto exposure flag": "STATIC_OBSERVED + public enum mapping",
+    "complete transition/reset coverage": "UNRESOLVED"
+  }
+}

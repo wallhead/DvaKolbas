@@ -55,10 +55,17 @@ for record in manifest['files']:
 modules = {}
 decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
 landmarks = json.loads((output / 'evidence/landmarks.json').read_text())
-for revision in (2, 3, 4):
+for revision in (2, 3, 4, 5):
     additional = output / f'evidence/v{revision}/landmarks_v{revision}.json'
     if additional.exists():
-        landmarks.extend(json.loads(additional.read_text()))
+        extra = json.loads(additional.read_text(encoding='utf-8'))
+        if isinstance(extra, dict):
+            aliases = {'host': 'SkyrimUpscaler.dll', 'pd': 'PDPerfPlugin.dll'}
+            landmarks.extend({**r, 'module': aliases[r['module']],
+                              'sha256': extra['module_sha256'][r['module']],
+                              'label': r['meaning']} for r in extra['records'])
+        else:
+            landmarks.extend(extra)
 decoded = []
 for record in landmarks:
     name = record['module']

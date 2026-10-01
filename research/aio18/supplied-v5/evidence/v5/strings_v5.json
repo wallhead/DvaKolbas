@@ -1,0 +1,60 @@
+{
+  "host_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+  "records": [
+    {
+      "text": "F:\\GithubMods\\DLSS\\SkyrimUpscaler\\src\\CSUpscalingBridge.h",
+      "present": true,
+      "file_offset": 4228280
+    },
+    {
+      "text": "void __cdecl CSUpscalingBridge::Install(void)",
+      "present": true,
+      "file_offset": 4228232
+    },
+    {
+      "text": "bool __cdecl SkyrimUpscaler::PrepareCSUpscaleInput(void)",
+      "present": true,
+      "file_offset": 4093752
+    },
+    {
+      "text": "void __cdecl SkyrimUpscaler::FinishCSUpscaleFrame(void)",
+      "present": true,
+      "file_offset": 4093816
+    },
+    {
+      "text": "bool __cdecl SkyrimUpscaler::CaptureCSDepthAndMotion(bool)",
+      "present": true,
+      "file_offset": 4217344
+    },
+    {
+      "text": "CS input bridge installed at live postprocessing (layout={}): render-rect NR, spatial hidden wide, native depth/HDR/postprocessing retained",
+      "present": true,
+      "file_offset": 4228352
+    },
+    {
+      "text": "Depth Buffer Found : {} x {}",
+      "present": true,
+      "file_offset": 4229704
+    },
+    {
+      "text": "Motion Vertor Found : {} x {}",
+      "present": true,
+      "file_offset": 4229736
+    },
+    {
+      "text": "dynamicResScale",
+      "present": true,
+      "file_offset": 4222736
+    },
+    {
+      "text": "jitterOffset",
+      "present": true,
+      "file_offset": 4222680
+    },
+    {
+      "text": "screenSize",
+      "present": true,
+      "file_offset": 4222752
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "module": "SkyrimUpscaler.dll",
+  "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+  "rva_begin": "0x2a1240",
+  "rva_end_exclusive": "0x2a15a4",
+  "code_sha256": "1f439507388addeb018cb88de102244e1c306cf1234ada2fb83cc7d31393ef31",
+  "instructions_decoded": 182,
+  "context_slot_13_call_rva": "0x2a152b",
+  "context_slot_13_call_bytes": "ff5068",
+  "supplied_named_excerpt_covers_helper_body": false,
+  "scope": "Local callee decode confirms bindings and a draw; caller-wide preservation/restoration and shader equations are not established."
+}

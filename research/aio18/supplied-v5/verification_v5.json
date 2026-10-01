@@ -1,0 +1,31 @@
+{
+  "module_hashes": {
+    "host": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "pd": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1"
+  },
+  "module_hash_match": {
+    "host": true,
+    "pd": true
+  },
+  "archive_sha256": "136cbacda0d75373ad47e07c6017924edaaddbda063abaeb53f7e30734076af8",
+  "archive_hash_match": true,
+  "landmark_count": 38,
+  "landmark_byte_mismatches": [],
+  "landmarks_match": true,
+  "string_record_count": 11,
+  "missing_strings": [],
+  "strings_match": true,
+  "v5_disassembly_count": 13,
+  "v5_disassembly_nonempty": true,
+  "metadata_files_present": true,
+  "reference_model_tests_exit_code": 0,
+  "reference_model_tests_pass": true,
+  "reference_model_tests_output": [
+    "Ran 8 tests in 0.000s",
+    "",
+    "OK"
+  ],
+  "forbidden_binary_files": [],
+  "no_target_binaries_in_package": true,
+  "all_boolean_checks_pass": true
+}

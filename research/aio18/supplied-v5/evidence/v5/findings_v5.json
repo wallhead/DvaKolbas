@@ -1,0 +1,20 @@
+{
+  "revision": 5,
+  "date": "2026-10-01",
+  "new_findings": [
+    "Community Shaders live-postprocessing bridge calls PrepareCSUpscaleInput and CaptureCSDepthAndMotion(true).",
+    "CS capture converges into prepared depth +0xB50 and motion +0xBA8 and can shader-transform inputs.",
+    "Generic D3D11 resource detection remains as a fallback/sibling path.",
+    "Both SR and FG consume the same prepared depth/motion pair.",
+    "Normal SR producer explicitly zeros common payload +0x20, proven reactive by both FSR consumers.",
+    "DX11 FSR path supplies null external exposure and null transparency/composition while context flags include auto exposure.",
+    "DX11 context base flags do not contain dynamic-resolution bit 6 on the inspected creation path.",
+    "Several additional SR-reset writers remain semantically unattributed; menu event code is not mislabeled as a reset writer."
+  ],
+  "limitations": [
+    "static only",
+    "no Skyrim/Windows/GPU execution",
+    "no DXBC shader decompilation",
+    "no complete transition-to-reset attribution"
+  ]
+}

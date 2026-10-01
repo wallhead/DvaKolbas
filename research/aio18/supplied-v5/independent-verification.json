@@ -1,0 +1,2554 @@
+{
+  "status": "PASS",
+  "scope": "Independent hash/PE/Capstone byte checks; no runtime execution",
+  "evidence_zip_sha256": "5505f04660d66aca9d78aff7b7e08fb9af52ef118a624b6542edf4b638c86290",
+  "zip_members_hashed": 211,
+  "original_files_hashed": 25,
+  "landmarks_hashed_and_decoded": 363,
+  "vtable_slots_checked": 4,
+  "host_delay_imports_checked": 2,
+  "legacy_effect_version": "3.1.2",
+  "decoded_landmarks": [
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294FBD",
+      "decoded": [
+        "call qword ptr [rip + 0x1ddc5d]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2948E0",
+      "decoded": [
+        "call qword ptr [rip + 0x1de372]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AA8A0",
+      "decoded": [
+        "mov rax, rsp"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AAE18",
+      "decoded": [
+        "call 0x2949c0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AB349",
+      "decoded": [
+        "call 0x2941a0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2ABD02",
+      "decoded": [
+        "call 0x2941a0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF8D20",
+      "decoded": [
+        "sub rsp, 0xd8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF8DB0",
+      "decoded": [
+        "sub rsp, 0xd8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF5170",
+      "decoded": [
+        "mov qword ptr [rsp + 0x10], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF520",
+      "decoded": [
+        "mov rax, rsp"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF475",
+      "decoded": [
+        "call rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xCF080",
+      "decoded": [
+        "mov qword ptr [rsp + 0x10], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xD0CB0",
+      "decoded": [
+        "mov qword ptr [rsp + 0x18], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xCFB5D",
+      "decoded": [
+        "call 0x1003e0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100E84",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEA650",
+      "decoded": [
+        "mov qword ptr [rsp + 0x18], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEAAAF",
+      "decoded": [
+        "call qword ptr [rax + 0x4a0]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEABBB",
+      "decoded": [
+        "call qword ptr [rax + 0x498]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEABC7",
+      "decoded": [
+        "call qword ptr [rax + 0x378]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEAD90",
+      "decoded": [
+        "mov qword ptr [rsp + 8], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE680",
+      "decoded": [
+        "mov qword ptr [rsp + 0x18], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE870",
+      "decoded": [
+        "mov qword ptr [rsp + 0x10], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEEC1C",
+      "decoded": [
+        "call r9"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEED07",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF230",
+      "decoded": [
+        "push rbp"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF581",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF719",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF834",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF880",
+      "decoded": [
+        "mov qword ptr [rsp + 0x18], rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF8C6",
+      "decoded": [
+        "call rax"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF0B60",
+      "decoded": [
+        "mov qword ptr [rcx + 8], 0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEEF20",
+      "decoded": [
+        "push rdi"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF011",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF0BD",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF0F6",
+      "decoded": [
+        "call rax"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF126",
+      "decoded": [
+        "call rax"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBAB0",
+      "decoded": [
+        "mov qword ptr [rsp + 0x20], rbx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0x98E0",
+      "decoded": [
+        "mov qword ptr [rsp + 0x18], rbx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0x94A0",
+      "decoded": [
+        "mov rax, rsp"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0x97F1",
+      "decoded": [
+        "call rax"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF4050",
+      "decoded": [
+        "mov qword ptr [rsp + 8], rbx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF0BD0",
+      "decoded": [
+        "mov qword ptr [rsp + 8], rbx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF457A",
+      "decoded": [
+        "call 0xf8c40"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF4750",
+      "decoded": [
+        "call 0xfc940"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF4ACC",
+      "decoded": [
+        "call 0xf8ec0"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xECA90",
+      "decoded": [
+        "push rbx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBEC0",
+      "decoded": [
+        "mov qword ptr [rsp + 8], rbx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xAAF0",
+      "decoded": [
+        "push rbx"
+      ]
+    },
+    {
+      "module": "ffx_fsr3_x64.dll",
+      "rva": "0x31FF",
+      "decoded": [
+        "call 0x3eba"
+      ]
+    },
+    {
+      "module": "ffx_fsr3_x64.dll",
+      "rva": "0x3EBA",
+      "decoded": [
+        "jmp qword ptr [rip + 0x22f8]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x1A16F2",
+      "decoded": [
+        "mov qword ptr [rsp + 0x40], 0x1384b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x1A16FB",
+      "decoded": [
+        "mov qword ptr [rsp + 0x48], 0x140a4"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x1A170E",
+      "decoded": [
+        "mov esi, 0x17a"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x1A1715",
+      "decoded": [
+        "mov r14d, 0x16f"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x1A1744",
+      "decoded": [
+        "lea r8, [rip - 0x232b]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x1A1756",
+      "decoded": [
+        "mov qword ptr [rip + 0x2dbc53], rbx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19F583",
+      "decoded": [
+        "call qword ptr [rip + 0x2dde27]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19F6EA",
+      "decoded": [
+        "mov byte ptr [rcx + 0x489], 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19F741",
+      "decoded": [
+        "cmp byte ptr [rcx + 0x487], r14b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19F8FF",
+      "decoded": [
+        "call qword ptr [rsi + 0x48]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FA14",
+      "decoded": [
+        "call 0x2949c0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FA2E",
+      "decoded": [
+        "cmp byte ptr [rcx + 0x487], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FAD0",
+      "decoded": [
+        "call qword ptr [rsi + 0x48]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FB28",
+      "decoded": [
+        "mov byte ptr [rcx + 0x489], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FC85",
+      "decoded": [
+        "add rcx, 0x9e0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FCF3",
+      "decoded": [
+        "call qword ptr [rax + 0x108]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FD66",
+      "decoded": [
+        "call rbx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29B4A9",
+      "decoded": [
+        "mov byte ptr [rsi + 0x487], al"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29BF70",
+      "decoded": [
+        "mov dword ptr [rsi + 0x3dc], eax"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29C113",
+      "decoded": [
+        "mov byte ptr [rsi + 0x4a5], cl"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29CC99",
+      "decoded": [
+        "mov byte ptr [rsi + 0x4fa], al"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29CD38",
+      "decoded": [
+        "mov dword ptr [rsi + 0x4fc], eax"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A49B6",
+      "decoded": [
+        "lea r9, [rdi + 0x9e0]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A49E4",
+      "decoded": [
+        "call qword ptr [rax + 0x28]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19EDDD",
+      "decoded": [
+        "mov r8d, 0x21"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19EDE3",
+      "decoded": [
+        "lea rdx, [rip + 0x10ad46]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9B67",
+      "decoded": [
+        "cmp byte ptr [rip + 0xbd7524], r12b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9E9E",
+      "decoded": [
+        "add rcx, 0x9e0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9EEB",
+      "decoded": [
+        "mov qword ptr [rbp - 0x39], rbx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A6997",
+      "decoded": [
+        "mov r8d, 9"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A6AA7",
+      "decoded": [
+        "cmp byte ptr [rax + 0x489], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A6AB0",
+      "decoded": [
+        "jmp qword ptr [rip + 0x1d6959]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AB32A",
+      "decoded": [
+        "cmp byte ptr [rax + 0x4e4], r13b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AB333",
+      "decoded": [
+        "cmp dword ptr [rax + 0x3dc], 2"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AB33C",
+      "decoded": [
+        "cmp byte ptr [rax + 0x4a5], r13b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AB349",
+      "decoded": [
+        "call 0x2941a0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2ABCD1",
+      "decoded": [
+        "cmp dword ptr [rcx + 0x3dc], 2"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2ABCDA",
+      "decoded": [
+        "cmp byte ptr [rcx + 0x4a5], r13b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2ABCF5",
+      "decoded": [
+        "mov byte ptr [rip + 0xbd52a3], 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2ABD02",
+      "decoded": [
+        "call 0x2941a0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x284B6F",
+      "decoded": [
+        "lea rdx, [rip + 0x1ba]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x284B76",
+      "decoded": [
+        "mov ecx, 0x4b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x284D85",
+      "decoded": [
+        "mov byte ptr [rip + 0xbfc213], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x284DA2",
+      "decoded": [
+        "call 0x2941a0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2AC105",
+      "decoded": [
+        "mov byte ptr [rip + 0xbd4e93], 0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x72A33",
+      "decoded": [
+        "call r10"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x72A75",
+      "decoded": [
+        "call qword ptr [rax + 0xf8]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x72AAF",
+      "decoded": [
+        "call qword ptr [rax + 0x218]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x72AF9",
+      "decoded": [
+        "call qword ptr [rax + 0x100]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x72B19",
+      "decoded": [
+        "call qword ptr [rip + 0xa05a1]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x75567",
+      "decoded": [
+        "call qword ptr [rax + 0x40]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x7559A",
+      "decoded": [
+        "call qword ptr [rax + 0x68]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x755DB",
+      "decoded": [
+        "call 0x6e850"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x6E884",
+      "decoded": [
+        "call qword ptr [rax + 0x100]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEAEAC",
+      "decoded": [
+        "call 0x77940"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEAF15",
+      "decoded": [
+        "mov dword ptr [r8 + 0x3e8], ebp"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEB03E",
+      "decoded": [
+        "call qword ptr [rax + 8]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEB050",
+      "decoded": [
+        "call 0x73660"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x77A1E",
+      "decoded": [
+        "call qword ptr [rax + 0x78]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x7F4A3",
+      "decoded": [
+        "lea rdx, [rip + 0x111ff36]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x7F579",
+      "decoded": [
+        "call 0x77d60"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xADFB",
+      "decoded": [
+        "movups xmmword ptr [rsi + 0x1688], xmm0"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xAE16",
+      "decoded": [
+        "and edi, 0xfffffffd"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0x9D26",
+      "decoded": [
+        "call 0xf4c30"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0x9DD2",
+      "decoded": [
+        "call r10"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBB5D",
+      "decoded": [
+        "call 0xf4c30"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBB76",
+      "decoded": [
+        "call qword ptr [rax + 0x78]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBBA2",
+      "decoded": [
+        "call qword ptr [rax + 0x178]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA002",
+      "decoded": [
+        "call qword ptr [rax + 0xd0]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA014",
+      "decoded": [
+        "call qword ptr [rax + 0x88]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA045",
+      "decoded": [
+        "call qword ptr [rax + 0xd0]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA06C",
+      "decoded": [
+        "call qword ptr [rax + 0x50]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA07D",
+      "decoded": [
+        "call qword ptr [rax + 0x70]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA080",
+      "decoded": [
+        "mov qword ptr [r13 + 0x1688], r12"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBC72",
+      "decoded": [
+        "mov qword ptr [rbx + rcx*8 + 0x1918], rax"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBCA7",
+      "decoded": [
+        "mov dword ptr [rbx + 0x1a44], edx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBCB2",
+      "decoded": [
+        "mov dword ptr [rbx + 0x1a40], edx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBCE3",
+      "decoded": [
+        "call 0xf4c30"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xAB13",
+      "decoded": [
+        "call 0xf4c30"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xAB32",
+      "decoded": [
+        "call 0xf4c30"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xAB51",
+      "decoded": [
+        "call 0xf4c30"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA38E",
+      "decoded": [
+        "call qword ptr [rax + 0x1b8]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA3A6",
+      "decoded": [
+        "call qword ptr [rax + 0x190]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA3B2",
+      "decoded": [
+        "call qword ptr [rax + 0x1a0]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xA567",
+      "decoded": [
+        "mov byte ptr [rbx + 0x1878], 1"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBEEC",
+      "decoded": [
+        "call qword ptr [rax + 0x188]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBF55",
+      "decoded": [
+        "call r10"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xBF68",
+      "decoded": [
+        "mov eax, ebx"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF4CF9",
+      "decoded": [
+        "call qword ptr [rax + 0x40]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF4D35",
+      "decoded": [
+        "jb 0xf4cf3"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF4DC6",
+      "decoded": [
+        "call qword ptr [rip + 0x1131c]"
+      ]
+    },
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12.dll",
+      "rva": "0xF4DE5",
+      "decoded": [
+        "jne 0xf4db3"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A95F0",
+      "decoded": [
+        "mov qword ptr [rsp + 8], rbx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9635",
+      "decoded": [
+        "vcvtsi2ss xmm0, xmm0, dword ptr [rax + 0x278]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A963D",
+      "decoded": [
+        "vcvtsi2ss xmm1, xmm1, dword ptr [rax + 0x27c]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A968E",
+      "decoded": [
+        "cmp edi, 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A96AA",
+      "decoded": [
+        "vucomiss xmm0, dword ptr [rbx + 8]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A96BD",
+      "decoded": [
+        "vucomiss xmm0, dword ptr [rbx + 0xc]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A96C8",
+      "decoded": [
+        "vcvtsi2ss xmm0, xmm0, dword ptr [rax + 0x270]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A96D4",
+      "decoded": [
+        "vcvtsi2ss xmm1, xmm1, dword ptr [rax + 0x274]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A971F",
+      "decoded": [
+        "mov edx, edi"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9724",
+      "decoded": [
+        "call qword ptr [rip + 0x1d3d0e]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9754",
+      "decoded": [
+        "cmp byte ptr [rip + 0xbd7937], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9768",
+      "decoded": [
+        "cmp ebx, 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A977D",
+      "decoded": [
+        "call qword ptr [rax + 0x38]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9787",
+      "decoded": [
+        "mov rax, qword ptr [rcx + 0x7d0]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A978E",
+      "decoded": [
+        "cmp qword ptr [rsp + 0x20], rax"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A9795",
+      "decoded": [
+        "add rcx, 0x930"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A979C",
+      "decoded": [
+        "call 0x16c290"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A97BB",
+      "decoded": [
+        "call qword ptr [rip + 0x1d3c47]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A97D5",
+      "decoded": [
+        "ret "
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ECAA",
+      "decoded": [
+        "mov r8d, 0xa"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ECB0",
+      "decoded": [
+        "lea rdx, [rip + 0x109859]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ECC6",
+      "decoded": [
+        "mov r8d, 0x1a"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ECCC",
+      "decoded": [
+        "lea rdx, [rip + 0x1097dd]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ECE2",
+      "decoded": [
+        "mov r8d, 0x20"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ECE8",
+      "decoded": [
+        "lea rdx, [rip + 0x109761]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ECFE",
+      "decoded": [
+        "mov r8d, 0x3d"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED04",
+      "decoded": [
+        "lea rdx, [rip + 0x1096e5]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED1A",
+      "decoded": [
+        "mov r8d, 0x41"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED20",
+      "decoded": [
+        "lea rdx, [rip + 0x109669]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED36",
+      "decoded": [
+        "mov r8d, 0x46"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED3C",
+      "decoded": [
+        "lea rdx, [rip + 0x1095ed]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED52",
+      "decoded": [
+        "mov r8d, 8"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED58",
+      "decoded": [
+        "lea rdx, [rip + 0x10a9e1]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED6E",
+      "decoded": [
+        "mov r8d, 0x2c"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19ED74",
+      "decoded": [
+        "lea rdx, [rip + 0x10a875]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19EDDD",
+      "decoded": [
+        "mov r8d, 0x21"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19EDE3",
+      "decoded": [
+        "lea rdx, [rip + 0x10ad46]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A85AF",
+      "decoded": [
+        "vucomiss xmm0, dword ptr [rdi]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A8627",
+      "decoded": [
+        "call 0x1a4830"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A8633",
+      "decoded": [
+        "call 0x1a4780"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A8647",
+      "decoded": [
+        "vmovss dword ptr [rip + 0xbd8a45], xmm0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A88A2",
+      "decoded": [
+        "call qword ptr [rax + 0x38]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A88AA",
+      "decoded": [
+        "vucomiss xmm0, xmm6"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A88B4",
+      "decoded": [
+        "cmp dword ptr [rbp - 0x25], 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A88B8",
+      "decoded": [
+        "jbe 0x2a8973"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A88D2",
+      "decoded": [
+        "vmovss dword ptr [rbp - 0x29], xmm0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A88FF",
+      "decoded": [
+        "call rbx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A8934",
+      "decoded": [
+        "mov qword ptr [rsi], rax"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A465D",
+      "decoded": [
+        "call 0x2af9c3"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A4669",
+      "decoded": [
+        "vminss xmm2, xmm0, dword ptr [rip + 0x1677af]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A4671",
+      "decoded": [
+        "vmovss xmm1, dword ptr [rip + 0x1678cf]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A4684",
+      "decoded": [
+        "vmovss dword ptr [rbx + 0x2e8], xmm3"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A4696",
+      "decoded": [
+        "vmovss dword ptr [rbx + 0x2ec], xmm3"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FE8D",
+      "decoded": [
+        "call qword ptr [rip + 0x2dd525]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FEDC",
+      "decoded": [
+        "call qword ptr [rip + 0x2d2d8e]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF0B",
+      "decoded": [
+        "call qword ptr [rip + 0x2d2d67]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA3A8",
+      "decoded": [
+        "call qword ptr [rax + 0x58]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA3B7",
+      "decoded": [
+        "mov r8, qword ptr [rdx + 0x48]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA3C0",
+      "decoded": [
+        "mov ecx, eax"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA3C2",
+      "decoded": [
+        "mov edx, ebx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA2D2",
+      "decoded": [
+        "divss xmm0, xmm1"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA2D6",
+      "decoded": [
+        "movss xmm1, dword ptr [rip + 0x10b284a]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA2DE",
+      "decoded": [
+        "call 0x10d7ea"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA2E3",
+      "decoded": [
+        "mulss xmm0, dword ptr [rip + 0x10b2871]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA2EB",
+      "decoded": [
+        "cvttss2si eax, xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA3E0",
+      "decoded": [
+        "mov qword ptr [rsp + 8], rbx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29385D",
+      "decoded": [
+        "mov qword ptr [rbx + 0x828], rdx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2938B4",
+      "decoded": [
+        "call qword ptr [rax + 0x28]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29394B",
+      "decoded": [
+        "mov dword ptr [rbp + 0x17], eax"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x293957",
+      "decoded": [
+        "mov dword ptr [rbp + 0x1b], eax"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29395D",
+      "decoded": [
+        "call qword ptr [rax + 0x28]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x293D5A",
+      "decoded": [
+        "call r9"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x296C6C",
+      "decoded": [
+        "mov byte ptr [rsi + 0x2fd], 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x296C73",
+      "decoded": [
+        "mov byte ptr [rsi + 0x2fc], bl"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x296C79",
+      "decoded": [
+        "vmovss dword ptr [rsi + 0x2f8], xmm6"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x296C81",
+      "decoded": [
+        "vmovss dword ptr [rsi + 0x2f4], xmm7"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x296C89",
+      "decoded": [
+        "or byte ptr [rsi + 0x2fe], dil"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2965EF",
+      "decoded": [
+        "call qword ptr [rip + 0x1dc5fb]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29665F",
+      "decoded": [
+        "call qword ptr [rip + 0x1dc5a3]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2966F7",
+      "decoded": [
+        "call qword ptr [rip + 0x1dc513]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x296704",
+      "decoded": [
+        "call qword ptr [rip + 0x1dc50e]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29674D",
+      "decoded": [
+        "mov byte ptr [rbx + 0x2fe], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x296757",
+      "decoded": [
+        "mov byte ptr [rbx + 0x264], 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2949EB",
+      "decoded": [
+        "call 0x296550"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294C9A",
+      "decoded": [
+        "mov byte ptr [r14 + 0x264], 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294F8C",
+      "decoded": [
+        "movzx eax, byte ptr [r14 + 0x264]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294FA0",
+      "decoded": [
+        "mov byte ptr [rbp + 0xe4], al"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294FBD",
+      "decoded": [
+        "call qword ptr [rip + 0x1ddc5d]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294FDD",
+      "decoded": [
+        "mov byte ptr [r14 + 0x264], r15b"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x27F290",
+      "decoded": [
+        "sub rsp, 0x28"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294433",
+      "decoded": [
+        "call qword ptr [rax + 0x50]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2947B6",
+      "decoded": [
+        "mov byte ptr [rbp - 0x3c], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2947D2",
+      "decoded": [
+        "vmovss dword ptr [rbp - 0x58], xmm3"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2947D7",
+      "decoded": [
+        "vmovss dword ptr [rbp - 0x44], xmm3"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2947E4",
+      "decoded": [
+        "vmovss dword ptr [rbp - 0x54], xmm2"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2947E9",
+      "decoded": [
+        "vmovss dword ptr [rbp - 0x40], xmm2"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29487E",
+      "decoded": [
+        "call 0x27cce0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2948E0",
+      "decoded": [
+        "call qword ptr [rip + 0x1de372]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF034B",
+      "decoded": [
+        "mov byte ptr [rbx + 0x144], dil"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF035B",
+      "decoded": [
+        "test dil, dil"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF0360",
+      "decoded": [
+        "mov byte ptr [rbx + 0x1c9], 1"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF4AD",
+      "decoded": [
+        "cmp byte ptr [rdi + 0x54], r12b"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF4B3",
+      "decoded": [
+        "mov byte ptr [rbp - 0x5c], r12b"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF4B7",
+      "decoded": [
+        "cmp byte ptr [rbx + 0x1c9], r12b"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF4C0",
+      "decoded": [
+        "mov byte ptr [rbp - 0x5c], 1"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF581",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF719",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF742",
+      "decoded": [
+        "test r14b, r14b"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF747",
+      "decoded": [
+        "cmp byte ptr [rbx + 0x144], r12b"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF750",
+      "decoded": [
+        "cmp byte ptr [rbx + 0x1c9], r12b"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEF759",
+      "decoded": [
+        "mov byte ptr [rbx + 0x1c9], r12b"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xF5D96",
+      "decoded": [
+        "mov qword ptr [rdi + 0x28], rax"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100BCF",
+      "decoded": [
+        "mov rsi, qword ptr [rbx + 0x30]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100C0B",
+      "decoded": [
+        "mov rsi, qword ptr [rbx + 0x28]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100C0F",
+      "decoded": [
+        "mov r8, qword ptr [rbx + 8]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100C20",
+      "decoded": [
+        "mov r8, qword ptr [rbx + 0x18]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100C49",
+      "decoded": [
+        "mov r8, qword ptr [rbx + 0x10]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100C71",
+      "decoded": [
+        "mov r8, rsi"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100C93",
+      "decoded": [
+        "call 0x100a00"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100CA7",
+      "decoded": [
+        "movups xmmword ptr [rbp + 0x98], xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100C98",
+      "decoded": [
+        "mov r8, qword ptr [rbx + 0x20]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100CC4",
+      "decoded": [
+        "call 0x100a00"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100CD7",
+      "decoded": [
+        "movups xmmword ptr [rbp + 0x38], xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100CC9",
+      "decoded": [
+        "xor r8d, r8d"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100CEB",
+      "decoded": [
+        "call 0x100a00"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100CFE",
+      "decoded": [
+        "movups xmmword ptr [rbp + 0x68], xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100CF0",
+      "decoded": [
+        "xor r8d, r8d"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100D15",
+      "decoded": [
+        "call 0x100a00"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100D21",
+      "decoded": [
+        "movups xmmword ptr [rbp + 8], xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100E84",
+      "decoded": [
+        "call r8"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF8EE",
+      "decoded": [
+        "mov rax, qword ptr [rsi + 0x28]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF8F9",
+      "decoded": [
+        "mov rax, qword ptr [rsi + 0x30]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF904",
+      "decoded": [
+        "mov rax, qword ptr [rcx + rbx + 0x410]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF90C",
+      "decoded": [
+        "mov qword ptr [rbp + 0x90], rax"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF98A",
+      "decoded": [
+        "lea r8, [rbp + 0x70]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF995",
+      "decoded": [
+        "call 0xfedc0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF140",
+      "decoded": [
+        "mov rdx, qword ptr [r15 + 0x20]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF144",
+      "decoded": [
+        "lea r9, [rip + 0x10acecd]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF170",
+      "decoded": [
+        "mov r14, qword ptr [r15 + 0x38]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF1E8",
+      "decoded": [
+        "mov r14, qword ptr [r15 + 0x30]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF20C",
+      "decoded": [
+        "lea r9, [rip + 0x10ace35]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF2C9",
+      "decoded": [
+        "lea r9, [rip + 0x10ace00]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE44C",
+      "decoded": [
+        "ucomiss xmm6, dword ptr [rip + 0x10be755]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE46C",
+      "decoded": [
+        "call 0x10d7c6"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE471",
+      "decoded": [
+        "cmp ax, 1"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE480",
+      "decoded": [
+        "call 0x10d7c6"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE485",
+      "decoded": [
+        "test ax, ax"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE490",
+      "decoded": [
+        "movsd xmm0, qword ptr [rip + 0x10be700]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE49F",
+      "decoded": [
+        "mulsd xmm1, qword ptr [rip + 0x10be6e1]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE4A7",
+      "decoded": [
+        "minsd xmm0, xmm1"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE4AB",
+      "decoded": [
+        "cvtpd2ps xmm0, xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xEE4AF",
+      "decoded": [
+        "comiss xmm0, xmm7"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100DF4",
+      "decoded": [
+        "je 0x100e0d"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100DF6",
+      "decoded": [
+        "movss dword ptr [rbp + 0x100], xmm6"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100DFE",
+      "decoded": [
+        "call 0xee440"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100E03",
+      "decoded": [
+        "movss dword ptr [rbp + 0xfc], xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100E0D",
+      "decoded": [
+        "call 0xee440"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100E12",
+      "decoded": [
+        "movss dword ptr [rbp + 0x100], xmm0"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100E1A",
+      "decoded": [
+        "movss dword ptr [rbp + 0xfc], xmm6"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x266DDE",
+      "decoded": [
+        "lea rdx, [rip + 0x17c7ab]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x266DF7",
+      "decoded": [
+        "xor r9d, r9d"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x266DFF",
+      "decoded": [
+        "xor ecx, ecx"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x266E01",
+      "decoded": [
+        "call rax"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x266E03",
+      "decoded": [
+        "mov dword ptr [rbx + 0x11a0], 0xffffffff"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF2A",
+      "decoded": [
+        "vmulss xmm1, xmm4, dword ptr [rip + 0x26c006]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF3E",
+      "decoded": [
+        "vdivss xmm1, xmm1, xmm0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF42",
+      "decoded": [
+        "vmulss xmm0, xmm3, dword ptr [rip + 0x26be6e]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF4A",
+      "decoded": [
+        "vxorps xmm3, xmm3, xmmword ptr [rip + 0x26c98e]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF5E",
+      "decoded": [
+        "vmovss dword ptr [rdi + 0x44], xmm1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF63",
+      "decoded": [
+        "vdivss xmm1, xmm0, xmm2"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF67",
+      "decoded": [
+        "vxorps xmm0, xmm4, xmmword ptr [rip + 0x26c971]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF6F",
+      "decoded": [
+        "vmovss dword ptr [rdi + 0x48], xmm1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF74",
+      "decoded": [
+        "vmovss dword ptr [rax + 8], xmm0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19FF79",
+      "decoded": [
+        "vmovss dword ptr [rax + 0xc], xmm3"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA402",
+      "decoded": [
+        "cmovg r10d, r9d"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA406",
+      "decoded": [
+        "idiv r10d"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA409",
+      "decoded": [
+        "lea ebx, [rdx + 1]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA40C",
+      "decoded": [
+        "mov edx, 2"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA413",
+      "decoded": [
+        "call 0xfa300"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA418",
+      "decoded": [
+        "subss xmm0, dword ptr [rip + 0x10b2680]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA420",
+      "decoded": [
+        "mov edx, 3"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA42B",
+      "decoded": [
+        "call 0xfa300"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFA430",
+      "decoded": [
+        "subss xmm0, dword ptr [rip + 0x10b2668]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19DD14",
+      "decoded": [
+        "call 0x2654b0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x19DDC4",
+      "decoded": [
+        "call 0x2654b0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2656F0",
+      "decoded": [
+        "mov dl, 1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2656F5",
+      "decoded": [
+        "call 0x2a15b0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A166F",
+      "decoded": [
+        "mov r15d, dword ptr [rdi + 0x34c]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A1676",
+      "decoded": [
+        "mov r14d, dword ptr [rdi + 0x350]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A16E8",
+      "decoded": [
+        "mov rcx, qword ptr [rdi + 0x828]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A1735",
+      "decoded": [
+        "lea r12, [rdi + 0xb50]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A18A1",
+      "decoded": [
+        "lea rbx, [rdi + 0xba8]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A1B0E",
+      "decoded": [
+        "vmovss dword ptr [rdi + 0x1618], xmm1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A1B4E",
+      "decoded": [
+        "vmovss dword ptr [rdi + 0x161c], xmm1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A1D74",
+      "decoded": [
+        "call 0x2a1240"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A2043",
+      "decoded": [
+        "vmovss dword ptr [rdi + 0x1618], xmm1"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A205C",
+      "decoded": [
+        "vmovss dword ptr [rdi + 0x161c], xmm6"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A20E5",
+      "decoded": [
+        "call 0x2a1240"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A8AAB",
+      "decoded": [
+        "call 0x293820"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2A8BA4",
+      "decoded": [
+        "call 0x293c30"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294CF5",
+      "decoded": [
+        "mov rax, qword ptr [r14 + 0xb50]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294D03",
+      "decoded": [
+        "mov rax, qword ptr [r14 + 0xba8]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294F09",
+      "decoded": [
+        "mov qword ptr [rbp], r15"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294F8C",
+      "decoded": [
+        "movzx eax, byte ptr [r14 + 0x264]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x294FBD",
+      "decoded": [
+        "call qword ptr [rip + 0x1ddc5d]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29438E",
+      "decoded": [
+        "mov r8, qword ptr [rdi + 0xb50]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x29439E",
+      "decoded": [
+        "cmp qword ptr [rdi + 0xba8], 0"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2944D9",
+      "decoded": [
+        "mov rax, qword ptr [rdi + 0xb50]"
+      ]
+    },
+    {
+      "module": "SkyrimUpscaler.dll",
+      "rva": "0x2944E7",
+      "decoded": [
+        "mov rax, qword ptr [rdi + 0xba8]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFE3BC",
+      "decoded": [
+        "mov eax, 0x220"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFE3CD",
+      "decoded": [
+        "mov ecx, 0x228"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFE3DF",
+      "decoded": [
+        "or eax, 1"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFE3EC",
+      "decoded": [
+        "or eax, 2"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF096",
+      "decoded": [
+        "xor edx, edx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF0FC",
+      "decoded": [
+        "mov rdx, qword ptr [r15 + 0x20]"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF2DD",
+      "decoded": [
+        "xor edx, edx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0xFF475",
+      "decoded": [
+        "call rbx"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x10069F",
+      "decoded": [
+        "mov eax, 0x220"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x1006A4",
+      "decoded": [
+        "mov ecx, 0x228"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x1006C2",
+      "decoded": [
+        "bts eax, 7"
+      ]
+    },
+    {
+      "module": "PDPerfPlugin.dll",
+      "rva": "0x100E84",
+      "decoded": [
+        "call r8"
+      ]
+    }
+  ]
+}

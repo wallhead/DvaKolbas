@@ -1,0 +1,232 @@
+{
+  "status": "PASS",
+  "scope": "Static bytes, selected function-aligned boundaries and exact embedded string offsets; no target execution",
+  "excerpt_files_checked": 13,
+  "gnu_raw_byte_chunks_checked": 5615,
+  "gnu_raw_bytes_checked": 22768,
+  "pd_excerpt_instruction_comparisons": 724,
+  "selected_v5_instruction_records_checked": 38,
+  "selected_records_with_unwind_boundary_check": 38,
+  "embedded_strings_at_supplied_offsets_checked": 11,
+  "actual_transform_helper": {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva_begin": "0x2a1240",
+    "rva_end_exclusive": "0x2a15a4",
+    "code_sha256": "1f439507388addeb018cb88de102244e1c306cf1234ada2fb83cc7d31393ef31",
+    "instructions_decoded": 182,
+    "context_slot_13_call_rva": "0x2a152b",
+    "context_slot_13_call_bytes": "ff5068",
+    "supplied_named_excerpt_covers_helper_body": false,
+    "scope": "Local callee decode confirms bindings and a draw; caller-wide preservation/restoration and shader equations are not established."
+  },
+  "partial_edge_pseudo_records": [
+    {
+      "file": "cs_bridge_install.asm",
+      "rva": "0x19e55c",
+      "bytes": "48",
+      "supplied_text": "rex.W"
+    },
+    {
+      "file": "cs_bridge_install.asm",
+      "rva": "0x19e55d",
+      "bytes": "89",
+      "supplied_text": ".byte 0x89"
+    },
+    {
+      "file": "cs_bridge_install.asm",
+      "rva": "0x19e55e",
+      "bytes": "4c",
+      "supplied_text": "rex.WR"
+    },
+    {
+      "file": "cs_bridge_install.asm",
+      "rva": "0x19e55f",
+      "bytes": "24",
+      "supplied_text": ".byte 0x24"
+    },
+    {
+      "file": "cs_bridge_runtime.asm",
+      "rva": "0x19de2f",
+      "bytes": "0f",
+      "supplied_text": ".byte 0xf"
+    },
+    {
+      "file": "cs_transform_helper.asm",
+      "rva": "0x2a204f",
+      "bytes": "c5",
+      "supplied_text": ".byte 0xc5"
+    },
+    {
+      "file": "generic_resource_detection.asm",
+      "rva": "0x2a8d7b",
+      "bytes": "4c",
+      "supplied_text": "rex.WR"
+    },
+    {
+      "file": "generic_resource_detection.asm",
+      "rva": "0x2a8d7c",
+      "bytes": "8d",
+      "supplied_text": ".byte 0x8d"
+    },
+    {
+      "file": "host_sr_temporal_payload.asm",
+      "rva": "0x29504b",
+      "bytes": "c5",
+      "supplied_text": ".byte 0xc5"
+    },
+    {
+      "file": "host_sr_temporal_payload.asm",
+      "rva": "0x29504d",
+      "bytes": "11",
+      "supplied_text": ".byte 0x11"
+    },
+    {
+      "file": "host_sr_temporal_payload.asm",
+      "rva": "0x29504e",
+      "bytes": "44",
+      "supplied_text": "rex.R"
+    },
+    {
+      "file": "host_sr_temporal_payload.asm",
+      "rva": "0x29504f",
+      "bytes": "24",
+      "supplied_text": ".byte 0x24"
+    }
+  ],
+  "excerpt_first_rows": [
+    {
+      "file": "cs_bridge_install.asm",
+      "first_rva": "0x19e330",
+      "first_row_matches_unwind_function_instruction_boundary": false
+    },
+    {
+      "file": "cs_bridge_runtime.asm",
+      "first_rva": "0x19dc40",
+      "first_row_matches_unwind_function_instruction_boundary": false
+    },
+    {
+      "file": "cs_capture_depth_motion.asm",
+      "first_rva": "0x2a15b0",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "cs_prepare_input.asm",
+      "first_rva": "0x265480",
+      "first_row_matches_unwind_function_instruction_boundary": false
+    },
+    {
+      "file": "cs_transform_helper.asm",
+      "first_rva": "0x2a1700",
+      "first_row_matches_unwind_function_instruction_boundary": false
+    },
+    {
+      "file": "generic_resource_detection.asm",
+      "first_rva": "0x2a8850",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "host_fg_temporal_payload.asm",
+      "first_rva": "0x2941a0",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "host_sr_temporal_payload.asm",
+      "first_rva": "0x2949c0",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "menu_event_negative_control.asm",
+      "first_rva": "0x25e890",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "pd_dx11_sr_context_flags.asm",
+      "first_rva": "0xfe2e0",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "pd_dx11_sr_mask_bindings.asm",
+      "first_rva": "0xfedc0",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "pd_ffxapi_context_flags.asm",
+      "first_rva": "0x100620",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    },
+    {
+      "file": "sr_reset_writer_survey.asm",
+      "first_rva": "0x27d400",
+      "first_row_matches_unwind_function_instruction_boundary": true
+    }
+  ],
+  "per_file": [
+    {
+      "file": "cs_bridge_install.asm",
+      "module": "host",
+      "records_checked": 118
+    },
+    {
+      "file": "cs_bridge_runtime.asm",
+      "module": "host",
+      "records_checked": 135
+    },
+    {
+      "file": "cs_capture_depth_motion.asm",
+      "module": "host",
+      "records_checked": 715
+    },
+    {
+      "file": "cs_prepare_input.asm",
+      "module": "host",
+      "records_checked": 503
+    },
+    {
+      "file": "cs_transform_helper.asm",
+      "module": "host",
+      "records_checked": 559
+    },
+    {
+      "file": "generic_resource_detection.asm",
+      "module": "host",
+      "records_checked": 346
+    },
+    {
+      "file": "host_fg_temporal_payload.asm",
+      "module": "host",
+      "records_checked": 516
+    },
+    {
+      "file": "host_sr_temporal_payload.asm",
+      "module": "host",
+      "records_checked": 396
+    },
+    {
+      "file": "menu_event_negative_control.asm",
+      "module": "host",
+      "records_checked": 279
+    },
+    {
+      "file": "pd_dx11_sr_context_flags.asm",
+      "module": "pd",
+      "records_checked": 171
+    },
+    {
+      "file": "pd_dx11_sr_mask_bindings.asm",
+      "module": "pd",
+      "records_checked": 371
+    },
+    {
+      "file": "pd_ffxapi_context_flags.asm",
+      "module": "pd",
+      "records_checked": 182
+    },
+    {
+      "file": "sr_reset_writer_survey.asm",
+      "module": "host",
+      "records_checked": 2048
+    }
+  ],
+  "note": "Literal excerpt bytes can match even when a range starts inside an instruction; partial edge pseudo-records are not complete instructions. No GNU whole-excerpt instruction-boundary claim is made."
+}

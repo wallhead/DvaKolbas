@@ -1,0 +1,1950 @@
+[
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A95F0",
+    "label": "UI viewport contract",
+    "bytes": "48895c2408",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rsp+0x8],rbx",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9635",
+    "label": "UI viewport contract",
+    "bytes": "c5fa2a8078020000",
+    "mnemonic": "vcvtsi2ss",
+    "operands": "xmm0,xmm0,DWORD PTR [rax+0x278]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A963D",
+    "label": "UI viewport contract",
+    "bytes": "c5f22a887c020000",
+    "mnemonic": "vcvtsi2ss",
+    "operands": "xmm1,xmm1,DWORD PTR [rax+0x27c]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A968E",
+    "label": "UI viewport contract",
+    "bytes": "83ff01",
+    "mnemonic": "cmp",
+    "operands": "edi,0x1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A96AA",
+    "label": "UI viewport contract",
+    "bytes": "c5f82e4308",
+    "mnemonic": "vucomiss",
+    "operands": "xmm0,DWORD PTR [rbx+0x8]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A96BD",
+    "label": "UI viewport contract",
+    "bytes": "c5f82e430c",
+    "mnemonic": "vucomiss",
+    "operands": "xmm0,DWORD PTR [rbx+0xc]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A96C8",
+    "label": "UI viewport contract",
+    "bytes": "c5fa2a8070020000",
+    "mnemonic": "vcvtsi2ss",
+    "operands": "xmm0,xmm0,DWORD PTR [rax+0x270]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A96D4",
+    "label": "UI viewport contract",
+    "bytes": "c5f22a8874020000",
+    "mnemonic": "vcvtsi2ss",
+    "operands": "xmm1,xmm1,DWORD PTR [rax+0x274]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A971F",
+    "label": "UI viewport contract",
+    "bytes": "8bd7",
+    "mnemonic": "mov",
+    "operands": "edx,edi",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9724",
+    "label": "UI viewport contract",
+    "bytes": "ff150e3d1d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1d3d0e]        # 0x18047d438",
+    "refs": [
+      4707384
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9754",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "803d3779bd0000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rip+0xbd7937],0x0        # 0x180e81092",
+    "refs": [
+      15208594
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9768",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "83fb01",
+    "mnemonic": "cmp",
+    "operands": "ebx,0x1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A977D",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "ff5038",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x38]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9787",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "488b81d0070000",
+    "mnemonic": "mov",
+    "operands": "rax,QWORD PTR [rcx+0x7d0]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A978E",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "4839442420",
+    "mnemonic": "cmp",
+    "operands": "QWORD PTR [rsp+0x20],rax",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9795",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "4881c130090000",
+    "mnemonic": "add",
+    "operands": "rcx,0x930",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A979C",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "e8ef2aecff",
+    "mnemonic": "call",
+    "operands": "0x18016c290",
+    "refs": [
+      1491600
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A97BB",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "ff15473c1d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1d3c47]        # 0x18047d408",
+    "refs": [
+      4707336
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A97D5",
+    "label": "UI depth resource lookup and substitution",
+    "bytes": "c3",
+    "mnemonic": "ret",
+    "operands": "",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ECAA",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b80a000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0xa",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ECB0",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d1559981000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x109859]        # 0x1802a8510",
+    "refs": [
+      2786576
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ECC6",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b81a000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x1a",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ECCC",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d15dd971000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x1097dd]        # 0x1802a84b0",
+    "refs": [
+      2786480
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ECE2",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b820000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x20",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ECE8",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d1561971000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x109761]        # 0x1802a8450",
+    "refs": [
+      2786384
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ECFE",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b83d000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x3d",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED04",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d15e5961000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x1096e5]        # 0x1802a83f0",
+    "refs": [
+      2786288
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED1A",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b841000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x41",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED20",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d1569961000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x109669]        # 0x1802a8390",
+    "refs": [
+      2786192
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED36",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b846000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x46",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED3C",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d15ed951000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x1095ed]        # 0x1802a8330",
+    "refs": [
+      2786096
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED52",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b808000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x8",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED58",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d15e1a91000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x10a9e1]        # 0x1802a9740",
+    "refs": [
+      2791232
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED6E",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b82c000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x2c",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ED74",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d1575a81000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x10a875]        # 0x1802a95f0",
+    "refs": [
+      2790896
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19EDDD",
+    "label": "Hook installation slots and handlers",
+    "bytes": "41b821000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x21",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19EDE3",
+    "label": "Hook installation slots and handlers",
+    "bytes": "488d1546ad1000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x10ad46]        # 0x1802a9b30",
+    "refs": [
+      2792240
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A85AF",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "c5f82e07",
+    "mnemonic": "vucomiss",
+    "operands": "xmm0,DWORD PTR [rdi]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A8627",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "e804c2efff",
+    "mnemonic": "call",
+    "operands": "0x1801a4830",
+    "refs": [
+      1722416
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A8633",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "e848c1efff",
+    "mnemonic": "call",
+    "operands": "0x1801a4780",
+    "refs": [
+      1722240
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A8647",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "c5fa1105458abd00",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rip+0xbd8a45],xmm0        # 0x180e81094",
+    "refs": [
+      15208596
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A88A2",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "ff5038",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x38]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A88AA",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "c5f82ec6",
+    "mnemonic": "vucomiss",
+    "operands": "xmm0,xmm6",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A88B4",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "837ddb01",
+    "mnemonic": "cmp",
+    "operands": "DWORD PTR [rbp-0x25],0x1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A88B8",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "0f86b5000000",
+    "mnemonic": "jbe",
+    "operands": "0x1802a8973",
+    "refs": [
+      2787699
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A88D2",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "c5fa1145d7",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rbp-0x29],xmm0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A88FF",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "ffd3",
+    "mnemonic": "call",
+    "operands": "rbx",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A8934",
+    "label": "Sampler cache eligibility and replacement",
+    "bytes": "488906",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rsi],rax",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A465D",
+    "label": "Bias bounds and producer",
+    "bytes": "e861b30000",
+    "mnemonic": "call",
+    "operands": "0x1802af9c3",
+    "refs": [
+      2816451
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A4669",
+    "label": "Bias bounds and producer",
+    "bytes": "c5fa5d15af771600",
+    "mnemonic": "vminss",
+    "operands": "xmm2,xmm0,DWORD PTR [rip+0x1677af]        # 0x18040be20",
+    "refs": [
+      4242976
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A4671",
+    "label": "Bias bounds and producer",
+    "bytes": "c5fa100dcf781600",
+    "mnemonic": "vmovss",
+    "operands": "xmm1,DWORD PTR [rip+0x1678cf]        # 0x18040bf48",
+    "refs": [
+      4243272
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A4684",
+    "label": "Bias bounds and producer",
+    "bytes": "c5fa119be8020000",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rbx+0x2e8],xmm3",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A4696",
+    "label": "Bias bounds and producer",
+    "bytes": "c5fa119bec020000",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rbx+0x2ec],xmm3",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FE8D",
+    "label": "Engine jitter signs and phase calls",
+    "bytes": "ff1525d52d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x2dd525]        # 0x18047d3b8",
+    "refs": [
+      4707256
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FEDC",
+    "label": "Engine jitter signs and phase calls",
+    "bytes": "ff158e2d2d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x2d2d8e]        # 0x180472c70",
+    "refs": [
+      4664432
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF0B",
+    "label": "Engine jitter signs and phase calls",
+    "bytes": "ff15672d2d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x2d2d67]        # 0x180472c78",
+    "refs": [
+      4664440
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA3A8",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "ff5058",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x58]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA3B7",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "4c8b4248",
+    "mnemonic": "mov",
+    "operands": "r8,QWORD PTR [rdx+0x48]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA3C0",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "8bc8",
+    "mnemonic": "mov",
+    "operands": "ecx,eax",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA3C2",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "8bd3",
+    "mnemonic": "mov",
+    "operands": "edx,ebx",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA2D2",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "f30f5ec1",
+    "mnemonic": "divss",
+    "operands": "xmm0,xmm1",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA2D6",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "f30f100d4a280b01",
+    "mnemonic": "movss",
+    "operands": "xmm1,DWORD PTR [rip+0x10b284a]        # 0x1811acb28",
+    "refs": [
+      18533160
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA2DE",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "e807350100",
+    "mnemonic": "call",
+    "operands": "0x18010d7ea",
+    "refs": [
+      1103850
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA2E3",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "f30f590571280b01",
+    "mnemonic": "mulss",
+    "operands": "xmm0,DWORD PTR [rip+0x10b2871]        # 0x1811acb5c",
+    "refs": [
+      18533212
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA2EB",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "f30f2cc0",
+    "mnemonic": "cvttss2si",
+    "operands": "eax,xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA3E0",
+    "label": "Jitter dimensions and utility arithmetic",
+    "bytes": "48895c2408",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rsp+0x8],rbx",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29385D",
+    "label": "Motion/depth resource creation",
+    "bytes": "48899328080000",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rbx+0x828],rdx",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2938B4",
+    "label": "Motion/depth resource creation",
+    "bytes": "ff5028",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x28]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29394B",
+    "label": "Motion/depth resource creation",
+    "bytes": "894517",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [rbp+0x17],eax",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x293957",
+    "label": "Motion/depth resource creation",
+    "bytes": "89451b",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [rbp+0x1b],eax",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29395D",
+    "label": "Motion/depth resource creation",
+    "bytes": "ff5028",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x28]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x293D5A",
+    "label": "Motion/depth resource creation",
+    "bytes": "41ffd1",
+    "mnemonic": "call",
+    "operands": "r9",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x296C6C",
+    "label": "Depth convention updates",
+    "bytes": "c686fd02000001",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rsi+0x2fd],0x1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x296C73",
+    "label": "Depth convention updates",
+    "bytes": "889efc020000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rsi+0x2fc],bl",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x296C79",
+    "label": "Depth convention updates",
+    "bytes": "c5fa11b6f8020000",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rsi+0x2f8],xmm6",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x296C81",
+    "label": "Depth convention updates",
+    "bytes": "c5fa11bef4020000",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rsi+0x2f4],xmm7",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x296C89",
+    "label": "Depth convention updates",
+    "bytes": "4008befe020000",
+    "mnemonic": "or",
+    "operands": "BYTE PTR [rsi+0x2fe],dil",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2965EF",
+    "label": "Depth-change recreation and reset",
+    "bytes": "ff15fbc51d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1dc5fb]        # 0x180472bf0",
+    "refs": [
+      4664304
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29665F",
+    "label": "Depth-change recreation and reset",
+    "bytes": "ff15a3c51d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1dc5a3]        # 0x180472c08",
+    "refs": [
+      4664328
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2966F7",
+    "label": "Depth-change recreation and reset",
+    "bytes": "ff1513c51d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1dc513]        # 0x180472c10",
+    "refs": [
+      4664336
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x296704",
+    "label": "Depth-change recreation and reset",
+    "bytes": "ff150ec51d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1dc50e]        # 0x180472c18",
+    "refs": [
+      4664344
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29674D",
+    "label": "Depth-change recreation and reset",
+    "bytes": "c683fe02000000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbx+0x2fe],0x0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x296757",
+    "label": "Depth-change recreation and reset",
+    "bytes": "c6836402000001",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbx+0x264],0x1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2949EB",
+    "label": "Host SR reset forwarding and clearing",
+    "bytes": "e8601b0000",
+    "mnemonic": "call",
+    "operands": "0x180296550",
+    "refs": [
+      2712912
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x294C9A",
+    "label": "Host SR reset forwarding and clearing",
+    "bytes": "41c6866402000001",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [r14+0x264],0x1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x294F8C",
+    "label": "Host SR reset forwarding and clearing",
+    "bytes": "410fb68664020000",
+    "mnemonic": "movzx",
+    "operands": "eax,BYTE PTR [r14+0x264]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x294FA0",
+    "label": "Host SR reset forwarding and clearing",
+    "bytes": "8885e4000000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbp+0xe4],al",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x294FBD",
+    "label": "Host SR reset forwarding and clearing",
+    "bytes": "ff155ddc1d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1ddc5d]        # 0x180472c20",
+    "refs": [
+      4664352
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x294FDD",
+    "label": "Host SR reset forwarding and clearing",
+    "bytes": "4588be64020000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [r14+0x264],r15b",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x27F290",
+    "label": "Host SR reset forwarding and clearing",
+    "bytes": "4883ec28",
+    "mnemonic": "sub",
+    "operands": "rsp,0x28",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x294433",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "ff5050",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x50]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2947B6",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "c645c400",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbp-0x3c],0x0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2947D2",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "c5fa115da8",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rbp-0x58],xmm3",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2947D7",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "c5fa115dbc",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rbp-0x44],xmm3",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2947E4",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "c5fa1155ac",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rbp-0x54],xmm2",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2947E9",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "c5fa1155c0",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rbp-0x40],xmm2",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29487E",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "e85d84feff",
+    "mnemonic": "call",
+    "operands": "0x18027cce0",
+    "refs": [
+      2608352
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2948E0",
+    "label": "Host FG depth dimensions, guides and reset",
+    "bytes": "ff1572e31d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1de372]        # 0x180472c58",
+    "refs": [
+      4664408
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF034B",
+    "label": "Independent FG reset latch",
+    "bytes": "4088bb44010000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbx+0x144],dil",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF035B",
+    "label": "Independent FG reset latch",
+    "bytes": "4084ff",
+    "mnemonic": "test",
+    "operands": "dil,dil",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF0360",
+    "label": "Independent FG reset latch",
+    "bytes": "c683c901000001",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbx+0x1c9],0x1",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF4AD",
+    "label": "Independent FG reset latch",
+    "bytes": "44386754",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rdi+0x54],r12b",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF4B3",
+    "label": "Independent FG reset latch",
+    "bytes": "448865a4",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbp-0x5c],r12b",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF4B7",
+    "label": "Independent FG reset latch",
+    "bytes": "4438a3c9010000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rbx+0x1c9],r12b",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF4C0",
+    "label": "Independent FG reset latch",
+    "bytes": "c645a401",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbp-0x5c],0x1",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF581",
+    "label": "Independent FG reset latch",
+    "bytes": "41ffd0",
+    "mnemonic": "call",
+    "operands": "r8",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF719",
+    "label": "Independent FG reset latch",
+    "bytes": "41ffd0",
+    "mnemonic": "call",
+    "operands": "r8",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF742",
+    "label": "Independent FG reset latch",
+    "bytes": "4584f6",
+    "mnemonic": "test",
+    "operands": "r14b,r14b",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF747",
+    "label": "Independent FG reset latch",
+    "bytes": "4438a344010000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rbx+0x144],r12b",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF750",
+    "label": "Independent FG reset latch",
+    "bytes": "4438a3c9010000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rbx+0x1c9],r12b",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF759",
+    "label": "Independent FG reset latch",
+    "bytes": "4488a3c9010000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbx+0x1c9],r12b",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF5D96",
+    "label": "FidelityFX SR field correction",
+    "bytes": "48894728",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rdi+0x28],rax",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100BCF",
+    "label": "FidelityFX SR field correction",
+    "bytes": "488b7330",
+    "mnemonic": "mov",
+    "operands": "rsi,QWORD PTR [rbx+0x30]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100C0B",
+    "label": "FidelityFX SR field correction",
+    "bytes": "488b7328",
+    "mnemonic": "mov",
+    "operands": "rsi,QWORD PTR [rbx+0x28]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100C0F",
+    "label": "FidelityFX SR field correction",
+    "bytes": "4c8b4308",
+    "mnemonic": "mov",
+    "operands": "r8,QWORD PTR [rbx+0x8]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100C20",
+    "label": "FidelityFX SR field correction",
+    "bytes": "4c8b4318",
+    "mnemonic": "mov",
+    "operands": "r8,QWORD PTR [rbx+0x18]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100C49",
+    "label": "FidelityFX SR field correction",
+    "bytes": "4c8b4310",
+    "mnemonic": "mov",
+    "operands": "r8,QWORD PTR [rbx+0x10]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100C71",
+    "label": "FidelityFX SR field correction",
+    "bytes": "4c8bc6",
+    "mnemonic": "mov",
+    "operands": "r8,rsi",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100C93",
+    "label": "FidelityFX SR field correction",
+    "bytes": "e868fdffff",
+    "mnemonic": "call",
+    "operands": "0x180100a00",
+    "refs": [
+      1051136
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100CA7",
+    "label": "FidelityFX SR field correction",
+    "bytes": "0f118598000000",
+    "mnemonic": "movups",
+    "operands": "XMMWORD PTR [rbp+0x98],xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100C98",
+    "label": "FidelityFX SR field correction",
+    "bytes": "4c8b4320",
+    "mnemonic": "mov",
+    "operands": "r8,QWORD PTR [rbx+0x20]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100CC4",
+    "label": "FidelityFX SR field correction",
+    "bytes": "e837fdffff",
+    "mnemonic": "call",
+    "operands": "0x180100a00",
+    "refs": [
+      1051136
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100CD7",
+    "label": "FidelityFX SR field correction",
+    "bytes": "0f114538",
+    "mnemonic": "movups",
+    "operands": "XMMWORD PTR [rbp+0x38],xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100CC9",
+    "label": "FidelityFX SR field correction",
+    "bytes": "4533c0",
+    "mnemonic": "xor",
+    "operands": "r8d,r8d",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100CEB",
+    "label": "FidelityFX SR field correction",
+    "bytes": "e810fdffff",
+    "mnemonic": "call",
+    "operands": "0x180100a00",
+    "refs": [
+      1051136
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100CFE",
+    "label": "FidelityFX SR field correction",
+    "bytes": "0f114568",
+    "mnemonic": "movups",
+    "operands": "XMMWORD PTR [rbp+0x68],xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100CF0",
+    "label": "FidelityFX SR field correction",
+    "bytes": "4533c0",
+    "mnemonic": "xor",
+    "operands": "r8d,r8d",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100D15",
+    "label": "FidelityFX SR field correction",
+    "bytes": "e8e6fcffff",
+    "mnemonic": "call",
+    "operands": "0x180100a00",
+    "refs": [
+      1051136
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100D21",
+    "label": "FidelityFX SR field correction",
+    "bytes": "0f114508",
+    "mnemonic": "movups",
+    "operands": "XMMWORD PTR [rbp+0x8],xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100E84",
+    "label": "FidelityFX SR field correction",
+    "bytes": "41ffd0",
+    "mnemonic": "call",
+    "operands": "r8",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF8EE",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "488b4628",
+    "mnemonic": "mov",
+    "operands": "rax,QWORD PTR [rsi+0x28]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF8F9",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "488b4630",
+    "mnemonic": "mov",
+    "operands": "rax,QWORD PTR [rsi+0x30]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF904",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "488b841910040000",
+    "mnemonic": "mov",
+    "operands": "rax,QWORD PTR [rcx+rbx*1+0x410]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF90C",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "48898590000000",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rbp+0x90],rax",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF98A",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "4c8d4570",
+    "mnemonic": "lea",
+    "operands": "r8,[rbp+0x70]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF995",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "e826f4ffff",
+    "mnemonic": "call",
+    "operands": "0x1800fedc0",
+    "refs": [
+      1043904
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF140",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "498b5720",
+    "mnemonic": "mov",
+    "operands": "rdx,QWORD PTR [r15+0x20]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF144",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "4c8d0dcdce0a01",
+    "mnemonic": "lea",
+    "operands": "r9,[rip+0x10acecd]        # 0x1811ac018",
+    "refs": [
+      18530328
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF170",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "4d8b7738",
+    "mnemonic": "mov",
+    "operands": "r14,QWORD PTR [r15+0x38]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF1E8",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "4d8b7730",
+    "mnemonic": "mov",
+    "operands": "r14,QWORD PTR [r15+0x30]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF20C",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "4c8d0d35ce0a01",
+    "mnemonic": "lea",
+    "operands": "r9,[rip+0x10ace35]        # 0x1811ac048",
+    "refs": [
+      18530376
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF2C9",
+    "label": "DX11 resource-bundle distinction",
+    "bytes": "4c8d0d00ce0a01",
+    "mnemonic": "lea",
+    "operands": "r9,[rip+0x10ace00]        # 0x1811ac0d0",
+    "refs": [
+      18530512
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE44C",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "0f2e3555e70b01",
+    "mnemonic": "ucomiss",
+    "operands": "xmm6,DWORD PTR [rip+0x10be755]        # 0x1811acba8",
+    "refs": [
+      18533288
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE46C",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "e855f30100",
+    "mnemonic": "call",
+    "operands": "0x18010d7c6",
+    "refs": [
+      1103814
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE471",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "6683f801",
+    "mnemonic": "cmp",
+    "operands": "ax,0x1",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE480",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "e841f30100",
+    "mnemonic": "call",
+    "operands": "0x18010d7c6",
+    "refs": [
+      1103814
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE485",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "6685c0",
+    "mnemonic": "test",
+    "operands": "ax,ax",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE490",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "f20f100500e70b01",
+    "mnemonic": "movsd",
+    "operands": "xmm0,QWORD PTR [rip+0x10be700]        # 0x1811acb98",
+    "refs": [
+      18533272
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE49F",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "f20f590de1e60b01",
+    "mnemonic": "mulsd",
+    "operands": "xmm1,QWORD PTR [rip+0x10be6e1]        # 0x1811acb88",
+    "refs": [
+      18533256
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE4A7",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "f20f5dc1",
+    "mnemonic": "minsd",
+    "operands": "xmm0,xmm1",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE4AB",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "660f5ac0",
+    "mnemonic": "cvtpd2ps",
+    "operands": "xmm0,xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE4AF",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "0f2fc7",
+    "mnemonic": "comiss",
+    "operands": "xmm0,xmm7",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100DF4",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "7417",
+    "mnemonic": "je",
+    "operands": "0x180100e0d",
+    "refs": [
+      1052173
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100DF6",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "f30f11b500010000",
+    "mnemonic": "movss",
+    "operands": "DWORD PTR [rbp+0x100],xmm6",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100DFE",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "e83dd6feff",
+    "mnemonic": "call",
+    "operands": "0x1800ee440",
+    "refs": [
+      975936
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100E03",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "f30f1185fc000000",
+    "mnemonic": "movss",
+    "operands": "DWORD PTR [rbp+0xfc],xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100E0D",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "e82ed6feff",
+    "mnemonic": "call",
+    "operands": "0x1800ee440",
+    "refs": [
+      975936
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100E12",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "f30f118500010000",
+    "mnemonic": "movss",
+    "operands": "DWORD PTR [rbp+0x100],xmm0",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100E1A",
+    "label": "Far-plane sanitizer and reversed depth assignments",
+    "bytes": "f30f11b5fc000000",
+    "mnemonic": "movss",
+    "operands": "DWORD PTR [rbp+0xfc],xmm6",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x266DDE",
+    "label": "Idle-wide FG source clear (not universal history reset)",
+    "bytes": "488d15abc71700",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x17c7ab]        # 0x1803e3590",
+    "refs": [
+      4076944
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x266DF7",
+    "label": "Idle-wide FG source clear (not universal history reset)",
+    "bytes": "4533c9",
+    "mnemonic": "xor",
+    "operands": "r9d,r9d",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x266DFF",
+    "label": "Idle-wide FG source clear (not universal history reset)",
+    "bytes": "33c9",
+    "mnemonic": "xor",
+    "operands": "ecx,ecx",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x266E01",
+    "label": "Idle-wide FG source clear (not universal history reset)",
+    "bytes": "ffd0",
+    "mnemonic": "call",
+    "operands": "rax",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x266E03",
+    "label": "Idle-wide FG source clear (not universal history reset)",
+    "bytes": "c783a0110000ffffffff",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [rbx+0x11a0],0xffffffff",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF2A",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5da590d06c02600",
+    "mnemonic": "vmulss",
+    "operands": "xmm1,xmm4,DWORD PTR [rip+0x26c006]        # 0x18040bf38",
+    "refs": [
+      4243256
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF3E",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5f25ec8",
+    "mnemonic": "vdivss",
+    "operands": "xmm1,xmm1,xmm0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF42",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5e259056ebe2600",
+    "mnemonic": "vmulss",
+    "operands": "xmm0,xmm3,DWORD PTR [rip+0x26be6e]        # 0x18040bdb8",
+    "refs": [
+      4242872
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF4A",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5e0571d8ec92600",
+    "mnemonic": "vxorps",
+    "operands": "xmm3,xmm3,XMMWORD PTR [rip+0x26c98e]        # 0x18040c8e0",
+    "refs": [
+      4245728
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF5E",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5fa114f44",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rdi+0x44],xmm1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF63",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5fa5eca",
+    "mnemonic": "vdivss",
+    "operands": "xmm1,xmm0,xmm2",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF67",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5d8570571c92600",
+    "mnemonic": "vxorps",
+    "operands": "xmm0,xmm4,XMMWORD PTR [rip+0x26c971]        # 0x18040c8e0",
+    "refs": [
+      4245728
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF6F",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5fa114f48",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rdi+0x48],xmm1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF74",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5fa114008",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rax+0x8],xmm0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FF79",
+    "label": "Engine NDC vs backend pixel jitter",
+    "bytes": "c5fa11580c",
+    "mnemonic": "vmovss",
+    "operands": "DWORD PTR [rax+0xc],xmm3",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA402",
+    "label": "Halton period and bases",
+    "bytes": "450f4fd1",
+    "mnemonic": "cmovg",
+    "operands": "r10d,r9d",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA406",
+    "label": "Halton period and bases",
+    "bytes": "41f7fa",
+    "mnemonic": "idiv",
+    "operands": "r10d",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA409",
+    "label": "Halton period and bases",
+    "bytes": "8d5a01",
+    "mnemonic": "lea",
+    "operands": "ebx,[rdx+0x1]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA40C",
+    "label": "Halton period and bases",
+    "bytes": "ba02000000",
+    "mnemonic": "mov",
+    "operands": "edx,0x2",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA413",
+    "label": "Halton period and bases",
+    "bytes": "e8e8feffff",
+    "mnemonic": "call",
+    "operands": "0x1800fa300",
+    "refs": [
+      1024768
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA418",
+    "label": "Halton period and bases",
+    "bytes": "f30f5c0580260b01",
+    "mnemonic": "subss",
+    "operands": "xmm0,DWORD PTR [rip+0x10b2680]        # 0x1811acaa0",
+    "refs": [
+      18533024
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA420",
+    "label": "Halton period and bases",
+    "bytes": "ba03000000",
+    "mnemonic": "mov",
+    "operands": "edx,0x3",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA42B",
+    "label": "Halton period and bases",
+    "bytes": "e8d0feffff",
+    "mnemonic": "call",
+    "operands": "0x1800fa300",
+    "refs": [
+      1024768
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFA430",
+    "label": "Halton period and bases",
+    "bytes": "f30f5c0568260b01",
+    "mnemonic": "subss",
+    "operands": "xmm0,DWORD PTR [rip+0x10b2668]        # 0x1811acaa0",
+    "refs": [
+      18533024
+    ]
+  }
+]

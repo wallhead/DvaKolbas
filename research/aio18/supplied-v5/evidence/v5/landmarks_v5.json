@@ -1,0 +1,275 @@
+{
+  "schema": 1,
+  "module_sha256": {
+    "host": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "pd": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1"
+  },
+  "records": [
+    {
+      "module": "host",
+      "rva": "0x19DD14",
+      "length": 5,
+      "bytes": "e897770c00",
+      "meaning": "CS runtime hook calls PrepareCSUpscaleInput, branch A"
+    },
+    {
+      "module": "host",
+      "rva": "0x19DDC4",
+      "length": 5,
+      "bytes": "e8e7760c00",
+      "meaning": "CS runtime hook calls PrepareCSUpscaleInput, branch B"
+    },
+    {
+      "module": "host",
+      "rva": "0x2656F0",
+      "length": 2,
+      "bytes": "b201",
+      "meaning": "PrepareCSUpscaleInput passes true in DL"
+    },
+    {
+      "module": "host",
+      "rva": "0x2656F5",
+      "length": 5,
+      "bytes": "e8b6be0300",
+      "meaning": "PrepareCSUpscaleInput calls CaptureCSDepthAndMotion"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A166F",
+      "length": 7,
+      "bytes": "448bbf4c030000",
+      "meaning": "CS desired render width from host +0x34C"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A1676",
+      "length": 7,
+      "bytes": "448bb750030000",
+      "meaning": "CS desired render height from host +0x350"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A16E8",
+      "length": 7,
+      "bytes": "488b8f28080000",
+      "meaning": "CS raw motion source from host +0x828"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A1735",
+      "length": 7,
+      "bytes": "4c8da7500b0000",
+      "meaning": "prepared depth storage host +0xB50"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A18A1",
+      "length": 7,
+      "bytes": "488d9fa80b0000",
+      "meaning": "prepared motion storage host +0xBA8"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A1B0E",
+      "length": 8,
+      "bytes": "c5fa118f18160000",
+      "meaning": "CS X capture scale stored host +0x1618"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A1B4E",
+      "length": 8,
+      "bytes": "c5fa118f1c160000",
+      "meaning": "CS Y capture scale stored host +0x161C"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A1D74",
+      "length": 5,
+      "bytes": "e8c7f4ffff",
+      "meaning": "CS guide shader transform helper call A"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A2043",
+      "length": 8,
+      "bytes": "c5fa118f18160000",
+      "meaning": "alternate X capture scale store"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A205C",
+      "length": 8,
+      "bytes": "c5fa11b71c160000",
+      "meaning": "alternate Y capture scale store"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A20E5",
+      "length": 5,
+      "bytes": "e856f1ffff",
+      "meaning": "CS guide shader transform helper call B"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A8AAB",
+      "length": 5,
+      "bytes": "e870adfeff",
+      "meaning": "generic motion-vector discovery calls SetupMotionVector"
+    },
+    {
+      "module": "host",
+      "rva": "0x2A8BA4",
+      "length": 5,
+      "bytes": "e887b0feff",
+      "meaning": "generic depth discovery calls SetupDepth"
+    },
+    {
+      "module": "host",
+      "rva": "0x294CF5",
+      "length": 7,
+      "bytes": "498b86500b0000",
+      "meaning": "SR loads prepared depth +0xB50"
+    },
+    {
+      "module": "host",
+      "rva": "0x294D03",
+      "length": 7,
+      "bytes": "498b86a80b0000",
+      "meaning": "SR loads prepared motion +0xBA8"
+    },
+    {
+      "module": "host",
+      "rva": "0x294F09",
+      "length": 4,
+      "bytes": "4c897d00",
+      "meaning": "SR common payload +0x20 explicitly zeroed (reactive)"
+    },
+    {
+      "module": "host",
+      "rva": "0x294F8C",
+      "length": 8,
+      "bytes": "410fb68664020000",
+      "meaning": "SR reads host reset byte +0x264"
+    },
+    {
+      "module": "host",
+      "rva": "0x294FBD",
+      "length": 6,
+      "bytes": "ff155ddc1d00",
+      "meaning": "SR calls PD EvaluateUpscaler import"
+    },
+    {
+      "module": "host",
+      "rva": "0x29438E",
+      "length": 7,
+      "bytes": "4c8b87500b0000",
+      "meaning": "FG requires prepared depth +0xB50"
+    },
+    {
+      "module": "host",
+      "rva": "0x29439E",
+      "length": 8,
+      "bytes": "4883bfa80b000000",
+      "meaning": "FG requires prepared motion +0xBA8"
+    },
+    {
+      "module": "host",
+      "rva": "0x2944D9",
+      "length": 7,
+      "bytes": "488b87500b0000",
+      "meaning": "FG loads prepared depth +0xB50"
+    },
+    {
+      "module": "host",
+      "rva": "0x2944E7",
+      "length": 7,
+      "bytes": "488b87a80b0000",
+      "meaning": "FG loads prepared motion +0xBA8"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFE3BC",
+      "length": 5,
+      "bytes": "b820020000",
+      "meaning": "DX11 FSR context base flags 0x220"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFE3CD",
+      "length": 5,
+      "bytes": "b928020000",
+      "meaning": "DX11 FSR depth-inverted flags 0x228"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFE3DF",
+      "length": 3,
+      "bytes": "83c801",
+      "meaning": "DX11 FSR conditionally ORs bit 0"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFE3EC",
+      "length": 3,
+      "bytes": "83c802",
+      "meaning": "DX11 FSR conditionally ORs bit 1"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFF096",
+      "length": 2,
+      "bytes": "33d2",
+      "meaning": "DX11 external exposure pointer argument is null"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFF0FC",
+      "length": 4,
+      "bytes": "498b5720",
+      "meaning": "DX11 reads common payload +0x20 reactive"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFF2DD",
+      "length": 2,
+      "bytes": "33d2",
+      "meaning": "DX11 transparency/composition pointer argument is null"
+    },
+    {
+      "module": "pd",
+      "rva": "0xFF475",
+      "length": 2,
+      "bytes": "ffd3",
+      "meaning": "DX11 FSR dispatch indirect call"
+    },
+    {
+      "module": "pd",
+      "rva": "0x10069F",
+      "length": 5,
+      "bytes": "b820020000",
+      "meaning": "FFX API SR context base flags 0x220"
+    },
+    {
+      "module": "pd",
+      "rva": "0x1006A4",
+      "length": 5,
+      "bytes": "b928020000",
+      "meaning": "FFX API SR depth-inverted flags 0x228"
+    },
+    {
+      "module": "pd",
+      "rva": "0x1006C2",
+      "length": 4,
+      "bytes": "0fbae807",
+      "meaning": "FFX API SR additionally sets bit 7"
+    },
+    {
+      "module": "pd",
+      "rva": "0x100E84",
+      "length": 3,
+      "bytes": "41ffd0",
+      "meaning": "FFX API SR dispatch indirect call"
+    }
+  ]
+}

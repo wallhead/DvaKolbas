@@ -1,0 +1,325 @@
+RVA	Size	Kind	Name
+0x00004000		0x110c	modules
+0x00004700		0x110d	__type_info_root_node
+0x00004170		0x110d	__scrt_ucrt_dll_is_in_use
+0x00004100		0x110d	__security_cookie
+0x00004140		0x110d	__security_cookie_complement
+0x00004190		0x110c	GS_ExceptionRecord
+0x00004230		0x110c	GS_ContextRecord
+0x000032A8		0x110c	GS_ExceptionPointers
+0x00003168		0x110d	__xi_a
+0x00003170		0x110d	__xi_z
+0x00003158		0x110d	__xc_a
+0x00003160		0x110d	__xc_z
+0x00004720		0x110d	__scrt_current_native_startup_state
+0x000032A0		0x110d	_pRawDllMain
+0x000032A0		0x110d	_pDefaultRawDllMain
+0x00004180		0x110c	__proc_attached
+0x000037C8		0x110d	__rtc_iaa
+0x000037D0		0x110d	__rtc_izz
+0x000037D8		0x110d	__rtc_taa
+0x000037E0		0x110d	__rtc_tzz
+0x00004150		0x110d	__isa_inverted
+0x0000476C		0x110d	__avx10_version
+0x00004158		0x110d	__isa_available
+0x0000415C		0x110d	__isa_enabled
+0x00004770		0x110d	__favor
+0x00004160		0x110d	__memset_fast_string_threshold
+0x00004168		0x110d	__memset_nt_threshold
+0x00004768		0x110d	__scrt_debugger_hook_flag
+0x00003168		0x110d	__xi_a
+0x00003170		0x110d	__xi_z
+0x00003158		0x110d	__xc_a
+0x00003160		0x110d	__xc_z
+0x00003178		0x110d	__xp_a
+0x00003180		0x110d	__xp_z
+0x00003188		0x110d	__xt_a
+0x00003190		0x110d	__xt_z
+0x00003A38		0x110c	$xdatasym
+0x00003150		0x110d	__guard_memcpy_fptr
+0x00000000		0x110d	__ImageBase
+0x00004728		0x110d	__scrt_native_startup_lock
+0x00004148		0x110d	__scrt_native_dllmain_reason
+0x00004730		0x110c	is_initialized_as_dll
+0x00004738		0x110c	module_local_atexit_table
+0x00004750		0x110c	module_local_at_quick_exit_table
+0x00004731		0x110c	module_local_atexit_table_initialized
+0x00004100		0x110d	__security_cookie
+0x00002460		0x110d	_guard_dispatch_icall_nop
+0x00002480		0x110d	_guard_xfg_dispatch_icall_nop
+0x00004170		0x110d	__scrt_ucrt_dll_is_in_use
+0x00003120		0x110d	__guard_check_icall_fptr
+0x00003128		0x110d	__guard_xfg_check_icall_fptr
+0x00003130		0x110d	__guard_dispatch_icall_fptr
+0x00003138		0x110d	__guard_xfg_dispatch_icall_fptr
+0x00003140		0x110d	__guard_xfg_table_dispatch_icall_fptr
+0x00003148		0x110d	__castguard_check_failure_os_handled_fptr
+0x000038D0		0x110c	$xdatasym
+0x00003128		0x110d	__guard_xfg_check_icall_fptr
+0x00003138		0x110d	__guard_xfg_dispatch_icall_fptr
+0x00003140		0x110d	__guard_xfg_table_dispatch_icall_fptr
+0x00000000		0x110d	__guard_fids_table
+0x00000000		0x110d	__guard_fids_count
+0x00000000		0x110d	__guard_flags
+0x00000000		0x110d	__guard_iat_table
+0x00000000		0x110d	__guard_iat_count
+0x00000000		0x110d	__guard_longjmp_table
+0x00000000		0x110d	__guard_longjmp_count
+0x00000000		0x110d	__enclave_config
+0x00000000		0x110d	__guard_eh_cont_table
+0x00000000		0x110d	__guard_eh_cont_count
+0x00003480		0x110d	__volatile_metadata
+0x00003150		0x110d	__guard_memcpy_fptr
+0x000032D0		0x110d	_load_config_used
+0x00004778		0x110d	__dyn_tls_init_callback
+0x00003A30		0x110c	$xdatasym
+0x00003188		S_PUB32	__xt_a
+0x00002434		S_PUB32	__vcrt_uninitialize_critical
+0x00003088		S_PUB32	__imp_RtlCaptureContext
+0x00003150		S_PUB32	__guard_memcpy_fptr
+0x00004158		S_PUB32	__isa_available
+0x00003148		S_PUB32	__castguard_check_failure_os_handled_fptr
+0x00003110		S_PUB32	__imp__initialize_narrow_environment
+0x000030D8		S_PUB32	__imp__execute_onexit_table
+0x00003B3C		S_PUB32	__IMPORT_DESCRIPTOR_api-ms-win-crt-runtime-l1-1-0
+0x00002434		S_PUB32	__acrt_uninitialize_critical
+0x00001C04		S_PUB32	?__scrt_initialize_type_info@@YAXXZ
+0x00001C20		S_PUB32	__local_stdio_printf_options
+0x00003170		S_PUB32	__xi_z
+0x00001CBC		S_PUB32	__scrt_dllmain_before_initialize_c
+0x00001C4C		S_PUB32	__scrt_acquire_startup_lock
+0x00002434		S_PUB32	__scrt_stub_for_acrt_thread_detach
+0x00002434		S_PUB32	__vcrt_uninitialize
+0x00002434		S_PUB32	__scrt_stub_for_acrt_thread_attach
+0x000023F0		S_PUB32	__C_specific_handler
+0x00002434		S_PUB32	__scrt_stub_for_acrt_uninitialize
+0x00003168		S_PUB32	__xi_a
+0x00002414		S_PUB32	_configure_narrow_argv
+0x00003060		S_PUB32	__imp_GetSystemTimeAsFileTime
+0x000037C8		S_PUB32	__rtc_iaa
+0x00003B14		S_PUB32	__IMPORT_DESCRIPTOR_VCRUNTIME140
+0x000031A0		S_PUB32	??_C@_0CB@ONIBGOAH@amd_fidelityfx_upscaler_dx12?4dl@
+0x00004718		S_PUB32	?_OptionsStorage@?1??__local_stdio_scanf_options@@9@4_KA
+0x00002144		S_PUB32	__isa_available_init
+0x00000000		S_PUB32	__enclave_config
+0x00003B50		S_PUB32	__NULL_IMPORT_DESCRIPTOR
+0x00001F7C		S_PUB32	__scrt_fastfail
+0x00002420		S_PUB32	_initialize_onexit_table
+0x00003218		S_PUB32	??_C@_0CG@GACCPHJA@amd_fidelityfx_radiancecache_dx@
+0x00001C14		S_PUB32	?__scrt_uninitialize_type_info@@YAXXZ
+0x00002140		S_PUB32	_guard_check_icall_nop
+0x00003270		S_PUB32	??_C@_0N@BBLEHJJN@ffxConfigure@
+0x000032A0		S_PUB32	_pRawDllMain
+0x00003058		S_PUB32	__imp_DisableThreadLibraryCalls
+0x00001CFC		S_PUB32	__scrt_dllmain_crt_thread_detach
+0x00000000		S_PUB32	__guard_longjmp_count
+0x00001170		S_PUB32	ffxConfigure
+0x000030C8		S_PUB32	__imp_free
+0x00003B28		S_PUB32	__IMPORT_DESCRIPTOR_api-ms-win-crt-heap-l1-1-0
+0x00001DF4		S_PUB32	__scrt_initialize_onexit_tables
+0x000019B4		S_PUB32	__raise_securityfailure
+0x00002434		S_PUB32	__acrt_uninitialize
+0x00003140		S_PUB32	__guard_xfg_table_dispatch_icall_fptr
+0x00001F18		S_PUB32	__scrt_release_startup_lock
+0x00003138		S_PUB32	__guard_xfg_dispatch_icall_fptr
+0x00003070		S_PUB32	__imp_GetCurrentProcessId
+0x000037D0		S_PUB32	__rtc_izz
+0x00002408		S_PUB32	_initterm_e
+0x000030E8		S_PUB32	__imp__configure_narrow_argv
+0x00000000		S_PUB32	__guard_fids_table
+0x00002434		S_PUB32	__scrt_stub_for_acrt_uninitialize_critical
+0x000023F6		S_PUB32	__std_type_info_destroy_list
+0x00001640		S_PUB32	__security_check_cookie
+0x00003080		S_PUB32	__imp_IsProcessorFeaturePresent
+0x00003018		S_PUB32	__imp_RtlLookupFunctionEntry
+0x000030F0		S_PUB32	__imp__seh_filter_dll
+0x000020C8		S_PUB32	_RTC_Initialize
+0x00003008		S_PUB32	__imp_GetProcAddress
+0x00001CD4		S_PUB32	__scrt_dllmain_crt_thread_attach
+0x00004148		S_PUB32	__scrt_native_dllmain_reason
+0x00002438		S_PUB32	_is_c_termination_complete
+0x000030E0		S_PUB32	__imp__cexit
+0x00001C30		S_PUB32	__scrt_initialize_default_local_stdio_options
+0x00001F70		S_PUB32	__crt_debugger_hook
+0x000032A0		S_PUB32	_pDefaultRawDllMain
+0x000015B0		S_PUB32	__GSHandlerCheck
+0x00004720		S_PUB32	__scrt_current_native_startup_state
+0x00003000		S_PUB32	__imp_GetModuleHandleA
+0x00001020		S_PUB32	?LoadChildModules@@YAX_K@Z
+0x00003258		S_PUB32	??_C@_0BC@ECNHEPOB@ffxDestroyContext@
+0x00003028		S_PUB32	__imp_UnhandledExceptionFilter
+0x00001BE0		S_PUB32	DllMain
+0x00001E80		S_PUB32	__scrt_is_nonwritable_in_current_image
+0x0000240E		S_PUB32	_seh_filter_dll
+0x000013A0		S_PUB32	ffxDispatch
+0x00001DA4		S_PUB32	__scrt_dllmain_uninitialize_critical
+0x00002480		S_PUB32	_guard_xfg_dispatch_icall_nop
+0x000037D8		S_PUB32	__rtc_taa
+0x00003040		S_PUB32	__imp_TerminateProcess
+0x000030C0		S_PUB32	__imp_malloc
+0x00002434		S_PUB32	__acrt_thread_detach
+0x000013D0		S_PUB32	ffxQuery
+0x00003130		S_PUB32	__guard_dispatch_icall_fptr
+0x00004170		S_PUB32	__scrt_ucrt_dll_is_in_use
+0x00003180		S_PUB32	__xp_z
+0x00003178		S_PUB32	__xp_a
+0x00004160		S_PUB32	__memset_fast_string_threshold
+0x00002402		S_PUB32	_initterm
+0x00001320		S_PUB32	ffxDestroyContext
+0x00003030		S_PUB32	__imp_SetUnhandledExceptionFilter
+0x000023FC		S_PUB32	memset
+0x000030F8		S_PUB32	__imp__initterm_e
+0x00000000		S_PUB32	__AbsoluteZero
+0x0000242C		S_PUB32	_cexit
+0x00003038		S_PUB32	__imp_GetCurrentProcess
+0x00001F3C		S_PUB32	__scrt_uninitialize_crt
+0x00003480		S_PUB32	__volatile_metadata
+0x000023E4		S_PUB32	__scrt_is_ucrt_dll_in_use
+0x00003B00		S_PUB32	__IMPORT_DESCRIPTOR_KERNEL32
+0x00004770		S_PUB32	__favor
+0x00004150		S_PUB32	__isa_inverted
+0x000030A0		S_PUB32	__imp___std_type_info_destroy_list
+0x00003158		S_PUB32	__xc_a
+0x000030A8		S_PUB32	__imp___C_specific_handler
+0x00001D74		S_PUB32	__scrt_dllmain_uninitialize_c
+0x00002434		S_PUB32	__acrt_thread_attach
+0x00004140		S_PUB32	__security_cookie_complement
+0x00000000		S_PUB32	__guard_fids_count
+0x000015D0		S_PUB32	__GSHandlerCheckCommon
+0x00003078		S_PUB32	__imp_QueryPerformanceCounter
+0x00003050		S_PUB32	__imp_InitializeSListHead
+0x0000243B		S_PUB32	memcpy
+0x00000000		S_PUB32	__guard_flags
+0x00003290		S_PUB32	??_C@_0M@CDHILKGD@ffxDispatch@
+0x00003048		S_PUB32	__imp_IsDebuggerPresent
+0x00004710		S_PUB32	?_OptionsStorage@?1??__local_stdio_printf_options@@9@4_KA
+0x00003068		S_PUB32	__imp_GetCurrentThreadId
+0x00004100		S_PUB32	__security_cookie
+0x00003190		S_PUB32	__xt_z
+0x0000476C		S_PUB32	__avx10_version
+0x00002426		S_PUB32	_execute_onexit_table
+0x00003240		S_PUB32	??_C@_0BB@JHEAOHAM@ffxCreateContext@
+0x00001D14		S_PUB32	__scrt_dllmain_exception_filter
+0x00003010		S_PUB32	__imp_LoadLibraryA
+0x00002434		S_PUB32	__acrt_initialize
+0x00001000		S_PUB32	?ffxQueryFallback@@YAIPEAPEAXPEAUffxApiHeader@@I@Z
+0x00002434		S_PUB32	__scrt_stub_for_acrt_initialize
+0x000031F0		S_PUB32	??_C@_0CB@MFDJEJPF@amd_fidelityfx_denoiser_dx12?4dl@
+0x00000000		S_PUB32	__guard_iat_count
+0x00002434		S_PUB32	__vcrt_thread_attach
+0x000011A0		S_PUB32	ffxCreateContext
+0x00000000		S_PUB32	__guard_iat_table
+0x00000000		S_PUB32	__guard_longjmp_table
+0x00000000		S_PUB32	__guard_eh_cont_table
+0x00003098		S_PUB32	__imp_memcpy
+0x00003100		S_PUB32	__imp__initterm
+0x000031C8		S_PUB32	??_C@_0CI@HCPLHJOM@amd_fidelityfx_framegeneration_@
+0x0000241A		S_PUB32	_initialize_narrow_environment
+0x000037E0		S_PUB32	__rtc_tzz
+0x000030B8		S_PUB32	VCRUNTIME140_NULL_THUNK_DATA
+0x00003020		S_PUB32	__imp_RtlVirtualUnwind
+0x00002460		S_PUB32	_guard_dispatch_icall_nop
+0x00002434		S_PUB32	__vcrt_thread_detach
+0x000019E8		S_PUB32	__report_gsfailure
+0x00004168		S_PUB32	__memset_nt_threshold
+0x00003108		S_PUB32	__imp__initialize_onexit_table
+0x00000000		S_PUB32	__guard_eh_cont_count
+0x00003118		S_PUB32	api-ms-win-crt-runtime-l1-1-0_NULL_THUNK_DATA
+0x00002104		S_PUB32	_RTC_Terminate
+0x00002438		S_PUB32	__scrt_stub_for_is_c_termination_complete
+0x00003090		S_PUB32	KERNEL32_NULL_THUNK_DATA
+0x00001F68		S_PUB32	__scrt_get_dyn_tls_init_callback
+0x00001C88		S_PUB32	__scrt_dllmain_after_initialize_c
+0x00003280		S_PUB32	??_C@_08KMBMOJFC@ffxQuery@
+0x00003128		S_PUB32	__guard_xfg_check_icall_fptr
+0x00002434		S_PUB32	__vcrt_initialize
+0x000030B0		S_PUB32	__imp_memset
+0x0000415C		S_PUB32	__isa_enabled
+0x00001B30		S_PUB32	__security_init_cookie
+0x00004778		S_PUB32	__dyn_tls_init_callback
+0x000032C0		S_PUB32	__xmm@ffffffffffffffffffffffffffffffff
+0x00001DB8		S_PUB32	__scrt_initialize_crt
+0x00003120		S_PUB32	__guard_check_icall_fptr
+0x000032D0		S_PUB32	_load_config_used
+0x000023DC		S_PUB32	_get_startup_argv_mode
+0x00004700		S_PUB32	?__type_info_root_node@@3U__type_info_node@@A
+0x00001974		S_PUB32	_DllMainCRTStartup
+0x00004728		S_PUB32	__scrt_native_startup_lock
+0x00004768		S_PUB32	__scrt_debugger_hook_flag
+0x00001C28		S_PUB32	__local_stdio_scanf_options
+0x00003160		S_PUB32	__xc_z
+0x000030D0		S_PUB32	api-ms-win-crt-heap-l1-1-0_NULL_THUNK_DATA
+0x00004000		0x110c	modules
+0x00001020	328	0x1110	LoadChildModules
+0x00001170	38	0x1110	ffxConfigure
+0x000011A0	372	0x1110	ffxCreateContext
+0x00001320	126	0x1110	ffxDestroyContext
+0x000013A0	38	0x1110	ffxDispatch
+0x000013D0	478	0x1110	ffxQuery
+0x000015B0	29	0x1110	__GSHandlerCheck
+0x000015D0	96	0x1110	__GSHandlerCheckCommon
+0x000038D0		0x110c	$xdatasym
+0x00001640	30	0x1110	__security_check_cookie
+0x00004180		0x110c	__proc_attached
+0x00001660	80	0x110f	dllmain_crt_dispatch
+0x000016B0	278	0x110f	dllmain_crt_process_attach
+0x00002486	23	0x110f	`dllmain_crt_process_attach'::`1'::fin$0
+0x000017C8	131	0x110f	dllmain_crt_process_detach
+0x0000249D	25	0x110f	`dllmain_crt_process_detach'::`1'::fin$0
+0x000024B6	20	0x110f	`dllmain_crt_process_detach'::`1'::fin$1
+0x0000184C	296	0x110f	dllmain_dispatch
+0x000024CA	54	0x110f	`dllmain_dispatch'::`1'::filt$0
+0x00001974	61	0x1110	_DllMainCRTStartup
+0x00004190		0x110c	GS_ExceptionRecord
+0x00004230		0x110c	GS_ContextRecord
+0x000032A8		0x110c	GS_ExceptionPointers
+0x000019B4	52	0x1110	__raise_securityfailure
+0x000019E8	211	0x1110	__report_gsfailure
+0x00001ABC	116	0x110f	capture_previous_context
+0x00001B30	175	0x1110	__security_init_cookie
+0x00001BE0	35	0x1110	DllMain
+0x00001C04	14	0x1110	__scrt_initialize_type_info
+0x00001C14	12	0x1110	__scrt_uninitialize_type_info
+0x00001C20	8	0x1110	__local_stdio_printf_options
+0x00004710		0x110c	_OptionsStorage
+0x00001C28	8	0x1110	__local_stdio_scanf_options
+0x00004718		0x110c	_OptionsStorage
+0x00001C30	27	0x1110	__scrt_initialize_default_local_stdio_options
+0x00004730		0x110c	is_initialized_as_dll
+0x00004738		0x110c	module_local_atexit_table
+0x00004750		0x110c	module_local_at_quick_exit_table
+0x00004731		0x110c	module_local_atexit_table_initialized
+0x00001C4C	57	0x1110	__scrt_acquire_startup_lock
+0x00001C88	52	0x1110	__scrt_dllmain_after_initialize_c
+0x00001CBC	21	0x1110	__scrt_dllmain_before_initialize_c
+0x00001CD4	40	0x1110	__scrt_dllmain_crt_thread_attach
+0x00001CFC	21	0x1110	__scrt_dllmain_crt_thread_detach
+0x00001D14	96	0x1110	__scrt_dllmain_exception_filter
+0x00001D74	48	0x1110	__scrt_dllmain_uninitialize_c
+0x00001DA4	20	0x1110	__scrt_dllmain_uninitialize_critical
+0x00001DB8	58	0x1110	__scrt_initialize_crt
+0x00001DF4	139	0x1110	__scrt_initialize_onexit_tables
+0x00001E80	152	0x1110	__scrt_is_nonwritable_in_current_image
+0x00002500	24	0x110f	__scrt_is_nonwritable_in_current_image$filt$0
+0x00001F18	36	0x1110	__scrt_release_startup_lock
+0x00001F3C	41	0x1110	__scrt_uninitialize_crt
+0x00001F68	8	0x1110	__scrt_get_dyn_tls_init_callback
+0x00001F70	11	0x1110	__crt_debugger_hook
+0x00001F7C	331	0x1110	__scrt_fastfail
+0x000020C8	60	0x1110	_RTC_Initialize
+0x00002104	60	0x1110	_RTC_Terminate
+0x00002140	3	0x1110	_guard_check_icall_nop
+0x00002144	661	0x1110	__isa_available_init
+0x000023DC	6	0x1110	_get_startup_argv_mode
+0x000023E4	12	0x1110	__scrt_is_ucrt_dll_in_use
+0x00003A30		0x110c	$xdatasym
+0x00002460	2	0x1110	_guard_dispatch_icall_nop
+0x00003A38		0x110c	$xdatasym
+0x00002480	6	0x1110	_guard_xfg_dispatch_icall_nop
+0x00002434	3	0x1110	__scrt_stub_for_acrt_initialize
+0x00002434	3	0x1110	__scrt_stub_for_acrt_thread_attach
+0x00002434	3	0x1110	__scrt_stub_for_acrt_thread_detach
+0x00002434	3	0x1110	__scrt_stub_for_acrt_uninitialize
+0x00002434	3	0x1110	__scrt_stub_for_acrt_uninitialize_critical
+0x00002438	3	0x1110	__scrt_stub_for_is_c_termination_complete
+0x00001000	28	0x1110	ffxQueryFallback

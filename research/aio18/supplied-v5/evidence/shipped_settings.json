@@ -1,0 +1,17 @@
+{
+  "mUpscaleType": "0",
+  "mAutoExposure": "true",
+  "mQualityLevel": "2",
+  "mRenderReShadeBeforeUpscaling": "true",
+  "mSharpening": "true",
+  "mSharpness": "0.600000",
+  "mFOV": "90.000000",
+  "mTargetResolutionScale": "1.000000",
+  "mEnableFrameGeneration": "true",
+  "mFrameGenType": "2",
+  "mFGFrames": "2",
+  "mEnableHUDFix": "true",
+  "mHUDFixMethod": "0",
+  "mEnableDLSSNR": "false",
+  "mPDFrameWarpMode": "0"
+}

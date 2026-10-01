@@ -1,0 +1,2701 @@
+[
+  {
+    "type_index": 12800,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>",
+    "size": 6848,
+    "member_count": 114,
+    "forward": false,
+    "field_list": 12798,
+    "records": [
+      {
+        "leaf": "0x1400",
+        "record_offset": 0,
+        "kind": "base",
+        "offset": 0,
+        "type_index": 12550,
+        "type": "IFrameInterpolationSwapChainDX12",
+        "attributes": 3
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 12,
+        "type_index": 12656,
+        "attributes": 6,
+        "kind": "method",
+        "name": "shutdown"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 32,
+        "type_index": 12659,
+        "attributes": 6,
+        "kind": "method",
+        "name": "getInterpolationEnabledSwapChainFlags"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 80,
+        "type_index": 12660,
+        "attributes": 6,
+        "kind": "method",
+        "name": "getInterpolationEnabledSwapChainDescription"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 132,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 12662,
+        "type": "FrameinterpolationPresentInfoExt",
+        "attributes": 2,
+        "name": "presentInfo"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 156,
+        "kind": "member",
+        "offset": 5984,
+        "type_index": 9690,
+        "type": "FfxFrameGenerationConfig",
+        "attributes": 2,
+        "name": "nextFrameGenerationConfig"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 192,
+        "kind": "member",
+        "offset": 6136,
+        "type_index": 12134,
+        "type": "_RTL_CRITICAL_SECTION",
+        "attributes": 2,
+        "name": "criticalSection"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 220,
+        "kind": "member",
+        "offset": 6176,
+        "type_index": 12134,
+        "type": "_RTL_CRITICAL_SECTION",
+        "attributes": 2,
+        "name": "criticalSectionUpdateConfig"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 260,
+        "kind": "member",
+        "offset": 6216,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "gameBufferCount"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 288,
+        "kind": "member",
+        "offset": 6220,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "gameFlags"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 308,
+        "kind": "member",
+        "offset": 6224,
+        "type_index": 10782,
+        "type": "DXGI_SWAP_EFFECT",
+        "attributes": 2,
+        "name": "gameSwapEffect"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 336,
+        "kind": "member",
+        "offset": 6228,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "gameMaximumFrameLatency"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 372,
+        "kind": "member",
+        "offset": 6232,
+        "type_index": 9562,
+        "type": "ID3D12Resource*",
+        "attributes": 2,
+        "name": "realBackBuffer0"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 400,
+        "kind": "member",
+        "offset": 6240,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "replacementFrameLatencyWaitableObjectHandle"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 456,
+        "kind": "member",
+        "offset": 6248,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "interpolationFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 492,
+        "kind": "member",
+        "offset": 6256,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "gameFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 520,
+        "kind": "member",
+        "offset": 6264,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "frameInterpolationResetCondition"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 564,
+        "kind": "member",
+        "offset": 6268,
+        "type_index": 4908,
+        "type": "FfxApiRect2D",
+        "attributes": 2,
+        "name": "interpolationRect"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 592,
+        "kind": "member",
+        "offset": 6288,
+        "type_index": 12669,
+        "type": "Dx12Commands*[bytes=128]",
+        "attributes": 2,
+        "name": "registeredInterpolationCommandLists"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 640,
+        "kind": "member",
+        "offset": 6416,
+        "type_index": 12674,
+        "type": "ReplacementResource[bytes=256]",
+        "attributes": 2,
+        "name": "replacementSwapBuffers"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 676,
+        "kind": "member",
+        "offset": 6672,
+        "type_index": 12676,
+        "type": "ReplacementResource[bytes=32]",
+        "attributes": 2,
+        "name": "interpolationOutputs"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 708,
+        "kind": "member",
+        "offset": 6704,
+        "type_index": 12670,
+        "type": "ReplacementResource",
+        "attributes": 2,
+        "name": "uiReplacementBuffer"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 740,
+        "kind": "member",
+        "offset": 6720,
+        "type_index": 116,
+        "type": "int32",
+        "attributes": 2,
+        "name": "replacementSwapBufferIndex"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 780,
+        "kind": "member",
+        "offset": 6724,
+        "type_index": 116,
+        "type": "int32",
+        "attributes": 2,
+        "name": "interpolationBufferIndex"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 816,
+        "kind": "member",
+        "offset": 6728,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "presentCount"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 840,
+        "kind": "member",
+        "offset": 6736,
+        "type_index": 12681,
+        "type": "FfxFrameInterpolationDispatchFlags",
+        "attributes": 2,
+        "name": "configFlags"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 864,
+        "kind": "member",
+        "offset": 6740,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "tearingSupported"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 892,
+        "kind": "member",
+        "offset": 6741,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "interpolationEnabled"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 924,
+        "kind": "member",
+        "offset": 6742,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "presentInterpolatedOnly"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 960,
+        "kind": "member",
+        "offset": 6743,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "previousFrameWasInterpolated"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1000,
+        "kind": "member",
+        "offset": 6744,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "drawDebugPacingLines"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1032,
+        "kind": "member",
+        "offset": 6752,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "currentFrameID"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1060,
+        "kind": "member",
+        "offset": 6760,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "framesSentForPresentation"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1096,
+        "kind": "member",
+        "offset": 6768,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "nextPresentWaitValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1128,
+        "kind": "member",
+        "offset": 6776,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "interpolationThreadHandle"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1164,
+        "kind": "member",
+        "offset": 6784,
+        "type_index": 34,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "refCount"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1184,
+        "kind": "member",
+        "offset": 6788,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "backBufferTransferFunction"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1224,
+        "kind": "member",
+        "offset": 6792,
+        "type_index": 64,
+        "type": "float",
+        "attributes": 2,
+        "name": "minLuminance"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1248,
+        "kind": "member",
+        "offset": 6796,
+        "type_index": 64,
+        "type": "float",
+        "attributes": 2,
+        "name": "maxLuminance"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1272,
+        "kind": "member",
+        "offset": 6800,
+        "type_index": 4731,
+        "type": "0x127a(kind=0x1008)*",
+        "attributes": 2,
+        "name": "presentCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1300,
+        "kind": "member",
+        "offset": 6808,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "presentCallbackContext"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1336,
+        "kind": "member",
+        "offset": 6816,
+        "type_index": 4919,
+        "type": "0x1336(kind=0x1008)*",
+        "attributes": 2,
+        "name": "frameGenerationCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1372,
+        "kind": "member",
+        "offset": 6824,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "frameGenerationCallbackContext"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1416,
+        "kind": "member",
+        "offset": 6832,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "totalUsageInBytes"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1444,
+        "kind": "member",
+        "offset": 6840,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "aliasableUsageInBytes"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1476,
+        "type_index": 12685,
+        "attributes": 6,
+        "kind": "method",
+        "name": "presentPassthrough"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1504,
+        "type_index": 12685,
+        "attributes": 6,
+        "kind": "method",
+        "name": "presentWithUiComposition"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1540,
+        "type_index": 12687,
+        "attributes": 6,
+        "kind": "method",
+        "name": "dispatchInterpolationCommands"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1580,
+        "type_index": 12685,
+        "attributes": 6,
+        "kind": "method",
+        "name": "presentInterpolated"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1608,
+        "type_index": 12689,
+        "attributes": 6,
+        "kind": "method",
+        "name": "verifyUiDuplicateResource"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1644,
+        "type_index": 12691,
+        "attributes": 6,
+        "kind": "method",
+        "name": "copyUiResource"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1668,
+        "type_index": 12689,
+        "attributes": 6,
+        "kind": "method",
+        "name": "verifyBackbufferDuplicateResources"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1712,
+        "type_index": 12689,
+        "attributes": 6,
+        "kind": "method",
+        "name": "destroyReplacementResources"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1748,
+        "type_index": 12689,
+        "attributes": 6,
+        "kind": "method",
+        "name": "killPresenterThread"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1776,
+        "type_index": 12689,
+        "attributes": 6,
+        "kind": "method",
+        "name": "spawnPresenterThread"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1808,
+        "type_index": 12691,
+        "attributes": 6,
+        "kind": "method",
+        "name": "discardOutstandingInterpolationCommandLists"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1860,
+        "type_index": 12693,
+        "attributes": 6,
+        "kind": "method",
+        "name": "real"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1876,
+        "type_index": 12694,
+        "attributes": 7,
+        "kind": "method",
+        "name": "setFrameGenerationConfig"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1912,
+        "type_index": 12689,
+        "attributes": 7,
+        "kind": "method",
+        "name": "waitForPresents"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1936,
+        "type_index": 12696,
+        "attributes": 7,
+        "kind": "method",
+        "name": "interpolationOutput"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1964,
+        "type_index": 12697,
+        "attributes": 7,
+        "kind": "method",
+        "name": "getInterpolationCommandList"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2000,
+        "type_index": 12699,
+        "attributes": 7,
+        "kind": "method",
+        "name": "registerUiResource"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2028,
+        "type_index": 12702,
+        "attributes": 7,
+        "kind": "method",
+        "name": "setWaitCallback"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2052,
+        "type_index": 12703,
+        "attributes": 7,
+        "kind": "method",
+        "name": "setFramePacingTuning"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2084,
+        "type_index": 12705,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetGpuMemoryUsage"
+      },
+      {
+        "leaf": "0x150f",
+        "record_offset": 2112,
+        "type_index": 12718,
+        "attributes": 2,
+        "kind": "method_group",
+        "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2288,
+        "type_index": 12719,
+        "attributes": 7,
+        "kind": "method",
+        "name": "~TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2464,
+        "type_index": 12721,
+        "attributes": 7,
+        "kind": "method",
+        "name": "init"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2480,
+        "type_index": 12723,
+        "attributes": 7,
+        "kind": "method",
+        "name": "QueryInterface"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2504,
+        "type_index": 12724,
+        "attributes": 7,
+        "kind": "method",
+        "name": "AddRef"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2520,
+        "type_index": 12724,
+        "attributes": 7,
+        "kind": "method",
+        "name": "Release"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2536,
+        "type_index": 12726,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetPrivateData"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2560,
+        "type_index": 12728,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetPrivateDataInterface"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2592,
+        "type_index": 12730,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetPrivateData"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2616,
+        "type_index": 12723,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetParent"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2636,
+        "type_index": 12723,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetDevice"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2656,
+        "type_index": 12732,
+        "attributes": 7,
+        "kind": "method",
+        "name": "Present"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2672,
+        "type_index": 12733,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetBuffer"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2692,
+        "type_index": 12735,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetFullscreenState"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2720,
+        "type_index": 12738,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetFullscreenState"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2748,
+        "type_index": 12740,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetDesc"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2764,
+        "type_index": 12741,
+        "attributes": 7,
+        "kind": "method",
+        "name": "ResizeBuffers"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2788,
+        "type_index": 12743,
+        "attributes": 7,
+        "kind": "method",
+        "name": "ResizeTarget"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2812,
+        "type_index": 12744,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetContainingOutput"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2840,
+        "type_index": 12745,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetFrameStatistics"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2868,
+        "type_index": 12747,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetLastPresentCount"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2896,
+        "type_index": 12748,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetDesc1"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2916,
+        "type_index": 12750,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetFullscreenDesc"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2944,
+        "type_index": 12751,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetHwnd"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2960,
+        "type_index": 12723,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetCoreWindow"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 2984,
+        "type_index": 12753,
+        "attributes": 7,
+        "kind": "method",
+        "name": "Present1"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3004,
+        "type_index": 12755,
+        "attributes": 7,
+        "kind": "method",
+        "name": "IsTemporaryMonoSupported"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3040,
+        "type_index": 12744,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetRestrictToOutput"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3068,
+        "type_index": 12757,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetBackgroundColor"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3096,
+        "type_index": 12760,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetBackgroundColor"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3124,
+        "type_index": 12761,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetRotation"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3144,
+        "type_index": 12763,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetRotation"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3164,
+        "type_index": 12732,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetSourceSize"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3188,
+        "type_index": 12768,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetSourceSize"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3212,
+        "type_index": 12770,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetMaximumFrameLatency"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3244,
+        "type_index": 12747,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetMaximumFrameLatency"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3276,
+        "type_index": 12773,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetFrameLatencyWaitableObject"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3316,
+        "type_index": 12776,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetMatrixTransform"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3344,
+        "type_index": 12778,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetMatrixTransform"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3372,
+        "type_index": 12780,
+        "attributes": 7,
+        "kind": "method",
+        "name": "GetCurrentBackBufferIndex"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3408,
+        "type_index": 12782,
+        "attributes": 7,
+        "kind": "method",
+        "name": "CheckColorSpaceSupport"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3440,
+        "type_index": 12783,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetColorSpace1"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3464,
+        "type_index": 12785,
+        "attributes": 7,
+        "kind": "method",
+        "name": "ResizeBuffers1"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3488,
+        "type_index": 12788,
+        "attributes": 7,
+        "kind": "method",
+        "name": "SetHDRMetaData"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3512,
+        "type_index": 12791,
+        "attributes": 259,
+        "kind": "method",
+        "name": "operator="
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3532,
+        "type_index": 12794,
+        "attributes": 259,
+        "kind": "method",
+        "name": "__autoclassinit2"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3560,
+        "type_index": 12691,
+        "attributes": 259,
+        "kind": "method",
+        "name": "__local_vftable_ctor_closure"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 3600,
+        "type_index": 12796,
+        "attributes": 275,
+        "kind": "method",
+        "vtable_offset": 328,
+        "name": "__vecDelDtor"
+      }
+    ],
+    "fields": [
+      {
+        "leaf": "0x150d",
+        "record_offset": 132,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 12662,
+        "type": "FrameinterpolationPresentInfoExt",
+        "attributes": 2,
+        "name": "presentInfo"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 156,
+        "kind": "member",
+        "offset": 5984,
+        "type_index": 9690,
+        "type": "FfxFrameGenerationConfig",
+        "attributes": 2,
+        "name": "nextFrameGenerationConfig"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 192,
+        "kind": "member",
+        "offset": 6136,
+        "type_index": 12134,
+        "type": "_RTL_CRITICAL_SECTION",
+        "attributes": 2,
+        "name": "criticalSection"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 220,
+        "kind": "member",
+        "offset": 6176,
+        "type_index": 12134,
+        "type": "_RTL_CRITICAL_SECTION",
+        "attributes": 2,
+        "name": "criticalSectionUpdateConfig"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 260,
+        "kind": "member",
+        "offset": 6216,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "gameBufferCount"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 288,
+        "kind": "member",
+        "offset": 6220,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "gameFlags"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 308,
+        "kind": "member",
+        "offset": 6224,
+        "type_index": 10782,
+        "type": "DXGI_SWAP_EFFECT",
+        "attributes": 2,
+        "name": "gameSwapEffect"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 336,
+        "kind": "member",
+        "offset": 6228,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "gameMaximumFrameLatency"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 372,
+        "kind": "member",
+        "offset": 6232,
+        "type_index": 9562,
+        "type": "ID3D12Resource*",
+        "attributes": 2,
+        "name": "realBackBuffer0"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 400,
+        "kind": "member",
+        "offset": 6240,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "replacementFrameLatencyWaitableObjectHandle"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 456,
+        "kind": "member",
+        "offset": 6248,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "interpolationFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 492,
+        "kind": "member",
+        "offset": 6256,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "gameFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 520,
+        "kind": "member",
+        "offset": 6264,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "frameInterpolationResetCondition"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 564,
+        "kind": "member",
+        "offset": 6268,
+        "type_index": 4908,
+        "type": "FfxApiRect2D",
+        "attributes": 2,
+        "name": "interpolationRect"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 592,
+        "kind": "member",
+        "offset": 6288,
+        "type_index": 12669,
+        "type": "Dx12Commands*[bytes=128]",
+        "attributes": 2,
+        "name": "registeredInterpolationCommandLists"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 640,
+        "kind": "member",
+        "offset": 6416,
+        "type_index": 12674,
+        "type": "ReplacementResource[bytes=256]",
+        "attributes": 2,
+        "name": "replacementSwapBuffers"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 676,
+        "kind": "member",
+        "offset": 6672,
+        "type_index": 12676,
+        "type": "ReplacementResource[bytes=32]",
+        "attributes": 2,
+        "name": "interpolationOutputs"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 708,
+        "kind": "member",
+        "offset": 6704,
+        "type_index": 12670,
+        "type": "ReplacementResource",
+        "attributes": 2,
+        "name": "uiReplacementBuffer"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 740,
+        "kind": "member",
+        "offset": 6720,
+        "type_index": 116,
+        "type": "int32",
+        "attributes": 2,
+        "name": "replacementSwapBufferIndex"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 780,
+        "kind": "member",
+        "offset": 6724,
+        "type_index": 116,
+        "type": "int32",
+        "attributes": 2,
+        "name": "interpolationBufferIndex"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 816,
+        "kind": "member",
+        "offset": 6728,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "presentCount"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 840,
+        "kind": "member",
+        "offset": 6736,
+        "type_index": 12681,
+        "type": "FfxFrameInterpolationDispatchFlags",
+        "attributes": 2,
+        "name": "configFlags"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 864,
+        "kind": "member",
+        "offset": 6740,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "tearingSupported"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 892,
+        "kind": "member",
+        "offset": 6741,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "interpolationEnabled"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 924,
+        "kind": "member",
+        "offset": 6742,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "presentInterpolatedOnly"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 960,
+        "kind": "member",
+        "offset": 6743,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "previousFrameWasInterpolated"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1000,
+        "kind": "member",
+        "offset": 6744,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 2,
+        "name": "drawDebugPacingLines"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1032,
+        "kind": "member",
+        "offset": 6752,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "currentFrameID"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1060,
+        "kind": "member",
+        "offset": 6760,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "framesSentForPresentation"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1096,
+        "kind": "member",
+        "offset": 6768,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "nextPresentWaitValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1128,
+        "kind": "member",
+        "offset": 6776,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "interpolationThreadHandle"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1164,
+        "kind": "member",
+        "offset": 6784,
+        "type_index": 34,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "refCount"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1184,
+        "kind": "member",
+        "offset": 6788,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 2,
+        "name": "backBufferTransferFunction"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1224,
+        "kind": "member",
+        "offset": 6792,
+        "type_index": 64,
+        "type": "float",
+        "attributes": 2,
+        "name": "minLuminance"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1248,
+        "kind": "member",
+        "offset": 6796,
+        "type_index": 64,
+        "type": "float",
+        "attributes": 2,
+        "name": "maxLuminance"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1272,
+        "kind": "member",
+        "offset": 6800,
+        "type_index": 4731,
+        "type": "0x127a(kind=0x1008)*",
+        "attributes": 2,
+        "name": "presentCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1300,
+        "kind": "member",
+        "offset": 6808,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "presentCallbackContext"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1336,
+        "kind": "member",
+        "offset": 6816,
+        "type_index": 4919,
+        "type": "0x1336(kind=0x1008)*",
+        "attributes": 2,
+        "name": "frameGenerationCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1372,
+        "kind": "member",
+        "offset": 6824,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 2,
+        "name": "frameGenerationCallbackContext"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1416,
+        "kind": "member",
+        "offset": 6832,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "totalUsageInBytes"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 1444,
+        "kind": "member",
+        "offset": 6840,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 2,
+        "name": "aliasableUsageInBytes"
+      }
+    ]
+  },
+  {
+    "type_index": 13100,
+    "name": "TFrameInterpolationPresentInfo<32,FfxApiResource,FrameInterpolationPacingDataExt>",
+    "size": 5976,
+    "member_count": 34,
+    "forward": false,
+    "field_list": 13097,
+    "records": [
+      {
+        "leaf": "0x1510",
+        "record_offset": 0,
+        "type_index": 13084,
+        "attributes": 0,
+        "kind": "nested",
+        "name": "PacingData"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 12134,
+        "type": "_RTL_CRITICAL_SECTION",
+        "attributes": 3,
+        "name": "criticalSectionScheduledFrame"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 60,
+        "kind": "member",
+        "offset": 40,
+        "type_index": 5195,
+        "type": "ID3D12Device*",
+        "attributes": 3,
+        "name": "device"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 80,
+        "kind": "member",
+        "offset": 48,
+        "type_index": 10726,
+        "type": "IDXGISwapChain4*",
+        "attributes": 3,
+        "name": "swapChain"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 100,
+        "kind": "member",
+        "offset": 56,
+        "type_index": 12138,
+        "type": "Dx12CommandPool<32>",
+        "attributes": 3,
+        "name": "commandPool"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 124,
+        "kind": "member",
+        "offset": 5216,
+        "type_index": 13084,
+        "type": "FrameInterpolationPacingDataExt",
+        "attributes": 3,
+        "name": "scheduledInterpolations"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 160,
+        "kind": "member",
+        "offset": 5488,
+        "type_index": 13084,
+        "type": "FrameInterpolationPacingDataExt",
+        "attributes": 3,
+        "name": "scheduledPresents"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 188,
+        "kind": "member",
+        "offset": 5760,
+        "type_index": 4905,
+        "type": "FfxApiResource",
+        "attributes": 3,
+        "name": "currentUiSurface"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 216,
+        "kind": "member",
+        "offset": 5808,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 3,
+        "name": "uiCompositionFlags"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 248,
+        "kind": "member",
+        "offset": 5816,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "interpolationQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 280,
+        "kind": "member",
+        "offset": 5824,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "asyncComputeQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 308,
+        "kind": "member",
+        "offset": 5832,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "gameQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 328,
+        "kind": "member",
+        "offset": 5840,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "presentQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 352,
+        "kind": "member",
+        "offset": 5848,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "gameFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 372,
+        "kind": "member",
+        "offset": 5856,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "interpolationFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 404,
+        "kind": "member",
+        "offset": 5864,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "presentFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 428,
+        "kind": "member",
+        "offset": 5872,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "replacementBufferFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 464,
+        "kind": "member",
+        "offset": 5880,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "compositionFenceCPU"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 496,
+        "kind": "member",
+        "offset": 5888,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "compositionFenceGPU"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 528,
+        "kind": "member",
+        "offset": 5896,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "presentEvent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 552,
+        "kind": "member",
+        "offset": 5904,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "interpolationEvent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 584,
+        "kind": "member",
+        "offset": 5912,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "pacerEvent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 608,
+        "kind": "member",
+        "offset": 5920,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "resetTimer"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 632,
+        "kind": "member",
+        "offset": 5921,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "shutdown"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 652,
+        "kind": "member",
+        "offset": 5928,
+        "type_index": 12145,
+        "type": "qualified double",
+        "attributes": 3,
+        "name": "safetyMarginInSec"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 680,
+        "kind": "member",
+        "offset": 5936,
+        "type_index": 12145,
+        "type": "qualified double",
+        "attributes": 3,
+        "name": "varianceFactor"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 708,
+        "kind": "member",
+        "offset": 5944,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "allowHybridSpin"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 736,
+        "kind": "member",
+        "offset": 5948,
+        "type_index": 12147,
+        "type": "qualified uint32",
+        "attributes": 3,
+        "name": "hybridSpinTime"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 764,
+        "kind": "member",
+        "offset": 5952,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "allowWaitForSingleObjectOnFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 808,
+        "kind": "member",
+        "offset": 5960,
+        "type_index": 12154,
+        "type": "0x2f78(kind=0x1008)*",
+        "attributes": 3,
+        "name": "waitCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 832,
+        "kind": "member",
+        "offset": 5968,
+        "type_index": 12156,
+        "type": "qualified int64",
+        "attributes": 3,
+        "name": "previousPresentQpc"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 864,
+        "type_index": 13090,
+        "attributes": 259,
+        "kind": "method",
+        "name": "TFrameInterpolationPresentInfo<32,FfxApiResource,FrameInterpolationPacingDataExt>"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 956,
+        "type_index": 13092,
+        "attributes": 259,
+        "kind": "method",
+        "name": "~TFrameInterpolationPresentInfo<32,FfxApiResource,FrameInterpolationPacingDataExt>"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 1048,
+        "type_index": 13093,
+        "attributes": 259,
+        "kind": "method",
+        "name": "__vecDelDtor"
+      }
+    ],
+    "fields": [
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 12134,
+        "type": "_RTL_CRITICAL_SECTION",
+        "attributes": 3,
+        "name": "criticalSectionScheduledFrame"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 60,
+        "kind": "member",
+        "offset": 40,
+        "type_index": 5195,
+        "type": "ID3D12Device*",
+        "attributes": 3,
+        "name": "device"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 80,
+        "kind": "member",
+        "offset": 48,
+        "type_index": 10726,
+        "type": "IDXGISwapChain4*",
+        "attributes": 3,
+        "name": "swapChain"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 100,
+        "kind": "member",
+        "offset": 56,
+        "type_index": 12138,
+        "type": "Dx12CommandPool<32>",
+        "attributes": 3,
+        "name": "commandPool"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 124,
+        "kind": "member",
+        "offset": 5216,
+        "type_index": 13084,
+        "type": "FrameInterpolationPacingDataExt",
+        "attributes": 3,
+        "name": "scheduledInterpolations"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 160,
+        "kind": "member",
+        "offset": 5488,
+        "type_index": 13084,
+        "type": "FrameInterpolationPacingDataExt",
+        "attributes": 3,
+        "name": "scheduledPresents"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 188,
+        "kind": "member",
+        "offset": 5760,
+        "type_index": 4905,
+        "type": "FfxApiResource",
+        "attributes": 3,
+        "name": "currentUiSurface"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 216,
+        "kind": "member",
+        "offset": 5808,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 3,
+        "name": "uiCompositionFlags"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 248,
+        "kind": "member",
+        "offset": 5816,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "interpolationQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 280,
+        "kind": "member",
+        "offset": 5824,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "asyncComputeQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 308,
+        "kind": "member",
+        "offset": 5832,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "gameQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 328,
+        "kind": "member",
+        "offset": 5840,
+        "type_index": 10729,
+        "type": "ID3D12CommandQueue*",
+        "attributes": 3,
+        "name": "presentQueue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 352,
+        "kind": "member",
+        "offset": 5848,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "gameFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 372,
+        "kind": "member",
+        "offset": 5856,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "interpolationFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 404,
+        "kind": "member",
+        "offset": 5864,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "presentFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 428,
+        "kind": "member",
+        "offset": 5872,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "replacementBufferFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 464,
+        "kind": "member",
+        "offset": 5880,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "compositionFenceCPU"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 496,
+        "kind": "member",
+        "offset": 5888,
+        "type_index": 10747,
+        "type": "ID3D12Fence*",
+        "attributes": 3,
+        "name": "compositionFenceGPU"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 528,
+        "kind": "member",
+        "offset": 5896,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "presentEvent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 552,
+        "kind": "member",
+        "offset": 5904,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "interpolationEvent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 584,
+        "kind": "member",
+        "offset": 5912,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "pacerEvent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 608,
+        "kind": "member",
+        "offset": 5920,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "resetTimer"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 632,
+        "kind": "member",
+        "offset": 5921,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "shutdown"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 652,
+        "kind": "member",
+        "offset": 5928,
+        "type_index": 12145,
+        "type": "qualified double",
+        "attributes": 3,
+        "name": "safetyMarginInSec"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 680,
+        "kind": "member",
+        "offset": 5936,
+        "type_index": 12145,
+        "type": "qualified double",
+        "attributes": 3,
+        "name": "varianceFactor"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 708,
+        "kind": "member",
+        "offset": 5944,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "allowHybridSpin"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 736,
+        "kind": "member",
+        "offset": 5948,
+        "type_index": 12147,
+        "type": "qualified uint32",
+        "attributes": 3,
+        "name": "hybridSpinTime"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 764,
+        "kind": "member",
+        "offset": 5952,
+        "type_index": 12143,
+        "type": "qualified bool",
+        "attributes": 3,
+        "name": "allowWaitForSingleObjectOnFence"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 808,
+        "kind": "member",
+        "offset": 5960,
+        "type_index": 12154,
+        "type": "0x2f78(kind=0x1008)*",
+        "attributes": 3,
+        "name": "waitCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 832,
+        "kind": "member",
+        "offset": 5968,
+        "type_index": 12156,
+        "type": "qualified int64",
+        "attributes": 3,
+        "name": "previousPresentQpc"
+      }
+    ]
+  },
+  {
+    "type_index": 14185,
+    "name": "TFrameInterpolationPacingData<FfxApiResource,FrameInterpolationFrameInfoExt>",
+    "size": 272,
+    "member_count": 16,
+    "forward": false,
+    "field_list": 14183,
+    "records": [
+      {
+        "leaf": "0x1510",
+        "record_offset": 0,
+        "type_index": 14174,
+        "attributes": 0,
+        "kind": "nested",
+        "name": "FrameInfo"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 4731,
+        "type": "0x127a(kind=0x1008)*",
+        "attributes": 3,
+        "name": "presentCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 48,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "presentCallbackContext"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 84,
+        "kind": "member",
+        "offset": 16,
+        "type_index": 4905,
+        "type": "FfxApiResource",
+        "attributes": 3,
+        "name": "uiSurface"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 104,
+        "kind": "member",
+        "offset": 64,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "vsync"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 120,
+        "kind": "member",
+        "offset": 65,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "tearingSupported"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 148,
+        "kind": "member",
+        "offset": 66,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "usePremulAlphaComposite"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 184,
+        "kind": "member",
+        "offset": 67,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "drawDebugPacingLines"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 216,
+        "kind": "member",
+        "offset": 72,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "interpolationCompletedFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 260,
+        "kind": "member",
+        "offset": 80,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "replacementBufferFenceSignal"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 300,
+        "kind": "member",
+        "offset": 88,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "numFramesSentForPresentationBase"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 344,
+        "kind": "member",
+        "offset": 96,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 3,
+        "name": "numFramesToPresent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 376,
+        "kind": "member",
+        "offset": 104,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "currentFrameID"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 404,
+        "kind": "member",
+        "offset": 112,
+        "type_index": 14175,
+        "type": "FrameInterpolationFrameInfoExt[bytes=160]",
+        "attributes": 3,
+        "name": "frames"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 424,
+        "type_index": 14178,
+        "attributes": 3,
+        "kind": "method",
+        "name": "invalidate"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 444,
+        "type_index": 14181,
+        "attributes": 259,
+        "kind": "method",
+        "name": "TFrameInterpolationPacingData<FfxApiResource,FrameInterpolationFrameInfoExt>"
+      }
+    ],
+    "fields": [
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 4731,
+        "type": "0x127a(kind=0x1008)*",
+        "attributes": 3,
+        "name": "presentCallback"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 48,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 1539,
+        "type": "void*",
+        "attributes": 3,
+        "name": "presentCallbackContext"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 84,
+        "kind": "member",
+        "offset": 16,
+        "type_index": 4905,
+        "type": "FfxApiResource",
+        "attributes": 3,
+        "name": "uiSurface"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 104,
+        "kind": "member",
+        "offset": 64,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "vsync"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 120,
+        "kind": "member",
+        "offset": 65,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "tearingSupported"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 148,
+        "kind": "member",
+        "offset": 66,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "usePremulAlphaComposite"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 184,
+        "kind": "member",
+        "offset": 67,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "drawDebugPacingLines"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 216,
+        "kind": "member",
+        "offset": 72,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "interpolationCompletedFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 260,
+        "kind": "member",
+        "offset": 80,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "replacementBufferFenceSignal"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 300,
+        "kind": "member",
+        "offset": 88,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "numFramesSentForPresentationBase"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 344,
+        "kind": "member",
+        "offset": 96,
+        "type_index": 117,
+        "type": "uint32",
+        "attributes": 3,
+        "name": "numFramesToPresent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 376,
+        "kind": "member",
+        "offset": 104,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "currentFrameID"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 404,
+        "kind": "member",
+        "offset": 112,
+        "type_index": 14175,
+        "type": "FrameInterpolationFrameInfoExt[bytes=160]",
+        "attributes": 3,
+        "name": "frames"
+      }
+    ]
+  },
+  {
+    "type_index": 14104,
+    "name": "ReplacementResource",
+    "size": 16,
+    "member_count": 4,
+    "forward": false,
+    "field_list": 14102,
+    "records": [
+      {
+        "leaf": "0x150d",
+        "record_offset": 0,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 9562,
+        "type": "ID3D12Resource*",
+        "attributes": 3,
+        "name": "resource"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "availabilityFenceValue"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 56,
+        "type_index": 14099,
+        "attributes": 3,
+        "kind": "method",
+        "name": "destroy"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 72,
+        "type_index": 14100,
+        "attributes": 259,
+        "kind": "method",
+        "name": "ReplacementResource"
+      }
+    ],
+    "fields": [
+      {
+        "leaf": "0x150d",
+        "record_offset": 0,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 9562,
+        "type": "ID3D12Resource*",
+        "attributes": 3,
+        "name": "resource"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "availabilityFenceValue"
+      }
+    ]
+  },
+  {
+    "type_index": 13377,
+    "name": "TFrameInterpolationFrameInfo<FfxApiResource>",
+    "size": 80,
+    "member_count": 5,
+    "forward": false,
+    "field_list": 13374,
+    "records": [
+      {
+        "leaf": "0x150d",
+        "record_offset": 0,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "doPresent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 4905,
+        "type": "FfxApiResource",
+        "attributes": 3,
+        "name": "resource"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 40,
+        "kind": "member",
+        "offset": 56,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "interpolationCompletedFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 84,
+        "kind": "member",
+        "offset": 64,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "presentIndex"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 108,
+        "kind": "member",
+        "offset": 72,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "presentQpcDelta"
+      }
+    ],
+    "fields": [
+      {
+        "leaf": "0x150d",
+        "record_offset": 0,
+        "kind": "member",
+        "offset": 0,
+        "type_index": 48,
+        "type": "bool",
+        "attributes": 3,
+        "name": "doPresent"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 20,
+        "kind": "member",
+        "offset": 8,
+        "type_index": 4905,
+        "type": "FfxApiResource",
+        "attributes": 3,
+        "name": "resource"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 40,
+        "kind": "member",
+        "offset": 56,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "interpolationCompletedFenceValue"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 84,
+        "kind": "member",
+        "offset": 64,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "presentIndex"
+      },
+      {
+        "leaf": "0x150d",
+        "record_offset": 108,
+        "kind": "member",
+        "offset": 72,
+        "type_index": 35,
+        "type": "uint64",
+        "attributes": 3,
+        "name": "presentQpcDelta"
+      }
+    ]
+  },
+  {
+    "type_index": 12852,
+    "name": "FrameInterpolationSwapChainDX12Stable",
+    "size": 6848,
+    "member_count": 9,
+    "forward": false,
+    "field_list": 12849,
+    "records": [
+      {
+        "leaf": "0x1400",
+        "record_offset": 0,
+        "kind": "base",
+        "offset": 0,
+        "type_index": 12653,
+        "type": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>",
+        "attributes": 3
+      },
+      {
+        "leaf": "0x150f",
+        "record_offset": 12,
+        "type_index": 12834,
+        "attributes": 2,
+        "kind": "method_group",
+        "name": "FrameInterpolationSwapChainDX12Stable"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 60,
+        "type_index": 12835,
+        "attributes": 7,
+        "kind": "method",
+        "name": "~FrameInterpolationSwapChainDX12Stable"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 108,
+        "type_index": 12837,
+        "attributes": 7,
+        "kind": "method",
+        "name": "QueryInterface"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 132,
+        "type_index": 12841,
+        "attributes": 259,
+        "kind": "method",
+        "name": "operator="
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 152,
+        "type_index": 12843,
+        "attributes": 259,
+        "kind": "method",
+        "name": "__autoclassinit2"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 180,
+        "type_index": 12845,
+        "attributes": 259,
+        "kind": "method",
+        "name": "__local_vftable_ctor_closure"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 220,
+        "type_index": 12848,
+        "attributes": 275,
+        "kind": "method",
+        "vtable_offset": 328,
+        "name": "__vecDelDtor"
+      }
+    ],
+    "fields": []
+  },
+  {
+    "type_index": 14095,
+    "name": "FrameinterpolationPresentInfoExt",
+    "size": 5976,
+    "member_count": 4,
+    "forward": false,
+    "field_list": 14093,
+    "records": [
+      {
+        "leaf": "0x1400",
+        "record_offset": 0,
+        "kind": "base",
+        "offset": 0,
+        "type_index": 13086,
+        "type": "TFrameInterpolationPresentInfo<32,FfxApiResource,FrameInterpolationPacingDataExt>",
+        "attributes": 3
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 12,
+        "type_index": 14088,
+        "attributes": 259,
+        "kind": "method",
+        "name": "FrameinterpolationPresentInfoExt"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 56,
+        "type_index": 14089,
+        "attributes": 259,
+        "kind": "method",
+        "name": "~FrameinterpolationPresentInfoExt"
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 100,
+        "type_index": 14091,
+        "attributes": 259,
+        "kind": "method",
+        "name": "__vecDelDtor"
+      }
+    ],
+    "fields": []
+  },
+  {
+    "type_index": 13688,
+    "name": "FrameInterpolationPacingDataExt",
+    "size": 272,
+    "member_count": 2,
+    "forward": false,
+    "field_list": 13686,
+    "records": [
+      {
+        "leaf": "0x1400",
+        "record_offset": 0,
+        "kind": "base",
+        "offset": 0,
+        "type_index": 13680,
+        "type": "TFrameInterpolationPacingData<FfxApiResource,FrameInterpolationFrameInfoExt>",
+        "attributes": 3
+      },
+      {
+        "leaf": "0x1511",
+        "record_offset": 12,
+        "type_index": 13684,
+        "attributes": 259,
+        "kind": "method",
+        "name": "FrameInterpolationPacingDataExt"
+      }
+    ],
+    "fields": []
+  },
+  {
+    "type_index": 14322,
+    "name": "FrameInterpolationFrameInfoExt",
+    "size": 80,
+    "member_count": 1,
+    "forward": false,
+    "field_list": 14320,
+    "records": [
+      {
+        "leaf": "0x1400",
+        "record_offset": 0,
+        "kind": "base",
+        "offset": 0,
+        "type_index": 12802,
+        "type": "TFrameInterpolationFrameInfo<FfxApiResource>",
+        "attributes": 3
+      }
+    ],
+    "fields": []
+  }
+]
