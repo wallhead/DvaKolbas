@@ -1,6 +1,6 @@
 # FSR Super Resolution design
 
-Date: 2026-10-01. Status: proposed written spec, awaiting user review.
+Date: 2026-10-01. Status: approved written spec.
 
 ## Intent and scope
 
@@ -119,4 +119,4 @@ SR is complete only when real dispatch and output consumption, NVIDIA-independen
 
 ## Review state
 
-The conversational design direction is approved. This written spec requires user review before an implementation plan is prepared. The plan then requires review and execution-method selection before product code/dependency installation. This document records proposed behavior, not implementation success.
+The conversational design direction and this written spec are approved. The user also authorized pushing to `https://github.com/wallhead/DvaKolbas`. The implementation plan requires review and execution-method selection before product code/dependency installation. This document records proposed behavior, not implementation success.
