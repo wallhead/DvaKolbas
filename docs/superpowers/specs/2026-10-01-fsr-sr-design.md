@@ -119,4 +119,4 @@ SR is complete only when real dispatch and output consumption, NVIDIA-independen
 
 ## Review state
 
-The conversational design direction and this written spec are approved. The user also authorized pushing to `https://github.com/wallhead/DvaKolbas`. The implementation plan requires review and execution-method selection before product code/dependency installation. This document records proposed behavior, not implementation success.
+The conversational design direction and this written spec are approved. The user also authorized pushing to `https://github.com/wallhead/DvaKolbas`. The user’s “next step” resumed implementation inline in the existing FSR worktree. This document records intended behavior; executed evidence is kept in FSR_IMPLEMENTATION.md and the task ledger.

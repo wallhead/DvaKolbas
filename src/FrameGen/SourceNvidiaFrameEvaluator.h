@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SourceNvidiaFramePreparation.h"
+#include "SourceFrameEvaluator.h"
 
 namespace TheosRenderPipeline
 {
@@ -21,24 +22,47 @@ namespace TheosRenderPipeline
 
     class SourceNvidiaFrameEvaluator
     {
+        template<class Operations> struct Adapter
+        {
+            SourceNvidiaFrameInputs frame;
+            Operations& operations;
+            bool cameraValid{};
+            void CopyInput(ID3D11DeviceContext* context, const Upscaling::UpscaleFrame&)
+            { operations.CopyInput(context, frame); }
+            bool EvaluateOptionalPreUpscale(Upscaling::UpscaleFrame&)
+            { return operations.EvaluateNeuralBeforeDLSS(frame); }
+            void RenderReShade(const Upscaling::UpscaleFrame&, bool before)
+            { operations.RenderReShade(frame, before); }
+            Upscaling::Result<Upscaling::UpscaleOutcome> EvaluateUpscaler(const Upscaling::UpscaleFrame&)
+            {
+                if (operations.EvaluateDLSS(frame)) { return Upscaling::UpscaleOutcome::Temporal; }
+                return std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::DispatchFailure, 0, "DLSS evaluation failed"});
+            }
+            void UpscaleSucceeded() { operations.UpscaleSucceeded(); }
+            Upscaling::GenerationPreparationStatus PrepareGeneration(const Upscaling::UpscaleFrame&)
+            {
+                // NVIDIA preparation also serves after-upscale NR with FG off.
+                const auto result = SourceNvidiaFramePreparation::PrepareCompletedFrame(frame, operations);
+                cameraValid = result.cameraValid;
+                return result.prepared ? Upscaling::GenerationPreparationStatus::Succeeded : Upscaling::GenerationPreparationStatus::Failed;
+            }
+        };
     public:
         template<class Operations>
         static SourceNvidiaFrameResult Evaluate(ID3D11DeviceContext* context,
             SourceNvidiaFrameInputs frame, Operations& operations)
         {
-            context->OMSetRenderTargets(0, nullptr, nullptr);
-            operations.CopyInput(context, frame);
-            // Completes the optional D3D12 NR round trip before D3D11 DLSS can
-            // read input. Settings/re-entry resets apply to both stages.
-            if (!operations.EvaluateNeuralBeforeDLSS(frame)) { return {}; }
-            operations.RenderReShade(frame, true);
-            if (!operations.EvaluateDLSS(frame)) { return {}; }
-            operations.UpscaleSucceeded();
-            // Finish external effects before Prepare snapshots HUD-less color.
-            operations.RenderReShade(frame, false);
-
-            const auto preparation = SourceNvidiaFramePreparation::PrepareCompletedFrame(frame, operations);
-            return {true, preparation.cameraValid, preparation.prepared};
+            Adapter<Operations> adapter{frame, operations};
+            Upscaling::UpscaleFrame common{};
+            common.color = frame.color; common.input = frame.input; common.output = frame.output;
+            common.depth = frame.depth; common.motion = frame.motion;
+            common.render = {frame.renderWidth, frame.renderHeight};
+            common.display = {frame.outputWidth, frame.outputHeight};
+            common.jitterX = frame.jitterX; common.jitterY = frame.jitterY;
+            common.reset = frame.reset; common.sharpness = frame.sharpness;
+            const auto result = SourceFrameEvaluator::Evaluate(context, common, adapter);
+            return {result.outcome == Upscaling::UpscaleOutcome::Temporal, adapter.cameraValid,
+                result.preparation == Upscaling::GenerationPreparationStatus::Succeeded};
         }
     };
 }

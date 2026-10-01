@@ -13,19 +13,8 @@ namespace TheosRenderPipeline
             name.find_first_of("/\\:*?\"<>|\r\n") == std::string_view::npos;
     }
 #endif
-    // Missing legacy selectors use the NVIDIA defaults. Explicit requests for
-    // unavailable owners remain configuration errors.
-    template <class Ini> const char* ValidateNvidiaBaseline(const Ini& ini)
+    template <class Ini> const char* ValidateLegacyRendererExperiments(const Ini& ini)
     {
-        const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
-        if (!ini.GetBoolValue("Settings", "EnableUpscaler", true) || (mode != DLSS && mode != DLAA)) {
-            return "This renderer requires DLSS or DLAA. Use the Frame generation checkbox to turn interpolation off.";
-        }
-        if (ini.GetBoolValue("Experimental", "PureDarkFullDelegation", false) ||
-            ini.GetLongValue("Experimental", "FrameGenerationBackend", 1) != 1 ||
-            !ini.GetBoolValue("Experimental", "SourceDLSSGBackend", true)) {
-            return "This configuration selects an unavailable renderer. Use the packaged NVIDIA settings.";
-        }
         if (ini.GetLongValue("Experimental", "X3PresentationMode", 0) != 0 ||
             ini.GetBoolValue("Experimental", "EnableX3Presentation", false) ||
             ini.GetLongValue("Experimental", "NeuralRenderingStartupMode", 0) != 0) {
@@ -43,6 +32,22 @@ namespace TheosRenderPipeline
         }
 #endif
         return nullptr;
+    }
+
+    // Missing legacy selectors retain NVIDIA defaults. FSR startup validation
+    // is separate, so an unused legacy NVIDIA selector cannot acquire ownership.
+    template <class Ini> const char* ValidateNvidiaBaseline(const Ini& ini)
+    {
+        const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
+        if (!ini.GetBoolValue("Settings", "EnableUpscaler", true) || (mode != DLSS && mode != DLAA)) {
+            return "This renderer requires DLSS or DLAA. Use the Frame generation checkbox to turn interpolation off.";
+        }
+        if (ini.GetBoolValue("Experimental", "PureDarkFullDelegation", false) ||
+            ini.GetLongValue("Experimental", "FrameGenerationBackend", 1) != 1 ||
+            !ini.GetBoolValue("Experimental", "SourceDLSSGBackend", true)) {
+            return "This configuration selects an unavailable renderer. Use the packaged NVIDIA settings.";
+        }
+        return ValidateLegacyRendererExperiments(ini);
     }
 
     inline std::filesystem::path ResolveRuntimePath(

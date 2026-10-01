@@ -12,7 +12,7 @@
 #include "FrameGen/SourceNRRegression.h"
 #endif
 #include "PerformanceTuning.h"
-#include "NvidiaBaselinePolicy.h"
+#include "RendererBackendPolicy.h"
 #include "NativeInput.h"
 #include "NativeUIBridge.h"
 #include "../compatibility/ImGuiCompat/ImGuiIntegration.h"
@@ -183,7 +183,8 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	if (baselineIni.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") < 0) {
 		util::report_and_fail("Theo's Render Pipeline: SKSE/Plugins/TheosRenderPipeline.ini is missing or unreadable. Install the packaged TheosRenderPipeline.ini and restart Skyrim.");
 	}
-	if (const auto* error = TheosRenderPipeline::ValidateNvidiaBaseline(baselineIni)) {
+	// FSR stays unavailable until its ordinary host and temporal GPU path exist.
+	if (const auto* error = TheosRenderPipeline::ValidateRendererConfiguration(baselineIni, false)) {
 		util::report_and_fail(std::format("Theo's Render Pipeline configuration error:\n\n{}\n\nCorrect SKSE/Plugins/TheosRenderPipeline.ini and restart Skyrim.", error));
 	}
 	logger::info("{} {}", Plugin::DISPLAY_NAME, Plugin::RELEASE_VERSION);

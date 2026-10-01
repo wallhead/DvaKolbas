@@ -4,5 +4,6 @@
 enum UpscaleType
 {
     DLSS = 0,
-    DLAA = 3
+    DLAA = 3,
+    FSR = 4
 };
