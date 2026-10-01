@@ -1,0 +1,14 @@
+{
+  "pdb": "amd_fidelityfx_framegeneration_dx12.pdb",
+  "guid": "f977ea5e-eaed-467f-800d-e437ac3b9e74",
+  "age": 1,
+  "dll_codeview": [
+    {
+      "guid": "f977ea5e-eaed-467f-800d-e437ac3b9e74",
+      "age": 1,
+      "pdb": "X:\\Kits\\FidelityFX\\amdinternal\\framegeneration\\dx12\\x64\\Release\\amd_fidelityfx_framegeneration_dx12.pdb"
+    }
+  ],
+  "matches": true,
+  "symbol_records": 13871
+}

@@ -1,0 +1,21 @@
+test_engine_signs (__main__.RecoveredContractTests.test_engine_signs) ... ok
+test_halton_known_first (__main__.RecoveredContractTests.test_halton_known_first) ... ok
+test_jitter_min_period (__main__.RecoveredContractTests.test_jitter_min_period) ... ok
+test_jitter_period (__main__.RecoveredContractTests.test_jitter_period) ... ok
+test_output_fallback (__main__.RecoveredContractTests.test_output_fallback) ... ok
+test_output_preference (__main__.RecoveredContractTests.test_output_preference) ... ok
+test_reactive_not_output (__main__.RecoveredContractTests.test_reactive_not_output) ... ok
+test_reset_configure_failure_retains (__main__.RecoveredContractTests.test_reset_configure_failure_retains) ... ok
+test_reset_disabled_retains (__main__.RecoveredContractTests.test_reset_disabled_retains) ... ok
+test_reset_or_latch (__main__.RecoveredContractTests.test_reset_or_latch) ... ok
+test_reset_prepare_failure_retains (__main__.RecoveredContractTests.test_reset_prepare_failure_retains) ... ok
+test_reset_success_clears (__main__.RecoveredContractTests.test_reset_success_clears) ... ok
+test_ui_count_guard (__main__.RecoveredContractTests.test_ui_count_guard) ... ok
+test_ui_phase_guard (__main__.RecoveredContractTests.test_ui_phase_guard) ... ok
+test_ui_preserves_origin_depth (__main__.RecoveredContractTests.test_ui_preserves_origin_depth) ... ok
+test_ui_size_guard (__main__.RecoveredContractTests.test_ui_size_guard) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.000s
+
+OK

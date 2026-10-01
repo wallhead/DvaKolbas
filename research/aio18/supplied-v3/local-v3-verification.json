@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "scope": "Local v3 static byte, span, and instruction-boundary checks; no GPU or semantic-completeness proof",
+  "new_code_spans_checked": 49,
+  "excerpt_instruction_boundaries_checked": 6107,
+  "constant_records_checked": 11,
+  "pd_api_vtable_slots_checked": 34,
+  "cumulative_instruction_records": 325,
+  "distinct_module_addresses": 316,
+  "gnu_llvm_verifier_rerun": false,
+  "note": "Capstone checked boundaries locally; the supplied GNU/LLVM verification remains a supplied result."
+}

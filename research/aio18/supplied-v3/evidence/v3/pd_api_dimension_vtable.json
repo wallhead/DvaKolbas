@@ -1,0 +1,178 @@
+{
+  "class": ".?AVUpscaleAPI_D3D11@@",
+  "vtable_rva": 18528192,
+  "col_rva": 18556096,
+  "object_offset": 0,
+  "entries": [
+    {
+      "offset": 0,
+      "target_rva": 998704,
+      "name": null
+    },
+    {
+      "offset": 8,
+      "target_rva": 1000656,
+      "name": null
+    },
+    {
+      "offset": 16,
+      "target_rva": 1003888,
+      "name": null
+    },
+    {
+      "offset": 24,
+      "target_rva": 1004480,
+      "name": null
+    },
+    {
+      "offset": 32,
+      "target_rva": 1004592,
+      "name": null
+    },
+    {
+      "offset": 40,
+      "target_rva": 1006832,
+      "name": null
+    },
+    {
+      "offset": 48,
+      "target_rva": 1006320,
+      "name": null
+    },
+    {
+      "offset": 56,
+      "target_rva": 1005712,
+      "name": null
+    },
+    {
+      "offset": 64,
+      "target_rva": 1007904,
+      "name": null
+    },
+    {
+      "offset": 72,
+      "target_rva": 839456,
+      "name": null
+    },
+    {
+      "offset": 80,
+      "target_rva": 839488,
+      "name": null
+    },
+    {
+      "offset": 88,
+      "target_rva": 839520,
+      "name": null
+    },
+    {
+      "offset": 96,
+      "target_rva": 839552,
+      "name": null
+    },
+    {
+      "offset": 104,
+      "target_rva": 839584,
+      "name": null
+    },
+    {
+      "offset": 112,
+      "target_rva": 839616,
+      "name": null
+    },
+    {
+      "offset": 120,
+      "target_rva": 839648,
+      "name": null
+    },
+    {
+      "offset": 128,
+      "target_rva": 839696,
+      "name": null
+    },
+    {
+      "offset": 136,
+      "target_rva": 1000784,
+      "name": null
+    },
+    {
+      "offset": 144,
+      "target_rva": 1003120,
+      "name": null
+    },
+    {
+      "offset": 152,
+      "target_rva": 1003200,
+      "name": null
+    },
+    {
+      "offset": 160,
+      "target_rva": 1003472,
+      "name": null
+    },
+    {
+      "offset": 168,
+      "target_rva": 1000864,
+      "name": null
+    },
+    {
+      "offset": 176,
+      "target_rva": 1000944,
+      "name": null
+    },
+    {
+      "offset": 184,
+      "target_rva": 1001200,
+      "name": null
+    },
+    {
+      "offset": 192,
+      "target_rva": 1001360,
+      "name": null
+    },
+    {
+      "offset": 200,
+      "target_rva": 1001536,
+      "name": null
+    },
+    {
+      "offset": 208,
+      "target_rva": 1001600,
+      "name": null
+    },
+    {
+      "offset": 216,
+      "target_rva": 1001792,
+      "name": "GetPDFrameWarpContext"
+    },
+    {
+      "offset": 224,
+      "target_rva": 67520,
+      "name": null
+    },
+    {
+      "offset": 232,
+      "target_rva": 494672,
+      "name": null
+    },
+    {
+      "offset": 240,
+      "target_rva": 1001824,
+      "name": null
+    },
+    {
+      "offset": 248,
+      "target_rva": 1002208,
+      "name": null
+    },
+    {
+      "offset": 256,
+      "target_rva": 1003056,
+      "name": null
+    },
+    {
+      "offset": 264,
+      "target_rva": 1003872,
+      "name": null
+    }
+  ]
+}

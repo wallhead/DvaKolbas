@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "tests_run": 16,
+  "scope": "Supplied pure-Python arithmetic/branch reconstructions only; no native DLL, GPU, or game tests",
+  "command": "python scripts/reference_models_v3.py -v",
+  "exit_code": 0
+}

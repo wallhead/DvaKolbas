@@ -1,0 +1,325 @@
+RVA	Size	Name
+0x001073E8		TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::`vftable'
+0x024657B0		ffxProvider_Fsr3FrameGenerationSwapChain::`vftable'
+0x024672C8		ffxProvider_MLFrameGeneration::`vftable'
+0x02467498		ffxProvider_Fsr3FrameGeneration::`vftable'
+0x001063F8		ffxProvider::`vftable'
+0x00106440		ffxProviderExternal::`vftable'
+0x0000C1A0		?GetRestrictToOutput@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAPEAUIDXGIOutput@@@Z
+0x02472330		?$TSS0@?4???0ffxProviderExternal@@QEAA@PEAUID3D12Device@@_K@Z@4HA
+0x0246A8A8		??_R2ffxProvider_Fsr3FrameGeneration@@8
+0x00009C60		?verifyUiDuplicateResource@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAA_NXZ
+0x0000C000		?GetFrameStatistics@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAUDXGI_FRAME_STATISTICS@@@Z
+0x0000ADC0		?registerUiResource@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAXUFfxApiResource@@I@Z
+0x0246A570		??_R4?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@6B@
+0x0000C430		?SetColorSpace1@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJW4DXGI_COLOR_SPACE_TYPE@@@Z
+0x0000C200		?GetBackgroundColor@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAU_D3DCOLORVALUE@@@Z
+0x0000DCB0		?setFrameGenerationConfig@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$0CA@UFfxApiResource@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@@@UFfxFrameGenerationConfigSDK2@@UFfxPresentCallbackDescriptionSDK2@@$0BA@@@QEAAXPEBUFfxFrameGenerationConfig@@@Z
+0x0000A360		?destroyReplacementResources@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAA_NXZ
+0x02467498		??_7ffxProvider_Fsr3FrameGeneration@@6B@
+0x02471B58		??_R0?AVffxProvider_MLFrameGeneration@@@8
+0x00007290		?GetProvider@@YAPEAVffxProvider@@_K0PEAXAEAV?$optional@VffxProviderExternal@@@std@@@Z
+0x000111A0		??$compositeSwapChainFrame@U?$TFrameInterpolationPresentInfo@$0CA@UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@UFfxPresentCallbackDescriptionSDK1@@@@YAJPEAU?$TFrameInterpolationPresentInfo@$0CA@UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@PEAU?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@I@Z
+0x0000BEC0		?ResizeBuffers@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJIIIW4DXGI_FORMAT@@I@Z
+0x0000C230		?SetRotation@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJW4DXGI_MODE_ROTATION@@@Z
+0x00011910		??$compositeSwapChainFrame@U?$TFrameInterpolationPresentInfo@$0CA@UFfxApiResource@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@UFfxPresentCallbackDescriptionSDK2@@@@YAJPEAU?$TFrameInterpolationPresentInfo@$0CA@UFfxApiResource@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@@@PEAU?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@I@Z
+0x000F6210		?ffxFrameInterpolationDebugPacing@@YAHPEBUffxCallbackDescFrameGenerationPresent@@@Z
+0x02471B90		??_R0?AVffxProvider_Fsr3FrameGeneration@@@8
+0x0000BDF0		?SetFullscreenState@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJHPEAUIDXGIOutput@@@Z
+0x00006A90		??_EffxProvider_MLFrameGeneration@@UEAAPEAXI@Z
+0x0246A738		??_R4ffxProvider_MLFrameGeneration@@6B@
+0x0000C2D0		?GetSourceSize@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAI0@Z
+0x0000D610		?setFrameGenerationConfig@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$0CA@UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@UFfxFrameGenerationConfigSDK1@@UFfxPresentCallbackDescriptionSDK1@@$0BA@@@QEAAXPEBUFfxFrameGenerationConfig@@@Z
+0x02469FF8		??_R3ffxProvider@@8
+0x0000C170		?IsTemporaryMonoSupported@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAHXZ
+0x000F4050		?Dispatch@ffxProvider_Fsr3FrameGeneration@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x0000AE50		?setWaitCallback@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAXP6AHPEA_W_K@Z@Z
+0x0000BA70		?GetDevice@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJAEBU_GUID@@PEAPEAX@Z
+0x00006D90		?GetProvider@@YAPEAVffxProvider@@_K0PEAXAEAV?$optional@VffxProviderExternal@@@std@@V?$span@QEAVffxProvider@@$0?0@3@@Z
+0x00006AC0		??0ffxProviderExternal@@QEAA@PEAUID3D12Device@@_K@Z
+0x0000E2E0		?getInterpolationCommandList@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$0CA@UFfxApiResource@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@@@UFfxFrameGenerationConfigSDK2@@UFfxPresentCallbackDescriptionSDK2@@$0BA@@@QEAAPEAUID3D12GraphicsCommandList@@XZ
+0x0000C340		?GetFrameLatencyWaitableObject@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAPEAXXZ
+0x0000E4C0		??$compositeSwapChainFrame@UFrameinterpolationPresentInfoExt@@UFrameInterpolationPacingDataExt@@UffxCallbackDescFrameGenerationPresent@@@@YAJPEAUFrameinterpolationPresentInfoExt@@PEAUFrameInterpolationPacingDataExt@@I@Z
+0x00010A30		??$compositeSwapChainFrame@U?$TFrameInterpolationPresentInfo@$07UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@UFfxPresentCallbackDescriptionSDK1@@@@YAJPEAU?$TFrameInterpolationPresentInfo@$07UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@PEAU?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@I@Z
+0x001073E8		??_7?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@6B@
+0x000F25A0		?CanProvide@ffxProvider_Fsr3FrameGeneration@@UEBA_N_K@Z
+0x0000C120		?GetCoreWindow@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJAEBU_GUID@@PEAPEAX@Z
+0x00012290		?CreateContext@ffxProvider_Fsr3FrameGenerationSwapChain@@UEAAIPEAPEAXPEAUffxApiHeader@@AEAUAllocator@@@Z
+0x00008950		?shutdown@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAJXZ
+0x000094A0		?dispatchInterpolationCommands@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAXPEAUFfxApiResource@@0@Z
+0x000098E0		?presentInterpolated@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAXII@Z
+0x0000B9E0		?GetPrivateData@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJAEBU_GUID@@PEAIPEAX@Z
+0x000EFCE0		?DestroyContext@ffxProvider_MLFrameGeneration@@UEAAIPEAPEAXAEAUAllocator@@@Z
+0x0000AE60		?setFramePacingTuning@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAXPEBUFfxApiSwapchainFramePacingTuning@@@Z
+0x00009EA0		?copyUiResource@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAXXZ
+0x0246A600		??_R4ffxProvider_Fsr3FrameGenerationSwapChain@@6B@
+0x0000C490		?ResizeBuffers1@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJIIIW4DXGI_FORMAT@@IPEBIPEBQEAUIUnknown@@@Z
+0x000F8EC0		ffxFrameInterpolationDispatch
+0x00006D40		??_EffxProviderExternal@@UEAAPEAXI@Z
+0x0000BE70		?GetDesc@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAUDXGI_SWAP_CHAIN_DESC@@@Z
+0x02469F50		??_R1A@?0A@EA@ffxProvider@@8
+0x000F25C0		?CreateContext@ffxProvider_Fsr3FrameGeneration@@UEAAIPEAPEAXPEAUffxApiHeader@@AEAUAllocator@@@Z
+0x02469FD0		??_R4ffxProvider@@6B@
+0x001063F8		??_7ffxProvider@@6B@
+0x0000E270		?waitForPresents@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$0CA@UFfxApiResource@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@@@UFfxFrameGenerationConfigSDK2@@UFfxPresentCallbackDescriptionSDK2@@$0BA@@@QEAA_NXZ
+0x0000BF90		?ResizeTarget@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEBUDXGI_MODE_DESC@@@Z
+0x0000AAF0		?waitForPresents@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAA_NXZ
+0x00006D10		?Configure@ffxProviderExternal@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x02469FB8		??_R2ffxProviderExternal@@8
+0x0000A740		?setFrameGenerationConfig@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAXPEBUFfxFrameGenerationConfig@@@Z
+0x000076A0		??_E?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAPEAXI@Z
+0x0000DA60		?waitForPresents@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$0CA@UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@UFfxFrameGenerationConfigSDK1@@UFfxPresentCallbackDescriptionSDK1@@$0BA@@@QEAA_NXZ
+0x0000C290		?SetSourceSize@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJII@Z
+0x0246A6A0		??_R3ffxProvider_MLFrameGeneration@@8
+0x000F5600		?ffxFrameInterpolationUiComposition@@YAIPEAUffxCallbackDescFrameGenerationPresent@@PEAX@Z
+0x0000B950		?SetPrivateData@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJAEBU_GUID@@IPEBX@Z
+0x0000A6C0		?discardOutstandingInterpolationCommandLists@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAXXZ
+0x0000C4A0		?SetHDRMetaData@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJW4DXGI_HDR_METADATA_TYPE@@IPEAX@Z
+0x0000D430		?getInterpolationCommandList@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$07UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@UFfxFrameGenerationConfigSDK1@@UFfxPresentCallbackDescriptionSDK1@@$05@@QEAAPEAUID3D12GraphicsCommandList@@XZ
+0x00008F70		?presentWithUiComposition@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAXII@Z
+0x00012680		?Configure@ffxProvider_Fsr3FrameGenerationSwapChain@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x00006A90		??_GffxProvider_Fsr3FrameGenerationSwapChain@@UEAAPEAXI@Z
+0x02469F28		??_R1A@?0A@EA@ffxProviderExternal@@8
+0x000106A0		??$presenterThread@U?$TFrameInterpolationPresentInfo@$0CA@UFfxApiResource@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@@@U?$TFrameInterpolationPacingData@UFfxApiResource@@U?$TFrameInterpolationFrameInfo@UFfxApiResource@@@@@@UFfxPresentCallbackDescriptionSDK2@@@@YAKPEAX@Z
+0x0000C1D0		?SetBackgroundColor@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEBU_D3DCOLORVALUE@@@Z
+0x000F3A60		?Query@ffxProvider_Fsr3FrameGeneration@@UEBAIPEAPEAXPEAUffxApiHeader@@@Z
+0x0000ABE0		?getInterpolationCommandList@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAPEAUID3D12GraphicsCommandList@@XZ
+0x00007FE0		??$ffxFrameInterpolationUiCompositionWrapper@UffxCallbackDescFrameGenerationPresent@@@@YAIPEAUffxCallbackDescFrameGenerationPresent@@PEAX@Z
+0x0246A6F8		??_R2ffxProvider_MLFrameGeneration@@8
+0x0000C0C0		?GetFullscreenDesc@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAUDXGI_SWAP_CHAIN_FULLSCREEN_DESC@@@Z
+0x0000CFC0		?setFrameGenerationConfig@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$07UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@UFfxFrameGenerationConfigSDK1@@UFfxPresentCallbackDescriptionSDK1@@$05@@QEAAXPEBUFfxFrameGenerationConfig@@@Z
+0x0000DAD0		?getInterpolationCommandList@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$0CA@UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@UFfxFrameGenerationConfigSDK1@@UFfxPresentCallbackDescriptionSDK1@@$0BA@@@QEAAPEAUID3D12GraphicsCommandList@@XZ
+0x000EF4B0		?CreateContext@ffxProvider_MLFrameGeneration@@UEAAIPEAPEAXPEAUffxApiHeader@@AEAUAllocator@@@Z
+0x00006D40		??_GffxProviderExternal@@UEAAPEAXI@Z
+0x0000AEB0		?GetGpuMemoryUsage@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAXPEAUFfxApiEffectMemoryUsage@@@Z
+0x00006D30		?Dispatch@ffxProviderExternal@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x00012610		?DestroyContext@ffxProvider_Fsr3FrameGenerationSwapChain@@UEAAIPEAPEAXAEAUAllocator@@@Z
+0x0000EC10		?discardOutstandingInterpolationCommandLists@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$07UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@UFfxFrameGenerationConfigSDK1@@UFfxPresentCallbackDescriptionSDK1@@$05@@IEAAXXZ
+0x024672C8		??_7ffxProvider_MLFrameGeneration@@6B@
+0x00006A90		??_EffxProvider_Fsr3FrameGenerationSwapChain@@UEAAPEAXI@Z
+0x00012900		?Query@ffxProvider_Fsr3FrameGenerationSwapChain@@UEBAIPEAPEAXPEAUffxApiHeader@@@Z
+0x0000B350		?init@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAUHWND__@@PEBUDXGI_SWAP_CHAIN_DESC1@@PEBUDXGI_SWAP_CHAIN_FULLSCREEN_DESC@@PEAUID3D12CommandQueue@@PEAUIDXGIFactory2@@@Z
+0x02472380		?hModule@?4???0ffxProviderExternal@@QEAA@PEAUID3D12Device@@_K@Z@4PEAUHINSTANCE__@@EA
+0x0000BE30		?GetFullscreenState@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAHPEAPEAUIDXGIOutput@@@Z
+0x000102C0		??$presenterThread@U?$TFrameInterpolationPresentInfo@$0CA@UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@UFfxPresentCallbackDescriptionSDK1@@@@YAKPEAX@Z
+0x000F2D00		?DestroyContext@ffxProvider_Fsr3FrameGeneration@@UEAAIPEAPEAXAEAUAllocator@@@Z
+0x00012DD0		?Dispatch@ffxProvider_Fsr3FrameGenerationSwapChain@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x0246A010		??_R2ffxProvider@@8
+0x00006F00		?GetProviderVersions@@YA_K_KPEAX0PEA_KPEAPEBDAEAV?$optional@VffxProviderExternal@@@std@@V?$span@QEAVffxProvider@@$0?0@2@@Z
+0x0000C310		?SetMaximumFrameLatency@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJI@Z
+0x02469FA0		??_R3ffxProviderExternal@@8
+0x0000AB60		?interpolationOutput@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAA?AUFfxApiResource@@H@Z
+0x00007240		?GetProviderVersions@@YA_K_KPEAX0PEA_KPEAPEBDAEAV?$optional@VffxProviderExternal@@@std@@@Z
+0x000F09C0		?Query@ffxProvider_MLFrameGeneration@@UEBAIPEAPEAXPEAUffxApiHeader@@@Z
+0x0246A7B0		??_R1A@?0A@EA@ffxProvider_MLFrameGeneration@@8
+0x0246A1D0		??_R2?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@8
+0x00106440		??_7ffxProviderExternal@@6B@
+0x000F0BD0		?Dispatch@ffxProvider_MLFrameGeneration@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x02471840		??_R0?AVffxProviderExternal@@@8
+0x0000BFC0		?GetContainingOutput@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAPEAUIDXGIOutput@@@Z
+0x0000A730		?real@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAPEAUIDXGISwapChain4@@XZ
+0x0000C3B0		?GetCurrentBackBufferIndex@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAIXZ
+0x0000B910		?Release@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAKXZ
+0x00006D20		?Query@ffxProviderExternal@@UEBAIPEAPEAXPEAUffxApiHeader@@@Z
+0x02471870		??_R0?AVffxProvider@@@8
+0x00006A90		??_EffxProvider_Fsr3FrameGeneration@@UEAAPEAXI@Z
+0x00008C90		?presentPassthrough@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAXII@Z
+0x0000D3C0		?waitForPresents@?$TFrameInterpolationSwapChainDX12@VFrameInterpolationSwapChainDX12@@U?$TFrameInterpolationPresentInfo@$07UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@UFfxFrameGenerationConfigSDK1@@UFfxPresentCallbackDescriptionSDK1@@$05@@QEAA_NXZ
+0x0246A5D8		??_R1A@?0A@EA@ffxProvider_Fsr3FrameGenerationSwapChain@@8
+0x0000C260		?GetRotation@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAW4DXGI_MODE_ROTATION@@@Z
+0x02471A50		??_R0?AV?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@@8
+0x02471B18		??_R0?AVffxProvider_Fsr3FrameGenerationSwapChain@@@8
+0x000F8C40		ffxFrameInterpolationPrepare
+0x00007A10		ffxFrameInterpolationSwapchainGetGpuMemoryUsageDX12V2
+0x0000CBD0		??$presenterThread@UFrameinterpolationPresentInfoExt@@UFrameInterpolationPacingDataExt@@UffxCallbackDescFrameGenerationPresent@@@@YAKPEAX@Z
+0x0246A228		??_R3?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@8
+0x00006CF0		?DestroyContext@ffxProviderExternal@@UEAAIPEAPEAXAEAUAllocator@@@Z
+0x0000FEE0		??$presenterThread@U?$TFrameInterpolationPresentInfo@$07UFfxResourceSDK1@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@@@U?$TFrameInterpolationPacingData@UFfxResourceSDK1@@U?$TFrameInterpolationFrameInfo@UFfxResourceSDK1@@@@@@UFfxPresentCallbackDescriptionSDK1@@@@YAKPEAX@Z
+0x00006CB0		?CreateContext@ffxProviderExternal@@UEAAIPEAPEAXPEAUffxApiHeader@@AEAUAllocator@@@Z
+0x0000BA30		?GetParent@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJAEBU_GUID@@PEAPEAX@Z
+0x0000C350		?SetMatrixTransform@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEBUDXGI_MATRIX_3X2_F@@@Z
+0x00006A80		?IsSupported@ffxProvider@@UEBA_NPEAX@Z
+0x0000B9A0		?SetPrivateDataInterface@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJAEBU_GUID@@PEBUIUnknown@@@Z
+0x00006A90		??_EffxProvider@@UEAAPEAXI@Z
+0x0000C030		?GetLastPresentCount@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAI@Z
+0x00006A90		??_GffxProvider@@UEAAPEAXI@Z
+0x02469F78		??_R4ffxProviderExternal@@6B@
+0x02472340		?extProviderName@?1??GetProviderVersions@@YA_K_KPEAX0PEA_KPEAPEBDAEAV?$optional@VffxProviderExternal@@@std@@V?$span@QEAVffxProvider@@$0?0@3@@Z@4PADA
+0x0000BD10		?GetBuffer@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJIAEBU_GUID@@PEAPEAX@Z
+0x000F2F50		?Configure@ffxProvider_Fsr3FrameGeneration@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x0000BAB0		?Present@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJII@Z
+0x0000C060		?GetDesc1@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAUDXGI_SWAP_CHAIN_DESC1@@@Z
+0x0246A880		??_R1A@?0A@EA@ffxProvider_Fsr3FrameGeneration@@8
+0x0000A630		?spawnPresenterThread@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAA_NXZ
+0x0000C160		?Present1@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJIIPEBUDXGI_PRESENT_PARAMETERS@@@Z
+0x0000C3F0		?CheckColorSpaceSupport@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJW4DXGI_COLOR_SPACE_TYPE@@PEAI@Z
+0x0000C380		?GetMatrixTransform@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAUDXGI_MATRIX_3X2_F@@@Z
+0x00008C40		?getInterpolationEnabledSwapChainDescription@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAA?AUDXGI_SWAP_CHAIN_DESC1@@PEBU2@@Z
+0x0000A0C0		?verifyBackbufferDuplicateResources@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAA_NXZ
+0x0000B900		?AddRef@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAKXZ
+0x0000C320		?GetMaximumFrameLatency@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAI@Z
+0x000076A0		??_G?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAPEAXI@Z
+0x000EFE20		?Configure@ffxProvider_MLFrameGeneration@@UEBAIPEAPEAXPEBUffxApiHeader@@@Z
+0x0246A858		??_R4ffxProvider_Fsr3FrameGeneration@@6B@
+0x0246A8C0		??_R3ffxProvider_Fsr3FrameGeneration@@8
+0x0246A640		??_R2ffxProvider_Fsr3FrameGenerationSwapChain@@8
+0x024657B0		??_7ffxProvider_Fsr3FrameGenerationSwapChain@@6B@
+0x0000B810		?QueryInterface@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJAEBU_GUID@@PEAPEAX@Z
+0x00008C20		?getInterpolationEnabledSwapChainFlags@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAAII@Z
+0x00006A90		??_GffxProvider_Fsr3FrameGeneration@@UEAAPEAXI@Z
+0x0246A508		??_R1A@?0A@EA@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@8
+0x0000AED0		??0?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@QEAA@XZ
+0x00006A90		??_GffxProvider_MLFrameGeneration@@UEAAPEAXI@Z
+0x0246A628		??_R3ffxProvider_Fsr3FrameGenerationSwapChain@@8
+0x0000C0F0		?GetHwnd@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@UEAAJPEAPEAUHWND__@@@Z
+0x0000A5C0		?killPresenterThread@?$TFrameInterpolationSwapChainDX12@VIFrameInterpolationSwapChainDX12@@UFrameinterpolationPresentInfoExt@@UFfxFrameGenerationConfig@@UffxCallbackDescFrameGenerationPresent@@$0BA@@@MEAA_NXZ
+0x000ECA90		?IsSupported@ffxProvider_MLFrameGeneration@@UEBA_NPEAX@Z
+0x00012140		?CanProvide@ffxProvider_Fsr3FrameGenerationSwapChain@@UEBA_N_K@Z
+0x00006A70		?CanProvide@ffxProvider@@UEBA_N_K@Z
+0x00006AC0	488	ffxProviderExternal::ffxProviderExternal
+0x00006A90	33	ffxProvider::`scalar deleting destructor'
+0x00006D40	74	ffxProviderExternal::`scalar deleting destructor'
+0x00006A70	14	ffxProvider::CanProvide
+0x00006D10	16	ffxProviderExternal::Configure
+0x00006CB0	61	ffxProviderExternal::CreateContext
+0x00006CF0	20	ffxProviderExternal::DestroyContext
+0x00006D30	16	ffxProviderExternal::Dispatch
+0x00007290	45	GetProvider
+0x00006D90	361	GetProvider
+0x00007240	71	GetProviderVersions
+0x00006F00	821	GetProviderVersions
+0x00006A80	3	ffxProvider::IsSupported
+0x00006D20	16	ffxProviderExternal::Query
+0x00010A30	1902	compositeSwapChainFrame<TFrameInterpolationPresentInfo<8,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> >,FfxPresentCallbackDescriptionSDK1>
+0x00011910	1809	compositeSwapChainFrame<TFrameInterpolationPresentInfo<32,FfxApiResource,TFrameInterpolationPacingData<FfxApiResource,TFrameInterpolationFrameInfo<FfxApiResource> > >,TFrameInterpolationPacingData<FfxApiResource,TFrameInterpolationFrameInfo<FfxApiResource> >,FfxPresentCallbackDescriptionSDK2>
+0x000111A0	1901	compositeSwapChainFrame<TFrameInterpolationPresentInfo<32,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> >,FfxPresentCallbackDescriptionSDK1>
+0x0000E4C0	1870	compositeSwapChainFrame<FrameinterpolationPresentInfoExt,FrameInterpolationPacingDataExt,ffxCallbackDescFrameGenerationPresent>
+0x00007FE0	5	ffxFrameInterpolationUiCompositionWrapper<ffxCallbackDescFrameGenerationPresent>
+0x0000FEE0	986	presenterThread<TFrameInterpolationPresentInfo<8,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> >,FfxPresentCallbackDescriptionSDK1>
+0x000106A0	911	presenterThread<TFrameInterpolationPresentInfo<32,FfxApiResource,TFrameInterpolationPacingData<FfxApiResource,TFrameInterpolationFrameInfo<FfxApiResource> > >,TFrameInterpolationPacingData<FfxApiResource,TFrameInterpolationFrameInfo<FfxApiResource> >,FfxPresentCallbackDescriptionSDK2>
+0x000102C0	986	presenterThread<TFrameInterpolationPresentInfo<32,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> >,FfxPresentCallbackDescriptionSDK1>
+0x0000CBD0	911	presenterThread<FrameinterpolationPresentInfoExt,FrameInterpolationPacingDataExt,ffxCallbackDescFrameGenerationPresent>
+0x0000AED0	1143	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>
+0x00105830	12	`TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>'::`1'::dtor$0
+0x000076A0	81	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::`scalar deleting destructor'
+0x0000B900	14	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::AddRef
+0x0000C3F0	55	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::CheckColorSpaceSupport
+0x0000C200	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetBackgroundColor
+0x0000BD10	213	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetBuffer
+0x0000BFC0	53	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetContainingOutput
+0x0000C120	57	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetCoreWindow
+0x0000C3B0	57	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetCurrentBackBufferIndex
+0x0000C060	83	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetDesc1
+0x0000BE70	80	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetDesc
+0x0000BA70	54	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetDevice
+0x0000C340	8	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetFrameLatencyWaitableObject
+0x0000C000	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetFrameStatistics
+0x0000C0C0	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetFullscreenDesc
+0x0000BE30	54	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetFullscreenState
+0x0000AEB0	22	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetGpuMemoryUsage
+0x0000C0F0	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetHwnd
+0x0000C030	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetLastPresentCount
+0x0000C380	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetMatrixTransform
+0x0000C320	27	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetMaximumFrameLatency
+0x0000BA30	54	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetParent
+0x0000B9E0	70	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetPrivateData
+0x0000C1A0	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetRestrictToOutput
+0x0000C260	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetRotation
+0x0000C2D0	57	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetSourceSize
+0x0000C170	33	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::IsTemporaryMonoSupported
+0x0000C160	7	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::Present1
+0x0000BAB0	594	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::Present
+0x0000B810	227	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::QueryInterface
+0x0000B910	59	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::Release
+0x0000C490	3	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::ResizeBuffers1
+0x0000BEC0	196	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::ResizeBuffers
+0x0000BF90	39	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::ResizeTarget
+0x0000C1D0	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetBackgroundColor
+0x0000C430	93	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetColorSpace1
+0x0000BDF0	52	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetFullscreenState
+0x0000C4A0	134	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetHDRMetaData
+0x0000C350	42	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetMatrixTransform
+0x0000C310	9	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetMaximumFrameLatency
+0x0000B950	70	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetPrivateData
+0x0000B9A0	54	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetPrivateDataInterface
+0x0000C230	40	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetRotation
+0x0000C290	55	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::SetSourceSize
+0x00009EA0	532	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::copyUiResource
+0x0000A360	595	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::destroyReplacementResources
+0x0000EC10	312	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<8,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,FfxFrameGenerationConfigSDK1,FfxPresentCallbackDescriptionSDK1,6>::discardOutstandingInterpolationCommandLists
+0x0000A6C0	103	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::discardOutstandingInterpolationCommandLists
+0x000094A0	1074	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::dispatchInterpolationCommands
+0x0000D430	477	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<8,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,FfxFrameGenerationConfigSDK1,FfxPresentCallbackDescriptionSDK1,6>::getInterpolationCommandList
+0x0000E2E0	476	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<32,FfxApiResource,TFrameInterpolationPacingData<FfxApiResource,TFrameInterpolationFrameInfo<FfxApiResource> > >,FfxFrameGenerationConfigSDK2,FfxPresentCallbackDescriptionSDK2,16>::getInterpolationCommandList
+0x0000DAD0	476	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<32,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,FfxFrameGenerationConfigSDK1,FfxPresentCallbackDescriptionSDK1,16>::getInterpolationCommandList
+0x0000ABE0	476	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::getInterpolationCommandList
+0x00008C40	72	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::getInterpolationEnabledSwapChainDescription
+0x00008C20	25	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::getInterpolationEnabledSwapChainFlags
+0x0000B350	1212	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::init
+0x0000AB60	124	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::interpolationOutput
+0x0000A5C0	101	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::killPresenterThread
+0x000098E0	885	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::presentInterpolated
+0x00008C90	734	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::presentPassthrough
+0x00008F70	1314	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::presentWithUiComposition
+0x0000A730	5	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::real
+0x0000ADC0	129	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::registerUiResource
+0x0000CFC0	1015	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<8,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,FfxFrameGenerationConfigSDK1,FfxPresentCallbackDescriptionSDK1,6>::setFrameGenerationConfig
+0x0000DCB0	1466	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<32,FfxApiResource,TFrameInterpolationPacingData<FfxApiResource,TFrameInterpolationFrameInfo<FfxApiResource> > >,FfxFrameGenerationConfigSDK2,FfxPresentCallbackDescriptionSDK2,16>::setFrameGenerationConfig
+0x0000D610	1094	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<32,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,FfxFrameGenerationConfigSDK1,FfxPresentCallbackDescriptionSDK1,16>::setFrameGenerationConfig
+0x0000A740	932	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::setFrameGenerationConfig
+0x0000AE60	69	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::setFramePacingTuning
+0x0000AE50	8	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::setWaitCallback
+0x00008950	716	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::shutdown
+0x0000A630	134	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::spawnPresenterThread
+0x0000A0C0	669	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::verifyBackbufferDuplicateResources
+0x00009C60	573	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::verifyUiDuplicateResource
+0x0000D3C0	110	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<8,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,FfxFrameGenerationConfigSDK1,FfxPresentCallbackDescriptionSDK1,6>::waitForPresents
+0x0000E270	110	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<32,FfxApiResource,TFrameInterpolationPacingData<FfxApiResource,TFrameInterpolationFrameInfo<FfxApiResource> > >,FfxFrameGenerationConfigSDK2,FfxPresentCallbackDescriptionSDK2,16>::waitForPresents
+0x0000DA60	110	TFrameInterpolationSwapChainDX12<FrameInterpolationSwapChainDX12,TFrameInterpolationPresentInfo<32,FfxResourceSDK1,TFrameInterpolationPacingData<FfxResourceSDK1,TFrameInterpolationFrameInfo<FfxResourceSDK1> > >,FfxFrameGenerationConfigSDK1,FfxPresentCallbackDescriptionSDK1,16>::waitForPresents
+0x0000AAF0	110	TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::waitForPresents
+0x00007A10	921	ffxFrameInterpolationSwapchainGetGpuMemoryUsageDX12V2
+0x00006A90	33	ffxProvider_Fsr3FrameGenerationSwapChain::`scalar deleting destructor'
+0x00105A50	3	`ffxProvider_Fsr3FrameGenerationSwapChain::GetInstance'::`2'::`dynamic atexit destructor for 'instance''
+0x00012140	32	ffxProvider_Fsr3FrameGenerationSwapChain::CanProvide
+0x00012680	632	ffxProvider_Fsr3FrameGenerationSwapChain::Configure
+0x00012290	892	ffxProvider_Fsr3FrameGenerationSwapChain::CreateContext
+0x00012610	107	ffxProvider_Fsr3FrameGenerationSwapChain::DestroyContext
+0x00012DD0	416	ffxProvider_Fsr3FrameGenerationSwapChain::Dispatch
+0x00012900	1219	ffxProvider_Fsr3FrameGenerationSwapChain::Query
+0x000F02E0	466	`ffxProvider_MLFrameGeneration::Configure'::`22'::<lambda_1>::<lambda_invoker_cdecl>
+0x000F04C0	451	`ffxProvider_MLFrameGeneration::Configure'::`26'::<lambda_2>::<lambda_invoker_cdecl>
+0x000F0690	70	`ffxProvider_MLFrameGeneration::Configure'::`28'::<lambda_3>::<lambda_invoker_cdecl>
+0x000F06E0	331	`ffxProvider_MLFrameGeneration::Configure'::`34'::<lambda_4>::<lambda_invoker_cdecl>
+0x000F0830	319	`ffxProvider_MLFrameGeneration::Configure'::`38'::<lambda_5>::<lambda_invoker_cdecl>
+0x000F0970	70	`ffxProvider_MLFrameGeneration::Configure'::`40'::<lambda_6>::<lambda_invoker_cdecl>
+0x00006A90	33	ffxProvider_MLFrameGeneration::`scalar deleting destructor'
+0x00105A60	3	`ffxProvider_MLFrameGeneration::GetInstance'::`2'::`dynamic atexit destructor for 'instance''
+0x000EFE20	1207	ffxProvider_MLFrameGeneration::Configure
+0x000EF4B0	2082	ffxProvider_MLFrameGeneration::CreateContext
+0x000EFCE0	317	ffxProvider_MLFrameGeneration::DestroyContext
+0x000F0BD0	5021	ffxProvider_MLFrameGeneration::Dispatch
+0x000ECA90	210	ffxProvider_MLFrameGeneration::IsSupported
+0x000F09C0	527	ffxProvider_MLFrameGeneration::Query
+0x000F3380	466	`ffxProvider_Fsr3FrameGeneration::Configure'::`22'::<lambda_1>::<lambda_invoker_cdecl>
+0x000F3560	451	`ffxProvider_Fsr3FrameGeneration::Configure'::`26'::<lambda_2>::<lambda_invoker_cdecl>
+0x000F3730	70	`ffxProvider_Fsr3FrameGeneration::Configure'::`28'::<lambda_3>::<lambda_invoker_cdecl>
+0x000F3780	331	`ffxProvider_Fsr3FrameGeneration::Configure'::`34'::<lambda_4>::<lambda_invoker_cdecl>
+0x000F38D0	319	`ffxProvider_Fsr3FrameGeneration::Configure'::`38'::<lambda_5>::<lambda_invoker_cdecl>
+0x000F3A10	70	`ffxProvider_Fsr3FrameGeneration::Configure'::`40'::<lambda_6>::<lambda_invoker_cdecl>
+0x00006A90	33	ffxProvider_Fsr3FrameGeneration::`scalar deleting destructor'
+0x00105A70	3	`ffxProvider_Fsr3FrameGeneration::GetInstance'::`2'::`dynamic atexit destructor for 'instance''
+0x000F25A0	17	ffxProvider_Fsr3FrameGeneration::CanProvide
+0x000F2F50	1058	ffxProvider_Fsr3FrameGeneration::Configure
+0x000F25C0	1856	ffxProvider_Fsr3FrameGeneration::CreateContext
+0x000F2D00	588	ffxProvider_Fsr3FrameGeneration::DestroyContext
+0x000F4050	2758	ffxProvider_Fsr3FrameGeneration::Dispatch
+0x000F3A60	1505	ffxProvider_Fsr3FrameGeneration::Query
+0x000F5600	1896	ffxFrameInterpolationUiComposition
+0x000F6210	1186	ffxFrameInterpolationDebugPacing
+0x000FA090	230	`ffxFrameInterpolationDispatch'::`42'::<lambda_1>::operator()
+0x000F8EC0	4554	ffxFrameInterpolationDispatch
+0x000F8C40	640	ffxFrameInterpolationPrepare
+0x000FF1F0	1049	FrameInterpolationGetOpticalFlowVectorFieldPermutationBlobByIndex
+0x00102D70	1040	opticalflowGetComputeOpticalFlowAdvancedPassV5PermutationBlobByIndex
+0x00103180	1040	opticalflowGetFilterOpticalFlowPassV5PermutationBlobByIndex
+0x00103590	1040	opticalflowGetScaleOpticalFlowAdvancedPassV5PermutationBlobByIndex

@@ -7,7 +7,7 @@ import sys
 import pefile
 
 root = pathlib.Path(__file__).resolve().parents[1]
-review = root / 'evidence-review-v2'
+review = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else root / 'evidence-review-v2'
 sys.path.insert(0, str(review / 'scripts'))
 # These uploaded readers were inspected before this local import. They only parse bytes.
 from pdb_index import PDB
@@ -62,7 +62,7 @@ result = {
     'original_struct_layouts_reparsed': len(plain), 'original_fields_reparsed': sum(len(x['fields']) for x in plain),
     'unknown_leaf_rejected': rejected,
     'gnu_objdump_verifier_rerun': False,
-    'note': 'Capstone checked all 142 instruction byte records in independent-verification.json; objdump is unavailable locally.',
+    'note': f"Capstone checked all {load('independent-verification.json')['landmarks_hashed_and_decoded']} instruction byte records in independent-verification.json; objdump is unavailable locally.",
 }
 (review / 'local-layout-verification.json').write_text(json.dumps(result, indent=2))
 print(json.dumps(result, indent=2))

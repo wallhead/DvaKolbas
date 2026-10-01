@@ -11,7 +11,8 @@ import pefile
 root = pathlib.Path(__file__).resolve().parents[1]
 archive = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(r'C:\Users\user\Downloads\AIO18_FSR_RE_Evidence.zip')
 extracted = root / 'aio-build18'
-output = root / ('evidence-review-v2' if archive.stem.endswith('_v2') else 'evidence-review')
+revision_suffix = '-v3' if archive.stem.endswith('_v3') else '-v2' if archive.stem.endswith('_v2') else ''
+output = root / ('evidence-review' + revision_suffix)
 output.mkdir(exist_ok=True)
 
 def digest(data):
@@ -45,8 +46,10 @@ for record in manifest['files']:
 modules = {}
 decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
 landmarks = json.loads((output / 'evidence/landmarks.json').read_text())
-if (output / 'evidence/v2/landmarks_v2.json').exists():
-    landmarks.extend(json.loads((output / 'evidence/v2/landmarks_v2.json').read_text()))
+for revision in (2, 3):
+    additional = output / f'evidence/v{revision}/landmarks_v{revision}.json'
+    if additional.exists():
+        landmarks.extend(json.loads(additional.read_text()))
 decoded = []
 for record in landmarks:
     name = record['module']

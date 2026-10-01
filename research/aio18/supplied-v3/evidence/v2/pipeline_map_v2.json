@@ -1,0 +1,82 @@
+{
+  "revision": 2,
+  "scope": "Static observations only, exact AIO18 archive hashes inherited from manifest.json",
+  "host_preui": {
+    "relocation_id_pair": [
+      79947,
+      82084
+    ],
+    "displacements": [
+      367,
+      378
+    ],
+    "runtime_selection": "byte[version_helper()+0x118] == 1 selects 0x17A; otherwise 0x16F; no SkyrimSE.exe RVAs resolved",
+    "handler_rva": 1700896,
+    "original_call_global_rva": 4707248,
+    "sr_call_rva": 1702420,
+    "pre_reshade_call_rva": 1702143,
+    "post_reshade_call_rva": 1702608,
+    "separate_ui_image_host_offset": 2528,
+    "om_redirect_handler_rva": 2792240,
+    "ui_phase_global_rva": 15208594
+  },
+  "host_fg": {
+    "active_type_offset": 988,
+    "configured_type_offset": 992,
+    "fsr_value": 1,
+    "dlss_value": 2,
+    "early_call_rva": 2798409,
+    "early_gate_offsets_clear": [
+      1252,
+      1189
+    ],
+    "late_type_condition": "active type==2 OR FrameWarp-active host+0x4A5 nonzero, with additional surrounding branch gates",
+    "late_immediate_call_rva": 2800898,
+    "pending_global_rva": 15208351,
+    "registered_event_id": 75,
+    "registered_callback_rva": 2641200,
+    "registered_callback_fg_call_rva": 2641314,
+    "after_present_clear_rva": 2801925
+  },
+  "amd": {
+    "ui_copy_rva": 40608,
+    "ui_copy_call_from_present_rva": 48034,
+    "swapchain_class_size": 6848,
+    "nested_present_info_offset": 8,
+    "ring_capacity": 16,
+    "active_ring_count_offset": 6216,
+    "interpolation_outputs_count": 2,
+    "internal_ui_replacement_resource_count": 1,
+    "fence_fields_root": {
+      "gameFence": 5856,
+      "interpolationFence": 5864,
+      "presentFence": 5872,
+      "replacementBufferFence": 5880,
+      "compositionFenceCPU": 5888,
+      "compositionFenceGPU": 5896
+    },
+    "resize_rva": 48832,
+    "destroy_resources_rva": 41824,
+    "drain_rva": 43760
+  },
+  "negative_attribution_control": {
+    "pd_generic_fgfence_publisher_rva": 490848,
+    "direct_callers_found_in_disassembly": [
+      [
+        "0x7f579",
+        "0x7ee20",
+        "0007F579: call      0x180077d60"
+      ]
+    ],
+    "caller_contains": "slDLSSGGetState",
+    "conclusion": "Do not cite this as proof of FSR-specific retirement without another proven caller or runtime trace."
+  },
+  "explicitly_unresolved": [
+    "SkyrimSE.exe hook RVAs",
+    "Complete Scaleform flush and late mod UI chain",
+    "Every ENB/Community Shaders branch",
+    "SR/FG output resource sizes in a live process",
+    "Indirect/runtime provider and fence ownership",
+    "GPU execution and resize failure recovery"
+  ]
+}

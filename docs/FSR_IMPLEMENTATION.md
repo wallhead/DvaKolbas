@@ -33,6 +33,8 @@ The user's subsequent AIO archive was inspected offline with Ghidra and Capstone
 
 The supplied evidence v2 was compared against the same local binaries. Hashes, 142 instruction records, 40 new code spans, 22 AMD vtable slots, and PDB layouts passed the documented static checks. Its additional host/UI/retirement mapping and camera/order concerns are incorporated into the evidence record and plan; no runtime acceptance or product implementation is implied.
 
+Evidence v3 is now indexed in the [plain RE database](RE_DATABASE.md): 325 cumulative instruction records, 49 new spans/6,107 excerpt boundaries, 11 constants, 34 PD vtable entries, and 16 pure-Python reference-model tests passed locally. Its corrected supplied SR map, UI reference imbalance, jitter/depth producers, and reset acknowledgment findings remain static evidence; no FSR implementation or game deployment has occurred.
+
 Introduce a neutral upscaler input/result contract, optional typed AMD runtime loader, FSR context/dispatch adapter, ordinary presentation policy, and narrowly shared interop services. Keep the existing NVIDIA feature/presenter implementation and companion ABI intact. FSR-only startup must neither require nor attempt unused NVIDIA services.
 
 The producer signal/submission -> D3D12 wait/dispatch/signal -> D3D11 output wait sequence and recorded slot retirement are mandatory. The later FG stage adds completed UI and asynchronous presentation readers to retirement rather than replacing those obligations.
