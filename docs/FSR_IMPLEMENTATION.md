@@ -45,7 +45,7 @@ The producer signal/submission -> D3D12 wait/dispatch/signal -> D3D11 output wai
 
 ## Evidence gaps and acceptance state
 
-* FSR runtime archive/per-DLL hashes, signing, exact package layout, and licenses: not verified locally yet.
+* FSR runtime archive/per-DLL hashes, signing, exact package layout, and licenses: verified in increment 2 below.
 * FSR mode numeric audit: reachable baseline `UpscaleType.h` history preserves DLSS 0/DLAA 3 from publication `8164c1a`; a reachable source/package history search found no FSR/upscaler selector assigned 4. The spec selects FSR 4 and leaves legacy 1/2 rejected. Unpublished/disconnected history is outside this evidence.
 * Skyrim motion/jitter and ENB/non-ENB encoding at the FSR handoff: require controlled captures/measurements; NVIDIA adapter comments are not proof.
 * FSR dispatch, native output consumption, NVIDIA-free clean-process startup, GPU fixture, packaging, and gameplay: not implemented/tested.
@@ -78,3 +78,11 @@ Loader fixtures exercise missing runtime, relative paths, wrong architecture, ea
 Verification command: `C:/Python314/python.exe out/research/run_task2_tests.py`. FSR-enabled Standard Release: 104/104 runnable CTest cases passed. FSR-disabled Standard and Universal Release: 103/103 each passed, configured with deliberately nonexistent `C:/deliberately-missing-fidelityfx-sdk`. All three builds completed; three Graphics Tools-dependent checks remain SKIPPED in each. Acquisition integrity and the official provider/context probe also passed. Import inspection found no static FidelityFX imports in the Standard DLL or standalone probe. This does not satisfy the later clean-process FSR product startup gate.
 
 Reproducible provider-only probe: configure `cmake -S tools/fsr -B out/build/fsr-provider-probe -A x64 -DTRP_FSR_SDK_DIR=<verified SDK root>`, build Release, then run `TRPFsrProviderProbe.exe <absolute plugin root>` where `<plugin root>/FSR/` contains the two verified SR DLLs. The supplied tool uses the actual D3D11 adapter for D3D12 and checks the matching LUID. For acquisition/check scripts, the tested shell is PowerShell 7 (`pwsh`). SDK binaries and generated receipts are not checked into Git.
+
+## Executed increment 3: shared GPU transfer and retirement
+
+Extracted the existing same-adapter texture/fence/three-slot mechanics into `Graphics::D3D11D3D12Interop`. The NVIDIA wrapper keeps its completion-fence bridge. Ordinary SR now requires a submitted D3D11 producer before dispatch and explicitly retires final D3D11 output readers before destruction. Shared texture owners must retain their own allocations after a failed retirement; the common core retains its potentially live command objects.
+
+Hardware tests first reproduced dispatch without a producer and premature Drain during a gated final reader. Both now pass. Additional real GPU checks cover exact changing pixel copies, foreign adapters/devices, illegal descriptors, three outstanding submissions, blocked fourth-slot reuse, progress after delay, and delayed output readers preserving earlier pixels. Controlled fence/allocator fixtures verify the device-removal sentinel and safe abandonment without fake completion. They do not physically remove a GPU. Existing `SourceDLSSGInteropFence` remains passing.
+
+All three Release builds completed. Runnable CTest results: FSR-enabled Standard 106/106; FSR-disabled Standard and Universal 105/105 each. The three previously excluded Graphics Tools checks remain SKIPPED. The new interop probes independently reported both D3D11 and D3D12 debug layers unavailable. No FSR dispatch, product startup, gameplay, or cross-vendor acceptance is claimed by these transfer checks.

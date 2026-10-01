@@ -5,6 +5,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/../../cmake/NeuralShaders.cmake")
 add_executable(TRPNeuralPeripheralTests PeripheralTests.cpp FeatureDouble.cpp
     ../../src/FrameGen/SourceDLSSGNeuralRendering.cpp
     ../../src/FrameGen/SourceDLSSGNeuralResolve.cpp
+    ../../src/Graphics/D3D11D3D12Interop.cpp
     ../../src/FrameGen/SourceDLSSGInterop.cpp)
 target_compile_features(TRPNeuralPeripheralTests PRIVATE cxx_std_23)
 target_compile_definitions(TRPNeuralPeripheralTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
@@ -34,7 +35,8 @@ if(TRP_NR_VENDOR_BENCHMARK)
     add_executable(TRPNeuralPeripheralBenchmark VendorBenchmark.cpp
         ../../src/FrameGen/SourceDLSSGNeuralRendering.cpp
         ../../src/FrameGen/SourceDLSSGNeuralResolve.cpp
-        ../../src/FrameGen/SourceDLSSGInterop.cpp
+        ../../src/Graphics/D3D11D3D12Interop.cpp
+    ../../src/FrameGen/SourceDLSSGInterop.cpp
         ../../src/FrameGen/NeuralRenderingFeatureSession.cpp
         ../../src/FrameGen/NeuralRenderingModulePathHook.cpp
         ../../src/FrameGen/NeuralRenderingRuntimeIdentity.cpp)
@@ -48,7 +50,8 @@ if(TRP_NR_VENDOR_BENCHMARK)
     add_executable(TRPNeuralHDRRangeProbe HDRRangeProbe.cpp
         ../../src/FrameGen/SourceDLSSGNeuralRendering.cpp
         ../../src/FrameGen/SourceDLSSGNeuralResolve.cpp
-        ../../src/FrameGen/SourceDLSSGInterop.cpp
+        ../../src/Graphics/D3D11D3D12Interop.cpp
+    ../../src/FrameGen/SourceDLSSGInterop.cpp
         ../../src/FrameGen/NeuralRenderingFeatureSession.cpp
         ../../src/FrameGen/NeuralRenderingModulePathHook.cpp
         ../../src/FrameGen/NeuralRenderingRuntimeIdentity.cpp)

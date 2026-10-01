@@ -123,6 +123,7 @@ set(ARP_BASELINE_SOURCES
     src/FrameGen/HDROutput.h
     src/FrameGen/SourceDLSSGHDROutput.cpp
     src/FrameGen/SourceDLSSGHDROutput.h
+    src/Graphics/D3D11D3D12Interop.cpp
     src/FrameGen/SourceDLSSGInterop.cpp
     src/FrameGen/SourceDLSSGInterop.h
     src/FrameGen/SourceDLSSGMFG.h
