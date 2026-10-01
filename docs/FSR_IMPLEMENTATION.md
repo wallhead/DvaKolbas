@@ -29,6 +29,8 @@ References below were inspected at the starting revision. Line numbers describe 
 
 ## Proposed changes, not implemented
 
+The user's subsequent AIO archive was inspected offline with Ghidra and Capstone. [The RE evidence record](FSR_AIO_RE_NOTES.md) identifies separate SR/FG classes, a D3D11-to-D3D12 bridge/presenter, PrepareV2/matching source IDs, millisecond timing, and UI buffering. Those findings support the plan but are not FSR implementation or gameplay acceptance. The archive's binaries were not executed or deployed.
+
 Introduce a neutral upscaler input/result contract, optional typed AMD runtime loader, FSR context/dispatch adapter, ordinary presentation policy, and narrowly shared interop services. Keep the existing NVIDIA feature/presenter implementation and companion ABI intact. FSR-only startup must neither require nor attempt unused NVIDIA services.
 
 The producer signal/submission -> D3D12 wait/dispatch/signal -> D3D11 output wait sequence and recorded slot retirement are mandatory. The later FG stage adds completed UI and asynchronous presentation readers to retirement rather than replacing those obligations.
