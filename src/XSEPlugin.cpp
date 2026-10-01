@@ -72,9 +72,12 @@ namespace
 			if (hooksInstalled) { return; }
 			TheosRenderPipeline::CommunityShaders::SelectRenderer();
 			TheosRenderPipeline::ValidateGameHooks(TheosRenderPipeline::CommunityShaders::Active());
+			RenderPipeline::GetSingleton()->LoadINI();
 			if (!TheosRenderPipeline::CommunityShaders::Active()) {
+				if (RenderPipeline::GetSingleton()->mUpscaleType != FSR) {
 				const auto runtime = GetPluginDirectory() / L"TheosRenderPipeline" / L"nvngx_dlss.dll";
 				logger::info("nvngx_dlss.dll preload from \"{}\": {}", runtime.string(), ::LoadLibraryW(runtime.c_str()) ? "ok" : "failed");
+				}
 				DRS::InstallHooks();
 			}
 			InstallUpscalerHooks();

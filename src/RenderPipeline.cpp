@@ -20,7 +20,7 @@
 void RenderPipeline::SetFrameGenerationTransitionBlocked(bool a_blocked)
 {
 	mFrameGenerationTransitionBlocked.store(a_blocked, std::memory_order_release);
-	TheosRenderPipeline::SourceDLSSG::Backend::Get().SetTransitionBlocked(a_blocked);
+	if (mUpscaleType != 4) { TheosRenderPipeline::SourceDLSSG::Backend::Get().SetTransitionBlocked(a_blocked); }
 }
 
 void RenderPipeline::LoadINI()
@@ -65,7 +65,9 @@ void RenderPipeline::LoadINI()
 
 	// A reload after the feature exists (e.g. kDataLoaded) must not stomp the
 	// computed optimal bias with the INI's stored value.
-	if (mUseOptimalMipLodBias && DLSSBackend::GetSingleton()->HasFeature()) {
+	if (mUseOptimalMipLodBias && mUpscaleType == 4 && NvidiaHost::GetSingleton()->UpscalerReady()) {
+		mMipLodBias = NvidiaHost::GetSingleton()->OptimalMipmapBias();
+	} else if (mUseOptimalMipLodBias && mUpscaleType != 4 && DLSSBackend::GetSingleton()->HasFeature()) {
 		mMipLodBias = DLSSBackend::GetSingleton()->GetOptimalMipLodBias();
 	}
 
@@ -181,7 +183,7 @@ void RenderPipeline::SetupSwapChain(IDXGISwapChain* a_swapChain)
 	mSwapChain = a_swapChain;
 	mSwapChain->GetDevice(IID_PPV_ARGS(&mDevice));
 	mDevice->GetImmediateContext(&mContext);
-	DLSSBackend::GetSingleton()->SetupDevice(mDevice, mContext);
+	if (mUpscaleType != 4) { DLSSBackend::GetSingleton()->SetupDevice(mDevice, mContext); }
 }
 
 bool RenderPipeline::IsEnabled()

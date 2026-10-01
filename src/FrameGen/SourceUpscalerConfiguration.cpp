@@ -27,6 +27,7 @@ void NvidiaHost::RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Cr
 
 void NvidiaHost::ApplySourceUpscalerSettingsAfterPresent()
 {
+    if (FsrActive()) { return; } // Fixed FSR allocations are changed only after restart.
     if (FAILED(FailureResult()) || !sourceUpscalerSettings_.NeedsLiveChange() || nativeUIPass_.Active() || nativeUIPass_.HasEarlyEvaluation()) { return; }
     auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
     auto* dlss = DLSSBackend::GetSingleton();

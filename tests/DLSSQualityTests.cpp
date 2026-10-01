@@ -13,6 +13,8 @@ static void Require(bool value, const char* reason)
 int main()
 {
     using namespace TheosRenderPipeline;
+    Upscaler::Configuration fsr;fsr.Initialize({4,2,11,true,true});
+    Require(fsr.Startup().mode==4 && fsr.Effective().mode==4,"FSR selector survives shared startup settings without silently becoming DLSS");
     constexpr int outputs[][2]{{5120,1440}, {1920,1080}, {2560,1440}, {3840,2160}, {1919,1079}};
     constexpr int expected[][2]{{2560,720}, {2970,835}, {3413,960}, {1707,480}, {3982,1120}, {5120,1440}};
     constexpr NVSDK_NGX_PerfQuality_Value modes[]{

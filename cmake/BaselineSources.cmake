@@ -62,6 +62,7 @@ set(ARP_BASELINE_SOURCES
     src/FrameGen/InventoryPreviewDraw.h
     src/FrameGen/InventoryPreviewDraw.cpp
     src/FrameGen/NvidiaHost.h
+    src/FrameGen/OrdinaryPresentation.cpp
     src/FrameGen/NvidiaHost.cpp
     src/FrameGen/NvidiaHostStartup.cpp
     src/FrameGen/NvidiaHostLifecycle.cpp

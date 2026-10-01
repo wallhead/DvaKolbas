@@ -20,7 +20,19 @@ struct NvidiaHost::LifecycleOperations
     void RequestHistoryReset() { host.resetNextEvaluation_ = true; }
     HRESULT Fail(HRESULT result, const char* operation) { return host.FailLifecycle(result, operation); }
     void DisableGeneration() { host.SetRuntimeEnabled(false); }
-    bool Retire() { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
+    bool Retire()
+    {
+        if (!host.FsrActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
+        const auto result = host.ordinaryPresentation_.Retire();
+        if (FAILED(result)) { host.FailLifecycle(result, "FSR presentation retirement"); return false; }
+#if defined(TRP_ENABLE_FSR)
+        if (host.fsrResources_) {
+            const auto retired = host.fsrResources_->Retire();
+            if (!retired) { host.status_ = retired.error().message; host.FailLifecycle(E_FAIL, "FSR resource retirement"); return false; }
+        }
+#endif
+        return true;
+    }
     void EndUI() { host.EndNativeUIPass(); }
     void ClearAndFlush()
     {
@@ -73,7 +85,8 @@ HRESULT NvidiaHost::BeforeResizeBuffers(IDXGISwapChain* a_swapChain)
         return S_OK;
     }
     LifecycleOperations operations{*this};
-    return TheosRenderPipeline::SourceHostLifecycle::BeforeResize(operations) ? S_OK : DXGI_ERROR_WAS_STILL_DRAWING;
+    if (!TheosRenderPipeline::SourceHostLifecycle::BeforeResize(operations)) { return DXGI_ERROR_WAS_STILL_DRAWING; }
+    return FsrActive() ? ordinaryPresentation_.BeforeResize() : S_OK;
 }
 
 HRESULT NvidiaHost::AfterResizeBuffers(IDXGISwapChain* a_swapChain, HRESULT a_result)
@@ -84,6 +97,7 @@ HRESULT NvidiaHost::AfterResizeBuffers(IDXGISwapChain* a_swapChain, HRESULT a_re
         return a_result;
     }
     LifecycleOperations operations{*this, a_swapChain};
+    if (FsrActive()) { a_result = ordinaryPresentation_.AfterResize(a_result); }
     return TheosRenderPipeline::SourceHostLifecycle::AfterResize(operations, a_result);
 }
 
@@ -99,6 +113,10 @@ void NvidiaHost::OnGameFacingSwapChainDestroyed(IDXGISwapChain* a_swapChain)
 
 void NvidiaHost::ResetSessionAfterRetirement()
 {
+#if defined(TRP_ENABLE_FSR)
+    fsrResources_.reset();
+#endif
+    ordinaryPresentation_.ResetAfterRetirement();
     outputWindow_ = nullptr;
     outputWidth_ = 0;
     outputHeight_ = 0;
@@ -120,6 +138,12 @@ void NvidiaHost::ResetSessionAfterRetirement()
 
 void NvidiaHost::ReleaseSourceUpscaler()
 {
+#if defined(TRP_ENABLE_FSR)
+    if (FsrActive() && fsrResources_) {
+        const auto retired = fsrResources_->Retire();
+        if (!retired) { status_ = retired.error().message; FailLifecycle(E_FAIL, "FSR feature release"); return; }
+    }
+#endif
     TheosRenderPipeline::ReShadeIntegration::Get().ResetAfterRetirement();
     communityFrame_.ResetAfterRetirement();
     EndNativeUIPass();
@@ -183,9 +207,11 @@ void NvidiaHost::OnPresentCompleted(HRESULT a_result)
 
     // Consume the session snapshot after Present; querying Streamline again
     // here would consume its output-count delta a second time.
-    const auto& state = TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().state;
-    UpdateRuntimeDLSSGState(static_cast<std::uint32_t>(state.status), state.numFramesActuallyPresented, state.minWidthOrHeight,
-                            state.numFramesToGenerateMax);
+    if (!FsrActive()) {
+        const auto& state = TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().state;
+        UpdateRuntimeDLSSGState(static_cast<std::uint32_t>(state.status), state.numFramesActuallyPresented, state.minWidthOrHeight,
+                                state.numFramesToGenerateMax);
+    }
 
     if (StartupConfigured() && SUCCEEDED(a_result) && !TheosRenderPipeline::CommunityShaders::Active())
     {
@@ -227,6 +253,12 @@ void NvidiaHost::ArmFrameGenerationWarmup()
 
 void NvidiaHost::SetRuntimeEnabled(bool a_enabled)
 {
+    if (FsrActive()) {
+        if (!frameGenerationStateKnown_ || frameGenerationEnabled_) { resetNextEvaluation_ = true; }
+        frameGenerationStateKnown_ = true;
+        frameGenerationEnabled_ = false;
+        return;
+    }
     if (frameGenerationStateKnown_ && frameGenerationEnabled_ == a_enabled)
     {
         return;

@@ -84,7 +84,7 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     // The stable render-sized buffer is allocated inside CreateSwapChain, so
     // load its quality/sharpening contract before that one-way size decision.
     RenderPipeline::GetSingleton()->LoadINI();
-    const auto result = nvidiaHost->CreateSwapChain(This, d3d11Device, pDesc, ppSwapChain);
+    const auto result = nvidiaHost->CreateSwapChain(This, d3d11Device, pDesc, ppSwapChain, ptrFactoryCreateSwapChain);
     if (SUCCEEDED(result))
     {
         d3d11Device->Release();

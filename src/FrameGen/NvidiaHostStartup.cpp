@@ -8,9 +8,13 @@
 #include "SourceDLSSGCamera.h"
 #include "SourceFrameGeneration.h"
 #include "NeuralRenderingMode.h"
+#include "RendererBackendPolicy.h"
+#include "PresentationPolicy.h"
+#include "PluginPaths.h"
 #include <PCH.h>
 
-HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_device, DXGI_SWAP_CHAIN_DESC* a_desc, IDXGISwapChain** a_swapChain)
+HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_device, DXGI_SWAP_CHAIN_DESC* a_desc, IDXGISwapChain** a_swapChain,
+    TheosRenderPipeline::OriginalCreateSwapChain original)
 {
     if (FAILED(FailureResult())) { return FailureResult(); }
     if (!a_factory || !a_device || !a_desc || !a_swapChain)
@@ -22,6 +26,19 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     sourceUpscalerSettings_.Initialize(
         {upscalerSettings->mUpscaleType, upscalerSettings->mQualityLevel, upscalerSettings->mDLSSPreset,
          upscalerSettings->mSharpening, upscalerSettings->mAutoExposure});
+    const auto& generation=SourceFrameGeneration::GetSingleton()->settings;
+    TheosRenderPipeline::Upscaling::BackendConfiguration requested;
+    requested.backend=upscalerSettings->mUpscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
+        upscalerSettings->mUpscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
+    requested.generationEnabled=generation.enabled;requested.generationBackend=FsrActive()?0:1;
+    requested.neuralRendering=generation.sourceDLSSG.neuralEnabled;requested.hdr=generation.sourceDLSSG.hdrOutput.enabled;
+#if defined(TRP_ENABLE_FSR)
+    backendDecision_=TheosRenderPipeline::ResolveBackend(requested,true);
+    if(FsrActive())fsrResources_=std::make_unique<TheosRenderPipeline::Upscaling::FsrHostResources>(TheosRenderPipeline::PluginPaths::Directory());
+#else
+    backendDecision_=TheosRenderPipeline::ResolveBackend(requested,false);
+#endif
+    if(!backendDecision_.valid){status_=backendDecision_.diagnostic;return E_INVALIDARG;}
     logger::info("[SourceUpscaler] startup size authority=QualityLevel mode={} "
                  "quality={}",
                  upscalerSettings->mUpscaleType, upscalerSettings->mQualityLevel);
@@ -42,6 +59,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     // first proxied Present while frame inputs are still unavailable.
     SetRuntimeEnabled(false);
 
+    auto createNvidia=[&]()->HRESULT {
     const auto& settings = SourceFrameGeneration::GetSingleton()->settings;
     auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
     backend.ConfigureReflex(static_cast<sl::ReflexMode>(settings.sourceDLSSG.reflexMode));
@@ -62,11 +80,15 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     options.combat = settings.sourceDLSSG.neuralCombat;
     backend.ConfigureNeuralRendering(std::move(options));
 
-    const auto result = TheosRenderPipeline::SourceDLSSG::Backend::Get().CreateSwapChain(
+    return TheosRenderPipeline::SourceDLSSG::Backend::Get().CreateSwapChain(
         a_factory, a_device, *a_desc, SourceFrameGeneration::GetSingleton()->settings.sourceDLSSGStreamlineDirectory, a_swapChain);
+    };
+    auto createOrdinary=[&](){return ordinaryPresentation_.CreateSwapChain(a_factory,a_device,*a_desc,a_swapChain,original);};
+    TheosRenderPipeline::PresentationCreation creation{createNvidia,createOrdinary};
+    const auto result=TheosRenderPipeline::CreatePresentation(backendDecision_,creation);
     if (FAILED(result) || !*a_swapChain)
     {
-        status_ = TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
+        status_ = FsrActive()?"Ordinary D3D11 swapchain creation failed":TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
         return FAILED(result) ? result : E_FAIL;
     }
     innerSwapChain_ = *a_swapChain;
@@ -109,7 +131,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     // disable against the completed proxy before its first game-facing Present.
     frameGenerationStateKnown_ = false;
     SetRuntimeEnabled(false);
-    status_ = "NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
+    status_ = FsrActive()?"Ordinary presenter active; FSR feature deferred until device creation returns":"NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
     logger::info("[NvidiaHost] source swapchain active format={}", static_cast<std::uint32_t>(a_desc->BufferDesc.Format));
     logger::info("[NvidiaHost] outer stable-buffer swapchain returned during "
                  "factory creation");
@@ -150,8 +172,18 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
         }
         return TheosRenderPipeline::SourceDLSSG::QueryRenderSize(width, height, quality, renderWidth, renderHeight);
     };
-    if (!sizeQuery(static_cast<int>(outputWidth_), static_cast<int>(outputHeight_), sourceUpscalerSettings_.Startup().AllocationQuality(),
-                   &queriedRenderWidth, &queriedRenderHeight) ||
+    bool sized{};
+#if defined(TRP_ENABLE_FSR)
+    if(FsrActive() && !TheosRenderPipeline::CommunityShaders::Active()) {
+        TheosRenderPipeline::Upscaling::BackendConfiguration config;
+        config.backend=TheosRenderPipeline::Upscaling::BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;
+        auto render=fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_});
+        if(!render){status_=render.error().message;logger::error("[FSR] {}",status_);return false;}
+        queriedRenderWidth=render->width;queriedRenderHeight=render->height;sized=true;
+    } else
+#endif
+    sized=sizeQuery(static_cast<int>(outputWidth_),static_cast<int>(outputHeight_),sourceUpscalerSettings_.Startup().AllocationQuality(),&queriedRenderWidth,&queriedRenderHeight);
+    if (!sized ||
         queriedRenderWidth <= 0 || queriedRenderHeight <= 0 || queriedRenderWidth > static_cast<int>(outputWidth_) ||
         queriedRenderHeight > static_cast<int>(outputHeight_))
     {
@@ -248,7 +280,7 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
                   "contract";
         return false;
     }
-    ArmFrameGenerationWarmup();
+    if(FsrActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
     TheosRenderPipeline::ReShadeIntegration::Get().Configure(device_.Get(), context_.Get(), {outputWidth_, outputHeight_});
     logger::info("[NvidiaHost] source upscaler initialized after D3D11 startup Present");
     return true;
@@ -259,7 +291,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
     if (TheosRenderPipeline::CommunityShaders::Active()) {
         upscalerReady_ = true;
         splitSourceDLSSActive_ = false;
-        status_ = "CS owns upscaling; NVIDIA frame adapter initialized";
+        status_ = FsrActive()?"CS owns upscaling; ordinary presenter ready":"CS owns upscaling; NVIDIA frame adapter initialized";
         return true;
     }
     if (!device_ || !context_ || renderWidth_ == 0 || renderHeight_ == 0)
@@ -293,6 +325,17 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
                      (handoff.BindFlags & D3D11_BIND_UNORDERED_ACCESS) ? "can be requested" : "unavailable on allocated target; using copy route");
     }
 
+#if defined(TRP_ENABLE_FSR)
+    if(FsrActive()) {
+        auto created=fsrResources_->CompleteStartup();
+        if(!created){status_=created.error().message;return false;}
+        upscalerReady_=true;splitSourceDLSSActive_=false;
+        sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
+        if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="FSR native UI resource creation failed";return false;}
+        status_="FSR context ready on ordinary D3D11 presenter; waiting for validated source frames";
+        return true;
+    }
+#endif
     auto* dlss = DLSSBackend::GetSingleton();
     dlss->SetupDevice(device_.Get(), context_.Get());
     const auto creation = sourceUpscalerSettings_.BeginSubmission();

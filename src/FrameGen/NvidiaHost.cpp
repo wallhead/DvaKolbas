@@ -114,6 +114,9 @@ float NvidiaHost::OptimalMipmapBias() const
     {
         return 0.0f;
     }
+    if (FsrActive()) {
+        return outputWidth_ ? std::log2(static_cast<float>(renderWidth_) / outputWidth_) - 1.0f : 0.0f;
+    }
     return DLSSBackend::GetSingleton()->GetOptimalMipLodBias();
 }
 
@@ -256,4 +259,7 @@ bool NvidiaHost::FinishNativeUIPassForPresent()
     return true;
 }
 
-bool NvidiaHost::PresentationBackendReadyForEvaluation() { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Ready(); }
+bool NvidiaHost::PresentationBackendReadyForEvaluation()
+{
+    return FsrActive() ? ordinaryPresentation_.Ready() : TheosRenderPipeline::SourceDLSSG::Backend::Get().Ready();
+}

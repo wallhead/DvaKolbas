@@ -140,6 +140,7 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC* a_desc)
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::ResizeBuffers(UINT a_bufferCount, UINT a_width, UINT a_height, DXGI_FORMAT a_format, UINT a_flags)
 {
+    if (host_ && host_->FsrActive() && a_bufferCount != 0) { a_bufferCount = 2; }
     const auto resize = [&] { return inner_->ResizeBuffers(a_bufferCount, a_width, a_height, a_format, a_flags); };
     return host_ ? TheosRenderPipeline::ResizeHostBuffers(*host_, inner_.Get(), resize) : resize();
 }

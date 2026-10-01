@@ -20,6 +20,12 @@
 #include "LoadingScreenState.h"
 #include "LoadingScreenUpscaler.h"
 #include "LoadingFadeIn.h"
+#include "OrdinaryPresentation.h"
+#include "UpscaleType.h"
+#include "Upscaling/UpscalerBackend.h"
+#if defined(TRP_ENABLE_FSR)
+#include "Upscaling/FSRHostResources.h"
+#endif
 #include "PresentationFade.h"
 #include "ReShadeIntegration.h"
 #include <atomic>
@@ -38,7 +44,8 @@ class NvidiaHost
         return &singleton;
     }
 
-    HRESULT CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_device, DXGI_SWAP_CHAIN_DESC* a_desc, IDXGISwapChain** a_swapChain);
+    HRESULT CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_device, DXGI_SWAP_CHAIN_DESC* a_desc, IDXGISwapChain** a_swapChain,
+        TheosRenderPipeline::OriginalCreateSwapChain original = nullptr);
     bool CompleteStartupAfterDeviceCreation();
     TheosRenderPipeline::CommunityShaderAdapter& CommunityFrame() { return communityFrame_; }
     bool PrepareCommunityFrameForPresent();
@@ -73,6 +80,7 @@ class NvidiaHost
     bool FrameGenerationEnabled() const { return frameGenerationEnabled_; }
     bool UpscalerReady() const { return upscalerReady_ && SUCCEEDED(FailureResult()); }
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
+    bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
     bool StartupConfigured() const { return sourceUpscalerSettings_.Initialized(); }
     const TheosRenderPipeline::Upscaler::Configuration& SourceUpscalerSettings() const { return sourceUpscalerSettings_; }
     void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request);
@@ -134,6 +142,11 @@ class NvidiaHost
     void SetRuntimeEnabled(bool a_enabled);
     void ApplySourceUpscalerSettingsAfterPresent();
     TheosRenderPipeline::Upscaler::Configuration sourceUpscalerSettings_;
+    TheosRenderPipeline::Upscaling::BackendDecision backendDecision_;
+    TheosRenderPipeline::OrdinaryPresentation ordinaryPresentation_;
+#if defined(TRP_ENABLE_FSR)
+    std::unique_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;
+#endif
     TheosRenderPipeline::SourceHostFailure lifecycleFailure_;
 
     Microsoft::WRL::ComPtr<ID3D11Device> device_;
