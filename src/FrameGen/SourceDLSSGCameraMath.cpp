@@ -1,4 +1,5 @@
 #include "SourceDLSSGCamera.h"
+#include "CameraMeasurements.h"
 #include "SourceDLSSGSession.h"
 
 namespace TheosRenderPipeline::SourceDLSSG
@@ -8,33 +9,13 @@ namespace TheosRenderPipeline::SourceDLSSG
 		std::uintptr_t cameraIdentity, std::uint32_t gameFrame, bool reset, sl::Constants& result)
 	{
 		using namespace DirectX;
-		auto finite = [](const XMFLOAT4X4& m) {
-			for (const auto& row : m.m) { for (float v : row) { if (!std::isfinite(v)) { return false; } } }
-			return true;
-		};
-		if (!cameraIdentity || !finite(projection) || !finite(view) ||
-			std::abs(projection._34) < 0.5f || std::abs(projection._44) > 0.001f ||
-			projection._11 <= 0 || projection._22 <= 0 ||
-			!std::isfinite(nearPlane) || !std::isfinite(farPlane) || nearPlane <= 0 || farPlane <= nearPlane) { Reset(); return false; }
-		// The active producer may reverse Z without changing the physical frustum.
-		// Determine the convention from that frame's projection, not the renderer
-		// name or depth texture format. Use double precision at distant far planes.
-		const float direction = projection._34 > 0 ? 1.0f : -1.0f;
-		auto projectedDepth = [&](double distance) {
-			const double z = direction * distance;
-			return (z * projection._33 + projection._43) / (z * projection._34 + projection._44);
-		};
-		const double nearDepth = projectedDepth(nearPlane), farDepth = projectedDepth(farPlane);
-		if (!std::isfinite(nearDepth) || !std::isfinite(farDepth) || nearDepth == farDepth) { Reset(); return false; }
-		const bool inverted = nearDepth > farDepth;
-		// Engine view translation is camera-relative. Rebuild only translation
-		// from the actual NiCamera position, retaining the engine's basis. Our
-		// history then uses one absolute coordinate system across origin shifts.
-		auto absoluteView = view;
-		absoluteView._41 = -(position.x * view._11 + position.y * view._21 + position.z * view._31);
-		absoluteView._42 = -(position.x * view._12 + position.y * view._22 + position.z * view._32);
-		absoluteView._43 = -(position.x * view._13 + position.y * view._23 + position.z * view._33);
-		absoluteView._14 = absoluteView._24 = absoluteView._34 = 0; absoluteView._44 = 1;
+        auto measurements=TheosRenderPipeline::MeasureCamera(projection,view,{position.x,position.y,position.z},
+            nearPlane,farPlane,cameraIdentity,reset);
+        if(!measurements) { Reset(); return false; }
+        const bool inverted=measurements->depthInverted;
+        const float direction=projection._34>0?1.0f:-1.0f;
+        XMFLOAT4X4 absoluteView;
+        std::memcpy(&absoluteView,measurements->view.data(),sizeof(absoluteView));
 		const auto p = XMLoadFloat4x4(&projection);
 		const auto v = XMLoadFloat4x4(&absoluteView);
 		const auto vp = v * p;
@@ -61,7 +42,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		result.cameraUp = { view._12, view._22, view._32 };
 		result.cameraFwd = { direction * view._13, direction * view._23, direction * view._33 };
 		result.cameraNear = nearPlane; result.cameraFar = farPlane;
-		result.cameraFOV = 2.0f * std::atan(1.0f / projection._22);
+		result.cameraFOV = measurements->verticalFovRadians;
 		result.cameraAspectRatio = projection._22 / projection._11;
 		result.jitterOffset = { jitterX, jitterY };
 		result.mvecScale = { 1, 1 }; // Skyrim's guides already contain normalized screen motion.

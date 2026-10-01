@@ -25,7 +25,7 @@ namespace InteropFixture
         ComPtr<ID3D11Device5> device5;ComPtr<ID3D11DeviceContext4> context4;
         ComPtr<ID3D12Device> device12;ComPtr<ID3D12CommandQueue> queue;
         ComPtr<ID3D11InfoQueue> messages11;ComPtr<ID3D12InfoQueue> messages12;
-        Rig()
+        explicit Rig(bool skipUnsupported=false)
         {
             ComPtr<ID3D12Debug> debug;
             if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug))))debug->EnableDebugLayer();
@@ -33,9 +33,12 @@ namespace InteropFixture
             Check(CreateDXGIFactory1(IID_PPV_ARGS(&factory)),"DXGI factory");
             auto hr=D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_HARDWARE,nullptr,D3D11_CREATE_DEVICE_DEBUG,nullptr,0,D3D11_SDK_VERSION,&device11,nullptr,&context11);
             if(hr==DXGI_ERROR_SDK_COMPONENT_MISSING){std::puts("SKIPPED: D3D11 debug layer unavailable");hr=D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_HARDWARE,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&device11,nullptr,&context11);}
+            if(FAILED(hr) && skipUnsupported){std::puts("SKIPPED: hardware D3D11 unavailable");std::exit(77);}
             Check(hr,"actual hardware D3D11");
             ComPtr<IDXGIDevice> dxgi;Check(device11.As(&dxgi),"DXGI device");Check(dxgi->GetAdapter(&adapter),"actual adapter");
-            Check(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&device12)),"same adapter D3D12");
+            hr=D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&device12));
+            if(FAILED(hr) && skipUnsupported){std::puts("SKIPPED: matching hardware D3D12 unavailable");std::exit(77);}
+            Check(hr,"same adapter D3D12");
             D3D12_COMMAND_QUEUE_DESC desc{};desc.Type=D3D12_COMMAND_LIST_TYPE_DIRECT;
             Check(device12->CreateCommandQueue(&desc,IID_PPV_ARGS(&queue)),"SR queue");
             Check(device11.As(&device5),"shared-fence device");Check(context11.As(&context4),"shared-fence context");

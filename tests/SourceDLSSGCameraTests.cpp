@@ -1,4 +1,5 @@
 #include "FrameGen/SourceDLSSGCamera.h"
+#include "FrameGen/CameraMeasurements.h"
 #include <cstdio>
 #include <cstdlib>
 #include <limits>
@@ -43,6 +44,10 @@ int main()
         unsigned frame = 0;
         for (const bool inverted : {false, true, false}) {
             const auto& projection = inverted ? reversed : forward;
+            auto measurements=TheosRenderPipeline::MeasureCamera(projection,view,{1,2,3},nearPlane,farPlane,1,false,0.0142875f);
+            Require(measurements && measurements->depthInverted==inverted && std::abs(measurements->verticalFovRadians-1.0f)<0.00001f &&
+                measurements->position==std::array<float,3>{1,2,3} && measurements->worldUnitsToMeters==0.0142875f,
+                "shared measurements preserve physical camera and convention before vendor conversion");
             for (unsigned step = 0; step < 2; ++step) {
                 const sl::float3 position{float(step), 0, 0};
                 Require(history.Build(projection, view, position, nearPlane, farPlane, 0.25f, -0.5f,

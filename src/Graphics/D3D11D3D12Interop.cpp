@@ -289,6 +289,9 @@ namespace TheosRenderPipeline::Graphics
 
 	HRESULT D3D11D3D12Interop::Drain()
 	{
+        // Recording can still contain context/descriptor references which a
+        // caller may submit later. It is not a completed lifetime boundary.
+        for (const auto& work : work_) if (work.recording) { return E_UNEXPECTED; }
         // The last D3D12 dispatch fence does not retire the D3D11 output
         // readers queued after WaitConsumer. Signal behind those readers and
         // wait for that real consumer submission before releasing resources.

@@ -1,0 +1,5 @@
+add_executable(TRPFsrGpuSmoke FSRGpuSmoke.cpp "${PROJECT_SOURCE_DIR}/src/Graphics/D3D11D3D12Interop.cpp")
+target_link_libraries(TRPFsrGpuSmoke PRIVATE TRPFsrRuntime d3d11 d3d12 dxgi d3dcompiler)
+target_include_directories(TRPFsrGpuSmoke PRIVATE "${PROJECT_SOURCE_DIR}/tests")
+add_test(NAME FsrGpuSmoke COMMAND TRPFsrGpuSmoke --frames 1000 --recreate 25 --debug auto --runtime "${TRP_FSR_SDK_DIR}/runtime" --output "${CMAKE_BINARY_DIR}/validation/fsr-gpu.json")
+set_tests_properties(FsrGpuSmoke PROPERTIES TIMEOUT 600 SKIP_RETURN_CODE 77)

@@ -41,6 +41,7 @@ set(ARP_BASELINE_SOURCES
     src/FrameGen/SourceNvidiaFrameEvaluator.h
     src/FrameGen/SourceNvidiaFramePreparation.h
     src/FrameGen/SourceCameraSelection.h
+    src/FrameGen/CameraMeasurements.cpp
     src/FrameGen/D3D11FrameCopy.h
     src/FrameGen/D3D11ContextIsolation.h
     src/FrameGen/FinalFrameCapture.h
