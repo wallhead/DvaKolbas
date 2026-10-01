@@ -1,0 +1,402 @@
+[
+  {
+    "file": "evidence/v2/disassembly/amd_destroy_replacement_resources.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 41824,
+    "end_rva": 42419,
+    "byte_range_sha256": "5a99802f9d3d018f55ec348ab749d9ef30da199c92d837b5182e5a2ee1a3b42a",
+    "file_sha256": "112e4ddc689ef4637187d1565ae12429b5c8d116cae5b8c8bf1915f3263dc668",
+    "instruction_lines": 138
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_present.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 47792,
+    "end_rva": 48386,
+    "byte_range_sha256": "de18fb5f8787b3b67f572b8605d1204fa1550358afdb2d265f754a62c837db0c",
+    "file_sha256": "b2e8d268ea0e0e72de8ea250c8033197231f459a2c74e5bffbcd5fcfd36e28c4",
+    "instruction_lines": 136
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_presenter_thread.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 52176,
+    "end_rva": 53087,
+    "byte_range_sha256": "c6beea1035bcbd9adfccf3fa2a3576c65bddf2d117a6d5e65abba76e97dd4667",
+    "file_sha256": "3a1bef0c80398c56d5baf5248230b5aa82c40e9d52af465347d4d518ae834392",
+    "instruction_lines": 208
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_swapchain_resize.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 48832,
+    "end_rva": 49028,
+    "byte_range_sha256": "a7c655f2c3f180d36df86e029ee8e722a227297fcf24a61ea0373b7422c897f2",
+    "file_sha256": "5cffe1205de57019e4c2f9e84b4559de82f93ece54d61265bf4e915ec356d304",
+    "instruction_lines": 54
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_ui_composite.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 58560,
+    "end_rva": 60430,
+    "byte_range_sha256": "64a676864247339d44b6e68720e2bd0238962e770cbfc659205ef46a29602955",
+    "file_sha256": "7a1e6b8b72c0e75d8f91eafa469ea11f77a02883eda3c4c6de238424a0b90db3",
+    "instruction_lines": 413
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_ui_composition_api.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 1005056,
+    "end_rva": 1006952,
+    "byte_range_sha256": "12207aaaa0fb2c33064023ac9596b3ce43c6b506521cfb339652d2e88832cfda",
+    "file_sha256": "c265777b71ae9fb9e3ed5701046fb0a0b11cabeb0ff3ed406a6a62be0d0473e7",
+    "instruction_lines": 449
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_ui_copy.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 40608,
+    "end_rva": 41140,
+    "byte_range_sha256": "5038a9e7cd3f432fb1e6fb0718f9023890f4bb37cdc43dc11abce44ccc9b16dd",
+    "file_sha256": "f9fac9d138f2830eaeb534a023473128b7bfb7124af2265a4cebb2122414ff84",
+    "instruction_lines": 140
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_ui_register.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 44480,
+    "end_rva": 44609,
+    "byte_range_sha256": "878dd245f99d8c8bd0cf7a6a40304da644efcda0a26b093226e24fb2dff1bfd2",
+    "file_sha256": "c9edebf25e106c053dc0607eb6938f23bece65e687b777b39ada4856a1208cf1",
+    "instruction_lines": 28
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_verify_ui_resource.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 40032,
+    "end_rva": 40605,
+    "byte_range_sha256": "1be643f8c5971cc6688743dfaab158ec50c3e19ba52ee1b6b27217930f74d16e",
+    "file_sha256": "bf5125282cdef32413577ebb31c0586cf289263b643682498aca7e1cba267476",
+    "instruction_lines": 129
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_wait_fence_value.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 1002544,
+    "end_rva": 1003008,
+    "byte_range_sha256": "8d79ca6def06c76d1cfea57f804b4d4373704fe7f422c7d8c519103d262bf23e",
+    "file_sha256": "b0a406473f0032ffee2985174e50913b3fb1903367d5e856ced9b88689846e60",
+    "instruction_lines": 116
+  },
+  {
+    "file": "evidence/v2/disassembly/amd_wait_presents.asm",
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "module_sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "start_rva": 43760,
+    "end_rva": 43870,
+    "byte_range_sha256": "d1c1424cb34923faa0e1af38df298d587f541ebc9ae61f49738766686a1de65c",
+    "file_sha256": "47a38e6c03c0e6e25577f5a51e8f3c9df391e79353a51566924d7c6adea72475",
+    "instruction_lines": 22
+  },
+  {
+    "file": "evidence/v2/disassembly/host_after_present.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2801744,
+    "end_rva": 2803269,
+    "byte_range_sha256": "003acf40827885761bcf86f681854467c2965900cc4e66a790bb93901943ff71",
+    "file_sha256": "627598a56e1fe989bc3a478070a96d32755df22cba16a3169f61a21a497c8f42",
+    "instruction_lines": 306
+  },
+  {
+    "file": "evidence/v2/disassembly/host_before_present_early_fg.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2798336,
+    "end_rva": 2798509,
+    "byte_range_sha256": "2463c17cc5ee37a8be6ac59abf752d705b0712136545ce80e1fa0774421c018a",
+    "file_sha256": "c09a2fef7d47760a3ebcfe79adb8fb531fb98f962f0bf4486967d43a762c9184",
+    "instruction_lines": 42
+  },
+  {
+    "file": "evidence/v2/disassembly/host_before_present_late_fg.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2800808,
+    "end_rva": 2800920,
+    "byte_range_sha256": "7f9bc1b5d116d3255ebd3d292006e3ac3451a8183814c339e9216c3118d4498e",
+    "file_sha256": "70b0626bbfd5e509fb063780380411524c9e1e37613eb6a559906bb61738654d",
+    "instruction_lines": 23
+  },
+  {
+    "file": "evidence/v2/disassembly/host_check_ui_buffer.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2770736,
+    "end_rva": 2772186,
+    "byte_range_sha256": "73bcd300cf90ac5d064e12830f2456df87924c59cd3d53846f72b9b151982aa2",
+    "file_sha256": "6c5e63502670b2c4e2c5ac9092aa2fb9b76466a4dc3c9f669cfee2ea6d362ca5",
+    "instruction_lines": 332
+  },
+  {
+    "file": "evidence/v2/disassembly/host_fg_type_setting.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2735744,
+    "end_rva": 2736000,
+    "byte_range_sha256": "0587f8d03843582534dfe18fc46ddc5903b065575f67744d3d919d93e9e67490",
+    "file_sha256": "be23a319f47c2f6de00d68921115260d2e988d0659054fd3d1eacaaf829ebef2",
+    "instruction_lines": 53
+  },
+  {
+    "file": "evidence/v2/disassembly/host_framewarp_active_setting.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2736186,
+    "end_rva": 2736421,
+    "byte_range_sha256": "c562d70255b22833a12c7b35f9f361af4daab8fb62e47c47c07bba85faad7642",
+    "file_sha256": "6c8c2833e213b478beeaf539b680ebcda4237fd7351f334f6d1da249a5081c97",
+    "instruction_lines": 50
+  },
+  {
+    "file": "evidence/v2/disassembly/host_hudfix_settings.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2739319,
+    "end_rva": 2739662,
+    "byte_range_sha256": "a7b384bc4de8a4fd6c6889d68d2a68a78b28b1eafd3f3004ee82677739c944c1",
+    "file_sha256": "f24c9dfe3860bf64477a2578f76439dba5dcd7acf1a80289aa2042cc27c38691",
+    "instruction_lines": 72
+  },
+  {
+    "file": "evidence/v2/disassembly/host_om_hook_install.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 1699199,
+    "end_rva": 1699341,
+    "byte_range_sha256": "12b6d71395c29ab408133ecca89c3840e7215ced28e80ed8e407c15999fb5c99",
+    "file_sha256": "a9b825ac8e0a214eacd7cc7128b0efa1d6490469ed13703d783e92dc7d33c8f8",
+    "instruction_lines": 28
+  },
+  {
+    "file": "evidence/v2/disassembly/host_omsetrendertargets_redirect.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2792240,
+    "end_rva": 2793397,
+    "byte_range_sha256": "a732b1a6a880357acfe65206c55504c7c467ec6bd8aa7c93222f47ef81315939",
+    "file_sha256": "d6d9fcab1dde979a2e28e8f0eccba44e57ebbc456e3cfa62d958faa4a8b0d36c",
+    "instruction_lines": 294
+  },
+  {
+    "file": "evidence/v2/disassembly/host_preui_handler.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 1700896,
+    "end_rva": 1703305,
+    "byte_range_sha256": "ba4ec620e249ba50cbb76e8dacbe6dd73a5239c3444f9af5abfda1e1a1ffa0f7",
+    "file_sha256": "923c619e5ed125bbdb29de6d6584e3f7a52749b12a64e8795e65f998cb5423ee",
+    "instruction_lines": 496
+  },
+  {
+    "file": "evidence/v2/disassembly/host_preui_hook_install.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 1709795,
+    "end_rva": 1710041,
+    "byte_range_sha256": "a4260ae176dc5e533b1e18497f0b77648f9f3f1d2fbe0dfb405e67e24c6c1b42",
+    "file_sha256": "7a0f949297dd743576d69974d1ba3fba926ee0161642e46eb620f433718163fb",
+    "instruction_lines": 48
+  },
+  {
+    "file": "evidence/v2/disassembly/host_preui_separate_ui_predicate.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2703136,
+    "end_rva": 2703313,
+    "byte_range_sha256": "2cf0f715de80e0ead5d9aa4e34ccd3f2147ec841e7391944bb436a55f25c2e18",
+    "file_sha256": "bc6af7bfb8f23c1e2476d5948617f56d7dbed2e776c5330e41a75fae59225946",
+    "instruction_lines": 48
+  },
+  {
+    "file": "evidence/v2/disassembly/host_proxy_present.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2487616,
+    "end_rva": 2487970,
+    "byte_range_sha256": "a7a56d94d1aea033527511b35eb29ace541b8c830081f7c6e631d2002c450861",
+    "file_sha256": "5937b55b122fb16da429219d6b73e12a196dbb4ad953068375d9462e44c70985",
+    "instruction_lines": 92
+  },
+  {
+    "file": "evidence/v2/disassembly/host_proxy_present1.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2489968,
+    "end_rva": 2490286,
+    "byte_range_sha256": "4b144d76186c3ca7d65cdeca70a3af805645a9a9c2a2bc6814c389cfd6fc7cf9",
+    "file_sha256": "af9f341777dd97edf98aeb99aee2f6413b48e153d36c103481b3653b573d0241",
+    "instruction_lines": 90
+  },
+  {
+    "file": "evidence/v2/disassembly/host_reshade_complete_clone.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2795056,
+    "end_rva": 2795362,
+    "byte_range_sha256": "f4e5f51848228760f62dfd15732621a3749a5c971f3529dd111a651b5aa21f1c",
+    "file_sha256": "5bd8e641bf466e765cb987bbfbbf4f4ab4bfb30e8b9574a1ad8e27f958a1ee41",
+    "instruction_lines": 56
+  },
+  {
+    "file": "evidence/v2/disassembly/host_reshade_complete_registered.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2641200,
+    "end_rva": 2641506,
+    "byte_range_sha256": "b131c1f09d9726bfa46d7a08e34f249cb8de04bc79bfba5a6d53a857d595ed8e",
+    "file_sha256": "4c9c861f720b14aea30a895354b4e24ce9aaa1bd54d8cc3c36f868a7d0e54de7",
+    "instruction_lines": 56
+  },
+  {
+    "file": "evidence/v2/disassembly/host_reshade_overlay_redirect.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2791392,
+    "end_rva": 2791898,
+    "byte_range_sha256": "101fa6776675668e66384397ace30b7f987417a0df573a3f4852cd51ea4efcb3",
+    "file_sha256": "d0153261839a5db340a138bb285bcfabf74f3e39304eaaad8fecb2dcbdbad6ec",
+    "instruction_lines": 124
+  },
+  {
+    "file": "evidence/v2/disassembly/host_reshade_register.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2640496,
+    "end_rva": 2641190,
+    "byte_range_sha256": "9b407b78553fd8cc207d017dc9bc5110a4bf9a52a7b28d97d3b058eab6325df6",
+    "file_sha256": "f1e4de4728d2b417f4fd1552d8877cb4c15bad3872ae8c6f11dd6aa63b05b3f7",
+    "instruction_lines": 138
+  },
+  {
+    "file": "evidence/v2/disassembly/host_reshade_render_effects_guard.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2779808,
+    "end_rva": 2779832,
+    "byte_range_sha256": "d32f0655c048ec3e48cf52ad016ae396c7deb3c2d96ea5a99a0ffd6d432f5b8c",
+    "file_sha256": "427f498bb13225ea97ab1bfc1468d3bfbaabf6f2671b92d2a3f9f30db0c70f41",
+    "instruction_lines": 5
+  },
+  {
+    "file": "evidence/v2/disassembly/host_reshade_setting.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2733191,
+    "end_rva": 2733374,
+    "byte_range_sha256": "377e8609576371d533d493dd132a7bdaa742c7803817acaf90a898506b8f58ea",
+    "file_sha256": "2975d7d94bdc6a53c12caef0473ed388c2b22b1c3ecbbf17a24e864a6bb0f29a",
+    "instruction_lines": 37
+  },
+  {
+    "file": "evidence/v2/disassembly/host_reshade_vtable_hook_install.asm",
+    "module": "SkyrimUpscaler.dll",
+    "module_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "start_rva": 2779328,
+    "end_rva": 2779705,
+    "byte_range_sha256": "0c2d6e99628a8df9ca272bab8d81b65a6c0c2225a68eef2eb943b06958afbb22",
+    "file_sha256": "8a65864c45cbc2af323620fbf366b9ad10a26156fa9f9beae766c50b07ee71c1",
+    "instruction_lines": 79
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_dlssg_external_fence_source.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 521200,
+    "end_rva": 521648,
+    "byte_range_sha256": "f84787007b2b14e94e8e15fcdd0386a435eb5c9d9f8bb098050452ed9c2bf76d",
+    "file_sha256": "02b4e3e95a26e888666112f6ef41603b1aa2d40b1a7b52b035d9994d97e6cf64",
+    "instruction_lines": 97
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_dx12_open_shared_resource.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 452688,
+    "end_rva": 452781,
+    "byte_range_sha256": "f614d45435995682a0e91d08e6b3ab2877431402f53803338c61d825e6ee1ef9",
+    "file_sha256": "27324639994f4e4065a953834d85e49c8e13856e6c720ab985d3cebf9c24f886",
+    "instruction_lines": 25
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_fg_prepare_handoff.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 961936,
+    "end_rva": 962685,
+    "byte_range_sha256": "f98093eb9eb41260be562a874448da60036c1a66fffecbccb5a953fe574d7e98",
+    "file_sha256": "8f6c53fb3381168e107cba220d9f3b14629f9e5ea8f683e4d824823cc471ff7b",
+    "instruction_lines": 172
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_interop_fence_init.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 469008,
+    "end_rva": 470477,
+    "byte_range_sha256": "94cb93de5607c75c0ef65659bbb53724f20035b3e0e946b6bb0753d9f37e1791",
+    "file_sha256": "95084b838864a2311a7a28e885d7085afef6b742ede3bfdc53675f21f029a410",
+    "instruction_lines": 332
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_interop_fg_retire.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 490848,
+    "end_rva": 491180,
+    "byte_range_sha256": "02575d117876a0d1df71cf75bc9ec46d18439dee77e331856b5dcbbb8c5838c5",
+    "file_sha256": "79da5dd069bfc622a54fae888d50d8c40d613a940a16f29d8e6c130038530e4c",
+    "instruction_lines": 78
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_interop_resource_create.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 478304,
+    "end_rva": 480807,
+    "byte_range_sha256": "d4b68af41aeaceccbedd99824dd38f7498ef161dfe381d133589083175f7ab9e",
+    "file_sha256": "b8fb9d215c90b160f57cd579fa3b5e42e72fd5d8ca9fb8415813f06b2b1d9652",
+    "instruction_lines": 610
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_interop_slot_wait.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 489792,
+    "end_rva": 490054,
+    "byte_range_sha256": "667828a1cc83bd41577ea6f4f19139157f651ba15f8177849e6c9ece5f535677",
+    "file_sha256": "c67e4cde3547e1bfcb1df2aa098ec4070b6775757348d0234d61023afda24bf5",
+    "instruction_lines": 61
+  },
+  {
+    "file": "evidence/v2/disassembly/pd_proxy_resize.asm",
+    "module": "PDPerfPlugin.dll",
+    "module_sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "start_rva": 948208,
+    "end_rva": 948885,
+    "byte_range_sha256": "17c31b57eb576d2736ab9f9f3372d728b99673547c5c6e0b808a5133dfe1473c",
+    "file_sha256": "7d8f4faea3185f961cb1b3e3096717e28c126c99c7bc1e24eef38bb8d388470a",
+    "instruction_lines": 174
+  }
+]

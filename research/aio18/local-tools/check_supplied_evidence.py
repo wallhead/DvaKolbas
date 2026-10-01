@@ -11,7 +11,7 @@ import pefile
 root = pathlib.Path(__file__).resolve().parents[1]
 archive = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(r'C:\Users\user\Downloads\AIO18_FSR_RE_Evidence.zip')
 extracted = root / 'aio-build18'
-revision_suffix = '-v3' if archive.stem.endswith('_v3') else '-v2' if archive.stem.endswith('_v2') else ''
+revision_suffix = '-v' + archive.stem.rsplit('_v', 1)[1] if '_v' in archive.stem else ''
 output = root / ('evidence-review' + revision_suffix)
 output.mkdir(exist_ok=True)
 
@@ -19,12 +19,21 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 with zipfile.ZipFile(archive) as z:
-    names = {n.replace('\\', '/'): n for n in z.namelist()}
+    files_in_zip = [n for n in z.namelist() if not n.endswith('/')]
+    checksum_paths = [n.replace('\\', '/') for n in files_in_zip if n.replace('\\', '/').endswith('SHA256SUMS.txt')]
+    assert len(checksum_paths) == 1
+    prefix = checksum_paths[0].removesuffix('SHA256SUMS.txt')
+    assert all(n.replace('\\', '/').startswith(prefix) for n in files_in_zip)
+    names = {n.replace('\\', '/').removeprefix(prefix): n for n in files_in_zip}
+    assert len(names) == len(files_in_zip)
     checksums = z.read(names['SHA256SUMS.txt']).decode().splitlines()
     for line in checksums:
         expected, name = line.split('  ', 1)
+        name = name.removeprefix('./')
         assert digest(z.read(names[name])) == expected, name
     for name, raw in names.items():
+        if '__pycache__' in pathlib.PurePosixPath(name).parts or name.endswith('.pyc'):
+            continue
         target = (output / name).resolve()
         assert target.is_relative_to(output.resolve()), name
         assert not target.exists(), f'Refusing to overwrite {target}'
@@ -46,7 +55,7 @@ for record in manifest['files']:
 modules = {}
 decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
 landmarks = json.loads((output / 'evidence/landmarks.json').read_text())
-for revision in (2, 3):
+for revision in (2, 3, 4):
     additional = output / f'evidence/v{revision}/landmarks_v{revision}.json'
     if additional.exists():
         landmarks.extend(json.loads(additional.read_text()))

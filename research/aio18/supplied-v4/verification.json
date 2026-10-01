@@ -1,0 +1,52 @@
+{
+  "status": "PASS",
+  "scope": "Static input, byte, PDB and descriptor reproducibility only; no GPU or game test",
+  "archive_checked": true,
+  "files_hashed": 25,
+  "instruction_landmarks_checked": 50,
+  "pdb_identities": [
+    {
+      "module": "amd_fidelityfx_framegeneration_dx12",
+      "guid": "f977ea5e-eaed-467f-800d-e437ac3b9e74",
+      "age": 1
+    },
+    {
+      "module": "amd_fidelityfx_loader_dx12",
+      "guid": "f782f3f7-029d-4dc9-a3b7-c0a71dcac9da",
+      "age": 1
+    }
+  ],
+  "types_reparsed": 20,
+  "fields_reparsed": 122,
+  "vtable_slots_checked": 4,
+  "host_valid_exception_entries": 10058,
+  "negative_comparison_control": true,
+  "python": "3.13.5",
+  "verified_files": [
+    "SKSE/Plugins/SkyrimUpscaler_preload.txt",
+    "SKSE/Plugins/SkyrimUpscaler.ini",
+    "UpscalerBasePlugin/amd_fidelityfx_framegeneration_dx12.pdb",
+    "UpscalerBasePlugin/amd_fidelityfx_loader_dx12.pdb",
+    "SKSE/Plugins/SkyrimUpscaler.dll",
+    "UpscalerBasePlugin/amd_fidelityfx_dx12.dll",
+    "UpscalerBasePlugin/amd_fidelityfx_framegeneration_dx12.dll",
+    "UpscalerBasePlugin/amd_fidelityfx_loader_dx12.dll",
+    "UpscalerBasePlugin/amd_fidelityfx_upscaler_dx12.dll",
+    "UpscalerBasePlugin/ffx_backend_dx11_x64.dll",
+    "UpscalerBasePlugin/ffx_fsr3upscaler_x64.dll",
+    "UpscalerBasePlugin/ffx_fsr3_x64.dll",
+    "UpscalerBasePlugin/libxell.dll",
+    "UpscalerBasePlugin/libxess.dll",
+    "UpscalerBasePlugin/libxess_dx11.dll",
+    "UpscalerBasePlugin/libxess_fg.dll",
+    "UpscalerBasePlugin/nvngx_dlss.dll",
+    "UpscalerBasePlugin/nvngx_dlssnr.dll",
+    "UpscalerBasePlugin/PDPerfPlugin.dll",
+    "UpscalerBasePlugin/Streamline/nvngx_dlssg.dll",
+    "UpscalerBasePlugin/Streamline/sl.common.dll",
+    "UpscalerBasePlugin/Streamline/sl.dlss_g.dll",
+    "UpscalerBasePlugin/Streamline/sl.interposer.dll",
+    "UpscalerBasePlugin/Streamline/sl.pcl.dll",
+    "UpscalerBasePlugin/Streamline/sl.reflex.dll"
+  ]
+}

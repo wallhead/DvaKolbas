@@ -1,0 +1,695 @@
+[
+  {
+    "rva": 1074488,
+    "text": "FFX_DX12_DynamicRingBuffer",
+    "xrefs": [
+      [
+        "0x1775",
+        "0x1650",
+        "00001775: lea       rdx,[rip+0x104dbc]        # 0x180106538 ; 'FFX_DX12_DynamicRingBuffer'"
+      ]
+    ]
+  },
+  {
+    "rva": 1074544,
+    "text": "FFXInterface: DX12: D3D12_RESOURCE_HEAP_TIER_2 not supported. GPU memory may be allocated less efficiently.",
+    "xrefs": [
+      [
+        "0x270b",
+        "0x2490",
+        "0000270B: lea       r9,[rip+0x103e5e]        # 0x180106570 ; 'FFXInterface: DX12: D3D12_RESOURCE_HEAP_TIER_2 not supported. GPU memory may be allocated less efficiently.'"
+      ],
+      [
+        "0x2733",
+        "0x2490",
+        "00002733: lea       rdx,[rip+0x103e36]        # 0x180106570 ; 'FFXInterface: DX12: D3D12_RESOURCE_HEAP_TIER_2 not supported. GPU memory may be allocated less efficiently.'"
+      ]
+    ]
+  },
+  {
+    "rva": 1074768,
+    "text": "FFXInterface: DX12: Resource heaps are not supported on this device. Ignoring provided heap.",
+    "xrefs": [
+      [
+        "0x302d",
+        "0x2c70",
+        "0000302D: lea       r9,[rip+0x10361c]        # 0x180106650 ; 'FFXInterface: DX12: Resource heaps are not supported on this device. Ignoring provided heap.'"
+      ],
+      [
+        "0x305b",
+        "0x2c70",
+        "0000305B: lea       rdx,[rip+0x1035ee]        # 0x180106650 ; 'FFXInterface: DX12: Resource heaps are not supported on this device. Ignoring provided heap.'"
+      ]
+    ]
+  },
+  {
+    "rva": 1075496,
+    "text": "AMD FSR Replacement BackBuffer",
+    "xrefs": [
+      [
+        "0x7a78",
+        "0x7a10",
+        "00007A78: lea       rdx,[rip+0xfeea9]        # 0x180106928 ; 'AMD FSR Replacement BackBuffer'"
+      ],
+      [
+        "0x7b5f",
+        "0x7a10",
+        "00007B5F: lea       rdx,[rip+0xfedc2]        # 0x180106928 ; 'AMD FSR Replacement BackBuffer'"
+      ],
+      [
+        "0xa1f7",
+        "0xa0c0",
+        "0000A1F7: lea       rdx,[rip+0xfc72a]        # 0x180106928 ; 'AMD FSR Replacement BackBuffer'"
+      ]
+    ]
+  },
+  {
+    "rva": 1075560,
+    "text": "AMD FSR Interpolation Output",
+    "xrefs": [
+      [
+        "0x7b87",
+        "0x7a10",
+        "00007B87: lea       r14,[rip+0xfedda]        # 0x180106968 ; 'AMD FSR Interpolation Output'"
+      ],
+      [
+        "0xa280",
+        "0xa0c0",
+        "0000A280: lea       rdx,[rip+0xfc6e1]        # 0x180106968 ; 'AMD FSR Interpolation Output'"
+      ],
+      [
+        "0xa2ef",
+        "0xa0c0",
+        "0000A2EF: lea       rdx,[rip+0xfc672]        # 0x180106968 ; 'AMD FSR Interpolation Output'"
+      ]
+    ]
+  },
+  {
+    "rva": 1075624,
+    "text": "AMD FSR UI Replacement Buffer",
+    "xrefs": [
+      [
+        "0x7cf1",
+        "0x7a10",
+        "00007CF1: lea       rax,[rip+0xfecb0]        # 0x1801069a8 ; 'AMD FSR UI Replacement Buffer'"
+      ]
+    ]
+  },
+  {
+    "rva": 1075688,
+    "text": "amd_fidelityfx_dx12.dll",
+    "xrefs": [
+      [
+        "0x8040",
+        "0x7ff0",
+        "00008040: lea       rcx,[rip+0xfe9a1]        # 0x1801069e8 ; 'amd_fidelityfx_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 1075744,
+    "text": "amd_fidelityfx_framegeneration_dx12.dll",
+    "xrefs": [
+      [
+        "0xde54",
+        "0xdcb0",
+        "0000DE54: lea       rcx,[rip+0xf8bc5]        # 0x180106a20 ; 'amd_fidelityfx_framegeneration_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076200,
+    "text": "AMD FSR Internal Ui Resource",
+    "xrefs": [
+      [
+        "0x9deb",
+        "0x9c60",
+        "00009DEB: lea       rdx,[rip+0xfcdf6]        # 0x180106be8 ; 'AMD FSR Internal Ui Resource'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076304,
+    "text": "AMD FSR Interpolation Thread",
+    "xrefs": [
+      [
+        "0xa68b",
+        "0xa630",
+        "0000A68B: lea       rdx,[rip+0xfc5be]        # 0x180106c50 ; 'AMD FSR Interpolation Thread'"
+      ],
+      [
+        "0xd321",
+        "0xcfc0",
+        "0000D321: lea       rdx,[rip+0xf9928]        # 0x180106c50 ; 'AMD FSR Interpolation Thread'"
+      ],
+      [
+        "0xd9c2",
+        "0xd610",
+        "0000D9C2: lea       rdx,[rip+0xf9287]        # 0x180106c50 ; 'AMD FSR Interpolation Thread'"
+      ],
+      [
+        "0xe1c1",
+        "0xdcb0",
+        "0000E1C1: lea       rdx,[rip+0xf8a88]        # 0x180106c50 ; 'AMD FSR Interpolation Thread'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076368,
+    "text": "AMD FSR PresentQueue",
+    "xrefs": [
+      [
+        "0xb501",
+        "0xb350",
+        "0000B501: lea       rdx,[rip+0xfb788]        # 0x180106c90 ; 'AMD FSR PresentQueue'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076416,
+    "text": "AMD FSR GameFence",
+    "xrefs": [
+      [
+        "0xb634",
+        "0xb350",
+        "0000B634: lea       rdx,[rip+0xfb685]        # 0x180106cc0 ; 'AMD FSR GameFence'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076456,
+    "text": "AMD FSR InterpolationFence",
+    "xrefs": [
+      [
+        "0xb66e",
+        "0xb350",
+        "0000B66E: lea       rdx,[rip+0xfb673]        # 0x180106ce8 ; 'AMD FSR InterpolationFence'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076512,
+    "text": "AMD FSR PresentFence",
+    "xrefs": [
+      [
+        "0xb6a8",
+        "0xb350",
+        "0000B6A8: lea       rdx,[rip+0xfb671]        # 0x180106d20 ; 'AMD FSR PresentFence'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076560,
+    "text": "AMD FSR ReplacementBufferFence",
+    "xrefs": [
+      [
+        "0xb6e2",
+        "0xb350",
+        "0000B6E2: lea       rdx,[rip+0xfb667]        # 0x180106d50 ; 'AMD FSR ReplacementBufferFence'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076624,
+    "text": "AMD FSR CompositionFence GPU",
+    "xrefs": [
+      [
+        "0xb71c",
+        "0xb350",
+        "0000B71C: lea       rdx,[rip+0xfb66d]        # 0x180106d90 ; 'AMD FSR CompositionFence GPU'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076688,
+    "text": "AMD FSR CompositionFence CPU",
+    "xrefs": [
+      [
+        "0xb756",
+        "0xb350",
+        "0000B756: lea       rdx,[rip+0xfb673]        # 0x180106dd0 ; 'AMD FSR CompositionFence CPU'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076752,
+    "text": "AMD FSR AsyncComputeQueue",
+    "xrefs": [
+      [
+        "0xb7ce",
+        "0xb350",
+        "0000B7CE: lea       rdx,[rip+0xfb63b]        # 0x180106e10 ; 'AMD FSR AsyncComputeQueue'"
+      ]
+    ]
+  },
+  {
+    "rva": 1076808,
+    "text": "AMD FSR Presenter Thread",
+    "xrefs": [
+      [
+        "0xc5bb",
+        "0xc530",
+        "0000C5BB: lea       rdx,[rip+0xfa886]        # 0x180106e48 ; 'AMD FSR Presenter Thread'"
+      ],
+      [
+        "0xeddb",
+        "0xed50",
+        "0000EDDB: lea       rdx,[rip+0xf8066]        # 0x180106e48 ; 'AMD FSR Presenter Thread'"
+      ],
+      [
+        "0xf3cb",
+        "0xf340",
+        "0000F3CB: lea       rdx,[rip+0xf7a76]        # 0x180106e48 ; 'AMD FSR Presenter Thread'"
+      ],
+      [
+        "0xf9bb",
+        "0xf930",
+        "0000F9BB: lea       rdx,[rip+0xf7486]        # 0x180106e48 ; 'AMD FSR Presenter Thread'"
+      ]
+    ]
+  },
+  {
+    "rva": 38163712,
+    "text": "FSR_API_DEBUG_ERROR: %ls",
+    "xrefs": [
+      [
+        "0x79a6",
+        "0x7850",
+        "000079A6: lea       r8,[rip+0x245db53]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x8454",
+        "0x81d0",
+        "00008454: lea       r8,[rip+0x245d0a5]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x86a8",
+        "0x84c0",
+        "000086A8: lea       r8,[rip+0x245ce51]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x88d9",
+        "0x8720",
+        "000088D9: lea       r8,[rip+0x245cc20]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x120d4",
+        "0x120a0",
+        "000120D4: lea       r8,[rip+0x2453425]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x121cb",
+        "0x12160",
+        "000121CB: lea       r8,[rip+0x245332e]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x1221d",
+        "0x12160",
+        "0001221D: lea       r8,[rip+0x24532dc]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x12883",
+        "0x12680",
+        "00012883: lea       r8,[rip+0x2452c76]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x12a83",
+        "0x12900",
+        "00012A83: lea       r8,[rip+0x2452a76]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x12ce2",
+        "0x12900",
+        "00012CE2: lea       r8,[rip+0x2452817]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0x12f0d",
+        "0x12dd0",
+        "00012F0D: lea       r8,[rip+0x24525ec]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0xef568",
+        "0xef4b0",
+        "000EF568: lea       r8,[rip+0x2375f91]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0xefc7f",
+        "0xef4b0",
+        "000EFC7F: lea       r8,[rip+0x237587a]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0xf83f7",
+        "0xf8340",
+        "000F83F7: lea       r8,[rip+0x236d102]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ],
+      [
+        "0xf8f55",
+        "0xf8ec0",
+        "000F8F55: lea       r8,[rip+0x236c5a4]        # 0x182465500 ; 'FSR_API_DEBUG_ERROR: %ls'"
+      ]
+    ]
+  },
+  {
+    "rva": 38163768,
+    "text": "FSR_API_DEBUG_WARNING: %ls",
+    "xrefs": [
+      [
+        "0x2717",
+        "0x2490",
+        "00002717: lea       r8,[rip+0x2462e1a]        # 0x182465538 ; 'FSR_API_DEBUG_WARNING: %ls'"
+      ],
+      [
+        "0x3039",
+        "0x2c70",
+        "00003039: lea       r8,[rip+0x24624f8]        # 0x182465538 ; 'FSR_API_DEBUG_WARNING: %ls'"
+      ],
+      [
+        "0x4574",
+        "0x4520",
+        "00004574: lea       r8,[rip+0x2460fbd]        # 0x182465538 ; 'FSR_API_DEBUG_WARNING: %ls'"
+      ],
+      [
+        "0x476f",
+        "0x4720",
+        "0000476F: lea       r8,[rip+0x2460dc2]        # 0x182465538 ; 'FSR_API_DEBUG_WARNING: %ls'"
+      ],
+      [
+        "0x120e2",
+        "0x120a0",
+        "000120E2: lea       r8,[rip+0x245344f]        # 0x182465538 ; 'FSR_API_DEBUG_WARNING: %ls'"
+      ]
+    ]
+  },
+  {
+    "rva": 38163840,
+    "text": "ffxCreateContextDescFrameGenerationSwapChainVersionDX12 version is invalid.",
+    "xrefs": [
+      [
+        "0x12211",
+        "0x12160",
+        "00012211: lea       r9,[rip+0x2453368]        # 0x182465580 ; 'ffxCreateContextDescFrameGenerationSwapChainVersionDX12 version is invalid.'"
+      ],
+      [
+        "0x12240",
+        "0x12160",
+        "00012240: lea       rdx,[rip+0x2453339]        # 0x182465580 ; 'ffxCreateContextDescFrameGenerationSwapChainVersionDX12 version is invalid.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38164000,
+    "text": "An instance of ffxCreateContextDescFrameGenerationSwapChainVersionDX12 must be attached to ffxCreateContextDescFrameGenerationSwapChain* and specify a valid version to access new API functions.",
+    "xrefs": [
+      [
+        "0x121bf",
+        "0x12160",
+        "000121BF: lea       r9,[rip+0x245345a]        # 0x182465620 ; 'An instance of ffxCreateContextDescFrameGenerationSwapChainVersionDX12 must be attached to ffxCreateContextDescFrameGenerationSwapChain* and specify a valid version to access new API functions.'"
+      ],
+      [
+        "0x12252",
+        "0x12160",
+        "00012252: lea       rdx,[rip+0x24533c7]        # 0x182465620 ; 'An instance of ffxCreateContextDescFrameGenerationSwapChainVersionDX12 must be attached to ffxCreateContextDescFrameGenerationSwapChain* and specify a valid version to access new API functions.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38164880,
+    "text": "FFX_MLFI_PASS_",
+    "xrefs": [
+      [
+        "0xecc0d",
+        "0xecb70",
+        "000ECC0D: movups    xmm0,XMMWORD PTR [rip+0x2378d7c]        # 0x182465990 ; 'FFX_MLFI_PASS_'"
+      ]
+    ]
+  },
+  {
+    "rva": 38164912,
+    "text": "FFX_MLFI_DILATE_MV_PASS",
+    "xrefs": [
+      [
+        "0xed626",
+        "0xed250",
+        "000ED626: lea       r8,[rip+0x2378383]        # 0x1824659b0 ; 'FFX_MLFI_DILATE_MV_PASS'"
+      ]
+    ]
+  },
+  {
+    "rva": 38164960,
+    "text": "FFX_MLFI_SPLATTING_64",
+    "xrefs": [
+      [
+        "0xed6ea",
+        "0xed250",
+        "000ED6EA: lea       r8,[rip+0x23782ef]        # 0x1824659e0 ; 'FFX_MLFI_SPLATTING_64'"
+      ]
+    ]
+  },
+  {
+    "rva": 38165008,
+    "text": "FFX_MLFI_COMPUTE_FWD_MV",
+    "xrefs": [
+      [
+        "0xed7bd",
+        "0xed250",
+        "000ED7BD: lea       r8,[rip+0x237824c]        # 0x182465a10 ; 'FFX_MLFI_COMPUTE_FWD_MV'"
+      ]
+    ]
+  },
+  {
+    "rva": 38166032,
+    "text": "ffxCreateContextDescFrameGenerationVersion version is invalid.",
+    "xrefs": [
+      [
+        "0xefc73",
+        "0xef4b0",
+        "000EFC73: lea       r9,[rip+0x2376196]        # 0x182465e10 ; 'ffxCreateContextDescFrameGenerationVersion version is invalid.'"
+      ],
+      [
+        "0xefca9",
+        "0xef4b0",
+        "000EFCA9: lea       rdx,[rip+0x2376160]        # 0x182465e10 ; 'ffxCreateContextDescFrameGenerationVersion version is invalid.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38166160,
+    "text": "An instance of ffxCreateContextDescFrameGenerationVersion must be attached to ffxCreateContextDescFrameGeneration and specify a valid version to access new API functions.",
+    "xrefs": [
+      [
+        "0xef55c",
+        "0xef4b0",
+        "000EF55C: lea       r9,[rip+0x237692d]        # 0x182465e90 ; 'An instance of ffxCreateContextDescFrameGenerationVersion must be attached to ffxCreateContextDescFrameGeneration and specify a valid version to access new API functions.'"
+      ],
+      [
+        "0xef58a",
+        "0xef4b0",
+        "000EF58A: lea       rdx,[rip+0x23768ff]        # 0x182465e90 ; 'An instance of ffxCreateContextDescFrameGenerationVersion must be attached to ffxCreateContextDescFrameGeneration and specify a valid version to access new API functions.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38166512,
+    "text": "ffxCreateContextDescFrameGeneration params backBufferFormat or hudlessBackBufferFormat is not a supported format.",
+    "xrefs": [
+      [
+        "0xef810",
+        "0xef4b0",
+        "000EF810: lea       rdx,[rip+0x23767d9]        # 0x182465ff0 ; 'ffxCreateContextDescFrameGeneration params backBufferFormat or hudlessBackBufferFormat is not a supported format.'"
+      ],
+      [
+        "0xf83f0",
+        "0xf8340",
+        "000F83F0: lea       r9,[rip+0x236dbf9]        # 0x182465ff0 ; 'ffxCreateContextDescFrameGeneration params backBufferFormat or hudlessBackBufferFormat is not a supported format.'"
+      ],
+      [
+        "0xf8426",
+        "0xf8340",
+        "000F8426: lea       rdx,[rip+0x236dbc3]        # 0x182465ff0 ; 'ffxCreateContextDescFrameGeneration params backBufferFormat or hudlessBackBufferFormat is not a supported format.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38166752,
+    "text": "ffxCreateContextDescFrameGeneration params backBufferFormat and hudlessBackBufferFormat must belong to the same format precision group. Otherwise, may result in no interpolation. Hudless UI extraction is run instead of interpolation when value difference between backbuffer and HUDLessColor passes a threshold.",
+    "xrefs": [
+      [
+        "0xef7cd",
+        "0xef4b0",
+        "000EF7CD: lea       rdx,[rip+0x237690c]        # 0x1824660e0 ; 'ffxCreateContextDescFrameGeneration params backBufferFormat and hudlessBackBufferFormat must belong to the same format precision group. Otherwise, may result in no interpolation. Hudless UI extraction is run instead of interpolation when value difference between backbuffer and HUDLessColor passes a threshold.'"
+      ],
+      [
+        "0xf83bd",
+        "0xf8340",
+        "000F83BD: lea       r9,[rip+0x236dd1c]        # 0x1824660e0 ; 'ffxCreateContextDescFrameGeneration params backBufferFormat and hudlessBackBufferFormat must belong to the same format precision group. Otherwise, may result in no interpolation. Hudless UI extraction is run instead of interpolation when value difference between backbuffer and HUDLessColor passes a threshold.'"
+      ],
+      [
+        "0xf83c6",
+        "0xf8340",
+        "000F83C6: lea       rdx,[rip+0x236dd13]        # 0x1824660e0 ; 'ffxCreateContextDescFrameGeneration params backBufferFormat and hudlessBackBufferFormat must belong to the same format precision group. Otherwise, may result in no interpolation. Hudless UI extraction is run instead of interpolation when value difference between backbuffer and HUDLessColor passes a threshold.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38167584,
+    "text": "ffxConfigureDescFrameGeneration::HUDLessColor format have to be same as one of ffxCreateContextDescFrameGeneration::backBufferFormat or ffxCreateContextDescFrameGenerationHudless::hudlessBackBufferFormat. Otherwise, CopyTextureRegion of current to previous frame backbuffer would fail",
+    "xrefs": [
+      [
+        "0xf1e68",
+        "0xf0bd0",
+        "000F1E68: lea       rdx,[rip+0x23745b1]        # 0x182466420 ; 'ffxConfigureDescFrameGeneration::HUDLessColor format have to be same as one of ffxCreateContextDescFrameGeneration::backBufferFormat or ffxCreateContextDescFrameGenerationHudless::hudlessBackBufferFormat. Otherwise, CopyTextureRegion of current to previous frame backbuffer would fail'"
+      ]
+    ]
+  },
+  {
+    "rva": 38168160,
+    "text": "ffxDispatchDescFrameGeneration::presentColor format and ffxCreateContextDescFrameGeneration::backBufferFormat have to be identical. Or ffxConfigureDescFrameGeneration::HUDLessColor have to be valid.",
+    "xrefs": [
+      [
+        "0xf1ead",
+        "0xf0bd0",
+        "000F1EAD: lea       rdx,[rip+0x23747ac]        # 0x182466660 ; 'ffxDispatchDescFrameGeneration::presentColor format and ffxCreateContextDescFrameGeneration::backBufferFormat have to be identical. Or ffxConfigureDescFrameGeneration::HUDLessColor have to be valid.'"
+      ],
+      [
+        "0xf8fb0",
+        "0xf8ec0",
+        "000F8FB0: lea       r9,[rip+0x236d6a9]        # 0x182466660 ; 'ffxDispatchDescFrameGeneration::presentColor format and ffxCreateContextDescFrameGeneration::backBufferFormat have to be identical. Or ffxConfigureDescFrameGeneration::HUDLessColor have to be valid.'"
+      ],
+      [
+        "0xf8fb9",
+        "0xf8ec0",
+        "000F8FB9: lea       rdx,[rip+0x236d6a0]        # 0x182466660 ; 'ffxDispatchDescFrameGeneration::presentColor format and ffxCreateContextDescFrameGeneration::backBufferFormat have to be identical. Or ffxConfigureDescFrameGeneration::HUDLessColor have to be valid.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38168768,
+    "text": "The generation rects passed to ffxConfigure and ffxDispatch do not match. This is not supported.",
+    "xrefs": [
+      [
+        "0xf1f3a",
+        "0xf0bd0",
+        "000F1F3A: lea       rdx,[rip+0x237497f]        # 0x1824668c0 ; 'The generation rects passed to ffxConfigure and ffxDispatch do not match. This is not supported.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38168976,
+    "text": "ffxDispatchDescFrameGenerationPrepare is deprecated, update to ffxDispatchDescFrameGenerationPrepareV2.",
+    "xrefs": [
+      [
+        "0xf0db6",
+        "0xf0bd0",
+        "000F0DB6: lea       rdx,[rip+0x2375bd3]        # 0x182466990 ; 'ffxDispatchDescFrameGenerationPrepare is deprecated, update to ffxDispatchDescFrameGenerationPrepareV2.'"
+      ],
+      [
+        "0xf41e2",
+        "0xf4050",
+        "000F41E2: lea       rdx,[rip+0x23727a7]        # 0x182466990 ; 'ffxDispatchDescFrameGenerationPrepare is deprecated, update to ffxDispatchDescFrameGenerationPrepareV2.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38169184,
+    "text": "ffxDispatchDescFrameGenerationPrepare::unused_reset was never implemented and will be ignored, update to ffxDispatchDescFrameGenerationPrepareV2::reset.",
+    "xrefs": [
+      [
+        "0xf0dd2",
+        "0xf0bd0",
+        "000F0DD2: lea       rdx,[rip+0x2375c87]        # 0x182466a60 ; 'ffxDispatchDescFrameGenerationPrepare::unused_reset was never implemented and will be ignored, update to ffxDispatchDescFrameGenerationPrepareV2::reset.'"
+      ],
+      [
+        "0xf4200",
+        "0xf4050",
+        "000F4200: lea       rdx,[rip+0x2372859]        # 0x182466a60 ; 'ffxDispatchDescFrameGenerationPrepare::unused_reset was never implemented and will be ignored, update to ffxDispatchDescFrameGenerationPrepareV2::reset.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38169504,
+    "text": "ffxDispatchDescFrameGenerationPrepareCameraInfo is not linked to ffxDispatchDescFrameGenerationPrepare.",
+    "xrefs": [
+      [
+        "0xf0def",
+        "0xf0bd0",
+        "000F0DEF: lea       rdx,[rip+0x2375daa]        # 0x182466ba0 ; 'ffxDispatchDescFrameGenerationPrepareCameraInfo is not linked to ffxDispatchDescFrameGenerationPrepare.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38169712,
+    "text": "ffxConfigure must be called before ffxDispatchDescFrameGenerationPrepare.",
+    "xrefs": [
+      [
+        "0xf0f49",
+        "0xf0bd0",
+        "000F0F49: lea       rdx,[rip+0x2375d20]        # 0x182466c70 ; 'ffxConfigure must be called before ffxDispatchDescFrameGenerationPrepare.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38169872,
+    "text": "Camera view matrix parameters (cameraPosition, cameraUp, cameraRight, cameraForward) are all zero vectors, indicating they remain at their default initialized values. These parameters must be properly set by the application for optimal MLFI quality.",
+    "xrefs": [
+      [
+        "0xf1977",
+        "0xf0bd0",
+        "000F1977: lea       rdx,[rip+0x2375392]        # 0x182466d10 ; 'Camera view matrix parameters (cameraPosition, cameraUp, cameraRight, cameraForward) are all zero vectors, indicating they remain at their default initialized values. These parameters must be properly set by the application for optimal MLFI quality.'"
+      ],
+      [
+        "0xf455e",
+        "0xf4050",
+        "000F455E: lea       rdx,[rip+0x23727ab]        # 0x182466d10 ; 'Camera view matrix parameters (cameraPosition, cameraUp, cameraRight, cameraForward) are all zero vectors, indicating they remain at their default initialized values. These parameters must be properly set by the application for optimal MLFI quality.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38170384,
+    "text": "ffxDispatchDescFrameGenerationPrepareCameraInfo is deprecated, update to ffxDispatchDescFrameGenerationPrepareV2.",
+    "xrefs": [
+      [
+        "0xf0e88",
+        "0xf0bd0",
+        "000F0E88: lea       rdx,[rip+0x2376081]        # 0x182466f10 ; 'ffxDispatchDescFrameGenerationPrepareCameraInfo is deprecated, update to ffxDispatchDescFrameGenerationPrepareV2.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38170624,
+    "text": "ffxDispatchDescFrameGenerationPrepareCameraInfo struct is not a linked struct during dispatch ffxDispatchDescFrameGenerationPrepare. API expects ffx::Dispatch(fgContext, ffxDispatchDescFrameGenerationPrepare, ffxDispatchDescFrameGenerationPrepare). MLFI conditionally supports this nonstandard API usage to maintain compatibility with shipped titles.",
+    "xrefs": [
+      [
+        "0xf0e9e",
+        "0xf0bd0",
+        "000F0E9E: lea       rdx,[rip+0x237615b]        # 0x182467000 ; 'ffxDispatchDescFrameGenerationPrepareCameraInfo struct is not a linked struct during dispatch ffxDispatchDescFrameGenerationPrepare. API expects ffx::Dispatch(fgContext, ffxDispatchDescFrameGenerationPrepare, ffxDispatchDescFrameGenerationPrepare). MLFI conditionally supports this nonstandard API usage to maintain compatibility with shipped titles.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38171440,
+    "text": "ffxDispatchDescFrameGenerationPrepareCameraInfo is not linked to ffxDispatchDescFrameGenerationPrepare. Camera view matrix data is a prerequisite for MLFI provider enablement.",
+    "xrefs": [
+      [
+        "0xf421a",
+        "0xf4050",
+        "000F421A: lea       rdx,[rip+0x237310f]        # 0x182467330 ; 'ffxDispatchDescFrameGenerationPrepareCameraInfo is not linked to ffxDispatchDescFrameGenerationPrepare. Camera view matrix data is a prerequisite for MLFI provider enablement.'"
+      ]
+    ]
+  },
+  {
+    "rva": 38173744,
+    "text": "ffxConfigureDescFrameGeneration::HUDLessColor format have to be same as one of ffxCreateContextDescFrameGeneration::backBufferFormat or ffxCreateContextDescFrameGenerationHudless::hudlessBackBufferFormat. Otherwise, CopyTextureRegion from FFX_FRAMEINTERPOLATION_RESOURCE_IDENTIFIER_CURRENT_INTERPOLATION_SOURCE to FFX_FRAMEINTERPOLATION_RESOURCE_IDENTIFIER_PREVIOUS_INTERPOLATION_SOURCE would fail.",
+    "xrefs": [
+      [
+        "0xf8f4e",
+        "0xf8ec0",
+        "000F8F4E: lea       r9,[rip+0x236ecdb]        # 0x182467c30 ; 'ffxConfigureDescFrameGeneration::HUDLessColor format have to be same as one of ffxCreateContextDescFrameGeneration::backBufferFormat or ffxCreateContextDescFrameGenerationHudless::hudlessBackBufferFormat. Otherwise, CopyTextureRegion from FFX_FRAMEINTERPOLATION_RESOURCE_IDENTIFIER_CURRENT_INTERPOLATION_SOURCE to FFX_FRAMEINTERPOLATION_RESOURCE_IDENTIFIER_PREVIOUS_INTERPOLATION_SOURCE would fail.'"
+      ],
+      [
+        "0xf8f7e",
+        "0xf8ec0",
+        "000F8F7E: lea       rdx,[rip+0x236ecab]        # 0x182467c30 ; 'ffxConfigureDescFrameGeneration::HUDLessColor format have to be same as one of ffxCreateContextDescFrameGeneration::backBufferFormat or ffxCreateContextDescFrameGenerationHudless::hudlessBackBufferFormat. Otherwise, CopyTextureRegion from FFX_FRAMEINTERPOLATION_RESOURCE_IDENTIFIER_CURRENT_INTERPOLATION_SOURCE to FFX_FRAMEINTERPOLATION_RESOURCE_IDENTIFIER_PREVIOUS_INTERPOLATION_SOURCE would fail.'"
+      ]
+    ]
+  }
+]

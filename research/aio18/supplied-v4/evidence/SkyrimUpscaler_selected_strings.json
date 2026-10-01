@@ -1,0 +1,631 @@
+[
+  {
+    "rva": 4102616,
+    "text": "framegen",
+    "xrefs": [
+      [
+        "0x273e3b",
+        "0x272620",
+        "00273E3B: lea       rdx,[rip+0x175b96]        # 0x1803e99d8 ; 'framegen'"
+      ]
+    ]
+  },
+  {
+    "rva": 4108000,
+    "text": "downstream PDFrameWarp/Framegen owns final output; D3D11 source is not final",
+    "xrefs": [
+      [
+        "0x27cac6",
+        "0x27b590",
+        "0027CAC6: lea       rdx,[rip+0x16e413]        # 0x1803eaee0 ; 'downstream PDFrameWarp/Framegen owns final output; D3D11 source is not final'"
+      ]
+    ]
+  },
+  {
+    "rva": 4177824,
+    "text": "Uses a separate FrameWarp presentation thread with FSR FG or XeSS FG.",
+    "xrefs": [
+      [
+        "0x185e0a",
+        "0x185de0",
+        "00185E0A: lea       rdx,[rip+0x27618f]        # 0x1803fbfa0 ; 'Uses a separate FrameWarp presentation thread with FSR FG or XeSS FG.'"
+      ],
+      [
+        "0x292504",
+        "0x290c30",
+        "00292504: lea       rdx,[rip+0x169a95]        # 0x1803fbfa0 ; 'Uses a separate FrameWarp presentation thread with FSR FG or XeSS FG.'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186232,
+    "text": "FSR3 Upscaling",
+    "xrefs": [
+      [
+        "0x182047",
+        "0x17fcd0",
+        "00182047: lea       rdx,[rip+0x27c02a]        # 0x1803fe078 ; 'FSR3 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186264,
+    "text": "FSR3.1 Upscaling",
+    "xrefs": [
+      [
+        "0x182079",
+        "0x17fcd0",
+        "00182079: lea       rdx,[rip+0x27c018]        # 0x1803fe098 ; 'FSR3.1 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186288,
+    "text": "FSR3.1",
+    "xrefs": [
+      [
+        "0x182072",
+        "0x17fcd0",
+        "00182072: lea       r8,[rip+0x27c037]        # 0x1803fe0b0 ; 'FSR3.1'"
+      ],
+      [
+        "0x1820a4",
+        "0x17fcd0",
+        "001820A4: lea       r8,[rip+0x27c005]        # 0x1803fe0b0 ; 'FSR3.1'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186304,
+    "text": "FSR3.1.5",
+    "xrefs": [
+      [
+        "0x187241",
+        "0x1871f0",
+        "00187241: lea       rdx,[rip+0x276e78]        # 0x1803fe0c0 ; 'FSR3.1.5'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186328,
+    "text": "FSR 3.1 Upscaling",
+    "xrefs": [
+      [
+        "0x1820ab",
+        "0x17fcd0",
+        "001820AB: lea       rdx,[rip+0x27c026]        # 0x1803fe0d8 ; 'FSR 3.1 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186368,
+    "text": "FSR 3.1.5 Upscaling",
+    "xrefs": [
+      [
+        "0x18721a",
+        "0x1871f0",
+        "0018721A: lea       rdx,[rip+0x276edf]        # 0x1803fe100 ; 'FSR 3.1.5 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186392,
+    "text": "FSR 4 Upscaling",
+    "xrefs": [
+      [
+        "0x18728a",
+        "0x187260",
+        "0018728A: lea       rdx,[rip+0x276e87]        # 0x1803fe118 ; 'FSR 4 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186408,
+    "text": "FSR4 Upscaling",
+    "xrefs": [
+      [
+        "0x182101",
+        "0x17fcd0",
+        "00182101: lea       rdx,[rip+0x27c020]        # 0x1803fe128 ; 'FSR4 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186424,
+    "text": "FSR3.1 Upscaling (DX11)",
+    "xrefs": [
+      [
+        "0x182157",
+        "0x17fcd0",
+        "00182157: lea       rdx,[rip+0x27bfda]        # 0x1803fe138 ; 'FSR3.1 Upscaling (DX11)'"
+      ],
+      [
+        "0x285edc",
+        "0x2855c0",
+        "00285EDC: lea       rdx,[rip+0x178255]        # 0x1803fe138 ; 'FSR3.1 Upscaling (DX11)'"
+      ],
+      [
+        "0x2862f2",
+        "0x2855c0",
+        "002862F2: lea       rdx,[rip+0x177e3f]        # 0x1803fe138 ; 'FSR3.1 Upscaling (DX11)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186448,
+    "text": "FSR3.1",
+    "xrefs": [
+      [
+        "0x182150",
+        "0x17fcd0",
+        "00182150: lea       r8,[rip+0x27bff9]        # 0x1803fe150 ; 'FSR3.1'"
+      ],
+      [
+        "0x182182",
+        "0x17fcd0",
+        "00182182: lea       r8,[rip+0x27bfc7]        # 0x1803fe150 ; 'FSR3.1'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186472,
+    "text": "FSR3.1.5",
+    "xrefs": [
+      [
+        "0x1821b4",
+        "0x17fcd0",
+        "001821B4: lea       r8,[rip+0x27bfad]        # 0x1803fe168 ; 'FSR3.1.5'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186496,
+    "text": "FSR 3.1 Upscaling (DX11)",
+    "xrefs": [
+      [
+        "0x182189",
+        "0x17fcd0",
+        "00182189: lea       rdx,[rip+0x27bff0]        # 0x1803fe180 ; 'FSR 3.1 Upscaling (DX11)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186560,
+    "text": "FSR 3.1.5 Upscaling (DX11)",
+    "xrefs": [
+      [
+        "0x1821bb",
+        "0x17fcd0",
+        "001821BB: lea       rdx,[rip+0x27bffe]        # 0x1803fe1c0 ; 'FSR 3.1.5 Upscaling (DX11)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186592,
+    "text": "FSR 4 Upscaling (DX12 Interop)",
+    "xrefs": [
+      [
+        "0x182211",
+        "0x17fcd0",
+        "00182211: lea       rdx,[rip+0x27bfc8]        # 0x1803fe1e0 ; 'FSR 4 Upscaling (DX12 Interop)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4186624,
+    "text": "FSR4 Upscaling (DX12 Interop)",
+    "xrefs": [
+      [
+        "0x1872fa",
+        "0x1872d0",
+        "001872FA: lea       rdx,[rip+0x276eff]        # 0x1803fe200 ; 'FSR4 Upscaling (DX12 Interop)'"
+      ],
+      [
+        "0x285fcb",
+        "0x2855c0",
+        "00285FCB: lea       rdx,[rip+0x17822e]        # 0x1803fe200 ; 'FSR4 Upscaling (DX12 Interop)'"
+      ],
+      [
+        "0x28638d",
+        "0x2855c0",
+        "0028638D: lea       rdx,[rip+0x177e6c]        # 0x1803fe200 ; 'FSR4 Upscaling (DX12 Interop)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4193704,
+    "text": "FSR Frame Generation",
+    "xrefs": [
+      [
+        "0x182e39",
+        "0x17fcd0",
+        "00182E39: lea       rdx,[rip+0x27cf68]        # 0x1803ffda8 ; 'FSR Frame Generation'"
+      ],
+      [
+        "0x287a14",
+        "0x2855c0",
+        "00287A14: lea       rdx,[rip+0x17838d]        # 0x1803ffda8 ; 'FSR Frame Generation'"
+      ],
+      [
+        "0x287d76",
+        "0x2855c0",
+        "00287D76: lea       rdx,[rip+0x17802b]        # 0x1803ffda8 ; 'FSR Frame Generation'"
+      ]
+    ]
+  },
+  {
+    "rva": 4193824,
+    "text": "FSR Frame Generation: AMD tech that works for all GPUs",
+    "xrefs": [
+      [
+        "0x18839a",
+        "0x188370",
+        "0018839A: lea       rdx,[rip+0x277a7f]        # 0x1803ffe20 ; 'FSR Frame Generation: AMD tech that works for all GPUs'"
+      ]
+    ]
+  },
+  {
+    "rva": 4194240,
+    "text": "Restart is require for FrameGen method changes to take effect.",
+    "xrefs": [
+      [
+        "0x18840a",
+        "0x1883e0",
+        "0018840A: lea       rdx,[rip+0x277baf]        # 0x1803fffc0 ; 'Restart is require for FrameGen method changes to take effect.'"
+      ]
+    ]
+  },
+  {
+    "rva": 4196168,
+    "text": "DLSS FG is not functional, fallback to FSR FG.",
+    "xrefs": [
+      [
+        "0x18871a",
+        "0x1886f0",
+        "0018871A: lea       rdx,[rip+0x278027]        # 0x180400748 ; 'DLSS FG is not functional, fallback to FSR FG.'"
+      ],
+      [
+        "0x2880d5",
+        "0x2855c0",
+        "002880D5: lea       rdx,[rip+0x17866c]        # 0x180400748 ; 'DLSS FG is not functional, fallback to FSR FG.'"
+      ]
+    ]
+  },
+  {
+    "rva": 4197432,
+    "text": "Show FSR Upscaling Debug View",
+    "xrefs": [
+      [
+        "0x18334b",
+        "0x17fcd0",
+        "0018334B: lea       rdx,[rip+0x27d8e6]        # 0x180400c38 ; 'Show FSR Upscaling Debug View'"
+      ],
+      [
+        "0x28af40",
+        "0x2855c0",
+        "0028AF40: lea       rdx,[rip+0x175cf1]        # 0x180400c38 ; 'Show FSR Upscaling Debug View'"
+      ],
+      [
+        "0x2924a6",
+        "0x290c30",
+        "002924A6: lea       rdx,[rip+0x16e78b]        # 0x180400c38 ; 'Show FSR Upscaling Debug View'"
+      ]
+    ]
+  },
+  {
+    "rva": 4197496,
+    "text": "Shows debug view for FSR upscaling.",
+    "xrefs": [
+      [
+        "0x188b7a",
+        "0x188b50",
+        "00188B7A: lea       rdx,[rip+0x2780f7]        # 0x180400c78 ; 'Shows debug view for FSR upscaling.'"
+      ]
+    ]
+  },
+  {
+    "rva": 4197576,
+    "text": "Show FSR Framegen Debug View",
+    "xrefs": [
+      [
+        "0x188bea",
+        "0x188bc0",
+        "00188BEA: lea       rdx,[rip+0x2780d7]        # 0x180400cc8 ; 'Show FSR Framegen Debug View'"
+      ],
+      [
+        "0x28af04",
+        "0x2855c0",
+        "0028AF04: lea       rdx,[rip+0x175dbd]        # 0x180400cc8 ; 'Show FSR Framegen Debug View'"
+      ]
+    ]
+  },
+  {
+    "rva": 4197640,
+    "text": "Show FSR Debug View",
+    "xrefs": [
+      [
+        "0x188c5a",
+        "0x188c30",
+        "00188C5A: lea       rdx,[rip+0x2780a7]        # 0x180400d08 ; 'Show FSR Debug View'"
+      ]
+    ]
+  },
+  {
+    "rva": 4197696,
+    "text": "Shows debug view for FSR upscaling when frame generation is disabled.",
+    "xrefs": [
+      [
+        "0x188cca",
+        "0x188ca0",
+        "00188CCA: lea       rdx,[rip+0x27806f]        # 0x180400d40 ; 'Shows debug view for FSR upscaling when frame generation is disabled.'"
+      ],
+      [
+        "0x29246a",
+        "0x290c30",
+        "0029246A: lea       rdx,[rip+0x16e8cf]        # 0x180400d40 ; 'Shows debug view for FSR upscaling when frame generation is disabled.'"
+      ]
+    ]
+  },
+  {
+    "rva": 4197944,
+    "text": "Framegen FPS -> ",
+    "xrefs": [
+      [
+        "0x183471",
+        "0x17fcd0",
+        "00183471: lea       rdx,[rip+0x27d9c0]        # 0x180400e38 ; 'Framegen FPS -> '"
+      ]
+    ]
+  },
+  {
+    "rva": 4198272,
+    "text": "Framegen Frame Time",
+    "xrefs": [
+      [
+        "0x18358f",
+        "0x17fcd0",
+        "0018358F: lea       rdx,[rip+0x27d9ea]        # 0x180400f80 ; 'Framegen Frame Time'"
+      ],
+      [
+        "0x28acb3",
+        "0x2855c0",
+        "0028ACB3: lea       rdx,[rip+0x1762c6]        # 0x180400f80 ; 'Framegen Frame Time'"
+      ]
+    ]
+  },
+  {
+    "rva": 4199256,
+    "text": "Skyrim Upscaler FSR3 Build",
+    "xrefs": [
+      [
+        "0x18904a",
+        "0x189020",
+        "0018904A: lea       rdx,[rip+0x278307]        # 0x180401358 ; 'Skyrim Upscaler FSR3 Build'"
+      ],
+      [
+        "0x189071",
+        "0x189020",
+        "00189071: lea       rdx,[rip+0x2782e0]        # 0x180401358 ; 'Skyrim Upscaler FSR3 Build'"
+      ]
+    ]
+  },
+  {
+    "rva": 4200988,
+    "text": "FSR FG",
+    "xrefs": [
+      [
+        "0x28a498",
+        "0x2855c0",
+        "0028A498: lea       rax,[rip+0x17757d]        # 0x180401a1c ; 'FSR FG'"
+      ]
+    ]
+  },
+  {
+    "rva": 4201024,
+    "text": "Framegen FPS",
+    "xrefs": [
+      [
+        "0x28bd95",
+        "0x28b450",
+        "0028BD95: vmovsd    xmm0,QWORD PTR [rip+0x175ca3]        # 0x180401a40 ; 'Framegen FPS'"
+      ]
+    ]
+  },
+  {
+    "rva": 4216584,
+    "text": "frameGenerationMode",
+    "xrefs": [
+      [
+        "0x18bed0",
+        "0x18bdc0",
+        "0018BED0: lea       rdx,[rip+0x279831]        # 0x180405708 ; 'frameGenerationMode'"
+      ],
+      [
+        "0x18bf1d",
+        "0x18bdc0",
+        "0018BF1D: lea       rdx,[rip+0x2797e4]        # 0x180405708 ; 'frameGenerationMode'"
+      ],
+      [
+        "0x18bf77",
+        "0x18bdc0",
+        "0018BF77: lea       rdx,[rip+0x27978a]        # 0x180405708 ; 'frameGenerationMode'"
+      ],
+      [
+        "0x18bf97",
+        "0x18bdc0",
+        "0018BF97: lea       rdx,[rip+0x27976a]        # 0x180405708 ; 'frameGenerationMode'"
+      ]
+    ]
+  },
+  {
+    "rva": 4218416,
+    "text": ";Async Framewarp Thread: true uses a separate presentation thread with FSR FG or XeSS FG.",
+    "xrefs": [
+      [
+        "0x29c2c2",
+        "0x29b190",
+        "0029C2C2: lea       rax,[rip+0x169b67]        # 0x180405e30 ; ';Async Framewarp Thread: true uses a separate presentation thread with FSR FG or XeSS FG.'"
+      ],
+      [
+        "0x2a2f38",
+        "0x2a2650",
+        "002A2F38: lea       rax,[rip+0x162ef1]        # 0x180405e30 ; ';Async Framewarp Thread: true uses a separate presentation thread with FSR FG or XeSS FG.'"
+      ]
+    ]
+  },
+  {
+    "rva": 4219768,
+    "text": "mToggleFrameGen",
+    "xrefs": [
+      [
+        "0x29bdad",
+        "0x29b190",
+        "0029BDAD: lea       rdx,[rip+0x16a5c4]        # 0x180406378 ; 'mToggleFrameGen'"
+      ],
+      [
+        "0x2a2cf7",
+        "0x2a2650",
+        "002A2CF7: lea       rdx,[rip+0x16367a]        # 0x180406378 ; 'mToggleFrameGen'"
+      ]
+    ]
+  },
+  {
+    "rva": 4219824,
+    "text": "mFrameGenType",
+    "xrefs": [
+      [
+        "0x29be97",
+        "0x29b190",
+        "0029BE97: lea       r8,[rip+0x16a512]        # 0x1804063b0 ; 'mFrameGenType'"
+      ],
+      [
+        "0x29beb4",
+        "0x29b190",
+        "0029BEB4: lea       r8,[rip+0x16a4f5]        # 0x1804063b0 ; 'mFrameGenType'"
+      ],
+      [
+        "0x29bf1f",
+        "0x29b190",
+        "0029BF1F: lea       r8,[rip+0x16a48a]        # 0x1804063b0 ; 'mFrameGenType'"
+      ],
+      [
+        "0x2a32d2",
+        "0x2a2650",
+        "002A32D2: lea       r8,[rip+0x1630d7]        # 0x1804063b0 ; 'mFrameGenType'"
+      ]
+    ]
+  },
+  {
+    "rva": 4220152,
+    "text": "mEnableFrameGeneration",
+    "xrefs": [
+      [
+        "0x29ca89",
+        "0x29b190",
+        "0029CA89: lea       r8,[rip+0x169a68]        # 0x1804064f8 ; 'mEnableFrameGeneration'"
+      ],
+      [
+        "0x29caaa",
+        "0x29b190",
+        "0029CAAA: lea       r8,[rip+0x169a47]        # 0x1804064f8 ; 'mEnableFrameGeneration'"
+      ],
+      [
+        "0x29cb0b",
+        "0x29b190",
+        "0029CB0B: lea       r8,[rip+0x1699e6]        # 0x1804064f8 ; 'mEnableFrameGeneration'"
+      ],
+      [
+        "0x2a340d",
+        "0x2a2650",
+        "002A340D: lea       r8,[rip+0x1630e4]        # 0x1804064f8 ; 'mEnableFrameGeneration'"
+      ]
+    ]
+  },
+  {
+    "rva": 4221840,
+    "text": "void __cdecl ReportCSFrameGenerationBootErrors(void)",
+    "xrefs": [
+      [
+        "0x29a4ee",
+        "0x29a4b0",
+        "0029A4EE: lea       r15,[rip+0x16c69b]        # 0x180406b90 ; 'void __cdecl ReportCSFrameGenerationBootErrors(void)'"
+      ],
+      [
+        "0x29a605",
+        "0x29a4b0",
+        "0029A605: lea       r15,[rip+0x16c584]        # 0x180406b90 ; 'void __cdecl ReportCSFrameGenerationBootErrors(void)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4223584,
+    "text": "void __cdecl SkyrimUpscaler::EvaluateUpscaling(struct ImageWrapper *,struct ImageWrapper *)",
+    "xrefs": [
+      [
+        "0x294b4e",
+        "0x2949c0",
+        "00294B4E: lea       rsi,[rip+0x17270b]        # 0x180407260 ; 'void __cdecl SkyrimUpscaler::EvaluateUpscaling(struct ImageWrapper *,struct ImageWrapper *)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4234848,
+    "text": "void __cdecl BeforePresent(void)",
+    "xrefs": [
+      [
+        "0x2aa9dd",
+        "0x2aa8a0",
+        "002AA9DD: lea       rcx,[rip+0x15f47c]        # 0x180409e60 ; 'void __cdecl BeforePresent(void)'"
+      ],
+      [
+        "0x2aaa70",
+        "0x2aa8a0",
+        "002AAA70: lea       rcx,[rip+0x15f3e9]        # 0x180409e60 ; 'void __cdecl BeforePresent(void)'"
+      ]
+    ]
+  },
+  {
+    "rva": 4234912,
+    "text": "FrameGen backend switch {} -> {} failed; previous backend retained",
+    "xrefs": [
+      [
+        "0x2aaa80",
+        "0x2aa8a0",
+        "002AAA80: lea       rcx,[rip+0x15f419]        # 0x180409ea0 ; 'FrameGen backend switch {} -> {} failed; previous backend retained'"
+      ]
+    ]
+  },
+  {
+    "rva": 4234984,
+    "text": "FrameGen backend switched {} -> {}",
+    "xrefs": [
+      [
+        "0x2aa9ed",
+        "0x2aa8a0",
+        "002AA9ED: lea       rcx,[rip+0x15f4f4]        # 0x180409ee8 ; 'FrameGen backend switched {} -> {}'"
+      ]
+    ]
+  },
+  {
+    "rva": 4236176,
+    "text": "FrameGen backend {} creation failed {:08X}; restoring managed D3D11 transport",
+    "xrefs": [
+      [
+        "0x2ad476",
+        "0x2ac650",
+        "002AD476: lea       rcx,[rip+0x15cf13]        # 0x18040a390 ; 'FrameGen backend {} creation failed {:08X}; restoring managed D3D11 transport'"
+      ]
+    ]
+  },
+  {
+    "rva": 4223680,
+    "text": "EvaluateUpscaling",
+    "xrefs": [
+      [
+        "0x295012",
+        "0x2949c0",
+        "00295012: lea       rdx,[rip+0x1722a7]        # 0x1804072c0 ; 'EvaluateUpscaling'"
+      ]
+    ]
+  }
+]

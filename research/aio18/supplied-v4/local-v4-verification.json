@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "scope": "Local static comparison of v4 excerpt instructions, not runtime traces or whole-program completeness",
+  "host_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+  "excerpt_files_checked": 8,
+  "excerpt_instruction_records_compared": 720,
+  "comparison": "Capstone mnemonic/operand comparison; equivalent REX/padding, signed immediates, unit index scale and segment notation normalized; nop operands excluded",
+  "local_host_routing_landmarks": 16,
+  "global_direct_scissor_search_rerun": false,
+  "note": "The archive global-search claim remains supplied evidence; local excerpts confirm the two identified calls."
+}

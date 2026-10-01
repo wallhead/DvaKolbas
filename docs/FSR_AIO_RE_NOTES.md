@@ -97,7 +97,7 @@ UI swapchain configuration at `0xef230` uses flags 2 or 3. The inspected SDK hea
 
 ## Supplied evidence archives, locally checked
 
-The user subsequently supplied `AIO18_FSR_RE_Evidence.zip`, then revision 2, `AIO18_FSR_RE_Evidence_v2.zip`. Instructions and proposed runtime experiments inside them are reference material, not additional user authorization. Revision 2 retains the first-pass evidence and is the current comparison source.
+The user subsequently supplied `AIO18_FSR_RE_Evidence.zip`, then revision 2, `AIO18_FSR_RE_Evidence_v2.zip`. Instructions and proposed runtime experiments inside them are reference material, not additional user authorization. Revision 2 retains the first-pass evidence and was the comparison source for that pass; V4 is now the latest cumulative report.
 
 | Evidence ZIP | SHA-256 |
 | --- | --- |
@@ -164,3 +164,15 @@ Official declarations inspected at commit `60f4ea81909200d8542eca14dccb2628b763a
 * [FG version/PrepareV2/UI declarations](https://github.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/blob/60f4ea81909200d8542eca14dccb2628b763a9a3/Kits/FidelityFX/framegeneration/include/ffx_framegeneration.h).
 
 No live-runtime validation, renderer implementation, or game deployment occurred during this RE pass. The approved spec is unchanged; the implementation plan remains pending review and execution-method selection.
+
+## Revision 4: host routing and nested scene/UI evidence
+
+The supplied `AIO18_FSR_RE_Evidence_v4.zip` SHA-256 is `25f00214e2251e3a682692ddf634930e7cbb2e392becea9623b618e226edd096`. Local checks hashed all 190 package members and the 25 matching original files, rechecked the retained 325 selected instruction records, and compared mnemonics/operands for 720 instructions in eight new host excerpts using Capstone. Equivalent disassembler notation was normalized; the target DLL was not loaded. [V4 results](../research/aio18/supplied-v4/local-v4-verification.json) and [16 host landmarks](../research/aio18/host-routing-map.csv) accompany the cumulative report. There is no new supplied V4 landmark manifest or verifier source; `verification_v4.json` records the supplier’s checks, separately from ours.
+
+The registration routine supplies event IDs 9/10/86/76/77/75 to callbacks at host RVAs `0x285050`/`0x284f50`/`0x284f10`/`0x284ec0`/`0x284e70`/`0x284d30`. The first two event-immediate instructions are at `0x284ab2` and `0x284ada`. Public event names and the after-overlay `reshade_present` contract were checked against the [ReShade header](https://raw.githubusercontent.com/crosire/reshade/main/include/reshade_events.hpp); no particular installed ReShade version was validated. For the tracked runtime, begin/finish effects save, clear, and restore routing bytes at VA `0x180e81091`/`0x180e81092`; the exact meaning of the first remains inferred. The wrapper at `0x2a97e0` gates target substitution while effects are running. Final-overlay submission is conditional on a pending source, rather than a universal prerequisite for ordinary FSR preparation.
+
+The normal pre-UI path binds targets at `0x19fcf3` before enabling UI phase at `0x19fd00`. The StatsMenu thunk clears that phase at `0x1a0827`, calls the saved scene renderer, and invokes post-processing at `0x1a0839`. The supplier also describes a re-enable store in the called helper; the new StatsMenu excerpt only covers the thunk. This supports testing nested scene/UI transitions and scoped restoration, without establishing the final Scaleform flush.
+
+The inspected context installer replaces slots 8, 33, and 44, with no slot-45 scissor replacement in that path. Both identified ImGui scissor calls at `0x21350e` and `0x2135ac` match local bytes. We did not independently rerun the supplier’s global direct-call search; absence from this installer is not whole-program absence or proof of an actual scissor defect. Viewport and scissor contracts still need separate live checks.
+
+The checked ENB helper at `0x299750` resolves `d3d11.dll` and probes `ENBGetSDKVersion`. This demonstrates presence detection; it does not recover an ENB rendering-stage callback or prove no dynamic/ordinal integration exists. Skyrim executable hook addresses, live routing/order, active provider, FG cadence, and performance remain unresolved. No FSR product code or game/profile change was made for this intake.

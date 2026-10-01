@@ -1,0 +1,223 @@
+{
+  "revision": 3,
+  "scope": "Static, hash-pinned; no runtime observations",
+  "corrections": [
+    {
+      "target": "Report section 10.1 PD common payload",
+      "old": "+0x20 output; +0x28/+0x30 optional SR inputs",
+      "new": "DX12 FSR SR: +0x20 reactive; +0x28 API-populated default output; +0x30 preferred explicit output. Native DX11 expands a DIFFERENT resource bundle before its SDK builder; never reuse those internal offsets as common payload offsets.",
+      "proof": [
+        "PD+0xF5D96",
+        "PD+0x100BCF..0x100D21",
+        "PD+0xFF8EE..0xFF995"
+      ]
+    }
+  ],
+  "ui_context_hooks": [
+    {
+      "method": "PSSetSamplers",
+      "slot": 10,
+      "handler_rva": 2786576
+    },
+    {
+      "method": "VSSetSamplers",
+      "slot": 26,
+      "handler_rva": 2786480
+    },
+    {
+      "method": "GSSetSamplers",
+      "slot": 32,
+      "handler_rva": 2786384
+    },
+    {
+      "method": "HSSetSamplers",
+      "slot": 61,
+      "handler_rva": 2786288
+    },
+    {
+      "method": "DSSetSamplers",
+      "slot": 65,
+      "handler_rva": 2786192
+    },
+    {
+      "method": "CSSetSamplers",
+      "slot": 70,
+      "handler_rva": 2786096
+    },
+    {
+      "method": "PSSetShaderResources",
+      "slot": 8,
+      "handler_rva": 2791232
+    },
+    {
+      "method": "RSSetViewports",
+      "slot": 44,
+      "handler_rva": 2790896
+    },
+    {
+      "method": "OMSetRenderTargets",
+      "slot": 33,
+      "handler_rva": 2792240
+    }
+  ],
+  "fields": [
+    {
+      "owner": "Skyrim host",
+      "offset": 8,
+      "role": "backend pixel jitter X"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 12,
+      "role": "backend pixel jitter Y"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 16,
+      "role": "motion X scale"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 20,
+      "role": "motion Y scale"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 612,
+      "role": "SR reset request"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 624,
+      "role": "display width"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 628,
+      "role": "display height"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 632,
+      "role": "render width"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 636,
+      "role": "render height"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 744,
+      "role": "computed bounded mip bias"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 748,
+      "role": "active sampler mip bias"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 756,
+      "role": "observed far distance"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 760,
+      "role": "observed near distance"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 764,
+      "role": "inverted depth state"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 765,
+      "role": "depth convention confirmed"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 766,
+      "role": "depth convention changed latch"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 2000,
+      "role": "original depth resource"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 2352,
+      "role": "full-size UI depth wrapper"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 2896,
+      "role": "prepared depth wrapper"
+    },
+    {
+      "owner": "Skyrim host",
+      "offset": 2984,
+      "role": "prepared MV wrapper"
+    }
+  ],
+  "reset_contract": {
+    "host_sr_request": 612,
+    "host_fg_payload_reset_write": "SkyrimUpscaler+0x2947B6 = 0",
+    "fg_effective_prepare_reset": "payload[0x54] OR backend[0x1C9]",
+    "backend_latch_set": "PD+0xF0360, API1 disabled",
+    "backend_latch_clear": "PD+0xEF759 after successful prepare + successful configure + enabled",
+    "not_proven": "Propagation of every camera cut/loading transition into one of these reset mechanisms"
+  },
+  "sr_dx12_descriptor": {
+    "descriptor_base": "rsp+0x60",
+    "rbp": "rsp+0x100",
+    "resource_size": 48,
+    "fields": [
+      {
+        "name": "color",
+        "descriptor_offset": 24,
+        "source": "payload+0x08"
+      },
+      {
+        "name": "depth",
+        "descriptor_offset": 72,
+        "source": "payload+0x18"
+      },
+      {
+        "name": "motionVectors",
+        "descriptor_offset": 120,
+        "source": "payload+0x10"
+      },
+      {
+        "name": "exposure",
+        "descriptor_offset": 168,
+        "source": "null"
+      },
+      {
+        "name": "reactive",
+        "descriptor_offset": 216,
+        "source": "payload+0x20"
+      },
+      {
+        "name": "transparencyAndComposition",
+        "descriptor_offset": 264,
+        "source": "null"
+      },
+      {
+        "name": "output",
+        "descriptor_offset": 312,
+        "source": "payload+0x30 if non-null else payload+0x28"
+      }
+    ]
+  },
+  "unresolved": [
+    "Exact runtime paths and frequency; no GPU execution",
+    "No SkyrimSE.exe final Scaleform flush address or mod-widget attribution",
+    "Earlier special viewport branch passes original count with one local viewport; trigger count not observed",
+    "Original host scalar math thunk used by mip-bias producer not resolved through rebuilt imports; no verified log2 formula claim",
+    "No SR external exposure/T&C in inspected descriptor builders is not a claim about every other backend",
+    "Disassembly/payload corrections do not recover a guaranteed public ABI"
+  ]
+}

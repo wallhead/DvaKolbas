@@ -1,0 +1,1622 @@
+[
+  {
+    "rva": 18478136,
+    "text": "Creating FrameGenMethod_Streamline_DX12",
+    "xrefs": [
+      [
+        "0x7a894",
+        "0x7a200",
+        "0007A894: lea       rcx,[rip+0x1124b9d]        # 0x18119f438 ; 'Creating FrameGenMethod_Streamline_DX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18478176,
+    "text": "FrameGenMethod_Streamline_DX12 init Success!",
+    "xrefs": [
+      [
+        "0x7abaa",
+        "0x7ab20",
+        "0007ABAA: lea       rcx,[rip+0x11248af]        # 0x18119f460 ; 'FrameGenMethod_Streamline_DX12 init Success!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18478224,
+    "text": "FrameGenMethod_Streamline_DX12: SEH in slShutdown code=0x%08lx",
+    "xrefs": [
+      [
+        "0x7abe0",
+        "0x7abc0",
+        "0007ABE0: lea       rcx,[rip+0x11248a9]        # 0x18119f490 ; 'FrameGenMethod_Streamline_DX12: SEH in slShutdown code=0x%08lx'"
+      ]
+    ]
+  },
+  {
+    "rva": 18478288,
+    "text": "FrameGenMethod_Streamline_DX12 released!",
+    "xrefs": [
+      [
+        "0x7ac09",
+        "0x7ac00",
+        "0007AC09: lea       rcx,[rip+0x11248c0]        # 0x18119f4d0 ; 'FrameGenMethod_Streamline_DX12 released!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18479904,
+    "text": "FrameGenMethod_Streamline_DX12 is already initialised.",
+    "xrefs": [
+      [
+        "0x7c826",
+        "0x7c7e0",
+        "0007C826: lea       rcx,[rip+0x11232f3]        # 0x18119fb20 ; 'FrameGenMethod_Streamline_DX12 is already initialised.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18480704,
+    "text": "FrameGenMethod_Streamline_DX12: restored native D3D12 device from SL proxy (lost=%d)",
+    "xrefs": [
+      [
+        "0x7d5e5",
+        "0x7d3e0",
+        "0007D5E5: lea       rcx,[rip+0x1122854]        # 0x18119fe40 ; 'FrameGenMethod_Streamline_DX12: restored native D3D12 device from SL proxy (lost=%d)'"
+      ]
+    ]
+  },
+  {
+    "rva": 18480792,
+    "text": "FrameGenMethod_Streamline_DX12: slShutdown result=%d lost=%d",
+    "xrefs": [
+      [
+        "0x7d617",
+        "0x7d3e0",
+        "0007D617: lea       rcx,[rip+0x112287a]        # 0x18119fe98 ; 'FrameGenMethod_Streamline_DX12: slShutdown result=%d lost=%d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18483672,
+    "text": "Creating FrameGenMethod_XeFG_DX12",
+    "xrefs": [
+      [
+        "0x82aea",
+        "0x82990",
+        "00082AEA: lea       rcx,[rip+0x111dee7]        # 0x1811a09d8 ; 'Creating FrameGenMethod_XeFG_DX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18484040,
+    "text": "FrameGenMethod FSR3 ffxFsr3ContextCreate Success!",
+    "xrefs": [
+      [
+        "0x82fcb",
+        "0x82f30",
+        "00082FCB: lea       rcx,[rip+0x111db76]        # 0x1811a0b48 ; 'FrameGenMethod FSR3 ffxFsr3ContextCreate Success!'"
+      ],
+      [
+        "0xeed20",
+        "0xee870",
+        "000EED20: lea       rcx,[rip+0x10b1e21]        # 0x1811a0b48 ; 'FrameGenMethod FSR3 ffxFsr3ContextCreate Success!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511328,
+    "text": "amd_fidelityfx_dx11.dll loaded.",
+    "xrefs": [
+      [
+        "0xcc905",
+        "0xcc8c0",
+        "000CC905: lea       rcx,[rip+0x10dacd4]        # 0x1811a75e0 ; 'amd_fidelityfx_dx11.dll loaded.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511584,
+    "text": "amd_fidelityfx_dx12.dll loaded.",
+    "xrefs": [
+      [
+        "0xcc93b",
+        "0xcc8c0",
+        "000CC93B: lea       rcx,[rip+0x10dad9e]        # 0x1811a76e0 ; 'amd_fidelityfx_dx12.dll loaded.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511616,
+    "text": "amd_fidelityfx_loader_dx12.dll loaded.",
+    "xrefs": [
+      [
+        "0xcc971",
+        "0xcc8c0",
+        "000CC971: lea       rcx,[rip+0x10dad88]        # 0x1811a7700 ; 'amd_fidelityfx_loader_dx12.dll loaded.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511824,
+    "text": "ffxConfigure",
+    "xrefs": [
+      [
+        "0xcc9bf",
+        "0xcc8c0",
+        "000CC9BF: lea       rdx,[rip+0x10dae0a]        # 0x1811a77d0 ; 'ffxConfigure'"
+      ],
+      [
+        "0xcca4d",
+        "0xcc8c0",
+        "000CCA4D: lea       rdx,[rip+0x10dad7c]        # 0x1811a77d0 ; 'ffxConfigure'"
+      ],
+      [
+        "0xccae1",
+        "0xcc8c0",
+        "000CCAE1: lea       rdx,[rip+0x10dace8]        # 0x1811a77d0 ; 'ffxConfigure'"
+      ],
+      [
+        "0xccb9c",
+        "0xcc8c0",
+        "000CCB9C: lea       rdx,[rip+0x10dac2d]        # 0x1811a77d0 ; 'ffxConfigure'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511840,
+    "text": "amd_fidelityfx_vk.dll loaded.",
+    "xrefs": [
+      [
+        "0xcc9a7",
+        "0xcc8c0",
+        "000CC9A7: lea       rcx,[rip+0x10dae32]        # 0x1811a77e0 ; 'amd_fidelityfx_vk.dll loaded.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511872,
+    "text": "ffxDestroyContext",
+    "xrefs": [
+      [
+        "0xcc9e3",
+        "0xcc8c0",
+        "000CC9E3: lea       rdx,[rip+0x10dae16]        # 0x1811a7800 ; 'ffxDestroyContext'"
+      ],
+      [
+        "0xcca74",
+        "0xcc8c0",
+        "000CCA74: lea       rdx,[rip+0x10dad85]        # 0x1811a7800 ; 'ffxDestroyContext'"
+      ],
+      [
+        "0xccb08",
+        "0xcc8c0",
+        "000CCB08: lea       rdx,[rip+0x10dacf1]        # 0x1811a7800 ; 'ffxDestroyContext'"
+      ],
+      [
+        "0xccbc6",
+        "0xcc8c0",
+        "000CCBC6: lea       rdx,[rip+0x10dac33]        # 0x1811a7800 ; 'ffxDestroyContext'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511896,
+    "text": "ffxCreateContext",
+    "xrefs": [
+      [
+        "0xcc9cf",
+        "0xcc8c0",
+        "000CC9CF: lea       rdx,[rip+0x10dae42]        # 0x1811a7818 ; 'ffxCreateContext'"
+      ],
+      [
+        "0xcca60",
+        "0xcc8c0",
+        "000CCA60: lea       rdx,[rip+0x10dadb1]        # 0x1811a7818 ; 'ffxCreateContext'"
+      ],
+      [
+        "0xccaf4",
+        "0xcc8c0",
+        "000CCAF4: lea       rdx,[rip+0x10dad1d]        # 0x1811a7818 ; 'ffxCreateContext'"
+      ],
+      [
+        "0xccbaf",
+        "0xcc8c0",
+        "000CCBAF: lea       rdx,[rip+0x10dac62]        # 0x1811a7818 ; 'ffxCreateContext'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511920,
+    "text": "ffxQuery",
+    "xrefs": [
+      [
+        "0xcca0b",
+        "0xcc8c0",
+        "000CCA0B: lea       rdx,[rip+0x10dae1e]        # 0x1811a7830 ; 'ffxQuery'"
+      ],
+      [
+        "0xcca9c",
+        "0xcc8c0",
+        "000CCA9C: lea       rdx,[rip+0x10dad8d]        # 0x1811a7830 ; 'ffxQuery'"
+      ],
+      [
+        "0xccb36",
+        "0xcc8c0",
+        "000CCB36: lea       rdx,[rip+0x10dacf3]        # 0x1811a7830 ; 'ffxQuery'"
+      ],
+      [
+        "0xccbf4",
+        "0xcc8c0",
+        "000CCBF4: lea       rdx,[rip+0x10dac35]        # 0x1811a7830 ; 'ffxQuery'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511936,
+    "text": "ffxDispatch",
+    "xrefs": [
+      [
+        "0xcc9f7",
+        "0xcc8c0",
+        "000CC9F7: lea       rdx,[rip+0x10dae42]        # 0x1811a7840 ; 'ffxDispatch'"
+      ],
+      [
+        "0xcca88",
+        "0xcc8c0",
+        "000CCA88: lea       rdx,[rip+0x10dadb1]        # 0x1811a7840 ; 'ffxDispatch'"
+      ],
+      [
+        "0xccb1f",
+        "0xcc8c0",
+        "000CCB1F: lea       rdx,[rip+0x10dad1a]        # 0x1811a7840 ; 'ffxDispatch'"
+      ],
+      [
+        "0xccbdd",
+        "0xcc8c0",
+        "000CCBDD: lea       rdx,[rip+0x10dac5c]        # 0x1811a7840 ; 'ffxDispatch'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511952,
+    "text": "FFXAPIInterface Inited!",
+    "xrefs": [
+      [
+        "0xccc39",
+        "0xcc8c0",
+        "000CCC39: lea       rcx,[rip+0x10dac10]        # 0x1811a7850 ; 'FFXAPIInterface Inited!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18518336,
+    "text": "Creating FrameGenMethod_DX11WrapperForDX12",
+    "xrefs": [
+      [
+        "0xe9e43",
+        "0xe9dc0",
+        "000E9E43: lea       rcx,[rip+0x10bf2f6]        # 0x1811a9140 ; 'Creating FrameGenMethod_DX11WrapperForDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18518384,
+    "text": "FrameGen transport: creation returned success without a swapchain (type=%d direct=%u)",
+    "xrefs": [
+      [
+        "0xeb701",
+        "0xeb430",
+        "000EB701: lea       rcx,[rip+0x10bda68]        # 0x1811a9170 ; 'FrameGen transport: creation returned success without a swapchain (type=%d direct=%u)'"
+      ]
+    ]
+  },
+  {
+    "rva": 18518488,
+    "text": "FrameGen transport switch %d -> %d failed=%08x rollback=%08x",
+    "xrefs": [
+      [
+        "0xebc46",
+        "0xeb770",
+        "000EBC46: lea       rcx,[rip+0x10bd58b]        # 0x1811a91d8 ; 'FrameGen transport switch %d -> %d failed=%08x rollback=%08x'"
+      ]
+    ]
+  },
+  {
+    "rva": 18518560,
+    "text": "FrameGen transport: output pools did not retire before backend switch",
+    "xrefs": [
+      [
+        "0xeba22",
+        "0xeb770",
+        "000EBA22: lea       rcx,[rip+0x10bd7f7]        # 0x1811a9220 ; 'FrameGen transport: output pools did not retire before backend switch'"
+      ]
+    ]
+  },
+  {
+    "rva": 18518632,
+    "text": "FrameGen transport: None uses managed D3D11 swapchain proxy=%p",
+    "xrefs": [
+      [
+        "0xec91f",
+        "0xec800",
+        "000EC91F: lea       rcx,[rip+0x10bc942]        # 0x1811a9268 ; 'FrameGen transport: None uses managed D3D11 swapchain proxy=%p'"
+      ]
+    ]
+  },
+  {
+    "rva": 18518696,
+    "text": "FrameGen transport switched %d -> %d",
+    "xrefs": [
+      [
+        "0xebc71",
+        "0xeb770",
+        "000EBC71: lea       rcx,[rip+0x10bd630]        # 0x1811a92a8 ; 'FrameGen transport switched %d -> %d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18520632,
+    "text": "Creating FrameGenMethod_FSR3_FFXAPI Graphic API: D3D12",
+    "xrefs": [
+      [
+        "0xee7c6",
+        "0xee680",
+        "000EE7C6: lea       rcx,[rip+0x10bb26b]        # 0x1811a9a38 ; 'Creating FrameGenMethod_FSR3_FFXAPI Graphic API: D3D12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18520688,
+    "text": "Creating FrameGenMethod_FSR3_FFXAPI Graphic API: D3D11",
+    "xrefs": [
+      [
+        "0xee7cf",
+        "0xee680",
+        "000EE7CF: lea       rcx,[rip+0x10bb29a]        # 0x1811a9a70 ; 'Creating FrameGenMethod_FSR3_FFXAPI Graphic API: D3D11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18520744,
+    "text": "Using FSR4 Frame Generation.",
+    "xrefs": [
+      [
+        "0xee7e5",
+        "0xee680",
+        "000EE7E5: lea       rcx,[rip+0x10bb2bc]        # 0x1811a9aa8 ; 'Using FSR4 Frame Generation.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18520776,
+    "text": "Creating FrameGenMethod_FSR3_FFXAPI Graphic API: VULKAN",
+    "xrefs": [
+      [
+        "0xee7bd",
+        "0xee680",
+        "000EE7BD: lea       rcx,[rip+0x10bb304]        # 0x1811a9ac8 ; 'Creating FrameGenMethod_FSR3_FFXAPI Graphic API: VULKAN'"
+      ]
+    ]
+  },
+  {
+    "rva": 18520832,
+    "text": "Couldn't set the ffxapi framegen config: %d",
+    "xrefs": [
+      [
+        "0xeed10",
+        "0xee870",
+        "000EED10: lea       rcx,[rip+0x10bade9]        # 0x1811a9b00 ; \"Couldn't set the ffxapi framegen config: %d\""
+      ],
+      [
+        "0xef734",
+        "0xef230",
+        "000EF734: lea       rcx,[rip+0x10ba3c5]        # 0x1811a9b00 ; \"Couldn't set the ffxapi framegen config: %d\""
+      ]
+    ]
+  },
+  {
+    "rva": 18520880,
+    "text": "ffx::CreateContext for frame generation failed! ErrorCode: %d",
+    "xrefs": [
+      [
+        "0xeec29",
+        "0xee870",
+        "000EEC29: lea       rcx,[rip+0x10baf00]        # 0x1811a9b30 ; 'ffx::CreateContext for frame generation failed! ErrorCode: %d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521024,
+    "text": "FSR3 FG Feature gets released!",
+    "xrefs": [
+      [
+        "0xeef74",
+        "0xeef20",
+        "000EEF74: lea       rcx,[rip+0x10bac45]        # 0x1811a9bc0 ; 'FSR3 FG Feature gets released!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521056,
+    "text": "Replace FSR3 Frame Interpolation Swapchain",
+    "xrefs": [
+      [
+        "0xef994",
+        "0xef950",
+        "000EF994: lea       rcx,[rip+0x10ba245]        # 0x1811a9be0 ; 'Replace FSR3 Frame Interpolation Swapchain'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521104,
+    "text": "Couldn't set the ffxapi swapchain config: %d",
+    "xrefs": [
+      [
+        "0xef847",
+        "0xef230",
+        "000EF847: lea       rcx,[rip+0x10ba3c2]        # 0x1811a9c10 ; \"Couldn't set the ffxapi swapchain config: %d\""
+      ]
+    ]
+  },
+  {
+    "rva": 18521152,
+    "text": "Replace FSR3 Frame Interpolation Swapchain success",
+    "xrefs": [
+      [
+        "0xefa93",
+        "0xef950",
+        "000EFA93: lea       rcx,[rip+0x10ba1a6]        # 0x1811a9c40 ; 'Replace FSR3 Frame Interpolation Swapchain success'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521208,
+    "text": "Couldn't create the ffxapi fg swapchain (dx12): %d",
+    "xrefs": [
+      [
+        "0xefa2d",
+        "0xef950",
+        "000EFA2D: lea       rcx,[rip+0x10ba244]        # 0x1811a9c78 ; \"Couldn't create the ffxapi fg swapchain (dx12): %d\""
+      ]
+    ]
+  },
+  {
+    "rva": 18521264,
+    "text": "Couldn't create the FFXAPI FG SwapChain (dx12): %d",
+    "xrefs": [
+      [
+        "0xefbe7",
+        "0xefad0",
+        "000EFBE7: lea       rcx,[rip+0x10ba0c2]        # 0x1811a9cb0 ; \"Couldn't create the FFXAPI FG SwapChain (dx12): %d\""
+      ],
+      [
+        "0xefe1a",
+        "0xefc80",
+        "000EFE1A: lea       rcx,[rip+0x10b9e8f]        # 0x1811a9cb0 ; \"Couldn't create the FFXAPI FG SwapChain (dx12): %d\""
+      ]
+    ]
+  },
+  {
+    "rva": 18521320,
+    "text": "Create FSR3 Frame Interpolation SwapChain",
+    "xrefs": [
+      [
+        "0xefb22",
+        "0xefad0",
+        "000EFB22: lea       rcx,[rip+0x10ba1bf]        # 0x1811a9ce8 ; 'Create FSR3 Frame Interpolation SwapChain'"
+      ],
+      [
+        "0xefce6",
+        "0xefc80",
+        "000EFCE6: lea       rcx,[rip+0x10b9ffb]        # 0x1811a9ce8 ; 'Create FSR3 Frame Interpolation SwapChain'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521368,
+    "text": "Couldn't set the FFXAPI FrameGen config: %d",
+    "xrefs": [
+      [
+        "0xeff27",
+        "0xefc80",
+        "000EFF27: lea       rcx,[rip+0x10b9dea]        # 0x1811a9d18 ; \"Couldn't set the FFXAPI FrameGen config: %d\""
+      ],
+      [
+        "0xf03c3",
+        "0xf0320",
+        "000F03C3: lea       rcx,[rip+0x10b994e]        # 0x1811a9d18 ; \"Couldn't set the FFXAPI FrameGen config: %d\""
+      ]
+    ]
+  },
+  {
+    "rva": 18521416,
+    "text": "Create FSR3 Frame Interpolation SwapChain success",
+    "xrefs": [
+      [
+        "0xefc44",
+        "0xefad0",
+        "000EFC44: lea       rcx,[rip+0x10ba0fd]        # 0x1811a9d48 ; 'Create FSR3 Frame Interpolation SwapChain success'"
+      ],
+      [
+        "0xefead",
+        "0xefc80",
+        "000EFEAD: lea       rcx,[rip+0x10b9e94]        # 0x1811a9d48 ; 'Create FSR3 Frame Interpolation SwapChain success'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521488,
+    "text": "FrameGenMethod_FSR3_FFXAPI Couldn't get the vulkan frame interpolation queue",
+    "xrefs": [
+      [
+        "0xeff9b",
+        "0xeff60",
+        "000EFF9B: lea       rcx,[rip+0x10b9dee]        # 0x1811a9d90 ; \"FrameGenMethod_FSR3_FFXAPI Couldn't get the vulkan frame interpolation queue\""
+      ]
+    ]
+  },
+  {
+    "rva": 18521616,
+    "text": "ffx::CreateContext for Frame Generation SwapChain failed! ErrorCode: %d",
+    "xrefs": [
+      [
+        "0xf01f9",
+        "0xeffc0",
+        "000F01F9: lea       rcx,[rip+0x10b9c10]        # 0x1811a9e10 ; 'ffx::CreateContext for Frame Generation SwapChain failed! ErrorCode: %d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521744,
+    "text": "FSR menu presentation configuration failed result=%d",
+    "xrefs": [
+      [
+        "0xf0720",
+        "0xf0580",
+        "000F0720: lea       rcx,[rip+0x10b9769]        # 0x1811a9e90 ; 'FSR menu presentation configuration failed result=%d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521800,
+    "text": "FrameGenMethod_FSR3_FFXAPI is not initialized!",
+    "xrefs": [
+      [
+        "0xf03d9",
+        "0xf0320",
+        "000F03D9: lea       rcx,[rip+0x10b9ae8]        # 0x1811a9ec8 ; 'FrameGenMethod_FSR3_FFXAPI is not initialized!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18521848,
+    "text": "FSR menu UI clear failed result=%d",
+    "xrefs": [
+      [
+        "0xf079b",
+        "0xf0580",
+        "000F079B: lea       rcx,[rip+0x10b9756]        # 0x1811a9ef8 ; 'FSR menu UI clear failed result=%d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526160,
+    "text": "Loaded ffx_backend_dx12_x64.dll",
+    "xrefs": [
+      [
+        "0xf3f01",
+        "0xf3ec0",
+        "000F3F01: lea       rcx,[rip+0x10b70c8]        # 0x1811aafd0 ; 'Loaded ffx_backend_dx12_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526496,
+    "text": "Loaded ffx_backend_dx11_x64.dll",
+    "xrefs": [
+      [
+        "0xf3f37",
+        "0xf3ec0",
+        "000F3F37: lea       rcx,[rip+0x10b71e2]        # 0x1811ab120 ; 'Loaded ffx_backend_dx11_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526528,
+    "text": "ffxGetDeviceDX12",
+    "xrefs": [
+      [
+        "0xf3faa",
+        "0xf3ec0",
+        "000F3FAA: lea       rdx,[rip+0x10b718f]        # 0x1811ab140 ; 'ffxGetDeviceDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526552,
+    "text": "ffxGetInterfaceDX12",
+    "xrefs": [
+      [
+        "0xf3fbd",
+        "0xf3ec0",
+        "000F3FBD: lea       rdx,[rip+0x10b7194]        # 0x1811ab158 ; 'ffxGetInterfaceDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526576,
+    "text": "Loaded ffx_fsr3_x64.dll",
+    "xrefs": [
+      [
+        "0xf3f6d",
+        "0xf3ec0",
+        "000F3F6D: lea       rcx,[rip+0x10b71fc]        # 0x1811ab170 ; 'Loaded ffx_fsr3_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526600,
+    "text": "ffxGetScratchMemorySizeDX12",
+    "xrefs": [
+      [
+        "0xf3f87",
+        "0xf3ec0",
+        "000F3F87: lea       rdx,[rip+0x10b71fa]        # 0x1811ab188 ; 'ffxGetScratchMemorySizeDX12'"
+      ],
+      [
+        "0xf3f97",
+        "0xf3ec0",
+        "000F3F97: lea       rdx,[rip+0x10b71ea]        # 0x1811ab188 ; 'ffxGetScratchMemorySizeDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526632,
+    "text": "ffxGetSurfaceFormatDX12",
+    "xrefs": [
+      [
+        "0xf3ff9",
+        "0xf3ec0",
+        "000F3FF9: lea       rdx,[rip+0x10b71a8]        # 0x1811ab1a8 ; 'ffxGetSurfaceFormatDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526656,
+    "text": "ffxGetResourceDescriptionDX12",
+    "xrefs": [
+      [
+        "0xf400d",
+        "0xf3ec0",
+        "000F400D: lea       rdx,[rip+0x10b71ac]        # 0x1811ab1c0 ; 'ffxGetResourceDescriptionDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526688,
+    "text": "ffxGetCommandListDX12",
+    "xrefs": [
+      [
+        "0xf3fd1",
+        "0xf3ec0",
+        "000F3FD1: lea       rdx,[rip+0x10b7208]        # 0x1811ab1e0 ; 'ffxGetCommandListDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526712,
+    "text": "ffxGetResourceDX12",
+    "xrefs": [
+      [
+        "0xf3fe5",
+        "0xf3ec0",
+        "000F3FE5: lea       rdx,[rip+0x10b720c]        # 0x1811ab1f8 ; 'ffxGetResourceDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526736,
+    "text": "ffxGetSwapchainDX12",
+    "xrefs": [
+      [
+        "0xf404e",
+        "0xf3ec0",
+        "000F404E: lea       rdx,[rip+0x10b71bb]        # 0x1811ab210 ; 'ffxGetSwapchainDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526760,
+    "text": "ffxGetDX12SwapchainPtr",
+    "xrefs": [
+      [
+        "0xf4062",
+        "0xf3ec0",
+        "000F4062: lea       rdx,[rip+0x10b71bf]        # 0x1811ab228 ; 'ffxGetDX12SwapchainPtr'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526784,
+    "text": "GetFfxResourceDescriptionDX12",
+    "xrefs": [
+      [
+        "0xf402a",
+        "0xf3ec0",
+        "000F402A: lea       rdx,[rip+0x10b720f]        # 0x1811ab240 ; 'GetFfxResourceDescriptionDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526816,
+    "text": "ffxGetCommandQueueDX12",
+    "xrefs": [
+      [
+        "0xf403e",
+        "0xf3ec0",
+        "000F403E: lea       rdx,[rip+0x10b721b]        # 0x1811ab260 ; 'ffxGetCommandQueueDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526840,
+    "text": "ffxCreateFrameinterpolationSwapchainForHwndDX12",
+    "xrefs": [
+      [
+        "0xf409e",
+        "0xf3ec0",
+        "000F409E: lea       rdx,[rip+0x10b71d3]        # 0x1811ab278 ; 'ffxCreateFrameinterpolationSwapchainForHwndDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526888,
+    "text": "ffxWaitForPresents",
+    "xrefs": [
+      [
+        "0xf40b2",
+        "0xf3ec0",
+        "000F40B2: lea       rdx,[rip+0x10b71ef]        # 0x1811ab2a8 ; 'ffxWaitForPresents'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526912,
+    "text": "ffxReplaceSwapchainForFrameinterpolationDX12",
+    "xrefs": [
+      [
+        "0xf4076",
+        "0xf3ec0",
+        "000F4076: lea       rdx,[rip+0x10b7243]        # 0x1811ab2c0 ; 'ffxReplaceSwapchainForFrameinterpolationDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526960,
+    "text": "ffxCreateFrameinterpolationSwapchainDX12",
+    "xrefs": [
+      [
+        "0xf408a",
+        "0xf3ec0",
+        "000F408A: lea       rdx,[rip+0x10b725f]        # 0x1811ab2f0 ; 'ffxCreateFrameinterpolationSwapchainDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527008,
+    "text": "ffxGetFrameinterpolationTextureDX12",
+    "xrefs": [
+      [
+        "0xf40ee",
+        "0xf3ec0",
+        "000F40EE: lea       rdx,[rip+0x10b722b]        # 0x1811ab320 ; 'ffxGetFrameinterpolationTextureDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527048,
+    "text": "ffxSetFrameGenerationConfigToSwapchainDX12",
+    "xrefs": [
+      [
+        "0xf4102",
+        "0xf3ec0",
+        "000F4102: lea       rdx,[rip+0x10b723f]        # 0x1811ab348 ; 'ffxSetFrameGenerationConfigToSwapchainDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527096,
+    "text": "ffxRegisterFrameinterpolationUiResourceDX12",
+    "xrefs": [
+      [
+        "0xf40c6",
+        "0xf3ec0",
+        "000F40C6: lea       rdx,[rip+0x10b72ab]        # 0x1811ab378 ; 'ffxRegisterFrameinterpolationUiResourceDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527144,
+    "text": "ffxGetFrameinterpolationCommandlistDX12",
+    "xrefs": [
+      [
+        "0xf40da",
+        "0xf3ec0",
+        "000F40DA: lea       rdx,[rip+0x10b72c7]        # 0x1811ab3a8 ; 'ffxGetFrameinterpolationCommandlistDX12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527184,
+    "text": "ffxGetInterfaceDX11",
+    "xrefs": [
+      [
+        "0xf4164",
+        "0xf3ec0",
+        "000F4164: lea       rdx,[rip+0x10b7265]        # 0x1811ab3d0 ; 'ffxGetInterfaceDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527208,
+    "text": "ffxGetCommandListDX11",
+    "xrefs": [
+      [
+        "0xf417b",
+        "0xf3ec0",
+        "000F417B: lea       rdx,[rip+0x10b7266]        # 0x1811ab3e8 ; 'ffxGetCommandListDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527232,
+    "text": "ffxGetScratchMemorySizeDX11",
+    "xrefs": [
+      [
+        "0xf413d",
+        "0xf3ec0",
+        "000F413D: lea       rdx,[rip+0x10b72bc]        # 0x1811ab400 ; 'ffxGetScratchMemorySizeDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527264,
+    "text": "ffxGetDeviceDX11",
+    "xrefs": [
+      [
+        "0xf414d",
+        "0xf3ec0",
+        "000F414D: lea       rdx,[rip+0x10b72cc]        # 0x1811ab420 ; 'ffxGetDeviceDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527288,
+    "text": "ffxGetResourceDescriptionDX11",
+    "xrefs": [
+      [
+        "0xf41c0",
+        "0xf3ec0",
+        "000F41C0: lea       rdx,[rip+0x10b7271]        # 0x1811ab438 ; 'ffxGetResourceDescriptionDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527320,
+    "text": "GetFfxResourceDescriptionDX11",
+    "xrefs": [
+      [
+        "0xf41e3",
+        "0xf3ec0",
+        "000F41E3: lea       rdx,[rip+0x10b726e]        # 0x1811ab458 ; 'GetFfxResourceDescriptionDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527352,
+    "text": "ffxGetResourceDX11",
+    "xrefs": [
+      [
+        "0xf4192",
+        "0xf3ec0",
+        "000F4192: lea       rdx,[rip+0x10b72df]        # 0x1811ab478 ; 'ffxGetResourceDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527376,
+    "text": "ffxGetSurfaceFormatDX11",
+    "xrefs": [
+      [
+        "0xf41a9",
+        "0xf3ec0",
+        "000F41A9: lea       rdx,[rip+0x10b72e0]        # 0x1811ab490 ; 'ffxGetSurfaceFormatDX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527400,
+    "text": "ffxFsr3ContextDispatchUpscale",
+    "xrefs": [
+      [
+        "0xf4235",
+        "0xf3ec0",
+        "000F4235: lea       rdx,[rip+0x10b726c]        # 0x1811ab4a8 ; 'ffxFsr3ContextDispatchUpscale'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527432,
+    "text": "ffxFsr3ConfigureFrameGeneration",
+    "xrefs": [
+      [
+        "0xf424c",
+        "0xf3ec0",
+        "000F424C: lea       rdx,[rip+0x10b7275]        # 0x1811ab4c8 ; 'ffxFsr3ConfigureFrameGeneration'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527464,
+    "text": "ffxFsr3ContextCreate",
+    "xrefs": [
+      [
+        "0xf420e",
+        "0xf3ec0",
+        "000F420E: lea       rdx,[rip+0x10b72d3]        # 0x1811ab4e8 ; 'ffxFsr3ContextCreate'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527488,
+    "text": "ffxFsr3ContextDestroy",
+    "xrefs": [
+      [
+        "0xf421e",
+        "0xf3ec0",
+        "000F421E: lea       rdx,[rip+0x10b72db]        # 0x1811ab500 ; 'ffxFsr3ContextDestroy'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527512,
+    "text": "ffxFsr3ContextDispatchFrameGenerationPrepare",
+    "xrefs": [
+      [
+        "0xf4291",
+        "0xf3ec0",
+        "000F4291: lea       rdx,[rip+0x10b7280]        # 0x1811ab518 ; 'ffxFsr3ContextDispatchFrameGenerationPrepare'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527560,
+    "text": "FSR3Interface Inited!",
+    "xrefs": [
+      [
+        "0xf42db",
+        "0xf3ec0",
+        "000F42DB: lea       rcx,[rip+0x10b7266]        # 0x1811ab548 ; 'FSR3Interface Inited!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527584,
+    "text": "ffxFsr3DispatchFrameGeneration",
+    "xrefs": [
+      [
+        "0xf4263",
+        "0xf3ec0",
+        "000F4263: lea       rdx,[rip+0x10b72f6]        # 0x1811ab560 ; 'ffxFsr3DispatchFrameGeneration'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527616,
+    "text": "ffxFsr3ContextGenerateReactiveMask",
+    "xrefs": [
+      [
+        "0xf427a",
+        "0xf3ec0",
+        "000F427A: lea       rdx,[rip+0x10b72ff]        # 0x1811ab580 ; 'ffxFsr3ContextGenerateReactiveMask'"
+      ]
+    ]
+  },
+  {
+    "rva": 18527776,
+    "text": "FrameGen: failed to create companion D3D12 device.",
+    "xrefs": [
+      [
+        "0xf4643",
+        "0xf45f0",
+        "000F4643: lea       rcx,[rip+0x10b6fd6]        # 0x1811ab620 ; 'FrameGen: failed to create companion D3D12 device.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529088,
+    "text": "ffx_fsr2_api_dx12_x64.dll",
+    "xrefs": [
+      [
+        "0xfad63",
+        "0xfa450",
+        "000FAD63: movups    xmm0,XMMWORD PTR [rip+0x10b0dd6]        # 0x1811abb40 ; 'ffx_fsr2_api_dx12_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529136,
+    "text": "ffx_fsr2_api_x64.dll",
+    "xrefs": [
+      [
+        "0xfabdc",
+        "0xfa450",
+        "000FABDC: movups    xmm0,XMMWORD PTR [rip+0x10b0f8d]        # 0x1811abb70 ; 'ffx_fsr2_api_x64.dll'"
+      ],
+      [
+        "0xfad1e",
+        "0xfa450",
+        "000FAD1E: movups    xmm0,XMMWORD PTR [rip+0x10b0e4b]        # 0x1811abb70 ; 'ffx_fsr2_api_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529160,
+    "text": "ffx_fsr2_api_dx11_x64.dll",
+    "xrefs": [
+      [
+        "0xfac2b",
+        "0xfa450",
+        "000FAC2B: movups    xmm0,XMMWORD PTR [rip+0x10b0f56]        # 0x1811abb88 ; 'ffx_fsr2_api_dx11_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529192,
+    "text": "amd_fidelityfx_dx12.dll",
+    "xrefs": [
+      [
+        "0xfa845",
+        "0xfa450",
+        "000FA845: movups    xmm0,XMMWORD PTR [rip+0x10b135c]        # 0x1811abba8 ; 'amd_fidelityfx_dx12.dll'"
+      ],
+      [
+        "0xfb22d",
+        "0xfafa0",
+        "000FB22D: movups    xmm0,XMMWORD PTR [rip+0x10b0974]        # 0x1811abba8 ; 'amd_fidelityfx_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529216,
+    "text": "amd_fidelityfx_vk.dll",
+    "xrefs": [
+      [
+        "0xfa8a5",
+        "0xfa450",
+        "000FA8A5: movups    xmm0,XMMWORD PTR [rip+0x10b1314]        # 0x1811abbc0 ; 'amd_fidelityfx_vk.dll'"
+      ],
+      [
+        "0xfb28d",
+        "0xfafa0",
+        "000FB28D: movups    xmm0,XMMWORD PTR [rip+0x10b092c]        # 0x1811abbc0 ; 'amd_fidelityfx_vk.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529264,
+    "text": "amd_fidelityfx_dx11.dll",
+    "xrefs": [
+      [
+        "0xfa7e2",
+        "0xfa450",
+        "000FA7E2: movups    xmm0,XMMWORD PTR [rip+0x10b1407]        # 0x1811abbf0 ; 'amd_fidelityfx_dx11.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529288,
+    "text": "amd_fidelityfx_loader_dx11.dll",
+    "xrefs": [
+      [
+        "0xfa4d9",
+        "0xfa450",
+        "000FA4D9: movups    xmm0,XMMWORD PTR [rip+0x10b1728]        # 0x1811abc08 ; 'amd_fidelityfx_loader_dx11.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529320,
+    "text": "amd_fidelityfx_loader_dx12.dll",
+    "xrefs": [
+      [
+        "0xfa53e",
+        "0xfa450",
+        "000FA53E: movups    xmm0,XMMWORD PTR [rip+0x10b16e3]        # 0x1811abc28 ; 'amd_fidelityfx_loader_dx12.dll'"
+      ],
+      [
+        "0xfb2e5",
+        "0xfafa0",
+        "000FB2E5: movups    xmm0,XMMWORD PTR [rip+0x10b093c]        # 0x1811abc28 ; 'amd_fidelityfx_loader_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529352,
+    "text": "ffx_fsr3_x64.dll",
+    "xrefs": [
+      [
+        "0xfa8fe",
+        "0xfa450",
+        "000FA8FE: movups    xmm0,XMMWORD PTR [rip+0x10b1343]        # 0x1811abc48 ; 'ffx_fsr3_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529376,
+    "text": "ffx_fsr3upscaler_x64.dll",
+    "xrefs": [
+      [
+        "0xfa93c",
+        "0xfa450",
+        "000FA93C: movups    xmm0,XMMWORD PTR [rip+0x10b131d]        # 0x1811abc60 ; 'ffx_fsr3upscaler_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529408,
+    "text": "amd_fidelityfx_upscaler_dx12.dll",
+    "xrefs": [
+      [
+        "0xfa6fc",
+        "0xfa450",
+        "000FA6FC: movups    xmm0,XMMWORD PTR [rip+0x10b157d]        # 0x1811abc80 ; 'amd_fidelityfx_upscaler_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529448,
+    "text": "amd_fidelityfx_framegeneration_dx12.dll",
+    "xrefs": [
+      [
+        "0xfb347",
+        "0xfafa0",
+        "000FB347: movups    xmm0,XMMWORD PTR [rip+0x10b095a]        # 0x1811abca8 ; 'amd_fidelityfx_framegeneration_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529488,
+    "text": "amd_fidelityfx_loader_vk.dll",
+    "xrefs": [
+      [
+        "0xfa5a0",
+        "0xfa450",
+        "000FA5A0: movups    xmm0,XMMWORD PTR [rip+0x10b1729]        # 0x1811abcd0 ; 'amd_fidelityfx_loader_vk.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529520,
+    "text": "amd_fidelityfx_upscaler_dx11.dll",
+    "xrefs": [
+      [
+        "0xfa6b4",
+        "0xfa450",
+        "000FA6B4: movups    xmm0,XMMWORD PTR [rip+0x10b1635]        # 0x1811abcf0 ; 'amd_fidelityfx_upscaler_dx11.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529624,
+    "text": "FSR 3.1 Upscaling",
+    "xrefs": [
+      [
+        "0xfb513",
+        "0xfb513",
+        "000FB513: lea       rax,[rip+0x10b083e]        # 0x1811abd58 ; 'FSR 3.1 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529648,
+    "text": "FSR 4 Upscaling",
+    "xrefs": [
+      [
+        "0xfb508",
+        "0xfb508",
+        "000FB508: lea       rax,[rip+0x10b0861]        # 0x1811abd70 ; 'FSR 4 Upscaling'"
+      ]
+    ]
+  },
+  {
+    "rva": 18529992,
+    "text": "ffxGetInterface for DX11 failed! ErrorCode: 0x%08x",
+    "xrefs": [
+      [
+        "0xfe393",
+        "0xfe2e0",
+        "000FE393: lea       rcx,[rip+0x10adb2e]        # 0x1811abec8 ; 'ffxGetInterface for DX11 failed! ErrorCode: 0x%08x'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530048,
+    "text": "ffxFsr3ContextCreate failed! ErrorCode: 0x%08x",
+    "xrefs": [
+      [
+        "0xfe419",
+        "0xfe2e0",
+        "000FE419: lea       rcx,[rip+0x10adae0]        # 0x1811abf00 ; 'ffxFsr3ContextCreate failed! ErrorCode: 0x%08x'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530096,
+    "text": "Creating UpscaleMethod_FSR3_DX11",
+    "xrefs": [
+      [
+        "0xfe13f",
+        "0xfddb0",
+        "000FE13F: lea       rcx,[rip+0x10addea]        # 0x1811abf30 ; 'Creating UpscaleMethod_FSR3_DX11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530136,
+    "text": "ffxFsr3ContextDestroy Failed! ErrorCode: 0x%08x",
+    "xrefs": [
+      [
+        "0xfe609",
+        "0xfe5b0",
+        "000FE609: lea       rcx,[rip+0x10ad948]        # 0x1811abf58 ; 'ffxFsr3ContextDestroy Failed! ErrorCode: 0x%08x'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530184,
+    "text": "ffxFsr3ContextCreate success!",
+    "xrefs": [
+      [
+        "0xfe55d",
+        "0xfe2e0",
+        "000FE55D: lea       rcx,[rip+0x10ada24]        # 0x1811abf88 ; 'ffxFsr3ContextCreate success!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530216,
+    "text": "FSR Feature id=%d gets released!",
+    "xrefs": [
+      [
+        "0xfe5c1",
+        "0xfe5b0",
+        "000FE5C1: lea       rcx,[rip+0x10ad9e0]        # 0x1811abfa8 ; 'FSR Feature id=%d gets released!'"
+      ],
+      [
+        "0x100934",
+        "0x100900",
+        "00100934: lea       rcx,[rip+0x10ab66d]        # 0x1811abfa8 ; 'FSR Feature id=%d gets released!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530584,
+    "text": "ffxFsr3ContextDispatchUpscale Failed! ErrorCode: 0x%08x",
+    "xrefs": [
+      [
+        "0xff47d",
+        "0xfedc0",
+        "000FF47D: lea       rcx,[rip+0x10acc94]        # 0x1811ac118 ; 'ffxFsr3ContextDispatchUpscale Failed! ErrorCode: 0x%08x'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530728,
+    "text": "Creating UpscaleMethod_FSR3_FFXAPI Graphic API: D3D11",
+    "xrefs": [
+      [
+        "0x1004d9",
+        "0x1003e0",
+        "001004D9: lea       rcx,[rip+0x10abcc8]        # 0x1811ac1a8 ; 'Creating UpscaleMethod_FSR3_FFXAPI Graphic API: D3D11'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530784,
+    "text": "Using FSR4 Upscaling.",
+    "xrefs": [
+      [
+        "0x1004ef",
+        "0x1003e0",
+        "001004EF: lea       rcx,[rip+0x10abcea]        # 0x1811ac1e0 ; 'Using FSR4 Upscaling.'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530808,
+    "text": "ffx::CreateContext for upscaling failed! ErrorCode: %d",
+    "xrefs": [
+      [
+        "0x1007b0",
+        "0x100620",
+        "001007B0: lea       rcx,[rip+0x10aba41]        # 0x1811ac1f8 ; 'ffx::CreateContext for upscaling failed! ErrorCode: %d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530864,
+    "text": "Creating UpscaleMethod_FSR3_FFXAPI Graphic API: D3D12",
+    "xrefs": [
+      [
+        "0x1004d0",
+        "0x1003e0",
+        "001004D0: lea       rcx,[rip+0x10abd59]        # 0x1811ac230 ; 'Creating UpscaleMethod_FSR3_FFXAPI Graphic API: D3D12'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530920,
+    "text": "Creating UpscaleMethod_FSR3_FFXAPI Graphic API: VULKAN",
+    "xrefs": [
+      [
+        "0x1004c7",
+        "0x1003e0",
+        "001004C7: lea       rcx,[rip+0x10abd9a]        # 0x1811ac268 ; 'Creating UpscaleMethod_FSR3_FFXAPI Graphic API: VULKAN'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530976,
+    "text": "ffx::CreateContext Success!",
+    "xrefs": [
+      [
+        "0x1008cc",
+        "0x100620",
+        "001008CC: lea       rcx,[rip+0x10ab9cd]        # 0x1811ac2a0 ; 'ffx::CreateContext Success!'"
+      ]
+    ]
+  },
+  {
+    "rva": 18531008,
+    "text": "ffxFsr3ContextDispatchUpscale Failed! ErrorCode: %d",
+    "xrefs": [
+      [
+        "0x100e8d",
+        "0x100b70",
+        "00100E8D: lea       rcx,[rip+0x10ab42c]        # 0x1811ac2c0 ; 'ffxFsr3ContextDispatchUpscale Failed! ErrorCode: %d'"
+      ]
+    ]
+  },
+  {
+    "rva": 18475472,
+    "text": "FrameGen",
+    "xrefs": [
+      [
+        "0x727fb",
+        "0x727fb",
+        "000727FB: lea       rax,[rip+0x112c1ce]        # 0x18119e9d0 ; 'FrameGen'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511280,
+    "text": "amd_fidelityfx_dx11.dll",
+    "xrefs": [
+      [
+        "0xcc8db",
+        "0xcc8c0",
+        "000CC8DB: lea       rcx,[rip+0x10dacce]        # 0x1811a75b0 ; 'amd_fidelityfx_dx11.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511416,
+    "text": "amd_fidelityfx_dx12d.dll",
+    "xrefs": [
+      [
+        "0xcc926",
+        "0xcc8c0",
+        "000CC926: lea       rcx,[rip+0x10dad0b]        # 0x1811a7638 ; 'amd_fidelityfx_dx12d.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511472,
+    "text": "amd_fidelityfx_dx12.dll",
+    "xrefs": [
+      [
+        "0xcc911",
+        "0xcc8c0",
+        "000CC911: lea       rcx,[rip+0x10dad58]        # 0x1811a7670 ; 'amd_fidelityfx_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511520,
+    "text": "amd_fidelityfx_loader_dx12.dll",
+    "xrefs": [
+      [
+        "0xcc947",
+        "0xcc8c0",
+        "000CC947: lea       rcx,[rip+0x10dad52]        # 0x1811a76a0 ; 'amd_fidelityfx_loader_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511664,
+    "text": "amd_fidelityfx_loader_dx12d.dll",
+    "xrefs": [
+      [
+        "0xcc95c",
+        "0xcc8c0",
+        "000CC95C: lea       rcx,[rip+0x10dadcd]        # 0x1811a7730 ; 'amd_fidelityfx_loader_dx12d.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511728,
+    "text": "amd_fidelityfx_vkd.dll",
+    "xrefs": [
+      [
+        "0xcc992",
+        "0xcc8c0",
+        "000CC992: lea       rcx,[rip+0x10dadd7]        # 0x1811a7770 ; 'amd_fidelityfx_vkd.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511776,
+    "text": "amd_fidelityfx_vk.dll",
+    "xrefs": [
+      [
+        "0xcc97d",
+        "0xcc8c0",
+        "000CC97D: lea       rcx,[rip+0x10dae1c]        # 0x1811a77a0 ; 'amd_fidelityfx_vk.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18511984,
+    "text": "amd_fidelityfx_framegeneration_dx12.dll",
+    "xrefs": [
+      [
+        "0xccb7a",
+        "0xcc8c0",
+        "000CCB7A: lea       rcx,[rip+0x10dacef]        # 0x1811a7870 ; 'amd_fidelityfx_framegeneration_dx12.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526248,
+    "text": "ffx_backend_dx12_x64.dll",
+    "xrefs": [
+      [
+        "0xf3ed2",
+        "0xf3ec0",
+        "000F3ED2: lea       rcx,[rip+0x10b714f]        # 0x1811ab028 ; 'ffx_backend_dx12_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526304,
+    "text": "ffx_backend_dx12_x64d.dll",
+    "xrefs": [
+      [
+        "0xf3eec",
+        "0xf3ec0",
+        "000F3EEC: lea       rcx,[rip+0x10b716d]        # 0x1811ab060 ; 'ffx_backend_dx12_x64d.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526360,
+    "text": "ffx_fsr3_x64.dll",
+    "xrefs": [
+      [
+        "0xf3f43",
+        "0xf3ec0",
+        "000F3F43: lea       rcx,[rip+0x10b714e]        # 0x1811ab098 ; 'ffx_fsr3_x64.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526400,
+    "text": "ffx_fsr3_x64d.dll",
+    "xrefs": [
+      [
+        "0xf3f58",
+        "0xf3ec0",
+        "000F3F58: lea       rcx,[rip+0x10b7161]        # 0x1811ab0c0 ; 'ffx_fsr3_x64d.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18526440,
+    "text": "ffx_backend_dx11_x64d.dll",
+    "xrefs": [
+      [
+        "0xf3f22",
+        "0xf3ec0",
+        "000F3F22: lea       rcx,[rip+0x10b71bf]        # 0x1811ab0e8 ; 'ffx_backend_dx11_x64d.dll'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530256,
+    "text": "FSR3_Input_Color",
+    "xrefs": [
+      [
+        "0xfee4b",
+        "0xfedc0",
+        "000FEE4B: lea       r9,[rip+0x10ad17e]        # 0x1811abfd0 ; 'FSR3_Input_Color'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530296,
+    "text": "FSR3_InputDepth",
+    "xrefs": [
+      [
+        "0xfef08",
+        "0xfedc0",
+        "000FEF08: lea       r9,[rip+0x10ad0e9]        # 0x1811abff8 ; 'FSR3_InputDepth'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530328,
+    "text": "FSR3_InputReactiveMap",
+    "xrefs": [
+      [
+        "0xff144",
+        "0xfedc0",
+        "000FF144: lea       r9,[rip+0x10acecd]        # 0x1811ac018 ; 'FSR3_InputReactiveMap'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530376,
+    "text": "FSR3_Output_Color",
+    "xrefs": [
+      [
+        "0xff20c",
+        "0xfedc0",
+        "000FF20C: lea       r9,[rip+0x10ace35]        # 0x1811ac048 ; 'FSR3_Output_Color'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530416,
+    "text": "FSR3_InputMotionVectors",
+    "xrefs": [
+      [
+        "0xfefc8",
+        "0xfedc0",
+        "000FEFC8: lea       r9,[rip+0x10ad0a1]        # 0x1811ac070 ; 'FSR3_InputMotionVectors'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530464,
+    "text": "FSR3_InputExposure",
+    "xrefs": [
+      [
+        "0xff082",
+        "0xfedc0",
+        "000FF082: lea       r9,[rip+0x10ad017]        # 0x1811ac0a0 ; 'FSR3_InputExposure'"
+      ]
+    ]
+  },
+  {
+    "rva": 18530512,
+    "text": "FSR3_TransparencyAndCompositionMap",
+    "xrefs": [
+      [
+        "0xff2c9",
+        "0xfedc0",
+        "000FF2C9: lea       r9,[rip+0x10ace00]        # 0x1811ac0d0 ; 'FSR3_TransparencyAndCompositionMap'"
+      ]
+    ]
+  }
+]

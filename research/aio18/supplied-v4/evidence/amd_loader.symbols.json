@@ -1,0 +1,3192 @@
+[
+  {
+    "kind": "0x110c",
+    "offset": 0,
+    "section": 3,
+    "name": "modules",
+    "source": "global:48",
+    "record_offset": 10668,
+    "rva": 16384
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1792,
+    "section": 3,
+    "name": "__type_info_root_node",
+    "source": "global:48",
+    "record_offset": 45716,
+    "rva": 18176
+  },
+  {
+    "kind": "0x110d",
+    "offset": 368,
+    "section": 3,
+    "name": "__scrt_ucrt_dll_is_in_use",
+    "source": "global:48",
+    "record_offset": 60532,
+    "rva": 16752
+  },
+  {
+    "kind": "0x110d",
+    "offset": 256,
+    "section": 3,
+    "name": "__security_cookie",
+    "source": "global:48",
+    "record_offset": 61712,
+    "rva": 16640
+  },
+  {
+    "kind": "0x110d",
+    "offset": 320,
+    "section": 3,
+    "name": "__security_cookie_complement",
+    "source": "global:48",
+    "record_offset": 61776,
+    "rva": 16704
+  },
+  {
+    "kind": "0x110c",
+    "offset": 400,
+    "section": 3,
+    "name": "GS_ExceptionRecord",
+    "source": "global:48",
+    "record_offset": 61820,
+    "rva": 16784
+  },
+  {
+    "kind": "0x110c",
+    "offset": 560,
+    "section": 3,
+    "name": "GS_ContextRecord",
+    "source": "global:48",
+    "record_offset": 61856,
+    "rva": 16944
+  },
+  {
+    "kind": "0x110c",
+    "offset": 680,
+    "section": 2,
+    "name": "GS_ExceptionPointers",
+    "source": "global:48",
+    "record_offset": 61888,
+    "rva": 12968
+  },
+  {
+    "kind": "0x110d",
+    "offset": 360,
+    "section": 2,
+    "name": "__xi_a",
+    "source": "global:48",
+    "record_offset": 63084,
+    "rva": 12648
+  },
+  {
+    "kind": "0x110d",
+    "offset": 368,
+    "section": 2,
+    "name": "__xi_z",
+    "source": "global:48",
+    "record_offset": 63108,
+    "rva": 12656
+  },
+  {
+    "kind": "0x110d",
+    "offset": 344,
+    "section": 2,
+    "name": "__xc_a",
+    "source": "global:48",
+    "record_offset": 63160,
+    "rva": 12632
+  },
+  {
+    "kind": "0x110d",
+    "offset": 352,
+    "section": 2,
+    "name": "__xc_z",
+    "source": "global:48",
+    "record_offset": 63184,
+    "rva": 12640
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1824,
+    "section": 3,
+    "name": "__scrt_current_native_startup_state",
+    "source": "global:48",
+    "record_offset": 63208,
+    "rva": 18208
+  },
+  {
+    "kind": "0x110d",
+    "offset": 672,
+    "section": 2,
+    "name": "_pRawDllMain",
+    "source": "global:48",
+    "record_offset": 63280,
+    "rva": 12960
+  },
+  {
+    "kind": "0x110d",
+    "offset": 672,
+    "section": 2,
+    "name": "_pDefaultRawDllMain",
+    "source": "global:48",
+    "record_offset": 63328,
+    "rva": 12960
+  },
+  {
+    "kind": "0x110c",
+    "offset": 384,
+    "section": 3,
+    "name": "__proc_attached",
+    "source": "global:48",
+    "record_offset": 63364,
+    "rva": 16768
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1992,
+    "section": 2,
+    "name": "__rtc_iaa",
+    "source": "global:48",
+    "record_offset": 65900,
+    "rva": 14280
+  },
+  {
+    "kind": "0x110d",
+    "offset": 2000,
+    "section": 2,
+    "name": "__rtc_izz",
+    "source": "global:48",
+    "record_offset": 65924,
+    "rva": 14288
+  },
+  {
+    "kind": "0x110d",
+    "offset": 2008,
+    "section": 2,
+    "name": "__rtc_taa",
+    "source": "global:48",
+    "record_offset": 65948,
+    "rva": 14296
+  },
+  {
+    "kind": "0x110d",
+    "offset": 2016,
+    "section": 2,
+    "name": "__rtc_tzz",
+    "source": "global:48",
+    "record_offset": 65972,
+    "rva": 14304
+  },
+  {
+    "kind": "0x110d",
+    "offset": 336,
+    "section": 3,
+    "name": "__isa_inverted",
+    "source": "global:48",
+    "record_offset": 66912,
+    "rva": 16720
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1900,
+    "section": 3,
+    "name": "__avx10_version",
+    "source": "global:48",
+    "record_offset": 66944,
+    "rva": 18284
+  },
+  {
+    "kind": "0x110d",
+    "offset": 344,
+    "section": 3,
+    "name": "__isa_available",
+    "source": "global:48",
+    "record_offset": 67140,
+    "rva": 16728
+  },
+  {
+    "kind": "0x110d",
+    "offset": 348,
+    "section": 3,
+    "name": "__isa_enabled",
+    "source": "global:48",
+    "record_offset": 67172,
+    "rva": 16732
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1904,
+    "section": 3,
+    "name": "__favor",
+    "source": "global:48",
+    "record_offset": 67200,
+    "rva": 18288
+  },
+  {
+    "kind": "0x110d",
+    "offset": 352,
+    "section": 3,
+    "name": "__memset_fast_string_threshold",
+    "source": "global:48",
+    "record_offset": 67224,
+    "rva": 16736
+  },
+  {
+    "kind": "0x110d",
+    "offset": 360,
+    "section": 3,
+    "name": "__memset_nt_threshold",
+    "source": "global:48",
+    "record_offset": 67272,
+    "rva": 16744
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1896,
+    "section": 3,
+    "name": "__scrt_debugger_hook_flag",
+    "source": "global:48",
+    "record_offset": 67344,
+    "rva": 18280
+  },
+  {
+    "kind": "0x110d",
+    "offset": 360,
+    "section": 2,
+    "name": "__xi_a",
+    "source": "global:48",
+    "record_offset": 68152,
+    "rva": 12648
+  },
+  {
+    "kind": "0x110d",
+    "offset": 368,
+    "section": 2,
+    "name": "__xi_z",
+    "source": "global:48",
+    "record_offset": 68176,
+    "rva": 12656
+  },
+  {
+    "kind": "0x110d",
+    "offset": 344,
+    "section": 2,
+    "name": "__xc_a",
+    "source": "global:48",
+    "record_offset": 68200,
+    "rva": 12632
+  },
+  {
+    "kind": "0x110d",
+    "offset": 352,
+    "section": 2,
+    "name": "__xc_z",
+    "source": "global:48",
+    "record_offset": 68224,
+    "rva": 12640
+  },
+  {
+    "kind": "0x110d",
+    "offset": 376,
+    "section": 2,
+    "name": "__xp_a",
+    "source": "global:48",
+    "record_offset": 68248,
+    "rva": 12664
+  },
+  {
+    "kind": "0x110d",
+    "offset": 384,
+    "section": 2,
+    "name": "__xp_z",
+    "source": "global:48",
+    "record_offset": 68272,
+    "rva": 12672
+  },
+  {
+    "kind": "0x110d",
+    "offset": 392,
+    "section": 2,
+    "name": "__xt_a",
+    "source": "global:48",
+    "record_offset": 68296,
+    "rva": 12680
+  },
+  {
+    "kind": "0x110d",
+    "offset": 400,
+    "section": 2,
+    "name": "__xt_z",
+    "source": "global:48",
+    "record_offset": 68320,
+    "rva": 12688
+  },
+  {
+    "kind": "0x110c",
+    "offset": 2616,
+    "section": 2,
+    "name": "$xdatasym",
+    "source": "global:48",
+    "record_offset": 68344,
+    "rva": 14904
+  },
+  {
+    "kind": "0x110d",
+    "offset": 336,
+    "section": 2,
+    "name": "__guard_memcpy_fptr",
+    "source": "global:48",
+    "record_offset": 68412,
+    "rva": 12624
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 0,
+    "name": "__ImageBase",
+    "source": "global:48",
+    "record_offset": 68448
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1832,
+    "section": 3,
+    "name": "__scrt_native_startup_lock",
+    "source": "global:48",
+    "record_offset": 68476,
+    "rva": 18216
+  },
+  {
+    "kind": "0x110d",
+    "offset": 328,
+    "section": 3,
+    "name": "__scrt_native_dllmain_reason",
+    "source": "global:48",
+    "record_offset": 68520,
+    "rva": 16712
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1840,
+    "section": 3,
+    "name": "is_initialized_as_dll",
+    "source": "global:48",
+    "record_offset": 68564,
+    "rva": 18224
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1848,
+    "section": 3,
+    "name": "module_local_atexit_table",
+    "source": "global:48",
+    "record_offset": 68600,
+    "rva": 18232
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1872,
+    "section": 3,
+    "name": "module_local_at_quick_exit_table",
+    "source": "global:48",
+    "record_offset": 68640,
+    "rva": 18256
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1841,
+    "section": 3,
+    "name": "module_local_atexit_table_initialized",
+    "source": "global:48",
+    "record_offset": 68688,
+    "rva": 18225
+  },
+  {
+    "kind": "0x110d",
+    "offset": 256,
+    "section": 3,
+    "name": "__security_cookie",
+    "source": "global:48",
+    "record_offset": 69644,
+    "rva": 16640
+  },
+  {
+    "kind": "0x110d",
+    "offset": 5216,
+    "section": 1,
+    "name": "_guard_dispatch_icall_nop",
+    "source": "global:48",
+    "record_offset": 69676,
+    "rva": 9312
+  },
+  {
+    "kind": "0x110d",
+    "offset": 5248,
+    "section": 1,
+    "name": "_guard_xfg_dispatch_icall_nop",
+    "source": "global:48",
+    "record_offset": 69716,
+    "rva": 9344
+  },
+  {
+    "kind": "0x110d",
+    "offset": 368,
+    "section": 3,
+    "name": "__scrt_ucrt_dll_is_in_use",
+    "source": "global:48",
+    "record_offset": 69788,
+    "rva": 16752
+  },
+  {
+    "kind": "0x110d",
+    "offset": 288,
+    "section": 2,
+    "name": "__guard_check_icall_fptr",
+    "source": "global:48",
+    "record_offset": 69908,
+    "rva": 12576
+  },
+  {
+    "kind": "0x110d",
+    "offset": 296,
+    "section": 2,
+    "name": "__guard_xfg_check_icall_fptr",
+    "source": "global:48",
+    "record_offset": 69948,
+    "rva": 12584
+  },
+  {
+    "kind": "0x110d",
+    "offset": 304,
+    "section": 2,
+    "name": "__guard_dispatch_icall_fptr",
+    "source": "global:48",
+    "record_offset": 69992,
+    "rva": 12592
+  },
+  {
+    "kind": "0x110d",
+    "offset": 312,
+    "section": 2,
+    "name": "__guard_xfg_dispatch_icall_fptr",
+    "source": "global:48",
+    "record_offset": 70036,
+    "rva": 12600
+  },
+  {
+    "kind": "0x110d",
+    "offset": 320,
+    "section": 2,
+    "name": "__guard_xfg_table_dispatch_icall_fptr",
+    "source": "global:48",
+    "record_offset": 70084,
+    "rva": 12608
+  },
+  {
+    "kind": "0x110d",
+    "offset": 328,
+    "section": 2,
+    "name": "__castguard_check_failure_os_handled_fptr",
+    "source": "global:48",
+    "record_offset": 70136,
+    "rva": 12616
+  },
+  {
+    "kind": "0x110c",
+    "offset": 2256,
+    "section": 2,
+    "name": "$xdatasym",
+    "source": "global:48",
+    "record_offset": 70192,
+    "rva": 14544
+  },
+  {
+    "kind": "0x110d",
+    "offset": 296,
+    "section": 2,
+    "name": "__guard_xfg_check_icall_fptr",
+    "source": "global:48",
+    "record_offset": 70256,
+    "rva": 12584
+  },
+  {
+    "kind": "0x110d",
+    "offset": 312,
+    "section": 2,
+    "name": "__guard_xfg_dispatch_icall_fptr",
+    "source": "global:48",
+    "record_offset": 70300,
+    "rva": 12600
+  },
+  {
+    "kind": "0x110d",
+    "offset": 320,
+    "section": 2,
+    "name": "__guard_xfg_table_dispatch_icall_fptr",
+    "source": "global:48",
+    "record_offset": 70348,
+    "rva": 12608
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_fids_table",
+    "source": "global:48",
+    "record_offset": 70400
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_fids_count",
+    "source": "global:48",
+    "record_offset": 70436
+  },
+  {
+    "kind": "0x110d",
+    "offset": 256,
+    "section": 7,
+    "name": "__guard_flags",
+    "source": "global:48",
+    "record_offset": 70472
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_iat_table",
+    "source": "global:48",
+    "record_offset": 70500
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_iat_count",
+    "source": "global:48",
+    "record_offset": 70532
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_longjmp_table",
+    "source": "global:48",
+    "record_offset": 70564
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_longjmp_count",
+    "source": "global:48",
+    "record_offset": 70600
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__enclave_config",
+    "source": "global:48",
+    "record_offset": 70636
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_eh_cont_table",
+    "source": "global:48",
+    "record_offset": 70668
+  },
+  {
+    "kind": "0x110d",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_eh_cont_count",
+    "source": "global:48",
+    "record_offset": 70704
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1152,
+    "section": 2,
+    "name": "__volatile_metadata",
+    "source": "global:48",
+    "record_offset": 70740,
+    "rva": 13440
+  },
+  {
+    "kind": "0x110d",
+    "offset": 336,
+    "section": 2,
+    "name": "__guard_memcpy_fptr",
+    "source": "global:48",
+    "record_offset": 70776,
+    "rva": 12624
+  },
+  {
+    "kind": "0x110d",
+    "offset": 720,
+    "section": 2,
+    "name": "_load_config_used",
+    "source": "global:48",
+    "record_offset": 70940,
+    "rva": 13008
+  },
+  {
+    "kind": "0x110d",
+    "offset": 1912,
+    "section": 3,
+    "name": "__dyn_tls_init_callback",
+    "source": "global:48",
+    "record_offset": 70972,
+    "rva": 18296
+  },
+  {
+    "kind": "0x110c",
+    "offset": 2608,
+    "section": 2,
+    "name": "$xdatasym",
+    "source": "global:48",
+    "record_offset": 71060,
+    "rva": 14896
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 392,
+    "section": 2,
+    "name": "__xt_a",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71124,
+    "rva": 12680
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__vcrt_uninitialize_critical",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71148,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 136,
+    "section": 2,
+    "name": "__imp_RtlCaptureContext",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71192,
+    "rva": 12424
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 336,
+    "section": 2,
+    "name": "__guard_memcpy_fptr",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71232,
+    "rva": 12624
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 344,
+    "section": 3,
+    "name": "__isa_available",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71268,
+    "rva": 16728
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 328,
+    "section": 2,
+    "name": "__castguard_check_failure_os_handled_fptr",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71300,
+    "rva": 12616
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 272,
+    "section": 2,
+    "name": "__imp__initialize_narrow_environment",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71356,
+    "rva": 12560
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 216,
+    "section": 2,
+    "name": "__imp__execute_onexit_table",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71408,
+    "rva": 12504
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2876,
+    "section": 2,
+    "name": "__IMPORT_DESCRIPTOR_api-ms-win-crt-runtime-l1-1-0",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71452,
+    "rva": 15164
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__acrt_uninitialize_critical",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71516,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3076,
+    "section": 1,
+    "name": "?__scrt_initialize_type_info@@YAXXZ",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71560,
+    "rva": 7172
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3104,
+    "section": 1,
+    "name": "__local_stdio_printf_options",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71612,
+    "rva": 7200
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 368,
+    "section": 2,
+    "name": "__xi_z",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 71656,
+    "rva": 12656
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3260,
+    "section": 1,
+    "name": "__scrt_dllmain_before_initialize_c",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71680,
+    "rva": 7356
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3148,
+    "section": 1,
+    "name": "__scrt_acquire_startup_lock",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71732,
+    "rva": 7244
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_thread_detach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71776,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__vcrt_uninitialize",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71828,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_thread_attach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71864,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5104,
+    "section": 1,
+    "name": "__C_specific_handler",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71916,
+    "rva": 9200
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_uninitialize",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 71952,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 360,
+    "section": 2,
+    "name": "__xi_a",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72000,
+    "rva": 12648
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5140,
+    "section": 1,
+    "name": "_configure_narrow_argv",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72024,
+    "rva": 9236
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 96,
+    "section": 2,
+    "name": "__imp_GetSystemTimeAsFileTime",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72064,
+    "rva": 12384
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1992,
+    "section": 2,
+    "name": "__rtc_iaa",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72108,
+    "rva": 14280
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2836,
+    "section": 2,
+    "name": "__IMPORT_DESCRIPTOR_VCRUNTIME140",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72132,
+    "rva": 15124
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 416,
+    "section": 2,
+    "name": "??_C@_0CB@ONIBGOAH@amd_fidelityfx_upscaler_dx12?4dl@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72180,
+    "rva": 12704
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1816,
+    "section": 3,
+    "name": "?_OptionsStorage@?1??__local_stdio_scanf_options@@9@4_KA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72248,
+    "rva": 18200
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 4420,
+    "section": 1,
+    "name": "__isa_available_init",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72320,
+    "rva": 8516
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__enclave_config",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72356
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2896,
+    "section": 2,
+    "name": "__NULL_IMPORT_DESCRIPTOR",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72388,
+    "rva": 15184
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3964,
+    "section": 1,
+    "name": "__scrt_fastfail",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72428,
+    "rva": 8060
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5152,
+    "section": 1,
+    "name": "_initialize_onexit_table",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72460,
+    "rva": 9248
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 536,
+    "section": 2,
+    "name": "??_C@_0CG@GACCPHJA@amd_fidelityfx_radiancecache_dx@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72500,
+    "rva": 12824
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3092,
+    "section": 1,
+    "name": "?__scrt_uninitialize_type_info@@YAXXZ",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72568,
+    "rva": 7188
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 4416,
+    "section": 1,
+    "name": "_guard_check_icall_nop",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72620,
+    "rva": 8512
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 624,
+    "section": 2,
+    "name": "??_C@_0N@BBLEHJJN@ffxConfigure@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72660,
+    "rva": 12912
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 672,
+    "section": 2,
+    "name": "_pRawDllMain",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72708,
+    "rva": 12960
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 88,
+    "section": 2,
+    "name": "__imp_DisableThreadLibraryCalls",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72736,
+    "rva": 12376
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3324,
+    "section": 1,
+    "name": "__scrt_dllmain_crt_thread_detach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72784,
+    "rva": 7420
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_longjmp_count",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72832
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 368,
+    "section": 1,
+    "name": "ffxConfigure",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72868,
+    "rva": 4464
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 200,
+    "section": 2,
+    "name": "__imp_free",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72896,
+    "rva": 12488
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2856,
+    "section": 2,
+    "name": "__IMPORT_DESCRIPTOR_api-ms-win-crt-heap-l1-1-0",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 72924,
+    "rva": 15144
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3572,
+    "section": 1,
+    "name": "__scrt_initialize_onexit_tables",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 72988,
+    "rva": 7668
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2484,
+    "section": 1,
+    "name": "__raise_securityfailure",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73036,
+    "rva": 6580
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__acrt_uninitialize",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73076,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 320,
+    "section": 2,
+    "name": "__guard_xfg_table_dispatch_icall_fptr",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73112,
+    "rva": 12608
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3864,
+    "section": 1,
+    "name": "__scrt_release_startup_lock",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73164,
+    "rva": 7960
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 312,
+    "section": 2,
+    "name": "__guard_xfg_dispatch_icall_fptr",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73208,
+    "rva": 12600
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 112,
+    "section": 2,
+    "name": "__imp_GetCurrentProcessId",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73256,
+    "rva": 12400
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2000,
+    "section": 2,
+    "name": "__rtc_izz",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73296,
+    "rva": 14288
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5128,
+    "section": 1,
+    "name": "_initterm_e",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73320,
+    "rva": 9224
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 232,
+    "section": 2,
+    "name": "__imp__configure_narrow_argv",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73348,
+    "rva": 12520
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_fids_table",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73392
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_uninitialize_critical",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73428,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5110,
+    "section": 1,
+    "name": "__std_type_info_destroy_list",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73488,
+    "rva": 9206
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1600,
+    "section": 1,
+    "name": "__security_check_cookie",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73532,
+    "rva": 5696
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 128,
+    "section": 2,
+    "name": "__imp_IsProcessorFeaturePresent",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73572,
+    "rva": 12416
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 24,
+    "section": 2,
+    "name": "__imp_RtlLookupFunctionEntry",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73620,
+    "rva": 12312
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 240,
+    "section": 2,
+    "name": "__imp__seh_filter_dll",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73664,
+    "rva": 12528
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 4296,
+    "section": 1,
+    "name": "_RTC_Initialize",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73700,
+    "rva": 8392
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 8,
+    "section": 2,
+    "name": "__imp_GetProcAddress",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73732,
+    "rva": 12296
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3284,
+    "section": 1,
+    "name": "__scrt_dllmain_crt_thread_attach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73768,
+    "rva": 7380
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 328,
+    "section": 3,
+    "name": "__scrt_native_dllmain_reason",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73816,
+    "rva": 16712
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5176,
+    "section": 1,
+    "name": "_is_c_termination_complete",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73860,
+    "rva": 9272
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 224,
+    "section": 2,
+    "name": "__imp__cexit",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 73904,
+    "rva": 12512
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3120,
+    "section": 1,
+    "name": "__scrt_initialize_default_local_stdio_options",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73932,
+    "rva": 7216
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3952,
+    "section": 1,
+    "name": "__crt_debugger_hook",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 73992,
+    "rva": 8048
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 672,
+    "section": 2,
+    "name": "_pDefaultRawDllMain",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74028,
+    "rva": 12960
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1456,
+    "section": 1,
+    "name": "__GSHandlerCheck",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74064,
+    "rva": 5552
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1824,
+    "section": 3,
+    "name": "__scrt_current_native_startup_state",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74096,
+    "rva": 18208
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 2,
+    "name": "__imp_GetModuleHandleA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74148,
+    "rva": 12288
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 32,
+    "section": 1,
+    "name": "?LoadChildModules@@YAX_K@Z",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74188,
+    "rva": 4128
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 600,
+    "section": 2,
+    "name": "??_C@_0BC@ECNHEPOB@ffxDestroyContext@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74232,
+    "rva": 12888
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 40,
+    "section": 2,
+    "name": "__imp_UnhandledExceptionFilter",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74284,
+    "rva": 12328
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3040,
+    "section": 1,
+    "name": "DllMain",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74332,
+    "rva": 7136
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3712,
+    "section": 1,
+    "name": "__scrt_is_nonwritable_in_current_image",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74356,
+    "rva": 7808
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5134,
+    "section": 1,
+    "name": "_seh_filter_dll",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74412,
+    "rva": 9230
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 928,
+    "section": 1,
+    "name": "ffxDispatch",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74444,
+    "rva": 5024
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3492,
+    "section": 1,
+    "name": "__scrt_dllmain_uninitialize_critical",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74472,
+    "rva": 7588
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5248,
+    "section": 1,
+    "name": "_guard_xfg_dispatch_icall_nop",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74524,
+    "rva": 9344
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2008,
+    "section": 2,
+    "name": "__rtc_taa",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74568,
+    "rva": 14296
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 64,
+    "section": 2,
+    "name": "__imp_TerminateProcess",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74592,
+    "rva": 12352
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 192,
+    "section": 2,
+    "name": "__imp_malloc",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74632,
+    "rva": 12480
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__acrt_thread_detach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74660,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 976,
+    "section": 1,
+    "name": "ffxQuery",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74696,
+    "rva": 5072
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 304,
+    "section": 2,
+    "name": "__guard_dispatch_icall_fptr",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74720,
+    "rva": 12592
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 368,
+    "section": 3,
+    "name": "__scrt_ucrt_dll_is_in_use",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74764,
+    "rva": 16752
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 384,
+    "section": 2,
+    "name": "__xp_z",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74804,
+    "rva": 12672
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 376,
+    "section": 2,
+    "name": "__xp_a",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74828,
+    "rva": 12664
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 352,
+    "section": 3,
+    "name": "__memset_fast_string_threshold",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74852,
+    "rva": 16736
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5122,
+    "section": 1,
+    "name": "_initterm",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74900,
+    "rva": 9218
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 800,
+    "section": 1,
+    "name": "ffxDestroyContext",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 74924,
+    "rva": 4896
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 48,
+    "section": 2,
+    "name": "__imp_SetUnhandledExceptionFilter",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 74956,
+    "rva": 12336
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5116,
+    "section": 1,
+    "name": "memset",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75004,
+    "rva": 9212
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 248,
+    "section": 2,
+    "name": "__imp__initterm_e",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75028,
+    "rva": 12536
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__AbsoluteZero",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75060
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5164,
+    "section": 1,
+    "name": "_cexit",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75092,
+    "rva": 9260
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 56,
+    "section": 2,
+    "name": "__imp_GetCurrentProcess",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75116,
+    "rva": 12344
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3900,
+    "section": 1,
+    "name": "__scrt_uninitialize_crt",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75156,
+    "rva": 7996
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1152,
+    "section": 2,
+    "name": "__volatile_metadata",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75196,
+    "rva": 13440
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5092,
+    "section": 1,
+    "name": "__scrt_is_ucrt_dll_in_use",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75232,
+    "rva": 9188
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2816,
+    "section": 2,
+    "name": "__IMPORT_DESCRIPTOR_KERNEL32",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75272,
+    "rva": 15104
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1904,
+    "section": 3,
+    "name": "__favor",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75316,
+    "rva": 18288
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 336,
+    "section": 3,
+    "name": "__isa_inverted",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75340,
+    "rva": 16720
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 160,
+    "section": 2,
+    "name": "__imp___std_type_info_destroy_list",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75372,
+    "rva": 12448
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 344,
+    "section": 2,
+    "name": "__xc_a",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75424,
+    "rva": 12632
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 168,
+    "section": 2,
+    "name": "__imp___C_specific_handler",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75448,
+    "rva": 12456
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3444,
+    "section": 1,
+    "name": "__scrt_dllmain_uninitialize_c",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75492,
+    "rva": 7540
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__acrt_thread_attach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75536,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 320,
+    "section": 3,
+    "name": "__security_cookie_complement",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75572,
+    "rva": 16704
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_fids_count",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75616
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1488,
+    "section": 1,
+    "name": "__GSHandlerCheckCommon",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75652,
+    "rva": 5584
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 120,
+    "section": 2,
+    "name": "__imp_QueryPerformanceCounter",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75692,
+    "rva": 12408
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 80,
+    "section": 2,
+    "name": "__imp_InitializeSListHead",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75736,
+    "rva": 12368
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5179,
+    "section": 1,
+    "name": "memcpy",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 75776,
+    "rva": 9275
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 256,
+    "section": 7,
+    "name": "__guard_flags",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75800
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 656,
+    "section": 2,
+    "name": "??_C@_0M@CDHILKGD@ffxDispatch@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75828,
+    "rva": 12944
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 72,
+    "section": 2,
+    "name": "__imp_IsDebuggerPresent",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75876,
+    "rva": 12360
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1808,
+    "section": 3,
+    "name": "?_OptionsStorage@?1??__local_stdio_printf_options@@9@4_KA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75916,
+    "rva": 18192
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 104,
+    "section": 2,
+    "name": "__imp_GetCurrentThreadId",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 75988,
+    "rva": 12392
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 256,
+    "section": 3,
+    "name": "__security_cookie",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76028,
+    "rva": 16640
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 400,
+    "section": 2,
+    "name": "__xt_z",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76060,
+    "rva": 12688
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1900,
+    "section": 3,
+    "name": "__avx10_version",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76084,
+    "rva": 18284
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5158,
+    "section": 1,
+    "name": "_execute_onexit_table",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76116,
+    "rva": 9254
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 576,
+    "section": 2,
+    "name": "??_C@_0BB@JHEAOHAM@ffxCreateContext@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76152,
+    "rva": 12864
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3348,
+    "section": 1,
+    "name": "__scrt_dllmain_exception_filter",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76204,
+    "rva": 7444
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 16,
+    "section": 2,
+    "name": "__imp_LoadLibraryA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76252,
+    "rva": 12304
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__acrt_initialize",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76288,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 1,
+    "name": "?ffxQueryFallback@@YAIPEAPEAXPEAUffxApiHeader@@I@Z",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76320,
+    "rva": 4096
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_initialize",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76388,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 496,
+    "section": 2,
+    "name": "??_C@_0CB@MFDJEJPF@amd_fidelityfx_denoiser_dx12?4dl@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76436,
+    "rva": 12784
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_iat_count",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76504
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__vcrt_thread_attach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76536,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 416,
+    "section": 1,
+    "name": "ffxCreateContext",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76572,
+    "rva": 4512
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_iat_table",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76604
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_longjmp_table",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76636
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_eh_cont_table",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76672
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 152,
+    "section": 2,
+    "name": "__imp_memcpy",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76708,
+    "rva": 12440
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 256,
+    "section": 2,
+    "name": "__imp__initterm",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76736,
+    "rva": 12544
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 456,
+    "section": 2,
+    "name": "??_C@_0CI@HCPLHJOM@amd_fidelityfx_framegeneration_@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76768,
+    "rva": 12744
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5146,
+    "section": 1,
+    "name": "_initialize_narrow_environment",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76836,
+    "rva": 9242
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2016,
+    "section": 2,
+    "name": "__rtc_tzz",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76884,
+    "rva": 14304
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 184,
+    "section": 2,
+    "name": "\u007fVCRUNTIME140_NULL_THUNK_DATA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76908,
+    "rva": 12472
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 32,
+    "section": 2,
+    "name": "__imp_RtlVirtualUnwind",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 76952,
+    "rva": 12320
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5216,
+    "section": 1,
+    "name": "_guard_dispatch_icall_nop",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 76992,
+    "rva": 9312
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__vcrt_thread_detach",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77032,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2536,
+    "section": 1,
+    "name": "__report_gsfailure",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77068,
+    "rva": 6632
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 360,
+    "section": 3,
+    "name": "__memset_nt_threshold",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77104,
+    "rva": 16744
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 264,
+    "section": 2,
+    "name": "__imp__initialize_onexit_table",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77140,
+    "rva": 12552
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 0,
+    "section": 7,
+    "name": "__guard_eh_cont_count",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77188
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 280,
+    "section": 2,
+    "name": "\u007fapi-ms-win-crt-runtime-l1-1-0_NULL_THUNK_DATA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77224,
+    "rva": 12568
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 4356,
+    "section": 1,
+    "name": "_RTC_Terminate",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77288,
+    "rva": 8452
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5176,
+    "section": 1,
+    "name": "__scrt_stub_for_is_c_termination_complete",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77320,
+    "rva": 9272
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 144,
+    "section": 2,
+    "name": "\u007fKERNEL32_NULL_THUNK_DATA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77376,
+    "rva": 12432
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3944,
+    "section": 1,
+    "name": "__scrt_get_dyn_tls_init_callback",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77416,
+    "rva": 8040
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3208,
+    "section": 1,
+    "name": "__scrt_dllmain_after_initialize_c",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77464,
+    "rva": 7304
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 640,
+    "section": 2,
+    "name": "??_C@_08KMBMOJFC@ffxQuery@",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77512,
+    "rva": 12928
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 296,
+    "section": 2,
+    "name": "__guard_xfg_check_icall_fptr",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77556,
+    "rva": 12584
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5172,
+    "section": 1,
+    "name": "__vcrt_initialize",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77600,
+    "rva": 9268
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 176,
+    "section": 2,
+    "name": "__imp_memset",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77632,
+    "rva": 12464
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 348,
+    "section": 3,
+    "name": "__isa_enabled",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77660,
+    "rva": 16732
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2864,
+    "section": 1,
+    "name": "__security_init_cookie",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77688,
+    "rva": 6960
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1912,
+    "section": 3,
+    "name": "__dyn_tls_init_callback",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77728,
+    "rva": 18296
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 704,
+    "section": 2,
+    "name": "__xmm@ffffffffffffffffffffffffffffffff",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77768,
+    "rva": 12992
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3512,
+    "section": 1,
+    "name": "__scrt_initialize_crt",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77824,
+    "rva": 7608
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 288,
+    "section": 2,
+    "name": "__guard_check_icall_fptr",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77860,
+    "rva": 12576
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 720,
+    "section": 2,
+    "name": "_load_config_used",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77900,
+    "rva": 13008
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 5084,
+    "section": 1,
+    "name": "_get_startup_argv_mode",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 77932,
+    "rva": 9180
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1792,
+    "section": 3,
+    "name": "?__type_info_root_node@@3U__type_info_node@@A",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 77972,
+    "rva": 18176
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 2420,
+    "section": 1,
+    "name": "_DllMainCRTStartup",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 78032,
+    "rva": 6516
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1832,
+    "section": 3,
+    "name": "__scrt_native_startup_lock",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 78068,
+    "rva": 18216
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 1896,
+    "section": 3,
+    "name": "__scrt_debugger_hook_flag",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 78112,
+    "rva": 18280
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 3112,
+    "section": 1,
+    "name": "__local_stdio_scanf_options",
+    "flags": 2,
+    "source": "global:48",
+    "record_offset": 78152,
+    "rva": 7208
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 352,
+    "section": 2,
+    "name": "__xc_z",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 78196,
+    "rva": 12640
+  },
+  {
+    "kind": "S_PUB32",
+    "offset": 208,
+    "section": 2,
+    "name": "\u007fapi-ms-win-crt-heap-l1-1-0_NULL_THUNK_DATA",
+    "flags": 0,
+    "source": "global:48",
+    "record_offset": 78220,
+    "rva": 12496
+  },
+  {
+    "kind": "0x110c",
+    "offset": 0,
+    "section": 3,
+    "name": "modules",
+    "source": "X:\\Kits\\FidelityFX\\amdinternal\\api\\dx12\\x64\\Release\\amd_fidelityfx_loader_dx12\\ffx_api_loader.obj",
+    "record_offset": 728,
+    "rva": 16384
+  },
+  {
+    "kind": "0x1110",
+    "offset": 32,
+    "section": 1,
+    "name": "LoadChildModules",
+    "size": 328,
+    "flags": 128,
+    "source": "X:\\Kits\\FidelityFX\\amdinternal\\api\\dx12\\x64\\Release\\amd_fidelityfx_loader_dx12\\ffx_api_loader.obj",
+    "record_offset": 760,
+    "rva": 4128
+  },
+  {
+    "kind": "0x1110",
+    "offset": 368,
+    "section": 1,
+    "name": "ffxConfigure",
+    "size": 38,
+    "flags": 128,
+    "source": "X:\\Kits\\FidelityFX\\amdinternal\\api\\dx12\\x64\\Release\\amd_fidelityfx_loader_dx12\\ffx_api_loader.obj",
+    "record_offset": 1204,
+    "rva": 4464
+  },
+  {
+    "kind": "0x1110",
+    "offset": 416,
+    "section": 1,
+    "name": "ffxCreateContext",
+    "size": 372,
+    "flags": 128,
+    "source": "X:\\Kits\\FidelityFX\\amdinternal\\api\\dx12\\x64\\Release\\amd_fidelityfx_loader_dx12\\ffx_api_loader.obj",
+    "record_offset": 1424,
+    "rva": 4512
+  },
+  {
+    "kind": "0x1110",
+    "offset": 800,
+    "section": 1,
+    "name": "ffxDestroyContext",
+    "size": 126,
+    "flags": 128,
+    "source": "X:\\Kits\\FidelityFX\\amdinternal\\api\\dx12\\x64\\Release\\amd_fidelityfx_loader_dx12\\ffx_api_loader.obj",
+    "record_offset": 2180,
+    "rva": 4896
+  },
+  {
+    "kind": "0x1110",
+    "offset": 928,
+    "section": 1,
+    "name": "ffxDispatch",
+    "size": 38,
+    "flags": 128,
+    "source": "X:\\Kits\\FidelityFX\\amdinternal\\api\\dx12\\x64\\Release\\amd_fidelityfx_loader_dx12\\ffx_api_loader.obj",
+    "record_offset": 2548,
+    "rva": 5024
+  },
+  {
+    "kind": "0x1110",
+    "offset": 976,
+    "section": 1,
+    "name": "ffxQuery",
+    "size": 478,
+    "flags": 128,
+    "source": "X:\\Kits\\FidelityFX\\amdinternal\\api\\dx12\\x64\\Release\\amd_fidelityfx_loader_dx12\\ffx_api_loader.obj",
+    "record_offset": 2768,
+    "rva": 5072
+  },
+  {
+    "kind": "0x1110",
+    "offset": 1456,
+    "section": 1,
+    "name": "__GSHandlerCheck",
+    "size": 29,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gshandler.obj",
+    "record_offset": 192,
+    "rva": 5552
+  },
+  {
+    "kind": "0x1110",
+    "offset": 1488,
+    "section": 1,
+    "name": "__GSHandlerCheckCommon",
+    "size": 96,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gshandler.obj",
+    "record_offset": 624,
+    "rva": 5584
+  },
+  {
+    "kind": "0x110c",
+    "offset": 2256,
+    "section": 2,
+    "name": "$xdatasym",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\amdsecgs.obj",
+    "record_offset": 376,
+    "rva": 14544
+  },
+  {
+    "kind": "0x1110",
+    "offset": 1600,
+    "section": 1,
+    "name": "__security_check_cookie",
+    "size": 30,
+    "flags": 0,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\amdsecgs.obj",
+    "record_offset": 400,
+    "rva": 5696
+  },
+  {
+    "kind": "0x110c",
+    "offset": 384,
+    "section": 3,
+    "name": "__proc_attached",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 188,
+    "rva": 16768
+  },
+  {
+    "kind": "0x110f",
+    "offset": 1632,
+    "section": 1,
+    "name": "dllmain_crt_dispatch",
+    "size": 80,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 228,
+    "rva": 5728
+  },
+  {
+    "kind": "0x110f",
+    "offset": 1712,
+    "section": 1,
+    "name": "dllmain_crt_process_attach",
+    "size": 278,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 548,
+    "rva": 5808
+  },
+  {
+    "kind": "0x110f",
+    "offset": 5254,
+    "section": 1,
+    "name": "`dllmain_crt_process_attach'::`1'::fin$0",
+    "size": 23,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 1132,
+    "rva": 9350
+  },
+  {
+    "kind": "0x110f",
+    "offset": 1992,
+    "section": 1,
+    "name": "dllmain_crt_process_detach",
+    "size": 131,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 1392,
+    "rva": 6088
+  },
+  {
+    "kind": "0x110f",
+    "offset": 5277,
+    "section": 1,
+    "name": "`dllmain_crt_process_detach'::`1'::fin$0",
+    "size": 25,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 1824,
+    "rva": 9373
+  },
+  {
+    "kind": "0x110f",
+    "offset": 5302,
+    "section": 1,
+    "name": "`dllmain_crt_process_detach'::`1'::fin$1",
+    "size": 20,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 2068,
+    "rva": 9398
+  },
+  {
+    "kind": "0x110f",
+    "offset": 2124,
+    "section": 1,
+    "name": "dllmain_dispatch",
+    "size": 296,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 2308,
+    "rva": 6220
+  },
+  {
+    "kind": "0x110f",
+    "offset": 5322,
+    "section": 1,
+    "name": "`dllmain_dispatch'::`1'::filt$0",
+    "size": 54,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 3088,
+    "rva": 9418
+  },
+  {
+    "kind": "0x1110",
+    "offset": 2420,
+    "section": 1,
+    "name": "_DllMainCRTStartup",
+    "size": 61,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain.obj",
+    "record_offset": 3504,
+    "rva": 6516
+  },
+  {
+    "kind": "0x110c",
+    "offset": 400,
+    "section": 3,
+    "name": "GS_ExceptionRecord",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gs_report.obj",
+    "record_offset": 176,
+    "rva": 16784
+  },
+  {
+    "kind": "0x110c",
+    "offset": 560,
+    "section": 3,
+    "name": "GS_ContextRecord",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gs_report.obj",
+    "record_offset": 212,
+    "rva": 16944
+  },
+  {
+    "kind": "0x110c",
+    "offset": 680,
+    "section": 2,
+    "name": "GS_ExceptionPointers",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gs_report.obj",
+    "record_offset": 244,
+    "rva": 12968
+  },
+  {
+    "kind": "0x1110",
+    "offset": 2484,
+    "section": 1,
+    "name": "__raise_securityfailure",
+    "size": 52,
+    "flags": 136,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gs_report.obj",
+    "record_offset": 340,
+    "rva": 6580
+  },
+  {
+    "kind": "0x1110",
+    "offset": 2536,
+    "section": 1,
+    "name": "__report_gsfailure",
+    "size": 211,
+    "flags": 8,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gs_report.obj",
+    "record_offset": 604,
+    "rva": 6632
+  },
+  {
+    "kind": "0x110f",
+    "offset": 2748,
+    "section": 1,
+    "name": "capture_previous_context",
+    "size": 116,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gs_report.obj",
+    "record_offset": 768,
+    "rva": 6844
+  },
+  {
+    "kind": "0x1110",
+    "offset": 2864,
+    "section": 1,
+    "name": "__security_init_cookie",
+    "size": 175,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\gs_support.obj",
+    "record_offset": 260,
+    "rva": 6960
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3040,
+    "section": 1,
+    "name": "DllMain",
+    "size": 35,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dll_dllmain_stub.obj",
+    "record_offset": 200,
+    "rva": 7136
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3076,
+    "section": 1,
+    "name": "__scrt_initialize_type_info",
+    "size": 14,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\tncleanup.obj",
+    "record_offset": 192,
+    "rva": 7172
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3092,
+    "section": 1,
+    "name": "__scrt_uninitialize_type_info",
+    "size": 12,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\tncleanup.obj",
+    "record_offset": 312,
+    "rva": 7188
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3104,
+    "section": 1,
+    "name": "__local_stdio_printf_options",
+    "size": 8,
+    "flags": 192,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\default_local_stdio_options.obj",
+    "record_offset": 212,
+    "rva": 7200
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1808,
+    "section": 3,
+    "name": "_OptionsStorage",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\default_local_stdio_options.obj",
+    "record_offset": 312,
+    "rva": 18192
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3112,
+    "section": 1,
+    "name": "__local_stdio_scanf_options",
+    "size": 8,
+    "flags": 192,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\default_local_stdio_options.obj",
+    "record_offset": 348,
+    "rva": 7208
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1816,
+    "section": 3,
+    "name": "_OptionsStorage",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\default_local_stdio_options.obj",
+    "record_offset": 448,
+    "rva": 18200
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3120,
+    "section": 1,
+    "name": "__scrt_initialize_default_local_stdio_options",
+    "size": 27,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\default_local_stdio_options.obj",
+    "record_offset": 484,
+    "rva": 7216
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1840,
+    "section": 3,
+    "name": "is_initialized_as_dll",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 184,
+    "rva": 18224
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1848,
+    "section": 3,
+    "name": "module_local_atexit_table",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 220,
+    "rva": 18232
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1872,
+    "section": 3,
+    "name": "module_local_at_quick_exit_table",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 260,
+    "rva": 18256
+  },
+  {
+    "kind": "0x110c",
+    "offset": 1841,
+    "section": 3,
+    "name": "module_local_atexit_table_initialized",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 308,
+    "rva": 18225
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3148,
+    "section": 1,
+    "name": "__scrt_acquire_startup_lock",
+    "size": 57,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 368,
+    "rva": 7244
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3208,
+    "section": 1,
+    "name": "__scrt_dllmain_after_initialize_c",
+    "size": 52,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 564,
+    "rva": 7304
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3260,
+    "section": 1,
+    "name": "__scrt_dllmain_before_initialize_c",
+    "size": 21,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 784,
+    "rva": 7356
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3284,
+    "section": 1,
+    "name": "__scrt_dllmain_crt_thread_attach",
+    "size": 40,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 908,
+    "rva": 7380
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3324,
+    "section": 1,
+    "name": "__scrt_dllmain_crt_thread_detach",
+    "size": 21,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 1036,
+    "rva": 7420
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3348,
+    "section": 1,
+    "name": "__scrt_dllmain_exception_filter",
+    "size": 96,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 1160,
+    "rva": 7444
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3444,
+    "section": 1,
+    "name": "__scrt_dllmain_uninitialize_c",
+    "size": 48,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 1788,
+    "rva": 7540
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3492,
+    "section": 1,
+    "name": "__scrt_dllmain_uninitialize_critical",
+    "size": 20,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 1920,
+    "rva": 7588
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3512,
+    "section": 1,
+    "name": "__scrt_initialize_crt",
+    "size": 58,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 2048,
+    "rva": 7608
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3572,
+    "section": 1,
+    "name": "__scrt_initialize_onexit_tables",
+    "size": 139,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 2240,
+    "rva": 7668
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3712,
+    "section": 1,
+    "name": "__scrt_is_nonwritable_in_current_image",
+    "size": 152,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 2480,
+    "rva": 7808
+  },
+  {
+    "kind": "0x110f",
+    "offset": 5376,
+    "section": 1,
+    "name": "__scrt_is_nonwritable_in_current_image$filt$0",
+    "size": 24,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 3160,
+    "rva": 9472
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3864,
+    "section": 1,
+    "name": "__scrt_release_startup_lock",
+    "size": 36,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 3344,
+    "rva": 7960
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3900,
+    "section": 1,
+    "name": "__scrt_uninitialize_crt",
+    "size": 41,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility.obj",
+    "record_offset": 3536,
+    "rva": 7996
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3944,
+    "section": 1,
+    "name": "__scrt_get_dyn_tls_init_callback",
+    "size": 8,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\dyn_tls_init.obj",
+    "record_offset": 240,
+    "rva": 8040
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3952,
+    "section": 1,
+    "name": "__crt_debugger_hook",
+    "size": 11,
+    "flags": 192,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility_desktop.obj",
+    "record_offset": 200,
+    "rva": 8048
+  },
+  {
+    "kind": "0x1110",
+    "offset": 3964,
+    "section": 1,
+    "name": "__scrt_fastfail",
+    "size": 331,
+    "flags": 136,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\utility_desktop.obj",
+    "record_offset": 364,
+    "rva": 8060
+  },
+  {
+    "kind": "0x1110",
+    "offset": 4296,
+    "section": 1,
+    "name": "_RTC_Initialize",
+    "size": 60,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\initsect.obj",
+    "record_offset": 192,
+    "rva": 8392
+  },
+  {
+    "kind": "0x1110",
+    "offset": 4356,
+    "section": 1,
+    "name": "_RTC_Terminate",
+    "size": 60,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\initsect.obj",
+    "record_offset": 328,
+    "rva": 8452
+  },
+  {
+    "kind": "0x1110",
+    "offset": 4416,
+    "section": 1,
+    "name": "_guard_check_icall_nop",
+    "size": 3,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\guard_support.obj",
+    "record_offset": 240,
+    "rva": 8512
+  },
+  {
+    "kind": "0x1110",
+    "offset": 4420,
+    "section": 1,
+    "name": "__isa_available_init",
+    "size": 661,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\cpu_disp.obj",
+    "record_offset": 236,
+    "rva": 8516
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5084,
+    "section": 1,
+    "name": "_get_startup_argv_mode",
+    "size": 6,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\argv_mode.obj",
+    "record_offset": 192,
+    "rva": 9180
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5092,
+    "section": 1,
+    "name": "__scrt_is_ucrt_dll_in_use",
+    "size": 12,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\ucrt_detection.obj",
+    "record_offset": 188,
+    "rva": 9188
+  },
+  {
+    "kind": "0x110c",
+    "offset": 2608,
+    "section": 2,
+    "name": "$xdatasym",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\guard_dispatch.obj",
+    "record_offset": 388,
+    "rva": 14896
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5216,
+    "section": 1,
+    "name": "_guard_dispatch_icall_nop",
+    "size": 2,
+    "flags": 0,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\guard_dispatch.obj",
+    "record_offset": 412,
+    "rva": 9312
+  },
+  {
+    "kind": "0x110c",
+    "offset": 2616,
+    "section": 2,
+    "name": "$xdatasym",
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\guard_xfg_dispatch.obj",
+    "record_offset": 396,
+    "rva": 14904
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5248,
+    "section": 1,
+    "name": "_guard_xfg_dispatch_icall_nop",
+    "size": 6,
+    "flags": 0,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\guard_xfg_dispatch.obj",
+    "record_offset": 420,
+    "rva": 9344
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_initialize",
+    "size": 3,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\ucrt_stubs.obj",
+    "record_offset": 192,
+    "rva": 9268
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_thread_attach",
+    "size": 3,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\ucrt_stubs.obj",
+    "record_offset": 300,
+    "rva": 9268
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_thread_detach",
+    "size": 3,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\ucrt_stubs.obj",
+    "record_offset": 412,
+    "rva": 9268
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_uninitialize",
+    "size": 3,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\ucrt_stubs.obj",
+    "record_offset": 524,
+    "rva": 9268
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5172,
+    "section": 1,
+    "name": "__scrt_stub_for_acrt_uninitialize_critical",
+    "size": 3,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\ucrt_stubs.obj",
+    "record_offset": 704,
+    "rva": 9268
+  },
+  {
+    "kind": "0x1110",
+    "offset": 5176,
+    "section": 1,
+    "name": "__scrt_stub_for_is_c_termination_complete",
+    "size": 3,
+    "flags": 128,
+    "source": "D:\\a\\_work\\1\\s\\Intermediate\\crt\\vcstartup\\build\\md\\msvcrt_md_kernel32.vcxproj\\objr\\amd64\\ucrt_stubs.obj",
+    "record_offset": 892,
+    "rva": 9272
+  },
+  {
+    "kind": "0x1110",
+    "offset": 0,
+    "section": 1,
+    "name": "ffxQueryFallback",
+    "size": 28,
+    "flags": 128,
+    "source": "x64\\Release\\loader_lib_dx12\\ffx_query_fallback.obj",
+    "record_offset": 172,
+    "rva": 4096
+  }
+]

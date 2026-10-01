@@ -1,0 +1,68 @@
+[
+  {
+    "module": "SkyrimUpscaler.dll",
+    "rva": 4242976,
+    "bytes": "00004040",
+    "label": "Mip clamp upper 3"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "rva": 4243272,
+    "bytes": "000040c0",
+    "label": "Mip clamp lower -3"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "rva": 4243256,
+    "bytes": "000000c0",
+    "label": "Engine jitter X multiplier -2"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "rva": 4242872,
+    "bytes": "00000040",
+    "label": "Engine jitter Y multiplier 2"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "rva": 4245728,
+    "bytes": "00000080000000800000008000000080",
+    "label": "Jitter sign mask"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "rva": 18533160,
+    "bytes": "00000040",
+    "label": "Jitter powf exponent 2"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "rva": 18533212,
+    "bytes": "00000041",
+    "label": "Jitter phase base 8"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "rva": 18533288,
+    "bytes": "ffff7f7f",
+    "label": "FLT_MAX"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "rva": 18533272,
+    "bytes": "000000e0ffffcf47",
+    "label": "FLT_MAX/4"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "rva": 18533256,
+    "bytes": "408cb5781daf1544",
+    "label": "Far surrogate multiplier"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "rva": 4076944,
+    "bytes": "5375626d6974466749646c65576964654261636b67726f756e64",
+    "label": "SubmitFgIdleWideBackground export name"
+  }
+]

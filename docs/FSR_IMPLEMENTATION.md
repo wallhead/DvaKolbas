@@ -35,6 +35,8 @@ The supplied evidence v2 was compared against the same local binaries. Hashes, 1
 
 Evidence v3 is now indexed in the [plain RE database](RE_DATABASE.md): 325 cumulative instruction records, 49 new spans/6,107 excerpt boundaries, 11 constants, 34 PD vtable entries, and 16 pure-Python reference-model tests passed locally. Its corrected supplied SR map, UI reference imbalance, jitter/depth producers, and reset acknowledgment findings remain static evidence; no FSR implementation or game deployment has occurred.
 
+Evidence v4 adds eight locally checked host excerpts (720 instruction comparisons) and 16 routing landmarks. ReShade save/clear/restore brackets, target-binding-before-UI-phase ordering, and StatsMenu’s embedded scene support scoped routing and nested scene/UI validation. Scissor coverage and ENB render chronology remain live evidence gaps. See the [RE findings](FSR_AIO_RE_NOTES.md) for exact scope; this is research only.
+
 Introduce a neutral upscaler input/result contract, optional typed AMD runtime loader, FSR context/dispatch adapter, ordinary presentation policy, and narrowly shared interop services. Keep the existing NVIDIA feature/presenter implementation and companion ABI intact. FSR-only startup must neither require nor attempt unused NVIDIA services.
 
 The producer signal/submission -> D3D12 wait/dispatch/signal -> D3D11 output wait sequence and recorded slot retirement are mandatory. The later FG stage adds completed UI and asynchronous presentation readers to retirement rather than replacing those obligations.

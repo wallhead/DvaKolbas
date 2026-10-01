@@ -1,0 +1,23 @@
+{
+  "host_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+  "expected_host_sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+  "host_hash_match": true,
+  "slot8_ps_srv": true,
+  "slot44_viewport": true,
+  "slot33_omrt": true,
+  "ui_phase_enable": true,
+  "stats_ui_phase_clear": true,
+  "reshade_present_id75": true,
+  "reshade_begin_id76": true,
+  "reshade_finish_id77": true,
+  "no_slot45_hook_in_context_installer": true,
+  "direct_scissor_call_count": 2,
+  "direct_scissor_calls": [
+    "18021350e:\tcall   QWORD PTR [rax+0x168]",
+    "1802135ac:\tcall   QWORD PTR [rax+0x168]"
+  ],
+  "direct_scissor_calls_expected_two": true,
+  "v4_excerpt_count": 8,
+  "v4_excerpts_nonempty": true,
+  "all_boolean_checks_pass": true
+}

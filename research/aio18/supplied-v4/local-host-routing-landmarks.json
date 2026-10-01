@@ -1,0 +1,146 @@
+[
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19ec61",
+    "bytes": "80b89000000000",
+    "instruction": "cmp byte ptr [rax + 0x90], 0",
+    "evidence": "evidence/v4/disassembly/context_hook_install.asm",
+    "label": "Context hook installation region"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284ab2",
+    "bytes": "b909000000",
+    "instruction": "mov ecx, 9",
+    "evidence": "evidence/v4/disassembly/reshade_event_registration.asm",
+    "label": "Register init_effect_runtime event 9"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284ada",
+    "bytes": "b90a000000",
+    "instruction": "mov ecx, 0xa",
+    "evidence": "evidence/v4/disassembly/reshade_event_registration.asm",
+    "label": "Register destroy_effect_runtime event 10"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284b02",
+    "bytes": "b956000000",
+    "instruction": "mov ecx, 0x56",
+    "evidence": "evidence/v4/disassembly/reshade_event_registration.asm",
+    "label": "Register open-overlay event 86"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284b2a",
+    "bytes": "b94c000000",
+    "instruction": "mov ecx, 0x4c",
+    "evidence": "evidence/v4/disassembly/reshade_event_registration.asm",
+    "label": "Register begin-effects event 76"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284b52",
+    "bytes": "b94d000000",
+    "instruction": "mov ecx, 0x4d",
+    "evidence": "evidence/v4/disassembly/reshade_event_registration.asm",
+    "label": "Register finish-effects event 77"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284b76",
+    "bytes": "b94b000000",
+    "instruction": "mov ecx, 0x4b",
+    "evidence": "evidence/v4/disassembly/reshade_event_registration.asm",
+    "label": "Register reshade_present event 75"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284ec0",
+    "bytes": "488b0519bfbf00",
+    "instruction": "mov rax, qword ptr [rip + 0xbfbf19]",
+    "evidence": "evidence/v4/disassembly/reshade_callbacks.asm",
+    "label": "Begin-effects routing flag bracket"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284e70",
+    "bytes": "488b0569bfbf00",
+    "instruction": "mov rax, qword ptr [rip + 0xbfbf69]",
+    "evidence": "evidence/v4/disassembly/reshade_callbacks.asm",
+    "label": "Finish-effects routing flag bracket"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19fcf3",
+    "bytes": "ff9008010000",
+    "instruction": "call qword ptr [rax + 0x108]",
+    "evidence": "evidence/v4/disassembly/preui_ui_phase_transition.asm",
+    "label": "UI target binding before phase enable"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19fd00",
+    "bytes": "c6058b13ce0001",
+    "instruction": "mov byte ptr [rip + 0xce138b], 1",
+    "evidence": "evidence/v4/disassembly/preui_ui_phase_transition.asm",
+    "label": "Normal UI phase enable"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x1a0827",
+    "bytes": "c6056408ce0000",
+    "instruction": "mov byte ptr [rip + 0xce0864], 0",
+    "evidence": "evidence/v4/disassembly/statsmenu_ui_phase_suspend.asm",
+    "label": "StatsMenu UI phase clear"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x21350e",
+    "bytes": "ff9068010000",
+    "instruction": "call qword ptr [rax + 0x168]",
+    "evidence": "evidence/v4/disassembly/imgui_scissor_calls.asm",
+    "label": "ImGui scissor call"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2135ac",
+    "bytes": "ff9068010000",
+    "instruction": "call qword ptr [rax + 0x168]",
+    "evidence": "evidence/v4/disassembly/imgui_scissor_calls.asm",
+    "label": "ImGui scissor restore call"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x299750",
+    "bytes": "4883ec28",
+    "instruction": "sub rsp, 0x28",
+    "evidence": "evidence/v4/disassembly/enb_presence_probe.asm",
+    "label": "ENB presence probe"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2a97e0",
+    "bytes": "48895c2410",
+    "instruction": "mov qword ptr [rsp + 0x10], rbx",
+    "evidence": "evidence/v4/disassembly/reshade_omsetrt_routing.asm",
+    "label": "ReShade-aware target routing wrapper"
+  }
+]
