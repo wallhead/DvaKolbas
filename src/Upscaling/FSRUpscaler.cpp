@@ -143,11 +143,14 @@ namespace TheosRenderPipeline::Upscaling
         }
         list->ResourceBarrier(count,barriers.data()); mapped->commandList=list;
         const auto result=state_->runtime->Functions().Dispatch(&state_->context,&mapped->header);
+        if(result!=FFX_API_RETURN_OK) {
+            state_->poisoned=true;
+            return Error(ErrorKind::DispatchFailure,result,"FSR dispatch failed; discard unsubmitted commands and retain context until retirement");
+        }
         // The SDK restores externally registered resources to their declared
         // incoming states; make the interop COMMON boundary explicit afterward.
         for(UINT i=0;i<count;++i) std::swap(barriers[i].Transition.StateBefore,barriers[i].Transition.StateAfter);
         list->ResourceBarrier(count,barriers.data());
-        if(result!=FFX_API_RETURN_OK) return Error(ErrorKind::DispatchFailure,result,"FSR temporal dispatch failed");
         state_->sourceId=frame.sourceId; state_->acceptedSource=true; return {};
     }
     Result<void> FsrUpscaler::DestroyAfterRetirement()

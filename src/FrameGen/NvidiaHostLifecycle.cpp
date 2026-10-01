@@ -114,6 +114,7 @@ void NvidiaHost::OnGameFacingSwapChainDestroyed(IDXGISwapChain* a_swapChain)
 void NvidiaHost::ResetSessionAfterRetirement()
 {
 #if defined(TRP_ENABLE_FSR)
+    fsrFrame_.reset();
     fsrResources_.reset();
 #endif
     ordinaryPresentation_.ResetAfterRetirement();
@@ -142,6 +143,7 @@ void NvidiaHost::ReleaseSourceUpscaler()
     if (FsrActive() && fsrResources_) {
         const auto retired = fsrResources_->Retire();
         if (!retired) { status_ = retired.error().message; FailLifecycle(E_FAIL, "FSR feature release"); return; }
+        fsrFrame_.reset();
     }
 #endif
     TheosRenderPipeline::ReShadeIntegration::Get().ResetAfterRetirement();

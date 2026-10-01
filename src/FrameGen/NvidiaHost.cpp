@@ -12,6 +12,7 @@
 
 bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHandoff)
 {
+    if(FsrActive())return EvaluateFsrFrame(a_swapChain,a_nativeUIHandoff);
     if (FAILED(FailureResult()) || !proxyActive_ || a_swapChain != outerSwapChain_ || !splitSourceDLSSActive_ || !upscalerReady_ || !gameTargets_.GameFacing() ||
         !gameTargets_.UpscaleInput() || !gameTargets_.UpscaleOutput() || !context_ || presentation_.Buffers().empty())
     {
@@ -127,6 +128,12 @@ bool NvidiaHost::PrepareCommunityFrameForPresent()
     if (FAILED(innerSwapChain_->QueryInterface(IID_PPV_ARGS(&indexed)))) { return false; }
     const auto index = indexed->GetCurrentBackBufferIndex();
     if (index >= presentation_.Buffers().size()) { return false; }
+    if(FsrActive()) {
+        context_->CopyResource(presentation_.Buffers()[index].Get(),gameTargets_.GameFacing());
+        SetRuntimeEnabled(false);
+        status_="Community Shaders owns upscaling; ordinary presentation, FSR not active";
+        return true;
+    }
     D3D11_TEXTURE2D_DESC desc{}; gameTargets_.GameFacing()->GetDesc(&desc);
     const bool prepared = communityFrame_.Prepare(desc);
     auto* pipeline = RenderPipeline::GetSingleton();

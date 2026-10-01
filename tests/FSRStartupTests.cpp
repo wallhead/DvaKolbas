@@ -36,6 +36,8 @@ int main(int argc,char** argv)
     D3D11_TEXTURE2D_DESC published{};targets.GameFacing()->GetDesc(&published);Require(published.Width==960 && published.Height==540,"stable target published before original return");
     Check(chain->Present(0,0),"StartupPresentWithoutFeature");Require(!fsr.FeatureReady(),"startup Present does not create a temporal feature");
     Require(bool(fsr.CompleteStartup()) && fsr.FeatureReady(),"DeferredFeatureCreation: context created after original return");
+    auto* fixedColor=fsr.Resources().color;
+    Require(bool(fsr.EnsureInputPolicy({true,false,false,true})) && fsr.FeatureReady() && fsr.Resources().color==fixedColor && fsr.Upscaler()->Limits().input.depthInverted,"measured reversed depth recreates context after retirement without changing published allocations");
     Require(spy.nvidiaCalls==0,"FsrDoesNotRequireNvidia: no NVIDIA creation/readiness/NR/Reflex path");
     Require(bool(fsr.Retire()),"retire feature");Check(RetirePresentation(backend,spy),"retire ordinary presenter");
     Require(spy.nvidiaCalls==0 && !fsr.FeatureReady(),"retirement does not call NVIDIA");

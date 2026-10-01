@@ -113,6 +113,9 @@ public:
 	// Frames the game rendered through the pre-UI hook (diverges from the
 	// presented frame count once frame generation exists).
 	uint64_t mRenderedFrameCount{ 0 };
+    float mSourceDeltaMilliseconds{};
+    void BeginSourceFrame();
+    std::chrono::steady_clock::time_point mSourceClock{std::chrono::steady_clock::now()};
 	// Frames left that should evaluate with the DLSS reset flag (history
 	// flush after loading screens, where stale accumulation looks wrong).
 	// Window is wide because the fader can close while the loading screen is

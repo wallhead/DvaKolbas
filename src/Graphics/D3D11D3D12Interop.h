@@ -75,6 +75,9 @@ namespace TheosRenderPipeline::Graphics
         HRESULT SignalProducer();
         HRESULT Begin(ID3D12GraphicsCommandList** a_list);
         HRESULT Submit();
+        // Discard an ordinary list which has never reached ExecuteCommandLists.
+        // No fence completion or GPU resource-state transition is fabricated.
+        HRESULT DiscardRecording();
         HRESULT WaitConsumer();
         HRESULT Drain();
         ID3D12Device* Device12() const { return device12_.Get(); }

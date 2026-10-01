@@ -193,10 +193,22 @@ bool RenderPipeline::IsEnabled()
 
 void RenderPipeline::GetJitters(float* a_outX, float* a_outY)
 {
+    if (mUpscaleType == FSR) {
+        *a_outX=*a_outY=0;
+        NvidiaHost::GetSingleton()->QueryFsrJitter(mRenderedFrameCount,*a_outX,*a_outY);
+        return;
+    }
 	const auto phase = DLSSBackend::GetSingleton()->GetJitterPhaseCount();
 
 	mJitterIndex++;
 	DLSSBackend::GetJitterOffset(a_outX, a_outY, static_cast<int>(mJitterIndex), phase);
+}
+
+void RenderPipeline::BeginSourceFrame()
+{
+    const auto now=std::chrono::steady_clock::now();
+    mSourceDeltaMilliseconds=std::chrono::duration<float,std::milli>(now-mSourceClock).count();
+    mSourceClock=now;
 }
 
 void RenderPipeline::SetJitterOffsets(float a_x, float a_y)

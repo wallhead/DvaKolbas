@@ -73,6 +73,20 @@ namespace TheosRenderPipeline::Upscaling
         auto created=state_->upscaler->Initialize(state_->runtime,state_->device.Get(),state_->provider,state_->config.quality,state_->render,state_->output);
         if(!created)return created;state_->contextOwned=true;return {};
     }
+    Result<void> FsrHostResources::EnsureInputPolicy(FsrInputPolicy policy)
+    {
+        if(!FeatureReady())return Failure(ErrorKind::ContextFailure,0,"FSR context unavailable for measured input conventions");
+        if(state_->upscaler->Limits().input==policy)return {};
+        // Flags are immutable per context. Retire the actual output readers,
+        // preserve fixed allocations/provider/quality, then recreate the feature.
+        auto hr=state_->bridge->SignalD3D11(Graphics::InteropWork::SwapChain);
+        if(FAILED(hr) || FAILED(hr=state_->bridge->Drain()))return Failure(ErrorKind::RetirementFailure,hr,"FSR measured convention change could not retire readers");
+        auto destroyed=state_->upscaler->DestroyAfterRetirement();if(!destroyed)return destroyed;
+        state_->contextOwned=false;
+        auto configured=state_->upscaler->SetInputPolicy(policy);if(!configured)return configured;
+        auto created=state_->upscaler->Initialize(state_->runtime,state_->device.Get(),state_->provider,state_->config.quality,state_->render,state_->output);
+        if(!created)return created;state_->contextOwned=true;return {};
+    }
     Result<void> FsrHostResources::Retire()
     {
         if(state_->bridge) {

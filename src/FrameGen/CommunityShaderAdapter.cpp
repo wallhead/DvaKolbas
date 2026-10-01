@@ -15,11 +15,14 @@ namespace TheosRenderPipeline
         context_ = input.context;
         resources_.SetProducerContext(input.producerContext);
         eligible_ = input.worldEligible;
+        nvidiaServices_=input.nvidiaServices;
         reset_ = input.reset;
         status_ = "Capturing CS world guides";
         const auto captured = resources_.CaptureGuides(input.context, input.frame, input.motion,
             input.depth, input.render, input.output);
         if (captured != S_OK) { status_ = "CS world guides unavailable"; return false; }
+        options_={};
+        if(nvidiaServices_) {
         candidate_ = history_;
         cameraValid_ = SourceDLSSG::CaptureCameraCandidate(input.graphics, input.render.width,
             input.render.height, input.jitterX, input.jitterY, reset_, input.jittered, camera_, candidate_);
@@ -40,6 +43,7 @@ namespace TheosRenderPipeline
         // Re-reading global preferences at an HDR transition loses this frame's
         // appearance overrides; using the previous format can miss a transition.
         options_ = std::move(options);
+        }
         // Early CS color is unfinished producer RGB, not a display-ready image.
         // The paired proxy transfers only NR's changes back to the retained scene.
         // Late NR keeps the user's completed-scene reconstruction configuration.
@@ -55,6 +59,7 @@ namespace TheosRenderPipeline
 
     bool CommunityShaderAdapter::EvaluateWorld(ID3D11Texture2D* color, FrameExtent extent)
     {
+        if(!nvidiaServices_)return true;
         D3D11ContextIsolation::Scope scope{resources_.Isolation(), context_.Get()};
         if (!scope) { status_ = "CS context unavailable at NR boundary"; return false; }
         if (!SourceDLSSG::SameHistoryOptions(options_, evaluatedOptions_)) { neuralBoundaryReported_ = false; }
@@ -129,6 +134,7 @@ namespace TheosRenderPipeline
 
     bool CommunityShaderAdapter::Prepare(const D3D11_TEXTURE2D_DESC& presentation)
     {
+        if(!nvidiaServices_)return false;
         if (prepared_) { return false; }
         if (!Ready()) { return false; } // Keep the failed world-stage diagnostic.
         if (!cameraValid_) { status_ = "Waiting for CS camera data"; return false; }

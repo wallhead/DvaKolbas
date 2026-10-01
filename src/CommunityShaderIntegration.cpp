@@ -67,6 +67,7 @@ namespace TheosRenderPipeline::CommunityShaders
             auto* state = reinterpret_cast<BSGraphics::State*>(RE::BSGraphics::State::GetSingleton());
             auto* pipeline = RenderPipeline::GetSingleton();
             CommunityShaderAdapter::Input input{};
+            input.nvidiaServices=!host->FsrActive();
             if (renderer && state && host->UpscalerReady()) {
                 auto& data = state->GetRuntimeData();
                 const auto width = data.dynamicResolutionWidthRatio * host->OutputWidth();

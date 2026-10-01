@@ -25,6 +25,7 @@ namespace TheosRenderPipeline
             std::uint64_t frame{};
             float jitterX{}, jitterY{};
             bool jittered{}, reset{}, worldEligible{};
+            bool nvidiaServices{true};
         };
 
         bool BeginWorld(const Input& input);
@@ -50,6 +51,7 @@ namespace TheosRenderPipeline
         Microsoft::WRL::ComPtr<ID3D11DeviceContext> context_;
         bool cameraValid_{}, eligible_{}, reset_{}, worldBegun_{}, upscalingCompleted_{}, worldCompleted_{}, prepared_{};
         bool neuralBoundaryReported_{};
+        bool nvidiaServices_{true};
         // Last completed scene was CS HDR Display's extended-range FP16 target.
         bool extendedScene_{};
         const char* status_{"Waiting for a CS world frame"};

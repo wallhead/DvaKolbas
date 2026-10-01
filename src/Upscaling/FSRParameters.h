@@ -13,6 +13,7 @@ namespace TheosRenderPipeline::Upscaling
     struct FsrInputPolicy
     {
         bool depthInverted{}, depthInfinite{}, motionIncludesJitter{}, colorIsLinear{true};
+        bool operator==(const FsrInputPolicy&)const=default;
     };
     struct FsrContextLimits
     {

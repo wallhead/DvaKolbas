@@ -25,6 +25,7 @@
 #include "Upscaling/UpscalerBackend.h"
 #if defined(TRP_ENABLE_FSR)
 #include "Upscaling/FSRHostResources.h"
+#include "Upscaling/FSRFrameAdapter.h"
 #endif
 #include "PresentationFade.h"
 #include "ReShadeIntegration.h"
@@ -81,6 +82,7 @@ class NvidiaHost
     bool UpscalerReady() const { return upscalerReady_ && SUCCEEDED(FailureResult()); }
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
+    bool QueryFsrJitter(std::uint64_t sourceId,float& x,float& y);
     bool StartupConfigured() const { return sourceUpscalerSettings_.Initialized(); }
     const TheosRenderPipeline::Upscaler::Configuration& SourceUpscalerSettings() const { return sourceUpscalerSettings_; }
     void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request);
@@ -134,6 +136,8 @@ class NvidiaHost
     struct SourceFrameOperations;
     struct SourceNvidiaEvaluationOperations;
     bool EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHistory);
+    bool EvaluateFsrFrame(IDXGISwapChain*,bool nativeUIHandoff);
+    struct SourceFsrEvaluationOperations;
     bool FinishSourceFrameForPresent();
     void ApplyLoadingFade(bool composed);
     void EndNativeUIPass();
@@ -146,6 +150,8 @@ class NvidiaHost
     TheosRenderPipeline::OrdinaryPresentation ordinaryPresentation_;
 #if defined(TRP_ENABLE_FSR)
     std::unique_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;
+    std::unique_ptr<TheosRenderPipeline::Upscaling::FsrFrameAdapter> fsrFrame_;
+    bool lastFsrTemporal_{};
 #endif
     TheosRenderPipeline::SourceHostFailure lifecycleFailure_;
 

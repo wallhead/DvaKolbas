@@ -1,4 +1,5 @@
 #include "Upscaling/FSRUpscaler.h"
+#include "Upscaling/FSRFrameAdapter.h"
 #include "Upscaling/FSRProviderPolicy.h"
 #include "InteropTestRig.h"
 #include <d3dcompiler.h>
@@ -55,6 +56,8 @@ static std::uint64_t Pixels(Rig& rig,ID3D11Texture2D* staging,Extent size)
 {
     D3D11_MAPPED_SUBRESOURCE mapped{};Check(rig.context11->Map(staging,0,D3D11_MAP_READ,0,&mapped),"read native output");
     std::uint64_t hash=1469598103934665603ull;double energy{};float min=100,max=-100;
+    auto* sentinel=static_cast<const DirectX::PackedVector::HALF*>(mapped.pData);
+    Require(DirectX::PackedVector::XMConvertHalfToFloat(sentinel[0])==1 && DirectX::PackedVector::XMConvertHalfToFloat(sentinel[1])==0 && DirectX::PackedVector::XMConvertHalfToFloat(sentinel[2])==0,"completed native UI sentinel survives frame delivery");
     for(UINT y=0;y<size.height;++y) {
         auto* row=reinterpret_cast<const DirectX::PackedVector::HALF*>(static_cast<const unsigned char*>(mapped.pData)+y*mapped.RowPitch);
         for(UINT x=0;x<size.width;++x)for(UINT c=0;c<3;++c){auto half=row[x*4+c];auto v=DirectX::PackedVector::XMConvertHalfToFloat(half);
@@ -68,7 +71,7 @@ int main(int argc,char** argv)
     for(int i=1;i<argc;++i){std::string argument=argv[i];Require(i+1<argc,"smoke option needs value");std::string value=argv[++i];
         if(argument=="--frames")frames=std::stoul(value);else if(argument=="--recreate")recreate=std::stoul(value);else if(argument=="--output")report=value;
         else if(argument=="--runtime")runtimeDirectory=std::filesystem::absolute(value);else if(argument=="--debug")Require(value=="auto","debug auto only");else Require(false,"unknown smoke option");}
-    Require(recreate>0 && frames>=recreate*4,"at least four frames per context");
+    Require(recreate>0 && frames>=recreate*9,"at least nine temporal frames per context for reentry coverage");
     if(runtimeDirectory.empty()||!std::filesystem::exists(runtimeDirectory/"amd_fidelityfx_loader_dx12.dll")){std::puts("SKIPPED: pinned runtime unavailable");return 77;}
     auto plugin=std::filesystem::absolute(report).parent_path()/"runtime-plugin";std::filesystem::create_directories(plugin/"FSR");
     for(auto name:{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll"})std::filesystem::copy_file(runtimeDirectory/name,plugin/"FSR"/name,std::filesystem::copy_options::overwrite_existing);
@@ -82,7 +85,7 @@ int main(int argc,char** argv)
     ComPtr<ID3D11ComputeShader> shader;Check(rig.device11->CreateComputeShader(code->GetBufferPointer(),code->GetBufferSize(),nullptr,&shader),"geometry shader");
     D3D11_BUFFER_DESC cb{};cb.ByteWidth=sizeof(Constants);cb.Usage=D3D11_USAGE_DEFAULT;cb.BindFlags=D3D11_BIND_CONSTANT_BUFFER;
     ComPtr<ID3D11Buffer> constants;Check(rig.device11->CreateBuffer(&cb,nullptr,&constants),"geometry constants");
-    unsigned dispatched{},readbacks{},changed{},inflightVerified{};std::uint64_t previousHash{};std::size_t firstPeakResources{},firstPeakHeaps{};
+    unsigned dispatched{},readbacks{},changed{},inflightVerified{},spatialFrames{},invalidFrames{},resetFrames{};std::uint64_t sourceId{},previousHash{};std::size_t firstPeakResources{},firstPeakHeaps{};
     for(unsigned cycle=0;cycle<recreate;++cycle){
         {
             auto bridge=std::make_shared<Interop>();rig.Initialize(*bridge);
@@ -100,26 +103,35 @@ int main(int argc,char** argv)
             desc.Format=DXGI_FORMAT_R16G16_FLOAT;Check(bridge->CreateSharedTexture(desc,motion),"shared motion");desc.Width=display.width;desc.Height=display.height;desc.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;
             Check(bridge->CreateSharedTexture(desc,output),"native output");ComPtr<ID3D11UnorderedAccessView> views[3];ID3D11Texture2D* inputs[]{color.texture11.Get(),depth.texture11.Get(),motion.texture11.Get()};
             for(unsigned i=0;i<3;++i)Check(rig.device11->CreateUnorderedAccessView(inputs[i],nullptr,&views[i]),"controlled input UAV");
+            desc.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;ComPtr<ID3D11Texture2D> handoff;
+            Check(rig.device11->CreateTexture2D(&desc,nullptr,&handoff),"adapter native handoff");ComPtr<ID3D11RenderTargetView> handoffRTV;Check(rig.device11->CreateRenderTargetView(handoff.Get(),nullptr,&handoffRTV),"native UI sentinel target");
             desc.BindFlags=0;desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ;desc.Usage=D3D11_USAGE_STAGING;ComPtr<ID3D11Texture2D> staging;Check(rig.device11->CreateTexture2D(&desc,nullptr,&staging),"native readback");
             GpuFrameResources gpu{color.texture12.Get(),depth.texture12.Get(),motion.texture12.Get(),output.texture12.Get()};UpscaleFrame frame;frame.backend=BackendKind::Fsr;frame.render=frame.subrect=render;frame.display=display;
+            FsrFrameAdapter adapter(fsr,bridge,gpu,color.texture11.Get(),depth.texture11.Get(),motion.texture11.Get(),output.texture11.Get(),ColorEncoding::Linear);
+            frame.color=frame.input=color.texture11.Get();frame.depth=depth.texture11.Get();frame.motion=motion.texture11.Get();frame.output=handoff.Get();
             frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;frame.colorIsLinear=true;frame.deltaMilliseconds=16;frame.sharpness=0.25f;
             frame.motionConvention={1,1,true,false};frame.camera.identity=1;frame.camera.nearDistance=0.1f;frame.camera.farDistance=100;frame.camera.verticalFovRadians=1;frame.camera.depthInverted=inverted;
             DirectX::XMFLOAT4X4 projection,view;DirectX::XMStoreFloat4x4(&projection,DirectX::XMMatrixPerspectiveFovLH(1,float(display.width)/display.height,0.1f,100));
             if(inverted)for(unsigned row=0;row<4;++row)projection.m[row][2]=projection.m[row][3]-projection.m[row][2];std::memcpy(frame.camera.projection.data(),&projection,sizeof(projection));
             ComPtr<ID3D12Fence> gate;Check(rig.device12->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&gate)),"in-flight gate");Check(rig.queue->Wait(gate.Get(),1),"hold three real dispatches");
             unsigned count=frames/recreate+(cycle<frames%recreate?1:0);
+            float lastCameraX{},lastObjectX{};
             for(unsigned local=0;local<count;++local){
-                frame.sourceId=++dispatched;frame.reset=local==0;auto jitter=Value(fsr.QueryJitter(frame.sourceId));frame.jitterX=jitter[0];frame.jitterY=jitter[1];
+                frame.sourceId=++sourceId;frame.reset=local==0;auto jitter=Value(fsr.QueryJitter(frame.sourceId));frame.jitterX=jitter[0];frame.jitterY=jitter[1];
                 float cameraX=std::sin(float(frame.sourceId)*0.02f)*0.04f,objectX=std::sin(float(frame.sourceId)*0.04f)*0.12f;
-                float previousCameraX=local?std::sin(float(frame.sourceId-1)*0.02f)*0.04f:cameraX,previousObjectX=local?std::sin(float(frame.sourceId-1)*0.04f)*0.12f:objectX;
+                float previousCameraX=local?lastCameraX:cameraX,previousObjectX=local?lastObjectX:objectX;
+                lastCameraX=cameraX;lastObjectX=objectX;
                 frame.camera.position={cameraX,0,0};DirectX::XMStoreFloat4x4(&view,DirectX::XMMatrixTranslation(-cameraX,0,0));std::memcpy(frame.camera.view.data(),&view,sizeof(view));
                 Constants values{render.width,render.height,jitter[0],jitter[1],cameraX,previousCameraX,objectX,previousObjectX,0.1f,100,inverted?1u:0u,0};
                 rig.context11->UpdateSubresource(constants.Get(),0,nullptr,&values,0,0);ID3D11Buffer* buffer=constants.Get();rig.context11->CSSetConstantBuffers(0,1,&buffer);
                 ID3D11UnorderedAccessView* uavs[]{views[0].Get(),views[1].Get(),views[2].Get()};rig.context11->CSSetUnorderedAccessViews(0,3,uavs,nullptr);rig.context11->CSSetShader(shader.Get(),nullptr,0);
                 rig.context11->Dispatch((render.width+7)/8,(render.height+7)/8,1);ID3D11UnorderedAccessView* empty[3]{};rig.context11->CSSetUnorderedAccessViews(0,3,empty,nullptr);
-                Check(bridge->SignalProducer(),"submit D3D11 geometry");ID3D12GraphicsCommandList* list{};Check(bridge->Begin(&list),"FSR slot");Accepted(fsr.Dispatch(list,gpu,frame));Check(bridge->Submit(),"submit real FSR");Check(bridge->WaitConsumer(),"native dependency");
+                if(local==4){auto invalid=frame;invalid.deltaMilliseconds=0;Require(Value(adapter.Evaluate(invalid))==UpscaleOutcome::SkippedInvalidInput,"invalid frame skipped without fabricated timing");++invalidFrames;}
+                Require(Value(adapter.Evaluate(frame))==UpscaleOutcome::Temporal,"production frame adapter delivers official FSR native output");++dispatched;if(adapter.LastTemporalReset())++resetFrames;
                 if(local==2){Require(bridge->CurrentSlot(Work::Upscaling)==0 && gate->GetCompletedValue()==0,"three submissions outstanding before reuse");++inflightVerified;Check(gate->Signal(1),"release independent test gate");}
-                if((local+1)%16==0||local+1==count){rig.context11->CopyResource(staging.Get(),output.texture11.Get());Check(bridge->Drain(),"retire native reader");auto hash=Pixels(rig,staging.Get(),display);if(previousHash&&hash!=previousHash)++changed;previousHash=hash;++readbacks;}
+                if(local==7){auto loading=frame;loading.sourceId=++sourceId;Require(Value(adapter.Spatial(loading))==UpscaleOutcome::SpatialRecovery,"loading source uses native spatial route");++spatialFrames;}
+                const float uiColor[]{1,0,0,1};const D3D11_RECT corner{0,0,1,1};rig.context4->ClearView(handoffRTV.Get(),uiColor,&corner,1);
+                if((local+1)%16==0||local+1==count){rig.context11->CopyResource(staging.Get(),handoff.Get());Check(bridge->Drain(),"retire native reader");auto hash=Pixels(rig,staging.Get(),display);if(previousHash&&hash!=previousHash)++changed;previousHash=hash;++readbacks;}
             }
             peakMemory=std::max(peakMemory,memory());Accepted(fsr.DestroyAfterRetirement());Require(liveResources.empty()&&liveHeaps.empty(),"every instrumented SDK allocation destroyed after retirement");
         }
@@ -127,11 +139,13 @@ int main(int argc,char** argv)
         if(cycle==3){firstPeakResources=peakResources;firstPeakHeaps=peakHeaps;}if(cycle>=4)Require(peakResources<=firstPeakResources&&peakHeaps<=firstPeakHeaps,"SDK resource peaks bounded across recreation");
     }
     Require(changed>recreate && readbacks>=recreate && inflightVerified==recreate,"changing output and multiple in-flight frames in every context");
+    Require(spatialFrames==recreate && invalidFrames==recreate && resetFrames==recreate*3,"one first-frame, invalid-input reentry and loading-exit reset per context");
     std::printf("Allocation observations: resources=%zu heaps=%zu peakResources=%zu peakHeaps=%zu retiredMemoryRange=%llu\n",
         allocatedResources,allocatedHeaps,peakResources,peakHeaps,static_cast<unsigned long long>(maxRetiredMemory-minRetiredMemory));
     Require(allocatedResources>0||allocatedHeaps>0,"official allocation callbacks observed SDK allocations");Require(maxRetiredMemory-minRetiredMemory<64ull*1024*1024,"retired GPU memory growth bounded");rig.ValidateDebug();
     auto luid=rig.device12->GetAdapterLuid();std::filesystem::create_directories(report.parent_path());std::ofstream json(report);
     json<<"{\n\"result\":\"PASS\",\n\"frames\":"<<dispatched<<",\"recreations\":"<<recreate<<",\"readbacks\":"<<readbacks<<",\"changingSamples\":"<<changed<<",\"inflightContexts\":"<<inflightVerified
+        <<",\n\"productionFrameAdapter\":true,\"nativeUiSentinelChecked\":true,\"spatialFrames\":"<<spatialFrames<<",\"invalidInputAttempts\":"<<invalidFrames<<",\"historyResetFrames\":"<<resetFrames
         <<",\n\"providerId\":"<<provider.id<<",\"providerName\":\""<<provider.name<<"\",\"adapterLuidHigh\":"<<luid.HighPart<<",\"adapterLuidLow\":"<<luid.LowPart
         <<",\n\"d3d11DebugValidated\":"<<(rig.messages11?"true":"false")<<",\"d3d12DebugValidated\":"<<(rig.messages12?"true":"false")
         <<",\n\"sdkCommittedResourcesCreated\":"<<allocatedResources<<",\"sdkHeapsCreated\":"<<allocatedHeaps<<",\"peakSdkCommittedResources\":"<<peakResources<<",\"peakSdkHeaps\":"<<peakHeaps

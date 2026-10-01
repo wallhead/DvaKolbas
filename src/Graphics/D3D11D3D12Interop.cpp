@@ -350,6 +350,18 @@ namespace TheosRenderPipeline::Graphics
         return hr;
     }
 
+    HRESULT D3D11D3D12Interop::DiscardRecording()
+    {
+        auto* work=Get(InteropWork::Upscaling);
+        if(!Ready() || !srProducerSubmitted_ || srDispatchSubmitted_ || !work || !work->recording)return E_UNEXPECTED;
+        const auto hr=work->lists[work->slot]->Close();
+        if(FAILED(hr))return Check(hr);
+        work->recording=false;
+        // The next Begin resets this closed list after the slot's previous real
+        // submission retires. Current producer work still needs a normal Drain.
+        return S_OK;
+    }
+
 	std::uint64_t D3D11D3D12Interop::LastValue(InteropWork a_work) const
 	{
 		const auto index = static_cast<std::size_t>(a_work);

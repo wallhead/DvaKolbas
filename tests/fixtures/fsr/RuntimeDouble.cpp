@@ -76,5 +76,15 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
 }
 #endif
 #if FSR_MISSING_EXPORT != 5
-extern "C" __declspec(dllexport) ffxReturnCode_t ffxDispatch(ffxContext*, const ffxDispatchDescHeader*) { return FFX_API_RETURN_OK; }
+extern "C" __declspec(dllexport) ffxReturnCode_t ffxDispatch(ffxContext*, const ffxDispatchDescHeader* header)
+{
+    if(mode==8) {
+        auto* desc=reinterpret_cast<const ffxDispatchDescUpscale*>(header);
+        auto* list=static_cast<ID3D12GraphicsCommandList*>(desc->commandList);
+        D3D12_RESOURCE_BARRIER barrier{};barrier.Type=D3D12_RESOURCE_BARRIER_TYPE_UAV;
+        barrier.UAV.pResource=static_cast<ID3D12Resource*>(desc->output.resource);list->ResourceBarrier(1,&barrier);
+        return FFX_API_RETURN_ERROR;
+    }
+    return FFX_API_RETURN_OK;
+}
 #endif

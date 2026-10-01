@@ -11,6 +11,7 @@ namespace TheosRenderPipeline::Upscaling
         FsrHostResources(const FsrHostResources&)=delete;FsrHostResources& operator=(const FsrHostResources&)=delete;
         Result<Extent> PrepareSizing(ID3D11Device*,const BackendConfiguration&,Extent output);
         Result<void> CompleteStartup();Result<void> Retire();
+        Result<void> EnsureInputPolicy(FsrInputPolicy);
         bool FeatureReady()const;bool ContextOwned()const;
         std::shared_ptr<Graphics::D3D11D3D12Interop> Bridge()const;
         GpuFrameResources Resources()const;
