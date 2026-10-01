@@ -1,0 +1,33 @@
+{
+  "result": "PASS: initial in-game DLSS and native x2 FG check",
+  "scope": "One user gameplay session, V5.4 NO-LORE; user reports working",
+  "edition": "Standard 0.3.5",
+  "revision": "246d152c42a83308beb7a6f4930e7c472ef0d4ce",
+  "gpu": "RTX 4080 SUPER",
+  "driver": "617.14",
+  "skyrim": "1.6.1170",
+  "runtime": "DLSS/DLSS-G 310.8.0; Streamline 2.13.0.11ffc00ec",
+  "renderResolution": "1707x960",
+  "outputResolution": "2560x1440",
+  "successfulTwoOutputSamples": [
+    "[15:12:55.245] [17528] [I] [SourceDLSSG] frame=14400 enabled=true status=0 presented=2 maximum=1 inputFence=0x1c1416c09b0 value=14400 runtimePresentedTotal=14726 stateQueries=14401 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=14400 nativeOutputs=14722 nativeBatchedAdditional=324 nativeQueryFailures=0 outputBatches=14400 generatedPresented=326 interpolatedNotPresented=5 batchMismatches=0 unknownOutputBatches=0 configurationChanges=1 reflexQueries=451 reflexFailures=0 reflexReports=14367 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+    "[15:13:06.289] [17528] [I] [SourceDLSSG] frame=15000 enabled=true status=0 presented=2 maximum=1 inputFence=0x1c1416c09b0 value=15000 runtimePresentedTotal=15926 stateQueries=15001 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=15000 nativeOutputs=15922 nativeBatchedAdditional=924 nativeQueryFailures=0 outputBatches=15000 generatedPresented=926 interpolatedNotPresented=5 batchMismatches=0 unknownOutputBatches=0 configurationChanges=1 reflexQueries=469 reflexFailures=0 reflexReports=14943 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00"
+  ],
+  "latestCounters": "[15:15:38.995] [17528] [I] [SourceDLSSG] frame=22800 enabled=true status=0 presented=1 maximum=1 inputFence=0x1c1416c09b0 value=15579 runtimePresentedTotal=24305 stateQueries=22801 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=22800 nativeOutputs=24303 nativeBatchedAdditional=1505 nativeQueryFailures=0 outputBatches=22800 generatedPresented=1505 interpolatedNotPresented=7226 batchMismatches=0 unknownOutputBatches=0 configurationChanges=1 reflexQueries=713 reflexFailures=0 reflexReports=22752 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+  "rendererErrorLines": 0,
+  "warnings": [
+    "[15:08:42.500] [17528] [W] KreatE 1.5.0 adapter rejected: unsupported DLL sha256=F0313183D10E76EC112517C5A96A9097D5C48581710103D97BDEEF7B6A4518D4",
+    "[15:08:42.512] [17528] [W] Open Animation Replacer 3.1.5 adapter rejected: unsupported DLL sha256=DB61B8B691E709BEDE355514871918BAA63EABE8F6D0734BF17FFCF793B4C894",
+    "[15:09:22.266] [17528] [W] [FrameGen] factory CreateSwapChain without a D3D11 device; passing through",
+    "[15:09:34.481] [8576 ] [W] [SourceDLSSG] camera unavailable: player camera or graphics state absent",
+    "[15:09:34.481] [8576 ] [W] [SourceDLSSG] generation held off cameraValid=false backend=source Streamline swapchain ready; generation off until valid inputs",
+    "[15:11:29.430] [8576 ] [W] [SourceDLSSG] camera unavailable: no matching player view in graphics cache"
+  ],
+  "limitations": [
+    "Physical display cadence and long-session stability not measured",
+    "Later samples report one output; generation was observed earlier and the cause of the later change was not verified",
+    "Three offline debug-layer tests skipped because Graphics Tools unavailable"
+  ],
+  "rendererSha256": "4d3bae0192dd5286ee748208e57cf139108f4ee14c7d803477fc6b52a378cec7",
+  "logSnapshot": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\validation\\game-v54-20261001\\TheosRenderPipeline.log"
+}

@@ -1,0 +1,134 @@
+[
+  {
+    "vtable_rva": 1078248,
+    "offset": 352,
+    "target_rva": 38048,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::dispatchInterpolationCommands"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 360,
+    "target_rva": 39136,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::presentInterpolated"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 368,
+    "target_rva": 40032,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::verifyUiDuplicateResource"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 376,
+    "target_rva": 40608,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::copyUiResource"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 384,
+    "target_rva": 41152,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::verifyBackbufferDuplicateResources"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 392,
+    "target_rva": 41824,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::destroyReplacementResources"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 400,
+    "target_rva": 42432,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::killPresenterThread"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 408,
+    "target_rva": 42544,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::spawnPresenterThread"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 416,
+    "target_rva": 42688,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::discardOutstandingInterpolationCommandLists"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 424,
+    "target_rva": 42800,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::real"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 432,
+    "target_rva": 42816,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::setFrameGenerationConfig"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 440,
+    "target_rva": 43760,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::waitForPresents"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 448,
+    "target_rva": 43872,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::interpolationOutput"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 456,
+    "target_rva": 44000,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::getInterpolationCommandList"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 464,
+    "target_rva": 44480,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::registerUiResource"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 472,
+    "target_rva": 44624,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::setWaitCallback"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 480,
+    "target_rva": 44640,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::setFramePacingTuning"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 488,
+    "target_rva": 44720,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::GetGpuMemoryUsage"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 496,
+    "target_rva": 45904,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::init"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 504,
+    "target_rva": 35152,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::shutdown"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 512,
+    "target_rva": 35872,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::getInterpolationEnabledSwapChainFlags"
+  },
+  {
+    "vtable_rva": 1078248,
+    "offset": 520,
+    "target_rva": 35904,
+    "name": "TFrameInterpolationSwapChainDX12<IFrameInterpolationSwapChainDX12,FrameinterpolationPresentInfoExt,FfxFrameGenerationConfig,ffxCallbackDescFrameGenerationPresent,16>::getInterpolationEnabledSwapChainDescription"
+  }
+]

@@ -1,0 +1,980 @@
+[
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x1A16F2",
+    "label": "Pre-UI relocation ID 79947",
+    "bytes": "48c74424404b380100",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rsp+0x40],0x1384b",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x1A16FB",
+    "label": "Pre-UI relocation ID 82084",
+    "bytes": "48c7442448a4400100",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rsp+0x48],0x140a4",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x1A170E",
+    "label": "Pre-UI alternate displacement 0x17A",
+    "bytes": "be7a010000",
+    "mnemonic": "mov",
+    "operands": "esi,0x17a",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x1A1715",
+    "label": "Pre-UI displacement 0x16F",
+    "bytes": "41be6f010000",
+    "mnemonic": "mov",
+    "operands": "r14d,0x16f",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x1A1744",
+    "label": "Pre-UI replacement handler pointer",
+    "bytes": "4c8d05d5dcffff",
+    "mnemonic": "lea",
+    "operands": "r8,[rip+0xffffffffffffdcd5]        # 0x18019f420",
+    "refs": [
+      1700896
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x1A1756",
+    "label": "Save original engine call target",
+    "bytes": "48891d53bc2d00",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rip+0x2dbc53],rbx        # 0x18047d3b0",
+    "refs": [
+      4707248
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19F583",
+    "label": "Pre-UI handler invokes saved engine callee",
+    "bytes": "ff1527de2d00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x2dde27]        # 0x18047d3b0",
+    "refs": [
+      4707248
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19F6EA",
+    "label": "Enable guarded ReShade effects window",
+    "bytes": "c6818904000001",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rcx+0x489],0x1",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19F741",
+    "label": "Read before-upscaling ReShade selector",
+    "bytes": "4438b187040000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rcx+0x487],r14b",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19F8FF",
+    "label": "Guarded pre-SR ReShade render_effects call",
+    "bytes": "ff5648",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rsi+0x48]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FA14",
+    "label": "Pre-UI handler invokes SR producer",
+    "bytes": "e8a74f0f00",
+    "mnemonic": "call",
+    "operands": "0x1802949c0",
+    "refs": [
+      2705856
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FA2E",
+    "label": "Read post-SR ReShade selector",
+    "bytes": "80b98704000000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rcx+0x487],0x0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FAD0",
+    "label": "Guarded post-SR ReShade render_effects call",
+    "bytes": "ff5648",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rsi+0x48]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FB28",
+    "label": "Disable guarded ReShade effects window",
+    "bytes": "c6818904000000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rcx+0x489],0x0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FC85",
+    "label": "Select separate UI image at host+0x9E0",
+    "bytes": "4881c1e0090000",
+    "mnemonic": "add",
+    "operands": "rcx,0x9e0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FCF3",
+    "label": "Bind output render targets after SR",
+    "bytes": "ff9008010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x108]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19FD66",
+    "label": "Clear selected UI render-target view",
+    "bytes": "ffd3",
+    "mnemonic": "call",
+    "operands": "rbx",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29B4A9",
+    "label": "INI before-SR ReShade setting at host+0x487",
+    "bytes": "888687040000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rsi+0x487],al",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29BF70",
+    "label": "Copy configured FG type to active host+0x3DC",
+    "bytes": "8986dc030000",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [rsi+0x3dc],eax",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29C113",
+    "label": "Set FrameWarp-active boolean at host+0x4A5",
+    "bytes": "888ea5040000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rsi+0x4a5],cl",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29CC99",
+    "label": "INI HUD Fix enabled flag host+0x4FA",
+    "bytes": "8886fa040000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rsi+0x4fa],al",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x29CD38",
+    "label": "INI HUD Fix method host+0x4FC",
+    "bytes": "8986fc040000",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [rsi+0x4fc],eax",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A49B6",
+    "label": "Create UI-render image output host+0x9E0",
+    "bytes": "4c8d8fe0090000",
+    "mnemonic": "lea",
+    "operands": "r9,[rdi+0x9e0]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A49E4",
+    "label": "CreateTexture2D using proxy-buffer-derived UI description",
+    "bytes": "ff5028",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x28]",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19EDDD",
+    "label": "Install context hook at vtable slot 33",
+    "bytes": "41b821000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x21",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x19EDE3",
+    "label": "OMSetRenderTargets redirect handler pointer",
+    "bytes": "488d1546ad1000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x10ad46]        # 0x1802a9b30",
+    "refs": [
+      2792240
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9B67",
+    "label": "OM redirect UI-phase flag check",
+    "bytes": "4438252475bd00",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rip+0xbd7524],r12b        # 0x180e81092",
+    "refs": [
+      15208594
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9E9E",
+    "label": "OM redirect selects separate UI image",
+    "bytes": "4881c1e0090000",
+    "mnemonic": "add",
+    "operands": "rcx,0x9e0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A9EEB",
+    "label": "Replace first RTV in local binding array",
+    "bytes": "48895dc7",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rbp-0x39],rbx",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A6997",
+    "label": "Install ReShade runtime vtable slot 9 hook",
+    "bytes": "41b809000000",
+    "mnemonic": "mov",
+    "operands": "r8d,0x9",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A6AA7",
+    "label": "render_effects duplicate-suppression guard",
+    "bytes": "80b88904000000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rax+0x489],0x0",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2A6AB0",
+    "label": "Tailcall original render_effects within allowed window",
+    "bytes": "48ff2559691d00",
+    "mnemonic": "rex.W",
+    "operands": "jmp QWORD PTR [rip+0x1d6959]        # 0x18047d410",
+    "refs": [
+      4707344
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AB32A",
+    "label": "Early FG gate: mode flag+0x4E4",
+    "bytes": "4438a8e4040000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rax+0x4e4],r13b",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AB333",
+    "label": "Early FG gate: active type != DLSS FG",
+    "bytes": "83b8dc03000002",
+    "mnemonic": "cmp",
+    "operands": "DWORD PTR [rax+0x3dc],0x2",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AB33C",
+    "label": "Early FG gate: FrameWarp-active flag",
+    "bytes": "4438a8a5040000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rax+0x4a5],r13b",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AB349",
+    "label": "Normal early FG preparation call",
+    "bytes": "e8528efeff",
+    "mnemonic": "call",
+    "operands": "0x1802941a0",
+    "refs": [
+      2703776
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2ABCD1",
+    "label": "Late FG gate: active type DLSS FG",
+    "bytes": "83b9dc03000002",
+    "mnemonic": "cmp",
+    "operands": "DWORD PTR [rcx+0x3dc],0x2",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2ABCDA",
+    "label": "Late FG gate: FrameWarp-active flag",
+    "bytes": "4438a9a5040000",
+    "mnemonic": "cmp",
+    "operands": "BYTE PTR [rcx+0x4a5],r13b",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2ABCF5",
+    "label": "Defer FG by marking pending final source",
+    "bytes": "c605a352bd0001",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rip+0xbd52a3],0x1        # 0x180e80f9f",
+    "refs": [
+      15208351
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2ABD02",
+    "label": "Immediate late FG call when not deferred",
+    "bytes": "e89984feff",
+    "mnemonic": "call",
+    "operands": "0x1802941a0",
+    "refs": [
+      2703776
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284B6F",
+    "label": "Registered ReShade completion callback address",
+    "bytes": "488d15ba010000",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x1ba]        # 0x180284d30",
+    "refs": [
+      2641200
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284B76",
+    "label": "Register event 75 / 0x4B",
+    "bytes": "b94b000000",
+    "mnemonic": "mov",
+    "operands": "ecx,0x4b",
+    "refs": []
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284D85",
+    "label": "Clear pending latch before deferred FG",
+    "bytes": "c60513c2bf0000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rip+0xbfc213],0x0        # 0x180e80f9f",
+    "refs": [
+      15208351
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x284DA2",
+    "label": "Registered final-overlay callback invokes FG producer",
+    "bytes": "e8f9f30000",
+    "mnemonic": "call",
+    "operands": "0x1802941a0",
+    "refs": [
+      2703776
+    ]
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AC105",
+    "label": "AfterPresent clears missing-callback pending latch",
+    "bytes": "c605934ebd0000",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rip+0xbd4e93],0x0        # 0x180e80f9f",
+    "refs": [
+      15208351
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x72A33",
+    "label": "Create shared D3D12 fence",
+    "bytes": "41ffd2",
+    "mnemonic": "call",
+    "operands": "r10",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x72A75",
+    "label": "Create shared fence handle",
+    "bytes": "ff90f8000000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0xf8]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x72AAF",
+    "label": "Open same shared fence on D3D11Device5",
+    "bytes": "ff9018020000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x218]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x72AF9",
+    "label": "Optional additional D3D12 device opens fence handle",
+    "bytes": "ff9000010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x100]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x72B19",
+    "label": "Close exported fence handle after imports",
+    "bytes": "ff15a1050a00",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0xa05a1]        # 0x1801130c0",
+    "refs": [
+      1126592
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x75567",
+    "label": "Legacy shared texture handle lookup",
+    "bytes": "ff5040",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x40]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x7559A",
+    "label": "NT shared texture handle fallback",
+    "bytes": "ff5068",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x68]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x755DB",
+    "label": "Open shared texture on D3D12 helper",
+    "bytes": "e87092ffff",
+    "mnemonic": "call",
+    "operands": "0x18006e850",
+    "refs": [
+      452688
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x6E884",
+    "label": "D3D12 OpenSharedHandle resource call",
+    "bytes": "ff9000010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x100]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEAEAC",
+    "label": "Wait selected companion-ring slot before FG",
+    "bytes": "e88fcaf8ff",
+    "mnemonic": "call",
+    "operands": "0x180077940",
+    "refs": [
+      489792
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEAF15",
+    "label": "Store selected companion-ring slot",
+    "bytes": "4189a8e8030000",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [r8+0x3e8],ebp",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEB03E",
+    "label": "Submit prepared FG to child backend",
+    "bytes": "ff5008",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x8]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEB050",
+    "label": "Submit companion command recording",
+    "bytes": "e80b86f8ff",
+    "mnemonic": "call",
+    "operands": "0x180073660",
+    "refs": [
+      472672
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x77A1E",
+    "label": "Optional external fence wait in generic ring helper",
+    "bytes": "ff5078",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x78]",
+    "refs": []
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x7F4A3",
+    "label": "DLSS-G state API call before external-fence publication",
+    "bytes": "488d1536ff1101",
+    "mnemonic": "lea",
+    "operands": "rdx,[rip+0x111ff36]        # 0x18119f3e0",
+    "refs": [
+      18478048
+    ]
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x7F579",
+    "label": "DLSS-G direct caller of generic FGFence publisher",
+    "bytes": "e8e287ffff",
+    "mnemonic": "call",
+    "operands": "0x180077d60",
+    "refs": [
+      490848
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xADFB",
+    "label": "Copy caller UI record into presentInfo",
+    "bytes": "0f118688160000",
+    "mnemonic": "movups",
+    "operands": "XMMWORD PTR [rsi+0x1688],xmm0",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xAE16",
+    "label": "Clear internal-UI-copy flag for null UI",
+    "bytes": "83e7fd",
+    "mnemonic": "and",
+    "operands": "edi,0xfffffffd",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0x9D26",
+    "label": "Wait composition before replacing differently-sized UI duplicate",
+    "bytes": "e805af0e00",
+    "mnemonic": "call",
+    "operands": "0x1800f4c30",
+    "refs": [
+      1002544
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0x9DD2",
+    "label": "Allocate internal UI duplicate",
+    "bytes": "41ffd2",
+    "mnemonic": "call",
+    "operands": "r10",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBB5D",
+    "label": "CPU composition completion wait in AMD Present",
+    "bytes": "e8ce900e00",
+    "mnemonic": "call",
+    "operands": "0x1800f4c30",
+    "refs": [
+      1002544
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBB76",
+    "label": "Game queue waits on GPU composition fence",
+    "bytes": "ff5078",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x78]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBBA2",
+    "label": "Copy registered UI from Present",
+    "bytes": "ff9078010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x178]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA002",
+    "label": "Transition UI source/destination for copy",
+    "bytes": "ff90d0000000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0xd0]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA014",
+    "label": "CopyResource into internal UI buffer",
+    "bytes": "ff9088000000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x88]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA045",
+    "label": "Restore UI copy resource states",
+    "bytes": "ff90d0000000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0xd0]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA06C",
+    "label": "Execute UI copy command list",
+    "bytes": "ff5050",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x50]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA07D",
+    "label": "Signal UI copy command-pool completion",
+    "bytes": "ff5070",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x70]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA080",
+    "label": "Consume caller's current UI pointer after copy recording",
+    "bytes": "4d89a588160000",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [r13+0x1688],r12",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBC72",
+    "label": "Stamp used replacement buffer with availability value",
+    "bytes": "488984cb18190000",
+    "mnemonic": "mov",
+    "operands": "QWORD PTR [rbx+rcx*8+0x1918],rax",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBCA7",
+    "label": "Store alternating interpolation-output index",
+    "bytes": "8993441a0000",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [rbx+0x1a44],edx",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBCB2",
+    "label": "Store next game replacement-buffer index",
+    "bytes": "8993401a0000",
+    "mnemonic": "mov",
+    "operands": "DWORD PTR [rbx+0x1a40],edx",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBCE3",
+    "label": "Wait next replacement buffer's availability fence",
+    "bytes": "e8488f0e00",
+    "mnemonic": "call",
+    "operands": "0x1800f4c30",
+    "refs": [
+      1002544
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xAB13",
+    "label": "Drain game submission fence",
+    "bytes": "e818a10e00",
+    "mnemonic": "call",
+    "operands": "0x1800f4c30",
+    "refs": [
+      1002544
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xAB32",
+    "label": "Drain interpolation submission fence",
+    "bytes": "e8f9a00e00",
+    "mnemonic": "call",
+    "operands": "0x1800f4c30",
+    "refs": [
+      1002544
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xAB51",
+    "label": "Drain presentation fence",
+    "bytes": "e8daa00e00",
+    "mnemonic": "call",
+    "operands": "0x1800f4c30",
+    "refs": [
+      1002544
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA38E",
+    "label": "Destroy-resources first drains via waitForPresents",
+    "bytes": "ff90b8010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x1b8]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA3A6",
+    "label": "Stop existing presenter before resource destruction",
+    "bytes": "ff9090010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x190]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA3B2",
+    "label": "Discard registered interpolation command lists",
+    "bytes": "ff90a0010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x1a0]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xA567",
+    "label": "Mark temporal reset after replacement-resource cleanup",
+    "bytes": "c6837818000001",
+    "mnemonic": "mov",
+    "operands": "BYTE PTR [rbx+0x1878],0x1",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBEEC",
+    "label": "ResizeBuffers invokes drain/destroy helper",
+    "bytes": "ff9088010000",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x188]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBF55",
+    "label": "Forward underlying ResizeBuffers",
+    "bytes": "41ffd2",
+    "mnemonic": "call",
+    "operands": "r10",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBF68",
+    "label": "Return underlying resize HRESULT",
+    "bytes": "8bc3",
+    "mnemonic": "mov",
+    "operands": "eax,ebx",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF4CF9",
+    "label": "Fence polling reads completed value",
+    "bytes": "ff5040",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rax+0x40]",
+    "refs": []
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF4D35",
+    "label": "Unbounded polling branch while target not reached",
+    "bytes": "72bc",
+    "mnemonic": "jb",
+    "operands": "0x1800f4cf3",
+    "refs": [
+      1002739
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF4DC6",
+    "label": "One-millisecond event wait iteration",
+    "bytes": "ff151c130100",
+    "mnemonic": "call",
+    "operands": "QWORD PTR [rip+0x1131c]        # 0x1801060e8",
+    "refs": [
+      1073384
+    ]
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF4DE5",
+    "label": "Event wait retries until signaled",
+    "bytes": "75cc",
+    "mnemonic": "jne",
+    "operands": "0x1800f4db3",
+    "refs": [
+      1002931
+    ]
+  }
+]

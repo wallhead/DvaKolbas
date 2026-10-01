@@ -1,0 +1,9 @@
+﻿{
+    "succeeded":  false,
+    "stage":  "start Windows Update temporarily",
+    "originalUpdateStartMode":  "Disabled",
+    "originalUpdateState":  "Stopped",
+    "restoredUpdateSetting":  false,
+    "before":  "NotPresent",
+    "error":  "Не удается настроить службу \"Центр обновления Windows (wuauserv)\" из-за следующей ошибки: Отказано в доступе"
+}

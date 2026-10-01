@@ -1,0 +1,10 @@
+{
+  "module": "ffx_fsr3upscaler_x64.dll",
+  "sha256": "dbd5e7a1a6cb3074617c8e82c1d12ce49721a013ab382385d5b4657edda7f62d",
+  "export": "ffxFsr3UpscalerGetEffectVersion",
+  "rva": "0x42E0",
+  "bytes": "b80210c000c3",
+  "return_value": "0xC01002",
+  "decoded_FFX_MAKE_VERSION": "3.1.2",
+  "decoding_reference": "https://gpuopen.com/manuals/fidelityfx_sdk/fidelityfx_sdk-group__utils/"
+}

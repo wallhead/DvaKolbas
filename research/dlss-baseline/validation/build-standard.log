@@ -1,0 +1,1037 @@
+Версия MSBuild 17.14.40+3e7442088 для .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Detours.cpp
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/ampere-runtime/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  RuntimeBridgeTests.cpp
+  ModuleIdentityFixture.cpp
+  Detours64.cpp
+  Создание кода...
+     Создается библиотека C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard/module-fixtures/1/Release/TRPModuleIdentityFixture.lib и объект C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard/module-fixtures/1/Release/TRPModuleIdentityFixture.exp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 1 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPModuleIdentityFixture1.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\module-fixtures\1\Release\TRPModuleIdentityFixture.dll
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  HideStaticLibSymbols.c
+  ModuleIdentityFixture.cpp
+     Создается библиотека C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard/module-fixtures/2/Release/TRPModuleIdentityFixture.lib и объект C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard/module-fixtures/2/Release/TRPModuleIdentityFixture.exp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 1 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPModuleIdentityFixture2.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\module-fixtures\2\Release\TRPModuleIdentityFixture.dll
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  CommunityShaderFrameTests.cpp
+  ARPDetours.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\ARPDetours.lib
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  D3D11EntryObservers.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  midpoint_fix.cpp
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  All 315 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  CompileNeuralShaders.cpp
+  TRPCommunityShaderFrameTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPCommunityShaderFrameTests.exe
+  buffer.c
+  hook.c
+  trampoline.c
+  hde64.c
+  dlssg_provider_policy.cpp
+  TRPD3D11EntryObservers.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPD3D11EntryObservers.lib
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/ampere-loader/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/turing/CMakeLists.txt
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  CuModuleProbe.cpp
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  D3D11ContextSlotsTests.cpp
+  All 2273 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPAmpereRuntimeTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\ampere-runtime\Release\TRPAmpereRuntimeTests.exe
+  CommunityShaderHDRTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 289 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPCompileNeuralShaders.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPCompileNeuralShaders.exe
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 1 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPD3D11ContextSlotsTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPD3D11ContextSlotsTests.exe
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  All 351 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  D3D11EntryObserverTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  TRPCommunityShaderHDRTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPCommunityShaderHDRTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  D3D11FrameCopyTests.cpp
+  All 585 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPCuModuleProbe.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\turing\Release\TRPCuModuleProbe.exe
+  ModuleLoaderTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 309 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPD3D11EntryObserverTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPD3D11EntryObserverTests.exe
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  DLSSQualityTests.cpp
+  All 328 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPD3D11FrameCopyTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPD3D11FrameCopyTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  FinalFrameCaptureTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 27 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPDLSSQualityTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPDLSSQualityTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  GameFacingTargetsTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 230 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPGameFacingTargetsTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPGameFacingTargetsTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  All 780 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  HDROutputPassTests.cpp
+  TRPAmpereModuleLoaderTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\ampere-loader\Release\TRPAmpereModuleLoaderTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  HDROutputTests.cpp
+  ScreenshotFile.cpp
+  SourceDLSSGHDROutput.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 512 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPHDROutputTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPHDROutputTests.exe
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/CommonLibSSE-NG/CMakeLists.txt
+  All 468 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPHDROutputPassTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPHDROutputPassTests.exe
+  cmake_pch.cxx
+  Создание кода
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Previous IPDB not found, fall back to full compilation.
+  HookSafetyTests.cpp
+  All 1161 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPFinalFrameCaptureTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPFinalFrameCaptureTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  LoadingFadeTests.cpp
+  PresentationFade.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 219 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPHookSafetyTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPHookSafetyTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  NativeUICopyRouteTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  MenuRenderStateTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 173 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPNativeUICopyRouteTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPNativeUICopyRouteTests.exe
+  All 243 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPLoadingFadeTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPLoadingFadeTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/nr-peripheral/CMakeLists.txt
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  NeuralCombatPolicyTests.cpp
+  All 17 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPMenuRenderStateTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPMenuRenderStateTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/nr-peripheral/CMakeLists.txt
+  NeuralPassSettingsTests.cpp
+  AIFormulas.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  AIProcess.cpp
+  All 26 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPNeuralCombatPolicyTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\nr-peripheral\Release\TRPNeuralCombatPolicyTests.exe
+  Compiling embedded Neural Rendering shaders
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/nr-peripheral/CMakeLists.txt
+  PeripheralTests.cpp
+  AITimer.cpp
+  ActiveEffect.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 573 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  ActiveEffectFactory.cpp
+  TRPNeuralPassSettingsTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\nr-peripheral\Release\TRPNeuralPassSettingsTests.exe
+  Actor.cpp
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  NeuralRatioColorTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  FeatureDouble.cpp
+  All 293 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPNeuralRatioColorTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPNeuralRatioColorTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/nr-peripheral/CMakeLists.txt
+  NeuralShaderBytecodeTests.cpp
+  ActorEquipManager.cpp
+  ActorKill.cpp
+  ActorValueList.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 16 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPNeuralShaderBytecodeTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\nr-peripheral\Release\TRPNeuralShaderBytecodeTests.exe
+  ActorValueOwner.cpp
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  NeuralWorldContractTests.cpp
+  AddCallbackVisitor.cpp
+  AnimationClipDataSingleton.cpp
+  SourceDLSSGNeuralRendering.cpp
+  AnimationSystemUtils.cpp
+  ArmorRatingVisitor.cpp
+  ArmorRatingVisitorBase.cpp
+  Array.cpp
+  AutoVanityState.cpp
+  BGSAcousticSpace.cpp
+  BGSAttackData.cpp
+  BGSAutoWater.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  SourceDLSSGNeuralResolve.cpp
+  Создание кода...
+  All 365 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPNeuralWorldContractTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPNeuralWorldContractTests.exe
+  SourceDLSSGInterop.cpp
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  OverlayHotkeysTests.cpp
+  OverlayHotkeys.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 193 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPOverlayHotkeysTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPOverlayHotkeysTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  OverlayLayoutTests.cpp
+  All 1548 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPNeuralPeripheralTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\nr-peripheral\Release\TRPNeuralPeripheralTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  OverlayTextInputTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  OverlayLayout.cpp
+  All 151 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPOverlayTextInputTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPOverlayTextInputTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  PerformanceTuningTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 553 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPOverlayLayoutTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPOverlayLayoutTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  PluginPathsTests.cpp
+  PerformanceTuning.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 531 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPPluginPathsTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPPluginPathsTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/turing/CMakeLists.txt
+  ProviderGuardProbe.cpp
+  TimingContextAlias.c
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  midpoint_fix.cpp
+  All 1325 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPPerformanceTuningTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPPerformanceTuningTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  RCASParametersTests.cpp
+  dlssg_provider_policy.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 1130 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPProviderGuardProbe.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\turing\Release\TRPProviderGuardProbe.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  ReShadeIntegrationTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 396 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPRCASParametersTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPRCASParametersTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/reshade-lifecycle/CMakeLists.txt
+  ReShadeLifecycleTests.cpp
+  ReShadeIntegration.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 817 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPReShadeLifecycleTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\reshade-lifecycle\Release\TRPReShadeLifecycleTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  RendererSettingsActionTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 962 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPReShadeIntegrationTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPReShadeIntegrationTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  RuntimeModuleDiagnosticTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  SourceCameraSelectionTests.cpp
+  All 1533 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  Компиляция...
+  BGSBaseAlias.cpp
+  TRPRendererSettingsActionTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPRendererSettingsActionTests.exe
+  BGSBipedObjectForm.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  BGSColorForm.cpp
+  All 896 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  BGSConstructibleObject.cpp
+  TRPRuntimeModuleDiagnosticTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPRuntimeModuleDiagnosticTests.exe
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  All 265 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  SourceDLSSGCameraTests.cpp
+  TRPSourceCameraSelectionTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPSourceCameraSelectionTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  SourceDLSSGInteropFenceTests.cpp
+  BGSCreatedObjectManager.cpp
+  SourceDLSSGCameraMath.cpp
+  BGSDebris.cpp
+  BGSDecalNode.cpp
+  SourceDLSSGSession.cpp
+  BGSDefaultObjectManager.cpp
+  BGSDistantObjectBlock.cpp
+  SourceDLSSGInterop.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 60 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  BGSDistantTreeBlock.cpp
+  TRPSourceDLSSGCameraTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPSourceDLSSGCameraTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  BGSEntryPointFunctionDataActivateChoice.cpp
+  SourceDLSSGSessionTests.cpp
+  BGSEntryPointPerkEntry.cpp
+  BGSFootstepManager.cpp
+  BGSHeadPart.cpp
+  SourceDLSSGSession.cpp
+  BGSIdleCollection.cpp
+  BGSKeyword.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  BGSKeywordForm.cpp
+  All 304 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPSourceDLSSGSessionTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPSourceDLSSGSessionTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  All 274 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  SourceNvidiaFrameEvaluatorTests.cpp
+  TRPSourceDLSSGInteropFenceTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPSourceDLSSGInteropFenceTests.exe
+  BGSListForm.cpp
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  StartupPreferencesTests.cpp
+  BGSLocation.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  BGSOpenCloseForm.cpp
+  All 81 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  Создание кода...
+  TRPSourceNvidiaFrameEvaluatorTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPSourceNvidiaFrameEvaluatorTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/turing/CMakeLists.txt
+  PlannerTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/turing/CMakeLists.txt
+  ProviderAudit.cpp
+  All 926 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPStartupPreferencesTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPStartupPreferencesTests.exe
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 1267 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPTuringPlannerTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\turing\Release\TRPTuringPlannerTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  WeatherAppearanceTests.cpp
+  midpoint_fix.cpp
+  dlssg_provider_policy.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 2079 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  TRPTuringProviderAudit.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\turing\Release\TRPTuringProviderAudit.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/ui-blend/CMakeLists.txt
+  All 4013 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  UIBlendStateTests.cpp
+  TRPWeatherAppearanceTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPWeatherAppearanceTests.exe
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/tests/ui-blend/CMakeLists.txt
+  NativeUIBlend.cpp
+  UIBlendTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 278 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  UIBlendStateTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\ui-blend\Release\UIBlendStateTests.exe
+  NativeUIComposition.cpp
+  Компиляция...
+  BGSPerkEntry.cpp
+  BGSPerkRankArray.cpp
+  BGSRefAlias.cpp
+  NativeUIBlend.cpp
+  BGSSaveLoadManager.cpp
+  BGSSkillPerkTreeNode.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  BGSSoundCategory.cpp
+  BGSStoryTeller.cpp
+  All 571 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  BGSTerrainChunk.cpp
+  UIBlendTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\tests\ui-blend\Release\UIBlendTests.exe
+  BGSTerrainManager.cpp
+  BSAtomic.cpp
+  BSAudioManager.cpp
+  BSCompoundFrustum.cpp
+  BSCubeMapCamera.cpp
+  BSCullingProcess.cpp
+  BSDirectInputManager.cpp
+  BSEffectShaderData.cpp
+  BSExtraData.cpp
+  BSFaceGenAnimationData.cpp
+  BSFaceGenKeyframeMultiple.cpp
+  BSFaceGenNiNode.cpp
+  Создание кода...
+  Компиляция...
+  BSFadeNode.cpp
+  BSFixedString.cpp
+  BSGameSound.cpp
+  BSGamepadDevice.cpp
+  BSGeometry.cpp
+  BSHandleRefObject.cpp
+  BSIStream.cpp
+  BSImagespaceShader.cpp
+  BSInputDevice.cpp
+  BSInputDeviceFactory.cpp
+  BSInputDeviceManager.cpp
+  BSInputEventQueue.cpp
+  BSInstanceTriShape.cpp
+  BSInvMarker.cpp
+  BSKeyboardDevice.cpp
+  BSLeafAnimNode.cpp
+  BSLightingShaderMaterialBase.cpp
+  BSLightingShaderProperty.cpp
+  BSModelDB.cpp
+  BSMouseDevice.cpp
+  Создание кода...
+  Компиляция...
+  BSMultiBoundNode.cpp
+  BSMultiStreamInstanceTriShape.cpp
+  BSOcclusionPlane.cpp
+  BSOpenVR.cpp
+  BSPCGamepadDeviceDelegate.cpp
+  BSPCGamepadDeviceHandler.cpp
+  BSPCOrbisGamepadDevice.cpp
+  BSParticleSystemManager.cpp
+  BSPathingLocation.cpp
+  BSPathingRequest.cpp
+  BSPointerHandle.cpp
+  BSPortalGraph.cpp
+  BSPortalGraphEntry.cpp
+  BSProceduralLightningController.cpp
+  BSProceduralLightningTasklet.cpp
+  BSResourceNiBinaryStream.cpp
+  BSResponse.cpp
+  BSScaleformManager.cpp
+  BSScaleformTranslator.cpp
+  BSScriptObjectBindPolicy.cpp
+  Создание кода...
+  Компиляция...
+  BSShaderAccumulator.cpp
+  BSShaderProperty.cpp
+  BSShaderTextureSet.cpp
+  BSSoundHandle.cpp
+  BSStringPool.cpp
+  BSSystemFileStorage.cpp
+  BSTArray.cpp
+  BSTCreateFactoryManager.cpp
+  BSTempNodeManager.cpp
+  BSTreeNode.cpp
+  BSUIMessageData.cpp
+  BSVirtualKeyboardDevice.cpp
+  BSVisit.cpp
+  BSWin32GamepadDevice.cpp
+  BSWin32KeyboardDevice.cpp
+  BSWin32MouseDevice.cpp
+  BSWin32SaveDataSystemUtility.cpp
+  BSWin32VirtualKeyboardDevice.cpp
+  BSWindModifier.cpp
+  BSXAudio2GameSound.cpp
+  Создание кода...
+  Компиляция...
+  BSXFlags.cpp
+  BarterMenu.cpp
+  BeamProjectile.cpp
+  BipedAnim.cpp
+  BleedoutCameraState.cpp
+  BookMenu.cpp
+  BooksRead.cpp
+  bhkCharProxyController.cpp
+  bhkRigidBody.cpp
+  CFilter.cpp
+  Calendar.cpp
+  ChainExplosion.cpp
+  ChestsLooted.cpp
+  ChildSelectorBase.cpp
+  CollisionLayers.cpp
+  Color.cpp
+  ColorUtil.cpp
+  CombatAcquireItem.cpp
+  CombatAimController.cpp
+  CombatAnimation.cpp
+  Создание кода...
+  Компиляция...
+  CombatBehavior.cpp
+  CombatBehaviorAccessors.cpp
+  CombatBehaviorAcquireItem.cpp
+  CombatBehaviorAcquireResource.cpp
+  CombatBehaviorAdvance.cpp
+  CombatBehaviorBackoff.cpp
+  CombatBehaviorBlock.cpp
+  CombatBehaviorBlockAttack.cpp
+  CombatBehaviorChildSelector.cpp
+  CombatBehaviorCircle.cpp
+  CombatBehaviorCircleDistant.cpp
+  CombatBehaviorContext.cpp
+  CombatBehaviorContextAcquireWeapon.cpp
+  CombatBehaviorContextBlock.cpp
+  CombatBehaviorContextCloseMovement.cpp
+  CombatBehaviorContextDodgeThreat.cpp
+  CombatBehaviorContextFlankingMovement.cpp
+  CombatBehaviorContextFlee.cpp
+  CombatBehaviorContextMagic.cpp
+  CombatBehaviorContextMelee.cpp
+  Создание кода...
+  Компиляция...
+  CombatBehaviorContextRangedMovement.cpp
+  CombatBehaviorContextSearch.cpp
+  CombatBehaviorContextShout.cpp
+  CombatBehaviorController.cpp
+  CombatBehaviorDodgeThreat.cpp
+  CombatBehaviorDynamicConditionalNode.cpp
+  CombatBehaviorEquipContext.cpp
+  CombatBehaviorFallback.cpp
+  CombatBehaviorFallbackSelector.cpp
+  CombatBehaviorFallbackToRanged.cpp
+  CombatBehaviorFindWeapon.cpp
+  CombatBehaviorIdle.cpp
+  CombatBehaviorParallel.cpp
+  CombatBehaviorPause.cpp
+  CombatBehaviorRepeat.cpp
+  CombatBehaviorReposition.cpp
+  CombatBehaviorResource.cpp
+  CombatBehaviorSequence.cpp
+  CombatBehaviorSpawnParallel.cpp
+  CombatBehaviorStack.cpp
+  Создание кода...
+  Компиляция...
+  CombatBehaviorSurround.cpp
+  CombatBehaviorThread.cpp
+  CombatBehaviorTree.cpp
+  CombatBehaviorTreeLinkNode.cpp
+  CombatBehaviorTreeManager.cpp
+  CombatBehaviorTreeNode.cpp
+  CombatBehaviorTreeNodeEvaluateFunction.cpp
+  CombatBehaviorTreeNodeObject.cpp
+  CombatBehaviorTreeRootNode.cpp
+  CombatBehaviorTreeUtils.cpp
+  CombatBehaviorTrees.cpp
+  CombatBlackboard.cpp
+  CombatBlackboardFlag.cpp
+  CombatBlackboardManager.cpp
+  CombatController.cpp
+  CombatGroup.cpp
+  CombatInventory.cpp
+  CombatPath.cpp
+  CombatState.cpp
+  CombatTargetLocation.cpp
+  Создание кода...
+  Компиляция...
+  CombatTargetLocationSearch.cpp
+  CombatTargetLocationSearchResult.cpp
+  CombatThreat.cpp
+  CommandTable.cpp
+  ConditionalChildSelector.cpp
+  ConeProjectile.cpp
+  Console.cpp
+  ConsoleLog.cpp
+  ContainerItemExtra.cpp
+  ContainerMenu.cpp
+  ControlMap.cpp
+  CriticalHit.cpp
+  DisarmedEvent.cpp
+  DragonCameraState.cpp
+  DragonSoulsGained.cpp
+  Effect.cpp
+  EffectSetting.cpp
+  EnchantConstructMenu.cpp
+  Explosion.cpp
+  ExtraAliasInstanceArray.cpp
+  Создание кода...
+  Компиляция...
+  ExtraAshPileRef.cpp
+  ExtraCanTalkToPlayer.cpp
+  ExtraCannotWear.cpp
+  ExtraCharge.cpp
+  ExtraContainerChanges.cpp
+  ExtraCount.cpp
+  ExtraDataList.cpp
+  ExtraEnchantment.cpp
+  ExtraEncounterZone.cpp
+  ExtraForcedTarget.cpp
+  ExtraHealth.cpp
+  ExtraHotkey.cpp
+  ExtraLevCreaModifier.cpp
+  ExtraLightData.cpp
+  ExtraLinkedRef.cpp
+  ExtraLock.cpp
+  ExtraMissingLinkedRefIDs.cpp
+  ExtraNorthRotation.cpp
+  ExtraOwnership.cpp
+  ExtraPoison.cpp
+  Создание кода...
+  Компиляция...
+  ExtraRank.cpp
+  ExtraReferenceHandle.cpp
+  ExtraSoul.cpp
+  ExtraTextDisplayData.cpp
+  ExtraUniqueID.cpp
+  FindMaxMagnitudeVisitor.cpp
+  FirstPersonState.cpp
+  FormTypes.cpp
+  FurnitureCameraState.cpp
+  FxDelegate.cpp
+  FxDelegateArgs.cpp
+  GAtomic.cpp
+  GFxLoader.cpp
+  GFxLog.cpp
+  GFxMovie.cpp
+  GFxMovieDataDef.cpp
+  GFxMovieDef.cpp
+  GFxMovieView.cpp
+  GFxRenderConfig.cpp
+  GFxResource.cpp
+  Создание кода...
+  Компиляция...
+  GFxResourceID.cpp
+  GFxResourceKey.cpp
+  GFxState.cpp
+  GFxStateBag.cpp
+  GFxTranslator.cpp
+  GFxValue.cpp
+  GFxWStringBuffer.cpp
+  GFxWWHelper.cpp
+  GMemory.cpp
+  GMemoryHeap.cpp
+  GRefCountImpl.cpp
+  GRefCountNTSImpl.cpp
+  GRenderer.cpp
+  GStd.cpp
+  GString.cpp
+  GViewport.cpp
+  GameSettingCollection.cpp
+  GetWornMaskVisitor.cpp
+  GiftMenu.cpp
+  HUDMeter.cpp
+  Создание кода...
+  Компиляция...
+  HUDObject.cpp
+  Hazard.cpp
+  HeapBlock.cpp
+  HeldStateHandler.cpp
+  HorseCameraState.cpp
+  hkBaseTypes.cpp
+  hkReferencedObject.cpp
+  hkStringPtr.cpp
+  hkVector4.cpp
+  hkbBehaviorGraph.cpp
+  hkbBehaviorGraphData.cpp
+  hkbVariableValueSet.cpp
+  hkpAabbPhantom.cpp
+  hkpAddModifierUtil.cpp
+  hkpBroadPhase.cpp
+  hkpCdBody.cpp
+  hkpCharacterProxyListener.cpp
+  hkpCharacterRigidBody.cpp
+  hkpMaterial.cpp
+  hkpProperty.cpp
+  Создание кода...
+  Компиляция...
+  hkpResponseModifier.cpp
+  hkpRigidBody.cpp
+  hkpShapePhantom.cpp
+  hkpWorldObject.cpp
+  IAnimationGraphManagerHolder.cpp
+  IFormFactory.cpp
+  IFunction.cpp
+  IHandlerFunctor.cpp
+  IMemoryStore.cpp
+  IMenu.cpp
+  IMovementState.cpp
+  INIPrefSettingCollection.cpp
+  INISettingCollection.cpp
+  IObjectHandlePolicy.cpp
+  IStackCallbackFunctor.cpp
+  IVirtualMachine.cpp
+  IngredientItem.cpp
+  InputEvent.cpp
+  InterfaceStrings.cpp
+  Inventory.cpp
+  Создание кода...
+  Компиляция...
+  Inventory3DManager.cpp
+  InventoryChanges.cpp
+  InventoryEntryData.cpp
+  ItemCrafted.cpp
+  ItemHarvested.cpp
+  ItemList.cpp
+  ItemsPickpocketed.cpp
+  LevelIncrease.cpp
+  LocalMapCamera.cpp
+  Location.cpp
+  LocationCleared.cpp
+  LocationDiscovery.cpp
+  LockpickingMenu.cpp
+  LooseFileStream.cpp
+  MagicCaster.cpp
+  MagicFavorites.cpp
+  MagicFormulas.cpp
+  MagicItem.cpp
+  MagicItemDataCollector.cpp
+  MagicItemList.cpp
+  Создание кода...
+  Компиляция...
+  MagicSystem.cpp
+  MagicTarget.cpp
+  MagicUtilities.cpp
+  Main.cpp
+  MaterialIDs.cpp
+  MemoryPage.cpp
+  MenuControls.cpp
+  MenuCursor.cpp
+  MenuEventHandler.cpp
+  MessageBoxMenu.cpp
+  Misc.cpp
+  MissileProjectile.cpp
+  NativeFunctionBase.cpp
+  NextChildSelector.cpp
+  NiAVObject.cpp
+  NiAlphaProperty.cpp
+  NiAnimationKey.cpp
+  NiBackToFrontAccumulator.cpp
+  NiBinaryExtraData.cpp
+  NiBinaryStream.cpp
+  Создание кода...
+  Компиляция...
+  NiBooleanExtraData.cpp
+  NiCamera.cpp
+  NiColor.cpp
+  NiColorData.cpp
+  NiColorKey.cpp
+  NiControllerManager.cpp
+  NiControllerSequence.cpp
+  NiCullingProcess.cpp
+  NiExtraData.cpp
+  NiFloatData.cpp
+  NiFloatExtraData.cpp
+  NiFloatKey.cpp
+  NiFloatsExtraData.cpp
+  NiGeometry.cpp
+  NiIntegerExtraData.cpp
+  NiIntegersExtraData.cpp
+  NiInterpolator.cpp
+  NiMath.cpp
+  NiMatrix3.cpp
+  NiMemManager.cpp
+  Создание кода...
+  Компиляция...
+  NiNode.cpp
+  NiObject.cpp
+  NiObjectNET.cpp
+  NiPick.cpp
+  NiPoint2.cpp
+  NiPoint3.cpp
+  NiQuaternion.cpp
+  NiRefObject.cpp
+  NiSkinInstance.cpp
+  NiStringsExtraData.cpp
+  NiSystem.cpp
+  NiTCollection.cpp
+  NiTexture.cpp
+  NiTimeController.cpp
+  NiTransform.cpp
+  Object.cpp
+  ObjectTypeInfo.cpp
+  ObjectTypes.cpp
+  ObjectiveState.cpp
+  PackUnpack.cpp
+  Создание кода...
+  Компиляция...
+  PackedInstructionStream.cpp
+  PlayerCamera.cpp
+  PlayerCameraTransitionState.cpp
+  PlayerCharacter.cpp
+  PlayerControls.cpp
+  PlayerInputHandler.cpp
+  PriorityChildSelector.cpp
+  ProcessLists.cpp
+  Projectile.cpp
+  QuestStatus.cpp
+  RaceSexMenu.cpp
+  RandomValueChildSelector.cpp
+  ReferenceEffectController.cpp
+  RemoveCallbackVisitor.cpp
+  RenderTargetManager.cpp
+  Renderer.cpp
+  Rumble.cpp
+  ScrapHeap.cpp
+  Script.cpp
+  ScriptEventSourceHolder.cpp
+  Создание кода...
+  Компиляция...
+  SendHUDMessage.cpp
+  SendUIMessage.cpp
+  Setting.cpp
+  ShadowSceneNode.cpp
+  ShoutAttack.cpp
+  SkillIncrease.cpp
+  Sky.cpp
+  SkyrimVM.cpp
+  SoulsTrapped.cpp
+  SourceActionMap.cpp
+  SpellsLearned.cpp
+  Stack.cpp
+  StackFrame.cpp
+  Stream.cpp
+  StreamBase.cpp
+  Sun.cpp
+  Skyrim.cpp
+  TES.cpp
+  TESAIForm.cpp
+  TESActorBase.cpp
+  Создание кода...
+  Компиляция...
+  TESAmmo.cpp
+  TESCamera.cpp
+  TESCameraState.cpp
+  TESClimate.cpp
+  TESCondition.cpp
+  TESContainer.cpp
+  TESDataHandler.cpp
+  TESDescription.cpp
+  TESFaction.cpp
+  TESFile.cpp
+  TESForm.cpp
+  TESHavokUtilities.cpp
+  TESHitEvent.cpp
+  TESLeveledList.cpp
+  TESNPC.cpp
+  TESObjectARMA.cpp
+  TESObjectARMO.cpp
+  TESObjectBOOK.cpp
+  TESObjectCELL.cpp
+  TESObjectREFR.cpp
+  Создание кода...
+  Компиляция...
+  TESObjectSTAT.cpp
+  TESObjectWEAP.cpp
+  TESQuest.cpp
+  TESRace.cpp
+  TESSpellList.cpp
+  TESTopic.cpp
+  TESTopicInfo.cpp
+  TESValueForm.cpp
+  TESWaterReflections.cpp
+  TESWaterSystem.cpp
+  TESWorldSpace.cpp
+  TaskQueueInterface.cpp
+  ThirdPersonState.cpp
+  ThumbstickEvent.cpp
+  TutorialMenu.cpp
+  TweenMenuCameraState.cpp
+  TypeInfo.cpp
+  UI.cpp
+  UI3DSceneManager.cpp
+  UIBlurManager.cpp
+  Создание кода...
+  Компиляция...
+  UIMessageQueue.cpp
+  UnlinkedTypes.cpp
+  UserEvents.cpp
+  VATSCameraState.cpp
+  ValueChildSelector.cpp
+  Variable.cpp
+  VirtualMachine.cpp
+  WeightedRandomChildSelector.cpp
+  WorldSpaceMenu.cpp
+  ZeroFunctionArguments.cpp
+  IDDB.cpp
+  Module.cpp
+  Offset2ID.cpp
+  Relocation.cpp
+  Verify.cpp
+  Version.cpp
+  REX.cpp
+  W32.cpp
+  API.cpp
+  IAT.cpp
+  Создание кода...
+  Компиляция...
+  PCH.cpp
+  InputMap.cpp
+  Interfaces.cpp
+  Logger.cpp
+  RegistrationSet.cpp
+  RegistrationSetUnique.cpp
+  Trampoline.cpp
+  Translation.cpp
+  Создание кода...
+  hde64.c
+  CommonLibSSE.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\CommonLibSSE\Release\CommonLibSSE.lib
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt
+  HookChainTests.cpp
+  cmake_pch.cxx
+  RuntimeProfileTests.cpp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 25 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPRuntimeProfileTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPRuntimeProfileTests.exe
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 233 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPHookChainTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPHookChainTests.exe
+  ImGuiIntegration.cpp
+  RuntimeLayoutTests.cpp
+C:\Users\user\Documents\ChatGPT\DvaKolbas\.dependencies\CommonLibSSE-NG\include\SKSE\ContextHook.h(129,18): warning C4245: аргумент: преобразование "int" в "uint32_t", несоответствие типов со знаком и без [C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\TheosRenderPipeline.vcxproj]
+  (компиляция исходного файла "../../../compatibility/ImGuiCompat/ImGuiIntegration.cpp")
+  
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 2164 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  TRPRuntimeLayoutTests.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TRPRuntimeLayoutTests.exe
+  ModexMenuScope.cpp
+  DLSSBackend.cpp
+  GameHookValidation.cpp
+  CommunityShaderIntegration.cpp
+  SourceUpscalerConfiguration.cpp
+  NativeUIBlend.cpp
+  CommunityShaderAdapter.cpp
+  SourceNvidiaEvaluation.cpp
+  LoadingArtwork.cpp
+  PresentationFade.cpp
+  SourceFrameGeneration.cpp
+  InventoryPreviewDraw.cpp
+  NvidiaHost.cpp
+  NvidiaHostStartup.cpp
+  NvidiaHostLifecycle.cpp
+  GameSwapChain.cpp
+  SourceNativeUI.cpp
+  NativeUIComposition.cpp
+  DRS.cpp
+  RenderPipeline.cpp
+  WeatherAppearanceRuntime.cpp
+  OverlayPresetsPanel.cpp
+  ReShadeIntegration.cpp
+  ScreenshotFile.cpp
+  SourceDLSSGBackend.cpp
+  SourceDLSSGCamera.cpp
+  SourceDLSSGCameraMath.cpp
+  SourceDLSSGHDR.cpp
+  SourceDLSSGHDROutput.cpp
+  SourceDLSSGInterop.cpp
+  SourceDLSSGSession.cpp
+  SourceDLSSGSwapChain.cpp
+  FrameTrace.cpp
+  OverlayHotkeys.cpp
+  OverlayGameInput.cpp
+  OverlayUI.cpp
+  OverlayFrameView.cpp
+  OverlayPipeline.cpp
+  OverlayLayout.cpp
+  OverlayImagePanel.cpp
+  OverlayAdvancedPanel.cpp
+  OverlayUIStyle.cpp
+  OverlayFrameGenerationPanel.cpp
+  OverlayPerformancePanel.cpp
+  RendererSettingsController.cpp
+  PerformanceTuning.cpp
+  TextureProviderBridge.cpp
+  UpscalerHooks.cpp
+  UpscalerDeviceHooks.cpp
+  UpscalerSamplerHooks.cpp
+  VideoMemoryTelemetry.cpp
+  XSEPlugin.cpp
+  NeuralCombatMode.cpp
+  NeuralRenderingFeatureSession.cpp
+  NeuralRenderingModulePathHook.cpp
+  NeuralRenderingRuntimeIdentity.cpp
+  SourceDLSSGNeuralRendering.cpp
+  SourceDLSSGNeuralStage.cpp
+  SourceDLSSGNeuralResolve.cpp
+  OverlayNeuralPanel.cpp
+  SourceDLSSGMFGNative.cpp
+     Создается библиотека C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard/Release/TheosRenderPipeline.lib и объект C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard/Release/TheosRenderPipeline.exp
+  Создание кода
+  Создание кода завершено
+  TheosRenderPipeline.vcxproj -> C:\Users\user\Documents\ChatGPT\DvaKolbas\out\build\standard\Release\TheosRenderPipeline.dll
+  Building Custom Rule C:/Users/user/Documents/ChatGPT/DvaKolbas/CMakeLists.txt

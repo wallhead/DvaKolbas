@@ -1,0 +1,118 @@
+{
+  "archive": "C:\\Users\\user\\Downloads\\DLSS310.8.0-Streamline2.13.zip",
+  "archiveSha256": "3fdb7cb25250259332550f419dbac516a2eba778d8592da75cb2fe8abfc781d8",
+  "files": [
+    {
+      "name": "nvngx_dlss.dll",
+      "bytes": 58956400,
+      "version": "310,8,0,0",
+      "sha256": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=1005bk6, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "nvngx_dlssd.dll",
+      "bytes": 79687792,
+      "version": "310,7,129,0",
+      "sha256": "4b43bc85d7f3c023f864d5fc2d8402f5a1e807a3dcbaf48e83a9da57b4cb5349",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=1005bk6, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "nvngx_dlssg.dll",
+      "bytes": 7453808,
+      "version": "310,8,0,0",
+      "sha256": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=1005bk6, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "nvngx_dlssnr.dll",
+      "bytes": 165840496,
+      "version": "310,8,0,0",
+      "sha256": "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=1005bk6, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.common.dll",
+      "bytes": 830592,
+      "version": "2,13,0,0",
+      "sha256": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.deepdvc.dll",
+      "bytes": 375936,
+      "version": "2,12,129,0",
+      "sha256": "bc37bb465aaf8b3feaff6c462f6296531225467b838486e87da95a71e41dab23",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.dlss_d.dll",
+      "bytes": 436864,
+      "version": "2,12,129,0",
+      "sha256": "16f50d070da8d52e5346d17e663f10f7189953f6c7de77c036d7f5d3c60e8a4f",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.dlss_g.dll",
+      "bytes": 625792,
+      "version": "2,13,0,0",
+      "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.dlss_nr.dll",
+      "bytes": 401024,
+      "version": "2,13,0,0",
+      "sha256": "9f6672e5e0170dc118a3188d21bda187e1fc1aa3502895b21ab846d23165c11d",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.dlss.dll",
+      "bytes": 421504,
+      "version": "2,13,0,0",
+      "sha256": "1eb5fb3d6f01d340fe086d981cc2de4f18aa6d05ee276e5cf28ecd54818dcc8b",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.interposer.dll",
+      "bytes": 651392,
+      "version": "2,13,0,0",
+      "sha256": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.nis.dll",
+      "bytes": 1155200,
+      "version": "2,13,0,0",
+      "sha256": "6039e38a1af56c8e86f3e936596e2db910bf3d76bbf4268562a3b13763049dfa",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.pcl.dll",
+      "bytes": 360064,
+      "version": "2,13,0,0",
+      "sha256": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    },
+    {
+      "name": "sl.reflex.dll",
+      "bytes": 382080,
+      "version": "2,13,0,0",
+      "sha256": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3",
+      "signatureStatus": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=2008B9F, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US"
+    }
+  ]
+}

@@ -1,0 +1,482 @@
+[
+  {
+    "rva": 4076272,
+    "value": "AsyncLook: direct mode must be selected before PDFrameWarp device/swapchain initialization"
+  },
+  {
+    "rva": 4085616,
+    "value": "long __cdecl DXGISwapChainProxy::SetColorSpace1(enum DXGI_COLOR_SPACE_TYPE)"
+  },
+  {
+    "rva": 4085752,
+    "value": "DXGISwapChainProxy::SetColorSpace1: {}"
+  },
+  {
+    "rva": 4091568,
+    "value": "void __cdecl HookLoad::ApplyAtFrameBoundary(struct DXGISwapChainProxy *) noexcept"
+  },
+  {
+    "rva": 4102616,
+    "value": "framegen"
+  },
+  {
+    "rva": 4108000,
+    "value": "downstream PDFrameWarp/Framegen owns final output; D3D11 source is not final"
+  },
+  {
+    "rva": 4112544,
+    "value": "Enabling DLSS/FSR3/XeSS upscaling and DLSS MFG/FSR3 FG/XeFG in Skyrim."
+  },
+  {
+    "rva": 4112664,
+    "value": "void __cdecl BindReShadeToHostSwapChain(void)"
+  },
+  {
+    "rva": 4115872,
+    "value": "AMD FidelityFX FSR 1 / RCAS"
+  },
+  {
+    "rva": 4117664,
+    "value": "Embedded FSR 1 / RCAS shaders (ffx_fsr1.h)."
+  },
+  {
+    "rva": 4118808,
+    "value": "https://github.com/GPUOpen-Effects/FidelityFX-FSR"
+  },
+  {
+    "rva": 4118864,
+    "value": "https://github.com/GPUOpen-Effects/FidelityFX-FSR2"
+  },
+  {
+    "rva": 4118920,
+    "value": "AMD FidelityFX FSR 2"
+  },
+  {
+    "rva": 4118944,
+    "value": "AMD FidelityFX FSR 3 / FFX API"
+  },
+  {
+    "rva": 4118976,
+    "value": "FSR 2 integration and optional ffx_fsr2_api_* backends."
+  },
+  {
+    "rva": 4119033,
+    "value": "FidelityFX Super Resolution 2.2"
+  },
+  {
+    "rva": 4120208,
+    "value": "Open-source FSR 3 SDK code/API: ffx_backend_dx11_x64.dll, ffx_fsr3_x64.dll, ffx_fsr3upscaler_x64.dll and legacy amd_fidelityfx_dx12.dll."
+  },
+  {
+    "rva": 4122544,
+    "value": "https://github.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK"
+  },
+  {
+    "rva": 4152237,
+    "value": "interoperate with devbench. The devbench plugin itself is licensed GPL-3.0 (see"
+  },
+  {
+    "rva": 4171653,
+    "value": "HUDless Detection "
+  },
+  {
+    "rva": 4171856,
+    "value": "UI Texture uses a separate HUD texture. HUDless Detection extracts UI by comparing images before and after HUD rendering."
+  },
+  {
+    "rva": 4177824,
+    "value": "Uses a separate FrameWarp presentation thread with FSR FG or XeSS FG."
+  },
+  {
+    "rva": 4178166,
+    "value": " FSR FG "
+  },
+  {
+    "rva": 4182576,
+    "value": "Startup enable requires a restart; runtime active does not recreate the swapchain."
+  },
+  {
+    "rva": 4186232,
+    "value": "FSR3 Upscaling"
+  },
+  {
+    "rva": 4186264,
+    "value": "FSR3.1 Upscaling"
+  },
+  {
+    "rva": 4186288,
+    "value": "FSR3.1"
+  },
+  {
+    "rva": 4186304,
+    "value": "FSR3.1.5"
+  },
+  {
+    "rva": 4186328,
+    "value": "FSR 3.1 Upscaling"
+  },
+  {
+    "rva": 4186368,
+    "value": "FSR 3.1.5 Upscaling"
+  },
+  {
+    "rva": 4186392,
+    "value": "FSR 4 Upscaling"
+  },
+  {
+    "rva": 4186408,
+    "value": "FSR4 Upscaling"
+  },
+  {
+    "rva": 4186424,
+    "value": "FSR3.1 Upscaling (DX11)"
+  },
+  {
+    "rva": 4186448,
+    "value": "FSR3.1"
+  },
+  {
+    "rva": 4186472,
+    "value": "FSR3.1.5"
+  },
+  {
+    "rva": 4186496,
+    "value": "FSR 3.1 Upscaling (DX11)"
+  },
+  {
+    "rva": 4186560,
+    "value": "FSR 3.1.5 Upscaling (DX11)"
+  },
+  {
+    "rva": 4186592,
+    "value": "FSR 4 Upscaling (DX12 Interop)"
+  },
+  {
+    "rva": 4186624,
+    "value": "FSR4 Upscaling (DX12 Interop)"
+  },
+  {
+    "rva": 4186724,
+    "value": "FSR : AMD tech that works for all GPUs"
+  },
+  {
+    "rva": 4193704,
+    "value": "FSR Frame Generation"
+  },
+  {
+    "rva": 4193824,
+    "value": "FSR Frame Generation: AMD tech that works for all GPUs"
+  },
+  {
+    "rva": 4194240,
+    "value": "Restart is require for FrameGen method changes to take effect."
+  },
+  {
+    "rva": 4196168,
+    "value": "DLSS FG is not functional, fallback to FSR FG."
+  },
+  {
+    "rva": 4197432,
+    "value": "Show FSR Upscaling Debug View"
+  },
+  {
+    "rva": 4197496,
+    "value": "Shows debug view for FSR upscaling."
+  },
+  {
+    "rva": 4197542,
+    "value": "FSR3.1"
+  },
+  {
+    "rva": 4197576,
+    "value": "Show FSR Framegen Debug View"
+  },
+  {
+    "rva": 4197640,
+    "value": "Show FSR Debug View"
+  },
+  {
+    "rva": 4197696,
+    "value": "Shows debug view for FSR upscaling when frame generation is disabled."
+  },
+  {
+    "rva": 4197944,
+    "value": "Framegen FPS -> "
+  },
+  {
+    "rva": 4198272,
+    "value": "Framegen Frame Time"
+  },
+  {
+    "rva": 4199016,
+    "value": "DLSS2/FSR2/XeSS"
+  },
+  {
+    "rva": 4199256,
+    "value": "Skyrim Upscaler FSR3 Build"
+  },
+  {
+    "rva": 4199394,
+    "value": "I am modding DLSS2/FSR2/XeSS as well as DLSS Frame Generation into games, "
+  },
+  {
+    "rva": 4200464,
+    "value": "void __cdecl SettingGUI::InitIMGUI(struct IDXGISwapChain *,struct ID3D11Device *,struct ID3D11DeviceContext *)"
+  },
+  {
+    "rva": 4200755,
+    "value": "Hudless Detection"
+  },
+  {
+    "rva": 4200988,
+    "value": "FSR FG"
+  },
+  {
+    "rva": 4201024,
+    "value": "Framegen FPS"
+  },
+  {
+    "rva": 4216584,
+    "value": "frameGenerationMode"
+  },
+  {
+    "rva": 4218416,
+    "value": ";Async Framewarp Thread: true uses a separate presentation thread with FSR FG or XeSS FG."
+  },
+  {
+    "rva": 4219768,
+    "value": "mToggleFrameGen"
+  },
+  {
+    "rva": 4219824,
+    "value": "mFrameGenType"
+  },
+  {
+    "rva": 4220152,
+    "value": "mEnableFrameGeneration"
+  },
+  {
+    "rva": 4221840,
+    "value": "void __cdecl ReportCSFrameGenerationBootErrors(void)"
+  },
+  {
+    "rva": 4223160,
+    "value": "HDR::UiTexture"
+  },
+  {
+    "rva": 4224528,
+    "value": "Create mTempHudlessColor failed! ErrorCode: {}"
+  },
+  {
+    "rva": 4226203,
+    "value": "hudlessTex"
+  },
+  {
+    "rva": 4234912,
+    "value": "FrameGen backend switch {} -> {} failed; previous backend retained"
+  },
+  {
+    "rva": 4234984,
+    "value": "FrameGen backend switched {} -> {}"
+  },
+  {
+    "rva": 4235600,
+    "value": "long __cdecl hk_IDXGIFactory_CreateSwapChain(struct IDXGIFactory2 *,struct IUnknown *,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **)"
+  },
+  {
+    "rva": 4235784,
+    "value": "PDFrameWarp CreateSwapChainProxy failed hr=0x{:08X}"
+  },
+  {
+    "rva": 4235840,
+    "value": "hk_IDXGIFactory_CreateSwapChain created original SwapChain : {} x {} Format: {} BufferCount: {}"
+  },
+  {
+    "rva": 4235936,
+    "value": "InitPDFrameWarp failed, falling back to existing swapchain path."
+  },
+  {
+    "rva": 4236008,
+    "value": "InitPDFrameWarp succeeded, CreateSwapChainProxy hr=0x{:08X}"
+  },
+  {
+    "rva": 4236080,
+    "value": "hk_IDXGIFactory_CreateSwapChain created proxy SwapChain : {} x {} Format: {} BufferCount: {}"
+  },
+  {
+    "rva": 4236176,
+    "value": "FrameGen backend {} creation failed {:08X}; restoring managed D3D11 transport"
+  },
+  {
+    "rva": 4236256,
+    "value": "auto __cdecl hk_IDXGIFactory2_CreateSwapChainForHwnd_RS::<lambda_1>::operator ()(void) const"
+  },
+  {
+    "rva": 4236400,
+    "value": "long __cdecl hk_IDXGIFactory2_CreateSwapChainForHwnd_RS(struct IDXGIFactory2 *,struct IUnknown *,struct HWND__ *,const struct DXGI_SWAP_CHAIN_DESC1 *,const struct DXGI_SWAP_CHAIN_FULLSCREEN_DESC *,struct IDXGIOutput *,struct IDXGISwapChain1 **)"
+  },
+  {
+    "rva": 4237728,
+    "value": "long __cdecl hk_D3D11CreateDeviceAndSwapChain_Real(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,const struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)"
+  },
+  {
+    "rva": 4238304,
+    "value": "long __cdecl UpscalerHooks::D3D11CreateDeviceAndSwapChain_Hook::thunk(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)"
+  },
+  {
+    "rva": 4238704,
+    "value": "Calling original D3D11CreateDeviceAndSwapChain"
+  },
+  {
+    "rva": 4239432,
+    "value": "D3D11CreateDeviceAndSwapChain"
+  },
+  {
+    "rva": 4239544,
+    "value": "Skipping D3D11CreateDeviceAndSwapChain hook: {}"
+  },
+  {
+    "rva": 4239592,
+    "value": "D3D11CreateDeviceAndSwapChain hook target={} ({}) original={}"
+  },
+  {
+    "rva": 4239688,
+    "value": "Hook D3D11CreateDeviceAndSwapChain failed: {}"
+  },
+  {
+    "rva": 4240192,
+    "value": "D3D11CreateDeviceAndSwapChain_Hook {}"
+  },
+  {
+    "rva": 4241320,
+    "value": "amd_fidelityfx_dx11.dll"
+  },
+  {
+    "rva": 4241384,
+    "value": "amd_fidelityfx_dx12.dll"
+  },
+  {
+    "rva": 4241408,
+    "value": "Loaded plugin amd_fidelityfx_dx11.dll {}"
+  },
+  {
+    "rva": 4241456,
+    "value": "amd_fidelityfx_loader_dx12.dll"
+  },
+  {
+    "rva": 4241488,
+    "value": "Loaded plugin amd_fidelityfx_dx12.dll {}"
+  },
+  {
+    "rva": 4241536,
+    "value": "amd_fidelityfx_upscaler_dx12.dll"
+  },
+  {
+    "rva": 4241576,
+    "value": "Loaded plugin amd_fidelityfx_loader_dx12.dll {}"
+  },
+  {
+    "rva": 4241624,
+    "value": "amd_fidelityfx_framegeneration_dx12.dll"
+  },
+  {
+    "rva": 4241664,
+    "value": "Loaded plugin amd_fidelityfx_upscaler_dx12.dll {}"
+  },
+  {
+    "rva": 4241720,
+    "value": "ffx_backend_dx11_x64.dll"
+  },
+  {
+    "rva": 4241752,
+    "value": "Loaded plugin amd_fidelityfx_framegeneration_dx12.dll {}"
+  },
+  {
+    "rva": 4241816,
+    "value": "ffx_fsr3upscaler_x64.dll"
+  },
+  {
+    "rva": 4241848,
+    "value": "Loaded plugin ffx_backend_dx11_x64.dll {}"
+  },
+  {
+    "rva": 4241896,
+    "value": "ffx_fsr3_x64.dll"
+  },
+  {
+    "rva": 4241920,
+    "value": "Loaded plugin ffx_fsr3upscaler_x64.dll {}"
+  },
+  {
+    "rva": 4242000,
+    "value": "Loaded plugin ffx_fsr3_x64.dll {}"
+  },
+  {
+    "rva": 4553040,
+    "value": "IsFrameGenMethodAvailable"
+  },
+  {
+    "rva": 4553068,
+    "value": "SetFrameGenParams"
+  },
+  {
+    "rva": 4553380,
+    "value": "EvaluateFrameGeneration"
+  },
+  {
+    "rva": 4553424,
+    "value": "SetFrameGeneration"
+  },
+  {
+    "rva": 4553664,
+    "value": "CreateSwapChainProxy"
+  },
+  {
+    "rva": 4662712,
+    "value": ".?AUDXGISwapChainProxy@@"
+  },
+  {
+    "rva": 4662760,
+    "value": ".?AUIDXGISwapChain3@@"
+  },
+  {
+    "rva": 4662800,
+    "value": ".?AUIDXGISwapChain2@@"
+  },
+  {
+    "rva": 4662840,
+    "value": ".?AUIDXGISwapChain4@@"
+  },
+  {
+    "rva": 4662880,
+    "value": ".?AUIDXGISwapChain@@"
+  },
+  {
+    "rva": 4663008,
+    "value": ".?AUIDXGISwapChain1@@"
+  },
+  {
+    "rva": 20096540,
+    "value": "z5:pffX4:p"
+  },
+  {
+    "rva": 24135058,
+    "value": "SetFrameGenParams"
+  },
+  {
+    "rva": 24371972,
+    "value": "EvaluateFrameGeneration"
+  },
+  {
+    "rva": 24379814,
+    "value": "SetFrameGeneration"
+  },
+  {
+    "rva": 24488948,
+    "value": "IsFrameGenMethodAvailable"
+  },
+  {
+    "rva": 24554012,
+    "value": "CreateSwapChainProxy"
+  }
+]

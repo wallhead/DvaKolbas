@@ -1,0 +1,10 @@
+{
+  "profile": "V5.4 NO-LORE",
+  "enabledRendererModules": [
+    {
+      "mod": "RazKolbas",
+      "file": "RazKolbas.dll",
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RazKolbas\\SKSE\\Plugins\\RazKolbas.dll"
+    }
+  ]
+}

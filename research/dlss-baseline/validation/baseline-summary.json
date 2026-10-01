@@ -1,0 +1,128 @@
+{
+  "sourceRevision": "246d152c42a83308beb7a6f4930e7c472ef0d4ce",
+  "rendererSourceChanges": false,
+  "builds": {
+    "standard": "PASS",
+    "universal": "PASS",
+    "configuration": "Release x64"
+  },
+  "initialCTest": {
+    "standard": {
+      "passed": 101,
+      "total": 104
+    },
+    "universal": {
+      "passed": 101,
+      "total": 104
+    },
+    "failedTests": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "cause": "Missing Windows Graphics Tools D3D debug layers",
+    "rerun": "PENDING installation"
+  },
+  "graphicsTools": {
+    "userAuthorized": true,
+    "installerLaunch": "Elevated attempt reached capability check; failed enabling Windows Update (access denied)",
+    "installed": false,
+    "rerun": "SKIPPED at user request"
+  },
+  "vendorSmoke": {
+    "fixture": "RazKolbasFgStreamlineProbe.exe, independent of TRP",
+    "fixtureSha256": "5635e53df6d0d6e6bfacb2d287d0be130aa8d5b82e0ec7a64bba20f1e36dbc86",
+    "hardware": "NVIDIA RTX 4080 SUPER, vendor 0x10de device 0x2702",
+    "suppliedRuntime": {
+      "streamline": "2.13.0.0 (runtime log: v2.13.0-beta10, 11ffc00ec)",
+      "dlssg": "310.8.0.0",
+      "exitCode": 56,
+      "successfulPresents": 1,
+      "failure": "second Present DXGI_ERROR_INVALID_CALL 0x887a0001",
+      "result": "FAILED fixture/runtime combination; not a TRP gameplay result"
+    },
+    "controlRuntime": {
+      "streamline": "2.14.1",
+      "exitCode": 0,
+      "successfulPresents": 8,
+      "reportedTwoOutputs": 8,
+      "result": "PASSED 8-frame synthetic smoke only; TRP gameplay not verified"
+    }
+  },
+  "packages": [
+    {
+      "edition": "standard",
+      "zip": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\packages\\TRP-0.3.5-standard-246d152c-dlss310.8-streamline2.13.zip",
+      "sha256": "769f1ee2f22f6875e73a14dc98941abdc8da7c76651b0df24784f2b90fb4181c",
+      "verifiedManifestFiles": 17,
+      "result": "PASS: staged files and all ZIP entry hashes"
+    },
+    {
+      "edition": "universal",
+      "zip": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\packages\\TRP-0.3.5-universal-246d152c-dlss310.8-streamline2.13.zip",
+      "sha256": "8a77b36fd8b631e076f7508cd3123f618870e17edf342058bfd74ccf72fd632f",
+      "verifiedManifestFiles": 17,
+      "result": "PASS: staged files and all ZIP entry hashes"
+    }
+  ],
+  "gameplay": {
+    "status": "PASS: initial in-game check, user report and runtime x2 output evidence",
+    "separateTestProfile": "REMOVED: user chose existing V5.4 NO-LORE profile",
+    "preparationScript": "local/Prepare-V54-Test.ps1",
+    "dlssFgAcceptance": "Confirmed active native x2 on tested V5.4 / RTX 4080 SUPER session; extended testing pending",
+    "installedProfile": "V5.4 NO-LORE",
+    "installation": {
+      "profile": "V5.4 NO-LORE",
+      "mod": "TRP 0.3.5 Standard - DvaKolbas baseline",
+      "modPath": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline",
+      "trpEnabled": true,
+      "razKolbasEnabled": false,
+      "initialFG": "OFF",
+      "requestedFG": "native x2 after DLSS check",
+      "nr": "OFF",
+      "hdr": "OFF",
+      "runtime": "DLSS 310.8.0 / Streamline 2.13 supplied by user",
+      "backup": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\v54-install-backup-20261001-150706",
+      "settingsChecks": [
+        {
+          "file": "SkyrimCustom.ini",
+          "unchanged": true
+        },
+        {
+          "file": "lockedorder.txt",
+          "unchanged": true
+        },
+        {
+          "file": "initweaks.ini",
+          "unchanged": true
+        },
+        {
+          "file": "settings.ini",
+          "unchanged": true
+        },
+        {
+          "file": "plugins.txt",
+          "unchanged": true
+        },
+        {
+          "file": "archives.txt",
+          "unchanged": true
+        },
+        {
+          "file": "Skyrim.ini",
+          "unchanged": true
+        },
+        {
+          "file": "loadorder.txt",
+          "unchanged": true
+        },
+        {
+          "file": "SkyrimPrefs.ini",
+          "unchanged": true
+        }
+      ],
+      "verifiedPackageFiles": 17,
+      "gameAcceptance": "PASS: initial in-game DLSS and native x2 FG check"
+    }
+  }
+}

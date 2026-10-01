@@ -1,0 +1,53 @@
+{
+  "profile": "V5.4 NO-LORE",
+  "mod": "TRP 0.3.5 Standard - DvaKolbas baseline",
+  "modPath": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline",
+  "trpEnabled": true,
+  "razKolbasEnabled": false,
+  "initialFG": "OFF",
+  "requestedFG": "native x2 after DLSS check",
+  "nr": "OFF",
+  "hdr": "OFF",
+  "runtime": "DLSS 310.8.0 / Streamline 2.13 supplied by user",
+  "backup": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\v54-install-backup-20261001-150706",
+  "settingsChecks": [
+    {
+      "file": "SkyrimCustom.ini",
+      "unchanged": true
+    },
+    {
+      "file": "lockedorder.txt",
+      "unchanged": true
+    },
+    {
+      "file": "initweaks.ini",
+      "unchanged": true
+    },
+    {
+      "file": "settings.ini",
+      "unchanged": true
+    },
+    {
+      "file": "plugins.txt",
+      "unchanged": true
+    },
+    {
+      "file": "archives.txt",
+      "unchanged": true
+    },
+    {
+      "file": "Skyrim.ini",
+      "unchanged": true
+    },
+    {
+      "file": "loadorder.txt",
+      "unchanged": true
+    },
+    {
+      "file": "SkyrimPrefs.ini",
+      "unchanged": true
+    }
+  ],
+  "verifiedPackageFiles": 17,
+  "gameAcceptance": "NOT RUN"
+}

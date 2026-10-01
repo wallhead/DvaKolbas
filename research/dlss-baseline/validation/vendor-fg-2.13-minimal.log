@@ -1,0 +1,33 @@
+File 'C:\Users\user\Documents\ChatGPT\DvaKolbas\out\validation\vendor-fg-2.13-minimal/sl.common.dll' is signed by NVIDIA and the signature was verified.
+File 'C:\Users\user\Documents\ChatGPT\DvaKolbas\out\validation\vendor-fg-2.13-minimal/sl.dlss_g.dll' is signed by NVIDIA and the signature was verified.
+File 'C:\Users\user\Documents\ChatGPT\DvaKolbas\out\validation\vendor-fg-2.13-minimal/sl.pcl.dll' is signed by NVIDIA and the signature was verified.
+File 'C:\Users\user\Documents\ChatGPT\DvaKolbas\out\validation\vendor-fg-2.13-minimal/sl.reflex.dll' is signed by NVIDIA and the signature was verified.
+slInit=0
+adapterVendor=0x10de device=0x2702
+slIsFeatureSupported(DLSS-G)=0
+slGetFeatureRequirements(DLSS-G)=0 flags=0x1e
+D3D12CreateDevice=0x0
+slSetD3DDevice=0
+slGetNativeInterface(device)=0 distinct=1
+slGetNativeInterface(factory)=0 distinct=0
+slUpgradeInterface(factory)=0
+CreateCommandQueue=0x0
+CreateSwapChainForHwnd=0x0
+slGetNativeInterface(swap)=0 distinct=1
+QueryInterface(IDXGISwapChain3)=0x0
+GetCurrentBackBufferIndex=0
+FG-On foreground=1
+FG-D3D11 facade=1
+slReflexSetOptions=0
+slDLSSGSetOptions(On)=0
+FG-On shared-copy frame=0 slot=0 producer=1 copy=1
+FG-On Present frame=0 hr=0x0
+FG-On state result=0 status=0x0 actualPresented=2 maxExtra=1 minDimension=100
+FG-On input retirement frame=0 fencePresent=1 value=1
+FG-On retained-input retirement frame=0 provider=1 present=3 allocator=4
+FG-On shared-copy frame=1 slot=0 producer=2 copy=2
+FG-On Present frame=1 hr=0x887a0001
+slDLSSGSetOptions(Off)=0
+FG-On drain Present=0x887a0001
+FG-On generatedObserved=1
+slShutdown=0

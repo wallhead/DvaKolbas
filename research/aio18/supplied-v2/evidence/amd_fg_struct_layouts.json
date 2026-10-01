@@ -1,0 +1,934 @@
+[
+  {
+    "type_index": 4910,
+    "name": "ffxDispatchDescFrameGeneration",
+    "size": 312,
+    "member_count": 10,
+    "forward": false,
+    "field_list": 4909,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "commandList",
+        "offset": 16,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "presentColor",
+        "offset": 24,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      },
+      {
+        "name": "outputs",
+        "offset": 72,
+        "type": "FfxApiResource[bytes=192]",
+        "type_index": 4906
+      },
+      {
+        "name": "numGeneratedFrames",
+        "offset": 264,
+        "type": "uint32",
+        "type_index": 117
+      },
+      {
+        "name": "reset",
+        "offset": 268,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "backbufferTransferFunction",
+        "offset": 272,
+        "type": "uint32",
+        "type_index": 117
+      },
+      {
+        "name": "minMaxLuminance",
+        "offset": 276,
+        "type": "float[bytes=8]",
+        "type_index": 4907
+      },
+      {
+        "name": "generationRect",
+        "offset": 284,
+        "type": "FfxApiRect2D",
+        "type_index": 4908
+      },
+      {
+        "name": "frameID",
+        "offset": 304,
+        "type": "uint64",
+        "type_index": 35
+      }
+    ]
+  },
+  {
+    "type_index": 9211,
+    "name": "FfxFrameGenerationConfig",
+    "size": 152,
+    "member_count": 15,
+    "forward": false,
+    "field_list": 9210,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "swapChain",
+        "offset": 16,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "presentCallback",
+        "offset": 24,
+        "type": "0x127a(kind=0x1008)*",
+        "type_index": 4731
+      },
+      {
+        "name": "presentCallbackContext",
+        "offset": 32,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "frameGenerationCallback",
+        "offset": 40,
+        "type": "0x1336(kind=0x1008)*",
+        "type_index": 4919
+      },
+      {
+        "name": "frameGenerationCallbackContext",
+        "offset": 48,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "frameGenerationEnabled",
+        "offset": 56,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "allowAsyncWorkloads",
+        "offset": 57,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "allowAsyncPresent",
+        "offset": 58,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "HUDLessColor",
+        "offset": 64,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      },
+      {
+        "name": "flags",
+        "offset": 112,
+        "type": "uint32",
+        "type_index": 117
+      },
+      {
+        "name": "onlyPresentInterpolated",
+        "offset": 116,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "interpolationRect",
+        "offset": 120,
+        "type": "FfxApiRect2D",
+        "type_index": 4908
+      },
+      {
+        "name": "frameID",
+        "offset": 136,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "drawDebugPacingLines",
+        "offset": 144,
+        "type": "bool",
+        "type_index": 48
+      }
+    ]
+  },
+  {
+    "type_index": 9388,
+    "name": "ffxApiHeader",
+    "size": 16,
+    "member_count": 2,
+    "forward": false,
+    "field_list": 9387,
+    "fields": [
+      {
+        "name": "type",
+        "offset": 0,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "pNext",
+        "offset": 8,
+        "type": "ffxApiHeader*",
+        "type_index": 5207
+      }
+    ]
+  },
+  {
+    "type_index": 9758,
+    "name": "FfxApiResource",
+    "size": 48,
+    "member_count": 3,
+    "forward": false,
+    "field_list": 9757,
+    "fields": [
+      {
+        "name": "resource",
+        "offset": 0,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "description",
+        "offset": 8,
+        "type": "FfxApiResourceDescription",
+        "type_index": 9171
+      },
+      {
+        "name": "state",
+        "offset": 40,
+        "type": "uint32",
+        "type_index": 117
+      }
+    ]
+  },
+  {
+    "type_index": 10733,
+    "name": "ffxCreateContextDescFrameGenerationSwapChainNewDX12",
+    "size": 48,
+    "member_count": 5,
+    "forward": false,
+    "field_list": 10731,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "swapchain",
+        "offset": 16,
+        "type": "IDXGISwapChain4**",
+        "type_index": 10727
+      },
+      {
+        "name": "desc",
+        "offset": 24,
+        "type": "DXGI_SWAP_CHAIN_DESC*",
+        "type_index": 10631
+      },
+      {
+        "name": "dxgiFactory",
+        "offset": 32,
+        "type": "IDXGIFactory*",
+        "type_index": 10610
+      },
+      {
+        "name": "gameQueue",
+        "offset": 40,
+        "type": "ID3D12CommandQueue*",
+        "type_index": 10729
+      }
+    ]
+  },
+  {
+    "type_index": 10776,
+    "name": "ffxCreateContextDescFrameGenerationSwapChainWrapDX12",
+    "size": 32,
+    "member_count": 3,
+    "forward": false,
+    "field_list": 10775,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "swapchain",
+        "offset": 16,
+        "type": "IDXGISwapChain4**",
+        "type_index": 10727
+      },
+      {
+        "name": "gameQueue",
+        "offset": 24,
+        "type": "ID3D12CommandQueue*",
+        "type_index": 10729
+      }
+    ]
+  },
+  {
+    "type_index": 11311,
+    "name": "ffxCreateContextDescFrameGenerationSwapChainForHwndDX12",
+    "size": 64,
+    "member_count": 7,
+    "forward": false,
+    "field_list": 11308,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "swapchain",
+        "offset": 16,
+        "type": "IDXGISwapChain4**",
+        "type_index": 10727
+      },
+      {
+        "name": "hwnd",
+        "offset": 24,
+        "type": "HWND__*",
+        "type_index": 10617
+      },
+      {
+        "name": "desc",
+        "offset": 32,
+        "type": "DXGI_SWAP_CHAIN_DESC1*",
+        "type_index": 11303
+      },
+      {
+        "name": "fullscreenDesc",
+        "offset": 40,
+        "type": "DXGI_SWAP_CHAIN_FULLSCREEN_DESC*",
+        "type_index": 11306
+      },
+      {
+        "name": "dxgiFactory",
+        "offset": 48,
+        "type": "IDXGIFactory*",
+        "type_index": 10610
+      },
+      {
+        "name": "gameQueue",
+        "offset": 56,
+        "type": "ID3D12CommandQueue*",
+        "type_index": 10729
+      }
+    ]
+  },
+  {
+    "type_index": 19946,
+    "name": "ffxConfigureDescFrameGenerationSwapChainRegisterUiResourceDX12",
+    "size": 72,
+    "member_count": 3,
+    "forward": false,
+    "field_list": 19941,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "uiResource",
+        "offset": 16,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      },
+      {
+        "name": "flags",
+        "offset": 64,
+        "type": "uint32",
+        "type_index": 117
+      }
+    ]
+  },
+  {
+    "type_index": 19970,
+    "name": "ffxConfigureDescFrameGenerationSwapChainKeyValueDX12",
+    "size": 40,
+    "member_count": 4,
+    "forward": false,
+    "field_list": 19969,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "key",
+        "offset": 16,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "u64",
+        "offset": 24,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "ptr",
+        "offset": 32,
+        "type": "void*",
+        "type_index": 1539
+      }
+    ]
+  },
+  {
+    "type_index": 19980,
+    "name": "ffxDispatchDescFrameGenerationSwapChainWaitForPresentsDX12",
+    "size": 16,
+    "member_count": 1,
+    "forward": false,
+    "field_list": 19979,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      }
+    ]
+  },
+  {
+    "type_index": 19987,
+    "name": "ffxCreateContextDescFrameGenerationSwapChainVersionDX12",
+    "size": 24,
+    "member_count": 2,
+    "forward": false,
+    "field_list": 19983,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "version",
+        "offset": 16,
+        "type": "uint32",
+        "type_index": 117
+      }
+    ]
+  },
+  {
+    "type_index": 22591,
+    "name": "ffxConfigureDescFrameGeneration",
+    "size": 144,
+    "member_count": 13,
+    "forward": false,
+    "field_list": 22590,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "swapChain",
+        "offset": 16,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "presentCallback",
+        "offset": 24,
+        "type": "0x127a(kind=0x1008)*",
+        "type_index": 4731
+      },
+      {
+        "name": "presentCallbackUserContext",
+        "offset": 32,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "frameGenerationCallback",
+        "offset": 40,
+        "type": "0x1336(kind=0x1008)*",
+        "type_index": 4919
+      },
+      {
+        "name": "frameGenerationCallbackUserContext",
+        "offset": 48,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "frameGenerationEnabled",
+        "offset": 56,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "allowAsyncWorkloads",
+        "offset": 57,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "HUDLessColor",
+        "offset": 64,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      },
+      {
+        "name": "flags",
+        "offset": 112,
+        "type": "uint32",
+        "type_index": 117
+      },
+      {
+        "name": "onlyPresentGenerated",
+        "offset": 116,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "generationRect",
+        "offset": 120,
+        "type": "FfxApiRect2D",
+        "type_index": 4908
+      },
+      {
+        "name": "frameID",
+        "offset": 136,
+        "type": "uint64",
+        "type_index": 35
+      }
+    ]
+  },
+  {
+    "type_index": 23602,
+    "name": "ffxDispatchDescFrameGenerationPrepareCameraInfo",
+    "size": 64,
+    "member_count": 5,
+    "forward": false,
+    "field_list": 23601,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "cameraPosition",
+        "offset": 16,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      },
+      {
+        "name": "cameraUp",
+        "offset": 28,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      },
+      {
+        "name": "cameraRight",
+        "offset": 40,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      },
+      {
+        "name": "cameraForward",
+        "offset": 52,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      }
+    ]
+  },
+  {
+    "type_index": 23646,
+    "name": "ffxConfigureDescFrameGenerationRegisterDistortionFieldResource",
+    "size": 64,
+    "member_count": 2,
+    "forward": false,
+    "field_list": 23645,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "distortionField",
+        "offset": 16,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      }
+    ]
+  },
+  {
+    "type_index": 23759,
+    "name": "ffxConfigureDescFrameGenerationKeyValue",
+    "size": 40,
+    "member_count": 4,
+    "forward": false,
+    "field_list": 19969,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "key",
+        "offset": 16,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "u64",
+        "offset": 24,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "ptr",
+        "offset": 32,
+        "type": "void*",
+        "type_index": 1539
+      }
+    ]
+  },
+  {
+    "type_index": 23779,
+    "name": "ffxCreateContextDescFrameGenerationVersion",
+    "size": 24,
+    "member_count": 2,
+    "forward": false,
+    "field_list": 19983,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "version",
+        "offset": 16,
+        "type": "uint32",
+        "type_index": 117
+      }
+    ]
+  },
+  {
+    "type_index": 23782,
+    "name": "ffxDispatchDescFrameGenerationPrepareV2",
+    "size": 232,
+    "member_count": 19,
+    "forward": false,
+    "field_list": 23781,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "frameID",
+        "offset": 16,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "flags",
+        "offset": 24,
+        "type": "uint32",
+        "type_index": 117
+      },
+      {
+        "name": "commandList",
+        "offset": 32,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "renderSize",
+        "offset": 40,
+        "type": "FfxApiDimensions2D",
+        "type_index": 11988
+      },
+      {
+        "name": "jitterOffset",
+        "offset": 48,
+        "type": "FfxApiFloatCoords2D",
+        "type_index": 21067
+      },
+      {
+        "name": "motionVectorScale",
+        "offset": 56,
+        "type": "FfxApiFloatCoords2D",
+        "type_index": 21067
+      },
+      {
+        "name": "frameTimeDelta",
+        "offset": 64,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "reset",
+        "offset": 68,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "cameraNear",
+        "offset": 72,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "cameraFar",
+        "offset": 76,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "cameraFovAngleVertical",
+        "offset": 80,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "viewSpaceToMetersFactor",
+        "offset": 84,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "depth",
+        "offset": 88,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      },
+      {
+        "name": "motionVectors",
+        "offset": 136,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      },
+      {
+        "name": "cameraPosition",
+        "offset": 184,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      },
+      {
+        "name": "cameraUp",
+        "offset": 196,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      },
+      {
+        "name": "cameraRight",
+        "offset": 208,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      },
+      {
+        "name": "cameraForward",
+        "offset": 220,
+        "type": "float[bytes=12]",
+        "type_index": 21096
+      }
+    ]
+  },
+  {
+    "type_index": 23971,
+    "name": "ffxDispatchDescFrameGenerationPrepare",
+    "size": 184,
+    "member_count": 15,
+    "forward": false,
+    "field_list": 23969,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "frameID",
+        "offset": 16,
+        "type": "uint64",
+        "type_index": 35
+      },
+      {
+        "name": "flags",
+        "offset": 24,
+        "type": "uint32",
+        "type_index": 117
+      },
+      {
+        "name": "commandList",
+        "offset": 32,
+        "type": "void*",
+        "type_index": 1539
+      },
+      {
+        "name": "renderSize",
+        "offset": 40,
+        "type": "FfxApiDimensions2D",
+        "type_index": 11988
+      },
+      {
+        "name": "jitterOffset",
+        "offset": 48,
+        "type": "FfxApiFloatCoords2D",
+        "type_index": 21067
+      },
+      {
+        "name": "motionVectorScale",
+        "offset": 56,
+        "type": "FfxApiFloatCoords2D",
+        "type_index": 21067
+      },
+      {
+        "name": "frameTimeDelta",
+        "offset": 64,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "unused_reset",
+        "offset": 68,
+        "type": "bool",
+        "type_index": 48
+      },
+      {
+        "name": "cameraNear",
+        "offset": 72,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "cameraFar",
+        "offset": 76,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "cameraFovAngleVertical",
+        "offset": 80,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "viewSpaceToMetersFactor",
+        "offset": 84,
+        "type": "float",
+        "type_index": 64
+      },
+      {
+        "name": "depth",
+        "offset": 88,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      },
+      {
+        "name": "motionVectors",
+        "offset": 136,
+        "type": "FfxApiResource",
+        "type_index": 4905
+      }
+    ]
+  },
+  {
+    "type_index": 23978,
+    "name": "ffxCreateContextDescFrameGenerationHudless",
+    "size": 24,
+    "member_count": 2,
+    "forward": false,
+    "field_list": 23977,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "hudlessBackBufferFormat",
+        "offset": 16,
+        "type": "uint32",
+        "type_index": 117
+      }
+    ]
+  },
+  {
+    "type_index": 23985,
+    "name": "ffxCreateContextDescFrameGeneration",
+    "size": 40,
+    "member_count": 5,
+    "forward": false,
+    "field_list": 23983,
+    "fields": [
+      {
+        "name": "header",
+        "offset": 0,
+        "type": "ffxApiHeader",
+        "type_index": 4904
+      },
+      {
+        "name": "flags",
+        "offset": 16,
+        "type": "uint32",
+        "type_index": 117
+      },
+      {
+        "name": "displaySize",
+        "offset": 20,
+        "type": "FfxApiDimensions2D",
+        "type_index": 11988
+      },
+      {
+        "name": "maxRenderSize",
+        "offset": 28,
+        "type": "FfxApiDimensions2D",
+        "type_index": 11988
+      },
+      {
+        "name": "backBufferFormat",
+        "offset": 36,
+        "type": "uint32",
+        "type_index": 117
+      }
+    ]
+  }
+]

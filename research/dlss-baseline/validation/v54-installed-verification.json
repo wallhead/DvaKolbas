@@ -1,0 +1,11 @@
+{
+  "installedManifestHashes": "PASS",
+  "verifiedFiles": 17,
+  "enabledRendererModules": [
+    {
+      "FullName": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline.dll"
+    }
+  ],
+  "profile": "V5.4 NO-LORE",
+  "gameAcceptance": "NOT RUN"
+}

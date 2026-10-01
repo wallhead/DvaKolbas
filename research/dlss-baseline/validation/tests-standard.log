@@ -1,0 +1,226 @@
+Internal ctest changing into directory: C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard
+Test project C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard
+        Start   1: WeatherAppearance
+  1/104 Test   #1: WeatherAppearance ................................   Passed    0.06 sec
+        Start   2: RCASParameters
+  2/104 Test   #2: RCASParameters ...................................   Passed    0.07 sec
+        Start   3: PerformanceScopesCPU
+  3/104 Test   #3: PerformanceScopesCPU .............................   Passed    0.02 sec
+        Start   4: PerformanceScopesWARP
+  4/104 Test   #4: PerformanceScopesWARP ............................   Passed    0.46 sec
+        Start   5: PerformancePublicationWARP
+  5/104 Test   #5: PerformancePublicationWARP .......................   Passed    0.31 sec
+        Start   6: OverlayHotkeys
+  6/104 Test   #6: OverlayHotkeys ...................................   Passed    0.03 sec
+        Start   7: OverlayLayout
+  7/104 Test   #7: OverlayLayout ....................................   Passed    0.03 sec
+        Start   8: OverlayTextInput
+  8/104 Test   #8: OverlayTextInput .................................   Passed    0.02 sec
+        Start   9: StartupPreferences
+  9/104 Test   #9: StartupPreferences ...............................   Passed    0.02 sec
+        Start  10: RendererSettingsActions
+ 10/104 Test  #10: RendererSettingsActions ..........................   Passed    0.02 sec
+        Start  11: RuntimeModuleDiagnostics
+ 11/104 Test  #11: RuntimeModuleDiagnostics .........................   Passed    0.02 sec
+        Start  12: GameFacingTargets
+ 12/104 Test  #12: GameFacingTargets ................................   Passed    0.03 sec
+        Start  13: NativeUICopyRoute
+ 13/104 Test  #13: NativeUICopyRoute ................................   Passed    0.03 sec
+        Start  14: D3D11ContextSlots
+ 14/104 Test  #14: D3D11ContextSlots ................................   Passed    0.02 sec
+        Start  15: SourceDLSSGSession
+ 15/104 Test  #15: SourceDLSSGSession ...............................   Passed    0.02 sec
+        Start  16: SourceDLSSGCamera
+ 16/104 Test  #16: SourceDLSSGCamera ................................   Passed    0.02 sec
+        Start  17: MenuRenderState
+ 17/104 Test  #17: MenuRenderState ..................................   Passed    0.02 sec
+        Start  18: DLSSQuality
+ 18/104 Test  #18: DLSSQuality ......................................   Passed    0.02 sec
+        Start  19: ReShadeAbsent
+ 19/104 Test  #19: ReShadeAbsent ....................................   Passed    0.25 sec
+        Start  20: SourceDLSSGInteropFence
+ 20/104 Test  #20: SourceDLSSGInteropFence ..........................   Passed    1.07 sec
+        Start  21: FinalFrameCapture
+ 21/104 Test  #21: FinalFrameCapture ................................   Passed    0.37 sec
+        Start  22: PluginPaths-a-first
+ 22/104 Test  #22: PluginPaths-a-first ..............................   Passed    0.03 sec
+        Start  23: PluginPaths-virtual-a-first
+ 23/104 Test  #23: PluginPaths-virtual-a-first ......................   Passed    0.03 sec
+        Start  24: PluginPaths-b-first
+ 24/104 Test  #24: PluginPaths-b-first ..............................   Passed    0.01 sec
+        Start  25: PluginPaths-virtual-b-first
+ 25/104 Test  #25: PluginPaths-virtual-b-first ......................   Passed    0.04 sec
+        Start  26: D3D11FrameCopy
+ 26/104 Test  #26: D3D11FrameCopy ...................................   Passed    0.04 sec
+        Start  27: NeuralRatioColor
+ 27/104 Test  #27: NeuralRatioColor .................................   Passed    0.20 sec
+        Start  28: CommunityShaderFrame
+ 28/104 Test  #28: CommunityShaderFrame .............................   Passed    0.07 sec
+        Start  29: LoadingFade
+ 29/104 Test  #29: LoadingFade ......................................   Passed    0.04 sec
+        Start  30: CommunityShaderHDR
+ 30/104 Test  #30: CommunityShaderHDR ...............................   Passed    0.14 sec
+        Start  31: HDROutput
+ 31/104 Test  #31: HDROutput ........................................   Passed    0.03 sec
+        Start  32: HDROutputPass
+ 32/104 Test  #32: HDROutputPass ....................................   Passed    0.13 sec
+        Start  33: D3D11EntryObserver
+ 33/104 Test  #33: D3D11EntryObserver ...............................   Passed   18.12 sec
+        Start  34: NeuralWorldContract
+ 34/104 Test  #34: NeuralWorldContract ..............................   Passed    0.03 sec
+        Start  35: SourceCameraSelection
+ 35/104 Test  #35: SourceCameraSelection ............................   Passed    0.03 sec
+        Start  36: SourceNvidiaFrameEvaluation
+ 36/104 Test  #36: SourceNvidiaFrameEvaluation ......................   Passed    5.88 sec
+        Start  37: HookSafety
+ 37/104 Test  #37: HookSafety .......................................   Passed    0.03 sec
+        Start  38: HookChains
+ 38/104 Test  #38: HookChains .......................................   Passed    0.03 sec
+        Start  39: RuntimeProfiles
+ 39/104 Test  #39: RuntimeProfiles ..................................   Passed    0.02 sec
+        Start  40: RuntimeLayout-1.5.97
+ 40/104 Test  #40: RuntimeLayout-1.5.97 .............................   Passed    0.05 sec
+        Start  41: RuntimeLayout-1.6.640
+ 41/104 Test  #41: RuntimeLayout-1.6.640 ............................   Passed    0.03 sec
+        Start  42: RuntimeLayout-1.6.1170
+ 42/104 Test  #42: RuntimeLayout-1.6.1170 ...........................   Passed    0.01 sec
+        Start  43: RuntimeLayout-1.7.104
+ 43/104 Test  #43: RuntimeLayout-1.7.104 ............................   Passed    0.02 sec
+        Start  44: NativeUIComposition
+ 44/104 Test  #44: NativeUIComposition ..............................***Failed    0.04 sec
+FAIL: WARP debug device
+
+        Start  45: NativeUIBlendState
+ 45/104 Test  #45: NativeUIBlendState ...............................***Failed    0.04 sec
+FAIL: device
+
+        Start  46: AmpereRuntime-policies
+ 46/104 Test  #46: AmpereRuntime-policies ...........................   Passed    0.02 sec
+        Start  47: TuringRuntime-policies
+ 47/104 Test  #47: TuringRuntime-policies ...........................   Passed    0.01 sec
+        Start  48: AmpereRuntime-requirements
+ 48/104 Test  #48: AmpereRuntime-requirements .......................   Passed    0.01 sec
+        Start  49: TuringRuntime-requirements
+ 49/104 Test  #49: TuringRuntime-requirements .......................   Passed    0.01 sec
+        Start  50: AmpereRuntime-capabilities
+ 50/104 Test  #50: AmpereRuntime-capabilities .......................   Passed    0.00 sec
+        Start  51: TuringRuntime-capabilities
+ 51/104 Test  #51: TuringRuntime-capabilities .......................   Passed    0.00 sec
+        Start  52: AmpereRuntime-capabilities-reject-availability
+ 52/104 Test  #52: AmpereRuntime-capabilities-reject-availability ...   Passed    0.00 sec
+        Start  53: TuringRuntime-capabilities-reject-availability
+ 53/104 Test  #53: TuringRuntime-capabilities-reject-availability ...   Passed    0.02 sec
+        Start  54: AmpereRuntime-capabilities-reject-capacity
+ 54/104 Test  #54: AmpereRuntime-capabilities-reject-capacity .......   Passed    0.01 sec
+        Start  55: TuringRuntime-capabilities-reject-capacity
+ 55/104 Test  #55: TuringRuntime-capabilities-reject-capacity .......   Passed    0.00 sec
+        Start  56: AmpereRuntime-create-ready
+ 56/104 Test  #56: AmpereRuntime-create-ready .......................   Passed    0.01 sec
+        Start  57: TuringRuntime-create-ready
+ 57/104 Test  #57: TuringRuntime-create-ready .......................   Passed    0.01 sec
+        Start  58: AmpereRuntime-create-unprepared
+ 58/104 Test  #58: AmpereRuntime-create-unprepared ..................   Passed    0.01 sec
+        Start  59: TuringRuntime-create-unprepared
+ 59/104 Test  #59: TuringRuntime-create-unprepared ..................   Passed    0.00 sec
+        Start  60: AmpereRuntime-create-bridge-missing
+ 60/104 Test  #60: AmpereRuntime-create-bridge-missing ..............   Passed    0.00 sec
+        Start  61: TuringRuntime-create-bridge-missing
+ 61/104 Test  #61: TuringRuntime-create-bridge-missing ..............   Passed    0.01 sec
+        Start  62: AmpereRuntime-create-failed-owner
+ 62/104 Test  #62: AmpereRuntime-create-failed-owner ................   Passed    0.01 sec
+        Start  63: TuringRuntime-create-failed-owner
+ 63/104 Test  #63: TuringRuntime-create-failed-owner ................   Passed    0.01 sec
+        Start  64: AmpereRuntime-create-descriptor-changed
+ 64/104 Test  #64: AmpereRuntime-create-descriptor-changed ..........   Passed    0.01 sec
+        Start  65: TuringRuntime-create-descriptor-changed
+ 65/104 Test  #65: TuringRuntime-create-descriptor-changed ..........   Passed    0.00 sec
+        Start  66: AmpereRuntime-create-arch-changed
+ 66/104 Test  #66: AmpereRuntime-create-arch-changed ................   Passed    0.00 sec
+        Start  67: TuringRuntime-create-arch-changed
+ 67/104 Test  #67: TuringRuntime-create-arch-changed ................   Passed    0.00 sec
+        Start  68: AmpereRuntime-create-import-changed
+ 68/104 Test  #68: AmpereRuntime-create-import-changed ..............   Passed    0.00 sec
+        Start  69: TuringRuntime-create-import-changed
+ 69/104 Test  #69: TuringRuntime-create-import-changed ..............   Passed    0.01 sec
+        Start  70: AmpereRuntime-resolvers
+ 70/104 Test  #70: AmpereRuntime-resolvers ..........................   Passed    0.01 sec
+        Start  71: TuringRuntime-resolvers
+ 71/104 Test  #71: TuringRuntime-resolvers ..........................   Passed    0.01 sec
+        Start  72: AmpereRuntime-startup-reentry
+ 72/104 Test  #72: AmpereRuntime-startup-reentry ....................   Passed    0.00 sec
+        Start  73: TuringRuntime-startup-reentry
+ 73/104 Test  #73: TuringRuntime-startup-reentry ....................   Passed    0.00 sec
+        Start  74: AmpereRuntime-repeated-create
+ 74/104 Test  #74: AmpereRuntime-repeated-create ....................   Passed    0.02 sec
+        Start  75: TuringRuntime-repeated-create
+ 75/104 Test  #75: TuringRuntime-repeated-create ....................   Passed    0.01 sec
+        Start  76: AmpereRuntime-false-success
+ 76/104 Test  #76: AmpereRuntime-false-success ......................   Passed    0.01 sec
+        Start  77: TuringRuntime-false-success
+ 77/104 Test  #77: TuringRuntime-false-success ......................   Passed    0.01 sec
+        Start  78: TuringRuntime-module-success
+ 78/104 Test  #78: TuringRuntime-module-success .....................   Passed    0.02 sec
+        Start  79: TuringRuntime-module-failure
+ 79/104 Test  #79: TuringRuntime-module-failure .....................   Passed    0.02 sec
+        Start  80: TuringRuntime-module-null-success
+ 80/104 Test  #80: TuringRuntime-module-null-success ................   Passed    0.01 sec
+        Start  81: TuringRuntime-module-elf-failure
+ 81/104 Test  #81: TuringRuntime-module-elf-failure .................   Passed    0.02 sec
+        Start  82: TuringRuntime-module-fatbin-failure
+ 82/104 Test  #82: TuringRuntime-module-fatbin-failure ..............   Passed    0.01 sec
+        Start  83: TuringRuntime-create-network-changed
+ 83/104 Test  #83: TuringRuntime-create-network-changed .............   Passed    0.01 sec
+        Start  84: TuringPlanner
+ 84/104 Test  #84: TuringPlanner ....................................   Passed    0.15 sec
+        Start  85: AmpereLoader-AliasSetup
+ 85/104 Test  #85: AmpereLoader-AliasSetup ..........................   Passed    1.00 sec
+        Start  86: AmpereLoader-direct
+ 86/104 Test  #86: AmpereLoader-direct ..............................   Passed    0.03 sec
+        Start  87: AmpereLoader-alias
+ 87/104 Test  #87: AmpereLoader-alias ...............................   Passed    0.02 sec
+        Start  88: AmpereLoader-foreign
+ 88/104 Test  #88: AmpereLoader-foreign .............................   Passed    0.01 sec
+        Start  89: AmpereLoader-missing
+ 89/104 Test  #89: AmpereLoader-missing .............................   Passed    0.01 sec
+        Start  90: AmpereLoader-invalid-image
+ 90/104 Test  #90: AmpereLoader-invalid-image .......................   Passed    0.02 sec
+        Start  91: AmpereLoader-query-failed
+ 91/104 Test  #91: AmpereLoader-query-failed ........................   Passed    0.01 sec
+        Start  92: AmpereLoader-query-truncated
+ 92/104 Test  #92: AmpereLoader-query-truncated .....................   Passed    0.02 sec
+        Start  93: AmpereLoader-already-owned
+ 93/104 Test  #93: AmpereLoader-already-owned .......................   Passed    0.01 sec
+        Start  94: AmpereLoader-relative
+ 94/104 Test  #94: AmpereLoader-relative ............................   Passed    0.01 sec
+        Start  95: AmpereLoader-cs-peer-first
+ 95/104 Test  #95: AmpereLoader-cs-peer-first .......................   Passed    0.02 sec
+        Start  96: AmpereLoader-cs-trp-first
+ 96/104 Test  #96: AmpereLoader-cs-trp-first ........................   Passed    0.01 sec
+        Start  97: AmpereLoader-cs-owned
+ 97/104 Test  #97: AmpereLoader-cs-owned ............................   Passed    0.02 sec
+        Start  98: AmpereLoader-cs-owned-alias
+ 98/104 Test  #98: AmpereLoader-cs-owned-alias ......................   Passed    0.01 sec
+        Start  99: AmpereLoader-cs-missing
+ 99/104 Test  #99: AmpereLoader-cs-missing ..........................   Passed    0.01 sec
+        Start 100: AmpereLoader-cs-mismatch
+100/104 Test #100: AmpereLoader-cs-mismatch .........................   Passed    0.01 sec
+        Start 101: NeuralPeripheralPixels
+101/104 Test #101: NeuralPeripheralPixels ...........................***Failed    0.04 sec
+FAIL: debug interface 0x887A002D
+
+        Start 102: NeuralCombatPolicy
+102/104 Test #102: NeuralCombatPolicy ...............................   Passed    0.03 sec
+        Start 103: NeuralShaderBytecode
+103/104 Test #103: NeuralShaderBytecode .............................   Passed    0.66 sec
+        Start 104: NeuralPassSettings
+104/104 Test #104: NeuralPassSettings ...............................   Passed    0.02 sec
+
+97% tests passed, 3 tests failed out of 104
+
+Total Test time (real) =  30.53 sec
+
+The following tests FAILED:
+	 44 - NativeUIComposition (Failed)
+	 45 - NativeUIBlendState (Failed)
+	101 - NeuralPeripheralPixels (Failed)
+Errors while running CTest

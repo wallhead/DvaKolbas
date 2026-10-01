@@ -1,0 +1,32 @@
+[
+  {
+    "name": "nvngx_dlssg.dll",
+    "version": "310,9,1,0",
+    "sha256": "FF6E90EB78B827927DFF5B4ECC6B1C870C2E9BCA29ED9F48C7D348CC9E170B82"
+  },
+  {
+    "name": "sl.common.dll",
+    "version": "2,14,1,0",
+    "sha256": "82924A8954DD671E09351C5DE0EB87AD0EB25B944CC9F9AB955CA1D9950DE15D"
+  },
+  {
+    "name": "sl.dlss_g.dll",
+    "version": "2,14,1,0",
+    "sha256": "F4A6B2B14DCC0B1485989E430D3B4E3A44AC1800B92BA1AD74F476E64FB2B09C"
+  },
+  {
+    "name": "sl.interposer.dll",
+    "version": "2,14,1,0",
+    "sha256": "8C87C9499461DA561EDD529AA9BF7831D67D7B94EBB1C1A5ED54EF4934E1EA4C"
+  },
+  {
+    "name": "sl.pcl.dll",
+    "version": "2,14,1,0",
+    "sha256": "F13D51CFA05F4CD514DF2026049E2DB8ADF359221713170AD386FD499915B582"
+  },
+  {
+    "name": "sl.reflex.dll",
+    "version": "2,14,1,0",
+    "sha256": "0CE9725E3E03EA9E7F81D008B57F33EE365973D2E349131C8B1C3E3378FE2DB0"
+  }
+]

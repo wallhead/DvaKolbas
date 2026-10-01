@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "scope": "Local byte-span/vtable checks and rerun of reviewed uploaded PDB reader; no GPU validation",
+  "new_code_spans_checked": 40,
+  "amd_vtable_slots_checked": 22,
+  "new_class_layouts_reparsed": 9,
+  "new_direct_fields_reparsed": 91,
+  "original_struct_layouts_reparsed": 20,
+  "original_fields_reparsed": 122,
+  "unknown_leaf_rejected": true,
+  "gnu_objdump_verifier_rerun": false,
+  "note": "Capstone checked all 142 instruction byte records in independent-verification.json; objdump is unavailable locally."
+}

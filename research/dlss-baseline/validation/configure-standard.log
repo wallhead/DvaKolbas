@@ -1,0 +1,317 @@
+Preset CMake variables:
+
+  ARP_DETOURS_DIR="C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/detours"
+  CMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+  CMAKE_TOOLCHAIN_FILE="C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake"
+  ENABLE_SKYRIM_AE="ON"
+  ENABLE_SKYRIM_SE="ON"
+  ENABLE_SKYRIM_VR="OFF"
+  TRP_BUILD_COMPATIBILITY_TESTS="ON"
+  TRP_COMMONLIBSSE_NG_DIR="C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/CommonLibSSE-NG"
+  TRP_ENABLE_NEURAL_RENDERING="ON"
+  TRP_ENABLE_OPTIONAL_FEATURES="OFF"
+  TRP_NGX_SDK_DIR="C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/streamline-sdk-v2.11.1/external/ngx-sdk"
+  TRP_STREAMLINE_INCLUDE_DIR="C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/streamline-sdk-v2.11.1/include"
+  VCPKG_INSTALLED_DIR="C:/Users/user/Documents/ChatGPT/DvaKolbas/out/vcpkg_installed"
+  VCPKG_TARGET_TRIPLET="x64-windows-static-md"
+
+Preset environment variables:
+
+  VCPKG_MAX_CONCURRENCY="2"
+  VCPKG_VISUAL_STUDIO_PATH="C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools"
+
+-- Running vcpkg install
+Detecting compiler hash for triplet x64-windows...
+Compiler found: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
+Detecting compiler hash for triplet x64-windows-static-md...
+Compiler found: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
+The following packages will be rebuilt:
+    directxmath:x64-windows-static-md@2024-02-14#1
+    directxtk:x64-windows-static-md@2024-06-04
+    fmt:x64-windows-static-md@10.2.1#2
+    imgui[core,dx11-binding,win32-binding]:x64-windows-static-md@1.90.7#1
+    rapidcsv:x64-windows-static-md@8.82
+    simpleini:x64-windows-static-md@4.22
+    spdlog:x64-windows-static-md@1.14.1
+  * vcpkg-cmake:x64-windows@2024-04-23
+  * vcpkg-cmake-config:x64-windows@2024-05-23
+    xbyak:x64-windows-static-md@7.6
+Additional packages (*) will be modified to complete this operation.
+Restored 0 package(s) from C:\Users\user\AppData\Local\vcpkg\archives in 2.16 ms. Use --debug to see more details.
+Removing 1/20 xbyak:x64-windows-static-md
+Elapsed time to handle xbyak:x64-windows-static-md: 2.23 ms
+Removing 2/20 spdlog:x64-windows-static-md
+Elapsed time to handle spdlog:x64-windows-static-md: 14 ms
+Removing 3/20 simpleini:x64-windows-static-md
+Elapsed time to handle simpleini:x64-windows-static-md: 2.68 ms
+Removing 4/20 rapidcsv:x64-windows-static-md
+Elapsed time to handle rapidcsv:x64-windows-static-md: 1.72 ms
+Removing 5/20 imgui:x64-windows-static-md
+Elapsed time to handle imgui:x64-windows-static-md: 7.09 ms
+Removing 6/20 fmt:x64-windows-static-md
+Elapsed time to handle fmt:x64-windows-static-md: 5.06 ms
+Removing 7/20 directxtk:x64-windows-static-md
+Elapsed time to handle directxtk:x64-windows-static-md: 9.84 ms
+Removing 8/20 directxmath:x64-windows-static-md
+Elapsed time to handle directxmath:x64-windows-static-md: 3.97 ms
+Removing 9/20 vcpkg-cmake:x64-windows
+Elapsed time to handle vcpkg-cmake:x64-windows: 1.85 ms
+Removing 10/20 vcpkg-cmake-config:x64-windows
+Elapsed time to handle vcpkg-cmake-config:x64-windows: 4.5 ms
+Installing 11/20 vcpkg-cmake-config:x64-windows@2024-05-23...
+vcpkg-cmake-config:x64-windows@2024-05-23 package ABI: 2960f5ca27c29e80e5e8410bd726e47c327c93ea8009f6adb7cbef0a769a4f7a
+Building vcpkg-cmake-config:x64-windows@2024-05-23...
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake-config_x64-windows/share/vcpkg-cmake-config/vcpkg_cmake_config_fixup.cmake
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake-config_x64-windows/share/vcpkg-cmake-config/vcpkg-port-config.cmake
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake-config_x64-windows/share/vcpkg-cmake-config/copyright
+-- Skipping post-build validation due to VCPKG_POLICY_EMPTY_PACKAGE
+Starting submission of vcpkg-cmake-config:x64-windows@2024-05-23 to 1 binary cache(s) in the background
+Elapsed time to handle vcpkg-cmake-config:x64-windows: 44 ms
+Installing 12/20 vcpkg-cmake:x64-windows@2024-04-23...
+vcpkg-cmake:x64-windows@2024-04-23 package ABI: 1fd78f072cd8a0336ff6cccf63ac7a654094428c9b4d7f5e56f444749bd0590e
+Building vcpkg-cmake:x64-windows@2024-04-23...
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake_x64-windows/share/vcpkg-cmake/vcpkg_cmake_configure.cmake
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake_x64-windows/share/vcpkg-cmake/vcpkg_cmake_build.cmake
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake_x64-windows/share/vcpkg-cmake/vcpkg_cmake_install.cmake
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake_x64-windows/share/vcpkg-cmake/vcpkg-port-config.cmake
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/vcpkg-cmake_x64-windows/share/vcpkg-cmake/copyright
+-- Performing post-build validation
+Starting submission of vcpkg-cmake:x64-windows@2024-04-23 to 1 binary cache(s) in the background
+Elapsed time to handle vcpkg-cmake:x64-windows: 49.3 ms
+Completed submission of vcpkg-cmake-config:x64-windows@2024-05-23 to 1 binary cache(s) in 25.6 ms
+Installing 13/20 directxmath:x64-windows-static-md@2024-02-14#1...
+directxmath:x64-windows-static-md@2024-02-14#1 package ABI: 45b8f6fbab144c1a36bef2f8690e36b477d37549975db311901bb003206d6001
+Building directxmath:x64-windows-static-md@2024-02-14#1...
+-- Using cached Microsoft-DirectXMath-feb2024b.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/directxmath/src/feb2024b-d536663931.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/Microsoft-DirectXMath-feb2024b.tar.gz
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/directxmath/src/feb2024b-d536663931.clean
+-- Configuring x64-windows-static-md
+-- Building x64-windows-static-md-dbg
+-- Building x64-windows-static-md-rel
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxmath_x64-windows-static-md/share/pkgconfig/DirectXMath.pc
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxmath_x64-windows-static-md/lib/pkgconfig/DirectXMath.pc
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxmath_x64-windows-static-md/share/pkgconfig/DirectXMath.pc
+-- Using cached msys2-mingw-w64-x86_64-pkgconf-1~2.5.1-1-any.pkg.tar.zst
+-- Using cached msys2-msys2-runtime-3.6.5-1-x86_64.pkg.tar.zst
+-- Using msys root at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/tools/msys2/3e71d1f8e22ab23f
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxmath_x64-windows-static-md/debug/lib/pkgconfig/DirectXMath.pc
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxmath_x64-windows-static-md/share/directxmath/usage
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxmath_x64-windows-static-md/share/directxmath/copyright
+-- Performing post-build validation
+Starting submission of directxmath:x64-windows-static-md@2024-02-14#1 to 1 binary cache(s) in the background
+Elapsed time to handle directxmath:x64-windows-static-md: 1.2 s
+Completed submission of vcpkg-cmake:x64-windows@2024-04-23 to 1 binary cache(s) in 24.2 ms
+Installing 14/20 directxtk:x64-windows-static-md@2024-06-04...
+directxtk:x64-windows-static-md@2024-06-04 package ABI: f743b22da8186753f88f5a82b65e01f164924cfcf1cb54123cac94b2a0c9780b
+Building directxtk:x64-windows-static-md@2024-06-04...
+-- Using cached Microsoft-DirectXTK-jun2024.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/directxtk/src/jun2024-41841b3d9b.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/Microsoft-DirectXTK-jun2024.tar.gz
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/directxtk/src/jun2024-41841b3d9b.clean
+-- Configuring x64-windows-static-md
+-- Building x64-windows-static-md-dbg
+-- Building x64-windows-static-md-rel
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxtk_x64-windows-static-md/lib/pkgconfig/DirectXTK.pc
+-- Using cached msys2-mingw-w64-x86_64-pkgconf-1~2.5.1-1-any.pkg.tar.zst
+-- Using cached msys2-msys2-runtime-3.6.5-1-x86_64.pkg.tar.zst
+-- Using msys root at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/tools/msys2/3e71d1f8e22ab23f
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxtk_x64-windows-static-md/debug/lib/pkgconfig/DirectXTK.pc
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxtk_x64-windows-static-md/share/directxtk/usage
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/directxtk_x64-windows-static-md/share/directxtk/copyright
+-- Performing post-build validation
+Starting submission of directxtk:x64-windows-static-md@2024-06-04 to 1 binary cache(s) in the background
+Elapsed time to handle directxtk:x64-windows-static-md: 24 s
+Completed submission of directxmath:x64-windows-static-md@2024-02-14#1 to 1 binary cache(s) in 56.5 ms
+Installing 15/20 fmt:x64-windows-static-md@10.2.1#2...
+fmt:x64-windows-static-md@10.2.1#2 package ABI: 724fe5776b47c6ee1a08e1239827d534ff3dd0485bc55bc13690f71cc2601656
+Building fmt:x64-windows-static-md@10.2.1#2...
+-- Using cached fmtlib-fmt-10.2.1.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/fmt/src/10.2.1-a991065f88.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/fmtlib-fmt-10.2.1.tar.gz
+-- Applying patch fix-visibility.patch
+-- Applying patch fix-write-batch.patch
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/fmt/src/10.2.1-a991065f88.clean
+-- Configuring x64-windows-static-md
+-- Building x64-windows-static-md-dbg
+-- Building x64-windows-static-md-rel
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/fmt_x64-windows-static-md/lib/pkgconfig/fmt.pc
+-- Using cached msys2-mingw-w64-x86_64-pkgconf-1~2.5.1-1-any.pkg.tar.zst
+-- Using cached msys2-msys2-runtime-3.6.5-1-x86_64.pkg.tar.zst
+-- Using msys root at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/tools/msys2/3e71d1f8e22ab23f
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/fmt_x64-windows-static-md/debug/lib/pkgconfig/fmt.pc
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/fmt_x64-windows-static-md/share/fmt/usage
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/fmt_x64-windows-static-md/share/fmt/copyright
+-- Performing post-build validation
+Starting submission of fmt:x64-windows-static-md@10.2.1#2 to 1 binary cache(s) in the background
+Elapsed time to handle fmt:x64-windows-static-md: 3.3 s
+Completed submission of directxtk:x64-windows-static-md@2024-06-04 to 1 binary cache(s) in 2 s
+Installing 16/20 imgui[core,dx11-binding,win32-binding]:x64-windows-static-md@1.90.7#1...
+imgui[core,dx11-binding,win32-binding]:x64-windows-static-md@1.90.7#1 package ABI: 387566e74b268f33a7fef730037fc5f6e35297e0ce4c9c7608d31f6e7caeeab4
+Building imgui[core,dx11-binding,win32-binding]:x64-windows-static-md@1.90.7#1...
+-- Using cached ocornut-imgui-v1.90.7.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/imgui/src/v1.90.7-cda29176bb.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/ocornut-imgui-v1.90.7.tar.gz
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/imgui/src/v1.90.7-cda29176bb.clean
+-- Configuring x64-windows-static-md
+-- Building x64-windows-static-md-dbg
+-- Building x64-windows-static-md-rel
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/imgui_x64-windows-static-md/share/imgui/copyright
+-- Performing post-build validation
+Starting submission of imgui[core,dx11-binding,win32-binding]:x64-windows-static-md@1.90.7#1 to 1 binary cache(s) in the background
+Elapsed time to handle imgui:x64-windows-static-md: 7.5 s
+Completed submission of fmt:x64-windows-static-md@10.2.1#2 to 1 binary cache(s) in 305 ms
+Installing 17/20 rapidcsv:x64-windows-static-md@8.82...
+rapidcsv:x64-windows-static-md@8.82 package ABI: 2ec22d27824f6726d82e27e4ad0305a7a1bdb45006f8516e93dc59fabb57a713
+Building rapidcsv:x64-windows-static-md@8.82...
+-- Using cached d99kris-rapidcsv-v8.82.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/rapidcsv/src/v8.82-75b7367723.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/d99kris-rapidcsv-v8.82.tar.gz
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/rapidcsv/src/v8.82-75b7367723.clean
+-- Configuring x64-windows-static-md
+-- Building x64-windows-static-md-dbg
+-- Building x64-windows-static-md-rel
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/rapidcsv_x64-windows-static-md/share/rapidcsv/copyright
+-- Performing post-build validation
+Starting submission of rapidcsv:x64-windows-static-md@8.82 to 1 binary cache(s) in the background
+Elapsed time to handle rapidcsv:x64-windows-static-md: 1.1 s
+Completed submission of imgui[core,dx11-binding,win32-binding]:x64-windows-static-md@1.90.7#1 to 1 binary cache(s) in 656 ms
+Installing 18/20 simpleini:x64-windows-static-md@4.22...
+simpleini:x64-windows-static-md@4.22 package ABI: 0d9d047fa635ee2f2efb377d1622164762e84323a847df1a0fefec3425e8ec23
+Building simpleini:x64-windows-static-md@4.22...
+-- Using cached brofield-simpleini-v4.22.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/simpleini/src/v4.22-e4c8abcd5b.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/brofield-simpleini-v4.22.tar.gz
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/simpleini/src/v4.22-e4c8abcd5b.clean
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/simpleini_x64-windows-static-md/include/SimpleIni.h
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/simpleini_x64-windows-static-md/include/ConvertUTF.h
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/simpleini_x64-windows-static-md/include/ConvertUTF.c
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/simpleini_x64-windows-static-md/share/simpleini/copyright
+-- Performing post-build validation
+Starting submission of simpleini:x64-windows-static-md@4.22 to 1 binary cache(s) in the background
+Elapsed time to handle simpleini:x64-windows-static-md: 192 ms
+Completed submission of rapidcsv:x64-windows-static-md@8.82 to 1 binary cache(s) in 22.5 ms
+Installing 19/20 spdlog:x64-windows-static-md@1.14.1...
+spdlog:x64-windows-static-md@1.14.1 package ABI: 40cea292b010c9566bc69c549f1ead627298f6d5ecacac02d7aebb15110543a4
+Building spdlog:x64-windows-static-md@1.14.1...
+-- Using cached gabime-spdlog-v1.14.1.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/spdlog/src/v1.14.1-0ddeaa008e.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/gabime-spdlog-v1.14.1.tar.gz
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/spdlog/src/v1.14.1-0ddeaa008e.clean
+-- Configuring x64-windows-static-md
+-- Building x64-windows-static-md-dbg
+-- Building x64-windows-static-md-rel
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/spdlog_x64-windows-static-md/lib/pkgconfig/spdlog.pc
+-- Using cached msys2-mingw-w64-x86_64-pkgconf-1~2.5.1-1-any.pkg.tar.zst
+-- Using cached msys2-msys2-runtime-3.6.5-1-x86_64.pkg.tar.zst
+-- Using msys root at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/tools/msys2/3e71d1f8e22ab23f
+-- Fixing pkgconfig file: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/spdlog_x64-windows-static-md/debug/lib/pkgconfig/spdlog.pc
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/spdlog_x64-windows-static-md/share/spdlog/usage
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/spdlog_x64-windows-static-md/share/spdlog/copyright
+-- Performing post-build validation
+Starting submission of spdlog:x64-windows-static-md@1.14.1 to 1 binary cache(s) in the background
+Elapsed time to handle spdlog:x64-windows-static-md: 6.2 s
+Completed submission of simpleini:x64-windows-static-md@4.22 to 1 binary cache(s) in 29.9 ms
+Installing 20/20 xbyak:x64-windows-static-md@7.6...
+xbyak:x64-windows-static-md@7.6 package ABI: 9ea39b1ec3ec31771d4497ecd774a9473c6d5442ab1a874d2616c89a1ececba4
+Building xbyak:x64-windows-static-md@7.6...
+-- Using cached herumi-xbyak-v7.06.tar.gz
+-- Cleaning sources at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/xbyak/src/v7.06-87360b2c0c.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/downloads/herumi-xbyak-v7.06.tar.gz
+-- Using source at C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/buildtrees/xbyak/src/v7.06-87360b2c0c.clean
+-- Configuring x64-windows-static-md
+-- Building x64-windows-static-md-dbg
+-- Building x64-windows-static-md-rel
+-- Installing: C:/Users/user/Documents/ChatGPT/DvaKolbas/.dependencies/vcpkg/packages/xbyak_x64-windows-static-md/share/xbyak/copyright
+-- Performing post-build validation
+Starting submission of xbyak:x64-windows-static-md@7.6 to 1 binary cache(s) in the background
+Elapsed time to handle xbyak:x64-windows-static-md: 1.1 s
+Installed contents are licensed to you by owners. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages.
+Packages installed in this vcpkg installation declare the following licenses:
+BSD-3-Clause
+MIT
+The DirectXMath package provides CMake targets:
+
+    find_package(directxmath CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE Microsoft::DirectXMath)
+
+The DirectX Tool Kit for DX11 package provides CMake targets:
+
+    find_package(directxtk CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE Microsoft::DirectXTK)
+
+The package fmt provides CMake targets:
+
+    find_package(fmt CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE fmt::fmt)
+
+    # Or use the header-only version
+    find_package(fmt CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE fmt::fmt-header-only)
+
+imgui provides CMake targets:
+
+  # this is heuristically generated, and may not be correct
+  find_package(imgui CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE imgui::imgui)
+
+rapidcsv is header-only and can be used from CMake via:
+
+  find_path(RAPIDCSV_INCLUDE_DIRS "rapidcsv.h")
+  target_include_directories(main PRIVATE ${RAPIDCSV_INCLUDE_DIRS})
+
+simpleini is header-only and can be used from CMake via:
+
+  find_path(SIMPLEINI_INCLUDE_DIRS "ConvertUTF.c")
+  target_include_directories(main PRIVATE ${SIMPLEINI_INCLUDE_DIRS})
+
+The package spdlog provides CMake targets:
+
+    find_package(spdlog CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE spdlog::spdlog)
+
+    # Or use the header-only version
+    find_package(spdlog CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE spdlog::spdlog_header_only)
+
+xbyak provides CMake targets:
+
+  # this is heuristically generated, and may not be correct
+  find_package(xbyak CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE xbyak::xbyak)
+
+Completed submission of spdlog:x64-windows-static-md@1.14.1 to 1 binary cache(s) in 1.1 s
+Waiting for 1 remaining binary cache submissions...
+Completed submission of xbyak:x64-windows-static-md@7.6 to 1 binary cache(s) in 36.5 ms (1/1)
+All requested installations completed successfully in: 44 s
+-- Running vcpkg install - done
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.22631.
+-- The C compiler identification is MSVC 19.44.35226.0
+-- The CXX compiler identification is MSVC 19.44.35226.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+Options:
+	Enable Xbyak: ON
+	Enable Patch Safety Checks: ON
+	Enable Skyrim SE: ON
+	Enable Skyrim AE: ON
+	Enable Skyrim VR: OFF
+	Build Tests: OFF
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Found Threads: TRUE
+-- Configuring done (55.2s)
+-- Generating done (0.9s)
+-- Build files have been written to: C:/Users/user/Documents/ChatGPT/DvaKolbas/out/build/standard

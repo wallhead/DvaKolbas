@@ -1,0 +1,1899 @@
+[
+  {
+    "rva": "0x6e1c0",
+    "instruction": "lea rcx, [rip + 0x112f2a1]",
+    "string_rva": "0x119d468",
+    "string": "D3D12Interop: D3D12CreateDevice from '%ls'",
+    "function_rva": "0x6e060"
+  },
+  {
+    "rva": "0x6e239",
+    "instruction": "lea rcx, [rip + 0x112f258]",
+    "string_rva": "0x119d498",
+    "string": "D3D12Interop: CreateDXGIFactory2 failed 0x%08x",
+    "function_rva": "0x6e200"
+  },
+  {
+    "rva": "0x6e69a",
+    "instruction": "lea rcx, [rip + 0x112ef3f]",
+    "string_rva": "0x119d5e0",
+    "string": "D3D12Interop: adapterIndex %d not found among hardware adapters.",
+    "function_rva": "0x6e5d7"
+  },
+  {
+    "rva": "0x6e7da",
+    "instruction": "lea rcx, [rip + 0x112ee4f]",
+    "string_rva": "0x119d630",
+    "string": "D3D12Interop: adapter LUID %08x:%08x not found factoryCurrent=%d",
+    "function_rva": "0x6e725"
+  },
+  {
+    "rva": "0x6ef80",
+    "instruction": "lea rcx, [rip + 0x112e899]",
+    "string_rva": "0x119d820",
+    "string": "D3D12Interop: hardware adapter %d '%ls'%s",
+    "function_rva": "0x6ef18"
+  },
+  {
+    "rva": "0x6f080",
+    "instruction": "lea rcx, [rip + 0x112e7c9]",
+    "string_rva": "0x119d850",
+    "string": "D3D12Interop: game D3D11 adapter '%ls'",
+    "function_rva": "0x6f02b"
+  },
+  {
+    "rva": "0x6f297",
+    "instruction": "lea rcx, [rip + 0x112e622]",
+    "string_rva": "0x119d8c0",
+    "string": "D3D12Interop: OpenSharedFence copy fence on D3D11 failed: 0x%08x",
+    "function_rva": "0x6f1f0"
+  },
+  {
+    "rva": "0x6f2eb",
+    "instruction": "lea rcx, [rip + 0x112e61e]",
+    "string_rva": "0x119d910",
+    "string": "D3D12Interop: OpenSharedHandle copy fence on companion failed: 0x%08x",
+    "function_rva": "0x6f1f0"
+  },
+  {
+    "rva": "0x6f30a",
+    "instruction": "lea rcx, [rip + 0x112e567]",
+    "string_rva": "0x119d878",
+    "string": "D3D12Interop: CreateSharedHandle local fence failed: 0x%08x",
+    "function_rva": "0x6f1f0"
+  },
+  {
+    "rva": "0x6f3b4",
+    "instruction": "lea rcx, [rip + 0x112e59d]",
+    "string_rva": "0x119d958",
+    "string": "D3D12Interop: local device aliased to companion on game GPU.",
+    "function_rva": "0x6f320"
+  },
+  {
+    "rva": "0x6f437",
+    "instruction": "lea rcx, [rip + 0x112e55a]",
+    "string_rva": "0x119d998",
+    "string": "D3D12Interop: EnsureLocalDevice failed, no game adapter LUID.",
+    "function_rva": "0x6f3d1"
+  },
+  {
+    "rva": "0x6f4b6",
+    "instruction": "lea rcx, [rip + 0x112e56b]",
+    "string_rva": "0x119da28",
+    "string": "D3D12Interop: local CreateCommandQueue failed: 0x%08x",
+    "function_rva": "0x6f44a"
+  },
+  {
+    "rva": "0x6f5dc",
+    "instruction": "lea rcx, [rip + 0x112e47d]",
+    "string_rva": "0x119da60",
+    "string": "D3D12Interop: CreateFence on local GPU failed: 0x%08x",
+    "function_rva": "0x6f5da"
+  },
+  {
+    "rva": "0x6f610",
+    "instruction": "lea rcx, [rip + 0x112e489]",
+    "string_rva": "0x119daa0",
+    "string": "D3D12Interop: local D3D12 device created on game GPU for NR/bounce.",
+    "function_rva": "0x6f5da"
+  },
+  {
+    "rva": "0x6f63b",
+    "instruction": "lea rcx, [rip + 0x112e39e]",
+    "string_rva": "0x119d9e0",
+    "string": "D3D12Interop: failed to create local game-GPU D3D12 device: 0x%08x",
+    "function_rva": "0x6f5da"
+  },
+  {
+    "rva": "0x6f72c",
+    "instruction": "lea rcx, [rip + 0x112e3bd]",
+    "string_rva": "0x119daf0",
+    "string": "D3D12Interop companion already created on a different adapter, ignoring adapterIndex %d (requested '%ls')",
+    "function_rva": "0x6f680"
+  },
+  {
+    "rva": "0x6f7bb",
+    "instruction": "lea rcx, [rip + 0x112e39e]",
+    "string_rva": "0x119db60",
+    "string": "D3D12Interop: game D3D11 DXGI factory is stale after TDR, enumerating a fresh adapter",
+    "function_rva": "0x6f74c"
+  },
+  {
+    "rva": "0x6f7f2",
+    "instruction": "lea rcx, [rip + 0x112e3bf]",
+    "string_rva": "0x119dbb8",
+    "string": "D3D12Interop: falling back to game adapter.",
+    "function_rva": "0x6f74c"
+  },
+  {
+    "rva": "0x6f8c9",
+    "instruction": "lea rcx, [rip + 0x112e318]",
+    "string_rva": "0x119dbe8",
+    "string": "D3D12Interop: companion aliased to local game-GPU device.",
+    "function_rva": "0x6f74c"
+  },
+  {
+    "rva": "0x6fae0",
+    "instruction": "lea rcx, [rip + 0x112e209]",
+    "string_rva": "0x119dcf0",
+    "string": "D3D12Interop: created companion D3D12 device on adapterIndex=%d '%ls'%s",
+    "function_rva": "0x6faaf"
+  },
+  {
+    "rva": "0x6faf5",
+    "instruction": "lea rcx, [rip + 0x112e244]",
+    "string_rva": "0x119dd40",
+    "string": "D3D12Interop: cross-adapter mode enabled, using GPU1 local D3D12 + buffer bounce.",
+    "function_rva": "0x6faaf"
+  },
+  {
+    "rva": "0x6fb01",
+    "instruction": "lea rcx, [rip + 0x112e298]",
+    "string_rva": "0x119dda0",
+    "string": "D3D12Interop: Present/swapchain is on GPU2. If the monitor DP is plugged into GPU1, DWM will blit each presented frame across adapters; plug the display into the FG GPU to compare scanout cost.",
+    "function_rva": "0x6faaf"
+  },
+  {
+    "rva": "0x6fc02",
+    "instruction": "lea rcx, [rip + 0x112e267]",
+    "string_rva": "0x119de70",
+    "string": "D3D12Interop: marking D3D12 device lost (will stop GPU submits until recover)",
+    "function_rva": "0x6fbf0"
+  },
+  {
+    "rva": "0x6fd4b",
+    "instruction": "lea rcx, [rip + 0x112e16e]",
+    "string_rva": "0x119dec0",
+    "string": "D3D12Interop: clearing stale lost flag (devices are still healthy)",
+    "function_rva": "0x6fd47"
+  },
+  {
+    "rva": "0x6fd85",
+    "instruction": "lea rcx, [rip + 0x112e17c]",
+    "string_rva": "0x119df08",
+    "string": "D3D12Interop: companion DeviceRemovedReason=0x%08x",
+    "function_rva": "0x6fd47"
+  },
+  {
+    "rva": "0x6febd",
+    "instruction": "lea rcx, [rip + 0x112e07c]",
+    "string_rva": "0x119df40",
+    "string": "D3D12Interop: fence wait ended after driver TDR want=%llu completed=%llu",
+    "function_rva": "0x6fdf0"
+  },
+  {
+    "rva": "0x70935",
+    "instruction": "lea rcx, [rip + 0x112d654]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70952",
+    "instruction": "lea rcx, [rip + 0x112d637]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70970",
+    "instruction": "lea rcx, [rip + 0x112d619]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x7098e",
+    "instruction": "lea rcx, [rip + 0x112d5fb]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x709ab",
+    "instruction": "lea rcx, [rip + 0x112d5de]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x709c9",
+    "instruction": "lea rcx, [rip + 0x112d5c0]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x709e7",
+    "instruction": "lea rcx, [rip + 0x112d5a2]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70a05",
+    "instruction": "lea rcx, [rip + 0x112d584]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70a23",
+    "instruction": "lea rcx, [rip + 0x112d566]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70a56",
+    "instruction": "lea rcx, [rip + 0x112d533]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70a77",
+    "instruction": "lea rcx, [rip + 0x112d512]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70a98",
+    "instruction": "lea rcx, [rip + 0x112d4f1]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70ab9",
+    "instruction": "lea rcx, [rip + 0x112d4d0]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70ada",
+    "instruction": "lea rcx, [rip + 0x112d4af]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70afb",
+    "instruction": "lea rcx, [rip + 0x112d48e]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70b1c",
+    "instruction": "lea rcx, [rip + 0x112d46d]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70b3d",
+    "instruction": "lea rcx, [rip + 0x112d44c]",
+    "string_rva": "0x119df90",
+    "string": "D3D12Interop: still holding %s %p",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70b4f",
+    "instruction": "lea rcx, [rip + 0x112d4fa]",
+    "string_rva": "0x119e050",
+    "string": "D3D12Interop: %d owned COM pointers still live before device Release",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70b7a",
+    "instruction": "lea rcx, [rip + 0x112d51f]",
+    "string_rva": "0x119e0a0",
+    "string": "D3D12Interop: flushed D3D11 after releasing shared D3D12 fences",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70bd8",
+    "instruction": "lea rcx, [rip + 0x112d501]",
+    "string_rva": "0x119e0e0",
+    "string": "D3D12Interop: companion device refcount before Release=%u ptr=%p native=%p ownedLeftover=%d impliedExternal=%d",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x70c46",
+    "instruction": "lea rcx, [rip + 0x112d503]",
+    "string_rva": "0x119e150",
+    "string": "D3D12Interop: drained companion device extra=%d finalLeftover=%u",
+    "function_rva": "0x706e0"
+  },
+  {
+    "rva": "0x71043",
+    "instruction": "lea rcx, [rip + 0x112d156]",
+    "string_rva": "0x119e1a0",
+    "string": "D3D12Interop: dropped SL proxy device leftover=%u, restoring native %p",
+    "function_rva": "0x71010"
+  },
+  {
+    "rva": "0x711b0",
+    "instruction": "lea rcx, [rip + 0x112d039]",
+    "string_rva": "0x119e1f0",
+    "string": "D3D12Interop: unbound D3D11 views and flushed immediate context",
+    "function_rva": "0x71080"
+  },
+  {
+    "rva": "0x71223",
+    "instruction": "lea rcx, [rip + 0x112d006]",
+    "string_rva": "0x119e230",
+    "string": "D3D12Interop: cannot recover, D3D11 device is also removed (reason=0x%08x)",
+    "function_rva": "0x711e0"
+  },
+  {
+    "rva": "0x7133d",
+    "instruction": "lea rcx, [rip + 0x112cf3c]",
+    "string_rva": "0x119e280",
+    "string": "D3D12Interop: recreating companion D3D12 adapterIndex=%d aliased=%d sameGpu=%d localLost=%d wantLocal=%d createAttempts=%d",
+    "function_rva": "0x71243"
+  },
+  {
+    "rva": "0x7137d",
+    "instruction": "lea rcx, [rip + 0x112cf7c]",
+    "string_rva": "0x119e300",
+    "string": "D3D12Interop: old D3D12 objects released, creating new device",
+    "function_rva": "0x7136d"
+  },
+  {
+    "rva": "0x713a4",
+    "instruction": "lea rcx, [rip + 0x112cf95]",
+    "string_rva": "0x119e340",
+    "string": "D3D12Interop: recover failed to recreate companion D3D12 device",
+    "function_rva": "0x713a4"
+  },
+  {
+    "rva": "0x713da",
+    "instruction": "lea rcx, [rip + 0x112cf9f]",
+    "string_rva": "0x119e380",
+    "string": "D3D12Interop: recover could not recreate local D3D12 (NR on game GPU may stay off); companion Present will continue",
+    "function_rva": "0x713a4"
+  },
+  {
+    "rva": "0x71475",
+    "instruction": "lea rcx, [rip + 0x112cf7c]",
+    "string_rva": "0x119e3f8",
+    "string": "D3D12Interop: companion D3D12 recreated device=%p queue=%p",
+    "function_rva": "0x713a4"
+  },
+  {
+    "rva": "0x71619",
+    "instruction": "lea rcx, [rip + 0x112cea8]",
+    "string_rva": "0x119e4c8",
+    "string": "D3D12Interop: hang CreateRootSignature failed 0x%08x",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x71647",
+    "instruction": "lea rcx, [rip + 0x112ce42]",
+    "string_rva": "0x119e490",
+    "string": "D3D12Interop: hang root sig serialize failed 0x%08x %s",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x7177b",
+    "instruction": "lea rcx, [rip + 0x112cdc6]",
+    "string_rva": "0x119e548",
+    "string": "D3D12Interop: hang CreateComputePipelineState failed 0x%08x",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x717a9",
+    "instruction": "lea rcx, [rip + 0x112cd68]",
+    "string_rva": "0x119e518",
+    "string": "D3D12Interop: hang D3DCompile failed 0x%08x %s",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x7187c",
+    "instruction": "lea rcx, [rip + 0x112cd05]",
+    "string_rva": "0x119e588",
+    "string": "D3D12Interop: hang dummy buffer failed 0x%08x",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x71a2d",
+    "instruction": "lea rcx, [rip + 0x112cbfc]",
+    "string_rva": "0x119e630",
+    "string": "D3D12Interop: GPU hang dispatched on companion queue, Windows TDR should fire in ~2s",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x71a3f",
+    "instruction": "lea rcx, [rip + 0x112cbaa]",
+    "string_rva": "0x119e5f0",
+    "string": "D3D12Interop: hang CreateCommandList failed 0x%08x",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x71a5f",
+    "instruction": "lea rcx, [rip + 0x112cb52]",
+    "string_rva": "0x119e5b8",
+    "string": "D3D12Interop: hang CreateCommandAllocator failed 0x%08x",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x71a6d",
+    "instruction": "lea rcx, [rip + 0x112c9cc]",
+    "string_rva": "0x119e440",
+    "string": "D3D12Interop: cannot hang GPU, companion device missing or already removed",
+    "function_rva": "0x714b0"
+  },
+  {
+    "rva": "0x71c2a",
+    "instruction": "lea rcx, [rip + 0x112ca5f]",
+    "string_rva": "0x119e690",
+    "string": "D3D12Interop: HIGH pd_framewarp queue failed 0x%08x, falling back to NORMAL.",
+    "function_rva": "0x71be0"
+  },
+  {
+    "rva": "0x71c5c",
+    "instruction": "lea rcx, [rip + 0x112ca7d]",
+    "string_rva": "0x119e6e0",
+    "string": "D3D12Interop: pd_framewarp queue create failed 0x%08x",
+    "function_rva": "0x71be0"
+  },
+  {
+    "rva": "0x71c84",
+    "instruction": "lea rcx, [rip + 0x112cac5]",
+    "string_rva": "0x119e750",
+    "string": "D3D12Interop: created dedicated PDFrameWarp DIRECT queue (priority=%d)",
+    "function_rva": "0x71be0"
+  },
+  {
+    "rva": "0x727f3",
+    "instruction": "lea rax, [rip + 0x112c1ee]",
+    "string_rva": "0x119e9e8",
+    "string": "SwapChain",
+    "function_rva": null
+  },
+  {
+    "rva": "0x727fb",
+    "instruction": "lea rax, [rip + 0x112c1ce]",
+    "string_rva": "0x119e9d0",
+    "string": "FrameGen",
+    "function_rva": null
+  },
+  {
+    "rva": "0x72d72",
+    "instruction": "lea rcx, [rip + 0x112bec7]",
+    "string_rva": "0x119ec40",
+    "string": "DXGISwapChainDX11Wrapper resources for type %d created!",
+    "function_rva": "0x72860"
+  },
+  {
+    "rva": "0x76f25",
+    "instruction": "lea rdx, [rip + 0x11280ac]",
+    "string_rva": "0x119efd8",
+    "string": "d3d12Interop.m_D3D11TransparentTex",
+    "function_rva": "0x76dfd"
+  },
+  {
+    "rva": "0x771a1",
+    "instruction": "lea rdx, [rip + 0x1127e58]",
+    "string_rva": "0x119f000",
+    "string": "d3d12Interop.m_D3D11DepthTex",
+    "function_rva": "0x76f42"
+  },
+  {
+    "rva": "0x771b7",
+    "instruction": "lea rdx, [rip + 0x1127e62]",
+    "string_rva": "0x119f020",
+    "string": "d3d12Interop.m_D3D11MotionTex",
+    "function_rva": "0x76f42"
+  },
+  {
+    "rva": "0x771cd",
+    "instruction": "lea rdx, [rip + 0x1127e04]",
+    "string_rva": "0x119efd8",
+    "string": "d3d12Interop.m_D3D11TransparentTex",
+    "function_rva": "0x76f42"
+  },
+  {
+    "rva": "0x773bc",
+    "instruction": "lea rdx, [rip + 0x1127c15]",
+    "string_rva": "0x119efd8",
+    "string": "d3d12Interop.m_D3D11TransparentTex",
+    "function_rva": "0x77302"
+  },
+  {
+    "rva": "0x7755e",
+    "instruction": "lea rdx, [rip + 0x1127adb]",
+    "string_rva": "0x119f040",
+    "string": "d3d12Interop.m_D3D11NROutput",
+    "function_rva": "0x773ff"
+  },
+  {
+    "rva": "0x7a894",
+    "instruction": "lea rcx, [rip + 0x1124b9d]",
+    "string_rva": "0x119f438",
+    "string": "Creating FrameGenMethod_Streamline_DX12",
+    "function_rva": "0x7a200"
+  },
+  {
+    "rva": "0x7abaa",
+    "instruction": "lea rcx, [rip + 0x11248af]",
+    "string_rva": "0x119f460",
+    "string": "FrameGenMethod_Streamline_DX12 init Success!",
+    "function_rva": "0x7ab20"
+  },
+  {
+    "rva": "0x7abe0",
+    "instruction": "lea rcx, [rip + 0x11248a9]",
+    "string_rva": "0x119f490",
+    "string": "FrameGenMethod_Streamline_DX12: SEH in slShutdown code=0x%08lx",
+    "function_rva": "0x7abc0"
+  },
+  {
+    "rva": "0x7ac09",
+    "instruction": "lea rcx, [rip + 0x11248c0]",
+    "string_rva": "0x119f4d0",
+    "string": "FrameGenMethod_Streamline_DX12 released!",
+    "function_rva": "0x7ac00"
+  },
+  {
+    "rva": "0x7aed2",
+    "instruction": "lea rcx, [rip + 0x1124627]",
+    "string_rva": "0x119f500",
+    "string": "Replace Streamline Frame Generation SwapChain",
+    "function_rva": "0x7aeb0"
+  },
+  {
+    "rva": "0x7af0f",
+    "instruction": "lea rcx, [rip + 0x112461a]",
+    "string_rva": "0x119f530",
+    "string": "Replace Streamline Frame Generation SwapChain success",
+    "function_rva": "0x7aeb0"
+  },
+  {
+    "rva": "0x7afce",
+    "instruction": "lea rcx, [rip + 0x11245eb]",
+    "string_rva": "0x119f5c0",
+    "string": "Create Streamline Frame Generation SwapChain",
+    "function_rva": "0x7af60"
+  },
+  {
+    "rva": "0x7b04e",
+    "instruction": "lea rcx, [rip + 0x11245db]",
+    "string_rva": "0x119f630",
+    "string": "Create Streamline Frame Generation SwapChain success",
+    "function_rva": "0x7af60"
+  },
+  {
+    "rva": "0x7b0a7",
+    "instruction": "lea rcx, [rip + 0x1124542]",
+    "string_rva": "0x119f5f0",
+    "string": "Create Streamline Frame Generation SwapChain failed 0x%08x",
+    "function_rva": "0x7af60"
+  },
+  {
+    "rva": "0x7b16f",
+    "instruction": "lea rcx, [rip + 0x11244f2]",
+    "string_rva": "0x119f668",
+    "string": "Create Streamline Frame Generation SwapChain For Hwnd",
+    "function_rva": "0x7b0e0"
+  },
+  {
+    "rva": "0x7b21f",
+    "instruction": "lea rcx, [rip + 0x11244c2]",
+    "string_rva": "0x119f6e8",
+    "string": "Create Streamline Frame Generation SwapChain For Hwnd success",
+    "function_rva": "0x7b0e0"
+  },
+  {
+    "rva": "0x7b250",
+    "instruction": "lea rcx, [rip + 0x1124449]",
+    "string_rva": "0x119f6a0",
+    "string": "Create Streamline Frame Generation SwapChain For Hwnd failed 0x%08x",
+    "function_rva": "0x7b0e0"
+  },
+  {
+    "rva": "0x7c826",
+    "instruction": "lea rcx, [rip + 0x11232f3]",
+    "string_rva": "0x119fb20",
+    "string": "FrameGenMethod_Streamline_DX12 is already initialised.",
+    "function_rva": "0x7c7e0"
+  },
+  {
+    "rva": "0x7d5e5",
+    "instruction": "lea rcx, [rip + 0x1122854]",
+    "string_rva": "0x119fe40",
+    "string": "FrameGenMethod_Streamline_DX12: restored native D3D12 device from SL proxy (lost=%d)",
+    "function_rva": "0x7d408"
+  },
+  {
+    "rva": "0x7d617",
+    "instruction": "lea rcx, [rip + 0x112287a]",
+    "string_rva": "0x119fe98",
+    "string": "FrameGenMethod_Streamline_DX12: slShutdown result=%d lost=%d",
+    "function_rva": "0x7d602"
+  },
+  {
+    "rva": "0x82aea",
+    "instruction": "lea rcx, [rip + 0x111dee7]",
+    "string_rva": "0x11a09d8",
+    "string": "Creating FrameGenMethod_XeFG_DX12",
+    "function_rva": "0x82990"
+  },
+  {
+    "rva": "0x82cd9",
+    "instruction": "lea rdx, [rip + 0x111dd60]",
+    "string_rva": "0x11a0a40",
+    "string": "xefgSwapChainSetNumInterpolatedFrames",
+    "function_rva": "0x82b90"
+  },
+  {
+    "rva": "0x82fcb",
+    "instruction": "lea rcx, [rip + 0x111db76]",
+    "string_rva": "0x11a0b48",
+    "string": "FrameGenMethod FSR3 ffxFsr3ContextCreate Success!",
+    "function_rva": "0x82f30"
+  },
+  {
+    "rva": "0x83cba",
+    "instruction": "lea rcx, [rip + 0x111cfcf]",
+    "string_rva": "0x11a0c90",
+    "string": "Replacing XeSS FG SwapChain",
+    "function_rva": "0x83c90"
+  },
+  {
+    "rva": "0x83fea",
+    "instruction": "lea rcx, [rip + 0x111cd0f]",
+    "string_rva": "0x11a0d00",
+    "string": "Replace XeSS FG SwapChain success",
+    "function_rva": "0x83c90"
+  },
+  {
+    "rva": "0x8404a",
+    "instruction": "lea rcx, [rip + 0x111ccd7]",
+    "string_rva": "0x11a0d28",
+    "string": "Create XeSS Frame Geneartion SwapChain",
+    "function_rva": "0x84020"
+  },
+  {
+    "rva": "0x84202",
+    "instruction": "lea rcx, [rip + 0x111cb87]",
+    "string_rva": "0x11a0d90",
+    "string": "Create XeSS Frame Geneartion SwapChain success",
+    "function_rva": "0x84020"
+  },
+  {
+    "rva": "0x84285",
+    "instruction": "lea rcx, [rip + 0x111cb6c]",
+    "string_rva": "0x11a0df8",
+    "string": "Create XeSS Frame Geneartion SwapChain For Hwnd",
+    "function_rva": "0x84250"
+  },
+  {
+    "rva": "0x84415",
+    "instruction": "lea rcx, [rip + 0x111ca0c]",
+    "string_rva": "0x11a0e28",
+    "string": "Create XeSS Frame Geneartion SwapChain For Hwnd success",
+    "function_rva": "0x84250"
+  },
+  {
+    "rva": "0x9341d",
+    "instruction": "lea rdx, [rip + 0x110f84c]",
+    "string_rva": "0x11a2c70",
+    "string": "RENDERDOC_WrapD3D12SwapChain",
+    "function_rva": "0x93120"
+  },
+  {
+    "rva": "0x93492",
+    "instruction": "lea rdx, [rip + 0x110f85f]",
+    "string_rva": "0x11a2cf8",
+    "string": "RENDERDOC_WrapD3D11SwapChain",
+    "function_rva": "0x93120"
+  },
+  {
+    "rva": "0x93e61",
+    "instruction": "lea rcx, [rip + 0x110f188]",
+    "string_rva": "0x11a2ff0",
+    "string": "PDFrameWarp RenderDoc: WrapD3D12SwapChain failed %08x",
+    "function_rva": "0x93dd0"
+  },
+  {
+    "rva": "0x9c08f",
+    "instruction": "lea rcx, [rip + 0x1107d7a]",
+    "string_rva": "0x11a3e10",
+    "string": "DLSSNR: D3D12Interop is not ready (missing device or command queue).",
+    "function_rva": "0x9bef0"
+  },
+  {
+    "rva": "0x9c733",
+    "instruction": "lea rcx, [rip + 0x1107926]",
+    "string_rva": "0x11a4060",
+    "string": "DLSSNR: BeginCommandList failed (lost=%d device=%p queue=%p list=%p fence=%p), recreating SwapChain resources",
+    "function_rva": "0x9c510"
+  },
+  {
+    "rva": "0xae680",
+    "instruction": "lea rdx, [rip + 0x10f70e1]",
+    "string_rva": "0x11a5768",
+    "string": "xefgSwapChainD3D12CreateContext",
+    "function_rva": "0xae540"
+  },
+  {
+    "rva": "0xae696",
+    "instruction": "lea rdx, [rip + 0x10f23a3]",
+    "string_rva": "0x11a0a40",
+    "string": "xefgSwapChainSetNumInterpolatedFrames",
+    "function_rva": "0xae540"
+  },
+  {
+    "rva": "0xb1084",
+    "instruction": "lea rdx, [rip + 0x10f4855]",
+    "string_rva": "0x11a58e0",
+    "string": "IDXGIFactory2::CreateSwapChainForHwnd",
+    "function_rva": "0xb0880"
+  },
+  {
+    "rva": "0xb1294",
+    "instruction": "lea rdx, [rip + 0x10f4625]",
+    "string_rva": "0x11a58c0",
+    "string": "IDXGIFactory::CreateSwapChain",
+    "function_rva": "0xb0880"
+  },
+  {
+    "rva": "0xb7513",
+    "instruction": "lea rcx, [rip + 0x10ee696]",
+    "string_rva": "0x11a5bb0",
+    "string": "DLSS adapter: installed profile=%s provider=%ls output=%x batch=%x factory=%x-%x ownerSwapChain=%x",
+    "function_rva": "0xb6dc0"
+  },
+  {
+    "rva": "0xcc8db",
+    "instruction": "lea rcx, [rip + 0x10dacce]",
+    "string_rva": "0x11a75b0",
+    "string": "amd_fidelityfx_dx11.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc8f0",
+    "instruction": "lea rcx, [rip + 0x10dad09]",
+    "string_rva": "0x11a7600",
+    "string": ".amd_fidelityfx_dx11d.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc905",
+    "instruction": "lea rcx, [rip + 0x10dacd4]",
+    "string_rva": "0x11a75e0",
+    "string": "amd_fidelityfx_dx11.dll loaded.",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc911",
+    "instruction": "lea rcx, [rip + 0x10dad58]",
+    "string_rva": "0x11a7670",
+    "string": "amd_fidelityfx_dx12.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc926",
+    "instruction": "lea rcx, [rip + 0x10dad0b]",
+    "string_rva": "0x11a7638",
+    "string": "amd_fidelityfx_dx12d.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc93b",
+    "instruction": "lea rcx, [rip + 0x10dad9e]",
+    "string_rva": "0x11a76e0",
+    "string": "amd_fidelityfx_dx12.dll loaded.",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc947",
+    "instruction": "lea rcx, [rip + 0x10dad52]",
+    "string_rva": "0x11a76a0",
+    "string": "amd_fidelityfx_loader_dx12.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc95c",
+    "instruction": "lea rcx, [rip + 0x10dadcd]",
+    "string_rva": "0x11a7730",
+    "string": "amd_fidelityfx_loader_dx12d.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc971",
+    "instruction": "lea rcx, [rip + 0x10dad88]",
+    "string_rva": "0x11a7700",
+    "string": "amd_fidelityfx_loader_dx12.dll loaded.",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc97d",
+    "instruction": "lea rcx, [rip + 0x10dae1c]",
+    "string_rva": "0x11a77a0",
+    "string": "amd_fidelityfx_vk.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc992",
+    "instruction": "lea rcx, [rip + 0x10dadd7]",
+    "string_rva": "0x11a7770",
+    "string": "amd_fidelityfx_vkd.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc9a7",
+    "instruction": "lea rcx, [rip + 0x10dae32]",
+    "string_rva": "0x11a77e0",
+    "string": "amd_fidelityfx_vk.dll loaded.",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc9bf",
+    "instruction": "lea rdx, [rip + 0x10dae0a]",
+    "string_rva": "0x11a77d0",
+    "string": "ffxConfigure",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc9cf",
+    "instruction": "lea rdx, [rip + 0x10dae42]",
+    "string_rva": "0x11a7818",
+    "string": "ffxCreateContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc9e3",
+    "instruction": "lea rdx, [rip + 0x10dae16]",
+    "string_rva": "0x11a7800",
+    "string": "ffxDestroyContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcc9f7",
+    "instruction": "lea rdx, [rip + 0x10dae42]",
+    "string_rva": "0x11a7840",
+    "string": "ffxDispatch",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcca0b",
+    "instruction": "lea rdx, [rip + 0x10dae1e]",
+    "string_rva": "0x11a7830",
+    "string": "ffxQuery",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcca4d",
+    "instruction": "lea rdx, [rip + 0x10dad7c]",
+    "string_rva": "0x11a77d0",
+    "string": "ffxConfigure",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcca60",
+    "instruction": "lea rdx, [rip + 0x10dadb1]",
+    "string_rva": "0x11a7818",
+    "string": "ffxCreateContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcca74",
+    "instruction": "lea rdx, [rip + 0x10dad85]",
+    "string_rva": "0x11a7800",
+    "string": "ffxDestroyContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcca88",
+    "instruction": "lea rdx, [rip + 0x10dadb1]",
+    "string_rva": "0x11a7840",
+    "string": "ffxDispatch",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xcca9c",
+    "instruction": "lea rdx, [rip + 0x10dad8d]",
+    "string_rva": "0x11a7830",
+    "string": "ffxQuery",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccae1",
+    "instruction": "lea rdx, [rip + 0x10dace8]",
+    "string_rva": "0x11a77d0",
+    "string": "ffxConfigure",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccaf4",
+    "instruction": "lea rdx, [rip + 0x10dad1d]",
+    "string_rva": "0x11a7818",
+    "string": "ffxCreateContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccb08",
+    "instruction": "lea rdx, [rip + 0x10dacf1]",
+    "string_rva": "0x11a7800",
+    "string": "ffxDestroyContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccb1f",
+    "instruction": "lea rdx, [rip + 0x10dad1a]",
+    "string_rva": "0x11a7840",
+    "string": "ffxDispatch",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccb36",
+    "instruction": "lea rdx, [rip + 0x10dacf3]",
+    "string_rva": "0x11a7830",
+    "string": "ffxQuery",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccb7a",
+    "instruction": "lea rcx, [rip + 0x10dacef]",
+    "string_rva": "0x11a7870",
+    "string": "amd_fidelityfx_framegeneration_dx12.dll",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccb9c",
+    "instruction": "lea rdx, [rip + 0x10dac2d]",
+    "string_rva": "0x11a77d0",
+    "string": "ffxConfigure",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccbaf",
+    "instruction": "lea rdx, [rip + 0x10dac62]",
+    "string_rva": "0x11a7818",
+    "string": "ffxCreateContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccbc6",
+    "instruction": "lea rdx, [rip + 0x10dac33]",
+    "string_rva": "0x11a7800",
+    "string": "ffxDestroyContext",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccbdd",
+    "instruction": "lea rdx, [rip + 0x10dac5c]",
+    "string_rva": "0x11a7840",
+    "string": "ffxDispatch",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccbf4",
+    "instruction": "lea rdx, [rip + 0x10dac35]",
+    "string_rva": "0x11a7830",
+    "string": "ffxQuery",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xccc39",
+    "instruction": "lea rcx, [rip + 0x10dac10]",
+    "string_rva": "0x11a7850",
+    "string": "FFXAPIInterface Inited!",
+    "function_rva": "0xcc8c0"
+  },
+  {
+    "rva": "0xe438e",
+    "instruction": "lea rcx, [rip + 0x10c4203]",
+    "string_rva": "0x11a8598",
+    "string": "SwapChain is nullptr!",
+    "function_rva": "0xe42e0"
+  },
+  {
+    "rva": "0xe4432",
+    "instruction": "lea rcx, [rip + 0x10c4267]",
+    "string_rva": "0x11a86a0",
+    "string": "DXGISwapChainProxy mBackBuffer[%d]: Address: 0x%08x",
+    "function_rva": "0xe43ce"
+  },
+  {
+    "rva": "0xe44d4",
+    "instruction": "lea rcx, [rip + 0x10c4175]",
+    "string_rva": "0x11a8650",
+    "string": "DXGISwapChainProxy: Creating Fake HDR Buffer DXGI_FORMAT_R16G16B16A16_FLOAT",
+    "function_rva": "0xe43ce"
+  },
+  {
+    "rva": "0xe44e0",
+    "instruction": "lea rcx, [rip + 0x10c4169]",
+    "string_rva": "0x11a8650",
+    "string": "DXGISwapChainProxy: Creating Fake HDR Buffer DXGI_FORMAT_R16G16B16A16_FLOAT",
+    "function_rva": "0xe43ce"
+  },
+  {
+    "rva": "0xe4ae5",
+    "instruction": "lea rcx, [rip + 0x10c3c44]",
+    "string_rva": "0x11a8730",
+    "string": "DXGISwapChainProxy: cached hwnd=%p",
+    "function_rva": "0xe4aa0"
+  },
+  {
+    "rva": "0xe4e00",
+    "instruction": "lea rcx, [rip + 0x10c38d9]",
+    "string_rva": "0x11a86e0",
+    "string": "DXGISwapChainProxy: detached inner swapchain drained extra=%d finalLeftover=%u",
+    "function_rva": "0xe4dda"
+  },
+  {
+    "rva": "0xe4ed5",
+    "instruction": "lea rcx, [rip + 0x10c38cc]",
+    "string_rva": "0x11a87a8",
+    "string": "ReplaceInnerSwapChain GetBuffer[%d] failed 0x%08x",
+    "function_rva": "0xe4e5b"
+  },
+  {
+    "rva": "0xe4f66",
+    "instruction": "lea rcx, [rip + 0x10c37f3]",
+    "string_rva": "0x11a8760",
+    "string": "DXGISwapChainProxy: replaced inner swapchain %p %dx%d buffers=%d",
+    "function_rva": "0xe4f1b"
+  },
+  {
+    "rva": "0xe56e4",
+    "instruction": "lea rcx, [rip + 0x10c3135]",
+    "string_rva": "0x11a8820",
+    "string": "DXGISwapChainDX11Wrapper: cross-adapter Present on GPU2. Compare frame times with the monitor DP on GPU2 vs GPU1 (DWM blit).",
+    "function_rva": "0xe5650"
+  },
+  {
+    "rva": "0xe5dda",
+    "instruction": "lea rcx, [rip + 0x10c29ff]",
+    "string_rva": "0x11a87e0",
+    "string": "DXGISwapChainDX11Wrapper mRealBackBuffer[%d]: Address: 0x%08x",
+    "function_rva": "0xe5d76"
+  },
+  {
+    "rva": "0xe6299",
+    "instruction": "lea rcx, [rip + 0x10c2600]",
+    "string_rva": "0x11a88a0",
+    "string": "DXGISwapChainDX11Wrapper: failed to create isolated D3D11 backbuffer %d",
+    "function_rva": "0xe5fda"
+  },
+  {
+    "rva": "0xe631e",
+    "instruction": "lea rcx, [rip + 0x10c262b]",
+    "string_rva": "0x11a8950",
+    "string": "DXGISwapChainDX11Wrapper: game GetBuffer is isolated D3D11 SHARED (not opened on D3D12) fmt=%d bind=0x%x misc=0x%x %dx%d",
+    "function_rva": "0xe5fda"
+  },
+  {
+    "rva": "0xe668c",
+    "instruction": "lea rcx, [rip + 0x10c227d]",
+    "string_rva": "0x11a8910",
+    "string": "DXGISwapChainDX11Wrapper: released companion-shared backbuffers",
+    "function_rva": "0xe6350"
+  },
+  {
+    "rva": "0xe74ed",
+    "instruction": "lea rcx, [rip + 0x10c153c]",
+    "string_rva": "0x11a8a30",
+    "string": "DXGISwapChainProxy::Present failed hr=0x%08x DeviceRemovedReason=0x%08x lastPresentFence=%llu",
+    "function_rva": "0xe742b"
+  },
+  {
+    "rva": "0xe78ee",
+    "instruction": "lea rcx, [rip + 0x10c10db]",
+    "string_rva": "0x11a89d0",
+    "string": "DXGISwapChainProxy::ResizeBuffers: Creating Fake HDR Buffer DXGI_FORMAT_R16G16B16A16_FLOAT",
+    "function_rva": "0xe783d"
+  },
+  {
+    "rva": "0xe9e43",
+    "instruction": "lea rcx, [rip + 0x10bf2f6]",
+    "string_rva": "0x11a9140",
+    "string": "Creating FrameGenMethod_DX11WrapperForDX12",
+    "function_rva": "0xe9dc0"
+  },
+  {
+    "rva": "0xeb701",
+    "instruction": "lea rcx, [rip + 0x10bda68]",
+    "string_rva": "0x11a9170",
+    "string": "FrameGen transport: creation returned success without a swapchain (type=%d direct=%u)",
+    "function_rva": "0xeb430"
+  },
+  {
+    "rva": "0xeba22",
+    "instruction": "lea rcx, [rip + 0x10bd7f7]",
+    "string_rva": "0x11a9220",
+    "string": "FrameGen transport: output pools did not retire before backend switch",
+    "function_rva": "0xeb770"
+  },
+  {
+    "rva": "0xebc46",
+    "instruction": "lea rcx, [rip + 0x10bd58b]",
+    "string_rva": "0x11a91d8",
+    "string": "FrameGen transport switch %d -> %d failed=%08x rollback=%08x",
+    "function_rva": "0xeb770"
+  },
+  {
+    "rva": "0xebc71",
+    "instruction": "lea rcx, [rip + 0x10bd630]",
+    "string_rva": "0x11a92a8",
+    "string": "FrameGen transport switched %d -> %d",
+    "function_rva": "0xeb770"
+  },
+  {
+    "rva": "0xec91f",
+    "instruction": "lea rcx, [rip + 0x10bc942]",
+    "string_rva": "0x11a9268",
+    "string": "FrameGen transport: None uses managed D3D11 swapchain proxy=%p",
+    "function_rva": "0xec800"
+  },
+  {
+    "rva": "0xece77",
+    "instruction": "lea rcx, [rip + 0x10bc4c2]",
+    "string_rva": "0x11a9340",
+    "string": "TDR recover: ReplaceInnerSwapChain (naked) failed",
+    "function_rva": "0xecda3"
+  },
+  {
+    "rva": "0xece90",
+    "instruction": "lea rcx, [rip + 0x10bc551]",
+    "string_rva": "0x11a93e8",
+    "string": "TDR recover: naked DXGI swapchain attached",
+    "function_rva": "0xecda3"
+  },
+  {
+    "rva": "0xecea2",
+    "instruction": "lea rcx, [rip + 0x10bc4cf]",
+    "string_rva": "0x11a9378",
+    "string": "TDR recover: QueryInterface IDXGISwapChain4 failed 0x%08x",
+    "function_rva": "0xecda3"
+  },
+  {
+    "rva": "0xecedb",
+    "instruction": "lea rcx, [rip + 0x10bc3ee]",
+    "string_rva": "0x11a92d0",
+    "string": "TDR recover: CreateSwapChainForHwnd (naked) failed 0x%08x",
+    "function_rva": "0xeced9"
+  },
+  {
+    "rva": "0xed08b",
+    "instruction": "lea rcx, [rip + 0x10bc38e]",
+    "string_rva": "0x11a9420",
+    "string": "TDR recover: FG CreateSwapChainProxyForHwnd returned null hr=0x%08x",
+    "function_rva": "0xecf9b"
+  },
+  {
+    "rva": "0xed257",
+    "instruction": "lea rcx, [rip + 0x10bc282]",
+    "string_rva": "0x11a94e0",
+    "string": "TDR recover: failed to attach FG swapchain",
+    "function_rva": "0xed0ca"
+  },
+  {
+    "rva": "0xed6a2",
+    "instruction": "lea rcx, [rip + 0x10bc247]",
+    "string_rva": "0x11a98f0",
+    "string": "TDR recover: FG wrap failed, keeping naked swapchain",
+    "function_rva": "0xed620"
+  },
+  {
+    "rva": "0xee7bd",
+    "instruction": "lea rcx, [rip + 0x10bb304]",
+    "string_rva": "0x11a9ac8",
+    "string": "Creating FrameGenMethod_FSR3_FFXAPI Graphic API: VULKAN",
+    "function_rva": "0xee680"
+  },
+  {
+    "rva": "0xee7c6",
+    "instruction": "lea rcx, [rip + 0x10bb26b]",
+    "string_rva": "0x11a9a38",
+    "string": "Creating FrameGenMethod_FSR3_FFXAPI Graphic API: D3D12",
+    "function_rva": "0xee680"
+  },
+  {
+    "rva": "0xee7cf",
+    "instruction": "lea rcx, [rip + 0x10bb29a]",
+    "string_rva": "0x11a9a70",
+    "string": "Creating FrameGenMethod_FSR3_FFXAPI Graphic API: D3D11",
+    "function_rva": "0xee680"
+  },
+  {
+    "rva": "0xee7e5",
+    "instruction": "lea rcx, [rip + 0x10bb2bc]",
+    "string_rva": "0x11a9aa8",
+    "string": "Using FSR4 Frame Generation.",
+    "function_rva": "0xee680"
+  },
+  {
+    "rva": "0xeec29",
+    "instruction": "lea rcx, [rip + 0x10baf00]",
+    "string_rva": "0x11a9b30",
+    "string": "ffx::CreateContext for frame generation failed! ErrorCode: %d",
+    "function_rva": "0xee870"
+  },
+  {
+    "rva": "0xeed10",
+    "instruction": "lea rcx, [rip + 0x10bade9]",
+    "string_rva": "0x11a9b00",
+    "string": "Couldn't set the ffxapi framegen config: %d",
+    "function_rva": "0xee870"
+  },
+  {
+    "rva": "0xeed20",
+    "instruction": "lea rcx, [rip + 0x10b1e21]",
+    "string_rva": "0x11a0b48",
+    "string": "FrameGenMethod FSR3 ffxFsr3ContextCreate Success!",
+    "function_rva": "0xee870"
+  },
+  {
+    "rva": "0xeef74",
+    "instruction": "lea rcx, [rip + 0x10bac45]",
+    "string_rva": "0x11a9bc0",
+    "string": "FSR3 FG Feature gets released!",
+    "function_rva": "0xeef20"
+  },
+  {
+    "rva": "0xef734",
+    "instruction": "lea rcx, [rip + 0x10ba3c5]",
+    "string_rva": "0x11a9b00",
+    "string": "Couldn't set the ffxapi framegen config: %d",
+    "function_rva": "0xef732"
+  },
+  {
+    "rva": "0xef847",
+    "instruction": "lea rcx, [rip + 0x10ba3c2]",
+    "string_rva": "0x11a9c10",
+    "string": "Couldn't set the ffxapi swapchain config: %d",
+    "function_rva": "0xef845"
+  },
+  {
+    "rva": "0xef994",
+    "instruction": "lea rcx, [rip + 0x10ba245]",
+    "string_rva": "0x11a9be0",
+    "string": "Replace FSR3 Frame Interpolation Swapchain",
+    "function_rva": "0xef950"
+  },
+  {
+    "rva": "0xefa2d",
+    "instruction": "lea rcx, [rip + 0x10ba244]",
+    "string_rva": "0x11a9c78",
+    "string": "Couldn't create the ffxapi fg swapchain (dx12): %d",
+    "function_rva": "0xef950"
+  },
+  {
+    "rva": "0xefa93",
+    "instruction": "lea rcx, [rip + 0x10ba1a6]",
+    "string_rva": "0x11a9c40",
+    "string": "Replace FSR3 Frame Interpolation Swapchain success",
+    "function_rva": "0xef950"
+  },
+  {
+    "rva": "0xefb22",
+    "instruction": "lea rcx, [rip + 0x10ba1bf]",
+    "string_rva": "0x11a9ce8",
+    "string": "Create FSR3 Frame Interpolation SwapChain",
+    "function_rva": "0xefad0"
+  },
+  {
+    "rva": "0xefbe7",
+    "instruction": "lea rcx, [rip + 0x10ba0c2]",
+    "string_rva": "0x11a9cb0",
+    "string": "Couldn't create the FFXAPI FG SwapChain (dx12): %d",
+    "function_rva": "0xefad0"
+  },
+  {
+    "rva": "0xefc44",
+    "instruction": "lea rcx, [rip + 0x10ba0fd]",
+    "string_rva": "0x11a9d48",
+    "string": "Create FSR3 Frame Interpolation SwapChain success",
+    "function_rva": "0xefad0"
+  },
+  {
+    "rva": "0xefce6",
+    "instruction": "lea rcx, [rip + 0x10b9ffb]",
+    "string_rva": "0x11a9ce8",
+    "string": "Create FSR3 Frame Interpolation SwapChain",
+    "function_rva": "0xefc80"
+  },
+  {
+    "rva": "0xefe1a",
+    "instruction": "lea rcx, [rip + 0x10b9e8f]",
+    "string_rva": "0x11a9cb0",
+    "string": "Couldn't create the FFXAPI FG SwapChain (dx12): %d",
+    "function_rva": "0xefc80"
+  },
+  {
+    "rva": "0xefead",
+    "instruction": "lea rcx, [rip + 0x10b9e94]",
+    "string_rva": "0x11a9d48",
+    "string": "Create FSR3 Frame Interpolation SwapChain success",
+    "function_rva": "0xefc80"
+  },
+  {
+    "rva": "0xeff27",
+    "instruction": "lea rcx, [rip + 0x10b9dea]",
+    "string_rva": "0x11a9d18",
+    "string": "Couldn't set the FFXAPI FrameGen config: %d",
+    "function_rva": "0xefc80"
+  },
+  {
+    "rva": "0xeff9b",
+    "instruction": "lea rcx, [rip + 0x10b9dee]",
+    "string_rva": "0x11a9d90",
+    "string": "FrameGenMethod_FSR3_FFXAPI Couldn't get the vulkan frame interpolation queue",
+    "function_rva": "0xeff60"
+  },
+  {
+    "rva": "0xf0092",
+    "instruction": "lea rdx, [rip + 0x10b9d47]",
+    "string_rva": "0x11a9de0",
+    "string": "vkCreateSwapchainKHR",
+    "function_rva": "0xeffc0"
+  },
+  {
+    "rva": "0xf00cc",
+    "instruction": "lea rcx, [rip + 0x10b9d85]",
+    "string_rva": "0x11a9e58",
+    "string": "[vulkan] vkCreateSwapchainKHRProxy Error: VkResult = {}",
+    "function_rva": "0xeffc0"
+  },
+  {
+    "rva": "0xf01f9",
+    "instruction": "lea rcx, [rip + 0x10b9c10]",
+    "string_rva": "0x11a9e10",
+    "string": "ffx::CreateContext for Frame Generation SwapChain failed! ErrorCode: %d",
+    "function_rva": "0xeffc0"
+  },
+  {
+    "rva": "0xf03c3",
+    "instruction": "lea rcx, [rip + 0x10b994e]",
+    "string_rva": "0x11a9d18",
+    "string": "Couldn't set the FFXAPI FrameGen config: %d",
+    "function_rva": "0xf0320"
+  },
+  {
+    "rva": "0xf03d9",
+    "instruction": "lea rcx, [rip + 0x10b9ae8]",
+    "string_rva": "0x11a9ec8",
+    "string": "FrameGenMethod_FSR3_FFXAPI is not initialized!",
+    "function_rva": "0xf0320"
+  },
+  {
+    "rva": "0xf0720",
+    "instruction": "lea rcx, [rip + 0x10b9769]",
+    "string_rva": "0x11a9e90",
+    "string": "FSR menu presentation configuration failed result=%d",
+    "function_rva": "0xf0626"
+  },
+  {
+    "rva": "0xf079b",
+    "instruction": "lea rcx, [rip + 0x10b9756]",
+    "string_rva": "0x11a9ef8",
+    "string": "FSR menu UI clear failed result=%d",
+    "function_rva": "0xf0799"
+  },
+  {
+    "rva": "0xf3ed2",
+    "instruction": "lea rcx, [rip + 0x10b714f]",
+    "string_rva": "0x11ab028",
+    "string": "ffx_backend_dx12_x64.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3eec",
+    "instruction": "lea rcx, [rip + 0x10b716d]",
+    "string_rva": "0x11ab060",
+    "string": "ffx_backend_dx12_x64d.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f01",
+    "instruction": "lea rcx, [rip + 0x10b70c8]",
+    "string_rva": "0x11aafd0",
+    "string": "Loaded ffx_backend_dx12_x64.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f0d",
+    "instruction": "lea rcx, [rip + 0x10b70dc]",
+    "string_rva": "0x11aaff0",
+    "string": "lffx_backend_dx11_x64.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f22",
+    "instruction": "lea rcx, [rip + 0x10b71bf]",
+    "string_rva": "0x11ab0e8",
+    "string": "ffx_backend_dx11_x64d.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f37",
+    "instruction": "lea rcx, [rip + 0x10b71e2]",
+    "string_rva": "0x11ab120",
+    "string": "Loaded ffx_backend_dx11_x64.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f43",
+    "instruction": "lea rcx, [rip + 0x10b714e]",
+    "string_rva": "0x11ab098",
+    "string": "ffx_fsr3_x64.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f58",
+    "instruction": "lea rcx, [rip + 0x10b7161]",
+    "string_rva": "0x11ab0c0",
+    "string": "ffx_fsr3_x64d.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f6d",
+    "instruction": "lea rcx, [rip + 0x10b71fc]",
+    "string_rva": "0x11ab170",
+    "string": "Loaded ffx_fsr3_x64.dll",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f87",
+    "instruction": "lea rdx, [rip + 0x10b71fa]",
+    "string_rva": "0x11ab188",
+    "string": "ffxGetScratchMemorySizeDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3f97",
+    "instruction": "lea rdx, [rip + 0x10b71ea]",
+    "string_rva": "0x11ab188",
+    "string": "ffxGetScratchMemorySizeDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3faa",
+    "instruction": "lea rdx, [rip + 0x10b718f]",
+    "string_rva": "0x11ab140",
+    "string": "ffxGetDeviceDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3fbd",
+    "instruction": "lea rdx, [rip + 0x10b7194]",
+    "string_rva": "0x11ab158",
+    "string": "ffxGetInterfaceDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3fd1",
+    "instruction": "lea rdx, [rip + 0x10b7208]",
+    "string_rva": "0x11ab1e0",
+    "string": "ffxGetCommandListDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3fe5",
+    "instruction": "lea rdx, [rip + 0x10b720c]",
+    "string_rva": "0x11ab1f8",
+    "string": "ffxGetResourceDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf3ff9",
+    "instruction": "lea rdx, [rip + 0x10b71a8]",
+    "string_rva": "0x11ab1a8",
+    "string": "ffxGetSurfaceFormatDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf400d",
+    "instruction": "lea rdx, [rip + 0x10b71ac]",
+    "string_rva": "0x11ab1c0",
+    "string": "ffxGetResourceDescriptionDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf402a",
+    "instruction": "lea rdx, [rip + 0x10b720f]",
+    "string_rva": "0x11ab240",
+    "string": "GetFfxResourceDescriptionDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf403e",
+    "instruction": "lea rdx, [rip + 0x10b721b]",
+    "string_rva": "0x11ab260",
+    "string": "ffxGetCommandQueueDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf404e",
+    "instruction": "lea rdx, [rip + 0x10b71bb]",
+    "string_rva": "0x11ab210",
+    "string": "ffxGetSwapchainDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4062",
+    "instruction": "lea rdx, [rip + 0x10b71bf]",
+    "string_rva": "0x11ab228",
+    "string": "ffxGetDX12SwapchainPtr",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4076",
+    "instruction": "lea rdx, [rip + 0x10b7243]",
+    "string_rva": "0x11ab2c0",
+    "string": "ffxReplaceSwapchainForFrameinterpolationDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf408a",
+    "instruction": "lea rdx, [rip + 0x10b725f]",
+    "string_rva": "0x11ab2f0",
+    "string": "ffxCreateFrameinterpolationSwapchainDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf409e",
+    "instruction": "lea rdx, [rip + 0x10b71d3]",
+    "string_rva": "0x11ab278",
+    "string": "ffxCreateFrameinterpolationSwapchainForHwndDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf40b2",
+    "instruction": "lea rdx, [rip + 0x10b71ef]",
+    "string_rva": "0x11ab2a8",
+    "string": "ffxWaitForPresents",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf40c6",
+    "instruction": "lea rdx, [rip + 0x10b72ab]",
+    "string_rva": "0x11ab378",
+    "string": "ffxRegisterFrameinterpolationUiResourceDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf40da",
+    "instruction": "lea rdx, [rip + 0x10b72c7]",
+    "string_rva": "0x11ab3a8",
+    "string": "ffxGetFrameinterpolationCommandlistDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf40ee",
+    "instruction": "lea rdx, [rip + 0x10b722b]",
+    "string_rva": "0x11ab320",
+    "string": "ffxGetFrameinterpolationTextureDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4102",
+    "instruction": "lea rdx, [rip + 0x10b723f]",
+    "string_rva": "0x11ab348",
+    "string": "ffxSetFrameGenerationConfigToSwapchainDX12",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf413d",
+    "instruction": "lea rdx, [rip + 0x10b72bc]",
+    "string_rva": "0x11ab400",
+    "string": "ffxGetScratchMemorySizeDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf414d",
+    "instruction": "lea rdx, [rip + 0x10b72cc]",
+    "string_rva": "0x11ab420",
+    "string": "ffxGetDeviceDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4164",
+    "instruction": "lea rdx, [rip + 0x10b7265]",
+    "string_rva": "0x11ab3d0",
+    "string": "ffxGetInterfaceDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf417b",
+    "instruction": "lea rdx, [rip + 0x10b7266]",
+    "string_rva": "0x11ab3e8",
+    "string": "ffxGetCommandListDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4192",
+    "instruction": "lea rdx, [rip + 0x10b72df]",
+    "string_rva": "0x11ab478",
+    "string": "ffxGetResourceDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf41a9",
+    "instruction": "lea rdx, [rip + 0x10b72e0]",
+    "string_rva": "0x11ab490",
+    "string": "ffxGetSurfaceFormatDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf41c0",
+    "instruction": "lea rdx, [rip + 0x10b7271]",
+    "string_rva": "0x11ab438",
+    "string": "ffxGetResourceDescriptionDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf41e3",
+    "instruction": "lea rdx, [rip + 0x10b726e]",
+    "string_rva": "0x11ab458",
+    "string": "GetFfxResourceDescriptionDX11",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf420e",
+    "instruction": "lea rdx, [rip + 0x10b72d3]",
+    "string_rva": "0x11ab4e8",
+    "string": "ffxFsr3ContextCreate",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf421e",
+    "instruction": "lea rdx, [rip + 0x10b72db]",
+    "string_rva": "0x11ab500",
+    "string": "ffxFsr3ContextDestroy",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4235",
+    "instruction": "lea rdx, [rip + 0x10b726c]",
+    "string_rva": "0x11ab4a8",
+    "string": "ffxFsr3ContextDispatchUpscale",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf424c",
+    "instruction": "lea rdx, [rip + 0x10b7275]",
+    "string_rva": "0x11ab4c8",
+    "string": "ffxFsr3ConfigureFrameGeneration",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4263",
+    "instruction": "lea rdx, [rip + 0x10b72f6]",
+    "string_rva": "0x11ab560",
+    "string": "ffxFsr3DispatchFrameGeneration",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf427a",
+    "instruction": "lea rdx, [rip + 0x10b72ff]",
+    "string_rva": "0x11ab580",
+    "string": "ffxFsr3ContextGenerateReactiveMask",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf4291",
+    "instruction": "lea rdx, [rip + 0x10b7280]",
+    "string_rva": "0x11ab518",
+    "string": "ffxFsr3ContextDispatchFrameGenerationPrepare",
+    "function_rva": "0xf3ecd"
+  },
+  {
+    "rva": "0xf42db",
+    "instruction": "lea rcx, [rip + 0x10b7266]",
+    "string_rva": "0x11ab548",
+    "string": "FSR3Interface Inited!",
+    "function_rva": "0xf42c7"
+  },
+  {
+    "rva": "0xf4643",
+    "instruction": "lea rcx, [rip + 0x10b6fd6]",
+    "string_rva": "0x11ab620",
+    "string": "FrameGen: failed to create companion D3D12 device.",
+    "function_rva": "0xf45f0"
+  },
+  {
+    "rva": "0xf4a68",
+    "instruction": "lea rcx, [rip + 0x10b6c01]",
+    "string_rva": "0x11ab670",
+    "string": "DLSSNR: failed to create D3D12 interop queue.",
+    "function_rva": "0xf4960"
+  },
+  {
+    "rva": "0xfb508",
+    "instruction": "lea rax, [rip + 0x10b0861]",
+    "string_rva": "0x11abd70",
+    "string": "FSR 4 Upscaling",
+    "function_rva": null
+  },
+  {
+    "rva": "0xfb513",
+    "instruction": "lea rax, [rip + 0x10b083e]",
+    "string_rva": "0x11abd58",
+    "string": "FSR 3.1 Upscaling",
+    "function_rva": null
+  },
+  {
+    "rva": "0xfe13f",
+    "instruction": "lea rcx, [rip + 0x10addea]",
+    "string_rva": "0x11abf30",
+    "string": "Creating UpscaleMethod_FSR3_DX11",
+    "function_rva": "0xfddb0"
+  },
+  {
+    "rva": "0xfe393",
+    "instruction": "lea rcx, [rip + 0x10adb2e]",
+    "string_rva": "0x11abec8",
+    "string": "ffxGetInterface for DX11 failed! ErrorCode: 0x%08x",
+    "function_rva": "0xfe2e0"
+  },
+  {
+    "rva": "0xfe419",
+    "instruction": "lea rcx, [rip + 0x10adae0]",
+    "string_rva": "0x11abf00",
+    "string": "ffxFsr3ContextCreate failed! ErrorCode: 0x%08x",
+    "function_rva": "0xfe2e0"
+  },
+  {
+    "rva": "0xfe55d",
+    "instruction": "lea rcx, [rip + 0x10ada24]",
+    "string_rva": "0x11abf88",
+    "string": "ffxFsr3ContextCreate success!",
+    "function_rva": "0xfe2e0"
+  },
+  {
+    "rva": "0xfe5c1",
+    "instruction": "lea rcx, [rip + 0x10ad9e0]",
+    "string_rva": "0x11abfa8",
+    "string": "FSR Feature id=%d gets released!",
+    "function_rva": "0xfe5b0"
+  },
+  {
+    "rva": "0xfe609",
+    "instruction": "lea rcx, [rip + 0x10ad948]",
+    "string_rva": "0x11abf58",
+    "string": "ffxFsr3ContextDestroy Failed! ErrorCode: 0x%08x",
+    "function_rva": "0xfe5ed"
+  },
+  {
+    "rva": "0xfee4b",
+    "instruction": "lea r9, [rip + 0x10ad17e]",
+    "string_rva": "0x11abfd0",
+    "string": "FSR3_Input_Color",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0xfef08",
+    "instruction": "lea r9, [rip + 0x10ad0e9]",
+    "string_rva": "0x11abff8",
+    "string": "FSR3_InputDepth",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0xfefc8",
+    "instruction": "lea r9, [rip + 0x10ad0a1]",
+    "string_rva": "0x11ac070",
+    "string": "FSR3_InputMotionVectors",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0xff082",
+    "instruction": "lea r9, [rip + 0x10ad017]",
+    "string_rva": "0x11ac0a0",
+    "string": "FSR3_InputExposure",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0xff144",
+    "instruction": "lea r9, [rip + 0x10acecd]",
+    "string_rva": "0x11ac018",
+    "string": "FSR3_InputReactiveMap",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0xff20c",
+    "instruction": "lea r9, [rip + 0x10ace35]",
+    "string_rva": "0x11ac048",
+    "string": "FSR3_Output_Color",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0xff2c9",
+    "instruction": "lea r9, [rip + 0x10ace00]",
+    "string_rva": "0x11ac0d0",
+    "string": "FSR3_TransparencyAndCompositionMap",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0xff47d",
+    "instruction": "lea rcx, [rip + 0x10acc94]",
+    "string_rva": "0x11ac118",
+    "string": "ffxFsr3ContextDispatchUpscale Failed! ErrorCode: 0x%08x",
+    "function_rva": "0xfedc0"
+  },
+  {
+    "rva": "0x1004c7",
+    "instruction": "lea rcx, [rip + 0x10abd9a]",
+    "string_rva": "0x11ac268",
+    "string": "Creating UpscaleMethod_FSR3_FFXAPI Graphic API: VULKAN",
+    "function_rva": "0x1003e0"
+  },
+  {
+    "rva": "0x1004d0",
+    "instruction": "lea rcx, [rip + 0x10abd59]",
+    "string_rva": "0x11ac230",
+    "string": "Creating UpscaleMethod_FSR3_FFXAPI Graphic API: D3D12",
+    "function_rva": "0x1003e0"
+  },
+  {
+    "rva": "0x1004d9",
+    "instruction": "lea rcx, [rip + 0x10abcc8]",
+    "string_rva": "0x11ac1a8",
+    "string": "Creating UpscaleMethod_FSR3_FFXAPI Graphic API: D3D11",
+    "function_rva": "0x1003e0"
+  },
+  {
+    "rva": "0x1004ef",
+    "instruction": "lea rcx, [rip + 0x10abcea]",
+    "string_rva": "0x11ac1e0",
+    "string": "Using FSR4 Upscaling.",
+    "function_rva": "0x1003e0"
+  },
+  {
+    "rva": "0x1007b0",
+    "instruction": "lea rcx, [rip + 0x10aba41]",
+    "string_rva": "0x11ac1f8",
+    "string": "ffx::CreateContext for upscaling failed! ErrorCode: %d",
+    "function_rva": "0x100620"
+  },
+  {
+    "rva": "0x1008cc",
+    "instruction": "lea rcx, [rip + 0x10ab9cd]",
+    "string_rva": "0x11ac2a0",
+    "string": "ffx::CreateContext Success!",
+    "function_rva": "0x100620"
+  },
+  {
+    "rva": "0x100934",
+    "instruction": "lea rcx, [rip + 0x10ab66d]",
+    "string_rva": "0x11abfa8",
+    "string": "FSR Feature id=%d gets released!",
+    "function_rva": "0x100900"
+  },
+  {
+    "rva": "0x100e8d",
+    "instruction": "lea rcx, [rip + 0x10ab42c]",
+    "string_rva": "0x11ac2c0",
+    "string": "ffxFsr3ContextDispatchUpscale Failed! ErrorCode: %d",
+    "function_rva": "0x100b70"
+  }
+]

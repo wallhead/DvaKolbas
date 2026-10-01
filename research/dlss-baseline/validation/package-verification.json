@@ -1,0 +1,16 @@
+[
+  {
+    "edition": "standard",
+    "zip": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\packages\\TRP-0.3.5-standard-246d152c-dlss310.8-streamline2.13.zip",
+    "sha256": "769f1ee2f22f6875e73a14dc98941abdc8da7c76651b0df24784f2b90fb4181c",
+    "verifiedManifestFiles": 17,
+    "result": "PASS: staged files and all ZIP entry hashes"
+  },
+  {
+    "edition": "universal",
+    "zip": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\packages\\TRP-0.3.5-universal-246d152c-dlss310.8-streamline2.13.zip",
+    "sha256": "8a77b36fd8b631e076f7508cd3123f618870e17edf342058bfd74ccf72fd632f",
+    "verifiedManifestFiles": 17,
+    "result": "PASS: staged files and all ZIP entry hashes"
+  }
+]

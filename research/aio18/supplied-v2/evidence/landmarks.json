@@ -1,0 +1,402 @@
+[
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x294FBD",
+    "label": "Host SR delay-import call",
+    "instruction": "00294FBD: call      QWORD PTR [rip+0x1ddc5d]        # 0x180472c20 ; PDPerfPlugin.dll!EvaluateUpscaler",
+    "bytes": "ff155ddc1d00"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2948E0",
+    "label": "Host FG delay-import call",
+    "instruction": "002948E0: call      QWORD PTR [rip+0x1de372]        # 0x180472c58 ; PDPerfPlugin.dll!EvaluateFrameGeneration",
+    "bytes": "ff1572e31d00"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AA8A0",
+    "label": "BeforePresent function",
+    "instruction": "002AA8A0: mov       rax,rsp",
+    "bytes": "488bc4"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AAE18",
+    "label": "BeforePresent SR call",
+    "instruction": "002AAE18: call      0x1802949c0 ; '@UVATAVH'",
+    "bytes": "e8a39bfeff"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2AB349",
+    "label": "BeforePresent FG branch call",
+    "instruction": "002AB349: call      0x1802941a0",
+    "bytes": "e8528efeff"
+  },
+  {
+    "module": "SkyrimUpscaler.dll",
+    "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "rva": "0x2ABD02",
+    "label": "BeforePresent second FG branch call",
+    "instruction": "002ABD02: call      0x1802941a0",
+    "bytes": "e89984feff"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF8D20",
+    "label": "EvaluateUpscaler export",
+    "instruction": "000F8D20: sub       rsp,0xd8",
+    "bytes": "4881ecd8000000"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF8DB0",
+    "label": "EvaluateFrameGeneration export",
+    "instruction": "000F8DB0: sub       rsp,0xd8",
+    "bytes": "4881ecd8000000"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF5170",
+    "label": "D3D11 SR method factory",
+    "instruction": "000F5170: mov       QWORD PTR [rsp+0x10],rbx",
+    "bytes": "48895c2410"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF520",
+    "label": "DX11 FSR3 evaluator",
+    "instruction": "000FF520: mov       rax,rsp",
+    "bytes": "488bc4"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xFF475",
+    "label": "DX11 SDK dispatch call",
+    "instruction": "000FF475: call      rbx",
+    "bytes": "ffd3"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xCF080",
+    "label": "DX11-to-DX12 SR wrapper constructor",
+    "instruction": "000CF080: mov       QWORD PTR [rsp+0x10],rbx",
+    "bytes": "48895c2410"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xD0CB0",
+    "label": "DX11-to-DX12 SR evaluator",
+    "instruction": "000D0CB0: mov       QWORD PTR [rsp+0x18],rbx",
+    "bytes": "48895c2418"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xCFB5D",
+    "label": "Create FFX SR child",
+    "instruction": "000CFB5D: call      0x1801003e0",
+    "bytes": "e87e080300"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0x100E84",
+    "label": "FFX SR Dispatch call",
+    "instruction": "00100E84: call      r8",
+    "bytes": "41ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEA650",
+    "label": "DX11-to-DX12 FG evaluator",
+    "instruction": "000EA650: mov       QWORD PTR [rsp+0x18],rbx",
+    "bytes": "48895c2418"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEAAAF",
+    "label": "D3D11 context Wait call",
+    "instruction": "000EAAAF: call      QWORD PTR [rax+0x4a0]",
+    "bytes": "ff90a0040000"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEABBB",
+    "label": "D3D11 context Signal call",
+    "instruction": "000EABBB: call      QWORD PTR [rax+0x498]",
+    "bytes": "ff9098040000"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEABC7",
+    "label": "D3D11 context Flush call",
+    "instruction": "000EABC7: call      QWORD PTR [rax+0x378]",
+    "bytes": "ff9078030000"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEAD90",
+    "label": "FG companion submission helper",
+    "instruction": "000EAD90: mov       QWORD PTR [rsp+0x8],rbx",
+    "bytes": "48895c2408"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE680",
+    "label": "FFX FG constructor",
+    "instruction": "000EE680: mov       QWORD PTR [rsp+0x18],rbx",
+    "bytes": "48895c2418"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEE870",
+    "label": "FFX FG context initialization",
+    "instruction": "000EE870: mov       QWORD PTR [rsp+0x10],rbx",
+    "bytes": "48895c2410"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEEC1C",
+    "label": "FFX FG CreateContext call",
+    "instruction": "000EEC1C: call      r9",
+    "bytes": "41ffd1"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEED07",
+    "label": "Initial FG Configure call",
+    "instruction": "000EED07: call      r8",
+    "bytes": "41ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF230",
+    "label": "FFX FG per-frame evaluator",
+    "instruction": "000EF230: rex       push rbp",
+    "bytes": "4055"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF581",
+    "label": "PrepareV2 Dispatch",
+    "instruction": "000EF581: call      r8",
+    "bytes": "41ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF719",
+    "label": "Per-frame FG Configure",
+    "instruction": "000EF719: call      r8",
+    "bytes": "41ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF834",
+    "label": "UI register Configure",
+    "instruction": "000EF834: call      r8",
+    "bytes": "41ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF880",
+    "label": "AMD FG callback target",
+    "instruction": "000EF880: mov       QWORD PTR [rsp+0x18],rbx",
+    "bytes": "48895c2418"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF8C6",
+    "label": "Callback actual FG Dispatch",
+    "instruction": "000EF8C6: call      rax",
+    "bytes": "ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xF0B60",
+    "label": "pNext-clearing helper",
+    "instruction": "000F0B60: mov       QWORD PTR [rcx+0x8],0x0",
+    "bytes": "48c7410800000000"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEEF20",
+    "label": "FG release method",
+    "instruction": "000EEF20: rex       push rdi",
+    "bytes": "4057"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF011",
+    "label": "Release disable Configure",
+    "instruction": "000EF011: call      r8",
+    "bytes": "41ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF0BD",
+    "label": "Release clear UI Configure",
+    "instruction": "000EF0BD: call      r8",
+    "bytes": "41ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF0F6",
+    "label": "Release destroy FG context",
+    "instruction": "000EF0F6: call      rax",
+    "bytes": "ffd0"
+  },
+  {
+    "module": "PDPerfPlugin.dll",
+    "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "rva": "0xEF126",
+    "label": "Release destroy swapchain context",
+    "instruction": "000EF126: call      rax",
+    "bytes": "ffd0"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBAB0",
+    "label": "AMD swapchain Present",
+    "instruction": "0000BAB0: mov       QWORD PTR [rsp+0x20],rbx",
+    "bytes": "48895c2420"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0x98E0",
+    "label": "AMD presentInterpolated",
+    "instruction": "000098E0: mov       QWORD PTR [rsp+0x18],rbx",
+    "bytes": "48895c2418"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0x94A0",
+    "label": "AMD dispatchInterpolationCommands",
+    "instruction": "000094A0: mov       rax,rsp",
+    "bytes": "488bc4"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0x97F1",
+    "label": "AMD registered FG callback call",
+    "instruction": "000097F1: call      rax",
+    "bytes": "ffd0"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF4050",
+    "label": "Classical FSR3 provider Dispatch",
+    "instruction": "000F4050: mov       QWORD PTR [rsp+0x8],rbx",
+    "bytes": "48895c2408"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF0BD0",
+    "label": "ML provider Dispatch",
+    "instruction": "000F0BD0: mov       QWORD PTR [rsp+0x8],rbx",
+    "bytes": "48895c2408"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF457A",
+    "label": "Classical prepare call",
+    "instruction": "000F457A: call      0x1800f8c40 ; ffxFrameInterpolationPrepare",
+    "bytes": "e8c1460000"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF4750",
+    "label": "Optical flow dispatch call",
+    "instruction": "000F4750: call      0x1800fc940 ; dispatch",
+    "bytes": "e8eb810000"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xF4ACC",
+    "label": "Frame interpolation dispatch call",
+    "instruction": "000F4ACC: call      0x1800f8ec0 ; ffxFrameInterpolationDispatch",
+    "bytes": "e8ef430000"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xECA90",
+    "label": "ML provider support check",
+    "instruction": "000ECA90: rex       push rbx",
+    "bytes": "4053"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xBEC0",
+    "label": "AMD ResizeBuffers",
+    "instruction": "0000BEC0: mov       QWORD PTR [rsp+0x8],rbx",
+    "bytes": "48895c2408"
+  },
+  {
+    "module": "amd_fidelityfx_framegeneration_dx12.dll",
+    "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+    "rva": "0xAAF0",
+    "label": "AMD waitForPresents",
+    "instruction": "0000AAF0: rex       push rbx",
+    "bytes": "4053"
+  },
+  {
+    "module": "ffx_fsr3_x64.dll",
+    "sha256": "2734c4ffa563f675df9ccb33c6cd6af60ca014e0c7d3eea284816befa83bd12a",
+    "rva": "0x31FF",
+    "label": "DX11 wrapper dispatches to upscaler DLL",
+    "instruction": "000031FF: call      0x180003eba",
+    "bytes": "e8b60c0000"
+  },
+  {
+    "module": "ffx_fsr3_x64.dll",
+    "sha256": "2734c4ffa563f675df9ccb33c6cd6af60ca014e0c7d3eea284816befa83bd12a",
+    "rva": "0x3EBA",
+    "label": "DX11 upscaler import thunk",
+    "instruction": "00003EBA: jmp       QWORD PTR [rip+0x22f8]        # 0x1800061b8 ; ffx_fsr3upscaler_x64.dll!ffxFsr3UpscalerContextDispatch",
+    "bytes": "ff25f8220000"
+  }
+]

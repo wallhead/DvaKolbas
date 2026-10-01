@@ -20,3 +20,10 @@ CMakeLists.txt text eol=lf
 *.png binary
 .gitignore text eol=lf
 *.ini text eol=lf
+
+# Preserve archived research evidence exactly for its recorded hashes.
+research/aio18/supplied-v2/** -text -whitespace
+research/aio18/local-analysis/** -text -whitespace
+research/aio18/local-tools/** -text -whitespace
+research/dlss-baseline/** -text -whitespace
+research/references/** -text -whitespace

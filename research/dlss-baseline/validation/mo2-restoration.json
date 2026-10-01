@@ -1,0 +1,62 @@
+{
+  "originalSelectedProfile": "V5.4 NO-LORE",
+  "selectedProfileVerified": true,
+  "changedProfiles": [
+    "V5.4 NO-LORE"
+  ],
+  "originalModListMatchesPreTestCopy": true,
+  "originalRazKolbasEnabled": true,
+  "originalSettingsChecks": [
+    {
+      "file": "archives.txt",
+      "matchesPreTestCopy": true,
+      "sha256": "b5d6031773354069317958be89a2ccbc0e030debc1b19aaf2b2c473810403fa8"
+    },
+    {
+      "file": "initweaks.ini",
+      "matchesPreTestCopy": true,
+      "sha256": "c35e72b526cf46723f3559435de33c388f431966e48f66dfb6556283609cd27c"
+    },
+    {
+      "file": "loadorder.txt",
+      "matchesPreTestCopy": true,
+      "sha256": "72a9cec9dde7bb67548fe4f84026adb2022fc611429fea2ab47c333bee5d267c"
+    },
+    {
+      "file": "lockedorder.txt",
+      "matchesPreTestCopy": true,
+      "sha256": "f76bad6f87889c2ef94b459fa4ac5b7d35ede54b8d51dd518fd15a8381c04f95"
+    },
+    {
+      "file": "plugins.txt",
+      "matchesPreTestCopy": true,
+      "sha256": "25cd15822d777833a19fd3b7f555c383fad10e07ffd87b01c5afb85baec00f3d"
+    },
+    {
+      "file": "settings.ini",
+      "matchesPreTestCopy": true,
+      "sha256": "40196cc186af865412c5ef0f629355ad7bf96dcc61907d41df8c00ebfaf2c7fb"
+    },
+    {
+      "file": "Skyrim.ini",
+      "matchesPreTestCopy": true,
+      "sha256": "0b22d1b41e4c39795242c44539c4583647a2a379361bb8a6f1ceee1747eff870"
+    },
+    {
+      "file": "SkyrimCustom.ini",
+      "matchesPreTestCopy": true,
+      "sha256": "0065612d39f810e4c934fedd96f02429fc41ff0996fd531ef26d8e135716563d"
+    },
+    {
+      "file": "SkyrimPrefs.ini",
+      "matchesPreTestCopy": true,
+      "sha256": "aa5ebf01b1465b60883ae4afbc17a0eeac541d703065d2e1f055bed851d8c739"
+    }
+  ],
+  "testModRemovedFromMO2": true,
+  "testProfileRemovedFromMO2": true,
+  "archive": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\mo2-rollback-20261001-150242",
+  "globalIniChangedByRollback": false,
+  "gameAcceptance": "NOT RUN",
+  "verification": "PASS: original mod list, plugin order and settings restored; temporary setup archived"
+}

@@ -1,0 +1,20 @@
+{
+  "fixture": "RazKolbasFgStreamlineProbe.exe, independent of TRP",
+  "fixtureSha256": "5635e53df6d0d6e6bfacb2d287d0be130aa8d5b82e0ec7a64bba20f1e36dbc86",
+  "hardware": "NVIDIA RTX 4080 SUPER, vendor 0x10de device 0x2702",
+  "suppliedRuntime": {
+    "streamline": "2.13.0.0 (runtime log: v2.13.0-beta10, 11ffc00ec)",
+    "dlssg": "310.8.0.0",
+    "exitCode": 56,
+    "successfulPresents": 1,
+    "failure": "second Present DXGI_ERROR_INVALID_CALL 0x887a0001",
+    "result": "FAILED fixture/runtime combination; not a TRP gameplay result"
+  },
+  "controlRuntime": {
+    "streamline": "2.14.1",
+    "exitCode": 0,
+    "successfulPresents": 8,
+    "reportedTwoOutputs": 8,
+    "result": "PASSED 8-frame synthetic smoke only; TRP gameplay not verified"
+  }
+}

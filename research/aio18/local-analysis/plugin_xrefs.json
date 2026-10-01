@@ -1,0 +1,835 @@
+[
+  {
+    "rva": "0x180885",
+    "instruction": "lea rdx, [rip + 0x279fc4]",
+    "string_rva": "0x3fa850",
+    "string": "UI Texture uses a separate HUD texture. HUDless Detection extracts UI by comparing images before and after HUD rendering.",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x181943",
+    "instruction": "lea rdx, [rip + 0x27b8e6]",
+    "string_rva": "0x3fd230",
+    "string": "Startup enable requires a restart; runtime active does not recreate the swapchain.",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182047",
+    "instruction": "lea rdx, [rip + 0x27c02a]",
+    "string_rva": "0x3fe078",
+    "string": "FSR3 Upscaling",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182072",
+    "instruction": "lea r8, [rip + 0x27c037]",
+    "string_rva": "0x3fe0b0",
+    "string": "FSR3.1",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182079",
+    "instruction": "lea rdx, [rip + 0x27c018]",
+    "string_rva": "0x3fe098",
+    "string": "FSR3.1 Upscaling",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x1820a4",
+    "instruction": "lea r8, [rip + 0x27c005]",
+    "string_rva": "0x3fe0b0",
+    "string": "FSR3.1",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x1820ab",
+    "instruction": "lea rdx, [rip + 0x27c026]",
+    "string_rva": "0x3fe0d8",
+    "string": "FSR 3.1 Upscaling",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182101",
+    "instruction": "lea rdx, [rip + 0x27c020]",
+    "string_rva": "0x3fe128",
+    "string": "FSR4 Upscaling",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182150",
+    "instruction": "lea r8, [rip + 0x27bff9]",
+    "string_rva": "0x3fe150",
+    "string": "FSR3.1",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182157",
+    "instruction": "lea rdx, [rip + 0x27bfda]",
+    "string_rva": "0x3fe138",
+    "string": "FSR3.1 Upscaling (DX11)",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182182",
+    "instruction": "lea r8, [rip + 0x27bfc7]",
+    "string_rva": "0x3fe150",
+    "string": "FSR3.1",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182189",
+    "instruction": "lea rdx, [rip + 0x27bff0]",
+    "string_rva": "0x3fe180",
+    "string": "FSR 3.1 Upscaling (DX11)",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x1821b4",
+    "instruction": "lea r8, [rip + 0x27bfad]",
+    "string_rva": "0x3fe168",
+    "string": "FSR3.1.5",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x1821bb",
+    "instruction": "lea rdx, [rip + 0x27bffe]",
+    "string_rva": "0x3fe1c0",
+    "string": "FSR 3.1.5 Upscaling (DX11)",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182211",
+    "instruction": "lea rdx, [rip + 0x27bfc8]",
+    "string_rva": "0x3fe1e0",
+    "string": "FSR 4 Upscaling (DX12 Interop)",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x182e39",
+    "instruction": "lea rdx, [rip + 0x27cf68]",
+    "string_rva": "0x3ffda8",
+    "string": "FSR Frame Generation",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x18334b",
+    "instruction": "lea rdx, [rip + 0x27d8e6]",
+    "string_rva": "0x400c38",
+    "string": "Show FSR Upscaling Debug View",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x183471",
+    "instruction": "lea rdx, [rip + 0x27d9c0]",
+    "string_rva": "0x400e38",
+    "string": "Framegen FPS -> ",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x18358f",
+    "instruction": "lea rdx, [rip + 0x27d9ea]",
+    "string_rva": "0x400f80",
+    "string": "Framegen Frame Time",
+    "function_rva": "0x17fcd0"
+  },
+  {
+    "rva": "0x185e0a",
+    "instruction": "lea rdx, [rip + 0x27618f]",
+    "string_rva": "0x3fbfa0",
+    "string": "Uses a separate FrameWarp presentation thread with FSR FG or XeSS FG.",
+    "function_rva": "0x185de0"
+  },
+  {
+    "rva": "0x18721a",
+    "instruction": "lea rdx, [rip + 0x276edf]",
+    "string_rva": "0x3fe100",
+    "string": "FSR 3.1.5 Upscaling",
+    "function_rva": "0x1871f0"
+  },
+  {
+    "rva": "0x187241",
+    "instruction": "lea rdx, [rip + 0x276e78]",
+    "string_rva": "0x3fe0c0",
+    "string": "FSR3.1.5",
+    "function_rva": "0x1871f0"
+  },
+  {
+    "rva": "0x18728a",
+    "instruction": "lea rdx, [rip + 0x276e87]",
+    "string_rva": "0x3fe118",
+    "string": "FSR 4 Upscaling",
+    "function_rva": "0x187260"
+  },
+  {
+    "rva": "0x1872fa",
+    "instruction": "lea rdx, [rip + 0x276eff]",
+    "string_rva": "0x3fe200",
+    "string": "FSR4 Upscaling (DX12 Interop)",
+    "function_rva": "0x1872d0"
+  },
+  {
+    "rva": "0x18839a",
+    "instruction": "lea rdx, [rip + 0x277a7f]",
+    "string_rva": "0x3ffe20",
+    "string": "FSR Frame Generation: AMD tech that works for all GPUs",
+    "function_rva": "0x188370"
+  },
+  {
+    "rva": "0x18840a",
+    "instruction": "lea rdx, [rip + 0x277baf]",
+    "string_rva": "0x3fffc0",
+    "string": "Restart is require for FrameGen method changes to take effect.",
+    "function_rva": "0x1883e0"
+  },
+  {
+    "rva": "0x18871a",
+    "instruction": "lea rdx, [rip + 0x278027]",
+    "string_rva": "0x400748",
+    "string": "DLSS FG is not functional, fallback to FSR FG.",
+    "function_rva": "0x1886f0"
+  },
+  {
+    "rva": "0x188b7a",
+    "instruction": "lea rdx, [rip + 0x2780f7]",
+    "string_rva": "0x400c78",
+    "string": "Shows debug view for FSR upscaling.",
+    "function_rva": "0x188b50"
+  },
+  {
+    "rva": "0x188bea",
+    "instruction": "lea rdx, [rip + 0x2780d7]",
+    "string_rva": "0x400cc8",
+    "string": "Show FSR Framegen Debug View",
+    "function_rva": "0x188bc0"
+  },
+  {
+    "rva": "0x188c5a",
+    "instruction": "lea rdx, [rip + 0x2780a7]",
+    "string_rva": "0x400d08",
+    "string": "Show FSR Debug View",
+    "function_rva": "0x188c30"
+  },
+  {
+    "rva": "0x188cca",
+    "instruction": "lea rdx, [rip + 0x27806f]",
+    "string_rva": "0x400d40",
+    "string": "Shows debug view for FSR upscaling when frame generation is disabled.",
+    "function_rva": "0x188ca0"
+  },
+  {
+    "rva": "0x18904a",
+    "instruction": "lea rdx, [rip + 0x278307]",
+    "string_rva": "0x401358",
+    "string": "Skyrim Upscaler FSR3 Build",
+    "function_rva": "0x189020"
+  },
+  {
+    "rva": "0x189071",
+    "instruction": "lea rdx, [rip + 0x2782e0]",
+    "string_rva": "0x401358",
+    "string": "Skyrim Upscaler FSR3 Build",
+    "function_rva": "0x189020"
+  },
+  {
+    "rva": "0x18bed0",
+    "instruction": "lea rdx, [rip + 0x279831]",
+    "string_rva": "0x405708",
+    "string": "frameGenerationMode",
+    "function_rva": "0x18bdc0"
+  },
+  {
+    "rva": "0x18bf1d",
+    "instruction": "lea rdx, [rip + 0x2797e4]",
+    "string_rva": "0x405708",
+    "string": "frameGenerationMode",
+    "function_rva": "0x18bdc0"
+  },
+  {
+    "rva": "0x18bf77",
+    "instruction": "lea rdx, [rip + 0x27978a]",
+    "string_rva": "0x405708",
+    "string": "frameGenerationMode",
+    "function_rva": "0x18bdc0"
+  },
+  {
+    "rva": "0x18bf97",
+    "instruction": "lea rdx, [rip + 0x27976a]",
+    "string_rva": "0x405708",
+    "string": "frameGenerationMode",
+    "function_rva": "0x18bdc0"
+  },
+  {
+    "rva": "0x19e619",
+    "instruction": "lea r13, [rip + 0x26c5c0]",
+    "string_rva": "0x40abe0",
+    "string": "long __cdecl UpscalerHooks::D3D11CreateDeviceAndSwapChain_Hook::thunk(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)",
+    "function_rva": "0x19e5e0"
+  },
+  {
+    "rva": "0x19e82d",
+    "instruction": "lea rcx, [rip + 0x26c53c]",
+    "string_rva": "0x40ad70",
+    "string": "Calling original D3D11CreateDeviceAndSwapChain",
+    "function_rva": "0x19e5e0"
+  },
+  {
+    "rva": "0x19eb22",
+    "instruction": "lea rcx, [rip + 0x262ce7]",
+    "string_rva": "0x401810",
+    "string": "void __cdecl SettingGUI::InitIMGUI(struct IDXGISwapChain *,struct ID3D11Device *,struct ID3D11DeviceContext *)",
+    "function_rva": "0x19e5e0"
+  },
+  {
+    "rva": "0x19eb65",
+    "instruction": "lea rcx, [rip + 0x262ca4]",
+    "string_rva": "0x401810",
+    "string": "void __cdecl SettingGUI::InitIMGUI(struct IDXGISwapChain *,struct ID3D11Device *,struct ID3D11DeviceContext *)",
+    "function_rva": "0x19e5e0"
+  },
+  {
+    "rva": "0x19ec0f",
+    "instruction": "lea rsi, [rip + 0x26bfca]",
+    "string_rva": "0x40abe0",
+    "string": "long __cdecl UpscalerHooks::D3D11CreateDeviceAndSwapChain_Hook::thunk(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)",
+    "function_rva": "0x19e5e0"
+  },
+  {
+    "rva": "0x19ee93",
+    "instruction": "lea rsi, [rip + 0x26bd46]",
+    "string_rva": "0x40abe0",
+    "string": "long __cdecl UpscalerHooks::D3D11CreateDeviceAndSwapChain_Hook::thunk(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)",
+    "function_rva": "0x19e5e0"
+  },
+  {
+    "rva": "0x1a0ca2",
+    "instruction": "lea rdx, [rip + 0x26a39f]",
+    "string_rva": "0x40b048",
+    "string": "D3D11CreateDeviceAndSwapChain",
+    "function_rva": "0x1a0900"
+  },
+  {
+    "rva": "0x1a0d02",
+    "instruction": "lea rcx, [rip + 0x26a3af]",
+    "string_rva": "0x40b0b8",
+    "string": "Skipping D3D11CreateDeviceAndSwapChain hook: {}",
+    "function_rva": "0x1a0900"
+  },
+  {
+    "rva": "0x1a0dcb",
+    "instruction": "lea rcx, [rip + 0x26a316]",
+    "string_rva": "0x40b0e8",
+    "string": "D3D11CreateDeviceAndSwapChain hook target={} ({}) original={}",
+    "function_rva": "0x1a0900"
+  },
+  {
+    "rva": "0x1a0e51",
+    "instruction": "lea rcx, [rip + 0x26a2f0]",
+    "string_rva": "0x40b148",
+    "string": "Hook D3D11CreateDeviceAndSwapChain failed: {}",
+    "function_rva": "0x1a0900"
+  },
+  {
+    "rva": "0x1a1575",
+    "instruction": "lea rcx, [rip + 0x269dc4]",
+    "string_rva": "0x40b340",
+    "string": "D3D11CreateDeviceAndSwapChain_Hook {}",
+    "function_rva": "0x1a0900"
+  },
+  {
+    "rva": "0x258037",
+    "instruction": "lea rcx, [rip + 0x18b2b2]",
+    "string_rva": "0x3e32f0",
+    "string": "AsyncLook: direct mode must be selected before PDFrameWarp device/swapchain initialization",
+    "function_rva": "0x257f90"
+  },
+  {
+    "rva": "0x25f09f",
+    "instruction": "lea rcx, [rip + 0x1866ca]",
+    "string_rva": "0x3e5770",
+    "string": "long __cdecl DXGISwapChainProxy::SetColorSpace1(enum DXGI_COLOR_SPACE_TYPE)",
+    "function_rva": "0x25f040"
+  },
+  {
+    "rva": "0x25f0b4",
+    "instruction": "lea rcx, [rip + 0x18673d]",
+    "string_rva": "0x3e57f8",
+    "string": "DXGISwapChainProxy::SetColorSpace1: {}",
+    "function_rva": "0x25f040"
+  },
+  {
+    "rva": "0x264bb5",
+    "instruction": "lea r15, [rip + 0x1822f4]",
+    "string_rva": "0x3e6eb0",
+    "string": "void __cdecl HookLoad::ApplyAtFrameBoundary(struct DXGISwapChainProxy *) noexcept",
+    "function_rva": "0x2648f0"
+  },
+  {
+    "rva": "0x264c1f",
+    "instruction": "lea r15, [rip + 0x18228a]",
+    "string_rva": "0x3e6eb0",
+    "string": "void __cdecl HookLoad::ApplyAtFrameBoundary(struct DXGISwapChainProxy *) noexcept",
+    "function_rva": "0x2648f0"
+  },
+  {
+    "rva": "0x264f67",
+    "instruction": "lea r15, [rip + 0x181f42]",
+    "string_rva": "0x3e6eb0",
+    "string": "void __cdecl HookLoad::ApplyAtFrameBoundary(struct DXGISwapChainProxy *) noexcept",
+    "function_rva": "0x2648f0"
+  },
+  {
+    "rva": "0x273e3b",
+    "instruction": "lea rdx, [rip + 0x175b96]",
+    "string_rva": "0x3e99d8",
+    "string": "framegen",
+    "function_rva": "0x272620"
+  },
+  {
+    "rva": "0x27cac6",
+    "instruction": "lea rdx, [rip + 0x16e413]",
+    "string_rva": "0x3eaee0",
+    "string": "downstream PDFrameWarp/Framegen owns final output; D3D11 source is not final",
+    "function_rva": "0x27b590"
+  },
+  {
+    "rva": "0x2852f5",
+    "instruction": "lea rcx, [rip + 0x166e1c]",
+    "string_rva": "0x3ec118",
+    "string": "void __cdecl BindReShadeToHostSwapChain(void)",
+    "function_rva": "0x2851d0"
+  },
+  {
+    "rva": "0x285edc",
+    "instruction": "lea rdx, [rip + 0x178255]",
+    "string_rva": "0x3fe138",
+    "string": "FSR3.1 Upscaling (DX11)",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x285fcb",
+    "instruction": "lea rdx, [rip + 0x17822e]",
+    "string_rva": "0x3fe200",
+    "string": "FSR4 Upscaling (DX12 Interop)",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x2862f2",
+    "instruction": "lea rdx, [rip + 0x177e3f]",
+    "string_rva": "0x3fe138",
+    "string": "FSR3.1 Upscaling (DX11)",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x28638d",
+    "instruction": "lea rdx, [rip + 0x177e6c]",
+    "string_rva": "0x3fe200",
+    "string": "FSR4 Upscaling (DX12 Interop)",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x287a14",
+    "instruction": "lea rdx, [rip + 0x17838d]",
+    "string_rva": "0x3ffda8",
+    "string": "FSR Frame Generation",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x287d76",
+    "instruction": "lea rdx, [rip + 0x17802b]",
+    "string_rva": "0x3ffda8",
+    "string": "FSR Frame Generation",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x2880d5",
+    "instruction": "lea rdx, [rip + 0x17866c]",
+    "string_rva": "0x400748",
+    "string": "DLSS FG is not functional, fallback to FSR FG.",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x28a498",
+    "instruction": "lea rax, [rip + 0x17757d]",
+    "string_rva": "0x401a1c",
+    "string": "FSR FG",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x28acb3",
+    "instruction": "lea rdx, [rip + 0x1762c6]",
+    "string_rva": "0x400f80",
+    "string": "Framegen Frame Time",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x28af04",
+    "instruction": "lea rdx, [rip + 0x175dbd]",
+    "string_rva": "0x400cc8",
+    "string": "Show FSR Framegen Debug View",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x28af40",
+    "instruction": "lea rdx, [rip + 0x175cf1]",
+    "string_rva": "0x400c38",
+    "string": "Show FSR Upscaling Debug View",
+    "function_rva": "0x2855c0"
+  },
+  {
+    "rva": "0x28c3fc",
+    "instruction": "lea rcx, [rip + 0x17540d]",
+    "string_rva": "0x401810",
+    "string": "void __cdecl SettingGUI::InitIMGUI(struct IDXGISwapChain *,struct ID3D11Device *,struct ID3D11DeviceContext *)",
+    "function_rva": "0x28c2a0"
+  },
+  {
+    "rva": "0x28c43b",
+    "instruction": "lea rcx, [rip + 0x1753ce]",
+    "string_rva": "0x401810",
+    "string": "void __cdecl SettingGUI::InitIMGUI(struct IDXGISwapChain *,struct ID3D11Device *,struct ID3D11DeviceContext *)",
+    "function_rva": "0x28c2a0"
+  },
+  {
+    "rva": "0x29246a",
+    "instruction": "lea rdx, [rip + 0x16e8cf]",
+    "string_rva": "0x400d40",
+    "string": "Shows debug view for FSR upscaling when frame generation is disabled.",
+    "function_rva": "0x290c30"
+  },
+  {
+    "rva": "0x2924a6",
+    "instruction": "lea rdx, [rip + 0x16e78b]",
+    "string_rva": "0x400c38",
+    "string": "Show FSR Upscaling Debug View",
+    "function_rva": "0x290c30"
+  },
+  {
+    "rva": "0x292504",
+    "instruction": "lea rdx, [rip + 0x169a95]",
+    "string_rva": "0x3fbfa0",
+    "string": "Uses a separate FrameWarp presentation thread with FSR FG or XeSS FG.",
+    "function_rva": "0x290c30"
+  },
+  {
+    "rva": "0x2929c3",
+    "instruction": "lea rdx, [rip + 0x167e86]",
+    "string_rva": "0x3fa850",
+    "string": "UI Texture uses a separate HUD texture. HUDless Detection extracts UI by comparing images before and after HUD rendering.",
+    "function_rva": "0x290c30"
+  },
+  {
+    "rva": "0x298189",
+    "instruction": "lea rdx, [rip + 0x16ef28]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x2980a1"
+  },
+  {
+    "rva": "0x29819d",
+    "instruction": "lea rdx, [rip + 0x16ef14]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x2980a1"
+  },
+  {
+    "rva": "0x298328",
+    "instruction": "lea rdx, [rip + 0x16ed89]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x298310"
+  },
+  {
+    "rva": "0x2983a8",
+    "instruction": "lea rdx, [rip + 0x16ed09]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x298370"
+  },
+  {
+    "rva": "0x2984ff",
+    "instruction": "lea rdx, [rip + 0x16ebb2]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x298370"
+  },
+  {
+    "rva": "0x298514",
+    "instruction": "lea rdx, [rip + 0x16eb9d]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x298370"
+  },
+  {
+    "rva": "0x29a4ee",
+    "instruction": "lea r15, [rip + 0x16c69b]",
+    "string_rva": "0x406b90",
+    "string": "void __cdecl ReportCSFrameGenerationBootErrors(void)",
+    "function_rva": "0x29a4b0"
+  },
+  {
+    "rva": "0x29a605",
+    "instruction": "lea r15, [rip + 0x16c584]",
+    "string_rva": "0x406b90",
+    "string": "void __cdecl ReportCSFrameGenerationBootErrors(void)",
+    "function_rva": "0x29a4b0"
+  },
+  {
+    "rva": "0x29bdad",
+    "instruction": "lea rdx, [rip + 0x16a5c4]",
+    "string_rva": "0x406378",
+    "string": "mToggleFrameGen",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x29be97",
+    "instruction": "lea r8, [rip + 0x16a512]",
+    "string_rva": "0x4063b0",
+    "string": "mFrameGenType",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x29beb4",
+    "instruction": "lea r8, [rip + 0x16a4f5]",
+    "string_rva": "0x4063b0",
+    "string": "mFrameGenType",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x29bf1f",
+    "instruction": "lea r8, [rip + 0x16a48a]",
+    "string_rva": "0x4063b0",
+    "string": "mFrameGenType",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x29c2c2",
+    "instruction": "lea rax, [rip + 0x169b67]",
+    "string_rva": "0x405e30",
+    "string": ";Async Framewarp Thread: true uses a separate presentation thread with FSR FG or XeSS FG.",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x29ca89",
+    "instruction": "lea r8, [rip + 0x169a68]",
+    "string_rva": "0x4064f8",
+    "string": "mEnableFrameGeneration",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x29caaa",
+    "instruction": "lea r8, [rip + 0x169a47]",
+    "string_rva": "0x4064f8",
+    "string": "mEnableFrameGeneration",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x29cb0b",
+    "instruction": "lea r8, [rip + 0x1699e6]",
+    "string_rva": "0x4064f8",
+    "string": "mEnableFrameGeneration",
+    "function_rva": "0x29b190"
+  },
+  {
+    "rva": "0x2a2cf7",
+    "instruction": "lea rdx, [rip + 0x16367a]",
+    "string_rva": "0x406378",
+    "string": "mToggleFrameGen",
+    "function_rva": "0x2a2650"
+  },
+  {
+    "rva": "0x2a2f38",
+    "instruction": "lea rax, [rip + 0x162ef1]",
+    "string_rva": "0x405e30",
+    "string": ";Async Framewarp Thread: true uses a separate presentation thread with FSR FG or XeSS FG.",
+    "function_rva": "0x2a2650"
+  },
+  {
+    "rva": "0x2a32d2",
+    "instruction": "lea r8, [rip + 0x1630d7]",
+    "string_rva": "0x4063b0",
+    "string": "mFrameGenType",
+    "function_rva": "0x2a2650"
+  },
+  {
+    "rva": "0x2a340d",
+    "instruction": "lea r8, [rip + 0x1630e4]",
+    "string_rva": "0x4064f8",
+    "string": "mEnableFrameGeneration",
+    "function_rva": "0x2a2650"
+  },
+  {
+    "rva": "0x2a4c79",
+    "instruction": "lea rcx, [rip + 0x162990]",
+    "string_rva": "0x407610",
+    "string": "Create mTempHudlessColor failed! ErrorCode: {}",
+    "function_rva": "0x2a4730"
+  },
+  {
+    "rva": "0x2a6020",
+    "instruction": "lea r14, [rip + 0x164979]",
+    "string_rva": "0x40a9a0",
+    "string": "long __cdecl hk_D3D11CreateDeviceAndSwapChain_Real(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,const struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)",
+    "function_rva": "0x2a5f40"
+  },
+  {
+    "rva": "0x2a6175",
+    "instruction": "lea r14, [rip + 0x164824]",
+    "string_rva": "0x40a9a0",
+    "string": "long __cdecl hk_D3D11CreateDeviceAndSwapChain_Real(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,const struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)",
+    "function_rva": "0x2a5f40"
+  },
+  {
+    "rva": "0x2a61c4",
+    "instruction": "lea r14, [rip + 0x1647d5]",
+    "string_rva": "0x40a9a0",
+    "string": "long __cdecl hk_D3D11CreateDeviceAndSwapChain_Real(struct IDXGIAdapter *,enum D3D_DRIVER_TYPE,struct HINSTANCE__ *,unsigned int,const enum D3D_FEATURE_LEVEL *,unsigned int,unsigned int,const struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **,struct ID3D11Device **,enum D3D_FEATURE_LEVEL *,struct ID3D11DeviceContext **)",
+    "function_rva": "0x2a5f40"
+  },
+  {
+    "rva": "0x2a7c1b",
+    "instruction": "lea rcx, [rip + 0x1627be]",
+    "string_rva": "0x40a3e0",
+    "string": "auto __cdecl hk_IDXGIFactory2_CreateSwapChainForHwnd_RS::<lambda_1>::operator ()(void) const",
+    "function_rva": "0x2a7be0"
+  },
+  {
+    "rva": "0x2a7e21",
+    "instruction": "lea rcx, [rip + 0x162648]",
+    "string_rva": "0x40a470",
+    "string": "long __cdecl hk_IDXGIFactory2_CreateSwapChainForHwnd_RS(struct IDXGIFactory2 *,struct IUnknown *,struct HWND__ *,const struct DXGI_SWAP_CHAIN_DESC1 *,const struct DXGI_SWAP_CHAIN_FULLSCREEN_DESC *,struct IDXGIOutput *,struct IDXGISwapChain1 **)",
+    "function_rva": "0x2a7c70"
+  },
+  {
+    "rva": "0x2a7fca",
+    "instruction": "lea rcx, [rip + 0x16240f]",
+    "string_rva": "0x40a3e0",
+    "string": "auto __cdecl hk_IDXGIFactory2_CreateSwapChainForHwnd_RS::<lambda_1>::operator ()(void) const",
+    "function_rva": "0x2a7c70"
+  },
+  {
+    "rva": "0x2aa9ed",
+    "instruction": "lea rcx, [rip + 0x15f4f4]",
+    "string_rva": "0x409ee8",
+    "string": "FrameGen backend switched {} -> {}",
+    "function_rva": "0x2aa8c0"
+  },
+  {
+    "rva": "0x2aaa80",
+    "instruction": "lea rcx, [rip + 0x15f419]",
+    "string_rva": "0x409ea0",
+    "string": "FrameGen backend switch {} -> {} failed; previous backend retained",
+    "function_rva": "0x2aa8c0"
+  },
+  {
+    "rva": "0x2ac69b",
+    "instruction": "lea rcx, [rip + 0x15db9e]",
+    "string_rva": "0x40a240",
+    "string": "hk_IDXGIFactory_CreateSwapChain created original SwapChain : {} x {} Format: {} BufferCount: {}",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ac6c8",
+    "instruction": "lea rcx, [rip + 0x15da81]",
+    "string_rva": "0x40a150",
+    "string": "long __cdecl hk_IDXGIFactory_CreateSwapChain(struct IDXGIFactory2 *,struct IUnknown *,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **)",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad183",
+    "instruction": "lea rcx, [rip + 0x15d07e]",
+    "string_rva": "0x40a208",
+    "string": "PDFrameWarp CreateSwapChainProxy failed hr=0x{:08X}",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad1b0",
+    "instruction": "lea rcx, [rip + 0x15cf99]",
+    "string_rva": "0x40a150",
+    "string": "long __cdecl hk_IDXGIFactory_CreateSwapChain(struct IDXGIFactory2 *,struct IUnknown *,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **)",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad255",
+    "instruction": "lea rcx, [rip + 0x15d08c]",
+    "string_rva": "0x40a2e8",
+    "string": "InitPDFrameWarp succeeded, CreateSwapChainProxy hr=0x{:08X}",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad282",
+    "instruction": "lea rcx, [rip + 0x15cec7]",
+    "string_rva": "0x40a150",
+    "string": "long __cdecl hk_IDXGIFactory_CreateSwapChain(struct IDXGIFactory2 *,struct IUnknown *,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **)",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad2df",
+    "instruction": "lea rcx, [rip + 0x15cfba]",
+    "string_rva": "0x40a2a0",
+    "string": "InitPDFrameWarp failed, falling back to existing swapchain path.",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad30c",
+    "instruction": "lea rcx, [rip + 0x15ce3d]",
+    "string_rva": "0x40a150",
+    "string": "long __cdecl hk_IDXGIFactory_CreateSwapChain(struct IDXGIFactory2 *,struct IUnknown *,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **)",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad476",
+    "instruction": "lea rcx, [rip + 0x15cf13]",
+    "string_rva": "0x40a390",
+    "string": "FrameGen backend {} creation failed {:08X}; restoring managed D3D11 transport",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad4a3",
+    "instruction": "lea rcx, [rip + 0x15cca6]",
+    "string_rva": "0x40a150",
+    "string": "long __cdecl hk_IDXGIFactory_CreateSwapChain(struct IDXGIFactory2 *,struct IUnknown *,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **)",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad6f8",
+    "instruction": "lea rdx, [rip + 0x1599b9]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad840",
+    "instruction": "lea rdx, [rip + 0x159871]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ad854",
+    "instruction": "lea rdx, [rip + 0x15985d]",
+    "string_rva": "0x4070b8",
+    "string": "HDR::UiTexture",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ada19",
+    "instruction": "lea rax, [rip + 0x15c910]",
+    "string_rva": "0x40a330",
+    "string": "hk_IDXGIFactory_CreateSwapChain created proxy SwapChain : {} x {} Format: {} BufferCount: {}",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2ada46",
+    "instruction": "lea rax, [rip + 0x15c703]",
+    "string_rva": "0x40a150",
+    "string": "long __cdecl hk_IDXGIFactory_CreateSwapChain(struct IDXGIFactory2 *,struct IUnknown *,struct DXGI_SWAP_CHAIN_DESC *,struct IDXGISwapChain **)",
+    "function_rva": "0x2ac650"
+  },
+  {
+    "rva": "0x2b9d67",
+    "instruction": "lea rcx, [rip + 0x12d142]",
+    "string_rva": "0x3e6eb0",
+    "string": "void __cdecl HookLoad::ApplyAtFrameBoundary(struct DXGISwapChainProxy *) noexcept",
+    "function_rva": "0x2b9d0a"
+  }
+]

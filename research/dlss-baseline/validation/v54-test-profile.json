@@ -1,0 +1,18 @@
+{
+  "profile": "TRP 0.3.5 Standard FG baseline",
+  "profilePath": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\TRP 0.3.5 Standard FG baseline",
+  "mod": "TRP 0.3.5 Standard - DvaKolbas baseline",
+  "modPath": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline",
+  "sourceProfile": "V5.4 NO-LORE",
+  "initialFG": "OFF: verify DLSS first, then enable native x2 using End / Apply",
+  "sourceProfileChanged": false,
+  "selectedProfileChanged": false,
+  "copiedSaves": [
+    "Save9_4EC9BE19_0_4C656E696E57_Tamriel_000041_20260930165251_1_1.ess",
+    "Save9_4EC9BE19_0_4C656E696E57_Tamriel_000041_20260930165251_1_1.skse"
+  ],
+  "pluginSha256": "4d3bae0192dd5286ee748208e57cf139108f4ee14c7d803477fc6b52a378cec7",
+  "gameAcceptance": "NOT RUN",
+  "installed": false,
+  "archive": "C:\\Users\\user\\Documents\\ChatGPT\\DvaKolbas\\out\\mo2-rollback-20261001-150242"
+}

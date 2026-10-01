@@ -1,0 +1,330 @@
+INFO  Using log config file: jar:file:/C:/Users/user/Downloads/ghidra_12.1.3_PUBLIC_20260817/ghidra_12.1.3_PUBLIC/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\research\aio-triage\ghidra-perf-analysis.log (LoggingInitialization)  
+INFO  Loading user preferences: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (512 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7db12bb6 (file:/C:/Users/user/Downloads/ghidra_12.1.3_PUBLIC_20260817/ghidra_12.1.3_PUBLIC/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: SHA1PRNG (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1262 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/C:/Users/user/Downloads/ghidra_12.1.3_PUBLIC_20260817/ghidra_12.1.3_PUBLIC/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\WildcardAssembler\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Processors\8051\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Processors\JVM\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Processors\PIC\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\MicrosoftCodeAnalyzer\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\PDB\ghidra_scripts
+    C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\research\scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\BSim\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\Base\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\GnuDemangler\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Processors\Atmel\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\FileFormats\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\SwiftDemangler\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\PyGhidra\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\FunctionID\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Processors\DATA\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Debug\Debugger\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\BytePatterns\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\Decompiler\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\SystemEmulation\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Debug\Debugger-rmi-trace\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\DecompilerDependent\ghidra_scripts
+    C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\VersionTracking\ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Creating project: C:\Users\user\Documents\ChatGPT\DvaKolbas\out\research\ghidra-project\AioPerfBuild18 (HeadlessAnalyzer)  
+INFO  Creating project: C:\Users\user\Documents\ChatGPT\DvaKolbas\out\research\ghidra-project\AioPerfBuild18 (DefaultProject)  
+INFO  REPORT: Processing input files:  (HeadlessAnalyzer)  
+INFO       project: C:\Users\user\Documents\ChatGPT\DvaKolbas\out\research\ghidra-project\AioPerfBuild18 (HeadlessAnalyzer)  
+INFO  IMPORTING: file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/PDPerfPlugin.dll (HeadlessAnalyzer)  
+INFO  Using Loader: Portable Executable (PE) (ProgramLoader)  
+INFO  Using Language/Compiler: x86:LE:64:default:windows (ProgramLoader)  
+INFO  Using Library Search Path: [., C:\Windows\SysWOW64, C:\Users\user\Downloads\openjdk-26.0.1_windows-x64_bin\jdk-26.0.1\bin, C:\Windows\Sun\Java\bin, C:\Windows\system32, C:\Windows, C:\Program Files\PowerShell\7, C:\Users\user\.codex\tmp\arg0\codex-arg0xzMzO8, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\libheif\libheif\bin, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\jxrlib\jxrlib\bin, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\poppler\Library\bin, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\override, C:\Program Files (x86)\Common Files\Oracle\Java\java8path, C:\Program Files (x86)\Common Files\Oracle\Java\javapath, C:\Python314\Scripts\, C:\Python314\, C:\Windows\System32\Wbem, C:\Windows\System32\WindowsPowerShell\v1.0\, C:\Windows\System32\OpenSSH\, C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR, C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common, C:\Program Files\xmake, D:\SKSE_Plugin\tools\git\cmd, C:\Program Files\PowerShell\7\, C:\Program Files\dotnet\, C:\Program Files\nodejs\, C:\ProgramData\chocolatey\bin, C:\Program Files\RuDesktop\, C:\Program Files\GitHub CLI\, c:\Users\user\AppData\Local\Programs\cursor\resources\app\codeBin, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell, C:\Users\user\AppData\Local\Microsoft\WindowsApps, C:\Users\user\AppData\Local\GitHubDesktop\bin, C:\Users\user\AppData\Local\Programs\Microsoft VS Code\bin, C:\Users\user\.dotnet\tools, C:\Users\user\AppData\Local\Programs\cursor\resources\app\bin, C:\Users\user\AppData\Local\Programs\Ollama, C:\Users\user\AppData\Roaming\npm, C:\Users\user\.lmstudio\bin, C:\Tools\GitHubCLI, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin, C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd, C:\Users\user\AppData\Local\Programs\Codex\resources] (ProgramLoader)  
+INFO  TLS callbacks at 180113c60 (TLSDirectory)  
+INFO  TLS callbacks at 180018bf0 (TLSDirectory)  
+INFO  TLS callbacks at 180046778 (TLSDirectory)  
+INFO  TLS callbacks at 180257a78 (TLSDirectory)  
+WARN  Invalid or missing function at 1800a9028 (ExportDataDirectory)  
+INFO  Additional info:
+Loading file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/PDPerfPlugin.dll?MD5=345b7074804bd8362f8f4b0e01e8f6aa...
+------------------------------------------------
+
+Searching 39 paths for library ADVAPI32.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/advapi32.dll
+Loading file:///C:/Windows/System32/advapi32.dll?MD5=83af09f2e809bed6cc17d99e94a6bc59...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\advapi32.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-CONVERT-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-convert-l1-1-0.dll?MD5=10586394ea9480d896dc90cb41fbb349...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-convert-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-FILESYSTEM-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-filesystem-l1-1-0.dll?MD5=2708aaf92c87e569b312556e51fb11f8...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-filesystem-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-HEAP-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-heap-l1-1-0.dll?MD5=011cf908bfb96ebe4f6dae19820b1c9f...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-heap-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-LOCALE-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-locale-l1-1-0.dll?MD5=b86b2d5160adc92730398286e29f6a39...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-locale-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-MATH-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-math-l1-1-0.dll?MD5=41f4e348b750a18e8599a756021f947a...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-math-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-runtime-l1-1-0.dll?MD5=7307d9479d874ec7df299f497c0b03f3...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-runtime-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-STDIO-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-stdio-l1-1-0.dll?MD5=a3ac58404a0ceed624f9a18d0a65852b...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-stdio-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-STRING-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-string-l1-1-0.dll?MD5=38f92437d012a0f6ad6e435dfaed6cea...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-string-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-TIME-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-time-l1-1-0.dll?MD5=d709d32a2744df53af5fb8a50c85a32f...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-time-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library API-MS-WIN-CRT-UTILITY-L1-1-0.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/api-ms-win-crt-utility-l1-1-0.dll?MD5=cc741d481aea80559546da3464b01ce0...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-utility-l1-1-0.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library BCRYPT.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/bcrypt.dll
+Loading file:///C:/Windows/System32/bcrypt.dll?MD5=98a444fdb1b3dd7be6e4060d2dc8a8e6...
+[bcrypt.dll]: failed to create WEVTResource at 1800264d0: Failed to resolve data length for WEVTResource
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\bcrypt.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library D3D12.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/D3D12.dll
+Loading file:///C:/Windows/System32/D3D12.dll?MD5=3118f5565f06ad2af796da07d77c0256...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\d3d12.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library D3DCOMPILER_47.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/D3DCompiler_47.dll
+Loading file:///C:/Windows/System32/D3DCompiler_47.dll?MD5=3131da1936bc202a1fb4e51fe1254dce...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\d3dcompiler_47.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library DXGI.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/dxgi.dll
+Loading file:///C:/Windows/System32/dxgi.dll?MD5=9c993a6279ff36e6bb6a6f9f3c0feea9...
+[dxgi.dll]: failed to create WEVTResource at 1800e0430: Failed to resolve data length for WEVTResource
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\dxgi.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library KERNEL32.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/kernel32.dll
+Loading file:///C:/Windows/System32/kernel32.dll?MD5=1b92ede226791769d5972c29e6f353aa...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\kernel32.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library LIBXELL.DLL...
+Loading file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/libxell.dll?MD5=831a165eb6832a5c1ec46eee2a33de30...
+Created exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\libxell.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library LIBXESS_FG.DLL...
+Loading file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/libxess_fg.dll?MD5=e5da7e91e3af8a8340b3fef922912e6e...
+Created exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\libxess_fg.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library MSVCP140.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/msvcp140.dll
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/msvcp140.dll?MD5=7acbc57d268a691247b4a94fecfa42b4...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\msvcp140.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library USER32.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/user32.dll
+Loading file:///C:/Windows/System32/user32.dll?MD5=fbc00b247a0e94f4a17e9ff925e2e033...
+[user32.dll]: failed to create WEVTResource at 1800c6a70: Failed to resolve data length for WEVTResource
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\user32.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library VCRUNTIME140.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/vcruntime140.dll
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/vcruntime140.dll?MD5=32da96115c9d783a0769312c0482a62d...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\vcruntime140.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library VCRUNTIME140_1.DLL...
+Loading file:///C:/Users/user/Downloads/openjdk-26.0.1_windows-x64_bin/jdk-26.0.1/bin/vcruntime140_1.dll?MD5=c0c0b4c611561f94798b62eb43097722...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\vcruntime140_1.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library VERSION.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/version.dll
+Loading file:///C:/Windows/System32/version.dll?MD5=70959b343c0acad9f3ef8053e10d4192...
+Using existing exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\version.exports
+Library not saved to project.
+------------------------------------------------
+
+Searching 39 paths for library VULKAN-1.DLL...
+Skipping library which is the wrong architecture: file:///C:/Windows/SysWOW64/vulkan-1.dll
+Loading file:///C:/Windows/System32/vulkan-1.dll?MD5=a57df5009be2bfe49319107b53cbd81b...
+Created exports file: C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\vulkan-1.exports
+Library not saved to project.
+------------------------------------------------
+
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\d3d12.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\dxgi.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\bcrypt.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\version.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\kernel32.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\user32.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\advapi32.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\msvcp140.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\d3dcompiler_47.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\vcruntime140_1.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\vcruntime140.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-runtime-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-stdio-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-heap-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-utility-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-math-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-string-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-convert-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-filesystem-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-time-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\api-ms-win-crt-locale-l1-1-0.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\vulkan-1.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\libxell.exports
+Applying C:\Users\user\AppData\Roaming\ghidra\ghidra_12.1.3_PUBLIC\symbols\win64\libxess_fg.exports
+Linking the External Programs of 'PDPerfPlugin.dll' to imported libraries...
+  [D3D12.DLL] -> not found in project
+  [DXGI.DLL] -> not found in project
+  [BCRYPT.DLL] -> not found in project
+  [VERSION.DLL] -> not found in project
+  [KERNEL32.DLL] -> not found in project
+  [USER32.DLL] -> not found in project
+  [ADVAPI32.DLL] -> not found in project
+  [MSVCP140.DLL] -> not found in project
+  [D3DCOMPILER_47.DLL] -> not found in project
+  [VCRUNTIME140_1.DLL] -> not found in project
+  [VCRUNTIME140.DLL] -> not found in project
+  [API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-STDIO-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-HEAP-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-UTILITY-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-MATH-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-STRING-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-CONVERT-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-FILESYSTEM-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-TIME-L1-1-0.DLL] -> not found in project
+  [API-MS-WIN-CRT-LOCALE-L1-1-0.DLL] -> not found in project
+  [VULKAN-1.DLL] -> not found in project
+  [LIBXELL.DLL] -> not found in project
+  [LIBXESS_FG.DLL] -> not found in project
+------------------------------------------------
+
+ (ProgramLoader)  
+INFO  IMPORTING: Loaded 0 additional files (HeadlessAnalyzer)  
+INFO  ANALYZING all memory and code: file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/PDPerfPlugin.dll (HeadlessAnalyzer)  
+WARN  Ignoring leading '_' chars on no-return name '___raise_securityfailure' specified in file: C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\Base\data\PEFunctionsThatDoNotReturn (NoReturnFunctionAnalyzer)  
+WARN  Ignoring leading '_' chars on no-return name '___report_rangecheckfailure' specified in file: C:\Users\user\Downloads\ghidra_12.1.3_PUBLIC_20260817\ghidra_12.1.3_PUBLIC\Ghidra\Features\Base\data\PEFunctionsThatDoNotReturn (NoReturnFunctionAnalyzer)  
+INFO  Skipping PDB processing: failed to locate PDB file in configured locations (PdbUniversalAnalyzer)  
+INFO  Use a script to set the PDB file location. I.e.,
+    PdbAnalyzer.setPdbFileOption(currentProgram, new File("/path/to/pdb/file.pdb")); or
+    PdbUniversalAnalyzer.setPdbFileOption(currentProgram, new File("/path/to/pdb/file.pdb"));
+Or set the symbol server search configuration using:    PdbPlugin.saveSymbolServerServiceConfig(...);
+ This must be done using a pre-script (prior to analysis). (PdbUniversalAnalyzer)  
+INFO  Packed database cache: C:\Users\user\AppData\Local\ghidra\packed-db-cache (PackedDatabaseCache)  
+INFO  hit non-returning function, restarting decompiler switch analyzer later (DecompilerSwitchAnalyzer)  
+INFO  Applied data type archive: windows_vs12_64 (ApplyDataArchiveAnalyzer)  
+INFO  Applied data type archive: windows_vs12_64 (ApplyDataArchiveAnalyzer)  
+INFO  Applied data type archive: windows_vs12_64 (ApplyDataArchiveAnalyzer)  
+INFO  -----------------------------------------------------
+    ASCII Strings                              0.940 secs
+    Apply Data Archives                        0.113 secs
+    Call Convention ID                         0.015 secs
+    Call-Fixup Installer                       0.069 secs
+    Create Address Tables                      0.110 secs
+    Create Address Tables - One Time           0.741 secs
+    Create Function                            0.034 secs
+    Data Reference                             0.156 secs
+    Decompiler Switch Analysis                 3.917 secs
+    Decompiler Switch Analysis - One Time      1.580 secs
+    Demangler Microsoft                        0.032 secs
+    Disassemble Entry Points                   2.846 secs
+    Disassemble Entry Points - One Time        0.000 secs
+    Embedded Media                             0.043 secs
+    External Entry References                  0.001 secs
+    Function ID                                0.828 secs
+    Function Start Search                      0.023 secs
+    Non-Returning Functions - Discovered       0.583 secs
+    Non-Returning Functions - Known            0.010 secs
+    PDB Universal                              0.009 secs
+    Reference                                  0.157 secs
+    Scalar Operand References                  0.901 secs
+    Shared Return Calls                        0.156 secs
+    Stack                                      6.944 secs
+    Subroutine References                      0.084 secs
+    Subroutine References - One Time           0.015 secs
+    Windows x86 PE Exception Handling          0.605 secs
+    Windows x86 PE RTTI Analyzer               1.213 secs
+    Windows x86 Thread Environment Block (TEB) Analyzer     0.007 secs
+    WindowsResourceReference                   0.311 secs
+    x86 Constant Reference Analyzer            6.558 secs
+-----------------------------------------------------
+     Total Time   29 secs
+-----------------------------------------------------
+ (AutoAnalysisManager)  
+INFO  REPORT: Analysis succeeded for file: file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/PDPerfPlugin.dll (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: AioFsrReport.java 'C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\research\aio-triage\ghidra-perf.txt' 'C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\research\aio-triage\perf_targets.txt'  (HeadlessAnalyzer)  
+INFO  SCRIPT: C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\research\scripts\AioFsrReport.java (HeadlessAnalyzer)  
+INFO  AioFsrReport.java> FSR report written: C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\research\aio-triage\ghidra-perf.txt (GhidraScript)  
+INFO  ANALYZING changes made by post scripts: file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/PDPerfPlugin.dll (HeadlessAnalyzer)  
+INFO  REPORT: Post-analysis succeeded for file: file:///C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/aio-build18/UpscalerBasePlugin/PDPerfPlugin.dll (HeadlessAnalyzer)  
+INFO  /PDPerfPlugin.dll: file created (BestPC) (LocalFileSystem)  
+INFO  REPORT: Save succeeded for: /PDPerfPlugin.dll (AioPerfBuild18:/PDPerfPlugin.dll) (HeadlessAnalyzer)  
+INFO  REPORT: Import succeeded (HeadlessAnalyzer)  
