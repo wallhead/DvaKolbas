@@ -1,13 +1,13 @@
 # FSR frame generation: first integration milestone
 
-Status: approved by the user's “proceed.” The [implementation plan](../plans/2026-10-02-fsr-fg.md) is ready for review. No FG implementation or activation is implied.
+Status: architecture approved by the user's “proceed”; reviewed callback/synchronization refinements are incorporated in the [implementation plan](../plans/2026-10-02-fsr-fg.md), awaiting plan review. No FG implementation or activation is implied.
 Base: working FSR SR code `8e78f5136772fbbbb23c2aafe341ab931256c475`; V5.4 NO-LORE.
 
 ## Intent and scope
 
 The user approved shared TRP buffers and native UI, NVIDIA-independent FSR SR first, then FSR frame generation. Loaded-world SR now works; the user confirmed the corrected NR tab no longer crashes. The next milestone implements FSR SR plus FSR FG, producing one interpolated frame between source frames when the provider accepts generation. FG remains opt-in and off in the installed SR mod until a separately validated test package is ready.
 
-First-stage limits: SDR, fixed render/output dimensions, dedicated native UI, Analytical SR, and no NR. Loading/spatial recovery and invalid camera/guides suppress generation. DLSS/DLAA plus FSR FG, HDR, dynamic resolution, Community Shaders ownership, multiple generated frames and async-compute optimization are later milestones. Existing NVIDIA presentation retains its contracts. No general host rewrite is part of this milestone.
+First-stage limits: SDR, fixed extents, dedicated native UI, Analytical SR, analytical FG 3.1.6, swapchain 3.1.7, and no NR. Effect-tagged provider selection is deterministic and actual context identity is verified. ML FG 4.0.1 is deferred and unavailable on the RTX 4080 Super. Loading/spatial/invalid frames and low source rate suppress generation. DLSS/DLAA plus FSR FG, HDR, dynamic resolution, CS ownership, multiple generated frames and async-compute optimization remain later milestones. Preserve existing NVIDIA presentation; no broad host rewrite.
 
 SR save/load, fast travel, alt-tab/minimize, UI previews and ENB/Gamma22 calibration remain open acceptance items. They can be checked while the standalone FG work proceeds; a Skyrim FG trial requires those results to be recorded, with any defects repaired or restrictions stated.
 
@@ -35,10 +35,10 @@ Exactly one real presenter owns the HWND. Decide the requested presentation poli
 2. Perform exactly one SR pass. FG preparation uses the same source ID, reset, extents, jitter, motion convention and camera values. Delta time is milliseconds; provider-required units and color encoding are explicit conversions rather than assumptions.
 3. Deliver a native-size, HUD-less scene to AMD's application backbuffer. Run ReShade at its selected before/after position exactly once per source frame. Generated frames do not rerun Skyrim effects.
 4. At the existing native UI completion boundary, finish the dedicated HUD and overlay foreground, copy/convert into a shareable UI texture, and signal its completed producer work. Merely knowing the UI texture address never makes it ready.
-5. Configure FG and publish scene/UI with matching source IDs. Use SDK UI texture composition with its documented internal UI buffering, validated with sentinel pixels and delayed readers. Configure, PrepareV2 and generation dispatch for a source frame must agree; discontinuities reset history. Source IDs never increment for generated presents.
-6. Present through AMD's proxy. Initially use direct generation dispatch on the main D3D12 graphics queue, with async compute disabled. SDK UI/presentation may still execute asynchronously; retirement must cover those readers too.
+5. Once eligibility and UI completion are known at the final handoff, configure FG exactly once for source N, then PrepareV2(N) if enabled. Submit preparation and signal its guide-retirement fence before Present. Suppressed sources configure disabled with N and skip Prepare. Copy scene into AMD's application buffer and shared UI into a D3D12-only publication texture. Register completed UI on the swapchain context, separately from FG configuration, using premultiplied alpha and internal buffering. IDs advance once per consumed source, including suppression; test/startup/generated presents consume no ID. Discontinuities reset history.
+6. AMD Present invokes the synchronous game-thread `frameGenerationCallback`, which dispatches the supplied descriptor unchanged. No normal production interpolation-list/output query or manual generation route. Async compute remains disabled, but SDK UI/presentation is asynchronous. The callback inherits Present's session lock and never reacquires it; follow the plan's exact serialization protocol.
 
-Resource states and submission values belong to their slots. SR dispatch completion alone is not sufficient to overwrite guides, scene or UI. Preserve producer device identity across ReShade wrappers. No per-frame resource allocation, CPU readback, sleeps or full-device drains belong in production.
+Resource states and fence values belong to slots. Guides retire after PrepareV2's GPU submission; shared scene/UI retire after transport copies. UI registration alone permits no reuse. After Present returns SDK internal buffering protects its D3D12 publication texture; D3D11 source reuse still waits on the copy fence. No main-queue fence proves SDK async presents retired. Preserve producer device identity across ReShade wrappers. No per-frame allocations, CPU readback, sleeps or routine full-device drains.
 
 ## Compatibility, state and failures
 
@@ -46,9 +46,9 @@ ReShade/ENB compatibility is a delivery gate. The new inner D3D12 presenter must
 
 Retain generation backend values 0 (ordinary/off) and 1 (NVIDIA). Audit reachable source/package history before assigning a new FSR value; unknown values remain rejected. Restart is required to change presenter ownership. Within an AMD-presenter session, enabled/disabled requests affect generation without replacing the swapchain; disabled generation must still compose native UI correctly. UI status reports requested and active generation, provider, suppression reason and errors. Apply/Save/Discard use the existing authoritative settings flow. Unsupported NR remains unavailable safely.
 
-Suppress generation during menus/loading, skipped or spatial frames, missing guides, invalid camera state and warmup after resets. Resume only with valid sequential temporal inputs and an acknowledged reset. Generation failure may retain SR-only presentation through the existing AMD proxy only when that route remains safe; device loss, presentation failure or failed retirement use the host fault path. Never silently switch presenter ownership mid-session.
+Suppress generation during menus/loading, skipped/spatial frames, missing guides, invalid camera, low source rate and reentry warmup. Initial analytical policy uses a 60 FPS floor with explicit hysteresis/stall constants in the plan; those constants are TRP policy, not SDK mandates. Resume after sustained valid sequential frames with deliberate reset and successful Prepare. Safe generation failure may retain SR-only AMD presentation; device/presentation/retirement failure faults. Never silently replace presenter ownership mid-session.
 
-Resize/shutdown first stop new dispatches, disable FG, wait for SDK presentation/UI users and recorded bridge work, then destroy contexts/resources. Keep callbacks/modules alive throughout. A timeout is a failure, not completed retirement. Coordinate SDK operations using the pinned API's thread-safety rules; no render-thread mutex may deadlock the proxy's retirement or worker callbacks.
+Resize/shutdown stop admissions, disable FG/detach callbacks and HUD-less references, unregister UI (null/flags 0), wait for SDK presents and bridge work, then destroy FG context, swapchain context and final proxy references before transport/runtime owners. Close TRP-owned duplicated latency handles after swapchain destruction. No timeout fabricates completion. One session lock serializes SDK operations; callbacks never reacquire it and no host/UI/settings lock accompanies SDK waits. Use only NewDX12 creation with two application buffers; explicitly translate Present1 and ResizeBuffers1.
 
 ## Verification and handoff
 
