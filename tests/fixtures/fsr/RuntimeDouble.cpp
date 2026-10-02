@@ -4,11 +4,15 @@
 #include <cstring>
 #include <wrl/client.h>
 #include <vector>
+#ifdef TRP_ENABLE_FSR_FG
+#include <ffx_framegeneration.h>
+#include <dx12/ffx_api_framegeneration_dx12.h>
+#endif
 
 static unsigned mode{}, enumerations{}, destructions{};
 static uint64_t queryId{}, createId{};
 static char name[64]{"fixture analytical FSR 3.1.5"};
-struct FixtureContext { std::vector<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> heaps; };
+struct FixtureContext { std::vector<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> heaps; uint64_t provider{17}; };
 extern "C" __declspec(dllexport) void FixtureMode(unsigned value)
 { mode = value; enumerations = 0; std::strcpy(name, "fixture analytical FSR 3.1.5"); }
 extern "C" __declspec(dllexport) uint64_t FixtureQueryId() { return queryId; }
@@ -29,7 +33,21 @@ static bool ReadChain(const ffxApiHeader* header, uint64_t& id)
 }
 #if FSR_MISSING_EXPORT != 1
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxCreateContext(ffxContext* context, ffxCreateContextDescHeader* desc, const ffxAllocationCallbacks*)
-{ if (!ReadChain(desc, createId)) return FFX_API_RETURN_ERROR_PARAMETER; *context = new FixtureContext; return FFX_API_RETURN_OK; }
+{
+#ifdef TRP_ENABLE_FSR_FG
+    if (desc->type == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION) {
+        bool backend{}, version{}; uint64_t identity{};
+        for (auto* next = desc->pNext; next; next = next->pNext) {
+            if (next->type == FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_DX12) backend = reinterpret_cast<const ffxCreateBackendDX12Desc*>(next)->device != nullptr;
+            if (next->type == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION_VERSION) version = reinterpret_cast<const ffxCreateContextDescFrameGenerationVersion*>(next)->version == FFX_FRAMEGENERATION_VERSION;
+            if (next->type == FFX_API_DESC_TYPE_OVERRIDE_VERSION) identity = reinterpret_cast<const ffxOverrideVersion*>(next)->versionId;
+        }
+        if (!backend || !version || identity != 17726168133342859270ull) return FFX_API_RETURN_ERROR_PARAMETER;
+        auto* created = new FixtureContext; created->provider = identity; *context = created; return FFX_API_RETURN_OK;
+    }
+#endif
+    if (!ReadChain(desc, createId)) return FFX_API_RETURN_ERROR_PARAMETER; *context = new FixtureContext; return FFX_API_RETURN_OK;
+}
 #endif
 #if FSR_MISSING_EXPORT != 2
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxDestroyContext(ffxContext* context, const ffxAllocationCallbacks*)
@@ -44,13 +62,22 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
     if (mode == 2) return FFX_API_RETURN_PROVIDER_NO_SUPPORT_NEW_DESCTYPE;
     if (header->type == FFX_API_QUERY_DESC_TYPE_GET_VERSIONS) {
         auto& desc = *reinterpret_cast<ffxQueryDescGetVersions*>(header);
-        if (!desc.device || desc.createDescType != FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE) return FFX_API_RETURN_ERROR_PARAMETER;
+        if (!desc.device) return FFX_API_RETURN_ERROR_PARAMETER;
+        uint64_t providerId = 17; const char* providerName = name;
+        if (desc.createDescType != FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE) {
+#ifdef TRP_ENABLE_FSR_FG
+            if (desc.createDescType == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION) { providerId = 17726168133342859270ull; providerName = "3.1.6"; }
+            else if (desc.createDescType == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATIONSWAPCHAIN_NEW_DX12) { providerId = 17752306900579389447ull; providerName = "3.1.7"; }
+            else
+#endif
+                return FFX_API_RETURN_ERROR_PARAMETER;
+        }
         ++enumerations;
         uint64_t count = mode == 1 ? 0 : mode == 3 && enumerations > 1 ? 2 : mode == 5 ? *desc.outputCount + 1 : mode == 6 ? 129 : 1;
         uint64_t capacity = *desc.outputCount;
         *desc.outputCount = count;
         if (desc.versionIds && capacity >= count) {
-            for (uint64_t i = 0; i < count; ++i) { desc.versionIds[i] = 17 + i; desc.versionNames[i] = mode == 7 ? nullptr : i ? "fixture compatible" : name; }
+            for (uint64_t i = 0; i < count; ++i) { desc.versionIds[i] = providerId + i; desc.versionNames[i] = mode == 7 ? nullptr : i ? "fixture compatible" : providerName; }
         }
         return FFX_API_RETURN_OK;
     }
@@ -64,7 +91,9 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
     }
     if (header->type == FFX_API_QUERY_DESC_TYPE_GET_PROVIDER_VERSION && context && *context) {
         auto& desc = *reinterpret_cast<ffxQueryGetProviderVersion*>(header);
-        desc.versionId = mode == 4 ? 99 : 17; desc.versionName = name;
+        const auto provider = static_cast<FixtureContext*>(*context)->provider;
+        desc.versionId = mode == 4 ? 99 : provider;
+        desc.versionName = mode == 15 ? "4.0.1" : provider == 17 ? name : "3.1.6";
         return FFX_API_RETURN_OK;
     }
     if (header->type == FFX_API_QUERY_DESC_TYPE_UPSCALE_GETJITTERPHASECOUNT && context && *context) {

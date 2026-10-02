@@ -1,6 +1,6 @@
 # FSR frame generation: first integration milestone
 
-Status: architecture approved by the user's “proceed”; reviewed callback/synchronization refinements are incorporated in the [implementation plan](../plans/2026-10-02-fsr-fg.md), awaiting plan review. No FG implementation or activation is implied.
+Status: architecture approved by the user's “proceed”; reviewed callback/synchronization refinements are incorporated in the [implementation plan](../plans/2026-10-02-fsr-fg.md), approved for inline execution by the user's "start". Implementation is in progress; installed FG remains off.
 Base: working FSR SR code `8e78f5136772fbbbb23c2aafe341ab931256c475`; V5.4 NO-LORE.
 
 ## Intent and scope

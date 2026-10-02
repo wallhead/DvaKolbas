@@ -3,6 +3,10 @@
 #include <dx12/ffx_api_dx12.h>
 #include <fstream>
 #include <optional>
+#ifdef TRP_ENABLE_FSR_FG
+#include <ffx_framegeneration.h>
+#include <dx12/ffx_api_framegeneration_dx12.h>
+#endif
 
 namespace TheosRenderPipeline::Upscaling
 {
@@ -63,11 +67,29 @@ namespace TheosRenderPipeline::Upscaling
         }
     }
 
+    Result<FsrEffectProvider> SelectFsrEffectProvider(const std::vector<FsrEffectProvider>& providers, FsrEffect effect)
+    {
+        // Observed using the verified v2.3.0 binaries on the matching adapter.
+        // Opaque IDs are compared as identities, never decoded into versions.
+        const ProviderInfo* expected{};
+        static const ProviderInfo generation{17726168133342859270ull, "3.1.6"};
+        static const ProviderInfo swapchain{17752306900579389447ull, "3.1.7"};
+        if (effect == FsrEffect::FrameGeneration) expected = &generation;
+        if (effect == FsrEffect::FrameGenerationSwapChain) expected = &swapchain;
+        if (!expected) return std::unexpected(Error(ErrorKind::InvalidInput, 0, "FG selection requires an FG or swapchain effect; SR uses its existing provider policy"));
+        for (const auto& provider : providers) {
+            if (provider.effect == effect && provider.identity.id == expected->id && provider.identity.name == expected->name)
+                return provider;
+        }
+        return std::unexpected(Error(ErrorKind::NoProvider, 0, "Pinned analytical FG/swapchain provider identity is absent; no implicit fallback"));
+    }
+
     FsrRuntime::~FsrRuntime() { Unload(); }
     void FsrRuntime::Unload()
     {
         functions_ = {};
         if (loader_) { FreeLibrary(loader_); loader_ = nullptr; }
+        if (frameGeneration_) { FreeLibrary(frameGeneration_); frameGeneration_ = nullptr; }
         if (upscaler_) { FreeLibrary(upscaler_); upscaler_ = nullptr; }
     }
     Result<void> FsrRuntime::Load(const std::filesystem::path& pluginDirectory)
@@ -102,17 +124,64 @@ namespace TheosRenderPipeline::Upscaling
         return {};
     }
 
+    Result<void> FsrRuntime::LoadFrameGeneration(const std::filesystem::path& pluginDirectory)
+    {
+#ifdef TRP_ENABLE_FSR_FG
+        if (!loader_ || frameGeneration_ || !pluginDirectory.is_absolute())
+            return std::unexpected(Error(ErrorKind::InvalidInput, 0, "FG requires a loaded SR runtime, an absolute directory and no loaded FG module"));
+        std::error_code ec;
+        const auto path = std::filesystem::weakly_canonical(pluginDirectory / "FSR/amd_fidelityfx_framegeneration_dx12.dll", ec);
+        if (ec) return std::unexpected(Error(ErrorKind::MissingRuntime, ec.value(), "Cannot resolve FG runtime path"));
+        if (auto checked = CheckModuleFile(path); !checked) return checked;
+        const auto module = LoadLibraryExW(path.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+        if (!module) return std::unexpected(Error(ErrorKind::MissingRuntime, GetLastError(), "Cannot load plugin-relative FidelityFX FG runtime or dependencies"));
+        for (const auto* symbol : {"ffxCreateContext", "ffxDestroyContext", "ffxConfigure", "ffxQuery", "ffxDispatch"}) {
+            if (!GetProcAddress(module, symbol)) {
+                FreeLibrary(module);
+                return std::unexpected(Error(ErrorKind::MissingExport, ERROR_PROC_NOT_FOUND, "FG requires all five FidelityFX C exports; SR remains loaded"));
+            }
+        }
+        frameGeneration_ = module;
+        return {};
+#else
+        return std::unexpected(Error(ErrorKind::NoProvider, 0, "This build does not include FSR frame generation"));
+#endif
+    }
+
+    Result<std::vector<FsrEffectProvider>> FsrRuntime::EnumerateForEffect(ID3D12Device* device, FsrEffect effect)
+    {
+        uint64_t type{};
+        switch (effect) {
+        case FsrEffect::Upscale: type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE; break;
+#ifdef TRP_ENABLE_FSR_FG
+        case FsrEffect::FrameGeneration: type = FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION; break;
+        case FsrEffect::FrameGenerationSwapChain: type = FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATIONSWAPCHAIN_NEW_DX12; break;
+#endif
+        default: return std::unexpected(Error(ErrorKind::NoProvider, 0, "Unsupported FSR effect or build capability"));
+        }
+        if (effect != FsrEffect::Upscale && !frameGeneration_)
+            return std::unexpected(Error(ErrorKind::MissingRuntime, 0, "FG enumeration requires explicit FG module loading"));
+        auto discovered = EnumerateType(device, type);
+        if (!discovered) return std::unexpected(discovered.error());
+        std::vector<FsrEffectProvider> result; result.reserve(discovered->size());
+        for (auto& identity : *discovered) result.push_back({effect, std::move(identity)});
+        return result;
+    }
+
     Result<std::vector<ProviderInfo>> FsrRuntime::Enumerate(ID3D12Device* device)
+    { return EnumerateType(device, FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE); }
+
+    Result<std::vector<ProviderInfo>> FsrRuntime::EnumerateType(ID3D12Device* device, uint64_t createDescType)
     {
         if (!functions_.Query || !device) return std::unexpected(Error(ErrorKind::InvalidInput, 0, "FSR enumeration needs a loaded runtime and actual D3D12 device"));
         ffxQueryDescGetVersions query{}; query.header.type = FFX_API_QUERY_DESC_TYPE_GET_VERSIONS;
-        query.createDescType = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE; query.device = device;
+        query.createDescType = createDescType; query.device = device;
         uint64_t count{}; query.outputCount = &count;
         auto result = functions_.Query(nullptr, &query.header);
         if (result != FFX_API_RETURN_OK) return std::unexpected(QueryError(result));
         // Counts can change between calls. Bound allocation and retry counts.
         for (unsigned attempt = 0; attempt < 4; ++attempt) {
-            if (!count) return std::unexpected(Error(ErrorKind::NoProvider, 0, "No FSR upscaling provider supports this device"));
+            if (!count) return std::unexpected(Error(ErrorKind::NoProvider, 0, "No provider supports the requested FSR effect on this device"));
             if (count > 128) return std::unexpected(Error(ErrorKind::IncompatibleAbi, 0, "Invalid FSR provider count"));
             const auto capacity = count;
             std::vector<uint64_t> ids(static_cast<size_t>(capacity));
@@ -167,6 +236,16 @@ namespace TheosRenderPipeline::Upscaling
     {
         const auto actual = QueryActualProvider(context); if (!actual) return std::unexpected(actual.error());
         if (actual->id != expected.id) return std::unexpected(Error(ErrorKind::ContextFailure, 0, "Created FSR provider differs from sizing provider"));
+        return {};
+    }
+    Result<void> FsrRuntime::VerifyActualProvider(ffxContext& context, const FsrEffectProvider& expected)
+    {
+        if (auto valid = SelectFsrEffectProvider({expected}, expected.effect); !valid)
+            return std::unexpected(valid.error());
+        auto actual = QueryActualProvider(context);
+        if (!actual) return std::unexpected(actual.error());
+        if (actual->id != expected.identity.id || actual->name != expected.identity.name)
+            return std::unexpected(Error(ErrorKind::ContextFailure, 0, "Created FG provider ID/name differs from its selected effect catalog"));
         return {};
     }
 }

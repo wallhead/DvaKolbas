@@ -1,10 +1,19 @@
 [CmdletBinding()]
 param(
     [string]$Destination = (Join-Path $PSScriptRoot '../../.dependencies/FidelityFX-SDK-v2.3.0'),
-    [string]$ArchivePath
+    [string]$ArchivePath,
+    [switch]$IncludeFrameGeneration
 )
 $ErrorActionPreference = 'Stop'
 $pin = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime-pin.json') -Raw | ConvertFrom-Json
+$headers = @($pin.headers)
+$runtimes = @($pin.runtime)
+if ($IncludeFrameGeneration) {
+    $fgPin = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'fg-runtime-pin.json') -Raw | ConvertFrom-Json
+    if ($fgPin.commit -ne $pin.commit -or $fgPin.release -ne $pin.release) { throw 'FG/SR runtime pins must use the same SDK revision' }
+    $headers += @($fgPin.headers)
+    $runtimes += @($fgPin.runtime)
+}
 $destinationRoot = [IO.Path]::GetFullPath($Destination)
 [IO.Directory]::CreateDirectory($destinationRoot) | Out-Null
 function Assert-Hash([string]$Path, [string]$Expected) {
@@ -26,7 +35,7 @@ if (-not $ArchivePath) {
     $ArchivePath = [IO.Path]::GetFullPath($ArchivePath)
     Assert-Hash $ArchivePath $pin.archive.sha256
 }
-foreach ($header in $pin.headers) {
+foreach ($header in $headers) {
     $target = Join-Path $destinationRoot $header.path
     $url = "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/$($pin.commit)/$($header.path)"
     Get-PinnedFile $url $target $header.sha256
@@ -35,7 +44,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archive = [IO.Compression.ZipFile]::OpenRead($ArchivePath)
 $receipt = @()
 try {
-    foreach ($runtime in $pin.runtime) {
+    foreach ($runtime in $runtimes) {
         $target = Join-Path $destinationRoot "runtime/$($runtime.filename)"
         if (-not (Test-Path -LiteralPath $target)) {
             $entry = $archive.GetEntry($runtime.archivePath)
@@ -56,5 +65,5 @@ try {
         $receipt += [ordered]@{filename=$runtime.filename;sha256=$runtime.sha256;machine='0x8664';fileVersion=$version.FileVersion;productVersion=$version.ProductVersion;signatureStatus=[string]$signature.Status;signer=$signature.SignerCertificate.Subject;signerThumbprint=$signature.SignerCertificate.Thumbprint}
     }
 } finally { $archive.Dispose() }
-[ordered]@{sdkRelease=$pin.release;commit=$pin.commit;archiveSha256=$pin.archive.sha256;headers=$pin.headers;runtime=$receipt;license='Kits/FidelityFX/docs/license.md';provider='Not queried; SDK/runtime version does not identify active SR provider'} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $destinationRoot 'acquisition-receipt.json') -Encoding UTF8
-Write-Output "Verified pinned FSR SR headers/runtime: $destinationRoot"
+[ordered]@{sdkRelease=$pin.release;commit=$pin.commit;archiveSha256=$pin.archive.sha256;frameGenerationRequested=[bool]$IncludeFrameGeneration;headers=$headers;runtime=$receipt;license='Kits/FidelityFX/docs/license.md';provider='Not queried; module file versions do not identify active effect providers'} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $destinationRoot 'acquisition-receipt.json') -Encoding UTF8
+Write-Output "Verified pinned FSR headers/runtime (FG requested=$([bool]$IncludeFrameGeneration)): $destinationRoot"
