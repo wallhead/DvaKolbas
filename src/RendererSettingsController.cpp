@@ -115,8 +115,7 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     }
     upscaler_.mUpscaleType = settingsDraft.upscaleType;
     upscaler_.mFsrSettings = settingsDraft.fsr;
-    frameGen_.settings.generationBackend = settingsDraft.generationBackend;
-    frameGen_.RequestRuntimeInterpolation(settingsDraft.generationEnabled);
+    ApplyRendererGeneration(settingsDraft,frameGen_);
     upscaler_.mQualityLevel = std::clamp(settingsDraft.qualityLevel, 0, 4);
     upscaler_.mDLSSPreset = settingsDraft.dlssPreset;
     upscaler_.mAutoExposure = settingsDraft.autoExposure;

@@ -127,7 +127,7 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 	ini.SetBoolValue("Performance", "DirectDLSSOutput", performanceSettings.directDLSSOutput);
     // Preserve unrecognized and retired research keys from the loaded INI.
     const auto* frameGeneration = SourceFrameGeneration::GetSingleton();
-    ini.SetBoolValue("FrameGeneration", "Enabled", frameGeneration->RuntimeInterpolationRequested());
+    frameGeneration->StoreInterpolationPreference(ini);
     ini.SetLongValue("Experimental", "FrameGenerationBackend", frameGeneration->settings.generationBackend);
     const auto& sourceSettings = frameGeneration->settings;
     frameGeneration->StoreRuntimePaths(ini);

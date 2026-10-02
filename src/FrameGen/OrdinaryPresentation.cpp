@@ -1,4 +1,5 @@
 #include "OrdinaryPresentation.h"
+#include "ReShadeIntegration.h"
 #include <limits>
 #include <algorithm>
 namespace TheosRenderPipeline
@@ -28,7 +29,7 @@ namespace TheosRenderPipeline
         copy.BufferCount=2;copy.SwapEffect=DXGI_SWAP_EFFECT_FLIP_DISCARD;
         // This is the exact pre-hook function, supplied by the factory detour.
         // Calling the virtual factory entry here would recurse into the hook.
-        hr=(factory->*original)(device,&copy,output);
+        hr=ReShadeIntegration::Get().CreateOrdinarySwapChain(factory,device,copy,output,original);
         state_->ready=SUCCEEDED(hr) && *output;
         if(!state_->ready)return FAILED(hr)?hr:E_FAIL;
         return hr;

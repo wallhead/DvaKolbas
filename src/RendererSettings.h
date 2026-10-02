@@ -86,6 +86,19 @@ struct RendererSettingsCapabilities
     bool fsrBuilt{};
 };
 
+template<class Generation>
+inline void SetLiveGenerationRequest(RendererSettingsDraft& draft, Generation& generation, bool enabled)
+{
+    draft.generationEnabled=enabled;
+    generation.RequestRuntimeInterpolation(enabled);
+}
+template<class Generation>
+inline void ApplyRendererGeneration(const RendererSettingsDraft& draft, Generation& generation)
+{
+    generation.settings.generationBackend=draft.generationBackend;
+    generation.RequestRuntimeInterpolation(draft.generationEnabled);
+}
+
 inline bool CanEditNeuralEnabled(bool enabled, bool available) { return enabled || available; }
 
 inline bool SameNeuralPreferences(const SourceDLSSG::Preferences& a, const SourceDLSSG::Preferences& b)

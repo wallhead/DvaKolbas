@@ -73,6 +73,8 @@ class SourceFrameGeneration
     }
     static double GetRefreshRate(HWND window);
     void RequestRuntimeInterpolation(bool enabled) { requested_.store(enabled, std::memory_order_release); }
+    template<class Ini> void StoreInterpolationPreference(Ini& ini) const
+    { ini.SetBoolValue("FrameGeneration", "Enabled", RuntimeInterpolationRequested()); }
     bool RuntimeInterpolationRequested() const { return requested_.load(std::memory_order_acquire); }
     double refreshRate{};
 

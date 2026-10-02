@@ -95,7 +95,6 @@ set(ARP_BASELINE_SOURCES
     src/WeatherAppearanceFiles.h
     src/OverlayPresetsPanel.cpp
     src/RenderPipeline.h
-    src/ReShadeIntegration.cpp
     src/ReShadeIntegration.h
     src/ReShadeSwapChain.h
     src/ScreenshotFile.cpp

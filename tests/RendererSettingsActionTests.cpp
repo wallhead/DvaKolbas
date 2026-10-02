@@ -1,5 +1,6 @@
 #include "RendererSettings.h"
 #include "RendererSettingsAction.h"
+#include "FrameGen/SourceFrameGeneration.h"
 #include <SimpleIni.h>
 #include <iostream>
 #include <stdexcept>
@@ -84,9 +85,35 @@ void Neural()
     failed.sourceHost = false;
     Require(ValidateRendererSettings(draft, failed, &current), "unavailable source host still rejected");
 }
+void LiveGenerationActions()
+{
+    auto& generation=*SourceFrameGeneration::GetSingleton();
+    for (bool initial : {false,true}) for (bool save : {false,true}) {
+        generation.RequestRuntimeInterpolation(initial);
+        RendererSettingsDraft draft; draft.valid=true;
+        draft.generationEnabled=generation.RuntimeInterpolationRequested();
+        draft.generationBackend=1;
+        CSimpleIniA defaults; defaults.SetBoolValue("FrameGeneration","Enabled",initial);
+        const bool selected=!initial;
+        SetLiveGenerationRequest(draft,generation,selected);
+        Require(generation.RuntimeInterpolationRequested()==selected,"checkbox takes effect immediately");
+        // An unrelated edit followed by Apply/Save must preserve the checkbox.
+        draft.autoExposure=false;
+        Require(!ValidateRendererSettings(draft,{true,false,true,false}),"NVIDIA draft remains valid");
+        ApplyRendererGeneration(draft,generation);
+        if (save) generation.StoreInterpolationPreference(defaults);
+        Require(generation.RuntimeInterpolationRequested()==selected,"Apply/Save cannot reverse live FG toggle");
+        Require(defaults.GetBoolValue("FrameGeneration","Enabled")== (save?selected:initial),
+            "Save persists the visible choice; Apply leaves startup defaults alone");
+        if(save) {
+            generation.LoadStartupPreferences(defaults);
+            Require(generation.RuntimeInterpolationRequested()==selected,"saved toggle survives next startup");
+        }
+    }
+}
 }
 int main()
 {
-    try { Feedback(); Generation(); Neural(); std::cout << "PASS: visible/logged rejection, generation round trips and NR capability loss\n"; return 0; }
+    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

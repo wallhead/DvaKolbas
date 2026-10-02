@@ -96,7 +96,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         bool runtimeInterpolationRequested = frameGen->RuntimeInterpolationRequested();
         if (ImGui::Checkbox("Frame generation##runtime", &runtimeInterpolationRequested))
         {
-            frameGen->RequestRuntimeInterpolation(runtimeInterpolationRequested);
+            TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,runtimeInterpolationRequested);
         }
         DrawSettingsHelp("Takes effect immediately. Save as default to keep this choice for the next launch.");
         if (runtimeInterpolationRequested != nvidiaHost->FrameGenerationEnabled())

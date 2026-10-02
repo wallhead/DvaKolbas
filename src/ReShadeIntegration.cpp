@@ -48,6 +48,7 @@ namespace TheosRenderPipeline
         api::effect_runtime* runtime{};
         std::atomic_bool overlayOpen{};
         static thread_local ComPtr<ID3D12Device>* capturingDevice;
+        static thread_local ComPtr<IDXGISwapChain>* capturingSwapChain;
         bool nativeOutput{}, disabled{};
         std::atomic<api::effect_runtime*> overlayRuntime{};
         static thread_local bool internal;
@@ -68,6 +69,15 @@ namespace TheosRenderPipeline
                 // Public API handle, not a private proxy GUID or object offset.
                 auto* native = reinterpret_cast<ID3D12Device*>(device->get_native());
                 native->QueryInterface(IID_PPV_ARGS(capturingDevice->ReleaseAndGetAddressOf()));
+            }
+        }
+        static void InitSwapChain(api::swapchain* chain)
+        {
+            if (capturingSwapChain && chain->get_device()->get_api() == api::device_api::d3d11 && chain->get_native()) {
+                // Public API native handle, acquired only during our synchronous
+                // ordinary creation. No proxy GUID, offsets or private data.
+                auto* native = reinterpret_cast<IDXGISwapChain*>(chain->get_native());
+                native->QueryInterface(IID_PPV_ARGS(capturingSwapChain->ReleaseAndGetAddressOf()));
             }
         }
         static bool Open(api::effect_runtime* value, bool open, api::input_source)
@@ -206,6 +216,7 @@ namespace TheosRenderPipeline
 
     thread_local bool ReShadeIntegration::State::internal{};
     thread_local ComPtr<ID3D12Device>* ReShadeIntegration::State::capturingDevice{};
+    thread_local ComPtr<IDXGISwapChain>* ReShadeIntegration::State::capturingSwapChain{};
     ReShadeIntegration& ReShadeIntegration::Get() { static ReShadeIntegration value; return value; }
     ReShadeIntegration::State& ReShadeIntegration::Data()
     {
@@ -254,6 +265,7 @@ namespace TheosRenderPipeline
                 s.disabled = std::strcmp(disabled, "1") == 0 || _stricmp(disabled, "true") == 0;
             }
             registerEvent(Event::init_device, reinterpret_cast<void*>(&State::InitDevice));
+            registerEvent(Event::init_swapchain, reinterpret_cast<void*>(&State::InitSwapChain));
             registerEvent(Event::reshade_open_overlay, reinterpret_cast<void*>(&State::Open));
             registerEvent(Event::reshade_screenshot, reinterpret_cast<void*>(&State::Screenshot));
             s.status = s.disabled ? "ReShade disabled in ReShade.ini" : "ReShade API 14 registered; waiting for source color";
@@ -282,6 +294,35 @@ namespace TheosRenderPipeline
             s.status = "ReShade native output ownership unavailable; keeping automatic effects";
         }
         *out = native ? native.Detach() : exposed.Detach();
+        return result;
+    }
+    HRESULT ReShadeIntegration::CreateOrdinarySwapChain(IDXGIFactory* factory, ID3D11Device* device,
+        const DXGI_SWAP_CHAIN_DESC& desc, IDXGISwapChain** out, decltype(&IDXGIFactory::CreateSwapChain) original)
+    {
+        if (!out) { return E_POINTER; }
+        *out = nullptr;
+        if (!factory || !device || !original) { return E_INVALIDARG; }
+        auto& s = Data();
+        ComPtr<IDXGISwapChain> exposed, native;
+        auto copy = desc;
+        s.capturingSwapChain = s.module ? std::addressof(native) : nullptr;
+        const auto result = (factory->*original)(device, &copy, &exposed);
+        s.capturingSwapChain = nullptr;
+        if (FAILED(result) || !exposed) { return FAILED(result) ? result : E_FAIL; }
+        if (s.module && !native) {
+            s.nativeOutput = false;
+            s.status = "ReShade ordinary output ownership unavailable; presentation rejected";
+            return E_NOINTERFACE;
+        }
+        if (!s.module) { *out = exposed.Detach(); return result; }
+        // Retain the native chain, then release the automatic proxy/runtime
+        // before publishing it. Present/resize can no longer run automatic
+        // effects or consume the manual runtime's input. The native D3D11
+        // chain still owns the actual game adapter; no second device is made.
+        exposed.Reset();
+        s.nativeOutput = native != nullptr;
+        if (s.module) { s.status = "ReShade ordinary output isolated; waiting for source UI"; }
+        *out = native.Detach();
         return result;
     }
     void ReShadeIntegration::Configure(ID3D11Device* device, ID3D11DeviceContext* context, FrameExtent output)

@@ -1,4 +1,5 @@
 #include "ReShadeIntegration.h"
+#include "FrameGen/OrdinaryPresentation.h"
 #include <reshade/reshade_events.hpp>
 #include <dxgi1_4.h>
 #include <d3d12.h>
@@ -14,13 +15,18 @@ using TheosRenderPipeline::ReShadeIntegration;
 namespace api = reshade::api;
 static api::effect_runtime* owned{};
 static unsigned draws{}, automaticDraws{}, automaticRuntimes{};
+static bool creatingOrdinary{};
+static api::effect_runtime* automaticOrdinary{};
 // Both placements exceed ReShade 6.8's 160x120 minimum runtime size.
 static constexpr UINT outputWidth = 512, outputHeight = 256;
 static constexpr UINT renderWidth = 256, renderHeight = 128;
 static UINT expectedDepthWidth{}, expectedDepthHeight{};
 static bool depthExtentMatched{};
 static void Init(api::effect_runtime* runtime)
-{ if (runtime->get_device()->get_api() == api::device_api::d3d11) { owned = runtime; } else { ++automaticRuntimes; } }
+{ if (creatingOrdinary) { automaticOrdinary = runtime; ++automaticRuntimes; }
+  else if (runtime->get_device()->get_api() == api::device_api::d3d11) { owned = runtime; } else { ++automaticRuntimes; } }
+static void Destroy(api::effect_runtime* runtime)
+{ if (runtime == automaticOrdinary) { automaticOrdinary = nullptr; --automaticRuntimes; } }
 static void Draw(api::effect_runtime* runtime, api::command_list*, api::resource_view, api::resource_view)
 {
     if (runtime != owned) { ++automaticDraws; return; }
@@ -63,7 +69,8 @@ static std::array<unsigned char, 4> Pixel(ID3D11Device* device, ID3D11DeviceCont
 int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
-    const bool requireReShade = argc == 2 && std::string_view(argv[1]) == "--require-reshade";
+    const bool ordinaryRoute = argc == 2 && std::string_view(argv[1]) == "--ordinary-reshade";
+    const bool requireReShade = ordinaryRoute || (argc == 2 && std::string_view(argv[1]) == "--require-reshade");
     Require(argc == 1 || requireReShade, "supported arguments");
     WNDCLASSW wc{}; wc.hInstance = GetModuleHandleW(nullptr); wc.lpfnWndProc = DefWindowProcW; wc.lpszClassName = L"TRPReShadeFixture";
     RegisterClassW(&wc);
@@ -81,7 +88,9 @@ int main(int argc, char** argv)
     // Device creation is required even when the optional injector is absent.
     ComPtr<IDXGIDevice> dxgi; ComPtr<IDXGIAdapter> adapter; Check(device.As(&dxgi), "DXGI device"); Check(dxgi->GetAdapter(&adapter), "adapter");
     Require(effects.CreateSourceDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, nullptr) == E_POINTER, "null device output rejected");
-    ComPtr<ID3D12Device> device12; Check(effects.CreateSourceDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, &device12), "D3D12 device");
+    ComPtr<ID3D12Device> device12;
+    Check(ordinaryRoute ? D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device12)) :
+        effects.CreateSourceDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, &device12), "D3D12 device");
     Require(device12.Get() != nullptr, "successful creation returns a device");
     D3D12_COMMAND_QUEUE_DESC queueDesc{}; ComPtr<ID3D12CommandQueue> queue; Check(device12->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&queue)), "queue");
     if (!requireReShade) {
@@ -105,13 +114,28 @@ int main(int argc, char** argv)
     const auto reg = reinterpret_cast<void (*)(reshade::addon_event, void*)>(GetProcAddress(module, "ReShadeRegisterEvent"));
     Require(reg != nullptr, "actual ReShade exports");
     reg(reshade::addon_event::init_effect_runtime, reinterpret_cast<void*>(&Init));
+    reg(reshade::addon_event::destroy_effect_runtime, reinterpret_cast<void*>(&Destroy));
     reg(reshade::addon_event::reshade_begin_effects, reinterpret_cast<void*>(&Draw));
 
     // The production device factory keeps this D3D12 output chain free of
     // automatic effect/input runtimes. It presents four times per source frame.
     DXGI_SWAP_CHAIN_DESC1 desc{}; desc.Width = outputWidth; desc.Height = outputHeight; desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.SampleDesc.Count = 1; desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; desc.BufferCount = 2; desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    ComPtr<IDXGISwapChain1> output; Check(factory->CreateSwapChainForHwnd(queue.Get(), window, &desc, nullptr, nullptr, &output), "output swapchain");
+    TheosRenderPipeline::OrdinaryPresentation ordinary;
+    ComPtr<IDXGISwapChain> output;
+    if (ordinaryRoute) {
+        DXGI_SWAP_CHAIN_DESC ordinaryDesc{}; ordinaryDesc.BufferDesc.Width=outputWidth; ordinaryDesc.BufferDesc.Height=outputHeight;
+        ordinaryDesc.BufferDesc.Format=desc.Format; ordinaryDesc.SampleDesc.Count=1;
+        ordinaryDesc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT; ordinaryDesc.BufferCount=2;
+        ordinaryDesc.OutputWindow=window; ordinaryDesc.Windowed=TRUE;
+        creatingOrdinary=true;
+        Check(ordinary.CreateSwapChain(factory.Get(),device.Get(),ordinaryDesc,&output,&IDXGIFactory::CreateSwapChain), "production ordinary swapchain");
+        creatingOrdinary=false;
+    } else {
+        ComPtr<IDXGISwapChain1> chain;
+        Check(factory->CreateSwapChainForHwnd(queue.Get(), window, &desc, nullptr, nullptr, &chain), "output swapchain");
+        Check(chain.As(&output), "output interface");
+    }
 
     Require(automaticRuntimes == 0, "native output creates no automatic ReShade runtime");
     ComPtr<ID3D12Device> foreign; ComPtr<ID3D12Fence> foreignFence;
@@ -138,10 +162,13 @@ int main(int argc, char** argv)
         bool validated{}; unsigned stableFrames{};
         for (unsigned frame = 0; frame < 300 && !validated; ++frame) {
             target.Paint(context.Get(), scene); ui.Paint(context.Get(), scene);
+            const auto originalUI=Pixel(device.Get(),context.Get(),ui.texture.Get(),outputWidth-1,outputHeight-1);
             const auto initial = draws;
             Require(effects.Render(target.texture.Get(), depth.texture.Get(), extent, {renderWidth, renderHeight}, !before) == S_FALSE, "unselected placement is inert");
             Check(effects.Render(target.texture.Get(), depth.texture.Get(), extent, {renderWidth, renderHeight}, before), "selected placement");
             Require(effects.Render(target.texture.Get(), depth.texture.Get(), extent, {renderWidth, renderHeight}, before) == S_FALSE, "source-frame deduplication");
+            const auto uiBeforeGui=Pixel(device.Get(),context.Get(),ui.texture.Get(),outputWidth-1,outputHeight-1);
+            Require(uiBeforeGui==originalUI, "effects leave native UI sentinel unchanged");
             Check(effects.FinishUI(ui.texture.Get()), "GUI update");
             Require(effects.FinishUI(ui.texture.Get()) == S_FALSE, "GUI update deduplicated");
             if (draws != initial) {
@@ -154,9 +181,12 @@ int main(int argc, char** argv)
                 validated = stableFrames >= 3;
             } else { stableFrames = 0; }
             const auto outputDraws = automaticDraws;
+            const auto uiBeforePresent=Pixel(device.Get(),context.Get(),ui.texture.Get(),outputWidth-1,outputHeight-1);
             for (unsigned i = 0; i < 4; ++i) { Check(output->Present(0, 0), "downstream output Present"); }
             Require(automaticRuntimes == 0, "output remains free of automatic runtimes");
             Require(automaticDraws == outputDraws, "actual output runtime records no effect draws");
+            const auto uiPixel=Pixel(device.Get(),context.Get(),ui.texture.Get(),outputWidth-1,outputHeight-1);
+            Require(uiPixel==uiBeforePresent, "downstream presents preserve completed native UI");
             effects.PresentCompleted(); Sleep(10);
         }
         Require(validated, "placement switch completed shader reload");
@@ -257,6 +287,7 @@ int main(int argc, char** argv)
     Require(owned->open_overlay(false, api::input_source::none), "close ReShade overlay");
     Require(!effects.OverlayOpen(), "overlay capture releases");
     owned->get_command_queue()->wait_idle();
+    Check(ordinary.Retire(), "ordinary final readers retired");
     effects.ResetAfterRetirement();
     Require(!effects.OverlayOpen(), "retirement releases capture");
     effects.Configure(device.Get(), context.Get(), {outputWidth, outputHeight});
