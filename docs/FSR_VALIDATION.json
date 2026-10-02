@@ -702,5 +702,18 @@
     "independentSourceReview": "PASS after successful temporal transfer coverage was added",
     "gameOrMo2Modified": false
   },
-  "packages": "FSR_PACKAGES.json: four corrected ZIPs, staged and not installed"
+  "packages": "FSR_PACKAGES.json: four corrected ZIPs, staged and not installed",
+  "skyrimStartupCorrection": {
+    "builtCodeRevision": "3f463fdfc6fc68eaecb80cb37cbdc7fb4af39a40",
+    "firstSkyrimLaunch": "FAILED before FSR context creation: D3D11 presentation buffer cache 0x887A0001",
+    "productionCacheReproducedBeforeFix": true,
+    "standardReleaseRunnableTestsPassed": 118,
+    "fsrDisabledStandardReleaseRunnableTestsPassed": 108,
+    "productionD3D11CacheAndUiSentinelAndResize": "PASS",
+    "correctedStandardDllInstalled": true,
+    "manualSkyrimRetry": "PENDING",
+    "graphicsToolsChecks": "3 excluded per configuration; unavailable",
+    "crossVendor": "NOT RUN",
+    "frameGeneration": "NOT IMPLEMENTED"
+  }
 }

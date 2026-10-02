@@ -1,6 +1,6 @@
 # FSR SR gameplay acceptance checklist
 
-Status: **First Skyrim launch attempted on 2026-10-02; startup failed before gameplay.** The ordinary D3D11 buffer-cache fault was reproduced and corrected locally; a manual Skyrim retry is pending. See [the gameplay test log](FSR_SKYRIM_TEST_LOG.md). The user starts Skyrim manually. Target: **TESV54BETA / V5.4, V5.4 NO-LORE**. Keep the working DLSS mod available for rollback and avoid concurrent upscalers.
+Status: **First Skyrim launch attempted on 2026-10-02; startup failed before gameplay.** The ordinary D3D11 buffer-cache fault was reproduced and corrected locally; a manual Skyrim retry is pending. See [the gameplay test log](https://github.com/wallhead/DvaKolbas/blob/codex/fsr-sr/docs/FSR_SKYRIM_TEST_LOG.md). The user starts Skyrim manually. Target: **TESV54BETA / V5.4, V5.4 NO-LORE**. Keep the working DLSS mod available for rollback and avoid concurrent upscalers.
 
 ## First launch
 

@@ -49,5 +49,15 @@
       "embeddedSourceRevision": "30115005cfd4",
       "manifestAndZipContentsValidated": true
     }
-  ]
+  ],
+  "skyrimStartupFix": {
+    "builtCodeRevision": "3f463fdfc6fc68eaecb80cb37cbdc7fb4af39a40",
+    "preset": "fsr-standard",
+    "zip": "out/packages/2026-10-02/startup-fix/fsr-standard/Standard-FSR-SR.zip",
+    "sha256": "91134bcad9bc9a9305ea66c384c77c7d343f7f694cc5b00e93edc127695a70e4",
+    "pluginSha256": "730525e8d43b41e08bb35fd687a97b0fbae3b537ed12e2b90120b1d9b1c63505",
+    "state": "installed in separate V5.4 NO-LORE test mod; manual retry pending",
+    "settingsAndImportsValidated": true,
+    "supersedesStandardReviewFixPackageForGameplay": true
+  }
 }
