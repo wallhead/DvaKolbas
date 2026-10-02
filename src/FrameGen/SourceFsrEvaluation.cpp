@@ -124,12 +124,30 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     frame.motionConvention={float(renderWidth_),float(renderHeight_),true,false};
     frame.reset=resetNextEvaluation_ || pipeline.mPendingHistoryResets>0 || loadingScreenRoute_.NeedsTemporalReset();
     frame.sharpness=pipeline.mSharpening?std::clamp(pipeline.mSharpness,0.0f,1.0f):0.0f;
+    if(evaluationCount_<3) {
+        auto* bridgeContext=fsrResources_->Bridge()->Context11();
+        Microsoft::WRL::ComPtr<ID3D11Device> bridgeDevice;bridgeContext->GetDevice(&bridgeDevice);
+        for(auto target:{frame.input,frame.output}) {
+            D3D11_TEXTURE2D_DESC desc{};target->GetDesc(&desc);
+            Microsoft::WRL::ComPtr<ID3D11Device> targetDevice;target->GetDevice(&targetDevice);
+            logger::info("[FSR handoff] source={} deltaMs={} role={} extent={}x{} expected={}x{} format={} bind=0x{:X} mips={} array={} samples={} context={} contextType={} contextDevice={} targetDevice={} sameDevice={}",
+                frame.sourceId,frame.deltaMilliseconds,target==frame.input?"input":"output",desc.Width,desc.Height,
+                target==frame.input?frame.render.width:frame.display.width,target==frame.input?frame.render.height:frame.display.height,
+                static_cast<unsigned>(desc.Format),desc.BindFlags,desc.MipLevels,desc.ArraySize,desc.SampleDesc.Count,
+                static_cast<void*>(bridgeContext),static_cast<unsigned>(bridgeContext->GetType()),static_cast<void*>(bridgeDevice.Get()),
+                static_cast<void*>(targetDevice.Get()),D3D11FrameCopy::SameObject(bridgeDevice.Get(),targetDevice.Get()));
+        }
+    }
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
     SourceFsrEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_)};
     auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
     if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
         if(operations.error)status_=operations.error->message;
-        if(fsrFrame_ && fsrFrame_->LastError())status_=fsrFrame_->LastError()->message;
+        if(fsrFrame_ && fsrFrame_->LastError()) {
+            status_=fsrFrame_->LastError()->message;
+            logger::error("[FSR frame delivery] outcome={} error=0x{:08X} {}",static_cast<unsigned>(result.outcome),
+                static_cast<std::uint32_t>(fsrFrame_->LastError()->nativeResult),status_);
+        }
         FailLifecycle(E_FAIL,"FSR frame delivery");return false;
     }
     context_->CopyResource(presentation_.Buffers()[index].Get(),gameTargets_.UpscaleOutput());

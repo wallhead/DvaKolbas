@@ -116,5 +116,17 @@ int main(int argc,char** argv)
         Require(bool(colorHost.Retire()),"configured color context retires safely");
     }
     mode(0);
+    auto invalidSpatialFrame=frame;invalidSpatialFrame.display.width+=1;
+    auto invalidSpatial=adapter.Spatial(invalidSpatialFrame);
+    Require(invalidSpatial && *invalidSpatial==UpscaleOutcome::SkippedInvalidInput && adapter.LastError() &&
+        adapter.LastError()->message.find("extent")!=std::string::npos,"spatial extent rejection retains a diagnostic for the host");
+    auto invalidOutputDesc=desc;invalidOutputDesc.Usage=D3D11_USAGE_DEFAULT;invalidOutputDesc.CPUAccessFlags=0;invalidOutputDesc.BindFlags=D3D11_BIND_SHADER_RESOURCE;
+    ComPtr<ID3D11Texture2D> invalidOutput;Check(rig.device11->CreateTexture2D(&invalidOutputDesc,nullptr,&invalidOutput),"spatial target without render binding");
+    auto invalidOutputFrame=frame;invalidOutputFrame.output=invalidOutput.Get();auto invalidConversion=adapter.Spatial(invalidOutputFrame);
+    Require(!invalidConversion && adapter.LastError() && adapter.LastError()->nativeResult==E_INVALIDARG &&
+        adapter.LastError()->message.find("texture descriptor")!=std::string::npos,"spatial conversion reports its failing validation stage and HRESULT");
+    auto spatialFault=faulted.Spatial(frame);
+    Require(!spatialFault && faulted.LastError() && faulted.LastError()->message.find("bridge")!=std::string::npos,
+        "spatial bridge failure retains its actual reason for the host");
     Require(bool(host.Retire()),"retire integration feature");rig.ValidateDebug();std::puts("PASS: frame ordering, external ownership, native recovery and discarded failed commands");
 }

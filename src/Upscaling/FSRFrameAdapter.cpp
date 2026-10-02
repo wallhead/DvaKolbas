@@ -32,10 +32,20 @@ namespace TheosRenderPipeline::Upscaling
     Result<UpscaleOutcome> FsrFrameAdapter::Spatial(const UpscaleFrame& frame)
     {
         state_->history.Invalidate();state_->lastReset=false;
-        if(!state_->bridge || !state_->bridge->Ready())return std::unexpected(RuntimeError{ErrorKind::RetirementFailure,0,"FSR bridge is unavailable; spatial recovery cannot continue"});
-        if(!NativeImage(frame))return UpscaleOutcome::SkippedInvalidInput;
+        if(!state_->bridge || !state_->bridge->Ready()) {
+            state_->error=RuntimeError{ErrorKind::RetirementFailure,state_->bridge?state_->bridge->Fault():E_POINTER,"FSR bridge is unavailable; spatial recovery cannot continue"};
+            return std::unexpected(*state_->error);
+        }
+        if(!NativeImage(frame)) {
+            state_->error=RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,"FSR spatial input/output extent is invalid"};
+            return UpscaleOutcome::SkippedInvalidInput;
+        }
         auto hr=state_->spatial.Convert(state_->bridge->Context11(),frame.input,frame.output,frame.colorIsLinear?ColorEncoding::Linear:state_->encoding,state_->encoding);
-        if(FAILED(hr))return std::unexpected(RuntimeError{FAILED(state_->bridge->Device12()->GetDeviceRemovedReason())?ErrorKind::DeviceLost:ErrorKind::InvalidInput,hr,"FSR native spatial conversion failed"});
+        if(FAILED(hr)) {
+            state_->error=RuntimeError{FAILED(state_->bridge->Device12()->GetDeviceRemovedReason())?ErrorKind::DeviceLost:ErrorKind::InvalidInput,hr,
+                std::string("FSR native spatial conversion failed at ")+state_->spatial.FailureStage()};
+            return std::unexpected(*state_->error);
+        }
         return UpscaleOutcome::SpatialRecovery;
     }
     Result<UpscaleOutcome> FsrFrameAdapter::Evaluate(const UpscaleFrame& frame)

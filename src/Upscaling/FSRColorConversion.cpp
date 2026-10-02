@@ -42,19 +42,28 @@ float4 ps(Vertex v):SV_Target{float4 c=inputImage.SampleLevel(sampling,v.uv,0);r
     }
     HRESULT FsrColorConverter::Convert(ID3D11DeviceContext* context,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding from,ColorEncoding to)
     {
-        if(!IsKnownColorEncoding(from) || !IsKnownColorEncoding(to) || !D3D11FrameCopy::ValidResources(context,input,output))return E_INVALIDARG;
+        failureStage_="color encoding";
+        if(!IsKnownColorEncoding(from) || !IsKnownColorEncoding(to))return E_INVALIDARG;
+        failureStage_="resource ownership or immediate context";
+        if(!D3D11FrameCopy::ValidResources(context,input,output))return E_INVALIDARG;
         D3D11_TEXTURE2D_DESC in{},out{};input->GetDesc(&in);output->GetDesc(&out);
+        failureStage_="texture descriptor";
         if(!SupportsFsrHandoffFormat(in.Format) || !SupportsFsrHandoffFormat(out.Format) || !(in.BindFlags&D3D11_BIND_SHADER_RESOURCE) || !(out.BindFlags&D3D11_BIND_RENDER_TARGET) ||
             in.SampleDesc.Count!=1 || out.SampleDesc.Count!=1 || in.MipLevels!=1 || out.MipLevels!=1 || in.ArraySize!=1 || out.ArraySize!=1)return E_INVALIDARG;
+        failureStage_="device/shader initialization";
         Ptr<ID3D11Device> device;context->GetDevice(&device);auto hr=Initialize(device.Get());if(FAILED(hr))return hr;
+        failureStage_="source SRV creation";
         if(input_.Get()!=input){Ptr<ID3D11ShaderResourceView> view;hr=device->CreateShaderResourceView(input,nullptr,&view);if(FAILED(hr))return hr;srv_=view;input_=input;}
+        failureStage_="destination RTV creation";
         if(output_.Get()!=output){Ptr<ID3D11RenderTargetView> view;hr=device->CreateRenderTargetView(output,nullptr,&view);if(FAILED(hr))return hr;rtv_=view;output_=output;}
+        failureStage_="context state isolation";
         D3D11ContextIsolation::Scope scope(isolation_,context);if(!scope)return E_FAIL;
         const UINT values[]{static_cast<UINT>(from),static_cast<UINT>(to),0,0};context->UpdateSubresource(constants_.Get(),0,nullptr,values,0,0);
         auto* buffer=constants_.Get();auto* sampler=sampler_.Get();auto* srv=srv_.Get();auto* rtv=rtv_.Get();
         context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);context->VSSetShader(vertex_.Get(),nullptr,0);context->PSSetShader(pixel_.Get(),nullptr,0);
         context->PSSetConstantBuffers(0,1,&buffer);context->PSSetSamplers(0,1,&sampler);context->PSSetShaderResources(0,1,&srv);context->OMSetRenderTargets(1,&rtv,nullptr);
         const D3D11_VIEWPORT viewport{0,0,float(out.Width),float(out.Height),0,1};context->RSSetViewports(1,&viewport);context->Draw(3,0);
-        return device->GetDeviceRemovedReason();
+        failureStage_="draw/device status";
+        hr=device->GetDeviceRemovedReason();if(SUCCEEDED(hr))failureStage_="none";return hr;
     }
 }

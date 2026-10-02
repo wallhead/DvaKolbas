@@ -15,3 +15,13 @@ The updated helper passes: it caches the current native D3D11 buffer, checks log
 The corrected Standard DLL from clean code revision `3f463fdfc6fc68eaecb80cb37cbdc7fb4af39a40` is installed in the existing test mod. Its SHA-256 is `730525e8d43b41e08bb35fd687a97b0fbae3b537ed12e2b90120b1d9b1c63505`; the installed manifest, exact pinned runtimes, settings and imports passed package validation. The startup INI, ImGui layout and MO2 profile were retained; the failed DLL and log are backed up locally. The fresh Standard archive is `out/packages/2026-10-02/startup-fix/fsr-standard/Standard-FSR-SR.zip`.
 
 **Pending:** retry Skyrim manually. Reaching a loaded world, actual temporal FSR status, game-producer formats/guides, ENB color calibration, image quality, native UI behavior, gameplay lifecycle and performance remain unverified. FSR frame generation remains unimplemented.
+
+## 2026-10-02: retry reaches context creation, first loading frame fails
+
+The user reports a black screen. The 11:28:57–11:32:59 log confirms that the buffer-cache correction worked: the host prepares a 1706x960 render target for 2560x1440 output, caches one native D3D11 buffer, completes deferred FSR startup, initializes native UI and captures render-sized depth/motion. The first loading-menu frame at 11:29:37 then reports `FSR frame delivery failed (0x80004005)` and latches the rendering-stop state. No temporal frame or gameplay was delivered.
+
+This is a later failure than the previous swapchain-cache error. Loading/menu evaluation uses `FsrFrameAdapter::Spatial`, but that path returned errors without recording `LastError`; the host consequently logged the old context-ready status instead of the actual conversion failure. The precise black-screen cause is not yet established.
+
+Diagnostic correction: spatial extent, bridge and conversion failures now retain their own diagnostic and native HRESULT. Color conversion records whether it failed on encoding, resource ownership, descriptors, shader setup, SRV/RTV creation, context isolation or device status. First-frame logging records the real input/output descriptors and context/resource device-identity checks. Rendering still stops on an actual delivery failure; no ownership checks or error conditions were bypassed.
+
+Before the diagnostic correction, a new regression reproduced the missing spatial extent diagnostic. Afterward, extent, missing render binding and bridge-fault diagnostics pass, together with the ordinary FSR startup/pixel/UI/resize helper. A new Skyrim run is required to identify the failing conversion step; the black screen remains unresolved.
