@@ -88,18 +88,20 @@ void Neural()
 void LiveGenerationActions()
 {
     auto& generation=*SourceFrameGeneration::GetSingleton();
-    for (bool initial : {false,true}) for (bool save : {false,true}) {
+    for (bool fsr : {false,true}) for (bool initial : {false,true}) for (bool save : {false,true}) {
         generation.RequestRuntimeInterpolation(initial);
         RendererSettingsDraft draft; draft.valid=true;
         draft.generationEnabled=generation.RuntimeInterpolationRequested();
-        draft.generationBackend=1;
+        draft.generationBackend=fsr?2:1;draft.upscaleType=fsr?FSR:DLSS;
+        draft.fsr.sourceColorEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
         CSimpleIniA defaults; defaults.SetBoolValue("FrameGeneration","Enabled",initial);
         const bool selected=!initial;
         SetLiveGenerationRequest(draft,generation,selected);
         Require(generation.RuntimeInterpolationRequested()==selected,"checkbox takes effect immediately");
         // An unrelated edit followed by Apply/Save must preserve the checkbox.
         draft.autoExposure=false;
-        Require(!ValidateRendererSettings(draft,{true,false,true,false}),"NVIDIA draft remains valid");
+        RendererSettingsCapabilities caps{true,false,true,false};caps.fsrBuilt=true;caps.fsrFgBuilt=true;
+        Require(!ValidateRendererSettings(draft,caps),"NVIDIA/AMD draft remains valid");
         ApplyRendererGeneration(draft,generation);
         if (save) generation.StoreInterpolationPreference(defaults);
         Require(generation.RuntimeInterpolationRequested()==selected,"Apply/Save cannot reverse live FG toggle");

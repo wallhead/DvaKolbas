@@ -4,6 +4,10 @@
 #include "Graphics/D3D11D3D12Interop.h"
 #include "Upscaling/FSRColorConversion.h"
 #include "Upscaling/FSRPreparedResources.h"
+#if defined(TRP_ENABLE_FSR_FG)
+#include "FrameGen/FSRHostPresentation.h"
+#include "Upscaling/FSRFrameAdapter.h"
+#endif
 #include <reshade/reshade_events.hpp>
 #include <dxgi1_4.h>
 #include <d3d12.h>
@@ -70,12 +74,101 @@ static std::array<unsigned char, 4> Pixel(ID3D11Device* device, ID3D11DeviceCont
     std::array<unsigned char, 4> value{p[0], p[1], p[2], p[3]}; context->Unmap(staging.Get(), 0); return value;
 }
 
+#if defined(TRP_ENABLE_FSR_FG)
+static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* device,ID3D11DeviceContext* context)
+{
+    using namespace TheosRenderPipeline;using namespace Upscaling;
+    auto& effects=ReShadeIntegration::Get();
+    wchar_t executable[32768]{};Require(GetModuleFileNameW(nullptr,executable,32768)!=0,"AMD fixture root");
+    auto resources=std::make_shared<FsrHostResources>(std::filesystem::path(executable).parent_path(),
+        +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** output)->HRESULT {
+            return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,output,true);
+        });
+    FsrSettings settings;settings.quality=Quality::Performance;settings.sourceColorEncoding=ColorEncoding::SRGB;
+    DXGI_SWAP_CHAIN_DESC desc{};desc.BufferDesc.Width=outputWidth;desc.BufferDesc.Height=outputHeight;
+    desc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;desc.BufferCount=2;desc.SampleDesc.Count=1;
+    desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.OutputWindow=window;desc.Windowed=TRUE;
+    FsrHostPresentation host;auto extent=host.Create(factory,device,resources,desc,settings);
+    if(!extent)std::printf("AMD startup failure: %s native=%lld\n",extent.error().message.c_str(),extent.error().nativeResult);
+    Require(extent && *extent==Extent{renderWidth,renderHeight},"actual AMD host reduced sizing on original ReShade producer");
+    Require(bool(resources->CompleteStartup()),"real analytical SR context");
+    Require(automaticRuntimes==0,"AMD presenter has no automatic ReShade runtime");
+    Surface source(device,renderWidth,renderHeight),input(device,renderWidth,renderHeight),output(device,outputWidth,outputHeight);
+    Surface depth(device,renderWidth,renderHeight,DXGI_FORMAT_R32_FLOAT),motion(device,renderWidth,renderHeight,DXGI_FORMAT_R16G16_FLOAT),hud(device,outputWidth,outputHeight);
+    const std::array<float,4> scene{.25f,.5f,.25f,1},ui{0,.25f,0,.5f};
+    depth.Paint(context,{.5f,0,0,0});motion.Paint(context,{0,0,0,0});
+    FsrFrameAdapter adapter(*resources->Upscaler(),resources->Bridge(),resources->Resources(),resources->Color11(),resources->Depth11(),
+        resources->Motion11(),resources->Output11(),resources->HandoffEncoding());
+    // Compile the real source-stage probe before counting source transactions.
+    for(unsigned i=0;i<300 && !draws;++i){output.Paint(context,scene);hud.Paint(context,ui);
+        Check(effects.Render(output.texture.Get(),depth.texture.Get(),{outputWidth,outputHeight},{renderWidth,renderHeight},false),"AMD ReShade shader warmup");
+        Check(effects.FinishUI(hud.texture.Get()),"AMD ReShade GUI warmup");effects.PresentCompleted();Sleep(10);}
+    Require(owned && draws,"actual AMD source effect compiled");owned->open_overlay(false,api::input_source::none);
+    unsigned sourceTransactions{},upscales{},callbacks{},uiChecks{},disabledSources{},spatialSources{};
+    std::uint64_t sourceId{};
+    UpscaleFrame frame;frame.backend=BackendKind::Fsr;frame.color=source.texture.Get();frame.input=input.texture.Get();frame.output=output.texture.Get();
+    frame.depth=depth.texture.Get();frame.motion=motion.texture.Get();frame.render=frame.subrect={renderWidth,renderHeight};frame.display={outputWidth,outputHeight};
+    frame.deltaMilliseconds=1000.f/72;frame.motionConvention={float(renderWidth),float(renderHeight),true,false};
+    frame.camera.identity=7;frame.camera.nearDistance=.1f;frame.camera.farDistance=100;
+    frame.camera.verticalFovRadians=1.04719755f;frame.camera.worldUnitsToMeters=1;
+    frame.camera.view={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
+    frame.camera.projection={1,0,0,0,0,1.7320508f,0,0,0,0,1.001001f,1,0,0,-.1001001f,0};
+    for(bool before:{false,true,false}) {
+        effects.SetBeforeUpscaling(before);const FrameExtent effectExtent=before?FrameExtent{renderWidth,renderHeight}:FrameExtent{outputWidth,outputHeight};
+        expectedDepthWidth=effectExtent.width;expectedDepthHeight=effectExtent.height;
+        unsigned stable{};
+        for(unsigned i=0;i<32;++i){
+            Check(host.WaitBeforeProducer(),"AMD guide wait before SR writes");
+            source.Paint(context,scene);context->CopyResource(input.texture.Get(),source.texture.Get());hud.Paint(context,ui);
+            frame.sourceId=++sourceId;frame.reset=i==0;auto outcome=UpscaleOutcome::Temporal;
+            const bool menu=i==31,requested=i!=23;
+            const auto drawCount=draws,automaticCount=automaticDraws;
+            Check(effects.Render(input.texture.Get(),menu?nullptr:depth.texture.Get(),{renderWidth,renderHeight},{renderWidth,renderHeight},true),"AMD before effects stage");
+            auto evaluated=menu?adapter.Spatial(frame):adapter.Evaluate(frame);
+            if(!evaluated && adapter.LastError())std::printf("AMD SR failure: %s\n",adapter.LastError()->message.c_str());
+            Require(evaluated && (*evaluated==UpscaleOutcome::Temporal || *evaluated==UpscaleOutcome::SpatialRecovery),"exactly one real SR/spatial pass");
+            outcome=*evaluated;++upscales;
+            Check(effects.Render(output.texture.Get(),menu?nullptr:depth.texture.Get(),{outputWidth,outputHeight},{renderWidth,renderHeight},false),"AMD after effects stage");
+            Check(effects.FinishUI(hud.texture.Get()),"AMD completed GUI before SDK handoff");
+            const auto hudPixel=Pixel(device,context,hud.texture.Get(),outputWidth-1,outputHeight-1);
+            const auto scenePixel=Pixel(device,context,output.texture.Get());
+            if(!menu && draws==drawCount+1 && scenePixel[0]>=94 && scenePixel[0]<=98 && scenePixel[1]>=126 && scenePixel[1]<=130 && depthExtentMatched)++stable;
+            context->CopyResource(host.SceneTarget11(),output.texture.Get());
+            auto generationFrame=frame;generationFrame.depthFormat=DXGI_FORMAT_R32_FLOAT;generationFrame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
+            generationFrame.colorIsLinear=true;generationFrame.reset |= adapter.LastTemporalReset();
+            Check(host.Present(generationFrame,outcome,hud.texture.Get(),nullptr,true,menu,requested,0,0),"actual AMD source Present");
+            const auto status=host.Status();callbacks+=status.callback.invocations;++sourceTransactions;
+            Require(draws<=drawCount+1,"AMD SDK presents cannot run another source effects pass");
+            Require(automaticDraws==automaticCount && automaticRuntimes==0,"AMD output workers run no ReShade effect/input runtime");
+            Require(Pixel(device,context,hud.texture.Get(),outputWidth-1,outputHeight-1)==hudPixel,"AMD preserves completed premultiplied HUD pixels");++uiChecks;
+            if(!requested){++disabledSources;Require(!status.decision.generate && !status.callback.invocations,"FG off keeps same chain with real UI");}
+            if(menu){++spatialSources;Require(!status.decision.generate && !status.callback.invocations,"spatial menu cannot generate");}
+            effects.PresentCompleted();Sleep(10);
+        }
+        Require(stable>=3,"AMD before/after placement has exactly one probe and correct depth");
+    }
+    Require(sourceTransactions==96 && upscales==96 && uiChecks==96 && callbacks>0 && disabledSources==3 && spatialSources==3,"actual host source/effects/FG/UI observations");
+    for(auto name:{L"sl.interposer.dll",L"sl.dlss.dll",L"sl.dlss_g.dll",L"nvngx_dlss.dll",L"nvngx_dlssg.dll"})Require(!GetModuleHandleW(name),"AMD fixture loads no NVIDIA runtime");
+    owned->get_command_queue()->wait_idle();Require(bool(host.Retire()),"AMD async readers retire before SR owner release");
+    effects.ResetAfterRetirement();DestroyWindow(window);
+    std::printf("PASS: actual AMD/ReShade host sources=%u upscales=%u generationCallbacks=%u completedUi=%u liveOff=%u spatial=%u; physical cadence unobserved\n",
+        sourceTransactions,upscales,callbacks,uiChecks,disabledSources,spatialSources);
+}
+#endif
+
+template<class Effects> static HRESULT RequireNativeDevice(Effects& effects,IUnknown* adapter,ID3D12Device** out) {
+ if constexpr(requires{effects.CreateSourceDevice(adapter,D3D_FEATURE_LEVEL_12_0,out,true);})
+     return effects.CreateSourceDevice(adapter,D3D_FEATURE_LEVEL_12_0,out,true);
+ else return E_NOTIMPL;
+}
 int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
+    const bool unresolvedRoute=argc==3 && std::string_view(argv[1])=="--unresolved-reshade";
+    const bool fsrRoute=argc==2 && std::string_view(argv[1])=="--fsr-reshade";
     const bool ordinaryRoute = argc == 2 && std::string_view(argv[1]) == "--ordinary-reshade";
-    const bool requireReShade = ordinaryRoute || (argc == 2 && std::string_view(argv[1]) == "--require-reshade");
-    Require(argc == 1 || requireReShade, "supported arguments");
+    const bool requireReShade = fsrRoute || ordinaryRoute || (argc == 2 && std::string_view(argv[1]) == "--require-reshade");
+    Require(argc == 1 || requireReShade || unresolvedRoute, "supported arguments");
     WNDCLASSW wc{}; wc.hInstance = GetModuleHandleW(nullptr); wc.lpfnWndProc = DefWindowProcW; wc.lpszClassName = L"TRPReShadeFixture";
     RegisterClassW(&wc);
     HWND window = CreateWindowW(wc.lpszClassName, L"TRP offline ReShade fixture", WS_POPUP, 0, 0, outputWidth, outputHeight, nullptr, nullptr, wc.hInstance, nullptr);
@@ -84,6 +177,16 @@ int main(int argc, char** argv)
     ComPtr<ID3D11Device> device; ComPtr<ID3D11DeviceContext> context;
     Check(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION,
         &device, nullptr, &context), "D3D11 device");
+    if(unresolvedRoute) {
+        auto module=LoadLibraryW(std::filesystem::path(argv[2]).c_str());Require(module!=nullptr,"unresolved public-API fixture module");
+        auto& effects=ReShadeIntegration::Get();effects.Discover(window);
+        ComPtr<IDXGIDevice> dxgi;ComPtr<IDXGIAdapter> adapter;Check(device.As(&dxgi),"unresolved adapter query");Check(dxgi->GetAdapter(&adapter),"unresolved adapter");
+        ComPtr<ID3D12Device> strict;
+        Require(effects.CreateSourceDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,&strict,true)==E_NOINTERFACE && !strict,
+            "recognized unresolved ReShade injector rejects AMD ownership before publication");
+        ComPtr<ID3D12Device> legacy;Check(effects.CreateSourceDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,&legacy),"legacy non-strict creation remains available");
+        FreeLibrary(module);DestroyWindow(window);std::puts("PASS: unresolved native ownership rejected; legacy creation preserved");return 0;
+    }
     auto& effects = ReShadeIntegration::Get(); effects.Discover(window); effects.Configure(device.Get(), context.Get(), {outputWidth, outputHeight});
     effects.SetBeforeUpscaling(false);
     Surface color(device.Get(), outputWidth, outputHeight), earlyColor(device.Get(), renderWidth, renderHeight), depth(device.Get(), renderWidth, renderHeight, DXGI_FORMAT_R32_FLOAT), ui(device.Get(), outputWidth, outputHeight);
@@ -93,10 +196,10 @@ int main(int argc, char** argv)
     ComPtr<IDXGIDevice> dxgi; ComPtr<IDXGIAdapter> adapter; Check(device.As(&dxgi), "DXGI device"); Check(dxgi->GetAdapter(&adapter), "adapter");
     Require(effects.CreateSourceDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, nullptr) == E_POINTER, "null device output rejected");
     ComPtr<ID3D12Device> device12;
-    Check(ordinaryRoute ? D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device12)) :
-        effects.CreateSourceDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, &device12), "D3D12 device");
-    Require(device12.Get() != nullptr, "successful creation returns a device");
-    D3D12_COMMAND_QUEUE_DESC queueDesc{}; ComPtr<ID3D12CommandQueue> queue; Check(device12->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&queue)), "queue");
+    if(!fsrRoute)Check(ordinaryRoute ? D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device12)) :
+        RequireNativeDevice(effects,adapter.Get(), &device12), "D3D12 device");
+    Require(fsrRoute || device12.Get() != nullptr, "successful creation returns a device");
+    D3D12_COMMAND_QUEUE_DESC queueDesc{}; ComPtr<ID3D12CommandQueue> queue; if(!fsrRoute)Check(device12->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&queue)), "queue");
     if (!requireReShade) {
         Require(effects.Status() == "ReShade not loaded", "absence fixture must not load an injector");
         ComPtr<ID3D12Fence> ready; Check(device12->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&ready)), "absent runtime fence");
@@ -121,6 +224,13 @@ int main(int argc, char** argv)
     reg(reshade::addon_event::destroy_effect_runtime, reinterpret_cast<void*>(&Destroy));
     reg(reshade::addon_event::reshade_begin_effects, reinterpret_cast<void*>(&Draw));
 
+    if(fsrRoute) {
+#if defined(TRP_ENABLE_FSR_FG)
+        FsrReShadeHost(window,factory.Get(),device.Get(),context.Get());return 0;
+#else
+        Require(false,"FSR FG not built");
+#endif
+    }
     // The production device factory keeps this D3D12 output chain free of
     // automatic effect/input runtimes. It presents four times per source frame.
     DXGI_SWAP_CHAIN_DESC1 desc{}; desc.Width = outputWidth; desc.Height = outputHeight; desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

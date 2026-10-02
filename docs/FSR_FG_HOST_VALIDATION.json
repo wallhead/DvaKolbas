@@ -1,0 +1,63 @@
+{
+  "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+  "routes": [
+    {
+      "route": "--ordinary-reshade",
+      "result": "PASS",
+      "fsrRuntime": []
+    },
+    {
+      "route": "--require-reshade",
+      "result": "PASS",
+      "fsrRuntime": []
+    },
+    {
+      "route": "--fsr-reshade",
+      "result": "PASS",
+      "fsrRuntime": [
+        {
+          "filename": "amd_fidelityfx_loader_dx12.dll",
+          "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+        },
+        {
+          "filename": "amd_fidelityfx_upscaler_dx12.dll",
+          "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+        },
+        {
+          "filename": "amd_fidelityfx_framegeneration_dx12.dll",
+          "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+        }
+      ]
+    }
+  ],
+  "skyrimTested": false,
+  "sourceBase": "a9fb50dee60952e2b7114643a4be10a116059563",
+  "sourceFiles": {
+    "tests\\ReShadeIntegrationTests.cpp": "70e848ffc040fe5fb596fce525b002d4417f8000e35228314b23306b1961273d",
+    "tests\\run_reshade_integration.py": "29bb8a03fd2fb53027442ed7801d7916bd175df69fbc705450f94b7eb13f9cfc",
+    "src\\FrameGen\\FSRHostPresentation.cpp": "330147c4230fc74e780820517d6c16f054246258cbd617dc6c04e2e6cb6b5230",
+    "src\\FrameGen\\FSRPresentation.cpp": "c9951212e9e67b2357eceb454bc2cdcb2b4da372c3c1d2863c762b665a2a7961"
+  },
+  "hostObservations": {
+    "sourceTransactions": 96,
+    "srOrSpatialPasses": 96,
+    "generationCallbacks": 24,
+    "completedUiChecks": 96,
+    "liveOffSources": 3,
+    "spatialMenuSources": 3,
+    "automaticEffectsRuntimes": 0,
+    "nvidiaRuntimeLoaded": false,
+    "physicalCadenceObserved": false,
+    "automaticCompositorPixelsObserved": false
+  },
+  "fullRunnableSuite": {
+    "passed": 132,
+    "failed": 0,
+    "seconds": 52.25,
+    "excludedGraphicsTools": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ]
+  }
+}

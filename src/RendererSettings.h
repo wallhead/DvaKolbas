@@ -84,6 +84,7 @@ struct RendererSettingsCapabilities
     bool sourceHost{}, neuralRuntime{}, dedicatedUI{}, externalWorld{};
     bool neuralOperational{true};
     bool fsrBuilt{};
+    bool fsrFgBuilt{};
 };
 
 template<class Generation>
@@ -137,7 +138,12 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if (!capabilities.fsrBuilt) return "FSR is not included in this build.";
         if (!Upscaling::ValidFsrSettings(draft.fsr)) return "FSR quality/provider/sharpness is invalid.";
         if (!Upscaling::IsKnownColorEncoding(draft.fsr.sourceColorEncoding)) return "FSR requires an explicit source color encoding: Linear, Gamma22 or SRGB. Check the source producer before choosing.";
-        if (draft.generationEnabled || draft.generationBackend!=0) return "FSR frame generation is unavailable; disable generation and choose ordinary backend 0.";
+        if(draft.generationBackend==0){if(draft.generationEnabled)return "Ordinary FSR presentation requires frame generation off.";}
+        else if(draft.generationBackend==2){
+            if(!capabilities.fsrFgBuilt)return "FSR frame generation is not included in this build.";
+            if(draft.fsr.providerPolicy!=Upscaling::ProviderPolicy::Analytical)return "FSR frame generation requires the analytical provider.";
+            if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "FSR frame generation requires TRP's dedicated native UI and source ownership.";
+        } else return "FSR requires ordinary presentation (backend 0) or FSR frame generation (backend 2).";
         if (draft.sourceDLSSG.neuralEnabled) return "Neural Rendering is unavailable with FSR.";
         if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";
         if (draft.dynamicResolution) return "Dynamic resolution is unavailable with FSR.";

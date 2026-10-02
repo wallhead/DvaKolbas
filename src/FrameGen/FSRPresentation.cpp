@@ -101,16 +101,16 @@ namespace TheosRenderPipeline
         ID3D11Texture2D* scene,ColorEncoding encoding,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT syncInterval,UINT flags)
     {
         auto lock=state_->session->Lock();if(!lock.Owns(*state_->session) || !state_->chain || state_->closing || FAILED(state_->fault))return E_UNEXPECTED;
-        if(flags&DXGI_PRESENT_TEST || !state_->started){
+        if(flags&DXGI_PRESENT_TEST || (!state_->started && !frame.sourceId)){
             if(!state_->session->BeginPresent(lock))return E_UNEXPECTED;
             const auto hr=state_->chain->Present(syncInterval,flags);state_->session->EndPresent(lock);return hr;
         }
         if(!complete || !scene || !ui)return state_->Fail(DXGI_ERROR_INVALID_CALL); // Never silently omit native HUD.
-        const auto decision=state_->history.Decide(frame,outcome,complete,menu,requested);
+        const auto decision=state_->history.Decide(frame,outcome,complete,menu,requested && state_->started);
         state_->status={frame.sourceId,decision,{},S_OK,false};if(!decision.admit)return DXGI_ERROR_INVALID_CALL;
         auto hr=state_->transport.WaitBeforeProducer();if(FAILED(hr))return state_->Fail(hr);
         hr=state_->transport.Upload(scene,encoding,ui,overlay,complete,frame.sourceId);if(FAILED(hr))return state_->Fail(hr);
-        auto configured=state_->generation.Configure(lock,state_->chain.Get(),frame.sourceId,decision.generate);if(!configured)return state_->Fail(E_FAIL);
+        if(state_->started){auto configured=state_->generation.Configure(lock,state_->chain.Get(),frame.sourceId,decision.generate);if(!configured)return state_->Fail(E_FAIL);}
         if(decision.prepare){
             auto resources=state_->transport.Resources();resources.depth=guides.depth;resources.motion=guides.motion;
             // Validate before recording barriers, including foreign/aliased guides.

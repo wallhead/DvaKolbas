@@ -65,6 +65,8 @@ class GameSwapChain final : public IDXGISwapChain4
     HRESULT STDMETHODCALLTYPE SetHDRMetaData(DXGI_HDR_METADATA_TYPE a_type, UINT a_size, void* a_metadata) override;
 
   private:
+    friend class NvidiaHost;
+    void ReplaceInner(IDXGISwapChain*);
     ~GameSwapChain();
 
     std::atomic<ULONG> references_{1};

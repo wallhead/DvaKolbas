@@ -4,7 +4,11 @@
 #include "GameCameraMeasurements.h"
 #include "SourceFrameEvaluator.h"
 #include "PerformanceTuning.h"
+#include "SourceFrameGeneration.h"
 #include "CommunityShaderIntegration.h"
+#if defined(TRP_ENABLE_FSR_FG)
+#include "Upscaling/FSRGenerationStatus.h"
+#endif
 #include <optional>
 #include <utility>
 TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrStatus() const
@@ -65,6 +69,9 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         auto configured=host.fsrResources_->EnsureInputPolicy(policy);
         if(!configured){error=configured.error();return std::unexpected(configured.error());}
         frame.camera=*camera;
+#if defined(TRP_ENABLE_FSR_FG)
+        if(host.FsrFgActive())host.fsrGenerationFrame_=frame;
+#endif
         if(PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails &&
             (host.evaluationCount_<3 || host.evaluationCount_%600==0)) {
             D3D11_TEXTURE2D_DESC motion{},depth{};frame.motion->GetDesc(&motion);frame.depth->GetDesc(&depth);
@@ -92,7 +99,7 @@ bool NvidiaHost::QueryFsrJitter(std::uint64_t sourceId,float& x,float& y)
 {
 #if defined(TRP_ENABLE_FSR)
     if(FsrActive() && fsrResources_ && fsrResources_->FeatureReady()) {
-        auto jitter=fsrResources_->Upscaler()->QueryJitter(sourceId);
+        auto jitter=fsrResources_->Upscaler()->QueryJitter(FsrFgActive()?presentCount_+1:sourceId);
         if(jitter){x=(*jitter)[0];y=(*jitter)[1];return true;}
         if(fsrFrame_)fsrFrame_->InvalidateHistory();
     }
@@ -107,7 +114,7 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     (void)nativeUIHandoff;
 #if defined(TRP_ENABLE_FSR)
     if(FAILED(FailureResult()) || !proxyActive_ || swapChain!=outerSwapChain_ || !upscalerReady_ || !fsrResources_ || !context_ ||
-        !gameTargets_.GameFacing() || !gameTargets_.UpscaleInput() || !gameTargets_.UpscaleOutput() || !ordinaryPresentation_.Ready())return false;
+        !gameTargets_.GameFacing() || !gameTargets_.UpscaleInput() || !gameTargets_.UpscaleOutput() || !PresentationBackendReadyForEvaluation())return false;
     struct InternalScope {
         bool& flag;bool previous;
         explicit InternalScope(bool& value):flag(value),previous(std::exchange(value,true)){}
@@ -120,7 +127,7 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     frame.backend=BackendKind::Fsr;frame.color=gameTargets_.GameFacing();frame.input=gameTargets_.UpscaleInput();frame.output=gameTargets_.UpscaleOutput();
     frame.depth=pipeline.mDepthBuffer.mImage;frame.motion=pipeline.mMotionVectors.mImage;
     frame.render=frame.subrect={renderWidth_,renderHeight_};frame.display={outputWidth_,outputHeight_};
-    frame.sourceId=pipeline.mRenderedFrameCount;frame.deltaMilliseconds=pipeline.mSourceDeltaMilliseconds;
+    frame.sourceId=FsrFgActive()?presentCount_+1:pipeline.mRenderedFrameCount;frame.deltaMilliseconds=pipeline.mSourceDeltaMilliseconds;
     frame.jitterX=pipeline.mJitterOffsets[0];frame.jitterY=pipeline.mJitterOffsets[1];
     // Skyrim's unjittered previous/current projection motion is current-to-
     // previous UV displacement. The signed RG16_FLOAT producer is copied raw;
@@ -147,6 +154,14 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     if(handoffLogged)logHandoff();
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
     SourceFsrEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_)};
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        auto waited=fsrPresentation_->WaitBeforeProducer();
+        if(FAILED(waited)){FailLifecycle(waited,"AMD guide producer ownership");return false;}
+        fsrGenerationFrame_=frame;fsrSourcePending_=false;fsrUiComplete_=false;fsrForeground_.Reset();
+        fsrMenu_=operations.spatial || pipeline.FrameGenerationTransitionBlocked();
+    }
+#endif
     auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
     if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
         if(!handoffLogged)logHandoff();
@@ -158,12 +173,20 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
         }
         FailLifecycle(E_FAIL,"FSR frame delivery");return false;
     }
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        fsrGenerationOutcome_=result.outcome;
+        fsrGenerationFrame_.depthFormat=DXGI_FORMAT_R32_FLOAT;fsrGenerationFrame_.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
+        fsrGenerationFrame_.colorIsLinear=true;
+        fsrGenerationFrame_.reset |= fsrFrame_->LastTemporalReset();fsrSourcePending_=true;
+    }
+#endif
     context_->CopyResource(presentation_.Buffers()[index].Get(),gameTargets_.UpscaleOutput());
     const bool stateChanged=evaluationCount_==0 || lastFsrTemporal_!=(result.outcome==UpscaleOutcome::Temporal);
     lastFsrTemporal_=result.outcome==UpscaleOutcome::Temporal;
     if(lastFsrTemporal_) {
         resetNextEvaluation_=false;pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();
-        status_=std::format("FSR active: {} on ordinary presentation; frame generation off",fsrResources_->Provider().name);
+        status_=std::format("FSR active: {} on {} presentation",fsrResources_->Provider().name,FsrFgActive()?"AMD":"ordinary");
     } else {
         resetNextEvaluation_=true;
         status_="FSR requested; spatial recovery active, frame generation off";
@@ -180,5 +203,45 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     ++evaluationCount_;return true;
 #else
     (void)swapChain;return false;
+#endif
+}
+
+HRESULT NvidiaHost::PresentFsrSource(UINT interval,UINT flags)
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FAILED(FailureResult()))return FailureResult();
+    if(!FsrFgActive() || !fsrPresentation_)return E_UNEXPECTED;
+    if((flags&DXGI_PRESENT_TEST) || !UpscalerReady())return fsrPresentation_->StartupPresent(interval,flags);
+    if(!fsrSourcePending_ || !fsrUiComplete_ || !nativeUI_.Dedicated())
+        return FailLifecycle(DXGI_ERROR_INVALID_CALL,"AMD completed source/UI boundary");
+    auto before=fsrPresentation_->Status();
+    auto result=fsrPresentation_->Present(fsrGenerationFrame_,fsrGenerationOutcome_,nativeUI_.TaggedTexture(),
+        fsrForeground_.Get(),fsrUiComplete_,fsrMenu_,SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),interval,flags);
+    fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
+    auto status=fsrPresentation_->Status();frameGenerationEnabled_=SUCCEEDED(result) && status.decision.generate;
+    if(FAILED(result))return FailLifecycle(result,"AMD source Present");
+    const bool changed=before.decision.reason!=status.decision.reason || before.decision.generate!=status.decision.generate;
+    if(presentCount_<3 || (changed && fsrGenerationTransitionLogs_++<24) ||
+        (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && presentCount_%600==0)) {
+        logger::info("[FSR FG] source={} requested={} prepare={} generate={} reason={} callbackCount={} callbackResult={} submitted={} apiResult=0x{:08X}",
+            status.sourceId,SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),status.decision.prepare,
+            status.decision.generate,status.decision.reason,status.callback.invocations,status.callback.result,
+            status.submitted,static_cast<std::uint32_t>(result));
+    }
+    return result;
+#else
+    (void)interval;(void)flags;return E_NOTIMPL;
+#endif
+}
+
+TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrFgStatus() const
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    auto state=fsrPresentation_?fsrPresentation_->Status():TheosRenderPipeline::FsrPresentationStatus{};
+    return TheosRenderPipeline::Upscaling::DescribeFsrGenerationStatus(FsrFgActive(),
+        SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),state.submitted,
+        FAILED(FailureResult()) || FAILED(state.result),state.decision,state.callback.invocations);
+#else
+    return {"FSR frame generation is unavailable in this build.",TheosRenderPipeline::SettingsStatusKind::Neutral};
 #endif
 }

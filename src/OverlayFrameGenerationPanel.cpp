@@ -1,6 +1,7 @@
 #include "OverlayUI.h"
 #include "OverlayUIStyle.h"
 #include "OverlayFrameView.h"
+#include "OverlayFsrGenerationControls.h"
 
 #include "FrameGen/NvidiaHost.h"
 #include "FrameGen/SourceDLSSGBackend.h"
@@ -22,7 +23,19 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                                                                            : ImGuiTabItemFlags_None))
     {
         if(view.fsrActive) {
-            ImGui::TextWrapped("Frame generation and Reflex are unavailable with FSR. Ordinary presentation is active.");
+            auto status=nvidiaHost->FsrFgStatus();
+            ImGui::TextWrapped("%s",status.text.c_str());
+            constexpr bool built=
+#if defined(TRP_ENABLE_FSR_FG)
+                true;
+#else
+                false;
+#endif
+            bool requested=frameGen->RuntimeInterpolationRequested();
+            if(DrawFsrGenerationControls(built,nvidiaHost->FsrFgActive(),settingsDraft.generationBackend,requested)) {
+                TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,requested);
+            }
+            if(showDeveloperControls)ImGui::TextWrapped("%s",nvidiaHost->Status().c_str());
             ImGui::EndTabItem();return;
         }
         auto& sourceBackend = TheosRenderPipeline::SourceDLSSG::Backend::Get();

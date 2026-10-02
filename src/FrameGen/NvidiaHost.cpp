@@ -269,5 +269,14 @@ bool NvidiaHost::FinishNativeUIPassForPresent()
 
 bool NvidiaHost::PresentationBackendReadyForEvaluation()
 {
+#if defined(TRP_ENABLE_FSR_FG)
+    if (FsrFgActive()) return fsrPresentation_ && fsrPresentation_->SwapChain();
+#endif
     return FsrActive() ? ordinaryPresentation_.Ready() : TheosRenderPipeline::SourceDLSSG::Backend::Get().Ready();
+}
+
+HRESULT NvidiaHost::QueryFsrProducerDevice(REFIID iid,void** output) const
+{
+    if (!output)return E_POINTER;*output=nullptr;
+    return FsrFgActive() && device_?device_->QueryInterface(iid,output):E_NOINTERFACE;
 }

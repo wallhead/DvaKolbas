@@ -23,6 +23,13 @@ struct NvidiaHost::LifecycleOperations
     bool Retire()
     {
         if (!host.FsrActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
+#if defined(TRP_ENABLE_FSR_FG)
+        if (host.FsrFgActive()) {
+            auto retired=host.fsrPresentation_->Retire();
+            if (!retired) {host.status_=retired.error().message;host.FailLifecycle(E_FAIL,"AMD presentation retirement");return false;}
+            return true;
+        }
+#endif
         const auto result = host.ordinaryPresentation_.Retire();
         if (FAILED(result)) { host.FailLifecycle(result, "FSR presentation retirement"); return false; }
 #if defined(TRP_ENABLE_FSR)
@@ -91,7 +98,7 @@ HRESULT NvidiaHost::BeforeResizeBuffers(IDXGISwapChain* a_swapChain)
     }
     LifecycleOperations operations{*this};
     if (!TheosRenderPipeline::SourceHostLifecycle::BeforeResize(operations)) { return DXGI_ERROR_WAS_STILL_DRAWING; }
-    return FsrActive() ? ordinaryPresentation_.BeforeResize() : S_OK;
+    return FsrActive() && !FsrFgActive() ? ordinaryPresentation_.BeforeResize() : S_OK;
 }
 
 HRESULT NvidiaHost::AfterResizeBuffers(IDXGISwapChain* a_swapChain, HRESULT a_result)
@@ -102,7 +109,7 @@ HRESULT NvidiaHost::AfterResizeBuffers(IDXGISwapChain* a_swapChain, HRESULT a_re
         return a_result;
     }
     LifecycleOperations operations{*this, a_swapChain};
-    if (FsrActive()) { a_result = ordinaryPresentation_.AfterResize(a_result); }
+    if (FsrActive() && !FsrFgActive()) { a_result = ordinaryPresentation_.AfterResize(a_result); }
     return TheosRenderPipeline::SourceHostLifecycle::AfterResize(operations, a_result);
 }
 
@@ -119,6 +126,9 @@ void NvidiaHost::OnGameFacingSwapChainDestroyed(IDXGISwapChain* a_swapChain)
 void NvidiaHost::ResetSessionAfterRetirement()
 {
 #if defined(TRP_ENABLE_FSR)
+#if defined(TRP_ENABLE_FSR_FG)
+    fsrPresentation_.reset();fsrFactory_.Reset();fsrForeground_.Reset();fsrSourcePending_=fsrUiComplete_=false;
+#endif
     fsrFrame_.reset();
     fsrResources_.reset();
     lastFsrTemporal_=false;
@@ -262,6 +272,7 @@ void NvidiaHost::ArmFrameGenerationWarmup()
 
 void NvidiaHost::SetRuntimeEnabled(bool a_enabled)
 {
+    if (FsrFgActive()) { frameGenerationStateKnown_=true;frameGenerationEnabled_=false;return; }
     if (FsrActive()) {
         if (!frameGenerationStateKnown_ || frameGenerationEnabled_) { resetNextEvaluation_ = true; }
         frameGenerationStateKnown_ = true;

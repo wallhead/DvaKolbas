@@ -101,6 +101,9 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
 #if defined(TRP_ENABLE_FSR)
     capabilities.fsrBuilt = true;
 #endif
+#if defined(TRP_ENABLE_FSR_FG)
+    capabilities.fsrFgBuilt = true;
+#endif
     const auto current = Capture(capabilities.neuralRuntime, false);
     if (const char* error = ValidateRendererSettings(settingsDraft, capabilities, &current))
     {
@@ -183,12 +186,13 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
             actionMessage = "Source DLSS configuration failed; restart required.";
             actionMessageIsError = true;
         }
-        else if (configuration.NeedsRestart())
+        else if (configuration.NeedsRestart() || (settingsDraft.upscaleType==FSR &&
+            (settingsDraft.generationBackend==2)!=host_.FsrFgActive()))
         {
             actionMessage =
                 a_saveAsDefault
-                    ? "Mode/quality saved for restart; live feature changes apply after this frame."
-                    : "Mode/quality staged for restart; Save as default to keep them. Live feature changes are queued.";
+                    ? "Presenter/mode/quality saved for restart; live feature changes apply after this frame."
+                    : "Presenter/mode/quality staged for restart; Save as default to keep them. Live feature changes are queued.";
         }
         else if (configuration.NeedsLiveChange())
         {

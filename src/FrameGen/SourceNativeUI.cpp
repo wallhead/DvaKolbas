@@ -4,6 +4,7 @@
 #include <chrono>
 #include "RenderPipeline.h"
 #include "PerformanceTuning.h"
+#include "NativeUICompletion.h"
 #include <utility>
 
 namespace
@@ -28,6 +29,9 @@ bool NvidiaHost::CaptureAndComposeDedicatedNativeUI()
     // The direct compositor binds graphics state. Keep our routing hooks from
     // treating its fullscreen draw as another native-UI producer.
     InternalOperation internal(sourceUIInternal_);
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {fsrUiComplete_=nativeUI_.CaptureDedicated(context_.Get());return fsrUiComplete_;}
+#endif
     return nativeUI_.Compose(context_.Get(), presentation_.Texture());
 }
 
@@ -174,6 +178,7 @@ struct NvidiaHost::SourceFrameOperations
     void CompositionFailed()
     {
         host.nativeUI_.Invalidate();
+        if(host.FsrFgActive()) {host.FailLifecycle(E_FAIL,"AMD native HUD completion");return;}
         logger::error("[NativeUIRoute] composition failed; reverting to HUD-less-only tagging");
     }
     void Trace(const char* stage) { host.LogNativeUIState(stage, MainOrLoading()); }
@@ -205,12 +210,23 @@ bool NvidiaHost::PrepareSourceFrameForPresent(IDXGISwapChain* swapChain)
         if (startupOverlay_.Active()) { return false; }
     }
     SourceFrameOperations operations{*this};
-    return sourceFrameCoordinator_.PrepareForPresent(context_.Get(), operations);
+    const bool prepared=sourceFrameCoordinator_.PrepareForPresent(context_.Get(), operations);
+    if(prepared && FsrFgActive() && !TheosRenderPipeline::PrepareFsrPresentUi(context_.Get(),nativeUI_.RenderRTV(),nativeUIPass_.Frame().UIDrawn())) {
+        FailLifecycle(E_FAIL,"AMD UI producer preparation");return false;
+    }
+    return prepared;
 }
 
 bool NvidiaHost::FinishSourceFrameForPresent()
 {
     const bool ready = NativePresentReady();
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive() && ready && !nativeUIPass_.Frame().UIDrawn()) {
+        // Preparation already cleared an empty game HUD before the late
+        // foreground draws. Freeze their completed pixels without clearing again.
+        fsrUiComplete_=nativeUI_.CaptureDedicated(context_.Get());
+    }
+#endif
     SourceFrameOperations operations{*this};
     const bool finished = sourceFrameCoordinator_.FinishForPresent(operations);
     if (finished && ready && startupOverlay_.Drawn(presentCount_)) {
@@ -218,6 +234,10 @@ bool NvidiaHost::FinishSourceFrameForPresent()
         InternalOperation internal(sourceUIInternal_);
         // The scene and ordinary native UI are complete. This foreground was
         // never included in DLSS input and must survive a same-frame Mist entry.
+#if defined(TRP_ENABLE_FSR_FG)
+        if(FsrFgActive()) {fsrForeground_=startupOverlay_.SRV();}
+        else
+#endif
         if (!nativeUI_.ComposeOverlay(context_.Get(), presentation_.Texture(), startupOverlay_.SRV())) {
             logger::error("[StartupOverlay] native foreground composition failed");
             SetRuntimeEnabled(false);
@@ -240,7 +260,19 @@ void NvidiaHost::ApplyLoadingFade(bool composed)
     const float factor = loadingFade_.Update(loading, now);
     if (factor >= 1.0f || !composed) { return; }
     InternalOperation internal(sourceUIInternal_);
-    if (!presentationFade_.Apply(context_.Get(), presentation_.Texture(), factor)) {
+    bool faded=presentationFade_.Apply(context_.Get(), presentation_.Texture(), factor);
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive() && fsrUiComplete_) {
+        faded &= presentationFade_.Apply(context_.Get(),nativeUI_.TaggedTexture(),factor);
+        if(fsrForeground_) {
+            Microsoft::WRL::ComPtr<ID3D11Resource> resource;Microsoft::WRL::ComPtr<ID3D11Texture2D> foreground;
+            fsrForeground_->GetResource(&resource);
+            faded &= SUCCEEDED(resource.As(&foreground)) && presentationFade_.Apply(context_.Get(),foreground.Get(),factor);
+        }
+        if(!faded){FailLifecycle(E_FAIL,"AMD source and UI fade");return;}
+    }
+#endif
+    if (!faded) {
         static std::atomic_bool logged{};
         if (!logged.exchange(true)) { logger::warn("[LoadingArtwork] loading fade-in unavailable; artwork shows without it"); }
     } else if (starting) {

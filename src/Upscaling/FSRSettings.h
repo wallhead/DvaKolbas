@@ -61,6 +61,6 @@ inline SettingsActionStatus DescribeFsrStatus(const BackendConfiguration& reques
     if(restartRequired)return {"Upscaler allocation awaiting restart; requested settings are not active.",SettingsStatusKind::Pending};
     if(requested.backend!=BackendKind::Fsr)return {"FSR is not requested.",SettingsStatusKind::Neutral};
     if(active.backend!=BackendKind::Fsr || !active.valid || !provider)return {active.diagnostic.empty()?"FSR requested; waiting for a successful temporal frame.":active.diagnostic,SettingsStatusKind::Pending};
-    return {"FSR active | "+provider->name+" | frame generation unavailable",SettingsStatusKind::Success};
+    return {"FSR active | "+provider->name+(active.presentation==PresentationKind::Fsr?" | AMD presenter":" | ordinary presentation"),SettingsStatusKind::Success};
 }
 }

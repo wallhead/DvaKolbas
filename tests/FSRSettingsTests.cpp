@@ -7,6 +7,10 @@
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
 void Require(bool v,const char* why){if(!v)throw std::runtime_error(why);}
+template<class Ini> const char* ValidateFgStartup(const Ini& ini,bool built) {
+ if constexpr(requires{ValidateRendererConfiguration(ini,true,built);})return ValidateRendererConfiguration(ini,true,built);
+ else return "FSR FG startup admission missing";
+}
 int main(int argc,char** argv) {
  try {
   CSimpleIniA ini;
@@ -48,6 +52,11 @@ int main(int argc,char** argv) {
   draft=known;draft.sourceDLSSG.neuralEnabled=true;Require(ValidateRendererSettings(draft,caps),"FSR NR unavailable");
   draft=known;draft.sourceDLSSG.hdrOutput.enabled=true;Require(ValidateRendererSettings(draft,caps),"FSR HDR unavailable");
   draft=known;draft.dynamicResolution=true;Require(ValidateRendererSettings(draft,caps),"FSR dynamic resolution unavailable");
+  draft=known;draft.generationBackend=2;draft.generationEnabled=true;caps.fsrFgBuilt=true;
+  Require(!ValidateRendererSettings(draft,caps),"compiled analytical FSR FG accepted with completed native UI");
+  caps.dedicatedUI=false;Require(ValidateRendererSettings(draft,caps),"FSR FG cannot run without dedicated completed UI");caps.dedicatedUI=true;
+  caps.fsrFgBuilt=false;Require(ValidateRendererSettings(draft,caps),"FG-off build rejects AMD presenter");caps.fsrFgBuilt=true;
+  draft.fsr.providerPolicy=ProviderPolicy::Compatible;Require(ValidateRendererSettings(draft,caps),"FG analytical provider required");
   draft=original;draft.fsr.quality=Quality::Performance;Require(CountRendererSettingsChanges(draft,original)==1,"one draft tracks FSR edits");
   draft=original;Require(CountRendererSettingsChanges(draft,original)==0,"discard restores original draft");
   Upscaler::Configuration configuration;Upscaler::Creation startup{4};configuration.Initialize(startup);configuration.BeginSubmission();configuration.Completed(true);
@@ -58,6 +67,18 @@ int main(int argc,char** argv) {
   configuration.Initialize(startup);configuration.BeginSubmission();configuration.Completed(true);requested=startup;requested.fsr.sourceColorEncoding=ColorEncoding::SRGB;configuration.Request(requested);
   Require(configuration.NeedsRestart() && configuration.LiveCandidate().fsr.sourceColorEncoding==startup.fsr.sourceColorEncoding,
       "encoding changes require restart and cannot alter an active frame adapter");
+  CSimpleIniA fgIni;
+  fgIni.SetLongValue("Settings","UpscaleType",FSR);
+  fgIni.SetLongValue("Experimental","FrameGenerationBackend",2);
+  fgIni.SetBoolValue("FrameGeneration","Enabled",true);
+  Require(!ValidateFgStartup(fgIni,true),"compiled FG startup accepted with dedicated native UI");
+  Require(ValidateFgStartup(fgIni,false),"SR-only startup cannot admit AMD presentation");
+  fgIni.SetValue("FSR","ProviderPolicy","Compatible");Require(ValidateFgStartup(fgIni,true),"startup rejects incompatible FG provider");
+  fgIni.SetValue("FSR","ProviderPolicy","Analytical");fgIni.SetBoolValue("Settings","NativeUI",false);
+  Require(ValidateFgStartup(fgIni,true),"startup requires native UI");fgIni.SetBoolValue("Settings","NativeUI",true);
+  fgIni.SetLongValue("Experimental","NativeUICompositionMode",1);Require(ValidateFgStartup(fgIni,true),"startup requires dedicated UI");
+  fgIni.SetLongValue("Experimental","NativeUICompositionMode",0);fgIni.SetBoolValue("DynamicResolution","Enabled",true);
+  Require(ValidateFgStartup(fgIni,true),"startup keeps fixed extent requirement");
   if(argc==3){CSimpleIniA legacy,example;Require(legacy.LoadFile(argv[1])>=0 && example.LoadFile(argv[2])>=0,"package INIs readable");Require(legacy.GetLongValue("Settings","UpscaleType",-1)==0,"default NVIDIA selection preserved");Require(!ValidateRendererConfiguration(example,true) && ReadFsrSettings(example),"example is valid FSR only");}
   std::cout<<"PASS: SettingsLifecycle UnsupportedCombinationReason RequestedIsNotActive\n";
   return 0;

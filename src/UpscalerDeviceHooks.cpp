@@ -64,6 +64,11 @@ void BeforeGameSwapChainPresent(IDXGISwapChain* a_swapChain)
 HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDevice, DXGI_SWAP_CHAIN_DESC* pDesc,
                                                IDXGISwapChain** ppSwapChain)
 {
+#if defined(TRP_ENABLE_FSR_FG)
+    if (TheosRenderPipeline::FsrPresentation::InternalFactoryCreation()) {
+        return (This->*ptrFactoryCreateSwapChain)(pDevice,pDesc,ppSwapChain);
+    }
+#endif
     auto nvidiaHost = NvidiaHost::GetSingleton();
 
     // The vtable detour is class-wide: later swapchain creations from other

@@ -14,7 +14,7 @@ namespace TheosRenderPipeline
     public:
         static ReShadeIntegration& Get();
         void Discover(HWND window);
-        HRESULT CreateSourceDevice(IUnknown* adapter, D3D_FEATURE_LEVEL minimum, ID3D12Device** out);
+        HRESULT CreateSourceDevice(IUnknown* adapter, D3D_FEATURE_LEVEL minimum, ID3D12Device** out, bool requireNative = false);
         HRESULT CreateOrdinarySwapChain(IDXGIFactory*, ID3D11Device*, const DXGI_SWAP_CHAIN_DESC&,
             IDXGISwapChain**, decltype(&IDXGIFactory::CreateSwapChain));
         void Configure(ID3D11Device* device, ID3D11DeviceContext* context, FrameExtent output);

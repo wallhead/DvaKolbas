@@ -46,7 +46,8 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     view.fsrStatus = nvidiaHost->FsrStatus();
     view.sourceDLSSGActive = view.nvidiaHostActive && nvidiaHost->StartupConfigured() && !view.fsrActive;
     const bool dlssgEnabled = view.sourceDLSSGActive && TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().GenerationActive();
-    view.frameGenerationRuntimeActive = dlssgEnabled;
+    view.fsrFgActive=nvidiaHost->FsrFgActive() && nvidiaHost->FsrFgStatus().kind==TheosRenderPipeline::SettingsStatusKind::Success;
+    view.frameGenerationRuntimeActive = dlssgEnabled || view.fsrFgActive;
     view.activeDisplayMultiplier = view.frameGenerationRuntimeActive && view.sourceDLSSGActive
                                        ? TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().options.numFramesToGenerate + 1u
                                        : 1u;
@@ -134,7 +135,10 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
                       neural.beforeUpscaling ? "Before" : "After", TheosRenderPipeline::CommunityShaders::Active() ? "CS" : "DLSS", view.sourceNeural.effectivePasses,
                       view.sourceNeural.effectivePasses == 1 ? "pass" : "passes");
     }
-    if (view.frameGenerationRuntimeActive)
+    if(view.fsrActive) {
+        std::snprintf(view.generationTitle,sizeof(view.generationTitle),"%s",view.fsrFgActive?"FSR FG active":"FSR FG inactive");
+    }
+    else if (view.frameGenerationRuntimeActive)
     {
         std::snprintf(view.generationTitle, sizeof(view.generationTitle), "DLSS-G x%u", view.activeDisplayMultiplier);
     }

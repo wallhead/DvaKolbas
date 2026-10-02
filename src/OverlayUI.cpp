@@ -1,3 +1,4 @@
+#include "FrameGen/NativeUICompletion.h"
 #include "OverlayUI.h"
 #include "OverlayFrameView.h"
 #include "RendererSettingsController.h"
@@ -393,7 +394,7 @@ void OverlayUI::OnPresent(ID3D11Texture2D* producerUI)
     if (host->ProxyActive() && host->UpscalerReady()) {
         ID3D11Texture2D* target = producerUI;
         if (!target && host->NativePresentReady()) {
-            target = host->NativeUIDrawnThisFrame() ? host->NativeUIRenderTexture() : host->NativePresentationTexture();
+            target = TheosRenderPipeline::UseDedicatedPresentUi(host->FsrFgActive(),host->NativeUIDrawnThisFrame()) ? host->NativeUIRenderTexture() : host->NativePresentationTexture();
         }
         if (target) {
             auto& effects = TheosRenderPipeline::ReShadeIntegration::Get();
@@ -436,7 +437,7 @@ void OverlayUI::OnPresent(ID3D11Texture2D* producerUI)
 		finalFrame = nvidiaHost->NativeUIPassActive() ?
 			nvidiaHost->NativeUIRenderTexture() : nvidiaHost->GameFacingTexture();
 		if (nvidiaHost->NativePresentReady()) {
-			finalFrame = nvidiaHost->NativeUIDrawnThisFrame() ? nvidiaHost->NativeUIRenderTexture() : nvidiaHost->NativePresentationTexture();
+			finalFrame = TheosRenderPipeline::UseDedicatedPresentUi(nvidiaHost->FsrFgActive(),nvidiaHost->NativeUIDrawnThisFrame()) ? nvidiaHost->NativeUIRenderTexture() : nvidiaHost->NativePresentationTexture();
 		}
 		if (!finalFrame) {
 			static std::atomic_bool loggedUnavailable{ false };
@@ -448,7 +449,7 @@ void OverlayUI::OnPresent(ID3D11Texture2D* producerUI)
 		if (nvidiaHost->NativePresentReady()) {
 			// Borrow the host's view. Retaining an inner swapchain buffer here
 			// would prevent resize when this overlay is subsequently hidden.
-			overlayTarget = nvidiaHost->NativeUIDrawnThisFrame() ? nvidiaHost->NativeUIRenderRTV() : nvidiaHost->NativePresentationRTV();
+			overlayTarget = TheosRenderPipeline::UseDedicatedPresentUi(nvidiaHost->FsrFgActive(),nvidiaHost->NativeUIDrawnThisFrame()) ? nvidiaHost->NativeUIRenderRTV() : nvidiaHost->NativePresentationRTV();
 		}
 	} else {
 		const auto result = swapChain->GetBuffer(0, IID_PPV_ARGS(&fallbackBuffer));

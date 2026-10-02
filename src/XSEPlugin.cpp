@@ -196,7 +196,13 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 #else
         false;
 #endif
-	if (const auto* error = TheosRenderPipeline::ValidateRendererConfiguration(baselineIni, fsrBuilt)) {
+	if (const auto* error = TheosRenderPipeline::ValidateRendererConfiguration(baselineIni, fsrBuilt,
+#if defined(TRP_ENABLE_FSR_FG)
+        true
+#else
+        false
+#endif
+    )) {
 		util::report_and_fail(std::format("Theo's Render Pipeline configuration error:\n\n{}\n\nCorrect SKSE/Plugins/TheosRenderPipeline.ini and restart Skyrim.", error));
 	}
 	logger::info("{} {}", Plugin::DISPLAY_NAME, Plugin::RELEASE_VERSION);

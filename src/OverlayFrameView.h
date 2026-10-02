@@ -16,6 +16,7 @@ struct OverlayUI::FrameView
     bool nvidiaHostActive{};
     bool sourceDLSSGActive{};
     bool frameGenerationRuntimeActive{};
+    bool fsrFgActive{};
     unsigned activeDisplayMultiplier{};
     TheosRenderPipeline::SourceDLSSG::NeuralSnapshot sourceNeural{};
     int nativeWidth{};

@@ -16,12 +16,19 @@ namespace TheosRenderPipeline::Upscaling
         ColorEncoding handoffEncoding{ColorEncoding::Unknown};
     };
     static std::unexpected<RuntimeError> Failure(ErrorKind kind,HRESULT code,const char* text){return std::unexpected(RuntimeError{kind,code,text});}
-    FsrHostResources::FsrHostResources(std::filesystem::path plugin):state_(std::make_unique<State>()),pluginDirectory_(std::move(plugin)){}
+    FsrHostResources::FsrHostResources(std::filesystem::path plugin,DeviceCreator creator):state_(std::make_unique<State>()),pluginDirectory_(std::move(plugin)),deviceCreator_(creator){}
     FsrHostResources::~FsrHostResources(){if(!Retire())(void)state_.release();}
     bool FsrHostResources::FeatureReady()const{return state_->contextOwned && state_->bridge && state_->bridge->Ready();}
     bool FsrHostResources::ContextOwned()const{return state_->contextOwned;}
     std::shared_ptr<Graphics::D3D11D3D12Interop> FsrHostResources::Bridge()const{return state_->bridge;}
     std::shared_ptr<FsrRuntime> FsrHostResources::Runtime()const{return state_->runtime;}
+#if defined(TRP_ENABLE_FSR_FG)
+    Result<void> FsrHostResources::LoadFrameGeneration()
+    {
+        if(!state_->runtime)return Failure(ErrorKind::ContextFailure,0,"FG runtime requires completed SR pre-query");
+        return state_->runtime->LoadFrameGeneration(pluginDirectory_);
+    }
+#endif
     FsrUpscaler* FsrHostResources::Upscaler()const{return state_->upscaler.get();}
     GpuFrameResources FsrHostResources::Resources()const{return {state_->color.texture12.Get(),state_->depth.texture12.Get(),state_->motion.texture12.Get(),state_->native.texture12.Get()};}
     ID3D11Texture2D* FsrHostResources::Color11()const{return state_->color.texture11.Get();}ID3D11Texture2D* FsrHostResources::Depth11()const{return state_->depth.texture11.Get();}
@@ -38,7 +45,9 @@ namespace TheosRenderPipeline::Upscaling
         auto fail=[&](HRESULT hr,const char* text)->Result<Extent>{return Failure(ErrorKind::UnsupportedDevice,hr,text);};
         ComPtr<IDXGIDevice> dxgi;ComPtr<IDXGIAdapter> adapter;HRESULT hr=device11->QueryInterface(IID_PPV_ARGS(&dxgi));
         if(FAILED(hr) || FAILED(hr=dxgi->GetAdapter(&adapter)))return fail(hr,"FSR actual adapter query failed");
-        if(FAILED(hr=D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&state_->device))))return fail(hr,"FSR same-adapter D3D12 creation failed");
+        hr=deviceCreator_?deviceCreator_(adapter.Get(),D3D_FEATURE_LEVEL_12_0,state_->device.ReleaseAndGetAddressOf()):
+            D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&state_->device));
+        if(FAILED(hr) || !state_->device)return fail(FAILED(hr)?hr:E_NOINTERFACE,"FSR same-adapter native D3D12 ownership unavailable");
         D3D12_FEATURE_DATA_SHADER_MODEL model{D3D_SHADER_MODEL_6_0};
         if(FAILED(hr=state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model))) || model.HighestShaderModel<D3D_SHADER_MODEL_6_0)
             return fail(hr,"FSR requires shader model 6.0 before reduced target publication");

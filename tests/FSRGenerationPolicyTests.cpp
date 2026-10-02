@@ -140,9 +140,27 @@ static void CheckHistory()
     }
 }
 #endif
+#include "Upscaling/FSRGenerationStatus.h"
+void CheckRuntimeStatus()
+{
+    using namespace TheosRenderPipeline::Upscaling;
+    FsrGenerationDecision decision{};
+    Require(DescribeFsrGenerationStatus(false,false,false,false,decision,0).kind==TheosRenderPipeline::SettingsStatusKind::Neutral,"ordinary presenter unavailable independently of SR");
+    Require(DescribeFsrGenerationStatus(true,false,false,false,decision,0).text.find("off")!=std::string::npos,"FG off on AMD owner");
+    Require(DescribeFsrGenerationStatus(true,true,false,false,decision,0).text.find("requested")!=std::string::npos,"requested before first submitted source");
+    decision.reason="Source rate warmup";
+    Require(DescribeFsrGenerationStatus(true,true,true,false,decision,0).text.find("warming")!=std::string::npos,"warmup distinct from request");
+    decision.reason="Source rate suppressed";
+    Require(DescribeFsrGenerationStatus(true,true,true,false,decision,0).text.find("rate suppressed")!=std::string::npos,"rate suppression explicit");
+    decision.generate=true;decision.reason={};
+    Require(DescribeFsrGenerationStatus(true,true,true,false,decision,0).kind!=TheosRenderPipeline::SettingsStatusKind::Success,"request alone cannot claim active generation");
+    Require(DescribeFsrGenerationStatus(true,true,true,false,decision,1).kind==TheosRenderPipeline::SettingsStatusKind::Success,"observed callback active independently of scanout");
+    Require(DescribeFsrGenerationStatus(true,true,true,true,decision,1).kind==TheosRenderPipeline::SettingsStatusKind::Error,"failure overrides previous callback");
+}
 int main()
 {
     CheckBackend();
+    CheckRuntimeStatus();
 #ifdef HAS_FG_POLICY
     CheckHistory();
 #else

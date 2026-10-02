@@ -4,6 +4,8 @@
 #include "FrameGen/NativeUIComposition.h"
 #include "Upscaling/FSRHostResources.h"
 #include "InteropTestRig.h"
+#include "FrameGen/NativeUICompletion.h"
+#include "FrameGen/FSRSwapChainPolicy.h"
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
 using namespace InteropFixture;
@@ -39,9 +41,49 @@ void CompletedUiAtPresent(Rig& rig)
     Microsoft::WRL::ComPtr<ID3D11Device> foreign;Microsoft::WRL::ComPtr<ID3D11DeviceContext> foreignContext;
     Check(D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_WARP,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&foreign,nullptr,&foreignContext),"foreign UI producer fixture");
     Require(!CaptureCompleted(ui,foreignContext.Get()),"foreign producer cannot claim completed HUD capture");
+    Require(UseDedicatedPresentUi(true,false) && UseDedicatedPresentUi(true,true) && !UseDedicatedPresentUi(false,false) && UseDedicatedPresentUi(false,true),"AMD foreground/ReShade must stay outside the scene even without game UI draws");
+    Require(PrepareFsrPresentUi(rig.context11.Get(),ui.RenderRTV(),true),"completed game UI retained");
+    Require(CaptureCompleted(ui,rig.context11.Get()) && read(ui.TaggedTexture())==hud[0],"preparing overlay cannot erase game HUD");
+    Require(PrepareFsrPresentUi(rig.context11.Get(),ui.RenderRTV(),false),"empty game HUD explicitly cleared before overlay draws");
+    Require(CaptureCompleted(ui,rig.context11.Get()) && read(ui.TaggedTexture())==0,"no stale HUD on UI-less source");
+    const uint32_t overlay[6]{0x80008000,0,0,0,0,0};rig.context11->UpdateSubresource(ui.RenderTexture(),0,nullptr,overlay,12,0);
+    Require(CaptureCompleted(ui,rig.context11.Get()) && read(ui.TaggedTexture())==overlay[0] && read(scene.Get())==scenePixels[0],"late ImGui/ReShade foreground survives final freeze outside scene");
+    Require(!PrepareFsrPresentUi(foreignContext.Get(),ui.RenderRTV(),false),"foreign context cannot clear completed HUD");
     PresentationTargets targets;Check(CacheNativeScene(targets,scene.Get()),"AMD caches producer scene without D3D11 GetBuffer on D3D12 inner chain");
     Require(targets.BufferIndex(1)==0 && targets.Buffers().size()==1 && targets.Buffers()[0].Get()==scene.Get(),"stable producer scene across both AMD buffer indices");
     Check(targets.Select(rig.device11.Get(),0),"native scene RTV and depth attachment");Require(targets.Texture()==scene.Get(),"native scene identity retained");
+}
+void PresentAndResizeSourceBoundaries()
+{
+    unsigned effects{},submits{},completions{};unsigned events{};
+    auto prepare=[&](){Require(events++%3==0,"one effects boundary before each submit");++effects;return S_OK;};
+    auto submit=[&](){Require(events++%3==1,"one submit after effects");++submits;return S_OK;};
+    auto completed=[&](HRESULT result){Require(SUCCEEDED(result) && events++%3==2,"one completion after submit");++completions;};
+    Check(PresentFsrSourceBoundary(0,nullptr,prepare,submit,completed),"Present shared source boundary");
+    DXGI_PRESENT_PARAMETERS empty{};
+    Check(PresentFsrSourceBoundary(0,&empty,prepare,submit,completed),"Present1 shared source boundary");
+    Require(effects==2 && submits==2 && completions==2,"ExactlyOneUpscaleAndEffectsPass per Present entry");
+    RECT dirty{0,0,1,1};POINT offset{};
+    for(unsigned kind=0;kind<3;++kind){DXGI_PRESENT_PARAMETERS invalid{};
+        if(kind==0){invalid.DirtyRectsCount=1;invalid.pDirtyRects=&dirty;}
+        if(kind==1)invalid.pScrollRect=&dirty;if(kind==2)invalid.pScrollOffset=&offset;
+        Require(PresentFsrSourceBoundary(0,&invalid,prepare,submit,completed)==E_INVALIDARG,"dirty/scroll rejected before source consumption");}
+    Require(effects==2 && submits==2 && completions==2,"rejection consumes no source or completion");
+    Check(PresentFsrSourceBoundary(DXGI_PRESENT_TEST,&empty,prepare,[&]{++submits;return S_OK;},completed),"test Present only probes presenter");
+    Require(effects==2 && submits==3 && completions==2,"test Present has no effects/source/completion");
+    Require(PresentFsrSourceBoundary(0,nullptr,[]{return E_FAIL;},submit,completed)==E_FAIL,"failed source is never submitted");
+    unsigned retired{},detached{},created{};
+    auto retire=[&]{++retired;return S_OK;};auto detach=[&]{Require(retired==detached+1,"retire before detaching all inner refs");++detached;};
+    auto recreate=[&]{Require(detached==created+1,"detach before new HWND owner");++created;return S_OK;};
+    IUnknown* queues[2]{reinterpret_cast<IUnknown*>(1),reinterpret_cast<IUnknown*>(2)};
+    Require(ResizeFsrSourceBoundary(2,nullptr,queues,retire,detach,recreate)==E_INVALIDARG,"ResizeBuffers1DoesNotForwardD3D11Queues");
+    UINT bad[2]{0,1};Require(ResizeFsrSourceBoundary(2,bad,nullptr,retire,detach,recreate)==E_INVALIDARG,"nonzero masks rejected before retirement");
+    UINT zero[3]{};Require(ResizeFsrSourceBoundary(0,zero,nullptr,retire,detach,recreate)==E_INVALIDARG,"unknown mask array length rejected before mutation");
+    Require(retired==0 && detached==0 && created==0,"invalid resize cannot mutate host");
+    for(UINT count:{0u,1u,2u,3u})Check(ResizeFsrSourceBoundary(count,count?zero:nullptr,nullptr,retire,detach,recreate),"single native queue owner replacement");
+    Require(created==4 && detached==4 && retired==4,"all accepted buffer counts use replacement protocol");
+    Require(ResizeFsrSourceBoundary(2,nullptr,nullptr,[]{return DXGI_ERROR_WAS_STILL_DRAWING;},detach,recreate)==DXGI_ERROR_WAS_STILL_DRAWING,"failed retirement keeps original owner");
+    Require(created==4 && detached==4,"failed retirement cannot release HWND owner refs");
 }
 int main(int argc,char** argv)
 {
@@ -55,6 +97,7 @@ int main(int argc,char** argv)
         PresentationCreation unavailable{[]{return S_OK;},[]{return S_OK;}};
         Require(CreatePresentation(backend,unavailable)==E_NOTIMPL,"unwired AMD creation cannot fall through to another owner");
         backend.valid=false;Require(CreatePresentation(backend,routes)==E_INVALIDARG && routes.fsr==3,"invalid selector does not mutate presenter ownership");
+        PresentAndResizeSourceBoundaries();
         Rig rig;Microsoft::WRL::ComPtr<ID3D11Device> producer;
         HWND window=CreateWindowExW(0,L"STATIC",L"AMD host producer fixture",WS_OVERLAPPEDWINDOW,0,0,128,96,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);
         Require(window!=nullptr,"producer fixture HWND");struct Window{HWND value;~Window(){DestroyWindow(value);}}windowOwner{window};

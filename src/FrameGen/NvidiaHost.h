@@ -27,6 +27,9 @@
 #include "Upscaling/FSRHostResources.h"
 #include "Upscaling/FSRFrameAdapter.h"
 #endif
+#if defined(TRP_ENABLE_FSR_FG)
+#include "FSRHostPresentation.h"
+#endif
 #include "PresentationFade.h"
 #include "ReShadeIntegration.h"
 #include <atomic>
@@ -82,8 +85,14 @@ class NvidiaHost
     bool UpscalerReady() const { return upscalerReady_ && SUCCEEDED(FailureResult()); }
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
+    bool FsrFgActive() const { return FsrActive() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
+    HRESULT PresentFsrSource(UINT interval, UINT flags);
+    HRESULT QueryFsrProducerDevice(REFIID iid, void** output) const;
+    HRESULT ResizeFsrSwapChain(class GameSwapChain&, UINT count, UINT width, UINT height, DXGI_FORMAT format, UINT flags,
+        const UINT* masks = nullptr, IUnknown* const* queues = nullptr);
     bool QueryFsrJitter(std::uint64_t sourceId,float& x,float& y);
     TheosRenderPipeline::SettingsActionStatus FsrStatus() const;
+    TheosRenderPipeline::SettingsActionStatus FsrFgStatus() const;
     bool StartupConfigured() const { return sourceUpscalerSettings_.Initialized(); }
     const TheosRenderPipeline::Upscaler::Configuration& SourceUpscalerSettings() const { return sourceUpscalerSettings_; }
     void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request);
@@ -150,10 +159,21 @@ class NvidiaHost
     TheosRenderPipeline::Upscaling::BackendDecision backendDecision_;
     TheosRenderPipeline::OrdinaryPresentation ordinaryPresentation_;
 #if defined(TRP_ENABLE_FSR)
-    std::unique_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;
+    std::shared_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;
     std::unique_ptr<TheosRenderPipeline::Upscaling::FsrFrameAdapter> fsrFrame_;
     bool lastFsrTemporal_{};
     unsigned fsrTransitionLogs_{};
+#endif
+#if defined(TRP_ENABLE_FSR_FG)
+    HRESULT CreateFsrPresenter(IDXGIFactory*, ID3D11Device*, const DXGI_SWAP_CHAIN_DESC&, IDXGISwapChain**);
+    std::unique_ptr<TheosRenderPipeline::FsrHostPresentation> fsrPresentation_;
+    Microsoft::WRL::ComPtr<IDXGIFactory> fsrFactory_;
+    DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
+    TheosRenderPipeline::Upscaling::UpscaleFrame fsrGenerationFrame_{};
+    TheosRenderPipeline::Upscaling::UpscaleOutcome fsrGenerationOutcome_{TheosRenderPipeline::Upscaling::UpscaleOutcome::SkippedInvalidInput};
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> fsrForeground_;
+    bool fsrSourcePending_{}, fsrUiComplete_{}, fsrMenu_{};
+    unsigned fsrGenerationTransitionLogs_{};
 #endif
     TheosRenderPipeline::SourceHostFailure lifecycleFailure_;
 

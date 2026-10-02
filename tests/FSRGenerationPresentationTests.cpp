@@ -26,5 +26,12 @@ int main(int argc,char** argv)
     Require(rig.stat(0)==2 && rig.stat(11)==0,"NoCreationApiFallback");rig.mode(0);Require(bool(failed.Retire()),"failed creation cleanup");
     FsrPresentation startupOnly;rig.Create(startupOnly);Require(bool(startupOnly.CompleteStartup(rig.limits,rig.fgProvider)),"unconfigured FG context created");
     Require(bool(startupOnly.Retire()),"UnconfiguredContextDoesNotConfigureNullSwapchain");
+    FsrPresentation delayedFeature;rig.Create(delayedFeature);rig.frame.sourceId=1;
+    const auto uiBefore=rig.stat(5),contextsBefore=rig.stat(1);
+    Check(rig.Source(delayedFeature,false,true),"completed menu source before camera conventions are known");
+    Require(delayedFeature.Status().sourceId==1 && delayedFeature.Status().submitted && rig.stat(5)==uiBefore+1 && rig.stat(1)==contextsBefore,
+        "CompletedMenuStillPublishesSceneAndUiBeforeGenerationFeature");
+    Require(bool(delayedFeature.CompleteStartup(rig.limits,rig.fgProvider)),"generation feature can start after completed menu sources");
+    Check(rig.Source(delayedFeature),"first temporal source after menu-only handoff");Require(bool(delayedFeature.Retire()),"deferred menu presenter retirement");
     rig.ValidateDebug();std::puts("PASS: NewDX12 descriptor/admission, deferred startup, per-source callback transaction and separate UI registration (vendor double)");
 }

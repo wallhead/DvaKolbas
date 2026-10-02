@@ -49,7 +49,7 @@ namespace TheosRenderPipeline
         std::atomic_bool overlayOpen{};
         static thread_local ComPtr<ID3D12Device>* capturingDevice;
         static thread_local ComPtr<IDXGISwapChain>* capturingSwapChain;
-        bool nativeOutput{}, disabled{};
+        bool nativeOutput{}, disabled{}, knownInjector{};
         std::atomic<api::effect_runtime*> overlayRuntime{};
         static thread_local bool internal;
         bool before{}, attempted{}, updated{}, screenshotOverlay{};
@@ -244,6 +244,7 @@ namespace TheosRenderPipeline
             const auto update = reinterpret_cast<State::Update>(GetProcAddress(module, "ReShadeUpdateAndPresentEffectRuntime"));
             const auto basePath = reinterpret_cast<void (*)(char*, size_t*)>(GetProcAddress(module, "ReShadeGetBasePath"));
             if (!registerAddon) { continue; }
+            s.knownInjector = true;
             if (!registerEvent || !create || !destroy || !update || !basePath) {
                 s.status = "ReShade public runtime exports unavailable; keeping automatic effects";
                 continue;
@@ -272,11 +273,15 @@ namespace TheosRenderPipeline
             return;
         }
     }
-    HRESULT ReShadeIntegration::CreateSourceDevice(IUnknown* adapter, D3D_FEATURE_LEVEL minimum, ID3D12Device** out)
+    HRESULT ReShadeIntegration::CreateSourceDevice(IUnknown* adapter, D3D_FEATURE_LEVEL minimum, ID3D12Device** out, bool requireNative)
     {
         if (!out) { return E_POINTER; }
         *out = nullptr;
         auto& s = Data();
+        if (requireNative && s.knownInjector && !s.module) {
+            s.status = "ReShade public native ownership unavailable; AMD presentation rejected before publication";
+            return E_NOINTERFACE;
+        }
         ComPtr<ID3D12Device> exposed, native;
         // Capture only this synchronous host-owned creation, never another mod's
         // device. All of TRP's D3D12 work and Streamline use the same native
@@ -291,6 +296,10 @@ namespace TheosRenderPipeline
             s.status = "ReShade native output isolated; waiting for source UI";
         }
         if (s.module && !s.nativeOutput) {
+            if (requireNative) {
+                s.status = "ReShade native output ownership unavailable; AMD presentation rejected before publication";
+                return E_NOINTERFACE;
+            }
             s.status = "ReShade native output ownership unavailable; keeping automatic effects";
         }
         *out = native ? native.Detach() : exposed.Detach();

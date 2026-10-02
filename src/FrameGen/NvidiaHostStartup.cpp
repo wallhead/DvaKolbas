@@ -11,6 +11,7 @@
 #include "RendererBackendPolicy.h"
 #include "PresentationPolicy.h"
 #include "PresentationDevice.h"
+#include "FSRSwapChainPolicy.h"
 #include "PluginPaths.h"
 #include <PCH.h>
 
@@ -36,11 +37,19 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     requested.sharpness=upscalerSettings->mFsrSettings.sharpness;requested.dynamicResolution=upscalerSettings->mDynamicResolutionRequested;
     requested.neuralRendering=generation.sourceDLSSG.neuralEnabled;requested.hdr=generation.sourceDLSSG.hdrOutput.enabled;
 #if defined(TRP_ENABLE_FSR)
+    #if defined(TRP_ENABLE_FSR_FG)
+    backendDecision_=TheosRenderPipeline::ResolveBackend(requested,true,true);
+#else
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,true);
-    if(FsrActive())fsrResources_=std::make_unique<TheosRenderPipeline::Upscaling::FsrHostResources>(TheosRenderPipeline::PluginPaths::Directory());
+#endif
+    if(FsrActive())fsrResources_=std::make_shared<TheosRenderPipeline::Upscaling::FsrHostResources>(TheosRenderPipeline::PluginPaths::Directory());
 #else
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,false);
 #endif
+    if (FsrFgActive() && (TheosRenderPipeline::CommunityShaders::Active() || !upscalerSettings->mNativeUI || generation.nativeUICompositionMode != 0)) {
+        status_ = "FSR FG requires TRP-owned upscaling and dedicated NativeUI=true, composition mode 0";
+        return E_INVALIDARG;
+    }
     if(!backendDecision_.valid){status_=backendDecision_.diagnostic;return E_INVALIDARG;}
     logger::info("[SourceUpscaler] startup size authority=QualityLevel mode={} "
                  "quality={}",
@@ -87,11 +96,18 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
         a_factory, a_device, *a_desc, SourceFrameGeneration::GetSingleton()->settings.sourceDLSSGStreamlineDirectory, a_swapChain);
     };
     auto createOrdinary=[&](){return ordinaryPresentation_.CreateSwapChain(a_factory,a_device,*a_desc,a_swapChain,original);};
-    TheosRenderPipeline::PresentationCreation creation{createNvidia,createOrdinary};
+    auto createFsr=[&]()->HRESULT {
+#if defined(TRP_ENABLE_FSR_FG)
+        return CreateFsrPresenter(a_factory,a_device,*a_desc,a_swapChain);
+#else
+        return E_NOTIMPL;
+#endif
+    };
+    TheosRenderPipeline::PresentationCreation creation{createNvidia,createOrdinary,createFsr};
     const auto result=TheosRenderPipeline::CreatePresentation(backendDecision_,creation);
     if (FAILED(result) || !*a_swapChain)
     {
-        status_ = FsrActive()?"Ordinary D3D11 swapchain creation failed":TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
+        if(!FsrFgActive())status_ = FsrActive()?"Ordinary D3D11 swapchain creation failed":TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
         return FAILED(result) ? result : E_FAIL;
     }
     innerSwapChain_ = *a_swapChain;
@@ -135,7 +151,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     // disable against the completed proxy before its first game-facing Present.
     frameGenerationStateKnown_ = false;
     SetRuntimeEnabled(false);
-    status_ = FsrActive()?"Ordinary presenter active; FSR feature deferred until device creation returns":"NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
+    status_ = FsrFgActive()?"AMD presenter active; FSR feature deferred until device creation returns":FsrActive()?"Ordinary presenter active; FSR feature deferred until device creation returns":"NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
     logger::info("[NvidiaHost] source swapchain active format={}", static_cast<std::uint32_t>(a_desc->BufferDesc.Format));
     logger::info("[NvidiaHost] outer stable-buffer swapchain returned during "
                  "factory creation");
@@ -147,7 +163,7 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     EndNativeUIPass();
     gameTargets_.ResetGameFacingAfterRetirement();
     nativeUIPass_.ResetEvaluation();
-    ReleaseSourceUpscaler();
+    if (!FsrFgActive()) { ReleaseSourceUpscaler(); }
     sourceUpscalerInitializationPending_ = false;
     presentation_.ResetAfterRetirement();
     if (!a_swapChain || !device_ || !context_)
@@ -155,7 +171,12 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
         return false;
     }
 
-    const auto cacheResult = presentation_.CacheAfterRetirement(a_swapChain,
+    HRESULT cacheResult{};
+#if defined(TRP_ENABLE_FSR_FG)
+    if (FsrFgActive()) { cacheResult = presentation_.CacheSceneAfterRetirement(fsrPresentation_->SceneTarget11()); }
+    else
+#endif
+    cacheResult = presentation_.CacheAfterRetirement(a_swapChain,
         FsrActive() ? TheosRenderPipeline::PresentationBufferAccess::D3D11Current :
             TheosRenderPipeline::PresentationBufferAccess::Indexed);
     if (FAILED(cacheResult))
@@ -180,7 +201,8 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     };
     bool sized{};
 #if defined(TRP_ENABLE_FSR)
-    if(FsrActive() && !TheosRenderPipeline::CommunityShaders::Active()) {
+    if (FsrFgActive()) { queriedRenderWidth=renderWidth_;queriedRenderHeight=renderHeight_;sized=true; }
+    else if(FsrActive() && !TheosRenderPipeline::CommunityShaders::Active()) {
         TheosRenderPipeline::Upscaling::BackendConfiguration config;
         config.backend=TheosRenderPipeline::Upscaling::BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;
         config.quality=sourceUpscalerSettings_.Startup().fsr.quality;config.providerPolicy=sourceUpscalerSettings_.Startup().fsr.providerPolicy;
@@ -343,13 +365,16 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         upscalerReady_=true;splitSourceDLSSActive_=false;
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
         if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="FSR native UI resource creation failed";return false;}
-        status_="FSR context ready on ordinary D3D11 presenter; waiting for validated source frames";
+        if (FsrFgActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
+            status_="FSR FG dedicated UI initialization failed";return false;
+        }
+        status_=FsrFgActive()?"FSR ready on AMD presenter; FG awaits measured camera and completed UI":"FSR context ready on ordinary D3D11 presenter; waiting for validated source frames";
         const auto& settings=sourceUpscalerSettings_.Effective().fsr;
-        logger::info("[FSR startup] provider={} quality={} policy={} sourceColorEncoding={} render={}x{} output={}x{} presentation=ordinary-D3D11 frameGeneration=off",
+        logger::info("[FSR startup] provider={} quality={} policy={} sourceColorEncoding={} render={}x{} output={}x{} presentation={} frameGeneration=context-deferred",
             fsrResources_->Provider().name,TheosRenderPipeline::Upscaling::QualityName(settings.quality),
             TheosRenderPipeline::Upscaling::ProviderPolicyName(settings.providerPolicy),
             TheosRenderPipeline::Upscaling::ColorEncodingName(settings.sourceColorEncoding),
-            renderWidth_,renderHeight_,outputWidth_,outputHeight_);
+            renderWidth_,renderHeight_,outputWidth_,outputHeight_,FsrFgActive()?"AMD-D3D12":"ordinary-D3D11");
         return true;
     }
 #endif
@@ -389,4 +414,50 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
                  renderWidth_, renderHeight_, a_outputDesc.Width, a_outputDesc.Height, static_cast<std::uint32_t>(a_outputDesc.Format),
                  creation.AllocationQuality());
     return true;
+}
+
+#if defined(TRP_ENABLE_FSR_FG)
+HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* producer,const DXGI_SWAP_CHAIN_DESC& descriptor,IDXGISwapChain** output)
+{
+    if (!output) return E_POINTER;*output=nullptr;
+    using namespace TheosRenderPipeline;
+    fsrResources_=std::make_shared<Upscaling::FsrHostResources>(PluginPaths::Directory(),
+        +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
+            return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
+        });
+    fsrPresentation_=std::make_unique<FsrHostPresentation>();
+    auto extent=fsrPresentation_->Create(factory,producer,fsrResources_,descriptor,sourceUpscalerSettings_.Startup().fsr);
+    if (!extent) { status_=extent.error().message;return E_FAIL; }
+    fsrFactory_=factory;fsrDescriptor_=descriptor;
+    fsrDescriptor_.BufferCount=2;
+    renderWidth_=extent->width;renderHeight_=extent->height;
+    *output=fsrPresentation_->SwapChain();(*output)->AddRef();
+    return S_OK;
+}
+#endif
+
+HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT width,UINT height,DXGI_FORMAT format,UINT flags,
+    const UINT* masks,IUnknown* const* queues)
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    if (!FsrFgActive() || &outer!=outerSwapChain_ || !fsrPresentation_ || FAILED(FailureResult())) return E_UNEXPECTED;
+    auto candidate=fsrDescriptor_;candidate.BufferCount=2;candidate.BufferDesc.Width=width;candidate.BufferDesc.Height=height;
+    if (format!=DXGI_FORMAT_UNKNOWN)candidate.BufferDesc.Format=format;candidate.Flags=flags;
+    auto translated=TheosRenderPipeline::FsrPresentation::TranslateDescriptor(candidate);
+    if (!translated)return E_INVALIDARG;candidate=*translated;
+    return TheosRenderPipeline::ResizeFsrSourceBoundary(count,masks,queues,
+        [&]{return BeforeResizeBuffers(innerSwapChain_);},
+        [&]{outer.ReplaceInner(nullptr);innerSwapChain_=nullptr;fsrPresentation_.reset();},
+        [&]()->HRESULT {
+            Microsoft::WRL::ComPtr<IDXGISwapChain> replacement;
+            auto result=CreateFsrPresenter(fsrFactory_.Get(),device_.Get(),candidate,&replacement);
+            if (FAILED(result))return FailLifecycle(result,"AMD presenter replacement");
+            innerSwapChain_=replacement.Get();
+            if (!CreateGameFacingResources(innerSwapChain_) || !CompleteStartupAfterDeviceCreation())
+                return FailLifecycle(E_FAIL,"AMD source replacement");
+            outer.ReplaceInner(replacement.Get());resetNextEvaluation_=true;return S_OK;
+        });
+#else
+    (void)outer;(void)count;(void)width;(void)height;(void)format;(void)flags;(void)masks;(void)queues;return E_NOTIMPL;
+#endif
 }

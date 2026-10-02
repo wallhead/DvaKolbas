@@ -2,6 +2,7 @@
 
 #include "NvidiaBaselinePolicy.h"
 #include "Upscaling/UpscalerBackend.h"
+#include <string_view>
 
 namespace TheosRenderPipeline
 {
@@ -33,17 +34,26 @@ namespace TheosRenderPipeline
         return decision;
     }
 
-    template<class Ini> const char* ValidateRendererConfiguration(const Ini& ini, bool fsrBuilt)
+    template<class Ini> const char* ValidateRendererConfiguration(const Ini& ini, bool fsrBuilt, bool fsrFgBuilt = false)
     {
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
         if (mode != FSR) { return ValidateNvidiaBaseline(ini); }
         if (!fsrBuilt) { return "FSR support is unavailable in this build."; }
         if (!ini.GetBoolValue("Settings", "EnableUpscaler", true)) { return "FSR requires EnableUpscaler=true."; }
         if (ini.GetBoolValue("Experimental", "PureDarkFullDelegation", false)) { return "Full renderer delegation is unavailable."; }
-        if (ini.GetBoolValue("FrameGeneration", "Enabled", true) ||
-            ini.GetLongValue("Experimental", "FrameGenerationBackend", 1) != 0) {
-            return "FSR requires frame generation off and ordinary presentation (backend 0).";
-        }
+        const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
+        if (presenter == 0) {
+            if (ini.GetBoolValue("FrameGeneration", "Enabled", true)) { return "Ordinary FSR requires frame generation off."; }
+        } else if (presenter == 2) {
+            if (!fsrFgBuilt) { return "FSR frame generation support is unavailable in this build."; }
+            if (std::string_view(ini.GetValue("FSR", "ProviderPolicy", "Analytical")) != "Analytical") {
+                return "FSR frame generation requires the analytical provider.";
+            }
+            if (!ini.GetBoolValue("Settings", "NativeUI", true) ||
+                ini.GetLongValue("Experimental", "NativeUICompositionMode", 0) != 0) {
+                return "FSR frame generation requires NativeUI=true and dedicated NativeUICompositionMode=0.";
+            }
+        } else { return "FSR requires ordinary presentation (backend 0) or FSR frame generation (backend 2)."; }
         if (ini.GetBoolValue("SourceDLSSG", "NeuralRenderingEnabled", false)) { return "Neural Rendering is unavailable with FSR."; }
         if (ini.GetBoolValue("HDROutput", "Enabled", false)) { return "HDR output is not validated with FSR."; }
         if (ini.GetBoolValue("DynamicResolution", "Enabled", false) || ini.GetBoolValue("DynamicResolution", "Oscillate", false)) {
