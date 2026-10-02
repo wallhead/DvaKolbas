@@ -1,6 +1,6 @@
 # FSR frame generation: first integration milestone
 
-Status: proposed written design for user review. No FG implementation or activation is implied.
+Status: approved by the user's “proceed.” The [implementation plan](../plans/2026-10-02-fsr-fg.md) is ready for review. No FG implementation or activation is implied.
 Base: working FSR SR code `8e78f5136772fbbbb23c2aafe341ab931256c475`; V5.4 NO-LORE.
 
 ## Intent and scope
