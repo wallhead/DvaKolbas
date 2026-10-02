@@ -106,9 +106,10 @@
     "standardRunnableTestsPassed": 119,
     "installed": true,
     "installedPackageValidation": "PASS",
-    "requiresManualNrClickRetry": true,
+    "requiresManualNrClickRetry": false,
     "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-131406-fsr-nr-tab",
     "mo2ProfileUnchanged": true,
-    "iniUnchanged": true
+    "iniUnchanged": true,
+    "nrClickUserAcceptance": "PASS: user reports no crash"
   }
 }

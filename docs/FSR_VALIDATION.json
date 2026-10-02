@@ -800,7 +800,9 @@
     "graphicsToolsChecks": "3 excluded; unavailable",
     "installed": true,
     "installedPackageValidation": "PASS",
-    "manualSkyrimNrClickRetry": "PENDING",
-    "inGameCrashResolutionVerified": false
+    "manualSkyrimNrClickRetry": "PASS: user reports no crash",
+    "inGameCrashResolutionVerified": true,
+    "acceptanceScope": "NR click retry reported successful by user; latest log shows menu spatial SR and overlay open/close, not a new loaded-world temporal acceptance run",
+    "retryLogErrorsOrCriticalEntries": 0
   }
 }

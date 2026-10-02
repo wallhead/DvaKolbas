@@ -2,7 +2,7 @@
 
 Starting revision: `246d152c42a83308beb7a6f4930e7c472ef0d4ce` (TRP 0.3.5).
 Branch: `codex/fsr-sr`.
-Status: the local FSR SR milestone is complete. Six-build/GPU/package checks and the final review fix pass passed. Enabled builds accept coherent FSR settings, while FSR-off builds reject FSR. Built code revision: `49cb69f8ccb1532d42ed2b0a166010f870d4a121`. FSR is not installed in Skyrim; gameplay acceptance and FSR frame generation remain open. See the [review and preserved decisions](FSR_REVIEW.md), [validation evidence](FSR_VALIDATION.json) and [final package hashes](FSR_PACKAGES.json).
+Status: FSR SR is installed in V5.4 NO-LORE. Loaded-world temporal SR and the NR click correction have passed initial gameplay checks; broader image/color/lifecycle acceptance remains open. Current installed code revision: `8e78f5136772fbbbb23c2aafe341ab931256c475`. FSR FG is unimplemented and disabled; its [proposed design](superpowers/specs/2026-10-02-fsr-fg-design.md) is ready for review. See [Skyrim results](FSR_SKYRIM_TEST_LOG.md), [validation](FSR_VALIDATION.json) and [packages](FSR_PACKAGES.json). Execution records below describe their historical state.
 
 The user approved shared buffers/native UI, NVIDIA-independent FSR SR first, then FSR FG, and the [written spec](superpowers/specs/2026-10-01-fsr-sr-design.md). The [implementation plan](superpowers/plans/2026-10-01-fsr-sr.md) defines eight tested increments. The user’s “next step” continued implementation inline in the existing FSR worktree. Pushes to `https://github.com/wallhead/DvaKolbas` are authorized. This record will gain executed commands, artifacts, hashes, and acceptance outcomes as implementation proceeds.
 
@@ -53,7 +53,7 @@ The producer signal/submission -> D3D12 wait/dispatch/signal -> D3D11 output wai
 * Graphics Tools-dependent validation: unavailable after installation error 5; do not report those checks passed.
 * FSR FG: subsequent implementation stage, not active or tested.
 
-The live V5.4 NO-LORE installation remains the existing tested DLSS baseline. No FSR deployment or MO2 modification has been performed.
+The live V5.4 NO-LORE installation now uses the separate FSR SR test mod, with the tested DLSS baseline retained disabled. MO2 launch settings are preserved; current installed and gameplay evidence is recorded in the Skyrim test log.
 
 ## Executed increment 1: backend and frame contracts
 
