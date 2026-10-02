@@ -2,6 +2,7 @@
 #include "OverlayUIStyle.h"
 #include "OverlaySettingRows.h"
 #include "OverlayFrameView.h"
+#include "OverlayNeuralTab.h"
 
 #include "FrameGen/NvidiaHost.h"
 #include "FrameGen/SourceDLSSGBackend.h"
@@ -333,15 +334,10 @@ void DrawSourceNeuralControls(TheosRenderPipeline::SourceDLSSG::Preferences& dra
 
 void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
 {
-    if (!ImGui::BeginTabItem("Neural Rendering", nullptr,
-                             requestedPage == SettingsPage::NeuralRendering ? ImGuiTabItemFlags_SetSelected : 0))
+    if (!BeginNeuralRenderingTab(requestedPage == SettingsPage::NeuralRendering, view.fsrActive))
         return;
     if (BeginSettingsColumns("neural", height, view))
     {
-        if(view.fsrActive) {
-            ImGui::TextWrapped("Neural Rendering is unavailable with FSR. Set FSR sharpness in the Image tab.");
-            EndSettingsColumns();ImGui::EndTabItem();return;
-        }
         const auto applied = TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();
         const auto& state = view.sourceNeural;
         DrawStatusLabel(state.failed      ? "NR failed"
