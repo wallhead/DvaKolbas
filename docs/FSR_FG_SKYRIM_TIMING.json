@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-02",
+  "date": "2026-10-03",
   "sourceRevision": "be05d936e477",
-  "state": "Prepared on installed final-review build; awaiting user matched-scene run",
+  "state": "Captured bounded exploratory base-frame timing comparison; all four requested states observed; normal logging restored",
   "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-222644-799-fg-timing-logging",
   "originalIniSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
   "loggingIniSha256": "9a64badafc57265b2edc8d8574a721dfbd702a8b7bcbdf54e8dad523bfd84934",
@@ -13,9 +13,121 @@
   "trialMode": "NativeAA + backend2 FG; source configuration unchanged",
   "measurementScope": "Base-frame cadence and D3D11 GPU timings; CPU Present includes API waits; no game scanout or isolated FG GPU-cost claim",
   "matchedSceneProcedure": "Same camera and location, FG off30s/on30s/off30s with overlay closed between toggles; no Save as default",
-  "restoration": "Restore two logging settings after game closes, preserving other user settings",
+  "restoration": {
+    "state": "PASS",
+    "date": "2026-10-03",
+    "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-03-001527-444-restore-fg-timing-logging",
+    "beforeIniSha256": "9a64badafc57265b2edc8d8574a721dfbd702a8b7bcbdf54e8dad523bfd84934",
+    "afterIniSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
+    "logPerformanceMetrics": false,
+    "performanceLogIntervalSeconds": 10,
+    "otherSettingsUnchanged": true,
+    "fsrQuality": "NativeAA",
+    "startupFgEnabled": "true",
+    "installedPackageValidation": "PASS",
+    "validationLog": {
+      "path": "out/research/final-review-timing-restored-validate.log",
+      "sha256": "b707aa8781bd60704eb060f8c5632368c6cd22f35b801ab9e27c004d81b3ec6b",
+      "bytes": 171
+    }
+  },
   "installedPackageValidation": "PASS",
   "milestonesComplete": 7,
   "milestonesTotal": 8,
-  "loggingInitiallyPreparedOnRevision": "843057399b47"
+  "loggingInitiallyPreparedOnRevision": "843057399b47",
+  "userReport": "fg on, fg off, fg on, fg off done",
+  "actualSequence": [
+    "on",
+    "off",
+    "on",
+    "off"
+  ],
+  "snapshot": {
+    "path": "out/research/final-review-skyrim-timing-2026-10-03-closed.log",
+    "sha256": "764b5e6fae37f08c75183d7e5f6735f6741fded871023e5d12c1fc5707eb5a5a",
+    "bytes": 190148
+  },
+  "preClosureSnapshot": {
+    "path": "out/research/final-review-skyrim-timing-2026-10-03.log",
+    "sha256": "764b5e6fae37f08c75183d7e5f6735f6741fded871023e5d12c1fc5707eb5a5a",
+    "bytes": 190148
+  },
+  "analysisReceipt": {
+    "path": "out/research/final-review-skyrim-timing-bounded.json",
+    "sha256": "a50fadbfa43fb1e9feae238f0fafd4e09d8a8f9dfccab8b92c74d4951b125a5d",
+    "bytes": 2472
+  },
+  "timingComparison": {
+    "sourceRevision": "be05d936e477",
+    "selection": "First30s of each observed requested-state phase, clipped at next toggle; discard first20s and last2s. Twenty-second settling is a heuristic for1024-frame windows at observed ~58FPS, not proof of exact sample-window boundaries.",
+    "phases": [
+      {
+        "phase": 0,
+        "fgRequested": true,
+        "start": "2026-10-03 00:10:17.900",
+        "analysisEnd": "2026-10-03 00:10:47.900",
+        "availableSeconds": 30.0,
+        "selectedRollingSummaries": 4,
+        "medianRollingCadenceP50Ms": 17.2065,
+        "medianRollingCadenceP95Ms": 22.642000000000003,
+        "medianRollingCadenceP99Ms": 25.786,
+        "medianRollingD3D11P50Ms": 12.3215,
+        "medianRollingD3D11P95Ms": 13.9835
+      },
+      {
+        "phase": 1,
+        "fgRequested": false,
+        "start": "2026-10-03 00:11:06.678",
+        "analysisEnd": "2026-10-03 00:11:36.678",
+        "availableSeconds": 30.0,
+        "selectedRollingSummaries": 4,
+        "medianRollingCadenceP50Ms": 17.1875,
+        "medianRollingCadenceP95Ms": 20.999,
+        "medianRollingCadenceP99Ms": 24.101,
+        "medianRollingD3D11P50Ms": 11.374,
+        "medianRollingD3D11P95Ms": 12.693999999999999
+      },
+      {
+        "phase": 2,
+        "fgRequested": true,
+        "start": "2026-10-03 00:11:39.498",
+        "analysisEnd": "2026-10-03 00:12:03.369",
+        "availableSeconds": 23.871,
+        "selectedRollingSummaries": 1,
+        "medianRollingCadenceP50Ms": 17.204,
+        "medianRollingCadenceP95Ms": 21.025,
+        "medianRollingCadenceP99Ms": 22.739,
+        "medianRollingD3D11P50Ms": 11.878,
+        "medianRollingD3D11P95Ms": 13.326
+      },
+      {
+        "phase": 3,
+        "fgRequested": false,
+        "start": "2026-10-03 00:12:03.369",
+        "analysisEnd": "2026-10-03 00:12:33.369",
+        "availableSeconds": 30.0,
+        "selectedRollingSummaries": 4,
+        "medianRollingCadenceP50Ms": 17.29,
+        "medianRollingCadenceP95Ms": 21.8965,
+        "medianRollingCadenceP99Ms": 24.2285,
+        "medianRollingD3D11P50Ms": 11.543,
+        "medianRollingD3D11P95Ms": 12.9525
+      }
+    ],
+    "limitations": [
+      "Second on interval lasted23.871s and contributes only1 settled summary",
+      "Overlapping rolling windows are correlated, not independent per-frame samples",
+      "Same stationary scene/closed overlay requested but not verified by log",
+      "Source cadence and pre-Present D3D11 timing do not establish scanout or isolated FG GPU cost"
+    ]
+  },
+  "loggedSuccessfulGenerationStates": 2,
+  "loggedFailedFgApiOrCallbackStates": 0,
+  "loggedErrorOrCriticalEntries": 0,
+  "remainingAcceptance": [
+    "Independent Skyrim presentation/scanout or latency measurement",
+    "Formal ENB/source-color calibration; Gamma22 provisional",
+    "Automatic Alt+Enter",
+    "AMD/Intel hardware unavailable; three Graphics Tools checks excluded under user authorization"
+  ]
 }

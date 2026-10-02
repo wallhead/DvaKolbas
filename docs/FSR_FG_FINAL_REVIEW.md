@@ -20,7 +20,7 @@ The reviewer declined to judge the following; the executor retains each limitati
 
 | Area | Executor disposition |
 | --- | --- |
-| Measured Skyrim pacing, scanout and latency | Base-frame timing capture is prepared and pending; no game scanout or latency claim. |
+| Measured Skyrim pacing, scanout and latency | Bounded base-frame timing capture completed on 2026-10-03; see FSR_FG_SKYRIM_TIMING.md. No game scanout or latency claim. |
 | Calibrated Skyrim/ENB transfer and color | Gamma22 remains provisional. FG toggle appearance passed; formal source/ENB calibration remains pending. |
 | AMD/Intel hardware | No available execution evidence; pending hardware acceptance. Current tested GPU is RTX 4080 Super. |
 | Three Graphics Tools checks | Unavailable and excluded under the user's instruction to continue; never counted as passes. |

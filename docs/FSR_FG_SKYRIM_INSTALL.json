@@ -16,7 +16,7 @@
   "workingSrModEnabled": false,
   "fgTrialModEnabled": true,
   "standaloneVisibleGate": "PASS",
-  "skyrimFgGameplay": "pending manual launch of updated trial",
+  "skyrimFgGameplay": "PASS within startup/world/live-toggle log scope; user completed on/off/on/off test; prior full visual/lifecycle checklist remains scoped to843057399b47",
   "frameGenerationBackend": 2,
   "sourceColorEncoding": "Gamma22 provisional",
   "sharpness": 0,
@@ -55,5 +55,13 @@
     "path": "out/research/final-review-installed-validate.log",
     "sha256": "b707aa8781bd60704eb060f8c5632368c6cd22f35b801ab9e27c004d81b3ec6b",
     "bytes": 171
+  },
+  "normalLoggingRestored": {
+    "date": "2026-10-03",
+    "iniSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
+    "quality": "NativeAA",
+    "startupFgEnabled": true,
+    "installedPackageValidation": "PASS",
+    "timingReceipt": "docs/FSR_FG_SKYRIM_TIMING.json"
   }
 }

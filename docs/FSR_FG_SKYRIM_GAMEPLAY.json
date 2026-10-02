@@ -22,10 +22,9 @@
   },
   "evidenceScope": "User gameplay report plus logged successful generation callback; transition logs are not total generated-frame or scanout counts",
   "remainingAcceptance": [
-    "Measured Skyrim matched-scene frame timing/presentation",
+    "Independent Skyrim presentation/scanout or latency measurement",
     "Formal ENB/source-color calibration; Gamma22 remains provisional",
-    "Automatic Alt+Enter",
-    "Manual smoke check of installed final-review build be05d936e477"
+    "Automatic Alt+Enter"
   ],
   "milestonesComplete": 7,
   "milestonesTotal": 8,
@@ -74,7 +73,8 @@
   "updatedBuild": {
     "builtCodeRevision": "be05d936e4772739974b4aff1be8f343c4691867",
     "installed": true,
-    "manualSmoke": "Pending",
+    "manualSmoke": "PASS: correct build loaded world; user completed on/off/on/off; successful generation reentry and no logged error/API failure",
     "previousManualAcceptanceAppliesTo": "843057399b47"
-  }
+  },
+  "measuredBaseFrameTiming": "Captured bounded exploratory comparison; see FSR_FG_SKYRIM_TIMING.json; not scanout or isolated FG GPU cost"
 }

@@ -58,7 +58,7 @@
   "installationState": "Updated same FG trial; NativeAA INI, ImGui settings, MO2/profile and SR/DLSS rollback files preserved; installed validation PASS",
   "previousInstalledSource": "843057399b473a1c017f2a9c4b7aa09621223277",
   "previousInstalledManualChecklist": "PASS: user report",
-  "updatedBuildGameplay": "Installed; awaiting manual smoke/timing run",
+  "updatedBuildGameplay": "PASS: correct build loaded world; user completed on/off/on/off; successful generation reentry and no logged error/API failure",
   "milestonesComplete": 7,
   "milestonesTotal": 8,
   "installationReceipt": "docs/FSR_FG_SKYRIM_INSTALL.json"
