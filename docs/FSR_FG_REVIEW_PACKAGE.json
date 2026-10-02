@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-02",
+  "result": "PASS",
+  "sourceCommit": "aac2814ad2307ed90096d923cb6caaef76f3fe84",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "aac2814ad230",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": false
+  },
+  "edition": "Standard",
+  "zip": {
+    "path": "out/packages/2026-10-02/fg-review-fixes/aac2814/Standard-FSR-FG.zip",
+    "sha256": "8c7b33a81d0361ed4581cc5231372554117b308e0454b777e5f0818463ae99bf",
+    "bytes": 48782612
+  },
+  "manifest": {
+    "path": "out/packages/2026-10-02/fg-review-fixes/aac2814/Standard-FSR-FG/manifest.json",
+    "sha256": "3d24eac8446856ee0fc70b77fbf4fed803c4f4ae978ad669669031eb44f11a9e",
+    "bytes": 8410
+  },
+  "dll": {
+    "path": "out/packages/2026-10-02/fg-review-fixes/aac2814/Standard-FSR-FG/SKSE/Plugins/TheosRenderPipeline.dll",
+    "sha256": "d98932168dcee42719b379cb0c061b98ebfc2c7e3de32d6da2f2ec4d475f7691",
+    "bytes": 2554368
+  },
+  "ini": {
+    "path": "out/packages/2026-10-02/fg-review-fixes/aac2814/Standard-FSR-FG/SKSE/Plugins/TheosRenderPipeline.ini",
+    "sha256": "5a4afd28db453a95181569b22e0f98c41e04881ab6a0d968b7905600328ac55d",
+    "bytes": 4817
+  },
+  "configureLog": {
+    "path": "out/research/review-clean-package-configure.log",
+    "sha256": "c5b1d3fb4cb9ec2f05eac7def58f7839a20a10e7f678496597b5f69ebb7a2c10",
+    "bytes": 4403
+  },
+  "buildLog": {
+    "path": "out/research/review-clean-package-build.log",
+    "sha256": "66447e8bb89540825247fc028af62db0a25a2e71361a845a976c1cd9b2f14b0c",
+    "bytes": 12379
+  },
+  "stageLog": {
+    "path": "out/research/review-clean-package-stage.log",
+    "sha256": "50c1e17c293db3a2cc9a821ea6aef9a2538d82489c6680597a7444acbfad0314",
+    "bytes": 352
+  },
+  "validationLog": {
+    "path": "out/research/review-clean-package-validate.log",
+    "sha256": "00b45e973b3761b9e6c7b9cc5a0bf82af7722e5a1c626b3bf344f685149ae9b5",
+    "bytes": 211
+  },
+  "extractedZipValidationLog": {
+    "path": "out/research/review-clean-zip-validate.log",
+    "sha256": "247696fdfa32a28c236226fac5092832d85ed7061f61ced5183be5b6e87514aa",
+    "bytes": 205
+  },
+  "stageCommand": "tools/fsr/Stage-Package.ps1 -Edition Standard -BuildDirectory out/build/fsr-fg-standard-nr-off -RuntimeDirectory out/research/sdk-v2.3.0/runtime -OutputDirectory out/packages/2026-10-02/fg-review-fixes/aac2814 -FrameGeneration",
+  "validationCommand": "tools/fsr/Validate-Package.ps1 -Edition Standard -PackageDirectory <staged or extracted package> -FrameGeneration -RequireCleanSource",
+  "productSourceUnchangedSince498PassingChecks": true,
+  "sourceBlobAuditPassed": 23,
+  "installed": false,
+  "reasonNotInstalled": "MO2 is open; existing installed trial and profile unchanged",
+  "skyrimAcceptancePending": true,
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}
