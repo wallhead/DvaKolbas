@@ -1,6 +1,16 @@
 #include "RuntimeProbeReport.h"
 #include <algorithm>
+#include <stdexcept>
 namespace NrRuntimeResearch {
+std::vector<uint16_t> RgbForTemporalHash(std::span<const uint16_t> rgba) {
+    if(rgba.size()%4)throw std::invalid_argument("packed RGBA size is invalid");
+    std::vector<uint16_t> rgb;rgb.reserve(rgba.size()/4*3);
+    for(size_t i=0;i<rgba.size();i+=4)rgb.insert(rgb.end(),rgba.begin()+i,rgba.begin()+i+3);
+    return rgb;
+}
+bool AllRgbOverwritten(std::span<const uint16_t,4> rgba,std::span<const uint16_t,4> sentinel) {
+    return rgba[0]!=sentinel[0] && rgba[1]!=sentinel[1] && rgba[2]!=sentinel[2];
+}
 std::vector<std::string> Validate(const ProbeReport& r) {
     std::vector<std::string> issues;
     const auto hash=[](const std::string& s){return s.size()==64 && std::ranges::all_of(s,[](char c){

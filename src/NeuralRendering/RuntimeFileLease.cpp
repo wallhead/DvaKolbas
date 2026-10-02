@@ -12,6 +12,9 @@ std::unexpected<Error> Fail(ErrorKind kind, const char* message, int64_t native=
 Result<std::string> HashHandle(HANDLE file) {
     struct Hash {
         BCRYPT_ALG_HANDLE algorithm{}; BCRYPT_HASH_HANDLE value{};
+        // Members remain alive during the destructor body: CNG must destroy
+        // the handle before releasing its caller-owned backing storage.
+        std::vector<unsigned char> object;
         ~Hash(){ if(value) BCryptDestroyHash(value); if(algorithm) BCryptCloseAlgorithmProvider(algorithm,0); }
     } hash;
     auto code=BCryptOpenAlgorithmProvider(&hash.algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0);
@@ -19,8 +22,8 @@ Result<std::string> HashHandle(HANDLE file) {
     DWORD size{},written{};
     code=BCryptGetProperty(hash.algorithm,BCRYPT_OBJECT_LENGTH,reinterpret_cast<PUCHAR>(&size),sizeof(size),&written,0);
     if(code<0 || written!=sizeof(size)) return Fail(ErrorKind::Io,"Cannot get SHA256 object size",code);
-    std::vector<unsigned char> object(size);
-    code=BCryptCreateHash(hash.algorithm,&hash.value,object.data(),size,nullptr,0,0);
+    hash.object.resize(size);
+    code=BCryptCreateHash(hash.algorithm,&hash.value,hash.object.data(),size,nullptr,0,0);
     if(code<0) return Fail(ErrorKind::Io,"Cannot create SHA256 hash",code);
     std::array<unsigned char,65536> chunk{};
     for(;;) {

@@ -26,5 +26,10 @@ int main() {
     r=good;r.coreHeldAndMatched=false;check(!Validate(r).empty(),"UnretainedDriverCoreRejected");
     r=good;r.init=0xbad00002;check(!Validate(r).empty(),"RejectedInitCannotPass");
     r=good;r.readbackFrames=29;check(!Validate(r).empty(),"ShortRunCannotPass");
+    const std::array<uint16_t,8> alpha0{1,2,3,0,4,5,6,0},alpha1{1,2,3,1,4,5,6,1};
+    check(RgbForTemporalHash(alpha0)==RgbForTemporalHash(alpha1),"AlphaChangesDoNotQualifyChangingRgb");
+    const std::array<uint16_t,4> sentinel{99,99,99,99},partial{1,99,99,0},complete{1,2,3,99};
+    check(!AllRgbOverwritten(partial,sentinel),"PartiallyWrittenRgbIsRejected");
+    check(AllRgbOverwritten(complete,sentinel),"AllRgbWrittenRegardlessOfAlpha");
     return failed?1:0;
 }

@@ -29,6 +29,7 @@ std::atomic_bool allocationFailed{};
 NrRuntimeResearch::ProbeReport report;
 std::filesystem::path reportPath;
 std::vector<std::string> outputHashes;
+std::vector<std::string> rgbHashes;
 AdapterIdentity adapterIdentity;
 uint64_t shimRva{};
 void WriteReport() {
@@ -59,6 +60,8 @@ void WriteReport() {
         <<",\"colorFormat\":\"RGBA16F\",\"guideScenario\":\"static depth/zero motion; changing color pattern, not temporal scene qualification\""
         <<",\"ui\":\"null; no HUD composition in this NR runtime probe\",\"outputSha256\":[";
     for(size_t i=0;i<outputHashes.size();++i){if(i)out<<',';out<<std::quoted(outputHashes[i]);}
+    out<<"],\"temporalRgbSha256\":[";
+    for(size_t i=0;i<rgbHashes.size();++i){if(i)out<<',';out<<std::quoted(rgbHashes[i]);}
     out<<"],\"unestablished\":[";
     for(size_t i=0;i<issues.size();++i){if(i)out<<',';out<<std::quoted(issues[i]);}out<<"]\n}\n";
     if(!out)throw std::runtime_error("cannot save probe report");
@@ -179,12 +182,13 @@ int wmain(int argc,wchar_t** argv){
             Barrier(list.Get(),output.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COPY_SOURCE);D3D12_TEXTURE_COPY_LOCATION dst{},src{};dst.pResource=readback.buffer.Get();dst.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;dst.PlacedFootprint=readback.footprint;src.pResource=output.Get();src.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;list->CopyTextureRegion(&dst,0,0,0,&src,nullptr);submit();
             unsigned char* mapped{};Gpu(readback.buffer->Map(0,nullptr,reinterpret_cast<void**>(&mapped)),"readback map");for(UINT y=0;y<height;++y)std::memcpy(pixels.data()+size_t(y)*width*4,mapped+readback.footprint.Offset+size_t(y)*readback.footprint.Footprint.RowPitch,width*8);D3D12_RANGE noWrite{};readback.buffer->Unmap(0,&noWrite);
             std::array<float,3> minimum{INFINITY,INFINITY,INFINITY},maximum{-INFINITY,-INFINITY,-INFINITY};
-            for(size_t i=0;i<pixels.size();i+=4){bool finite=true,written=false,changed=false;for(size_t c=0;c<3;++c){const float value=DirectX::PackedVector::XMConvertHalfToFloat(pixels[i+c]);finite&=std::isfinite(value);minimum[c]=std::min(minimum[c],value);maximum[c]=std::max(maximum[c],value);written|=pixels[i+c]!=sentinel[i+c];changed|=pixels[i+c]!=colors[i+c];}++report.outputPixels;if(finite)++report.finitePixels;if(written)++report.overwrittenPixels;if(changed)++report.changedFromInputPixels;}
+            for(size_t i=0;i<pixels.size();i+=4){bool finite=true,changed=false;for(size_t c=0;c<3;++c){const float value=DirectX::PackedVector::XMConvertHalfToFloat(pixels[i+c]);finite&=std::isfinite(value);minimum[c]=std::min(minimum[c],value);maximum[c]=std::max(maximum[c],value);changed|=pixels[i+c]!=colors[i+c];}++report.outputPixels;if(finite)++report.finitePixels;if(NrRuntimeResearch::AllRgbOverwritten(std::span<const uint16_t,4>{pixels.data()+i,4},std::span<const uint16_t,4>{sentinel.data()+i,4}))++report.overwrittenPixels;if(changed)++report.changedFromInputPixels;}
             // Require visible spatial contrast in every measured image, not
             // merely different hashes from changing uniform or alpha values.
             if(maximum[0]-minimum[0]>.01f || maximum[1]-minimum[1]>.01f || maximum[2]-minimum[2]>.01f)
                 ++report.spatiallyVariedFrames;
-            const auto digest=Hash(pixels);outputHashes.push_back(digest);distinct.insert(digest);++report.readbackFrames;
+            outputHashes.push_back(Hash(pixels));const auto rgbDigest=Hash(NrRuntimeResearch::RgbForTemporalHash(pixels));
+            rgbHashes.push_back(rgbDigest);distinct.insert(rgbDigest);++report.readbackFrames;
         }
         report.distinctOutputHashes=static_cast<uint32_t>(distinct.size());report.outputReadersRetired=true;
         report.release=release(feature);Need(report.release==1,"feature release");feature=nullptr;
