@@ -213,6 +213,15 @@ bool NvidiaHost::PrepareSourceFrameForPresent(IDXGISwapChain* swapChain)
     SourceFrameOperations operations{*this};
     const bool prepared=sourceFrameCoordinator_.PrepareForPresent(context_.Get(), operations);
     if(prepared && FsrFgActive() && !TheosRenderPipeline::PrepareFsrPresentUi(context_.Get(),nativeUI_.RenderRTV(),nativeUIPass_.Frame().UIDrawn())) {
+        Microsoft::WRL::ComPtr<ID3D11Device> producer,viewOwner,resourceOwner;
+        Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+        auto* target=nativeUI_.RenderRTV();context_->GetDevice(&producer);
+        if(target){target->GetDevice(&viewOwner);target->GetResource(&resource);}
+        if(resource)resource->GetDevice(&resourceOwner);
+        logger::error("[FSR HUD preparation] context={} type={} rtv={} resource={} producer={} viewOwner={} resourceOwner={} resourceMatches={} available={} dedicated={} uiDrawn={}",
+            static_cast<void*>(context_.Get()),static_cast<unsigned>(context_->GetType()),static_cast<void*>(target),static_cast<void*>(resource.Get()),
+            static_cast<void*>(producer.Get()),static_cast<void*>(viewOwner.Get()),static_cast<void*>(resourceOwner.Get()),
+            TheosRenderPipeline::D3D11FrameCopy::SameObject(producer.Get(),resourceOwner.Get()),nativeUI_.Available(),nativeUI_.Dedicated(),nativeUIPass_.Frame().UIDrawn());
         FailLifecycle(E_FAIL,"AMD UI producer preparation");return false;
     }
     return prepared;

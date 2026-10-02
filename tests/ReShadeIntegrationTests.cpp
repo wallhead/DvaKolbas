@@ -6,6 +6,7 @@
 #include "Upscaling/FSRPreparedResources.h"
 #if defined(TRP_ENABLE_FSR_FG)
 #include "FrameGen/FSRHostPresentation.h"
+#include "FrameGen/NativeUICompletion.h"
 #include "Upscaling/FSRFrameAdapter.h"
 #endif
 #include <reshade/reshade_events.hpp>
@@ -96,6 +97,15 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     Require(automaticRuntimes==0,"AMD presenter has no automatic ReShade runtime");
     Surface source(device,renderWidth,renderHeight),input(device,renderWidth,renderHeight),output(device,outputWidth,outputHeight);
     Surface depth(device,renderWidth,renderHeight,DXGI_FORMAT_R32_FLOAT),motion(device,renderWidth,renderHeight,DXGI_FORMAT_R16G16_FLOAT),hud(device,outputWidth,outputHeight);
+    ComPtr<ID3D11Device> producerDevice,viewDevice,textureDevice;context->GetDevice(&producerDevice);
+    hud.rtv->GetDevice(&viewDevice);hud.texture->GetDevice(&textureDevice);
+    std::printf("HUD ownership producer=%p viewDevice=%p textureDevice=%p sameView=%d sameTexture=%d\n",producerDevice.Get(),viewDevice.Get(),textureDevice.Get(),
+        D3D11FrameCopy::SameObject(producerDevice.Get(),viewDevice.Get()),D3D11FrameCopy::SameObject(producerDevice.Get(),textureDevice.Get()));
+    const std::array<float,4> hudSentinel{0,1,0,1};hud.Paint(context,hudSentinel);
+    Require(PrepareFsrPresentUi(context,hud.rtv.Get(),true) && Pixel(device,context,hud.texture.Get())==std::array<unsigned char,4>{0,255,0,255},
+        "real ReShade completed HUD retained");
+    Require(PrepareFsrPresentUi(context,hud.rtv.Get(),false),"RealReShadeHudProducerPreparation");
+    Require(Pixel(device,context,hud.texture.Get())==std::array<unsigned char,4>{0,0,0,0},"real ReShade empty HUD cleared without alpha residue");
     const std::array<float,4> scene{.25f,.5f,.25f,1},ui{0,.25f,0,.5f};
     depth.Paint(context,{.5f,0,0,0});motion.Paint(context,{0,0,0,0});
     auto makeAdapter=[&]{return std::make_unique<FsrFrameAdapter>(*resources->Upscaler(),resources->Bridge(),resources->Resources(),resources->Color11(),resources->Depth11(),
