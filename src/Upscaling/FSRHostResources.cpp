@@ -21,6 +21,7 @@ namespace TheosRenderPipeline::Upscaling
     bool FsrHostResources::FeatureReady()const{return state_->contextOwned && state_->bridge && state_->bridge->Ready();}
     bool FsrHostResources::ContextOwned()const{return state_->contextOwned;}
     std::shared_ptr<Graphics::D3D11D3D12Interop> FsrHostResources::Bridge()const{return state_->bridge;}
+    std::shared_ptr<FsrRuntime> FsrHostResources::Runtime()const{return state_->runtime;}
     FsrUpscaler* FsrHostResources::Upscaler()const{return state_->upscaler.get();}
     GpuFrameResources FsrHostResources::Resources()const{return {state_->color.texture12.Get(),state_->depth.texture12.Get(),state_->motion.texture12.Get(),state_->native.texture12.Get()};}
     ID3D11Texture2D* FsrHostResources::Color11()const{return state_->color.texture11.Get();}ID3D11Texture2D* FsrHostResources::Depth11()const{return state_->depth.texture11.Get();}

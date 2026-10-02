@@ -266,8 +266,22 @@ bool NativeUIComposition::Compose(ID3D11DeviceContext* a_context, ID3D11Texture2
 	// The draw attachment and tagged UI texture are distinct.
 	// Copying here retains stable Streamline resource identity while
 	// allowing the UI render target to be cleared and reused next frame.
-	a_context->CopyResource(nativeUIColorAndAlpha_.Get(), nativeUIRenderTexture_.Get());
+	if (!CaptureDedicated(a_context)) { return false; }
 	return ComposeLayer(a_context, a_presentation, nativeUIColorAndAlphaSRV_.Get());
+}
+
+bool NativeUIComposition::CaptureDedicated(ID3D11DeviceContext* context)
+{
+    if (!nativeUITextureMode_ || !nativeUIExtractionAvailable_ || !context ||
+        context->GetType() != D3D11_DEVICE_CONTEXT_IMMEDIATE ||
+        !nativeUIRenderTexture_ || !nativeUIColorAndAlpha_) { return false; }
+    Microsoft::WRL::ComPtr<ID3D11Device> contextDevice, textureDevice;
+    context->GetDevice(&contextDevice);nativeUIRenderTexture_->GetDevice(&textureDevice);
+    Microsoft::WRL::ComPtr<IUnknown> contextIdentity, textureIdentity;
+    if (FAILED(contextDevice.As(&contextIdentity)) || FAILED(textureDevice.As(&textureIdentity)) ||
+        contextIdentity.Get() != textureIdentity.Get()) { return false; }
+    context->CopyResource(nativeUIColorAndAlpha_.Get(), nativeUIRenderTexture_.Get());
+    return true;
 }
 
 bool NativeUIComposition::ComposeOverlay(ID3D11DeviceContext* context, ID3D11Texture2D* presentation,

@@ -14,6 +14,7 @@ namespace TheosRenderPipeline::Upscaling
         Result<void> EnsureInputPolicy(FsrInputPolicy);
         bool FeatureReady()const;bool ContextOwned()const;
         std::shared_ptr<Graphics::D3D11D3D12Interop> Bridge()const;
+        std::shared_ptr<FsrRuntime> Runtime()const;
         GpuFrameResources Resources()const;
         FsrUpscaler* Upscaler()const;
         ID3D11Texture2D* Color11()const;ID3D11Texture2D* Depth11()const;ID3D11Texture2D* Motion11()const;ID3D11Texture2D* Output11()const;

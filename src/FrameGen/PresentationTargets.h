@@ -55,6 +55,15 @@ namespace TheosRenderPipeline
             }
             return S_OK;
         }
+        HRESULT CacheSceneAfterRetirement(ID3D11Texture2D* scene)
+        {
+            if (!scene) { return E_INVALIDARG; }
+            D3D11_TEXTURE2D_DESC desc{};scene->GetDesc(&desc);
+            if (!desc.Width || !desc.Height || desc.SampleDesc.Count!=1 ||
+                !(desc.BindFlags&D3D11_BIND_RENDER_TARGET)) { return E_INVALIDARG; }
+            ResetAfterRetirement();access_=PresentationBufferAccess::D3D11Current;
+            buffers_.emplace_back(scene);return S_OK;
+        }
         HRESULT Select(ID3D11Device* device, UINT index)
         {
             if (!device || index >= buffers_.size()) { return E_INVALIDARG; }

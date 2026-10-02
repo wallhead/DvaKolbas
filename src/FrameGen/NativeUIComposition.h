@@ -19,6 +19,9 @@ namespace TheosRenderPipeline
             ID3D11Texture2D* a_scene, const D3D11_TEXTURE2D_DESC& a_outputDesc, bool dedicated);
         bool Extract(ID3D11DeviceContext* a_context, ID3D11Texture2D* a_presentation);
         bool Compose(ID3D11DeviceContext* a_context, ID3D11Texture2D* a_presentation);
+        // Freeze completed dedicated HUD without putting it into the scene.
+        // The caller supplies the source Present completion boundary.
+        bool CaptureDedicated(ID3D11DeviceContext* context);
         // Compose an independent native foreground without changing the stable
         // game UI texture tagged for frame generation.
         bool ComposeOverlay(ID3D11DeviceContext* context, ID3D11Texture2D* presentation,
