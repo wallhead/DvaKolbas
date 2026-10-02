@@ -1,5 +1,7 @@
 # FSR frame generation implementation evidence
 
+**Current closure (2026-10-03): 8/8 implementation milestones complete for the user-accepted V5.4 NO-LORE borderless-windowed trial.** The user confirmed color appearance. Formal color calibration and wider hardware/optical qualification remain unperformed, not passed. See [acceptance closure](FSR_FG_ACCEPTANCE.md); older milestone counts below are historical checkpoints.
+
 Approved for implementation by the user's "start" after the revised plan `8d0df1e`.
 Work follows [the plan](superpowers/plans/2026-10-02-fsr-fg.md) in the existing `codex/fsr-sr` worktree. The installed V5.4 NO-LORE SR DLL and INI remain unchanged.
 

@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-03",
+  "timezone": "Europe/Moscow",
+  "state": "COMPLETE: initial implementation and user-accepted borderless-windowed V5.4 NO-LORE trial",
+  "milestonesComplete": 8,
+  "milestonesTotal": 8,
+  "closureBasis": "Task 8 delivery and accurately scoped acceptance evidence are complete. User accepted observed color; formal calibration remains pending qualification, not a passing result or claimed waiver.",
+  "userColorReport": "colors is fine, i saw them",
+  "colorAppearance": "PASS: user observation",
+  "formalSourceColorCalibration": "NOT MEASURED; Gamma22 provisional",
+  "profile": "V5.4 NO-LORE",
+  "edition": "Standard",
+  "builtCodeRevision": "be05d936e4772739974b4aff1be8f343c4691867",
+  "fsrQuality": "NativeAA",
+  "providerPolicy": "Analytical",
+  "frameGenerationEnabled": true,
+  "frameGenerationBackend": 2,
+  "sourceColorEncoding": "Gamma22",
+  "normalLogging": true,
+  "installedPackageValidation": {
+    "result": "PASS",
+    "exitCode": 0,
+    "readOnly": true,
+    "log": "out/research/final-acceptance-installed-validate-20261003.log",
+    "logSha256": "b707aa8781bd60704eb060f8c5632368c6cd22f35b801ab9e27c004d81b3ec6b"
+  },
+  "installedHashes": {
+    "dll": "2f6eebd9efb05cf0433687dc2bf70d43fec26290d05f3e3b56231c142e3867b6",
+    "ini": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
+    "manifest": "f5b5aae8580ea084e92951de49a390d3f2f83394145334546f0b633a522d0d88"
+  },
+  "finalRunnableSuite": {
+    "passed": 133,
+    "receipt": "docs/FSR_FG_FINAL_REVIEW_VALIDATION.json",
+    "rerunDuringDocumentationClosure": false,
+    "reason": "No compiled source changes since validated build"
+  },
+  "finalCodeReview": "docs/FSR_FG_FINAL_REVIEW.md",
+  "cleanPackageAndZip": "docs/FSR_FG_FINAL_REVIEW_PACKAGE.json",
+  "gameplay": "docs/FSR_FG_SKYRIM_GAMEPLAY.json",
+  "baseTiming": "docs/FSR_FG_SKYRIM_TIMING.json",
+  "presentation": "docs/FSR_FG_PRESENTATION_CAPTURE.json",
+  "offDisplayUpdateHz": 58.35014019574431,
+  "onDisplayUpdateHz": 115.12111714025083,
+  "displayUpdateRatio": 1.9729364274714638,
+  "exclusions": [
+    "Fullscreen/Alt+Enter excluded by user: borderless windowed only",
+    "Three Graphics Tools checks unavailable; user instructed continue"
+  ],
+  "pendingQualification": [
+    "Formal Skyrim/ENB source-transfer calibration",
+    "AMD/Intel hardware acceptance",
+    "Optical scanout/input-to-photon measurement"
+  ],
+  "rendererGameOrMo2SettingsChanged": false,
+  "branch": "codex/fsr-sr",
+  "remote": "wallhead",
+  "worktreeRetained": true
+}

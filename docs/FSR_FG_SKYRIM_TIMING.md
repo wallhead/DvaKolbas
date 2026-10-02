@@ -1,5 +1,7 @@
 # Skyrim FG timing capture — 2026-10-03
 
+**Current closure (2026-10-03): 8/8 implementation milestones complete for the user-accepted V5.4 NO-LORE borderless-windowed trial.** The user confirmed color appearance. Formal color calibration and wider hardware/optical qualification remain unperformed, not passed. See [acceptance closure](FSR_FG_ACCEPTANCE.md); older milestone counts below are historical checkpoints.
+
 Installed clean build `be05d936e477` reached the world in V5.4 NO-LORE with NativeAA at 2560×1440. The user reported completing FG on/off/on/off. The log confirms those four requested states, successful generation in both on phases, zero logged FG API/callback failures and zero error/critical entries. The two optional KreatE/OAR adapter hash warnings remain unchanged. Generation-state entries are transitions, not generated-frame totals.
 
 | Phase | Selected rolling summaries | Base cadence p50, ms | Base cadence p95, ms | Pre-Present D3D11 p50, ms |

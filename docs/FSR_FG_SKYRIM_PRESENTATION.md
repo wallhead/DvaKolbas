@@ -1,5 +1,7 @@
 # Skyrim FG presentation result — 2026-10-03
 
+**Current closure (2026-10-03): 8/8 implementation milestones complete for the user-accepted V5.4 NO-LORE borderless-windowed trial.** The user confirmed color appearance. Formal color calibration and wider hardware/optical qualification remain unperformed, not passed. See [acceptance closure](FSR_FG_ACCEPTANCE.md); older milestone counts below are historical checkpoints.
+
 **PASS within ETW display-update scope:** PresentMon 2.6.0 observed 58.35 updates/s with FG off and 115.12 updates/s with FG on, a 1.973× ratio. Both files belong to Skyrim PID 3152 and the same native DXGI swapchain `0x28BED6D1310`, in Hardware Independent Flip mode. Installed Standard/NR-off clean code is `be05d936e477`, using NativeAA at 2560×1440; the game reports a 165 Hz display.
 
 | Metric | FG off | FG on |

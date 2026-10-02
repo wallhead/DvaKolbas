@@ -1,5 +1,7 @@
 # Skyrim display-cadence capture
 
+**Current closure (2026-10-03): 8/8 implementation milestones complete for the user-accepted V5.4 NO-LORE borderless-windowed trial.** The user confirmed color appearance. Formal color calibration and wider hardware/optical qualification remain unperformed, not passed. See [acceptance closure](FSR_FG_ACCEPTANCE.md); older milestone counts below are historical checkpoints.
+
 Current result: **PASS within ETW display-update scope**. The user completed the capture; the same native swapchain measured 58.35 Hz off and 115.12 Hz on, ratio 1.973. See [measured results](FSR_FG_SKYRIM_PRESENTATION.md) and `FSR_FG_PRESENTATION_CAPTURE.json`. The preparation instructions and initial access limitations below are historical; actual elevated gameplay capture is now verified.
 
 The base-frame timing capture passed its logged live-toggle smoke checks. On 2026-10-03 the user additionally reported that the image looked fine. This accepts observed appearance for the tested setup; Gamma22/ENB transfer remains provisional rather than formally calibrated.

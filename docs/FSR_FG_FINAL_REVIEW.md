@@ -1,5 +1,7 @@
 # FSR FG whole-plan review and corrections
 
+**Current closure (2026-10-03): 8/8 implementation milestones complete for the user-accepted V5.4 NO-LORE borderless-windowed trial.** The user confirmed color appearance. Formal color calibration and wider hardware/optical qualification remain unperformed, not passed. See [acceptance closure](FSR_FG_ACCEPTANCE.md); older milestone counts below are historical checkpoints.
+
 The read-only review covered working SR base `8e78f5136772fbbbb23c2aafe341ab931256c475` through `a1f98bcab658472e60744ba784cacc2c232c9a05`, followed by a review of the corrections. It inspected runtime loading, source transactions, callback serialization, producer/SDK retirement, startup, resize/suspension, UI/color, settings, tests and packaging against the approved spec and amended plan. The user-requested removal of the 60/66 FPS gate is intentional.
 
 The initial verdict was **with fixes**: no Critical findings, two Important findings and one Minor help-text issue. Both Important findings were reproduced before their fixes. The final read-only recheck found no remaining Critical, Important or Minor implementation issue, conditional on successful production build, full suite and package validation. This is a code-review result; it does not establish unmeasured acceptance outcomes.
