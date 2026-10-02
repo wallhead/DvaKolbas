@@ -31,6 +31,8 @@ namespace TheosRenderPipeline::Upscaling
         Result<void> BeginPresent(const FsrSdkLock&);
         void EndPresent(const FsrSdkLock&) noexcept;
         Result<void> StopAdmissions(const FsrSdkLock&);
+        Result<void> ResumeAfterFeatureRetirement(const FsrSdkLock&);
+        Result<void> ResumeAfterReaderRetirement(const FsrSdkLock&);
     private:
         friend class FsrSdkLock;
         friend class FsrFrameGeneration;
@@ -44,6 +46,7 @@ namespace TheosRenderPipeline::Upscaling
     {
         ffxReturnCode_t result{FFX_API_RETURN_OK};
         unsigned invocations{};
+        std::uint64_t configuredId{},preparedId{};
     };
     class FsrFrameGeneration final
     {

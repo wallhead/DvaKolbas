@@ -443,20 +443,33 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
     if (!FsrFgActive() || &outer!=outerSwapChain_ || !fsrPresentation_ || FAILED(FailureResult())) return E_UNEXPECTED;
     auto candidate=fsrDescriptor_;candidate.BufferCount=2;candidate.BufferDesc.Width=width;candidate.BufferDesc.Height=height;
     if (format!=DXGI_FORMAT_UNKNOWN)candidate.BufferDesc.Format=format;candidate.Flags=flags;
-    auto translated=TheosRenderPipeline::FsrPresentation::TranslateDescriptor(candidate);
-    if (!translated)return E_INVALIDARG;candidate=*translated;
-    return TheosRenderPipeline::ResizeFsrSourceBoundary(count,masks,queues,
-        [&]{return BeforeResizeBuffers(innerSwapChain_);},
-        [&]{outer.ReplaceInner(nullptr);innerSwapChain_=nullptr;fsrPresentation_.reset();},
-        [&]()->HRESULT {
-            Microsoft::WRL::ComPtr<IDXGISwapChain> replacement;
-            auto result=CreateFsrPresenter(fsrFactory_.Get(),device_.Get(),candidate,&replacement);
-            if (FAILED(result))return FailLifecycle(result,"AMD presenter replacement");
-            innerSwapChain_=replacement.Get();
-            if (!CreateGameFacingResources(innerSwapChain_) || !CompleteStartupAfterDeviceCreation())
-                return FailLifecycle(E_FAIL,"AMD source replacement");
-            outer.ReplaceInner(replacement.Get());resetNextEvaluation_=true;return S_OK;
-        });
+    auto valid=TheosRenderPipeline::ValidateFsrResize(count,masks,queues);if(FAILED(valid))return valid;
+    valid=TheosRenderPipeline::ValidateFsrResizeFlags(fsrDescriptor_.Flags,flags);if(FAILED(valid))return valid;
+    auto translated=TheosRenderPipeline::FsrPresentation::TranslateResizeDescriptor(candidate);
+    if(!translated)return E_INVALIDARG;
+    if(!*translated){
+        const bool wasSuspended=FsrPresentSuspended();auto stopped=fsrPresentation_->Suspend();
+        if(!stopped){status_=stopped.error().message;return FailLifecycle(E_FAIL,"AMD suspension retirement");}
+        EndNativeUIPass();nativeUIPass_.ResetEvaluation();frameGenerationEnabled_=false;
+        fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();resetNextEvaluation_=true;
+        if(!wasSuspended)logger::info("[FSR resize] suspended empty client extent; AMD chain and game buffers retained");
+        return S_OK;
+    }
+    auto before=fsrPresentation_->BeforeResize();
+    if(!before){status_=before.error().message;return FailLifecycle(E_FAIL,"AMD resize retirement");}
+    frameGenerationEnabled_=false;fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
+    resetNextEvaluation_=true;
+    EndNativeUIPass();context_->ClearState();context_->Flush();
+    gameTargets_.ResetGameFacingAfterRetirement();ReleaseSourceUpscaler(true);presentation_.ResetAfterRetirement();
+    auto resized=fsrPresentation_->Resize(**translated);
+    if(!resized){status_=resized.error().message;return FailLifecycle(E_FAIL,"AMD resize reconstruction");}
+    renderWidth_=resized->render.width;renderHeight_=resized->render.height;
+    auto hr=innerSwapChain_->GetDesc(&fsrDescriptor_);
+    if(FAILED(hr) || !CreateGameFacingResources(innerSwapChain_) || !CompleteStartupAfterDeviceCreation())
+        return FailLifecycle(FAILED(hr)?hr:E_FAIL,"AMD resized source resources");
+    logger::info("[FSR resize] same AMD chain result=0x{:08X} render={}x{} output={}x{} temporalReset=true",
+        static_cast<std::uint32_t>(resized->result),renderWidth_,renderHeight_,outputWidth_,outputHeight_);
+    return resized->result;
 #else
     (void)outer;(void)count;(void)width;(void)height;(void)format;(void)flags;(void)masks;(void)queues;return E_NOTIMPL;
 #endif

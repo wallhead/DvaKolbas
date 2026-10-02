@@ -86,6 +86,8 @@ class NvidiaHost
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
     bool FsrFgActive() const { return FsrActive() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
+    bool FsrPresentSuspended()const;
+    HRESULT UpdateFsrSuspension();
     HRESULT PresentFsrSource(UINT interval, UINT flags);
     HRESULT QueryFsrProducerDevice(REFIID iid, void** output) const;
     HRESULT ResizeFsrSwapChain(class GameSwapChain&, UINT count, UINT width, UINT height, DXGI_FORMAT format, UINT flags,
@@ -151,7 +153,7 @@ class NvidiaHost
     bool FinishSourceFrameForPresent();
     void ApplyLoadingFade(bool composed);
     void EndNativeUIPass();
-    void ReleaseSourceUpscaler();
+    void ReleaseSourceUpscaler(bool retainFsrDevice=false);
     void ArmFrameGenerationWarmup();
     void SetRuntimeEnabled(bool a_enabled);
     void ApplySourceUpscalerSettingsAfterPresent();
@@ -167,6 +169,7 @@ class NvidiaHost
 #if defined(TRP_ENABLE_FSR_FG)
     HRESULT CreateFsrPresenter(IDXGIFactory*, ID3D11Device*, const DXGI_SWAP_CHAIN_DESC&, IDXGISwapChain**);
     std::unique_ptr<TheosRenderPipeline::FsrHostPresentation> fsrPresentation_;
+    std::uint64_t fsrSourceRenderedCount_{},fsrGuideCaptureCount_{};
     Microsoft::WRL::ComPtr<IDXGIFactory> fsrFactory_;
     DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
     TheosRenderPipeline::Upscaling::UpscaleFrame fsrGenerationFrame_{};

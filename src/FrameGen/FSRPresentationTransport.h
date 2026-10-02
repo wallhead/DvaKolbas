@@ -15,6 +15,7 @@ namespace TheosRenderPipeline
         FsrPresentationTransport& operator=(const FsrPresentationTransport&)=delete;
         HRESULT Initialize(std::shared_ptr<Graphics::D3D11D3D12Interop>,Upscaling::Extent);
         HRESULT WaitBeforeProducer();
+        HRESULT ResumeAfterSdkRetirement();
         HRESULT Upload(ID3D11Texture2D* scene,Upscaling::ColorEncoding,ID3D11Texture2D* ui,
             ID3D11ShaderResourceView* overlay,bool uiComplete,std::uint64_t sourceId);
         HRESULT PublishTo(ID3D12Resource* applicationBackbuffer);

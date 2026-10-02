@@ -87,7 +87,9 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxDestroyContext(ffxContext* c
 #ifdef TRP_ENABLE_FSR_FG
     auto* owned=static_cast<FixtureContext*>(*context);if(owned && owned->provider==17752306900579389447ull && (owned->uiRegistered || !owned->waited))++presentationStats[10];
 #endif
-    delete static_cast<FixtureContext*>(*context); *context = nullptr; return FFX_API_RETURN_OK; }
+    delete static_cast<FixtureContext*>(*context);
+    // The official runtime can leave the caller's value untouched on success.
+    if(mode!=24)*context=nullptr;return FFX_API_RETURN_OK; }
 #endif
 #if FSR_MISSING_EXPORT != 3
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxConfigure(ffxContext* context, const ffxConfigureDescHeader* header)

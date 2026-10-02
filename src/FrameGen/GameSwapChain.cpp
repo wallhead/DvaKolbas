@@ -106,10 +106,11 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::Present(UINT a_syncInterval, UINT a_fla
 {
     if (host_ && FAILED(host_->FailureResult())) { return host_->FailureResult(); }
     if(host_ && host_->FsrFgActive()) {
+        const auto restored=host_->UpdateFsrSuspension();if(restored!=S_OK)return restored;
         return TheosRenderPipeline::PresentFsrSourceBoundary(a_flags,nullptr,
             [&]{BeforeGameSwapChainPresent(this);return host_->FailureResult();},
             [&]{return MeasureSourcePresent([&]{return host_->PresentFsrSource(a_syncInterval,a_flags);});},
-            [&](HRESULT result){host_->OnPresentCompleted(result);});
+            [&](HRESULT result){host_->OnPresentCompleted(result);},host_->FsrPresentSuspended());
     }
     if (!inner_)return E_UNEXPECTED;
     if ((a_flags & DXGI_PRESENT_TEST) != 0)
@@ -132,7 +133,8 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::GetBuffer(UINT a_buffer, REFIID a_iid, 
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::SetFullscreenState(BOOL a_fullscreen, IDXGIOutput* a_target)
 {
-    return inner_?inner_->SetFullscreenState(a_fullscreen, a_target):E_UNEXPECTED;
+    return TheosRenderPipeline::SetFsrCompatibleFullscreen(host_ && host_->FsrFgActive(),a_fullscreen,
+        [&]{return inner_?inner_->SetFullscreenState(a_fullscreen,a_target):E_UNEXPECTED;});
 }
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::GetFullscreenState(BOOL* a_fullscreen, IDXGIOutput** a_target)
@@ -188,10 +190,12 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::Present1(UINT a_syncInterval, UINT a_fl
 {
     if (host_ && FAILED(host_->FailureResult())) { return host_->FailureResult(); }
     if(host_ && host_->FsrFgActive()) {
+        if(a_parameters && (a_parameters->DirtyRectsCount || a_parameters->pScrollRect || a_parameters->pScrollOffset))return E_INVALIDARG;
+        const auto restored=host_->UpdateFsrSuspension();if(restored!=S_OK)return restored;
         return TheosRenderPipeline::PresentFsrSourceBoundary(a_flags,a_parameters,
             [&]{BeforeGameSwapChainPresent(this);return host_->FailureResult();},
             [&]{return MeasureSourcePresent([&]{return host_->PresentFsrSource(a_syncInterval,a_flags);});},
-            [&](HRESULT result){host_->OnPresentCompleted(result);});
+            [&](HRESULT result){host_->OnPresentCompleted(result);},host_->FsrPresentSuspended());
     }
     if (!inner1_)
     {
@@ -273,12 +277,16 @@ UINT STDMETHODCALLTYPE GameSwapChain::GetCurrentBackBufferIndex() { return inner
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::CheckColorSpaceSupport(DXGI_COLOR_SPACE_TYPE a_colorSpace, UINT* a_support)
 {
+    if(host_ && host_->FsrFgActive() && a_colorSpace!=DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709){
+        if(!a_support)return E_POINTER;*a_support=0;return S_OK;
+    }
     return inner3_ ? inner3_->CheckColorSpaceSupport(a_colorSpace, a_support) : E_NOINTERFACE;
 }
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::SetColorSpace1(DXGI_COLOR_SPACE_TYPE a_colorSpace)
 {
-    return inner3_ ? inner3_->SetColorSpace1(a_colorSpace) : E_NOINTERFACE;
+    return TheosRenderPipeline::SetFsrCompatibleColorSpace(host_ && host_->FsrFgActive(),a_colorSpace,
+        [&]{return inner3_?inner3_->SetColorSpace1(a_colorSpace):E_NOINTERFACE;});
 }
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::ResizeBuffers1(UINT a_bufferCount, UINT a_width, UINT a_height, DXGI_FORMAT a_format, UINT a_flags,
@@ -295,5 +303,6 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::ResizeBuffers1(UINT a_bufferCount, UINT
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::SetHDRMetaData(DXGI_HDR_METADATA_TYPE a_type, UINT a_size, void* a_metadata)
 {
-    return inner4_ ? inner4_->SetHDRMetaData(a_type, a_size, a_metadata) : E_NOINTERFACE;
+    return TheosRenderPipeline::SetFsrCompatibleHdrMetadata(host_ && host_->FsrFgActive(),a_type,a_size,
+        [&]{return inner4_?inner4_->SetHDRMetaData(a_type,a_size,a_metadata):E_NOINTERFACE;});
 }

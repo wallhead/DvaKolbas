@@ -71,19 +71,37 @@ void PresentAndResizeSourceBoundaries()
     Require(effects==2 && submits==2 && completions==2,"rejection consumes no source or completion");
     Check(PresentFsrSourceBoundary(DXGI_PRESENT_TEST,&empty,prepare,[&]{++submits;return S_OK;},completed),"test Present only probes presenter");
     Require(effects==2 && submits==3 && completions==2,"test Present has no effects/source/completion");
+    Require(PresentFsrSourceBoundary(0,&empty,prepare,submit,completed,true)==DXGI_STATUS_OCCLUDED,"suspended Present returns occlusion");
+    Require(effects==2 && submits==3 && completions==2,"suspended Present consumes no source or SDK transaction");
     Require(PresentFsrSourceBoundary(0,nullptr,[]{return E_FAIL;},submit,completed)==E_FAIL,"failed source is never submitted");
-    unsigned retired{},detached{},created{};
-    auto retire=[&]{++retired;return S_OK;};auto detach=[&]{Require(retired==detached+1,"retire before detaching all inner refs");++detached;};
-    auto recreate=[&]{Require(detached==created+1,"detach before new HWND owner");++created;return S_OK;};
     IUnknown* queues[2]{reinterpret_cast<IUnknown*>(1),reinterpret_cast<IUnknown*>(2)};
-    Require(ResizeFsrSourceBoundary(2,nullptr,queues,retire,detach,recreate)==E_INVALIDARG,"ResizeBuffers1DoesNotForwardD3D11Queues");
-    UINT bad[2]{0,1};Require(ResizeFsrSourceBoundary(2,bad,nullptr,retire,detach,recreate)==E_INVALIDARG,"nonzero masks rejected before retirement");
-    UINT zero[3]{};Require(ResizeFsrSourceBoundary(0,zero,nullptr,retire,detach,recreate)==E_INVALIDARG,"unknown mask array length rejected before mutation");
-    Require(retired==0 && detached==0 && created==0,"invalid resize cannot mutate host");
-    for(UINT count:{0u,1u,2u,3u})Check(ResizeFsrSourceBoundary(count,count?zero:nullptr,nullptr,retire,detach,recreate),"single native queue owner replacement");
-    Require(created==4 && detached==4 && retired==4,"all accepted buffer counts use replacement protocol");
-    Require(ResizeFsrSourceBoundary(2,nullptr,nullptr,[]{return DXGI_ERROR_WAS_STILL_DRAWING;},detach,recreate)==DXGI_ERROR_WAS_STILL_DRAWING,"failed retirement keeps original owner");
-    Require(created==4 && detached==4,"failed retirement cannot release HWND owner refs");
+    Require(ValidateFsrResize(2,nullptr,queues)==E_INVALIDARG,"ResizeBuffers1DoesNotForwardD3D11Queues");
+    UINT bad[2]{0,1};Require(ValidateFsrResize(2,bad,nullptr)==E_INVALIDARG,"nonzero masks rejected before retirement");
+    UINT zero[3]{};Require(ValidateFsrResize(0,zero,nullptr)==E_INVALIDARG,"unknown mask array length rejected before mutation");
+    for(UINT count:{0u,1u,2u,3u})Check(ValidateFsrResize(count,count?zero:nullptr,nullptr),"single native queue resize admitted");
+    Require(ValidateFsrResizeFlags(DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT,0)==E_INVALIDARG,"immutable waitable flag rejected before AMD mutation");
+    Require(ValidateFsrResizeFlags(DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING,0)==E_INVALIDARG,"immutable tearing flag rejected before AMD mutation");
+    Check(ValidateFsrResizeFlags(DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT,DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT),"unchanged flags admitted");
+}
+void RuntimeStateAdmission()
+{
+    unsigned calls{};auto inner=[&]{++calls;return S_OK;};
+    Require(SetFsrCompatibleColorSpace(true,DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020,inner)==E_INVALIDARG && calls==0,
+        "RejectPqBeforeInnerMutation");
+    Require(SetFsrCompatibleColorSpace(true,DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709,inner)==E_INVALIDARG && calls==0,
+        "RejectScRgbBeforeInnerMutation");
+    Check(SetFsrCompatibleColorSpace(true,DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709,inner),"SDR runtime color allowed");
+    Require(SetFsrCompatibleHdrMetadata(true,DXGI_HDR_METADATA_TYPE_HDR10,sizeof(DXGI_HDR_METADATA_HDR10),inner)==E_INVALIDARG && calls==1,
+        "RejectHdrMetadata");
+    Require(SetFsrCompatibleHdrMetadata(true,DXGI_HDR_METADATA_TYPE_NONE,1,inner)==E_INVALIDARG && calls==1,
+        "malformed metadata clear rejected");
+    Check(SetFsrCompatibleHdrMetadata(true,DXGI_HDR_METADATA_TYPE_NONE,0,inner),"metadata clear allowed");
+    Require(SetFsrCompatibleFullscreen(true,TRUE,inner)==E_INVALIDARG && calls==2,"RejectExclusiveFullscreen");
+    Check(SetFsrCompatibleFullscreen(true,FALSE,inner),"windowed state allowed");
+    Check(SetFsrCompatibleColorSpace(false,DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020,inner),"other presenters keep runtime color contract");
+    Check(SetFsrCompatibleHdrMetadata(false,DXGI_HDR_METADATA_TYPE_HDR10,1,inner),"other presenters keep metadata contract");
+    Check(SetFsrCompatibleFullscreen(false,TRUE,inner),"other presenters keep fullscreen contract");
+    Require(calls==6,"only admitted runtime state reaches inner chain");
 }
 int main(int argc,char** argv)
 {
@@ -97,7 +115,7 @@ int main(int argc,char** argv)
         PresentationCreation unavailable{[]{return S_OK;},[]{return S_OK;}};
         Require(CreatePresentation(backend,unavailable)==E_NOTIMPL,"unwired AMD creation cannot fall through to another owner");
         backend.valid=false;Require(CreatePresentation(backend,routes)==E_INVALIDARG && routes.fsr==3,"invalid selector does not mutate presenter ownership");
-        PresentAndResizeSourceBoundaries();
+        PresentAndResizeSourceBoundaries();RuntimeStateAdmission();
         Rig rig;Microsoft::WRL::ComPtr<ID3D11Device> producer;
         HWND window=CreateWindowExW(0,L"STATIC",L"AMD host producer fixture",WS_OVERLAPPEDWINDOW,0,0,128,96,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);
         Require(window!=nullptr,"producer fixture HWND");struct Window{HWND value;~Window(){DestroyWindow(value);}}windowOwner{window};

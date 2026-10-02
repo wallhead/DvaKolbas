@@ -128,6 +128,7 @@ void NvidiaHost::ResetSessionAfterRetirement()
 #if defined(TRP_ENABLE_FSR)
 #if defined(TRP_ENABLE_FSR_FG)
     fsrPresentation_.reset();fsrFactory_.Reset();fsrForeground_.Reset();fsrSourcePending_=fsrUiComplete_=false;
+    fsrSourceRenderedCount_=fsrGuideCaptureCount_=0;
 #endif
     fsrFrame_.reset();
     fsrResources_.reset();
@@ -153,12 +154,39 @@ void NvidiaHost::ResetSessionAfterRetirement()
     device_.Reset();
 }
 
-void NvidiaHost::ReleaseSourceUpscaler()
+bool NvidiaHost::FsrPresentSuspended()const
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    return fsrPresentation_ && fsrPresentation_->Suspended();
+#else
+    return false;
+#endif
+}
+HRESULT NvidiaHost::UpdateFsrSuspension()
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FAILED(FailureResult()))return FailureResult();
+    if(!FsrFgActive() || !FsrPresentSuspended())return S_OK;
+    RECT client{};
+    if(!GetClientRect(outputWindow_,&client) || client.right<=client.left || client.bottom<=client.top)return DXGI_STATUS_OCCLUDED;
+    auto resumed=fsrPresentation_->Resume();
+    if(!resumed){status_=resumed.error().message;return FailLifecycle(E_FAIL,"AMD client restoration");}
+    // Resume the retained game buffers. DXGI may scale them to a restored
+    // client; an explicit ResizeBuffers still owns any resolution change.
+    resetNextEvaluation_=true;nativeUIPass_.ResetEvaluation();
+    logger::info("[FSR resize] client restored; retained AMD chain/game buffers resumed with temporal reset");
+#endif
+    return S_OK;
+}
+
+void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
 {
 #if defined(TRP_ENABLE_FSR)
     if (FsrActive() && fsrResources_) {
-        const auto retired = fsrResources_->Retire();
-        if (!retired) { status_ = retired.error().message; FailLifecycle(E_FAIL, "FSR feature release"); return; }
+        if(!retainFsrDevice){
+            const auto retired = fsrResources_->Retire();
+            if (!retired) { status_ = retired.error().message; FailLifecycle(E_FAIL, "FSR feature release"); return; }
+        }
         fsrFrame_.reset();
         lastFsrTemporal_=false;
     }

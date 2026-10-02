@@ -12,6 +12,8 @@ namespace TheosRenderPipeline::Upscaling
         FsrHostResources(const FsrHostResources&)=delete;FsrHostResources& operator=(const FsrHostResources&)=delete;
         Result<Extent> PrepareSizing(ID3D11Device*,const BackendConfiguration&,Extent output,DXGI_FORMAT handoffFormat,ColorEncoding handoffEncoding);
         Result<void> CompleteStartup();Result<void> Retire();
+        Result<void> ReleaseSizedAfterRetirement();
+        Result<Extent> ResizeSizingAfterRetirement(Extent,DXGI_FORMAT);
         Result<void> EnsureInputPolicy(FsrInputPolicy);
         bool FeatureReady()const;bool ContextOwned()const;
         std::shared_ptr<Graphics::D3D11D3D12Interop> Bridge()const;

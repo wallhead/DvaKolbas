@@ -27,6 +27,7 @@ int main(int argc, char** argv)
     Require(bool(runtime->LoadFrameGeneration(std::filesystem::absolute(argv[1]))), "FG runtime loads");
     auto dll = GetModuleHandleW(L"amd_fidelityfx_loader_dx12.dll");
     auto mode = reinterpret_cast<void (*)(unsigned)>(GetProcAddress(dll, "FixtureMode")); Require(mode != nullptr, "fixture mode");
+    auto stat = reinterpret_cast<unsigned (*)(unsigned)>(GetProcAddress(dll,"FixturePresentationStat"));Require(stat!=nullptr,"callback dispatch observation");
     auto session = std::make_shared<FsrSdkSession>(); FsrFrameGeneration generation(session);
     FsrEffectProvider selected{FsrEffect::FrameGeneration, {17726168133342859270ull, "3.1.6"}};
     auto foreignSession = std::make_shared<FsrSdkSession>();
@@ -59,8 +60,17 @@ int main(int argc, char** argv)
     Require(bool(session->BeginPresent(lock)), "Present owns the same SDK lock");
     Require(invoke(&descriptor) == FFX_API_RETURN_OK, "generation callback dispatch succeeds without recursive lock");
     Require(std::memcmp(&before, &descriptor, sizeof(descriptor)) == 0, "CallbackDescriptorUnchanged");
+    const auto dispatches=stat(4);
+    Require(invoke(&descriptor) == FFX_API_RETURN_ERROR_PARAMETER, "SecondCallbackInSamePresentRejected");
+    Require(stat(4)==dispatches,"duplicate invocation never reaches generation Dispatch");
+    Require(generation.LastCallback(lock).invocations == 2 && generation.LastCallback(lock).result == FFX_API_RETURN_ERROR_PARAMETER,
+        "duplicate callback retains transaction failure");
+    session->EndPresent(lock);
+    Require(bool(session->BeginPresent(lock)), "separate malformed descriptor transaction");
     descriptor.frameID = 42;
     Require(invoke(&descriptor) != FFX_API_RETURN_OK, "CallbackDescriptorFrameIdMatchesConfiguredId");
+    session->EndPresent(lock);
+    Require(bool(session->BeginPresent(lock)), "separate dispatch failure transaction");
     descriptor.frameID = 41; mode(18);
     Require(invoke(&descriptor) == FFX_API_RETURN_ERROR, "injected generation failure returned");
     Require(generation.LastCallback(lock).result == FFX_API_RETURN_ERROR, "GenerationFailureRetainsDiagnostic"); mode(0);
@@ -71,8 +81,11 @@ int main(int argc, char** argv)
     Require(!generation.Prepare(lock, rig.list.Get(), next, rig.resources, false), "suppressed source skips Prepare");
     Require(!generation.DisableAndDetach(lock), "lifecycle detach requires stopped admissions");
     Require(bool(session->StopAdmissions(lock)), "stop new SDK transactions before teardown");
+    Require(!session->ResumeAfterFeatureRetirement(lock),"cannot reopen admissions around a live FG feature");
     Require(bool(generation.DisableAndDetach(lock)), "detach callbacks for lifecycle");
+    mode(24);
     Require(bool(generation.DestroyAfterRetirement(lock)), "no GPU work recorded by vendor double; safe context destruction");
+    Require(bool(session->ResumeAfterFeatureRetirement(lock)),"SuccessfulDestroyClearsCallerContextEvenWhenSdkDoesNot");mode(0);
     chain.Reset(); base.Reset(); DestroyWindow(window); rig.ValidateDebug();
     }
     CheckDestructorSerialization();

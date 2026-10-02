@@ -113,7 +113,8 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
 {
     (void)nativeUIHandoff;
 #if defined(TRP_ENABLE_FSR)
-    if(FAILED(FailureResult()) || !proxyActive_ || swapChain!=outerSwapChain_ || !upscalerReady_ || !fsrResources_ || !context_ ||
+    if(FsrPresentSuspended() && UpdateFsrSuspension()!=S_OK)return false;
+    if(FAILED(FailureResult()) || FsrPresentSuspended() || !proxyActive_ || swapChain!=outerSwapChain_ || !upscalerReady_ || !fsrResources_ || !context_ ||
         !gameTargets_.GameFacing() || !gameTargets_.UpscaleInput() || !gameTargets_.UpscaleOutput() || !PresentationBackendReadyForEvaluation())return false;
     struct InternalScope {
         bool& flag;bool previous;
@@ -158,7 +159,8 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     if(FsrFgActive()) {
         auto waited=fsrPresentation_->WaitBeforeProducer();
         if(FAILED(waited)){FailLifecycle(waited,"AMD guide producer ownership");return false;}
-        fsrGenerationFrame_=frame;fsrSourcePending_=false;fsrUiComplete_=false;fsrForeground_.Reset();
+        fsrGenerationFrame_=frame;fsrSourceRenderedCount_=pipeline.mRenderedFrameCount;
+        fsrSourcePending_=false;fsrUiComplete_=false;fsrForeground_.Reset();
         fsrMenu_=operations.spatial || pipeline.FrameGenerationTransitionBlocked();
     }
 #endif
@@ -176,6 +178,7 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
 #if defined(TRP_ENABLE_FSR_FG)
     if(FsrFgActive()) {
         fsrGenerationOutcome_=result.outcome;
+        if(result.outcome==UpscaleOutcome::Temporal)++fsrGuideCaptureCount_;
         fsrGenerationFrame_.depthFormat=DXGI_FORMAT_R32_FLOAT;fsrGenerationFrame_.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
         fsrGenerationFrame_.colorIsLinear=true;
         fsrGenerationFrame_.reset |= fsrFrame_->LastTemporalReset();fsrSourcePending_=true;
@@ -219,15 +222,17 @@ HRESULT NvidiaHost::PresentFsrSource(UINT interval,UINT flags)
         fsrForeground_.Get(),fsrUiComplete_,fsrMenu_,SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),interval,flags);
     fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
     auto status=fsrPresentation_->Status();frameGenerationEnabled_=SUCCEEDED(result) && status.decision.generate;
-    if(FAILED(result))return FailLifecycle(result,"AMD source Present");
     const bool changed=before.decision.reason!=status.decision.reason || before.decision.generate!=status.decision.generate;
-    if(presentCount_<3 || (changed && fsrGenerationTransitionLogs_++<24) ||
+    if(FAILED(result) || presentCount_<3 || (changed && fsrGenerationTransitionLogs_++<24) ||
         (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && presentCount_%600==0)) {
-        logger::info("[FSR FG] source={} requested={} prepare={} generate={} reason={} callbackCount={} callbackResult={} submitted={} apiResult=0x{:08X}",
-            status.sourceId,SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),status.decision.prepare,
+        logger::info("[FSR FG] source={} presentCount={} renderedAtCapture={} renderedNow={} camera={} guideCapture={} temporalGuides={} configuredId={} preparedId={} requested={} prepare={} generate={} reason={} callbackCount={} callbackResult={} submitted={} apiResult=0x{:08X}",
+            status.sourceId,presentCount_,fsrSourceRenderedCount_,RenderPipeline::GetSingleton()->mRenderedFrameCount,
+            fsrGenerationFrame_.camera.identity,fsrGuideCaptureCount_,fsrGenerationOutcome_==UpscaleOutcome::Temporal,
+            status.callback.configuredId,status.callback.preparedId,SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),status.decision.prepare,
             status.decision.generate,status.decision.reason,status.callback.invocations,status.callback.result,
             status.submitted,static_cast<std::uint32_t>(result));
     }
+    if(FAILED(result))return FailLifecycle(result,"AMD source Present");
     return result;
 #else
     (void)interval;(void)flags;return E_NOTIMPL;

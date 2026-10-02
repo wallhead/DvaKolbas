@@ -88,6 +88,7 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     DXGI_SWAP_CHAIN_DESC desc{};desc.BufferDesc.Width=outputWidth;desc.BufferDesc.Height=outputHeight;
     desc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;desc.BufferCount=2;desc.SampleDesc.Count=1;
     desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.OutputWindow=window;desc.Windowed=TRUE;
+    desc.Flags=DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
     FsrHostPresentation host;auto extent=host.Create(factory,device,resources,desc,settings);
     if(!extent)std::printf("AMD startup failure: %s native=%lld\n",extent.error().message.c_str(),extent.error().nativeResult);
     Require(extent && *extent==Extent{renderWidth,renderHeight},"actual AMD host reduced sizing on original ReShade producer");
@@ -97,14 +98,18 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     Surface depth(device,renderWidth,renderHeight,DXGI_FORMAT_R32_FLOAT),motion(device,renderWidth,renderHeight,DXGI_FORMAT_R16G16_FLOAT),hud(device,outputWidth,outputHeight);
     const std::array<float,4> scene{.25f,.5f,.25f,1},ui{0,.25f,0,.5f};
     depth.Paint(context,{.5f,0,0,0});motion.Paint(context,{0,0,0,0});
-    FsrFrameAdapter adapter(*resources->Upscaler(),resources->Bridge(),resources->Resources(),resources->Color11(),resources->Depth11(),
-        resources->Motion11(),resources->Output11(),resources->HandoffEncoding());
+    auto makeAdapter=[&]{return std::make_unique<FsrFrameAdapter>(*resources->Upscaler(),resources->Bridge(),resources->Resources(),resources->Color11(),resources->Depth11(),
+        resources->Motion11(),resources->Output11(),resources->HandoffEncoding());};
+    auto adapter=makeAdapter();auto* originalChain=host.SwapChain();const auto originalBridge=resources->Bridge();
+    Check(originalChain->SetMaximumFrameLatency(1),"real AMD maximum latency");
+    Check(originalChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709),"real AMD SDR state");
+    const auto cachedWaitable=originalChain->GetFrameLatencyWaitableObject();Require(cachedWaitable!=nullptr,"real AMD cached waitable handle");
     // Compile the real source-stage probe before counting source transactions.
     for(unsigned i=0;i<300 && !draws;++i){output.Paint(context,scene);hud.Paint(context,ui);
         Check(effects.Render(output.texture.Get(),depth.texture.Get(),{outputWidth,outputHeight},{renderWidth,renderHeight},false),"AMD ReShade shader warmup");
         Check(effects.FinishUI(hud.texture.Get()),"AMD ReShade GUI warmup");effects.PresentCompleted();Sleep(10);}
     Require(owned && draws,"actual AMD source effect compiled");owned->open_overlay(false,api::input_source::none);
-    unsigned sourceTransactions{},upscales{},callbacks{},uiChecks{},disabledSources{},spatialSources{};
+    unsigned sourceTransactions{},upscales{},callbacks{},uiChecks{},disabledSources{},spatialSources{},resizeChecks{},phase{},largerSources{},largerCallbacks{},suspendChecks{};
     std::uint64_t sourceId{};
     UpscaleFrame frame;frame.backend=BackendKind::Fsr;frame.color=source.texture.Get();frame.input=input.texture.Get();frame.output=output.texture.Get();
     frame.depth=depth.texture.Get();frame.motion=motion.texture.Get();frame.render=frame.subrect={renderWidth,renderHeight};frame.display={outputWidth,outputHeight};
@@ -116,7 +121,7 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     for(bool before:{false,true,false}) {
         effects.SetBeforeUpscaling(before);const FrameExtent effectExtent=before?FrameExtent{renderWidth,renderHeight}:FrameExtent{outputWidth,outputHeight};
         expectedDepthWidth=effectExtent.width;expectedDepthHeight=effectExtent.height;
-        unsigned stable{};
+        unsigned stable{};const auto callbacksBeforePhase=callbacks;bool resetGeneration{};
         for(unsigned i=0;i<32;++i){
             Check(host.WaitBeforeProducer(),"AMD guide wait before SR writes");
             source.Paint(context,scene);context->CopyResource(input.texture.Get(),source.texture.Get());hud.Paint(context,ui);
@@ -124,8 +129,8 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
             const bool menu=i==31,requested=i!=23;
             const auto drawCount=draws,automaticCount=automaticDraws;
             Check(effects.Render(input.texture.Get(),menu?nullptr:depth.texture.Get(),{renderWidth,renderHeight},{renderWidth,renderHeight},true),"AMD before effects stage");
-            auto evaluated=menu?adapter.Spatial(frame):adapter.Evaluate(frame);
-            if(!evaluated && adapter.LastError())std::printf("AMD SR failure: %s\n",adapter.LastError()->message.c_str());
+            auto evaluated=menu?adapter->Spatial(frame):adapter->Evaluate(frame);
+            if(!evaluated && adapter->LastError())std::printf("AMD SR failure: %s\n",adapter->LastError()->message.c_str());
             Require(evaluated && (*evaluated==UpscaleOutcome::Temporal || *evaluated==UpscaleOutcome::SpatialRecovery),"exactly one real SR/spatial pass");
             outcome=*evaluated;++upscales;
             Check(effects.Render(output.texture.Get(),menu?nullptr:depth.texture.Get(),{outputWidth,outputHeight},{renderWidth,renderHeight},false),"AMD after effects stage");
@@ -135,9 +140,10 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
             if(!menu && draws==drawCount+1 && scenePixel[0]>=94 && scenePixel[0]<=98 && scenePixel[1]>=126 && scenePixel[1]<=130 && depthExtentMatched)++stable;
             context->CopyResource(host.SceneTarget11(),output.texture.Get());
             auto generationFrame=frame;generationFrame.depthFormat=DXGI_FORMAT_R32_FLOAT;generationFrame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
-            generationFrame.colorIsLinear=true;generationFrame.reset |= adapter.LastTemporalReset();
+            generationFrame.colorIsLinear=true;generationFrame.reset |= adapter->LastTemporalReset();
             Check(host.Present(generationFrame,outcome,hud.texture.Get(),nullptr,true,menu,requested,0,0),"actual AMD source Present");
             const auto status=host.Status();callbacks+=status.callback.invocations;++sourceTransactions;
+            if(status.decision.generate)resetGeneration|=status.decision.reset;
             Require(draws<=drawCount+1,"AMD SDK presents cannot run another source effects pass");
             Require(automaticDraws==automaticCount && automaticRuntimes==0,"AMD output workers run no ReShade effect/input runtime");
             Require(Pixel(device,context,hud.texture.Get(),outputWidth-1,outputHeight-1)==hudPixel,"AMD preserves completed premultiplied HUD pixels");++uiChecks;
@@ -146,13 +152,87 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
             effects.PresentCompleted();Sleep(10);
         }
         Require(stable>=3,"AMD before/after placement has exactly one probe and correct depth");
+        Require(callbacks>callbacksBeforePhase && resetGeneration,"real generation resumes with reset in each resized phase");
+        Require(WaitForSingleObject(cachedWaitable,2000)==WAIT_OBJECT_0,"cached AMD waitable still signals from active chain");
+        if(++phase<3){
+            // Exhaust old permits: a stale handle detached by context replacement
+            // must not pass merely because it was signaled before resize.
+            adapter.reset();Require(bool(host.BeforeResize()),"real AMD quiescence before resize");
+            while(WaitForSingleObject(cachedWaitable,0)==WAIT_OBJECT_0){}
+            effects.ResetAfterRetirement();
+            auto enlarged=desc;enlarged.BufferDesc.Width=640;enlarged.BufferDesc.Height=360;
+            auto resize=host.Resize(enlarged);
+            if(!resize)std::fprintf(stderr,"real resize: %s native=%lld\n",resize.error().message.c_str(),resize.error().nativeResult);
+            else std::printf("real resize result=0x%08X render=%ux%u\n",static_cast<unsigned>(resize->result),resize->render.width,resize->render.height);
+            Require(resize && SUCCEEDED(resize->result) && resize->render==Extent{320,180},"real AMD resize to larger extent");
+            Require(bool(resources->CompleteStartup()),"real SR feature at larger extent");
+            {
+                Surface largeSource(device,320,180),largeInput(device,320,180),largeOutput(device,640,360);
+                Surface largeDepth(device,320,180,DXGI_FORMAT_R32_FLOAT),largeMotion(device,320,180,DXGI_FORMAT_R16G16_FLOAT),largeHud(device,640,360);
+                largeDepth.Paint(context,{.5f,0,0,0});largeMotion.Paint(context,{0,0,0,0});adapter=makeAdapter();
+                effects.Configure(device,context,{640,360});effects.SetBeforeUpscaling(false);
+                expectedDepthWidth=640;expectedDepthHeight=360;
+                largeHud.Paint(context,ui);Check(effects.FinishUI(largeHud.texture.Get()),"larger ReShade GUI initialization");effects.PresentCompleted();
+                Require(owned!=nullptr,"larger source manual runtime");owned->open_overlay(false,api::input_source::none);
+                auto largeFrame=frame;largeFrame.color=largeSource.texture.Get();largeFrame.input=largeInput.texture.Get();largeFrame.output=largeOutput.texture.Get();
+                largeFrame.depth=largeDepth.texture.Get();largeFrame.motion=largeMotion.texture.Get();
+                largeFrame.render=largeFrame.subrect={320,180};largeFrame.display={640,360};largeFrame.motionConvention={320,180,true,false};
+                const auto beforeLargeCallbacks=largerCallbacks;bool generatedAfterRestore{};
+                for(unsigned sample=0;sample<40;++sample){
+                    if(sample==18){
+                        auto* retainedScene=host.SceneTarget11();auto* retainedSr=resources->Upscaler();
+                        Require(bool(host.Suspend()),"real AMD suspension with a live generation feature");
+                        Require(host.StartupPresent(0,DXGI_PRESENT_TEST)==DXGI_STATUS_OCCLUDED,"real suspended test Present is suppressed");
+                        Require(bool(host.Resume()) && host.SceneTarget11()==retainedScene && resources->Upscaler()==retainedSr,
+                            "real restoration without ResizeBuffers retains producer and SR feature");++suspendChecks;
+                    }
+                    Check(host.WaitBeforeProducer(),"larger guide producer wait");largeSource.Paint(context,scene);
+                    context->CopyResource(largeInput.texture.Get(),largeSource.texture.Get());largeHud.Paint(context,ui);
+                    largeFrame.sourceId=++sourceId;largeFrame.reset=sample==0;
+                    auto evaluated=adapter->Evaluate(largeFrame);Require(evaluated && *evaluated==UpscaleOutcome::Temporal,"actual temporal SR dispatch at larger extent");
+                    Check(effects.Render(largeOutput.texture.Get(),largeDepth.texture.Get(),{640,360},{320,180},false),"larger ReShade effects");
+                    Check(effects.FinishUI(largeHud.texture.Get()),"larger completed UI");
+                    const auto sentinel=Pixel(device,context,largeHud.texture.Get(),639,359);
+                    context->CopyResource(host.SceneTarget11(),largeOutput.texture.Get());
+                    auto generatedFrame=largeFrame;generatedFrame.depthFormat=DXGI_FORMAT_R32_FLOAT;generatedFrame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
+                    generatedFrame.colorIsLinear=true;generatedFrame.reset|=adapter->LastTemporalReset();
+                    Check(host.Present(generatedFrame,*evaluated,largeHud.texture.Get(),nullptr,true,false,true,0,0),"larger actual source/FG/UI transaction");
+                    const auto largerStatus=host.Status();largerCallbacks+=largerStatus.callback.invocations;++largerSources;
+                    if(sample>=18 && largerStatus.decision.generate && largerStatus.decision.reset)generatedAfterRestore=true;
+                    Require(largerStatus.callback.configuredId==largeFrame.sourceId && (!largerStatus.decision.prepare || largerStatus.callback.preparedId==largeFrame.sourceId),
+                        "larger configured/prepared/source correlation");
+                    Require(Pixel(device,context,largeHud.texture.Get(),639,359)==sentinel && automaticRuntimes==0,"larger UI and ReShade ownership intact");
+                    effects.PresentCompleted();Sleep(10);
+                }
+                Require(largerCallbacks>beforeLargeCallbacks && generatedAfterRestore,"generation at larger extent and after suspension reset");
+                Require(WaitForSingleObject(cachedWaitable,2000)==WAIT_OBJECT_0,"cached handle signals at larger generated extent");
+                adapter.reset();Require(bool(host.BeforeResize()),"larger SDK/SR/UI readers retired");
+                while(WaitForSingleObject(cachedWaitable,0)==WAIT_OBJECT_0){}
+                effects.ResetAfterRetirement();
+            }
+            resize=host.Resize(desc);Require(resize && SUCCEEDED(resize->result) && resize->render==Extent{renderWidth,renderHeight},"real AMD resize back to source fixture extent");
+            Require(host.SwapChain()==originalChain && resources->Bridge()==originalBridge,"actual ReShade/AMD chain and native device survive resize");
+            UINT latency{};Check(originalChain->GetMaximumFrameLatency(&latency),"real AMD latency after resize");
+            Require(latency==1,"real AMD maximum latency preserved across resize");
+            Require(bool(resources->CompleteStartup()),"real SR feature restored");adapter=makeAdapter();
+            effects.Configure(device,context,{outputWidth,outputHeight});
+            effects.SetBeforeUpscaling(false); // The warmup below explicitly renders the output stage.
+            const auto beforeWarmup=draws;
+            for(unsigned warm=0;warm<300 && draws==beforeWarmup;++warm){output.Paint(context,scene);hud.Paint(context,ui);
+                Check(effects.Render(output.texture.Get(),depth.texture.Get(),{outputWidth,outputHeight},{renderWidth,renderHeight},false),"resized ReShade shader warmup");
+                Check(effects.FinishUI(hud.texture.Get()),"resized ReShade GUI warmup");effects.PresentCompleted();Sleep(10);}
+            Require(owned && draws>beforeWarmup,"ReShade manual runtime recreated on retained AMD device");owned->open_overlay(false,api::input_source::none);
+            ++resizeChecks;
+        }
     }
     Require(sourceTransactions==96 && upscales==96 && uiChecks==96 && callbacks>0 && disabledSources==3 && spatialSources==3,"actual host source/effects/FG/UI observations");
     for(auto name:{L"sl.interposer.dll",L"sl.dlss.dll",L"sl.dlss_g.dll",L"nvngx_dlss.dll",L"nvngx_dlssg.dll"})Require(!GetModuleHandleW(name),"AMD fixture loads no NVIDIA runtime");
     owned->get_command_queue()->wait_idle();Require(bool(host.Retire()),"AMD async readers retire before SR owner release");
     effects.ResetAfterRetirement();DestroyWindow(window);
-    std::printf("PASS: actual AMD/ReShade host sources=%u upscales=%u generationCallbacks=%u completedUi=%u liveOff=%u spatial=%u; physical cadence unobserved\n",
-        sourceTransactions,upscales,callbacks,uiChecks,disabledSources,spatialSources);
+    CloseHandle(cachedWaitable);
+    Require(resizeChecks==2 && largerSources==80 && suspendChecks==2,"larger/restored resize and suspension cycles observed");
+    std::printf("PASS: actual AMD/ReShade host sources=%u upscales=%u generationCallbacks=%u completedUi=%u liveOff=%u spatial=%u resizeCycles=%u largerSources=%u largerCallbacks=%u suspendRestore=%u cachedWaitableSignaled=true; physical cadence unobserved\n",
+        sourceTransactions,upscales,callbacks,uiChecks,disabledSources,spatialSources,resizeChecks,largerSources,largerCallbacks,suspendChecks);
 }
 #endif
 

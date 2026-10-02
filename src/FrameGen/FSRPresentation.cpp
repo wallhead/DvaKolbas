@@ -35,8 +35,33 @@ namespace TheosRenderPipeline
         ffxCreateContextDescFrameGenerationSwapChainVersionDX12 version{};ffxOverrideVersion override{};
         FsrPresentationStatus status{};HRESULT fault{S_OK};HWND reserved{};
         FsrGenerationLimits limits{};
-        bool created{},started{},closing{},retired{},uiRegisteredEver{};
+        bool created{},started{},closing{},retired{},uiRegisteredEver{},resizing{},suspended{};
         HRESULT Fail(HRESULT hr){if(SUCCEEDED(fault))fault=hr;status.result=hr;return hr;}
+        Result<void> QuiesceReaders(const FsrSdkLock& lock)
+        {
+            auto stopped=session->StopAdmissions(lock);if(!stopped)return stopped;
+            if(generation.ContextOwned(lock)){auto detached=generation.DisableAndDetach(lock);if(!detached)return detached;}
+            if(swapContext){
+                ffxConfigureDescFrameGenerationSwapChainRegisterUiResourceDX12 unregister{};
+                unregister.header.type=FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATIONSWAPCHAIN_REGISTERUIRESOURCE_DX12;
+                auto result=runtime->Functions().Configure(&swapContext,&unregister.header);
+                if(result!=FFX_API_RETURN_OK)return Error(ErrorKind::RetirementFailure,result,"FSR UI unregister failed; keep all owners");
+                ffxDispatchDescFrameGenerationSwapChainWaitForPresentsDX12 wait{};
+                wait.header.type=FFX_API_DISPATCH_DESC_TYPE_FRAMEGENERATIONSWAPCHAIN_WAIT_FOR_PRESENTS_DX12;
+                result=runtime->Functions().Dispatch(&swapContext,&wait.header);
+                if(result!=FFX_API_RETURN_OK)return Error(ErrorKind::RetirementFailure,result,"AMD WaitForPresents failed; keep all owners");
+                if(uiRegisteredEver){auto hr=transport.AcknowledgeSdkRetirement(S_OK);if(FAILED(hr))return GraphicsResult(hr,"FSR SDK retirement acknowledgement failed");}
+            }
+            auto hr=transport.DrainForRetirement();if(FAILED(hr))return GraphicsResult(hr,"FSR Prepare/copy/native-producer retirement failed; retain contexts");
+            return {};
+        }
+        Result<void> Quiesce(const FsrSdkLock& lock)
+        {
+            auto retiredReaders=QuiesceReaders(lock);if(!retiredReaders)return retiredReaders;
+            if(generation.ContextOwned(lock)){auto destroyed=generation.DestroyAfterRetirement(lock);if(!destroyed)return destroyed;}
+            auto hr=transport.Retire();if(FAILED(hr))return GraphicsResult(hr,"FSR final transport retirement failed");
+            started=false;uiRegisteredEver=false;suspended=false;return {};
+        }
     };
     FsrPresentation::FsrPresentation():state_(std::make_unique<State>()){}
     FsrPresentation::~FsrPresentation(){if(!Retire())(void)state_.release();}
@@ -60,6 +85,23 @@ namespace TheosRenderPipeline
             if(!desc.BufferDesc.Width)desc.BufferDesc.Width=client.right-client.left;if(!desc.BufferDesc.Height)desc.BufferDesc.Height=client.bottom-client.top;}
         if(!desc.BufferDesc.Width || !desc.BufferDesc.Height || desc.BufferDesc.Width>D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION || desc.BufferDesc.Height>D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION)return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR BufferDesc extent is empty or exceeds D3D12 limits");
         return desc;
+    }
+    Result<std::optional<DXGI_SWAP_CHAIN_DESC>> FsrPresentation::TranslateResizeDescriptor(const DXGI_SWAP_CHAIN_DESC& input)
+    {
+        auto resolved=input;
+        if(!resolved.BufferDesc.Width || !resolved.BufferDesc.Height){
+            RECT client{};
+            if(!GetClientRect(resolved.OutputWindow,&client))return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR resize client extent unavailable");
+            if(!resolved.BufferDesc.Width)resolved.BufferDesc.Width=client.right-client.left;
+            if(!resolved.BufferDesc.Height)resolved.BufferDesc.Height=client.bottom-client.top;
+        }
+        const bool suspended=!resolved.BufferDesc.Width || !resolved.BufferDesc.Height;
+        // Still validate format/flags/windowing while minimized. Only the empty
+        // extent is deferred; unsupported runtime contracts remain rejected.
+        auto probe=resolved;if(!probe.BufferDesc.Width)probe.BufferDesc.Width=1;if(!probe.BufferDesc.Height)probe.BufferDesc.Height=1;
+        auto admitted=TranslateDescriptor(probe);if(!admitted)return std::unexpected(admitted.error());
+        if(suspended)return std::optional<DXGI_SWAP_CHAIN_DESC>{};
+        return std::optional<DXGI_SWAP_CHAIN_DESC>{*admitted};
     }
     Result<void> FsrPresentation::Create(IDXGIFactory* factory,std::shared_ptr<FsrRuntime> runtime,
         std::shared_ptr<D3D11D3D12Interop> bridge,const DXGI_SWAP_CHAIN_DESC& desc,const FsrEffectProvider& provider)
@@ -141,26 +183,53 @@ namespace TheosRenderPipeline
     {
         auto lock=state_->session->Lock();if(!lock.Owns(*state_->session))return Error(ErrorKind::RetirementFailure,E_UNEXPECTED,"FSR retirement could not acquire its SDK session");
         if(state_->retired)return {};state_->closing=true;
-        auto closed=state_->session->StopAdmissions(lock);if(!closed)return closed;
-        if(state_->generation.ContextOwned(lock)){auto detached=state_->generation.DisableAndDetach(lock);if(!detached)return detached;}
-        if(state_->swapContext){
-            ffxConfigureDescFrameGenerationSwapChainRegisterUiResourceDX12 unregister{};unregister.header.type=FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATIONSWAPCHAIN_REGISTERUIRESOURCE_DX12;
-            auto result=state_->runtime->Functions().Configure(&state_->swapContext,&unregister.header);
-            if(result!=FFX_API_RETURN_OK)return Error(ErrorKind::RetirementFailure,result,"FSR UI unregister failed; keep all owners");
-            ffxDispatchDescFrameGenerationSwapChainWaitForPresentsDX12 wait{};wait.header.type=FFX_API_DISPATCH_DESC_TYPE_FRAMEGENERATIONSWAPCHAIN_WAIT_FOR_PRESENTS_DX12;
-            result=state_->runtime->Functions().Dispatch(&state_->swapContext,&wait.header);
-            if(result!=FFX_API_RETURN_OK)return Error(ErrorKind::RetirementFailure,result,"AMD WaitForPresents failed; keep all owners");
-            if(state_->uiRegisteredEver){auto hr=state_->transport.AcknowledgeSdkRetirement(S_OK);if(FAILED(hr))return GraphicsResult(hr,"FSR SDK retirement acknowledgement failed");}
-        }
-        auto hr=state_->transport.DrainForRetirement();if(FAILED(hr))return GraphicsResult(hr,"FSR Prepare/copy/native-producer retirement failed; retain contexts");
-        if(state_->generation.ContextOwned(lock)){auto destroyed=state_->generation.DestroyAfterRetirement(lock);if(!destroyed)return destroyed;}
-        if(state_->swapContext){const auto result=state_->runtime->Functions().DestroyContext(&state_->swapContext,nullptr);if(result!=FFX_API_RETURN_OK)return Error(ErrorKind::RetirementFailure,result,"AMD swapchain context destruction failed; keep owner");}
-        state_->chain.Reset();hr=state_->transport.Retire();if(FAILED(hr))return GraphicsResult(hr,"FSR final transport retirement failed");
+        auto quiesced=state_->Quiesce(lock);if(!quiesced)return quiesced;
+        if(state_->swapContext){const auto result=state_->runtime->Functions().DestroyContext(&state_->swapContext,nullptr);if(result!=FFX_API_RETURN_OK)return Error(ErrorKind::RetirementFailure,result,"AMD swapchain context destruction failed; keep owner");state_->swapContext=nullptr;}
+        state_->chain.Reset();
         state_->runtime.reset();state_->bridge.reset();state_->factory.Reset();state_->started=false;state_->retired=true;
         if(state_->reserved){Unreserve(state_->reserved);state_->reserved=nullptr;}return {};
     }
-    Result<void> FsrPresentation::BeforeResize(){return Retire();}
-    Result<void> FsrPresentation::AfterResize(HRESULT result){return GraphicsResult(result,"FSR replacement presenter creation/resize failed; retain its partial owner");}
+    Result<void> FsrPresentation::Suspend()
+    {
+        auto lock=state_->session->Lock();
+        if(!lock.Owns(*state_->session) || !state_->chain || state_->retired || state_->resizing || FAILED(state_->fault))
+            return Error(ErrorKind::RetirementFailure,E_UNEXPECTED,"FSR suspension requires a live idle presenter");
+        state_->closing=true;state_->suspended=true;return state_->QuiesceReaders(lock);
+    }
+    Result<void> FsrPresentation::Resume()
+    {
+        auto lock=state_->session->Lock();
+        if(!lock.Owns(*state_->session) || !state_->suspended || state_->resizing || state_->retired || FAILED(state_->fault))
+            return Error(ErrorKind::RetirementFailure,E_UNEXPECTED,"FSR restoration requires suspended retained resources");
+        auto hr=state_->transport.ResumeAfterSdkRetirement();if(FAILED(hr))return GraphicsResult(hr,"FSR suspended readers were not retired");
+        auto resumed=state_->session->ResumeAfterReaderRetirement(lock);if(!resumed)return resumed;
+        state_->history.Invalidate();state_->status={};state_->closing=false;state_->suspended=false;return {};
+    }
+    Result<void> FsrPresentation::BeforeResize()
+    {
+        auto lock=state_->session->Lock();
+        if(!lock.Owns(*state_->session) || !state_->chain || state_->retired || FAILED(state_->fault))
+            return Error(ErrorKind::RetirementFailure,E_UNEXPECTED,"FSR resize requires a live idle presenter");
+        state_->closing=true;state_->resizing=true;return state_->Quiesce(lock);
+    }
+    Result<void> FsrPresentation::AfterResize(HRESULT result)
+    {
+        auto lock=state_->session->Lock();
+        if(!lock.Owns(*state_->session) || !state_->resizing || !state_->chain || FAILED(state_->fault))
+            return Error(ErrorKind::RetirementFailure,E_UNEXPECTED,"FSR resize reentry requires its retained swapchain");
+        // A rejected DXGI resize may already have retired AMD replacement
+        // resources. Restore from the actual chain extent, never the request.
+        (void)result;DXGI_SWAP_CHAIN_DESC actual{};auto hr=state_->chain->GetDesc(&actual);
+        if(FAILED(hr))return GraphicsResult(hr,"FSR actual descriptor unavailable after resize");
+        auto translated=TranslateDescriptor(actual);if(!translated)return std::unexpected(translated.error());
+        for(UINT i=0;i<2;++i){ComPtr<ID3D12Resource> buffer;hr=state_->chain->GetBuffer(i,IID_PPV_ARGS(&buffer));
+            if(FAILED(hr))return GraphicsResult(hr,"AMD resized application buffer initialization failed");}
+        hr=state_->transport.Initialize(state_->bridge,{actual.BufferDesc.Width,actual.BufferDesc.Height});
+        if(FAILED(hr))return GraphicsResult(hr,"FSR resized scene/UI transport initialization failed");
+        auto resumed=state_->session->ResumeAfterFeatureRetirement(lock);if(!resumed)return resumed;
+        state_->descriptor=*translated;state_->history=FsrGenerationHistory{};state_->limits={};state_->status={};
+        state_->resizing=false;state_->closing=false;return {};
+    }
     IDXGISwapChain4* FsrPresentation::SwapChain()const{return state_->chain.Get();}
     ID3D11Texture2D* FsrPresentation::SceneTarget11()const{return state_->transport.SceneTarget11();}
     std::shared_ptr<FsrSdkSession> FsrPresentation::Session()const{return state_->session;}

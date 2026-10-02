@@ -99,7 +99,7 @@ namespace TheosRenderPipeline::Upscaling
         auto created=state_->upscaler->Initialize(state_->runtime,state_->device.Get(),state_->provider,state_->config.quality,state_->render,state_->output);
         if(!created)return created;state_->contextOwned=true;return {};
     }
-    Result<void> FsrHostResources::Retire()
+    Result<void> FsrHostResources::ReleaseSizedAfterRetirement()
     {
         if(state_->bridge) {
             if(!state_->bridge->Ready())return Failure(ErrorKind::RetirementFailure,state_->bridge->Fault(),"FSR bridge fault; preserve owned resources");
@@ -107,6 +107,21 @@ namespace TheosRenderPipeline::Upscaling
             if(FAILED(hr) || FAILED(hr=state_->bridge->Drain()))return Failure(ErrorKind::RetirementFailure,hr,"FSR final scene/UI readers not retired; preserve ownership");
         }
         if(state_->upscaler){auto destroyed=state_->upscaler->DestroyAfterRetirement();if(!destroyed)return destroyed;}
+        state_->upscaler.reset();state_->contextOwned=false;
+        state_->color={};state_->depth={};state_->motion={};state_->native={};return {};
+    }
+    Result<Extent> FsrHostResources::ResizeSizingAfterRetirement(Extent output,DXGI_FORMAT format)
+    {
+        if(!state_->runtime || !state_->bridge || !state_->bridge->Ready() || state_->upscaler || state_->contextOwned)
+            return Failure(ErrorKind::InvalidInput,E_UNEXPECTED,"FSR resize sizing requires retired fixed-size features and retained device/runtime");
+        auto handoff=ValidateFsrHandoff(format,state_->handoffEncoding);if(!handoff)return std::unexpected(handoff.error());
+        auto render=state_->runtime->QueryRenderExtent(state_->device.Get(),state_->provider,state_->config.quality,output);
+        if(!render)return std::unexpected(render.error());
+        state_->render=*render;state_->output=output;return *render;
+    }
+    Result<void> FsrHostResources::Retire()
+    {
+        auto retired=ReleaseSizedAfterRetirement();if(!retired)return retired;
         state_=std::make_unique<State>();return {};
     }
 }

@@ -39,6 +39,12 @@ namespace TheosRenderPipeline
         if(FAILED(hr))return hr;
         state->resources={state->scene.texture12.Get(),nullptr,nullptr,state->publicationUi.Get(),ColorEncoding::SRGB};state_=std::move(state);return S_OK;
     }
+    HRESULT FsrPresentationTransport::ResumeAfterSdkRetirement()
+    {
+        if(!state_ || !state_->closing || FAILED(state_->fault) || !state_->bridge->Ready() ||
+            (state_->everRegistered && !state_->sdkRetired))return E_UNEXPECTED;
+        state_->closing=false;state_->waited=false;return S_OK;
+    }
     HRESULT FsrPresentationTransport::WaitBeforeProducer()
     {
         if(!state_ || !state_->Ready())return E_UNEXPECTED;

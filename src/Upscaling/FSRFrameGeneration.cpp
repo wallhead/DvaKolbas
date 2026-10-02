@@ -46,6 +46,18 @@ namespace TheosRenderPipeline::Upscaling
         if (!lock.Owns(*this) || present_) return Error(ErrorKind::InvalidInput, 0, "Closing requires idle SDK session ownership");
         closing_ = true; return {};
     }
+    Result<void> FsrSdkSession::ResumeAfterFeatureRetirement(const FsrSdkLock& lock)
+    {
+        if(!lock.Owns(*this) || !closing_ || present_ || callback_->context || callback_->owner || !callback_->detached)
+            return Error(ErrorKind::InvalidInput,0,"Resize reentry requires idle, detached and destroyed FG feature ownership");
+        closing_=false;return {};
+    }
+    Result<void> FsrSdkSession::ResumeAfterReaderRetirement(const FsrSdkLock& lock)
+    {
+        if(!lock.Owns(*this) || !closing_ || present_ || !callback_->detached || callback_->enabled)
+            return Error(ErrorKind::InvalidInput,0,"Suspend reentry requires idle, disabled and detached generation");
+        closing_=false;return {};
+    }
     struct FsrFrameGeneration::State
     {
         std::shared_ptr<FsrSdkSession> session;
@@ -170,7 +182,8 @@ namespace TheosRenderPipeline::Upscaling
         auto& callback = *static_cast<FsrSdkSession::CallbackState*>(opaque);
         const auto fail = [&callback](ffxReturnCode_t result) { callback.result.store(result, std::memory_order_relaxed); return result; };
         if (!callback.session || FsrSdkSession::ownedByThread_ != callback.session) return fail(FFX_API_RETURN_ERROR_PARAMETER);
-        callback.invocations.fetch_add(1, std::memory_order_relaxed);
+        if (callback.invocations.fetch_add(1, std::memory_order_relaxed) != 0)
+            return fail(FFX_API_RETURN_ERROR_PARAMETER);
         if (!descriptor || descriptor->header.type != FFX_API_DISPATCH_DESC_TYPE_FRAMEGENERATION || !callback.session->present_ ||
             !callback.context || !callback.runtime || !callback.enabled || !callback.configured || callback.detached ||
             descriptor->frameID != callback.sourceId || callback.preparedId != callback.sourceId ||
@@ -186,7 +199,7 @@ namespace TheosRenderPipeline::Upscaling
     {
         if (!state_->session || !lock.Owns(*state_->session)) return {FFX_API_RETURN_ERROR_PARAMETER, 0};
         const auto& callback = *state_->session->callback_;
-        return {callback.result.load(std::memory_order_relaxed), callback.invocations.load(std::memory_order_relaxed)};
+        return {callback.result.load(std::memory_order_relaxed), callback.invocations.load(std::memory_order_relaxed),callback.sourceId,callback.preparedId};
     }
     Result<void> FsrFrameGeneration::DisableAndDetach(const FsrSdkLock& lock)
     {
@@ -213,6 +226,7 @@ namespace TheosRenderPipeline::Upscaling
         auto& callback = *session->callback_;
         const auto result = callback.runtime->Functions().DestroyContext(&callback.context, nullptr);
         if (result != FFX_API_RETURN_OK) return Error(ErrorKind::ContextFailure, result, "FG context destruction failed; retain owners");
+        callback.context=nullptr; // Successful destruction need not clear the SDK caller's handle.
         callback.runtime.reset(); callback.owner = nullptr; callback.configured = false; callback.sourceId = callback.preparedId = 0;
         state_->resources = {}; state_->chain.Reset(); state_->device.Reset(); state_->poisoned = false;
         return {};

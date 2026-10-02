@@ -36,10 +36,52 @@ int main(int argc,char** argv)
         Require(host.FeatureReady() && host.Status().decision.generate && host.Status().callback.invocations==1,"measured source enables one generation callback");
         frame.sourceId=19;Check(host.Present(frame,UpscaleOutcome::Temporal,rig.ui.Get(),nullptr,true,false,false,0,0),"live FG off on same AMD chain");
         Require(!host.Status().decision.generate && host.Status().callback.invocations==0,"off source does not generate");
+        auto* retainedChain=host.SwapChain();const auto retainedBridge=resources->Bridge();const auto retainedRuntime=resources->Runtime();
+        auto nextDesc=rig.desc;nextDesc.BufferDesc.Width=144;nextDesc.BufferDesc.Height=96;
+        auto resized=host.Resize(nextDesc);
+        Require(resized && SUCCEEDED(resized->result) && resized->render==Extent{72,48},"host queries new render size after proxy resize");
+        Require(host.SwapChain()==retainedChain && resources->Bridge()==retainedBridge && resources->Runtime()==retainedRuntime && nativeCreations==1,
+            "ResizePreservesAmdChainNativeDeviceAndRuntime");
+        Require(!host.FeatureReady() && !resources->FeatureReady(),"fixed-size features deferred after resize");
+        Require(bool(resources->CompleteStartup()),"resized SR feature startup");
+        D3D11_TEXTURE2D_DESC resizedUi{};rig.ui->GetDesc(&resizedUi);resizedUi.Width=144;resizedUi.Height=96;rig.ui.Reset();
+        Check(rig.device11->CreateTexture2D(&resizedUi,nullptr,&rig.ui),"resized native UI");
+        frame.render=frame.subrect={72,48};frame.display={144,96};
+        bool sawReset{};
+        for(unsigned id=20;id<=37;++id){frame.sourceId=id;Check(host.WaitBeforeProducer(),"resized guide wait");
+            Check(host.Present(frame,UpscaleOutcome::Temporal,rig.ui.Get(),nullptr,true,false,true,0,0),"resized temporal source");
+            if(host.Status().decision.generate)sawReset|=host.Status().decision.reset;}
+        Require(sawReset && host.Status().decision.generate,"RestoreFromResizeRecreatesWithReset");
+        auto* unchangedScene=host.SceneTarget11();auto* unchangedUpscaler=resources->Upscaler();
+        Require(bool(host.Suspend()),"window suspension quiesces readers without replacing producer resources");
+        Require(host.StartupPresent(0,DXGI_PRESENT_TEST)==DXGI_STATUS_OCCLUDED,"suspended test Present cannot reuse enabled generation");
+        Require(bool(host.Resume()) && host.SceneTarget11()==unchangedScene && resources->Upscaler()==unchangedUpscaler,
+            "ClientRestoreWithoutResizeKeepsGameBuffersAndResumes");
+        frame.sourceId=38;Check(host.Present(frame,UpscaleOutcome::Temporal,rig.ui.Get(),nullptr,true,false,true,0,0),"source reentry without resource recreation");
+        Require(!host.Status().decision.generate && host.Status().decision.reset,"suspension clears rate/history before resumed source");
+        Require(bool(host.BeforeResize()),"temporary suspension retires FG safely");
+        Require(host.StartupPresent(0,0)==DXGI_STATUS_OCCLUDED && host.SwapChain()==retainedChain,"SuspendedHostNeverPresentsStaleConfiguredSource");
+        resized=host.Resize(nextDesc);Require(resized && SUCCEEDED(resized->result),"suspended host can restore nonzero extent");
+        Microsoft::WRL::ComPtr<ID3D12Resource> held;Check(retainedChain->GetBuffer(0,IID_PPV_ARGS(&held)),"force native resize rejection");
+        nextDesc.BufferDesc.Width=160;nextDesc.BufferDesc.Height=112;
+        resized=host.Resize(nextDesc);held.Reset();
+        Require(resized && FAILED(resized->result) && resized->render==Extent{72,48} && host.SwapChain()==retainedChain,
+            "FailedResizeRebuildsOriginalExtentWithoutReplacingChain");
+        Require(bool(resources->CompleteStartup()),"failed resize SR recovery");
+        frame.sourceId=39;Check(host.Present(frame,UpscaleOutcome::Temporal,rig.ui.Get(),nullptr,true,false,true,0,0),"failed resize host remains usable");
         Require(bool(host.Retire()) && !resources->Runtime(),"AMD asynchronous readers retire before shared SR owner");
         auto unresolved=WithNativeCreator<FsrHostResources>(std::filesystem::absolute(argv[1]),UnresolvedCreator);
         FsrHostPresentation rejected;auto rejectedExtent=rejected.Create(rig.factory.Get(),rig.device11.Get(),unresolved,rig.desc,settings);
         Require(!rejectedExtent && !rejected.SwapChain() && !unresolved->FeatureReady(),"unresolved native ownership rejected before outer publication");
+        rig.mode(0); // QueryRenderExtent deliberately overwrites the fixture's shared SDK name.
+        auto retryResources=WithNativeCreator<FsrHostResources>(std::filesystem::absolute(argv[1]),NativeCreator);
+        FsrHostPresentation retryHost;auto retryCreated=retryHost.Create(rig.factory.Get(),rig.device11.Get(),retryResources,rig.desc,settings);
+        if(!retryCreated)std::fprintf(stderr,"retry creation: %s native=%lld\n",retryCreated.error().message.c_str(),retryCreated.error().nativeResult);
+        Require(bool(retryCreated),"retirement retry host");
+        auto* retryChain=retryHost.SwapChain();rig.mode(23);
+        Require(!retryHost.BeforeResize() && retryHost.SwapChain()==retryChain && retryResources->Runtime(),"failed resize retirement retains all owners");
+        rig.mode(0);Require(bool(retryHost.BeforeResize()),"failed retirement must actually retry quiescence");
+        Require(bool(retryHost.Resize(rig.desc)),"successful retirement retry permits resize");Require(bool(retryHost.Retire()),"retry host retirement");
         std::puts("PASS: host sizing, stable D3D11 publication, deferred camera feature, complete UI, live toggle and ordered retirement");return 0;
     }catch(const std::exception& e){std::fprintf(stderr,"FAIL: %s\n",e.what());return 1;}
 }

@@ -187,6 +187,7 @@ struct NvidiaHost::SourceFrameOperations
 void NvidiaHost::OnBackgroundReady(TheosRenderPipeline::BackgroundBoundary boundary, bool mainOrLoading)
 {
     if (!StartupConfigured() || !proxyActive_ || !UpscalerReady() || !context_ || !RenderPipeline::GetSingleton()->mNativeUI) { return; }
+    if(FsrFgActive() && UpdateFsrSuspension()!=S_OK)return;
     if (boundary == TheosRenderPipeline::BackgroundBoundary::World) {
         startupWorldFrame_ = presentCount_;
         sourceRenderThread_ = GetCurrentThreadId();
