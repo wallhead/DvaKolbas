@@ -103,6 +103,7 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
 #endif
 #if defined(TRP_ENABLE_FSR_FG)
     capabilities.fsrFgBuilt = true;
+    capabilities.fsrFgPresenter = host_.FsrFgActive();
 #endif
     const auto current = Capture(capabilities.neuralRuntime, false);
     if (const char* error = ValidateRendererSettings(settingsDraft, capabilities, &current))

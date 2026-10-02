@@ -113,9 +113,25 @@ void LiveGenerationActions()
         }
     }
 }
+void EffectivePresenterUi()
+{
+    RendererSettingsCapabilities caps{true,false,true,false};
+    caps.fsrBuilt=true;caps.fsrFgBuilt=true;caps.fsrFgPresenter=true;
+    for(const int nextMode : {DLSS,DLAA,FSR}) {
+        RendererSettingsDraft draft;draft.valid=true;draft.upscaleType=nextMode;
+        draft.generationBackend=nextMode==FSR?0:1;draft.generationEnabled=nextMode!=FSR;
+        draft.fsr.sourceColorEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
+        Require(!ValidateRendererSettings(draft,caps),"pending presenter remains valid with current native UI retained");
+        draft.nativeUI=false;
+        Require(ValidateRendererSettings(draft,caps)!=nullptr,
+            "EffectiveAmdPresenterRequiresNativeUiEvenWhenPendingPresenterChanges");
+        auto inactive=caps;inactive.fsrFgPresenter=false;
+        Require(!ValidateRendererSettings(draft,inactive),"ordinary/NVIDIA presenter retains native UI opt-out");
+    }
+}
 }
 int main()
 {
-    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, generation round trips and NR capability loss\n"; return 0; }
+    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); EffectivePresenterUi(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

@@ -85,6 +85,7 @@ struct RendererSettingsCapabilities
     bool neuralOperational{true};
     bool fsrBuilt{};
     bool fsrFgBuilt{};
+    bool fsrFgPresenter{};
 };
 
 template<class Generation>
@@ -129,6 +130,9 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     if (!capabilities.sourceHost)
     {
         return "Presentation host is unavailable; settings were not applied.";
+    }
+    if (capabilities.fsrFgPresenter && !draft.nativeUI) {
+        return "Native UI must stay enabled while the AMD FSR presenter is active. Restart with the new presenter before disabling it.";
     }
     if (draft.upscaleType != DLSS && draft.upscaleType != DLAA && draft.upscaleType != FSR)
     {

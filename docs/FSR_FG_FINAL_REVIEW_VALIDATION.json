@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-02",
+  "sourceBase": "a1f98bcab658472e60744ba784cacc2c232c9a05",
+  "sourceState": "modified; exact tested source/test blobs recorded",
+  "changedSourceFiles": [
+    {
+      "path": "src/Upscaling/FSRPresentationColor.cpp",
+      "gitBlob": "38f646d57de984f3e338c7a146c1ddff902b1413"
+    },
+    {
+      "path": "src/RendererSettings.h",
+      "gitBlob": "a8ac04ead852388eb9affd4842878e4a87e6c0aa"
+    },
+    {
+      "path": "src/RendererSettingsController.cpp",
+      "gitBlob": "125ebea9dc6d8cbcddaf34dbe009ac4d168213d8"
+    },
+    {
+      "path": "src/OverlayFsrGenerationControls.h",
+      "gitBlob": "85fb173ed0584384c38100fa02b92f726ebae2e3"
+    },
+    {
+      "path": "tests/ReShadeIntegrationTests.cpp",
+      "gitBlob": "f21d0d40986de0774a9bc41cdb15d72083c5217c"
+    },
+    {
+      "path": "tests/RendererSettingsActionTests.cpp",
+      "gitBlob": "2f0d679a59a815483071f174ed7a63449207bd2b"
+    }
+  ],
+  "result": "PASS",
+  "reviewScope": "Whole-plan8e78f51..a1f98bc plus corrections",
+  "reviewFindingsResolved": [
+    "ReShade foreground resource ownership",
+    "Effective AMD presenter Native UI prerequisite",
+    "Obsolete rate-gate help"
+  ],
+  "reviewVerdict": "No remaining Critical/Important/Minor code findings; acceptance limits remain",
+  "regressionRedLog": {
+    "path": "out/research/final-review-red-tests.log",
+    "sha256": "500c5aeb887d921e71687273b323adc540831a274b8c09d3ffc7703825887b0c",
+    "bytes": 2931
+  },
+  "regressionRedFailedChecks": 2,
+  "targetedGreenLog": {
+    "path": "out/research/final-review-green-tests.log",
+    "sha256": "b92f87fff515d3ee3305c0d229d46d508025a7f5c9e0faf39f06e749c0ad8c87",
+    "bytes": 630
+  },
+  "targetedGreenPassedChecks": 3,
+  "targetedGreenSeconds": 12.51,
+  "foregroundBaselineRgba": [
+    127,
+    0,
+    0,
+    127
+  ],
+  "foregroundAfterEachPresent": "Exact match to observed before pixels; literal half-alpha/blend check tolerance1",
+  "foreignForegroundRejected": true,
+  "pendingPresenterTransitions": [
+    "DLSS",
+    "DLAA",
+    "Ordinary"
+  ],
+  "activeAmdNativeUiOptOut": "Rejected before settings mutation",
+  "inactiveNativeUiOptOut": "Preserved",
+  "configureLog": {
+    "path": "out/research/final-review-full-configure.log",
+    "sha256": "2210546fd1c3a5f54b830e5ef510032405dbc1aefa554988ba4f342508183b3b",
+    "bytes": 4403
+  },
+  "buildLog": {
+    "path": "out/research/final-review-full-build.log",
+    "sha256": "4ff5337d5aa34953c4893a2ac3ed2af3cdc193d46e120965f4dac1afcf49a7e1",
+    "bytes": 33351
+  },
+  "testLog": {
+    "path": "out/research/final-review-full-tests.log",
+    "sha256": "38964b7de7f9c3866f37b51dc9dde2f854e268be7f6bf7fa891e02562c49ecd6",
+    "bytes": 18315
+  },
+  "passedChecks": 133,
+  "failedChecks": 0,
+  "seconds": 68.9,
+  "excludedUnavailableGraphicsTools": [
+    "NativeUIComposition",
+    "NativeUIBlendState",
+    "NeuralPeripheralPixels"
+  ],
+  "actualReShadeReport": {
+    "path": "out/build/fsr-fg-standard-nr-off/validation/reshade/fsr-reshade.log",
+    "sha256": "6ca1cf21181a693ceb6ee6606da4c9b70402d7d4f0da39ae37707d76d679b846",
+    "bytes": 493
+  },
+  "gpuReport": {
+    "path": "out/build/fsr-fg-standard-nr-off/validation/fsr-fg-gpu.json",
+    "sha256": "da8be501dc79e35000543d99be749f9a1fda6eeae5d7e9bb134cc36fb83334d3",
+    "bytes": 1239
+  },
+  "gpuEvidence": {
+    "result": "PASS",
+    "failure": "",
+    "sourceRevision": "a1f98bcab658472e60744ba784cacc2c232c9a05",
+    "fixtureSourceSha256": "d728ef5c303ad9bd9457938392aa42cf9fe17137747f3c3b5b3b93f690bf2ff6",
+    "sdkCommit": "60f4ea81909200d8542eca14dccb2628b763a9a3",
+    "fgModuleSha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+    "observerSourceSha256": "ee1defe0bbae3ecabba44bd55d44680a28e34c4880f564055cfc95ffe30049ef",
+    "requestedSourcesPerMode": 1000,
+    "requestedRecreationsPerMode": 25,
+    "validationModes": 2,
+    "submittedSources": 2000,
+    "prepareSubmissions": 1950,
+    "generationCallbacks": 1950,
+    "generatedPixelReadbacks": 950,
+    "presentCallbackObservations": 1925,
+    "suppressedSources": 50,
+    "resetReentries": 100,
+    "retiredContexts": 50,
+    "automaticModeSources": 1000,
+    "observerModeSources": 1000,
+    "renderedPixelReadbacks": 975,
+    "changingGeneratedSamples": 925,
+    "callbackModeUiSentinels": 1925,
+    "nvidiaRuntimeAbsent": true,
+    "d3d11DebugAvailable": false,
+    "d3d12DebugAvailable": false,
+    "sdkDebugMessages": 0,
+    "sdkDebugCheckingEnabled": true,
+    "automaticUiAppearance": "pending visible acceptance",
+    "physicalCadence": "pending visible acceptance",
+    "visibleRun": false,
+    "stoppedEarly": false,
+    "initialMonitorRefreshHz": 0,
+    "retiredMemoryRangeBytes": 1003520,
+    "messages": [],
+    "nativeFrameStatistics": []
+  },
+  "remainingAcceptance": "See FSR_FG_FINAL_REVIEW.md and FSR_FG_SKYRIM_TIMING.json",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}

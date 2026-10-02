@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-02",
+  "sourceRevision": "843057399b47",
+  "state": "Prepared; awaiting user matched-scene run",
+  "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-222644-799-fg-timing-logging",
+  "originalIniSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
+  "loggingIniSha256": "9a64badafc57265b2edc8d8574a721dfbd702a8b7bcbdf54e8dad523bfd84934",
+  "temporaryChanges": {
+    "LogPerformanceMetrics": "false -> true",
+    "PerformanceLogIntervalSeconds": "10 -> 2"
+  },
+  "frameDiagnostics": false,
+  "trialMode": "NativeAA + backend2 FG; source configuration unchanged",
+  "measurementScope": "Base-frame cadence and D3D11 GPU timings; CPU Present includes API waits; no game scanout or isolated FG GPU-cost claim",
+  "matchedSceneProcedure": "Same camera and location, FG off30s/on30s/off30s with overlay closed between toggles; no Save as default",
+  "restoration": "Restore two logging settings after game closes, preserving other user settings",
+  "installedPackageValidation": "PASS",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}

@@ -1,13 +1,13 @@
 # FSR frame generation: first integration milestone
 
-Status: architecture approved by the user's “proceed”; reviewed callback/synchronization refinements are incorporated in the [implementation plan](../plans/2026-10-02-fsr-fg.md), approved for inline execution by the user's "start". Implementation is in progress; installed FG remains off.
+Status: architecture approved by the user's “proceed”; reviewed callback/synchronization refinements are incorporated in the [implementation plan](../plans/2026-10-02-fsr-fg.md), approved for inline execution by the user's "start". Seven of eight milestones are complete. The separate Standard NR-off NativeAA FG trial is installed and passes user-reported gameplay/lifecycle checks; whole-plan final review and measured Skyrim timing/source-color calibration remain pending.
 Base: working FSR SR code `8e78f5136772fbbbb23c2aafe341ab931256c475`; V5.4 NO-LORE.
 
 ## Intent and scope
 
 The user approved shared TRP buffers and native UI, NVIDIA-independent FSR SR first, then FSR frame generation. Loaded-world SR now works; the user confirmed the corrected NR tab no longer crashes. The next milestone implements FSR SR plus FSR FG, producing one interpolated frame between source frames when the provider accepts generation. FG remains opt-in and off in the installed SR mod until a separately validated test package is ready.
 
-First-stage limits: SDR, fixed extents, dedicated native UI, Analytical SR, analytical FG 3.1.6, swapchain 3.1.7, and no NR. Effect-tagged provider selection is deterministic and actual context identity is verified. ML FG 4.0.1 is deferred and unavailable on the RTX 4080 Super. Loading/spatial/invalid frames and low source rate suppress generation. DLSS/DLAA plus FSR FG, HDR, dynamic resolution, CS ownership, multiple generated frames and async-compute optimization remain later milestones. Preserve existing NVIDIA presentation; no broad host rewrite.
+First-stage limits: SDR, fixed extents, dedicated native UI, Analytical SR, analytical FG 3.1.6, swapchain 3.1.7, and no NR. Effect-tagged provider selection is deterministic and actual context identity is verified. ML FG 4.0.1 is deferred and unavailable on the RTX 4080 Super. Loading/spatial/invalid frames and source stalls suppress generation; the user removed the minimum-FPS gate and rate warmup on 2026-10-02. DLSS/DLAA plus FSR FG, HDR, dynamic resolution, CS ownership, multiple generated frames and async-compute optimization remain later milestones. Preserve existing NVIDIA presentation; no broad host rewrite.
 
 SR save/load, fast travel, alt-tab/minimize, UI previews and ENB/Gamma22 calibration remain open acceptance items. They can be checked while the standalone FG work proceeds; a Skyrim FG trial requires those results to be recorded, with any defects repaired or restrictions stated.
 

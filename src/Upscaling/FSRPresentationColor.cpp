@@ -41,8 +41,9 @@ float4 ps(Vertex v):SV_Target{
         Ptr<ID3D11Device> device;context->GetDevice(&device);
         if(overlay){
             Ptr<ID3D11Resource> resource;overlay->GetResource(&resource);Ptr<ID3D11Texture2D> texture;Ptr<ID3D11Device> overlayDevice;
-            overlay->GetDevice(&overlayDevice);D3D11_SHADER_RESOURCE_VIEW_DESC view{};overlay->GetDesc(&view);
-            if(!D3D11FrameCopy::SameObject(device.Get(),overlayDevice.Get()) || FAILED(resource.As(&texture)) ||
+            if(!resource || FAILED(resource.As(&texture)))return E_INVALIDARG;
+            texture->GetDevice(&overlayDevice);D3D11_SHADER_RESOURCE_VIEW_DESC view{};overlay->GetDesc(&view);
+            if(!D3D11FrameCopy::SameObject(device.Get(),overlayDevice.Get()) ||
                 D3D11FrameCopy::SameObject(texture.Get(),output) || D3D11FrameCopy::SameObject(texture.Get(),ui))return E_INVALIDARG;
             D3D11_TEXTURE2D_DESC d{};texture->GetDesc(&d);
             if(!supported(d) || d.Width!=in.Width || d.Height!=in.Height || view.Format!=d.Format ||

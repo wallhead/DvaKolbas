@@ -22,10 +22,8 @@
   },
   "evidenceScope": "User gameplay report plus logged successful generation callback; transition logs are not total generated-frame or scanout counts",
   "remainingAcceptance": [
-    "Detailed HUD/menu visual checks",
-    "Save/load and fast travel stress",
-    "Alt-tab/minimize and window transitions",
-    "Matched-scene timing and color/ENB comparison",
+    "Measured Skyrim matched-scene frame timing/presentation",
+    "Formal ENB/source-color calibration; Gamma22 remains provisional",
     "Whole-plan final review"
   ],
   "milestonesComplete": 7,
@@ -55,5 +53,20 @@
       "sha256": "68a65093266ed1bd23baf4352fc6304094a041e4128bfa1624a0d1a189cdd684",
       "bytes": 24625
     }
+  },
+  "manualAcceptance": {
+    "date": "2026-10-02",
+    "userReply": "All checks passed",
+    "requestedScope": "5-10 minute V5.4 NO-LORE check",
+    "hudInventoryMapDialogue": "PASS: user report",
+    "fgLiveToggle": "PASS: user report",
+    "saveReload": "PASS: user report",
+    "twoFastTravels": "PASS: user report",
+    "threeAltTabs": "PASS: user report",
+    "minimizeRestore": "PASS: user report",
+    "matchedSceneFgOffOnColorFlicker": "PASS: user report",
+    "skippedStepsReported": false,
+    "measuredFrameTimeOrScanout": "not collected in this check",
+    "enbOnOffSourceColorCalibration": "not established by FG toggle comparison"
   }
 }

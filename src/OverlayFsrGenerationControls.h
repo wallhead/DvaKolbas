@@ -27,7 +27,7 @@ namespace TheosRenderPipeline::Overlay
         changed |= ImGui::Checkbox("FSR frame generation",&requested);
         ImGui::EndDisabled();
         ImGui::TextWrapped("On/off takes effect on the current AMD presenter. Save as default to keep it for the next launch.");
-        ImGui::TextWrapped("Generation waits for completed native UI, valid temporal guides and a sustained source rate. Menus and loading use real frames.");
+        ImGui::TextWrapped("Generation uses completed native UI and valid temporal guides. Menus, loading, invalid guides and source stalls use real frames.");
         ImGui::PopID();return changed;
     }
 }

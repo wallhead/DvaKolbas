@@ -8,6 +8,7 @@
 #include "FrameGen/FSRHostPresentation.h"
 #include "FrameGen/NativeUICompletion.h"
 #include "Upscaling/FSRFrameAdapter.h"
+#include "Upscaling/FSRPresentationColor.h"
 #endif
 #include <reshade/reshade_events.hpp>
 #include <dxgi1_4.h>
@@ -106,6 +107,20 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
         "real ReShade completed HUD retained");
     Require(PrepareFsrPresentUi(context,hud.rtv.Get(),false),"RealReShadeHudProducerPreparation");
     Require(Pixel(device,context,hud.texture.Get())==std::array<unsigned char,4>{0,0,0,0},"real ReShade empty HUD cleared without alpha residue");
+    Surface foreground(device,outputWidth,outputHeight),publication(device,outputWidth,outputHeight);
+    ComPtr<ID3D11ShaderResourceView> foregroundView;
+    Check(device->CreateShaderResourceView(foreground.texture.Get(),nullptr,&foregroundView),"real ReShade foreground view");
+    foreground.Paint(context,{.5f,0,0,.5f});hud.Paint(context,hudSentinel);
+    const auto foregroundPixel=Pixel(device,context,foreground.texture.Get());
+    std::printf("Foreground producer pixel=%u,%u,%u,%u\n",foregroundPixel[0],foregroundPixel[1],foregroundPixel[2],foregroundPixel[3]);
+    Require(std::abs(int(foregroundPixel[0])-128)<=1 && foregroundPixel[1]==0 && foregroundPixel[2]==0 && std::abs(int(foregroundPixel[3])-128)<=1,
+        "real ReShade foreground is half-alpha premultiplied red");
+    FsrPresentationUiConverter uiConverter;
+    Check(uiConverter.Convert(context,hud.texture.Get(),foregroundView.Get(),publication.texture.Get(),ColorEncoding::SRGB),
+        "RealReShadeForegroundResourceOwnership");
+    const auto mergedPixel=Pixel(device,context,publication.texture.Get());
+    Require(std::abs(int(mergedPixel[0])-128)<=1 && std::abs(int(mergedPixel[1])-127)<=1 && mergedPixel[2]==0 && mergedPixel[3]==255,
+        "real ReShade half-alpha foreground blended once over opaque HUD");
     const std::array<float,4> scene{.25f,.5f,.25f,1},ui{0,.25f,0,.5f};
     depth.Paint(context,{.5f,0,0,0});motion.Paint(context,{0,0,0,0});
     auto makeAdapter=[&]{return std::make_unique<FsrFrameAdapter>(*resources->Upscaler(),resources->Bridge(),resources->Resources(),resources->Color11(),resources->Depth11(),
@@ -153,12 +168,17 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
             context->CopyResource(host.SceneTarget11(),output.texture.Get());
             auto generationFrame=frame;generationFrame.depthFormat=DXGI_FORMAT_R32_FLOAT;generationFrame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
             generationFrame.colorIsLinear=true;generationFrame.reset |= adapter->LastTemporalReset();
-            Check(host.Present(generationFrame,outcome,hud.texture.Get(),nullptr,true,menu,requested,0,0),"actual AMD source Present");
+            Check(host.Present(generationFrame,outcome,hud.texture.Get(),foregroundView.Get(),true,menu,requested,0,0),"actual AMD source Present with completed foreground");
             const auto status=host.Status();callbacks+=status.callback.invocations;++sourceTransactions;
             if(status.decision.generate)resetGeneration|=status.decision.reset;
             Require(draws<=drawCount+1,"AMD SDK presents cannot run another source effects pass");
             Require(automaticDraws==automaticCount && automaticRuntimes==0,"AMD output workers run no ReShade effect/input runtime");
             Require(Pixel(device,context,hud.texture.Get(),outputWidth-1,outputHeight-1)==hudPixel,"AMD preserves completed premultiplied HUD pixels");++uiChecks;
+            const auto foregroundAfter=Pixel(device,context,foreground.texture.Get());
+            if(foregroundAfter!=foregroundPixel)std::printf("Foreground changed source=%llu before=%u,%u,%u,%u after=%u,%u,%u,%u\n",
+                static_cast<unsigned long long>(generationFrame.sourceId),foregroundPixel[0],foregroundPixel[1],foregroundPixel[2],foregroundPixel[3],
+                foregroundAfter[0],foregroundAfter[1],foregroundAfter[2],foregroundAfter[3]);
+            Require(foregroundAfter==foregroundPixel,"AMD foreground publication preserves producer pixels");
             if(!requested){++disabledSources;Require(!status.decision.generate && !status.callback.invocations,"FG off keeps same chain with real UI");}
             if(menu){++spatialSources;Require(!status.decision.generate && !status.callback.invocations,"spatial menu cannot generate");}
             effects.PresentCompleted();Sleep(10);
