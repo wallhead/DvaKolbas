@@ -358,7 +358,8 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     target_include_directories(TRPDLSSQualityTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src"
         "${TRP_NGX_SDK_DIR}/include" "${TRP_STREAMLINE_INCLUDE_DIR}")
     add_test(NAME DLSSQuality COMMAND TRPDLSSQualityTests)
-    add_executable(TRPReShadeIntegrationTests tests/ReShadeIntegrationTests.cpp src/FrameGen/OrdinaryPresentation.cpp)
+    add_executable(TRPReShadeIntegrationTests tests/ReShadeIntegrationTests.cpp src/FrameGen/OrdinaryPresentation.cpp
+        src/Graphics/D3D11D3D12Interop.cpp src/Upscaling/FSRColorConversion.cpp)
     target_compile_features(TRPReShadeIntegrationTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPReShadeIntegrationTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPReShadeIntegrationTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/include")

@@ -10,6 +10,7 @@
 #include "NeuralRenderingMode.h"
 #include "RendererBackendPolicy.h"
 #include "PresentationPolicy.h"
+#include "PresentationDevice.h"
 #include "PluginPaths.h"
 #include <PCH.h>
 
@@ -97,10 +98,10 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     nativeUIContexts_.ResetAfterRetirement();
     device_.Reset();
     context_.Reset();
-    const auto deviceResult = innerSwapChain_->GetDevice(IID_PPV_ARGS(&device_));
+    const auto deviceResult = TheosRenderPipeline::AcquirePresentationDevice(innerSwapChain_,a_device,FsrActive(),device_);
     if (FAILED(deviceResult) || !device_)
     {
-        status_ = std::format("NVIDIA DLSS-G inner D3D11 device query failed (0x{:08X})", static_cast<std::uint32_t>(deviceResult));
+        status_ = std::format("Renderer source D3D11 device selection failed (0x{:08X})", static_cast<std::uint32_t>(deviceResult));
         return E_FAIL;
     }
     device_->GetImmediateContext(&context_);

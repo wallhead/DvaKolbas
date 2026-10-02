@@ -1,5 +1,9 @@
 #include "ReShadeIntegration.h"
 #include "FrameGen/OrdinaryPresentation.h"
+#include "FrameGen/PresentationDevice.h"
+#include "Graphics/D3D11D3D12Interop.h"
+#include "Upscaling/FSRColorConversion.h"
+#include "Upscaling/FSRPreparedResources.h"
 #include <reshade/reshade_events.hpp>
 #include <dxgi1_4.h>
 #include <d3d12.h>
@@ -138,6 +142,51 @@ int main(int argc, char** argv)
     }
 
     Require(automaticRuntimes == 0, "native output creates no automatic ReShade runtime");
+    if(ordinaryRoute) {
+        TheosRenderPipeline::Graphics::D3D11D3D12Interop bridge;
+        ComPtr<ID3D11Device> presenterDevice;
+        Check(TheosRenderPipeline::AcquirePresentationDevice(output.Get(),device.Get(),true,presenterDevice),"ordinary source device acquisition");
+        Check(bridge.Initialize(presenterDevice.Get(),device12.Get(),queue.Get()),"ordinary FSR sharing bridge");
+        ComPtr<ID3D11Device> contextOwner,resourceOwner;
+        bridge.Context11()->GetDevice(&contextOwner);color.texture->GetDevice(&resourceOwner);
+        std::printf("FSR ownership: immediate=%p bridge=%p contextDevice=%p resourceDevice=%p same=%d\n",
+            context.Get(),bridge.Context11(),contextOwner.Get(),resourceOwner.Get(),
+            TheosRenderPipeline::D3D11FrameCopy::SameObject(contextOwner.Get(),resourceOwner.Get()));
+        TheosRenderPipeline::Upscaling::FsrColorConverter spatial;
+        const auto converted=spatial.Convert(bridge.Context11(),color.texture.Get(),ui.texture.Get(),
+            TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22);
+        std::printf("FSR spatial conversion: result=0x%08lX stage=%s\n",static_cast<unsigned long>(converted),spatial.FailureStage());
+        Check(converted,"ordinary ReShade FSR spatial handoff");
+        const auto pixel=Pixel(device.Get(),context.Get(),ui.texture.Get());
+        std::printf("FSR spatial pixels: %u %u %u %u\n",pixel[0],pixel[1],pixel[2],pixel[3]);
+        const auto matchesScene=[](const std::array<unsigned char,4>& value) {
+            constexpr std::array<int,4> expected{64,128,64,255};
+            for(std::size_t i=0;i<value.size();++i)if(std::abs(int(value[i])-expected[i])>1)return false;
+            return true; // Gamma decode/encode permits one RGBA8 quantization step.
+        };
+        Require(matchesScene(pixel),"ordinary wrapped FSR spatial pixels");
+        ComPtr<ID3D11Device> nativeDevice;
+        Check(TheosRenderPipeline::AcquirePresentationDevice(output.Get(),device.Get(),false,nativeDevice),"indexed presenter retains swapchain device selection");
+        Require(!TheosRenderPipeline::D3D11FrameCopy::SameObject(nativeDevice.Get(),presenterDevice.Get()),
+            "real ReShade native chain exposes a distinct device identity");
+        auto desc=TheosRenderPipeline::Upscaling::FsrPreparedTextureDesc(TheosRenderPipeline::Upscaling::FsrResourceRole::Color,{outputWidth,outputHeight});
+        TheosRenderPipeline::Graphics::SharedTexture linear;
+        Check(bridge.CreateSharedTexture(desc,linear),"wrapped FSR prepared shared color");
+        TheosRenderPipeline::Upscaling::FsrColorConverter decode,encode;
+        Check(decode.Convert(bridge.Context11(),color.texture.Get(),linear.texture11.Get(),
+            TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,TheosRenderPipeline::Upscaling::ColorEncoding::Linear),"wrapped FSR input decode");
+        Check(encode.Convert(bridge.Context11(),linear.texture11.Get(),ui.texture.Get(),
+            TheosRenderPipeline::Upscaling::ColorEncoding::Linear,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22),"wrapped FSR output encode");
+        Require(matchesScene(Pixel(device.Get(),context.Get(),ui.texture.Get())),"wrapped shared color retains round-trip pixels");
+        ComPtr<ID3D11Device> foreignDevice;ComPtr<ID3D11DeviceContext> foreignContext;
+        Check(D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_HARDWARE,nullptr,0,nullptr,0,D3D11_SDK_VERSION,
+            &foreignDevice,nullptr,&foreignContext),"foreign D3D11 device on same adapter");
+        Surface foreign(foreignDevice.Get(),outputWidth,outputHeight);
+        Require(spatial.Convert(bridge.Context11(),foreign.texture.Get(),ui.texture.Get(),
+            TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22)==E_INVALIDARG,
+            "genuinely foreign D3D11 resource remains rejected");
+        Check(bridge.Drain(),"ordinary FSR bridge retirement");
+    }
     ComPtr<ID3D12Device> foreign; ComPtr<ID3D12Fence> foreignFence;
     Check(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&foreign)), "unrelated D3D12 creation");
     Check(foreign->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&foreignFence)), "unrelated fence");
