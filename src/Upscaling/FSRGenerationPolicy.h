@@ -19,11 +19,9 @@ namespace TheosRenderPipeline::Upscaling
         void AcknowledgePrepared(uint64_t sourceId);
         void Invalidate();
     private:
-        void ClearRate();
-        std::array<float, 8> deltas_{};
+        void ArmReset();
         Extent lastRender_{}, lastDisplay_{};
         uint64_t lastSource_{}, lastCamera_{}, pendingPrepare_{};
-        unsigned count_{}, next_{}, lowMeans_{}, highMeans_{};
-        bool active_{}, resetArmed_{true};
+        bool resetArmed_{true};
     };
 }

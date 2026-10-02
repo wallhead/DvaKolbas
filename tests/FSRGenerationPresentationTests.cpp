@@ -25,13 +25,13 @@ int main(int argc,char** argv)
     Check(p.Present({},UpscaleOutcome::SkippedInvalidInput,{},nullptr,ColorEncoding::Unknown,nullptr,nullptr,false,false,false,0,DXGI_PRESENT_TEST),"test Present");
     Require(rig.stat(2)==0 && rig.stat(3)==0 && rig.stat(4)==0,"PresentTestDoesNotDispatch");
     for(int i=0;i<16;++i)Check(rig.Source(p),"source handoff");
-    Require(rig.stat(2)==16 && rig.stat(3)==2 && rig.stat(4)==2,"PresentInvokesGenerationCallbackExactlyOnce");
+    Require(rig.stat(2)==16 && rig.stat(3)==16 && rig.stat(4)==16,"EveryEligibleSourcePreparesAndInvokesGenerationCallbackExactlyOnce");
     Require(rig.stat(5)==16 && rig.stat(6)==0,"UiRegistrationIsSeparateFromFrameConfigure and NoInterpolationCommandListQueryOnProductionPath");
     Require(rig.stat(7)==16,"PrepareAndCallbackUseConfiguredFrameId");
     rig.frame.sourceId=16;
     Require(FAILED(rig.Source(p)),"RejectedSourceCannotReusePreviousEnabledGenerationConfig");
-    Require(rig.stat(2)==16 && rig.stat(4)==2 && rig.stat(5)==16,"rejected source never configures, dispatches or republishes UI");
-    Check(rig.Source(p,false),"disabled generation source");Require(rig.stat(4)==2 && rig.stat(5)==17,"DisabledPresentDoesNotInvokeGenerationCallback and DisabledFgStillComposesUi");
+    Require(rig.stat(2)==16 && rig.stat(4)==16 && rig.stat(5)==16,"rejected source never configures, dispatches or republishes UI");
+    Check(rig.Source(p,false),"disabled generation source");Require(rig.stat(4)==16 && rig.stat(5)==17,"DisabledPresentDoesNotInvokeGenerationCallback and DisabledFgStillComposesUi");
     Require(bool(p.Retire()),"normal shutdown");Require(rig.stat(8)>0 && rig.stat(9)>0 && rig.stat(10)==0,"UiUnregisteredBeforeRelease and ShutdownWaitsForPresents");
     FsrPresentation failed;rig.mode(21);Require(!failed.Create(rig.factory.Get(),rig.runtime,rig.bridge,rig.desc,rig.swapchainProvider),"injected creation failure");
     Require(rig.stat(0)==2 && rig.stat(11)==0,"NoCreationApiFallback");rig.mode(0);Require(bool(failed.Retire()),"failed creation cleanup");

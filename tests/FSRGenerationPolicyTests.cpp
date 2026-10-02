@@ -55,19 +55,26 @@ static UpscaleFrame Frame(uint64_t id, float delta = 1000.0f / 90.0f)
     frame.motionConvention = {1280, 720, true, false};
     return frame;
 }
-static void Warm(FsrGenerationHistory& history)
+static void PrepareHistory(FsrGenerationHistory& history)
 {
     for (uint64_t id = 1; id <= 15; ++id) {
         const auto decision = history.Decide(Frame(id), UpscaleOutcome::Temporal, true, false, true);
         Require(decision.admit, "valid sequential source admitted");
-        Require(decision.prepare == (id == 15) && decision.generate == (id == 15), "ColdRateWindowSuppresses: 8 deltas plus 8 high means, first eligible source 15");
-        if (id == 15) { Require(decision.reset, "first eligible preparation resets"); history.AcknowledgePrepared(id); }
+        Require(decision.prepare && decision.generate, "valid source requests generation without rate warmup");
+        Require(decision.reset == (id == 1), "only initial preparation resets after acknowledged success");
+        history.AcknowledgePrepared(id);
     }
 }
 static void CheckHistory()
 {
     {
-        FsrGenerationHistory history; Warm(history);
+        FsrGenerationHistory history;
+        auto first = history.Decide(Frame(1, 1000.0f / 30.0f), UpscaleOutcome::Temporal, true, false, true);
+        Require(first.admit && first.prepare && first.generate && first.reset,
+            "NoSourceRateGate: valid 30 FPS source immediately requests reset preparation");
+    }
+    {
+        FsrGenerationHistory history; PrepareHistory(history);
         const auto stable = history.Decide(Frame(16), UpscaleOutcome::Temporal, true, false, true);
         Require(stable.prepare && stable.generate && !stable.reset, "successful preparation acknowledges reset history");
         auto repeated = history.Decide(Frame(16), UpscaleOutcome::Temporal, true, false, true);
@@ -76,33 +83,41 @@ static void CheckHistory()
         Require(!older.admit, "out-of-order source never admitted");
         auto gap = history.Decide(Frame(20), UpscaleOutcome::Temporal, true, false, true);
         Require(gap.admit && !gap.prepare && !gap.generate && gap.reset, "forward gap consumes one disabled source and resets reentry");
+        const auto reentry = history.Decide(Frame(21), UpscaleOutcome::Temporal, true, false, true);
+        Require(reentry.prepare && reentry.generate && reentry.reset, "sequential source after gap immediately prepares with reset");
     }
     for (auto outcome : {UpscaleOutcome::SpatialRecovery, UpscaleOutcome::SkippedInvalidInput, UpscaleOutcome::Fatal}) {
-        FsrGenerationHistory history; Warm(history);
+        FsrGenerationHistory history; PrepareHistory(history);
         auto decision = history.Decide(Frame(16), outcome, true, false, true);
         Require(decision.admit && !decision.prepare && decision.reset, "SpatialOrMenuSuppresses: non-temporal source");
+        const auto reentry = history.Decide(Frame(17), UpscaleOutcome::Temporal, true, false, true);
+        Require(reentry.prepare && reentry.generate && reentry.reset, "temporal recovery immediately prepares with reset");
     }
     {
-        FsrGenerationHistory history; Warm(history);
+        FsrGenerationHistory history; PrepareHistory(history);
         Require(!history.Decide(Frame(16), UpscaleOutcome::Temporal, true, true, true).prepare, "SpatialOrMenuSuppresses: menu");
         Require(!history.Decide(Frame(17), UpscaleOutcome::Temporal, false, false, true).prepare, "UiIdentityIsNotCompletion: unfinished UI");
         Require(!history.Decide(Frame(18), UpscaleOutcome::Temporal, true, false, false).generate, "runtime request off");
-        Require(!history.Decide(Frame(19), UpscaleOutcome::Temporal, true, false, true).prepare, "request reentry warms before Prepare");
+        const auto reentry = history.Decide(Frame(19), UpscaleOutcome::Temporal, true, false, true);
+        Require(reentry.prepare && reentry.generate && reentry.reset, "request reentry immediately prepares with reset");
     }
     for (auto delta : {0.0f, -1.0f, std::numeric_limits<float>::infinity(), std::numeric_limits<float>::quiet_NaN(), 100.0f}) {
-        FsrGenerationHistory history; Warm(history);
+        FsrGenerationHistory history; PrepareHistory(history);
         auto decision = history.Decide(Frame(16, delta), UpscaleOutcome::Temporal, true, false, true);
         Require(!decision.prepare && decision.reset, "InvalidDeltaOrCameraRejected: invalid time or inclusive 100ms stall");
-        Require(!history.Decide(Frame(17), UpscaleOutcome::Temporal, true, false, true).prepare, "StallResetsReentry: restart window");
+        const auto reentry = history.Decide(Frame(17), UpscaleOutcome::Temporal, true, false, true);
+        Require(reentry.prepare && reentry.generate && reentry.reset, "StallResetsReentry: valid source resumes with reset");
     }
     {
-        FsrGenerationHistory history; Warm(history);
+        FsrGenerationHistory history; PrepareHistory(history);
         auto camera = Frame(16); camera.camera.view[0] = std::numeric_limits<float>::quiet_NaN();
         Require(!history.Decide(camera, UpscaleOutcome::Temporal, true, false, true).prepare, "InvalidDeltaOrCameraRejected: camera NaN");
         auto missing = Frame(17); missing.depth = nullptr;
         Require(!history.Decide(missing, UpscaleOutcome::Temporal, true, false, true).prepare, "missing depth suppresses");
         auto cut = Frame(18); cut.camera.reset = true;
-        Require(!history.Decide(cut, UpscaleOutcome::Temporal, true, false, true).prepare, "camera cut resets window");
+        Require(!history.Decide(cut, UpscaleOutcome::Temporal, true, false, true).prepare, "camera cut rearms reset");
+        const auto reentry = history.Decide(Frame(19), UpscaleOutcome::Temporal, true, false, true);
+        Require(reentry.prepare && reentry.generate && reentry.reset, "valid source after camera cut immediately prepares with reset");
     }
     {
         FsrGenerationHistory history;
@@ -113,30 +128,25 @@ static void CheckHistory()
         history.AcknowledgePrepared(17);
         Require(!history.Decide(Frame(18), UpscaleOutcome::Temporal, true, false, true).reset, "current success acknowledges history");
         history.Invalidate(); history.AcknowledgePrepared(18);
-        Require(!history.Decide(Frame(19), UpscaleOutcome::Temporal, true, false, true).prepare, "invalidation clears pending acknowledgment");
+        const auto invalidated = history.Decide(Frame(19), UpscaleOutcome::Temporal, true, false, true);
+        Require(invalidated.prepare && invalidated.generate && invalidated.reset, "invalidation clears pending acknowledgment and rearms reset");
+    }
+    for (auto fps : {20.0f, 30.0f, 45.0f, 59.0f, 60.0f, 65.9f, 66.0f, 90.0f}) {
+        FsrGenerationHistory history;
+        for (uint64_t id = 1; id <= 30; ++id) {
+            const auto decision = history.Decide(Frame(id, 1000.0f / fps), UpscaleOutcome::Temporal, true, false, true);
+            Require(decision.admit && decision.prepare && decision.generate && decision.reason.empty(), "valid low/high source rates never suppress generation");
+            Require(decision.reset == (id == 1), "rate alone never rearms reset");
+            history.AcknowledgePrepared(id);
+        }
     }
     {
-        FsrGenerationHistory history; Warm(history);
-        for (uint64_t id = 16; id <= 24; ++id)
-            Require(history.Decide(Frame(id, 1000.0f/59.0f), UpscaleOutcome::Temporal, true, false, true).generate, "LowRateHysteresis: retain until third low rolling mean");
-        Require(!history.Decide(Frame(25, 1000.0f/59.0f), UpscaleOutcome::Temporal, true, false, true).generate, "third low mean suppresses");
-        for (uint64_t id = 26; id <= 37; ++id)
-            Require(!history.Decide(Frame(id, 1000.0f/70.0f), UpscaleOutcome::Temporal, true, false, true).generate, "resume requires eight successive >=66FPS means");
-        auto reentry = history.Decide(Frame(38, 1000.0f/70.0f), UpscaleOutcome::Temporal, true, false, true);
-        Require(reentry.generate && reentry.prepare && reentry.reset, "LowRateHysteresis: resume with reset at source 38");
-    }
-    {
-        FsrGenerationHistory history; Warm(history);
-        for (uint64_t id = 16; id <= 40; ++id)
-            Require(history.Decide(Frame(id, 1000.0f/60.0f), UpscaleOutcome::Temporal, true, false, true).generate, "exact 60FPS floor does not suppress active generation");
-    }
-    {
-        FsrGenerationHistory below;
-        for (uint64_t id = 1; id <= 30; ++id)
-            Require(!below.Decide(Frame(id, 1000.0f/65.9f), UpscaleOutcome::Temporal, true, false, true).generate, "below 66FPS cannot exit initial warmup");
-        FsrGenerationHistory boundary;
-        for (uint64_t id = 1; id <= 15; ++id)
-            Require(boundary.Decide(Frame(id, 1000.0f/66.0f), UpscaleOutcome::Temporal, true, false, true).generate == (id == 15), "exact 66FPS resume boundary");
+        FsrGenerationHistory history;
+        for (uint64_t id = 1; id <= 40; ++id) {
+            const auto decision = history.Decide(Frame(id, id % 2 ? 1000.0f / 30.0f : 1000.0f / 90.0f), UpscaleOutcome::Temporal, true, false, true);
+            Require(decision.prepare && decision.generate && decision.reset == (id == 1), "fluctuating valid rate neither suppresses nor resets");
+            history.AcknowledgePrepared(id);
+        }
     }
 }
 #endif
@@ -148,10 +158,8 @@ void CheckRuntimeStatus()
     Require(DescribeFsrGenerationStatus(false,false,false,false,decision,0).kind==TheosRenderPipeline::SettingsStatusKind::Neutral,"ordinary presenter unavailable independently of SR");
     Require(DescribeFsrGenerationStatus(true,false,false,false,decision,0).text.find("off")!=std::string::npos,"FG off on AMD owner");
     Require(DescribeFsrGenerationStatus(true,true,false,false,decision,0).text.find("requested")!=std::string::npos,"requested before first submitted source");
-    decision.reason="Source rate warmup";
-    Require(DescribeFsrGenerationStatus(true,true,true,false,decision,0).text.find("warming")!=std::string::npos,"warmup distinct from request");
-    decision.reason="Source rate suppressed";
-    Require(DescribeFsrGenerationStatus(true,true,true,false,decision,0).text.find("rate suppressed")!=std::string::npos,"rate suppression explicit");
+    decision.reason="Source stalled";
+    Require(DescribeFsrGenerationStatus(true,true,true,false,decision,0).text.find("Source stalled")!=std::string::npos,"stall suppression remains explicit");
     decision.generate=true;decision.reason={};
     Require(DescribeFsrGenerationStatus(true,true,true,false,decision,0).kind!=TheosRenderPipeline::SettingsStatusKind::Success,"request alone cannot claim active generation");
     Require(DescribeFsrGenerationStatus(true,true,true,false,decision,1).kind==TheosRenderPipeline::SettingsStatusKind::Success,"observed callback active independently of scanout");
@@ -164,7 +172,7 @@ int main()
 #ifdef HAS_FG_POLICY
     CheckHistory();
 #else
-    Require(false, "source/rate history is not implemented");
+    Require(false, "source history is not implemented");
 #endif
-    std::puts("PASS: backend capability, source identity, suppression, preparation acknowledgment and rate hysteresis");
+    std::puts("PASS: backend capability, source identity, safety suppression, preparation acknowledgment and unrestricted source rate");
 }

@@ -13,8 +13,6 @@ namespace TheosRenderPipeline::Upscaling
         if (!submitted) return {"FSR FG requested; waiting for a completed temporal source.", SettingsStatusKind::Pending};
         if (decision.generate && callbackCount) return {"FSR FG active (generation callback observed).", SettingsStatusKind::Success};
         if (decision.generate) return {"FSR FG requested; waiting for a generation callback.", SettingsStatusKind::Pending};
-        if (decision.reason == "Source rate warmup") return {"FSR FG warming up the source rate history.", SettingsStatusKind::Pending};
-        if (decision.reason == "Source rate suppressed") return {"FSR FG source rate suppressed; waits for sustained recovery.", SettingsStatusKind::Pending};
         return {"FSR FG suppressed: " + std::string(decision.reason), SettingsStatusKind::Pending};
     }
 }

@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-02",
+  "sourceBase": "d328ce6f328a72ca91541c76aaf0b5e3abd46b41",
+  "sourceState": "modified; exact source/test blobs recorded",
+  "changedSourceFiles": [
+    {
+      "path": "src/Upscaling/FSRGenerationPolicy.cpp",
+      "gitBlob": "264fc129adb6d46c9a2499258ffa5feac9d41c70"
+    },
+    {
+      "path": "src/Upscaling/FSRGenerationPolicy.h",
+      "gitBlob": "ad76bc1abf3832e7dea04d524542349c2f734ff6"
+    },
+    {
+      "path": "src/Upscaling/FSRGenerationStatus.h",
+      "gitBlob": "958c837ef515f6b5703e6e05c90be3b0115aae6c"
+    },
+    {
+      "path": "tests/FSRGenerationPolicyTests.cpp",
+      "gitBlob": "520d0cb360119c69a904d95e1d03c4a3ea8a3fd9"
+    },
+    {
+      "path": "tests/FSRGenerationPresentationTests.cpp",
+      "gitBlob": "3c2448330b08a7750215b0dd234d506db6f288ce"
+    },
+    {
+      "path": "tests/FSRGenerationHostOwnerTests.cpp",
+      "gitBlob": "105f34ee98827870fe2d04e79b7ad72395c5e20c"
+    }
+  ],
+  "result": "PASS",
+  "request": "Remove TRP minimum source FPS, rolling-rate suppression and warmup",
+  "regressionRed": "NoSourceRateGate: valid 30 FPS source immediately requests reset preparation",
+  "regressionRedLog": {
+    "path": "out/research/no-rate-gate-red-tests.log",
+    "sha256": "4e8904bef9030f16817c145ae0c7ee7fa56b022bf8ff57f7294eca3f19fa9136",
+    "bytes": 586
+  },
+  "targetedGreenLog": {
+    "path": "out/research/no-rate-gate-green-tests.log",
+    "sha256": "e9647980ba73fae513ccd49f21bf6baf005510267f5a8e108c6810b78b5d9aa1",
+    "bytes": 406
+  },
+  "integrationRedLog": {
+    "path": "out/research/no-rate-gate-integration-red-tests.log",
+    "sha256": "a25ba051af965dfd83612147ea8011d23d5956c40833aba5a72cd518b8a70af1",
+    "bytes": 18731
+  },
+  "integrationRedReason": "Two obsolete expectations retained old warmup callback counts and resumed-source suppression; updated to requested behavior",
+  "testedSourceFps": [
+    20,
+    30,
+    45,
+    59,
+    60,
+    65.9,
+    66,
+    90
+  ],
+  "fluctuatingSourceFps": [
+    30,
+    90
+  ],
+  "immediateResetPreparation": true,
+  "inclusiveStallMs": 100,
+  "retainedGates": [
+    "Menus/loading",
+    "Non-temporal sources",
+    "Incomplete UI",
+    "Invalid time",
+    "Invalid guides/camera",
+    "Camera/extent reset",
+    "Duplicate/out-of-order IDs",
+    "Source discontinuity",
+    "Current-source Prepare success acknowledgment"
+  ],
+  "buildPreset": "fsr-fg-standard-nr-off",
+  "configureLog": {
+    "path": "out/research/no-rate-gate-full-configure.log",
+    "sha256": "96877ab3e1184c23c364e98f43103be93999e36050484a5e7a7efaf707ee1dd9",
+    "bytes": 4403
+  },
+  "buildLog": {
+    "path": "out/research/no-rate-gate-full-build.log",
+    "sha256": "669cd8140f1298f7e1b60e13d4627c6ea7d9744e420321d01f8be29d399a4f4a",
+    "bytes": 15937
+  },
+  "testLog": {
+    "path": "out/research/no-rate-gate-full-tests.log",
+    "sha256": "e5e3c02022ee291364518ea87eb0cf84e4544adf13e5f4fc169f1e22ac33c429",
+    "bytes": 18315
+  },
+  "passedChecks": 133,
+  "failedChecks": 0,
+  "seconds": 70.95,
+  "excludedUnavailableGraphicsTools": [
+    "NativeUIComposition",
+    "NativeUIBlendState",
+    "NeuralPeripheralPixels"
+  ],
+  "gpuReport": {
+    "path": "out/build/fsr-fg-standard-nr-off/validation/fsr-fg-gpu.json",
+    "sha256": "d376ca4061888985c2b6583a96091c809e8138ad57001bdcd05b269f05d2b4ed",
+    "bytes": 1239
+  },
+  "gpuEvidence": {
+    "result": "PASS",
+    "failure": "",
+    "sourceRevision": "d328ce6f328a72ca91541c76aaf0b5e3abd46b41",
+    "fixtureSourceSha256": "d728ef5c303ad9bd9457938392aa42cf9fe17137747f3c3b5b3b93f690bf2ff6",
+    "sdkCommit": "60f4ea81909200d8542eca14dccb2628b763a9a3",
+    "fgModuleSha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+    "observerSourceSha256": "ee1defe0bbae3ecabba44bd55d44680a28e34c4880f564055cfc95ffe30049ef",
+    "requestedSourcesPerMode": 1000,
+    "requestedRecreationsPerMode": 25,
+    "validationModes": 2,
+    "submittedSources": 2000,
+    "prepareSubmissions": 1950,
+    "generationCallbacks": 1950,
+    "generatedPixelReadbacks": 950,
+    "presentCallbackObservations": 1925,
+    "suppressedSources": 50,
+    "resetReentries": 100,
+    "retiredContexts": 50,
+    "automaticModeSources": 1000,
+    "observerModeSources": 1000,
+    "renderedPixelReadbacks": 975,
+    "changingGeneratedSamples": 925,
+    "callbackModeUiSentinels": 1925,
+    "nvidiaRuntimeAbsent": true,
+    "d3d11DebugAvailable": false,
+    "d3d12DebugAvailable": false,
+    "sdkDebugMessages": 0,
+    "sdkDebugCheckingEnabled": true,
+    "automaticUiAppearance": "pending visible acceptance",
+    "physicalCadence": "pending visible acceptance",
+    "visibleRun": false,
+    "stoppedEarly": false,
+    "initialMonitorRefreshHz": 0,
+    "retiredMemoryRangeBytes": 1003520,
+    "messages": [],
+    "nativeFrameStatistics": []
+  },
+  "targetedReview": "No remaining confirmed issues after updating both integration expectations",
+  "skyrimLowRateAcceptance": "pending manual launch",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}

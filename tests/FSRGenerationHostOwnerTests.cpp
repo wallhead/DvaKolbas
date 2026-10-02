@@ -58,7 +58,8 @@ int main(int argc,char** argv)
         Require(bool(host.Resume()) && host.SceneTarget11()==unchangedScene && resources->Upscaler()==unchangedUpscaler,
             "ClientRestoreWithoutResizeKeepsGameBuffersAndResumes");
         frame.sourceId=38;Check(host.Present(frame,UpscaleOutcome::Temporal,rig.ui.Get(),nullptr,true,false,true,0,0),"source reentry without resource recreation");
-        Require(!host.Status().decision.generate && host.Status().decision.reset,"suspension clears rate/history before resumed source");
+        Require(host.Status().decision.prepare && host.Status().decision.generate && host.Status().decision.reset && host.Status().callback.invocations==1,
+            "suspension rearms reset and resumed eligible source immediately generates once");
         Require(bool(host.BeforeResize()),"temporary suspension retires FG safely");
         Require(host.StartupPresent(0,0)==DXGI_STATUS_OCCLUDED && host.SwapChain()==retainedChain,"SuspendedHostNeverPresentsStaleConfiguredSource");
         resized=host.Resize(nextDesc);Require(resized && SUCCEEDED(resized->result),"suspended host can restore nonzero extent");

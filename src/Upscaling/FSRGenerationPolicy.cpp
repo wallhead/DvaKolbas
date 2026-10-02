@@ -25,12 +25,11 @@ namespace TheosRenderPipeline::Upscaling
         }
     }
 
-    void FsrGenerationHistory::ClearRate()
+    void FsrGenerationHistory::ArmReset()
     {
-        deltas_ = {}; count_ = next_ = lowMeans_ = highMeans_ = 0;
-        active_ = false; resetArmed_ = true; pendingPrepare_ = 0;
+        resetArmed_ = true; pendingPrepare_ = 0;
     }
-    void FsrGenerationHistory::Invalidate() { ClearRate(); }
+    void FsrGenerationHistory::Invalidate() { ArmReset(); }
     void FsrGenerationHistory::AcknowledgePrepared(uint64_t sourceId)
     {
         if (pendingPrepare_ && pendingPrepare_ == sourceId && lastSource_ == sourceId) {
@@ -41,14 +40,14 @@ namespace TheosRenderPipeline::Upscaling
     FsrGenerationDecision FsrGenerationHistory::Decide(const UpscaleFrame& frame, UpscaleOutcome outcome, bool uiComplete, bool menu, bool requested)
     {
         if (!frame.sourceId || (lastSource_ && frame.sourceId <= lastSource_)) {
-            ClearRate(); return {false, false, true, false, "Duplicate or invalid source ID"};
+            ArmReset(); return {false, false, true, false, "Duplicate or invalid source ID"};
         }
         const auto gap = lastSource_ && frame.sourceId - lastSource_ != 1;
         const auto changed = lastSource_ && (lastCamera_ != frame.camera.identity || lastRender_ != frame.render || lastDisplay_ != frame.display);
         lastSource_ = frame.sourceId; lastCamera_ = frame.camera.identity;
         lastRender_ = frame.render; lastDisplay_ = frame.display; pendingPrepare_ = 0;
         const auto suppress = [this](std::string_view reason) {
-            ClearRate(); return FsrGenerationDecision{false, false, true, true, reason};
+            ArmReset(); return FsrGenerationDecision{false, false, true, true, reason};
         };
         if (gap) return suppress("Source ID discontinuity");
         if (!requested) return suppress("Generation not requested");
@@ -66,18 +65,6 @@ namespace TheosRenderPipeline::Upscaling
         if (!ValidCamera(frame.camera)) return suppress("Invalid camera");
         if (changed || frame.reset || frame.camera.reset) return suppress("Camera or extent reset");
 
-        deltas_[next_] = frame.deltaMilliseconds; next_ = (next_ + 1) % deltas_.size();
-        count_ = std::min(count_ + 1, unsigned(deltas_.size()));
-        if (count_ < deltas_.size()) return {false, false, true, true, "Source rate warmup"};
-        double sum{}; for (const auto delta : deltas_) sum += delta;
-        const auto mean = sum / deltas_.size();
-        // Compare average source duration using the same float boundaries as
-        // engine measurements; equality at 60/66 FPS is deliberate.
-        lowMeans_ = mean > 1000.0f / 60.0f ? std::min(lowMeans_ + 1, 3u) : 0;
-        highMeans_ = mean <= 1000.0f / 66.0f ? std::min(highMeans_ + 1, 8u) : 0;
-        if (active_ && lowMeans_ == 3) { active_ = false; resetArmed_ = true; }
-        if (!active_ && highMeans_ == 8) { active_ = true; resetArmed_ = true; }
-        if (!active_) return {false, false, true, true, "Source rate suppressed"};
         pendingPrepare_ = frame.sourceId;
         return {true, true, resetArmed_, true, {}};
     }
