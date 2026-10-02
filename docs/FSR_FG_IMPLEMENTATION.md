@@ -24,7 +24,7 @@ Probe command: `TRPFsrGenerationProviderProbe <absolute plugin root containing F
 
 Validation: observed failing optional-load, deterministic-selection and typed-created-provider tests before implementation; targeted `FsrRuntime` and `FsrGenerationRuntime` passed 2/2. `FSRGenerationAcquisitionTests.ps1` passed SR-only, opt-in and tamper cases. The SR-only Standard Release build succeeded and its full runnable suite passed 119/119 (22.28 seconds). Three Graphics Tools-dependent tests remain unavailable and excluded as previously authorized.
 
-Remaining: source/rate policy; typed FG context and SDK session; scene/UI transport and fences; AMD presentation/lifecycle; actual-GPU generation fixture; host/settings/ReShade integration; package and gameplay acceptance. FG is not activated in Skyrim.
+Remaining: scene/UI transport and fences; AMD presentation/lifecycle; actual-GPU generation fixture; host/settings/ReShade integration; package and gameplay acceptance. FG is not activated in Skyrim.
 
 ## Source identity and suppression
 
@@ -37,3 +37,17 @@ Analytical rate policy: rolling mean of eight source deltas; suppress at three s
 Audit: 165 source/package commits reachable from `HEAD`, `codex/dlss-fg-baseline` and `wallhead/codex/fsr-sr`; unrelated broken application capture refs excluded. The historical `mode==2` ternary selected FSR upscaling and set presentation backend 0. No existing backend 2 meaning was found in the named reachable history.
 
 Validation: old resolver failed the new supported-FG request before implementation. New policy covers both compiled capability states, exact rate boundaries/hysteresis, duplicate/gapped sources, non-temporal/menu/UI suppression, stalls, invalid camera/time and failed/stale acknowledgment. The FG-enabled Standard Release build and full runnable suite passed 121/121 (22.57 seconds), including settings/actions, startup preferences and runtime regressions. No game-facing FG activation or DLL installation.
+
+## Typed preparation and SDK session
+
+`BuildFsrGenerationPrepare` maps source 41 and 16.6667 milliseconds directly into PrepareV2. It validates fixed extents, full subrect, known sRGB publication, guide formats, matching resource/command-list device, depth/motion context flags and camera basis/projection. Camera position and near/far stay in native world units; normalized view columns provide world-space right/up/forward, with an explicit world-units-to-meters factor. Rotated-camera and foreign-WARP-resource cases pass.
+
+The session owns one mutex and stable callback state. A retained RAII token is valid only on its owning session/thread; recursive/nested session acquisition yields an invalid token. Configure admits a source once and precedes matching Prepare; suppression configures disabled and skips Prepare. Present explicitly enters/exits under that same token. Generation dispatch uses AMD's descriptor unchanged, inherits the lock, and records bounded scalar status without logging, allocation or game calls. Creation descriptor members and runtime/resource owners survive context lifetime.
+
+Lifecycle detach requires stopped admissions. Context destruction requires callback detachment and externally proven Prepare/SDK-present retirement; the later presenter owns those proofs. An unfinished destructor retains owners, and its inspection is serialized. Tests observed then corrected open-admission teardown and concurrent destructor failures. Failure/timeout never fabricates GPU completion.
+
+Ruling: actual scene/UI conversion belongs to the transport in Task 4; this task rejects incorrectly labeled Gamma22 publication. Swapchain ABI 3.1.7 is linked at the separate swapchain creation in Task 5, while FG creation links ABI 4.0.1. Adding a swapchain version descriptor to the FG context would confuse distinct effect contracts.
+
+Real pinned module probe `--create-context`: analytical FG 3.1.6 ID 17726168133342859270; FG ABI 4.0.1; swapchain header ABI 3.1.7; 640x360 render -> 1280x720 display; GPU memory 23,592,960 bytes. Actual identity query, memory query and context destruction passed. No Prepare/generation/Present commands were submitted by that probe.
+
+Validation: both typed preparation/context tests failed on missing implementation, then passed 2/2. The full FG-enabled Standard Release build and runnable suite passed 123/123 (22.86 seconds). Graphics Tools debug layers remain unavailable; these results do not claim those layers ran. Generated pixels, async lifetime and actual presentation remain future fixture gates.

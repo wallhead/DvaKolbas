@@ -12,6 +12,15 @@
 static unsigned mode{}, enumerations{}, destructions{};
 static uint64_t queryId{}, createId{};
 static char name[64]{"fixture analytical FSR 3.1.5"};
+#ifdef TRP_ENABLE_FSR_FG
+static ffxConfigureDescFrameGeneration fgConfiguration{};
+static uint64_t preparedFgSource{};
+extern "C" __declspec(dllexport) ffxReturnCode_t FixtureInvokeGeneration(ffxDispatchDescFrameGeneration* descriptor)
+{
+    if (!fgConfiguration.frameGenerationCallback) return FFX_API_RETURN_ERROR_PARAMETER;
+    return fgConfiguration.frameGenerationCallback(descriptor, fgConfiguration.frameGenerationCallbackUserContext);
+}
+#endif
 struct FixtureContext { std::vector<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> heaps; uint64_t provider{17}; };
 extern "C" __declspec(dllexport) void FixtureMode(unsigned value)
 { mode = value; enumerations = 0; std::strcpy(name, "fixture analytical FSR 3.1.5"); }
@@ -54,7 +63,18 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxDestroyContext(ffxContext* c
 { ++destructions; delete static_cast<FixtureContext*>(*context); *context = nullptr; return FFX_API_RETURN_OK; }
 #endif
 #if FSR_MISSING_EXPORT != 3
-extern "C" __declspec(dllexport) ffxReturnCode_t ffxConfigure(ffxContext*, const ffxConfigureDescHeader*) { return FFX_API_RETURN_OK; }
+extern "C" __declspec(dllexport) ffxReturnCode_t ffxConfigure(ffxContext* context, const ffxConfigureDescHeader* header)
+{
+#ifdef TRP_ENABLE_FSR_FG
+    if (header->type == FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION) {
+        if (!context || !*context || static_cast<FixtureContext*>(*context)->provider != 17726168133342859270ull) return FFX_API_RETURN_ERROR_PARAMETER;
+        const auto& config = *reinterpret_cast<const ffxConfigureDescFrameGeneration*>(header);
+        if (config.allowAsyncWorkloads || config.presentCallback || config.HUDLessColor.resource) return FFX_API_RETURN_ERROR_PARAMETER;
+        fgConfiguration = config; preparedFgSource = 0;
+    }
+#endif
+    return FFX_API_RETURN_OK;
+}
 #endif
 #if FSR_MISSING_EXPORT != 4
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, ffxQueryDescHeader* header)
@@ -110,6 +130,20 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
 #if FSR_MISSING_EXPORT != 5
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxDispatch(ffxContext* context, const ffxDispatchDescHeader* header)
 {
+#ifdef TRP_ENABLE_FSR_FG
+    if (header->type == FFX_API_DISPATCH_DESC_TYPE_FRAMEGENERATION_PREPARE_V2) {
+        const auto& prepare = *reinterpret_cast<const ffxDispatchDescFrameGenerationPrepareV2*>(header);
+        if (!context || !*context || !fgConfiguration.frameGenerationEnabled || prepare.frameID != fgConfiguration.frameID ||
+            !prepare.commandList || !prepare.depth.resource || !prepare.motionVectors.resource || prepare.frameTimeDelta != 16.6667f)
+            return FFX_API_RETURN_ERROR_PARAMETER;
+        preparedFgSource = prepare.frameID; return FFX_API_RETURN_OK;
+    }
+    if (header->type == FFX_API_DISPATCH_DESC_TYPE_FRAMEGENERATION) {
+        const auto& dispatch = *reinterpret_cast<const ffxDispatchDescFrameGeneration*>(header);
+        if (!context || !*context || dispatch.frameID != preparedFgSource) return FFX_API_RETURN_ERROR_PARAMETER;
+        return mode == 18 ? FFX_API_RETURN_ERROR : FFX_API_RETURN_OK;
+    }
+#endif
     if(mode==9) {
         // A deterministic successful vendor seam. Record an actual GPU write,
         // keeping descriptors alive until the caller proves context retirement.
