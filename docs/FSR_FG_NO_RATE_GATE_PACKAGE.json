@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-02",
+  "result": "PASS",
+  "sourceCommit": "843057399b473a1c017f2a9c4b7aa09621223277",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "843057399b47",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": false
+  },
+  "zip": {
+    "path": "out/packages/2026-10-02/fg-no-rate-gate/8430573/Standard-FSR-FG.zip",
+    "sha256": "af0bb7b5d2c133322aed0bedb2b09e496937e9fe93b50900f680d59a02b8d222",
+    "bytes": 48783017
+  },
+  "manifest": {
+    "path": "out/packages/2026-10-02/fg-no-rate-gate/8430573/Standard-FSR-FG/manifest.json",
+    "sha256": "3dabe51c61c1d2fa5e3813acb374684b85d5b3258aeaf6a66705bf4cae817d7c",
+    "bytes": 8410
+  },
+  "dll": {
+    "path": "out/packages/2026-10-02/fg-no-rate-gate/8430573/Standard-FSR-FG/SKSE/Plugins/TheosRenderPipeline.dll",
+    "sha256": "105f4b849a7ebb8dfbdb665107fb2ea65ad3d3abc64d6ab1c2c90d8ffb4b563d",
+    "bytes": 2556928
+  },
+  "configureLog": {
+    "path": "out/research/no-rate-gate-clean-configure.log",
+    "sha256": "6b23a9af3f2453c16e66bb989a3ece9dc4b985ab64f3dba10943ac4ef0f38883",
+    "bytes": 4403
+  },
+  "buildLog": {
+    "path": "out/research/no-rate-gate-clean-build.log",
+    "sha256": "7414151e15c931b1933d3ecac71a224bdf55538e80a16ba219e5cc9b6924b422",
+    "bytes": 12379
+  },
+  "stageLog": {
+    "path": "out/research/no-rate-gate-clean-stage.log",
+    "sha256": "657beeb9628d2e03307b08a5a6217da1e924a1dbeaa72da66ed5cb77f55aa7b6",
+    "bytes": 352
+  },
+  "packageValidationLog": {
+    "path": "out/research/no-rate-gate-clean-validate.log",
+    "sha256": "6e1aff9460680d639afd2c3664c157e6497f9936e75c785b748ccffe4275f330",
+    "bytes": 211
+  },
+  "zipValidationLog": {
+    "path": "out/research/no-rate-gate-zip-validate.log",
+    "sha256": "9133b5a28e57b564c055634f7476a9088948422992a2fc6bc8f2619cb1ae4c75",
+    "bytes": 205
+  },
+  "verifiedSourceBlobCount": 6,
+  "productSourceUnchangedSince133PassingChecks": true,
+  "skyrimAcceptancePending": true,
+  "installed": true,
+  "installationState": "Updated same FG trial; NativeAA and other INI settings preserved; FG startup enabled; ImGui settings, MO2/profile and SR/DLSS rollback files unchanged; installed validation PASS",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}
