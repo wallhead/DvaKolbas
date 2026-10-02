@@ -2,7 +2,7 @@
   "date": "2026-10-02",
   "builtCodeRevision": "30115005cfd4c158e774e1d43a0b3f8536b90a65",
   "state": "Historical ZIPs staged; current Standard source device ownership correction installed in V5.4 NO-LORE",
-  "skyrimGameplayTested": false,
+  "skyrimGameplayTested": true,
   "frameGenerationImplemented": false,
   "packages": [
     {
@@ -94,7 +94,9 @@
     "settingsAndImportsValidated": true,
     "mo2ProfileUnchanged": true,
     "iniUnchanged": true,
-    "requiresManualRetry": true,
-    "blackScreenResolvedInSkyrim": false
-  }
+    "requiresManualRetry": false,
+    "blackScreenResolvedInSkyrim": true,
+    "resolutionScope": "Startup and world entry in 2026-10-02 run; broader acceptance pending"
+  },
+  "skyrimGameplayTestScope": "Initial loaded-world temporal FSR confirmed; full visual/performance/lifecycle acceptance pending"
 }
