@@ -814,8 +814,8 @@
     "packages": "FSR_FG_PACKAGES.json",
     "graphicsToolsChecks": "3 excluded; unavailable",
     "amdIntelHardware": "not run",
-    "visibleUiAndCadence": "pending: user cannot run test yet",
-    "skyrimFg": "not installed",
+    "visibleUiAndCadence": "Controlled standalone gate PASS; receipt FSR_FG_VISIBLE_VALIDATION.json",
+    "skyrimFg": "Standard NR-off installed; manual game acceptance pending",
     "installedSrUnchanged": true,
     "additionalSrOnlyMinimalSdkTestsPassed": 121,
     "allBuildConfigurationTestsPassed": 875

@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-02",
+  "result": "PASS: controlled standalone automatic UI/cadence gate",
+  "sourceRevision": "495035ff8cfa5088b7dd45c0d861306dbc2cb218",
+  "rawReportSha256": "e191a743a5c760e6dd18a791eb369931bfd4b0120a1620ed24d24d7e74fcdb7f",
+  "rawReport": "FSR_FG_VISIBLE_RAW.json",
+  "userObservation": "Smoother with FG on; HUD intact",
+  "initialMonitorRefreshHz": 165,
+  "completedSources": 2880,
+  "generationCallbacks": 1831,
+  "sdkDebugMessages": 0,
+  "nvidiaRuntimeAbsent": true,
+  "firstDisjointSampleExcluded": true,
+  "failedStatisticsSamples": 1,
+  "phases": [
+    {
+      "name": "off",
+      "fromSeconds": 2.0384,
+      "toSeconds": 7.63163,
+      "validSamples": 12,
+      "sourceHz": 70.79987770930214,
+      "nativePresentedHz": 70.79987770930214,
+      "nativePresentsPerSource": 1,
+      "samplesWithGeneration": 0
+    },
+    {
+      "name": "on",
+      "fromSeconds": 12.2007,
+      "toSeconds": 17.7919,
+      "validSamples": 12,
+      "sourceHz": 70.82558305909288,
+      "nativePresentedHz": 141.65116611818576,
+      "nativePresentsPerSource": 2,
+      "samplesWithGeneration": 12
+    },
+    {
+      "name": "menu",
+      "fromSeconds": 21.3487,
+      "toSeconds": 23.945,
+      "validSamples": 5,
+      "sourceHz": 55.46354427454456,
+      "nativePresentedHz": 55.46354427454456,
+      "nativePresentsPerSource": 1,
+      "samplesWithGeneration": 0
+    },
+    {
+      "name": "reentry",
+      "fromSeconds": 28.0308,
+      "toSeconds": 37.6902,
+      "validSamples": 20,
+      "sourceHz": 70.81185166780547,
+      "nativePresentedHz": 141.62370333561094,
+      "nativePresentsPerSource": 2,
+      "samplesWithGeneration": 20
+    }
+  ],
+  "cadenceScope": "Native DXGI chain-reported present counters at comparable measured source rates, plus human smoother-motion/HUD observation. No external high-speed scanout measurement; multi-monitor statistics limitations remain applicable.",
+  "skyrimFg": "pending installation and manual game trial",
+  "graphicsTools": "unavailable; not counted as passing"
+}

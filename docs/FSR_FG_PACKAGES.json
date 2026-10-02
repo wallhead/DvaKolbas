@@ -1,11 +1,11 @@
 {
   "date": "2026-10-02",
   "builtCodeRevision": "495035ff8cfa5088b7dd45c0d861306dbc2cb218",
-  "state": "staged and validated; not installed",
+  "state": "All four packages staged/validated; Standard NR-off installed for Skyrim trial",
   "frameGenerationImplemented": true,
-  "automaticUiAppearance": "pending: user cannot run visible fixture yet",
-  "physicalCadence": "pending",
-  "skyrimFgGameplay": "not run",
+  "automaticUiAppearance": "PASS: user observation",
+  "physicalCadence": "Native DXGI off/on/reentry observations accepted; see FSR_FG_VISIBLE_VALIDATION.json",
+  "skyrimFgGameplay": "pending manual launch",
   "packages": [
     {
       "preset": "fsr-fg-standard",
@@ -1069,7 +1069,8 @@
           ]
         },
         "unpackedValidation": "PASS",
-        "installed": false
+        "installed": true,
+        "installedReceipt": "FSR_FG_SKYRIM_INSTALL.json"
       }
     },
     {

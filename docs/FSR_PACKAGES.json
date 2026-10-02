@@ -118,7 +118,8 @@
     "record": "FSR_FG_PACKAGES.json",
     "count": 4,
     "validated": true,
-    "installed": false,
-    "visibleAcceptance": "pending"
+    "installed": true,
+    "visibleAcceptance": "PASS: user HUD/motion + native DXGI timing",
+    "installedPreset": "fsr-fg-standard-nr-off"
   }
 }

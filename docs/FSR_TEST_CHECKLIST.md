@@ -1,6 +1,6 @@
 # FSR SR and FG acceptance checklist
 
-Status: **SR startup and NR-button retry accepted by the user; the working SR build remains installed with FG off.** FG implementation has passed standalone GPU and ReShade host checks; automatic UI appearance and displayed cadence remain pending visible acceptance before a Skyrim FG trial. See [the gameplay test log](https://github.com/wallhead/DvaKolbas/blob/codex/fsr-sr/docs/FSR_SKYRIM_TEST_LOG.md). The user starts Skyrim manually. Target: **TESV54BETA / V5.4, V5.4 NO-LORE**. Keep the working DLSS mod available for rollback and avoid concurrent upscalers.
+Status: **Standalone automatic UI and native DXGI cadence check accepted; the separate Standard NR-off FG trial is installed in V5.4 NO-LORE.** The working SR mod is backed up and retained, disabled for this trial. Skyrim FG gameplay remains pending manual launch. See [the gameplay test log](https://github.com/wallhead/DvaKolbas/blob/codex/fsr-sr/docs/FSR_SKYRIM_TEST_LOG.md) and `FSR_FG_VISIBLE_VALIDATION.json` for the bounded standalone acceptance scope. The user starts Skyrim manually. Target: **TESV54BETA / V5.4, V5.4 NO-LORE**. Keep the working DLSS mod available for rollback and avoid concurrent upscalers.
 
 ## FG gate before installation
 
@@ -38,4 +38,4 @@ Record GPU reconstruction/transfer times, source and presentation counts separat
 
 Local real-GPU fixture: 1,000 temporal frames / 25 contexts, native pixel readbacks, UI sentinels, outstanding work, loading/invalid re-entry and bounded allocation counts. Fresh-process fixture: built plugin import load plus separately invoked production ordinary/FSR startup helpers and 12 changing native pixel readbacks. Both are **separate from Skyrim SKSE startup/gameplay**.
 
-Graphics Tools-dependent debug checks: SKIPPED, installation failed with error 5; do not retry. AMD and Intel hardware: NOT RUN. FSR FG: implemented and exercised in standalone GPU/ReShade fixtures; visible automatic composition, physical cadence and Skyrim FG gameplay remain PENDING. Gameplay acceptance remains open until captured results are recorded.
+Graphics Tools-dependent debug checks: SKIPPED, installation failed with error 5; do not retry. AMD and Intel hardware: NOT RUN. FSR FG: implemented and exercised in standalone GPU/ReShade fixtures; automatic UI accepted by the user, and controlled native DXGI-reported presentation cadence observed. External high-speed scanout measurement: NOT RUN. Skyrim FG gameplay remains PENDING. Gameplay acceptance remains open until captured results are recorded.

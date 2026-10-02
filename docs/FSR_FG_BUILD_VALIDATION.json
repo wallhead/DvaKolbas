@@ -2256,9 +2256,9 @@
       "suite": "PASS"
     }
   ],
-  "visibleAutomaticUi": "pending human observation",
-  "physicalCadence": "pending visible/trace evidence",
-  "skyrimFg": "not installed",
+  "visibleAutomaticUi": "PASS: user confirms smoother FG-on motion and intact HUD",
+  "physicalCadence": "PASS within controlled native DXGI-statistics/human-observation scope; see FSR_FG_VISIBLE_VALIDATION.json",
+  "skyrimFg": "installed; pending manual gameplay acceptance",
   "noFgHeadersBuild": {
     "result": "PASS",
     "scope": "Exact production FSR CMake and complete SR library, isolated from game/vcpkg dependencies",
