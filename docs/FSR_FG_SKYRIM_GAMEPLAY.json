@@ -74,7 +74,13 @@
     "builtCodeRevision": "be05d936e4772739974b4aff1be8f343c4691867",
     "installed": true,
     "manualSmoke": "PASS: correct build loaded world; user completed on/off/on/off; successful generation reentry and no logged error/API failure",
-    "previousManualAcceptanceAppliesTo": "843057399b47"
+    "previousManualAcceptanceAppliesTo": "843057399b47",
+    "appearance": {
+      "date": "2026-10-03",
+      "userReport": "i looked at the image and it was fine",
+      "result": "PASS: user qualitative observation",
+      "formalSourceColorCalibration": "Not established; Gamma22/ENB remains provisional"
+    }
   },
   "measuredBaseFrameTiming": "Captured bounded exploratory comparison; see FSR_FG_SKYRIM_TIMING.json; not scanout or isolated FG GPU cost"
 }
