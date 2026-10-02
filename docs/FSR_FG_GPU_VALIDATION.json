@@ -1,0 +1,7 @@
+{
+"result":"PASS","failure":"",
+"sourceRevision":"40692e72909e3b8407e45c1ed0353bc13ff06c14","fixtureSourceSha256":"6c1d1496357b5707696c89e884445370f0249e338d2865961d542be328dc0a16","sdkCommit":"60f4ea81909200d8542eca14dccb2628b763a9a3","fgModuleSha256":"02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18","observerSourceSha256":"ee1defe0bbae3ecabba44bd55d44680a28e34c4880f564055cfc95ffe30049ef",
+"requestedSourcesPerMode":1000,"requestedRecreationsPerMode":25,"validationModes":2,"submittedSources":2000,"prepareSubmissions":550,"generationCallbacks":550,"generatedPixelReadbacks":250,"presentCallbackObservations":1225,"suppressedSources":1450,"resetReentries":100,"retiredContexts":50,"automaticModeSources":1000,"observerModeSources":1000,"renderedPixelReadbacks":975,"changingGeneratedSamples":225,"callbackModeUiSentinels":1225,
+"nvidiaRuntimeAbsent":true,"d3d11DebugAvailable":false,"d3d12DebugAvailable":false,"sdkDebugMessages":0,"sdkDebugCheckingEnabled":true,"automaticUiAppearance":"pending visible acceptance","physicalCadence":"pending visible acceptance","retiredMemoryRangeBytes":1003520,
+"messages":[]
+}
