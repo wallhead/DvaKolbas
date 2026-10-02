@@ -34,13 +34,7 @@ foreach($mode in @('Off','On')){
     $arguments=@('--process_id',[string]$game.Id,'--session_name',$session,'--delay','5','--timed','30','--terminate_after_timed','--no_console_stats','--no_track_input','--date_time','--write_display_metadata','--output_file',('"'+$csv+'"'))
     Write-Host 'Return to Skyrim within 5 seconds; keep its window foreground for 30 seconds, then return here.'
     $started=[datetime]::UtcNow.ToString('o')
-    $capture=Start-Process -FilePath $PresentMonPath -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-    if(-not $capture.WaitForExit(45000)){
-        # Stop only the child owned by this capture; never stop another ETW session or Skyrim.
-        $capture.Kill()
-        $capture.WaitForExit()
-        throw 'Capture exceeded 45 seconds; only its own PresentMon child was stopped'
-    }
+    $capture=Start-Process -FilePath $PresentMonPath -ArgumentList $arguments -WindowStyle Hidden -PassThru -Wait -RedirectStandardOutput $stdout -RedirectStandardError $stderr
     if($capture.ExitCode -ne 0){throw ('PresentMon failed; inspect '+$stderr)}
     if(-not (Test-Path -LiteralPath $csv)){throw 'PresentMon produced no CSV'}
     $rows=@(Import-Csv -LiteralPath $csv)

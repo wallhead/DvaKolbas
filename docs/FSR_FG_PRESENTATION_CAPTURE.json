@@ -1,6 +1,6 @@
 {
   "date": "2026-10-03",
-  "state": "Prepared; live ETW capture needs administrator rights",
+  "state": "Prepared; user authorized elevation and ETW recording start/stop verified; gameplay capture pending",
   "presentMonVersion": "2.6.0",
   "presentMonSha256": "b2a706bc6ad475749e3b7e3409263aa1e6906d45bdcf993f6dbc0f660188f1af",
   "signatureStatus": "Valid",
@@ -16,11 +16,24 @@
     "sha256": "8cda8a5f1ea4ccd3606cdcbca6d8e229e67b8b073c8ca7ab3696b493917ad80e"
   },
   "helper": "tools/fsr/Run-SkyrimPresentationCapture.ps1",
-  "helperSha256": "5247633c9d2f086c821ea34ea9e7f2a39890364b55fff2a1f13c4310e1b2f4f8",
+  "helperSha256": "04ecb14ce3519e99dce0767a2bec3ef710d9ce5e9728bf412eaddf678a65c9d0",
   "syntaxErrors": 0,
   "launcherTargetVerified": true,
   "liveCaptureValidated": false,
   "gameOrMo2SettingsEdited": false,
   "milestonesComplete": 7,
-  "milestonesTotal": 8
+  "milestonesTotal": 8,
+  "elevatedAccess": {
+    "userAuthorization": "i can give you admin",
+    "administrator": true,
+    "etwRecordingStarted": true,
+    "etwRecordingStopped": true,
+    "accessErrors": 0,
+    "presentMonExitCode": null,
+    "exitCodeScope": "Initial Start-Process/WaitForExit probe returned null exit code; recording status independently verified via stdout; capture helper now uses Start-Process -Wait",
+    "stdoutSha256": "a9130f7ca0a9bf20318a0122cdf0d1189d2a1ffbb038a45a6bfaf514bf9c5931",
+    "stderrSha256": "b3d510ef04275ca8e698e5b3cbb0ece3949ef9252f0cdc839e9ee347409a2209",
+    "gameplayCaptured": false,
+    "systemSettingsChanged": false
+  }
 }
