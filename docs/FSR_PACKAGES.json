@@ -56,8 +56,16 @@
     "zip": "out/packages/2026-10-02/startup-fix/fsr-standard/Standard-FSR-SR.zip",
     "sha256": "91134bcad9bc9a9305ea66c384c77c7d343f7f694cc5b00e93edc127695a70e4",
     "pluginSha256": "730525e8d43b41e08bb35fd687a97b0fbae3b537ed12e2b90120b1d9b1c63505",
-    "state": "installed in separate V5.4 NO-LORE test mod; manual retry pending",
+    "state": "installed initially; superseded by spatial diagnostic build for the next manual launch",
     "settingsAndImportsValidated": true,
     "supersedesStandardReviewFixPackageForGameplay": true
+  },
+  "installedSpatialDiagnosticBuild": {
+    "sourceRevision": "ceb5c18e333f89a38270f1f5c26d2a7e866624f2",
+    "pluginSha256": "fbb585b9c2ff1f729c5341285e45c3fd57f49bdb52d343715989cb38f59d27f2",
+    "standardRunnableTestsPassed": 118,
+    "installed": true,
+    "blackScreenResolved": false,
+    "requiresManualDiagnosticRun": true
   }
 }

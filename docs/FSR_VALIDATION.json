@@ -715,5 +715,15 @@
     "graphicsToolsChecks": "3 excluded per configuration; unavailable",
     "crossVendor": "NOT RUN",
     "frameGeneration": "NOT IMPLEMENTED"
+  },
+  "skyrimSpatialDiagnosticBuild": {
+    "sourceRevision": "ceb5c18e333f89a38270f1f5c26d2a7e866624f2",
+    "standardRunnableTestsPassed": 118,
+    "secondSkyrimLaunch": "Context and buffers initialized; first loading-menu spatial frame failed and stopped rendering",
+    "rootCause": "UNCONFIRMED; prior spatial error reason was not retained",
+    "diagnosticRegression": "Failed before error-retention fix; extent/descriptor/bridge diagnostics pass afterward",
+    "installed": true,
+    "nextManualRun": "REQUIRED",
+    "blackScreenResolved": false
   }
 }
