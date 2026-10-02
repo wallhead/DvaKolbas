@@ -7,6 +7,7 @@
 
 namespace TheosRenderPipeline
 {
+    enum class PresentationBufferAccess { Indexed, D3D11Current };
     // All host-held references to inner swapchain buffers live here. Selection
     // borrows from the cache. Reset requires completed GPU retirement and an
     // ended native UI pass; a failed retirement must retain this entire owner.
@@ -20,6 +21,12 @@ namespace TheosRenderPipeline
         ID3D11Texture2D* Texture() const { return selected_; }
         ID3D11RenderTargetView* RTV() const { return rtv_.Get(); }
         ID3D11DepthStencilView* DepthDSV() const { return depthDSV_.Get(); }
+        UINT BufferIndex(UINT physicalIndex) const
+        {
+            // Native D3D11 rotates the identity of buffer 0 after Present.
+            // The NVIDIA transport instead exposes independently indexed buffers.
+            return access_ == PresentationBufferAccess::D3D11Current ? 0 : physicalIndex;
+        }
         void ResetAfterRetirement()
         {
             selected_ = nullptr;
@@ -27,15 +34,18 @@ namespace TheosRenderPipeline
             depthDSV_.Reset();
             depth_.Reset();
             buffers_.clear();
+            access_ = PresentationBufferAccess::Indexed;
         }
-        HRESULT CacheAfterRetirement(IDXGISwapChain* swapchain)
+        HRESULT CacheAfterRetirement(IDXGISwapChain* swapchain,
+            PresentationBufferAccess access = PresentationBufferAccess::Indexed)
         {
             ResetAfterRetirement();
             if (!swapchain) { return E_INVALIDARG; }
             DXGI_SWAP_CHAIN_DESC desc{};
             auto result = swapchain->GetDesc(&desc);
             if (FAILED(result)) { return result; }
-            const auto count = std::max<UINT>(2, desc.BufferCount);
+            access_ = access;
+            const auto count = access == PresentationBufferAccess::D3D11Current ? 1 : std::max<UINT>(2, desc.BufferCount);
             buffers_.reserve(count);
             for (UINT index = 0; index < count; ++index) {
                 Microsoft::WRL::ComPtr<ID3D11Texture2D> buffer;
@@ -70,6 +80,7 @@ namespace TheosRenderPipeline
             return S_OK;
         }
     private:
+        PresentationBufferAccess access_{PresentationBufferAccess::Indexed};
         std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>> buffers_;
         ID3D11Texture2D* selected_{};
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv_;

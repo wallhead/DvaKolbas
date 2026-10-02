@@ -60,7 +60,7 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
         }
         return false;
     }
-    const auto currentIndex = indexedSwapChain->GetCurrentBackBufferIndex();
+    const auto currentIndex = presentation_.BufferIndex(indexedSwapChain->GetCurrentBackBufferIndex());
     if (currentIndex >= presentation_.Buffers().size())
     {
         if (!evaluationFailureLogged_)
@@ -126,7 +126,7 @@ bool NvidiaHost::PrepareCommunityFrameForPresent()
     if (!proxyActive_ || !upscalerReady_ || FAILED(FailureResult()) || !gameTargets_.GameFacing()) { return false; }
     Microsoft::WRL::ComPtr<IDXGISwapChain3> indexed;
     if (FAILED(innerSwapChain_->QueryInterface(IID_PPV_ARGS(&indexed)))) { return false; }
-    const auto index = indexed->GetCurrentBackBufferIndex();
+    const auto index = presentation_.BufferIndex(indexed->GetCurrentBackBufferIndex());
     if (index >= presentation_.Buffers().size()) { return false; }
     if(FsrActive()) {
         context_->CopyResource(presentation_.Buffers()[index].Get(),gameTargets_.GameFacing());

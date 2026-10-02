@@ -1,6 +1,6 @@
 # FSR SR gameplay acceptance checklist
 
-Status: **NOT RUN in Skyrim.** Local staging is complete only after validation; staging does not install or alter MO2. The user starts Skyrim manually. Target: **TESV54BETA / V5.4, V5.4 NO-LORE**. Keep the working DLSS mod available for rollback and avoid concurrent upscalers.
+Status: **First Skyrim launch attempted on 2026-10-02; startup failed before gameplay.** The ordinary D3D11 buffer-cache fault was reproduced and corrected locally; a manual Skyrim retry is pending. See [the gameplay test log](FSR_SKYRIM_TEST_LOG.md). The user starts Skyrim manually. Target: **TESV54BETA / V5.4, V5.4 NO-LORE**. Keep the working DLSS mod available for rollback and avoid concurrent upscalers.
 
 ## First launch
 

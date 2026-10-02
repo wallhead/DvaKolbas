@@ -106,7 +106,8 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     device_->GetImmediateContext(&context_);
     if (!CreateGameFacingResources(*a_swapChain))
     {
-        status_ = "NVIDIA DLSS-G stable game-facing buffer creation failed";
+        status_ = FsrActive() ? "FSR ordinary presentation game-facing buffer creation failed" :
+            "NVIDIA DLSS-G stable game-facing buffer creation failed";
         (*a_swapChain)->Release();
         *a_swapChain = nullptr;
         return E_FAIL;
@@ -153,7 +154,9 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
         return false;
     }
 
-    const auto cacheResult = presentation_.CacheAfterRetirement(a_swapChain);
+    const auto cacheResult = presentation_.CacheAfterRetirement(a_swapChain,
+        FsrActive() ? TheosRenderPipeline::PresentationBufferAccess::D3D11Current :
+            TheosRenderPipeline::PresentationBufferAccess::Indexed);
     if (FAILED(cacheResult))
     {
         logger::error("[CoreHost] inner buffer cache failed result=0x{:08X}", static_cast<std::uint32_t>(cacheResult));

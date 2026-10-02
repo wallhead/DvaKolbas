@@ -111,7 +111,7 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     } internal(sourceUIInternal_);
     Microsoft::WRL::ComPtr<IDXGISwapChain3> indexed;
     if(FAILED(innerSwapChain_->QueryInterface(IID_PPV_ARGS(&indexed))))return false;
-    const auto index=indexed->GetCurrentBackBufferIndex();if(index>=presentation_.Buffers().size())return false;
+    const auto index=presentation_.BufferIndex(indexed->GetCurrentBackBufferIndex());if(index>=presentation_.Buffers().size())return false;
     auto& pipeline=*RenderPipeline::GetSingleton();UpscaleFrame frame;
     frame.backend=BackendKind::Fsr;frame.color=gameTargets_.GameFacing();frame.input=gameTargets_.UpscaleInput();frame.output=gameTargets_.UpscaleOutput();
     frame.depth=pipeline.mDepthBuffer.mImage;frame.motion=pipeline.mMotionVectors.mImage;

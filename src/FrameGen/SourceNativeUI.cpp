@@ -114,7 +114,7 @@ bool NvidiaHost::PrepareSourceNativeUITargets()
     if (!device_ || !context_ || !innerSwapChain_) { return false; }
     Microsoft::WRL::ComPtr<IDXGISwapChain3> chain;
     if (FAILED(innerSwapChain_->QueryInterface(IID_PPV_ARGS(&chain)))) { return false; }
-    sourceUIBufferIndex_ = chain->GetCurrentBackBufferIndex();
+    sourceUIBufferIndex_ = presentation_.BufferIndex(chain->GetCurrentBackBufferIndex());
     InternalOperation internal(sourceUIInternal_);
     if (!PrepareNativeUITarget(sourceUIBufferIndex_)) { return false; }
     auto* upscaler = RenderPipeline::GetSingleton();
@@ -157,7 +157,7 @@ struct NvidiaHost::SourceFrameOperations
     {
         Microsoft::WRL::ComPtr<IDXGISwapChain3> chain;
         if (!host.innerSwapChain_ || FAILED(host.innerSwapChain_->QueryInterface(IID_PPV_ARGS(&chain)))) { return false; }
-        host.sourceUIBufferIndex_ = chain->GetCurrentBackBufferIndex();
+        host.sourceUIBufferIndex_ = host.presentation_.BufferIndex(chain->GetCurrentBackBufferIndex());
         InternalOperation internal(host.sourceUIInternal_);
         return host.PrepareNativeUITarget(host.sourceUIBufferIndex_);
     }
