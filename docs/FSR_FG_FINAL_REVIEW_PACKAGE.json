@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-02",
+  "result": "PASS",
+  "sourceCommit": "be05d936e4772739974b4aff1be8f343c4691867",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "be05d936e477",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": false
+  },
+  "zip": {
+    "path": "out/packages/2026-10-02/fg-final-review/be05d93/Standard-FSR-FG.zip",
+    "sha256": "2a78b5500c4713d30fab4dbc5b06104b3a2b1c0c44e5ad46bb0adb815c3debd5",
+    "bytes": 48783458
+  },
+  "manifest": {
+    "path": "out/packages/2026-10-02/fg-final-review/be05d93/Standard-FSR-FG/manifest.json",
+    "sha256": "8e1e7c9d3a4e07e871277d54634b394a3a46b0bfc0357e493bdeb8246673a97b",
+    "bytes": 8410
+  },
+  "dll": {
+    "path": "out/packages/2026-10-02/fg-final-review/be05d93/Standard-FSR-FG/SKSE/Plugins/TheosRenderPipeline.dll",
+    "sha256": "2f6eebd9efb05cf0433687dc2bf70d43fec26290d05f3e3b56231c142e3867b6",
+    "bytes": 2557440
+  },
+  "configureLog": {
+    "path": "out/research/final-review-clean-configure.log",
+    "sha256": "7dda2a97011d17d50b491f6c81e53d2f47d8f765656e27b8edab65250f375317",
+    "bytes": 4403
+  },
+  "buildLog": {
+    "path": "out/research/final-review-clean-build.log",
+    "sha256": "ba60d9e670246885bb422809b7da92037bce29650b791920db2d7b90506c6447",
+    "bytes": 12379
+  },
+  "stageLog": {
+    "path": "out/research/final-review-clean-stage.log",
+    "sha256": "bbb1b3c943ec181bf61f5e150d0b40bb14f9019f7f02e8cd6197a0f83fa7350c",
+    "bytes": 352
+  },
+  "packageValidationLog": {
+    "path": "out/research/final-review-clean-validate.log",
+    "sha256": "7bb31e652dbc460bd326f7a29b21fa815a4ed2adc5ee94a681c2954f53f4ed6d",
+    "bytes": 211
+  },
+  "zipValidationLog": {
+    "path": "out/research/final-review-zip-validate.log",
+    "sha256": "c9d9494fdab3aa4f7e4eac059338eda4af40ec3092906b8c1260117cb457d0e3",
+    "bytes": 209
+  },
+  "verifiedSourceBlobCount": 6,
+  "productSourceUnchangedSince133PassingChecks": true,
+  "passedChecks": 133,
+  "failedChecks": 0,
+  "installed": false,
+  "installationState": "Prepared; awaiting closed MO2/Skyrim for safe replacement; NativeAA and existing settings will be preserved",
+  "previousInstalledSource": "843057399b473a1c017f2a9c4b7aa09621223277",
+  "previousInstalledManualChecklist": "PASS: user report",
+  "updatedBuildGameplay": "Pending installation/manual smoke check",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}

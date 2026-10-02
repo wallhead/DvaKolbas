@@ -24,7 +24,8 @@
   "remainingAcceptance": [
     "Measured Skyrim matched-scene frame timing/presentation",
     "Formal ENB/source-color calibration; Gamma22 remains provisional",
-    "Whole-plan final review"
+    "Automatic Alt+Enter",
+    "Installation/manual smoke check of final-review build be05d936e477"
   ],
   "milestonesComplete": 7,
   "milestonesTotal": 8,
@@ -68,5 +69,6 @@
     "skippedStepsReported": false,
     "measuredFrameTimeOrScanout": "not collected in this check",
     "enbOnOffSourceColorCalibration": "not established by FG toggle comparison"
-  }
+  },
+  "wholePlanCodeReview": "Complete; verified fixes passed 133 checks and clean package/ZIP validation; see FSR_FG_FINAL_REVIEW.md"
 }

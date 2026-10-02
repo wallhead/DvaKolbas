@@ -1,6 +1,6 @@
 # FSR frame generation: first integration milestone
 
-Status: architecture approved by the user's “proceed”; reviewed callback/synchronization refinements are incorporated in the [implementation plan](../plans/2026-10-02-fsr-fg.md), approved for inline execution by the user's "start". Seven of eight milestones are complete. The separate Standard NR-off NativeAA FG trial is installed and passes user-reported gameplay/lifecycle checks; whole-plan final review and measured Skyrim timing/source-color calibration remain pending.
+Status: architecture approved by the user's “proceed”; reviewed callback/synchronization refinements are incorporated in the [implementation plan](../plans/2026-10-02-fsr-fg.md), approved for inline execution by the user's "start". Seven of eight milestones are complete. The separate Standard NR-off NativeAA FG trial is installed and passes user-reported gameplay/lifecycle checks. Whole-plan final code review is complete; corrected clean `be05d936e477` passed 133 runnable checks and package/extracted-ZIP validation, and awaits safe installation. Measured Skyrim timing, formal source-color calibration and automatic Alt+Enter remain pending.
 Base: working FSR SR code `8e78f5136772fbbbb23c2aafe341ab931256c475`; V5.4 NO-LORE.
 
 ## Intent and scope
@@ -9,7 +9,7 @@ The user approved shared TRP buffers and native UI, NVIDIA-independent FSR SR fi
 
 First-stage limits: SDR, fixed extents, dedicated native UI, Analytical SR, analytical FG 3.1.6, swapchain 3.1.7, and no NR. Effect-tagged provider selection is deterministic and actual context identity is verified. ML FG 4.0.1 is deferred and unavailable on the RTX 4080 Super. Loading/spatial/invalid frames and source stalls suppress generation; the user removed the minimum-FPS gate and rate warmup on 2026-10-02. DLSS/DLAA plus FSR FG, HDR, dynamic resolution, CS ownership, multiple generated frames and async-compute optimization remain later milestones. Preserve existing NVIDIA presentation; no broad host rewrite.
 
-SR save/load, fast travel, alt-tab/minimize, UI previews and ENB/Gamma22 calibration remain open acceptance items. They can be checked while the standalone FG work proceeds; a Skyrim FG trial requires those results to be recorded, with any defects repaired or restrictions stated.
+The user accepted save/load, fast travel, alt-tab/minimize and HUD/menu appearance in the NativeAA FG trial. Measured timing, ENB/Gamma22 calibration and automatic Alt+Enter remain open acceptance items; user observations do not establish scanout or calibrated color.
 
 ## Chosen approach
 
