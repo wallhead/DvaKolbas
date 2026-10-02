@@ -20,4 +20,4 @@ PerformanceLogIntervalSeconds=10
 
 For the current black screen, launch Skyrim through the usual MO2 SKSE entry, close the game after the failure, and inspect the current log. The logging update does not establish or repair the underlying frame-delivery cause. Source revision and DLL path identify whether the intended test build actually loaded.
 
-Automated checks cover quiet defaults, INI round trips, interval bounds and production WARP GPU measurements with text logging disabled/enabled. SKSE startup banner retention and failure snapshots require the next actual Skyrim launch; headless GPU fixtures do not exercise that startup entry point.
+Automated checks cover quiet defaults, INI round trips, interval bounds and production WARP GPU measurements with text logging disabled/enabled. The 2026-10-02 Skyrim launch confirmed startup-banner retention, rotation of the previous log and a detailed automatic failure snapshot. Headless GPU fixtures do not exercise the SKSE startup entry point or establish gameplay acceptance.

@@ -1,7 +1,7 @@
 {
   "date": "2026-10-02",
   "builtCodeRevision": "30115005cfd4c158e774e1d43a0b3f8536b90a65",
-  "state": "Historical ZIPs staged; current Standard logging diagnostic build installed in V5.4 NO-LORE",
+  "state": "Historical ZIPs staged; current Standard source device ownership correction installed in V5.4 NO-LORE",
   "skyrimGameplayTested": false,
   "frameGenerationImplemented": false,
   "packages": [
@@ -74,11 +74,27 @@
     "pluginSha256": "8338c2be0444e680d94f2c75581b31d63d15d17de41005d8687cba113a74e6e3",
     "standardRunnableTestsPassed": 118,
     "fsrDisabledRunnableTestsPassed": 108,
-    "installed": true,
+    "installed": false,
     "settingsAndImportsValidated": true,
     "mo2ProfileUnchanged": true,
     "blackScreenResolved": false,
     "requiresManualDiagnosticRun": true,
-    "quietLogsByDefault": true
+    "quietLogsByDefault": true,
+    "supersededBy": "26a254a9b319efb9277e3f6db7a07e4636c123a0"
+  },
+  "installedDeviceOwnershipCorrection": {
+    "sourceRevision": "26a254a9b319efb9277e3f6db7a07e4636c123a0",
+    "embeddedSourceRevision": "26a254a9b319-modified",
+    "modificationScope": "Documentation only; production code matches sourceRevision",
+    "pluginSha256": "3d624021f97ccdc0483e96830cc089b01cad301b1da2ad350700f38ee8aed9a3",
+    "standardRunnableTestsPassed": 118,
+    "fsrDisabledRunnableTestsPassed": 108,
+    "actualV54ReShadeFixturesPassed": true,
+    "installed": true,
+    "settingsAndImportsValidated": true,
+    "mo2ProfileUnchanged": true,
+    "iniUnchanged": true,
+    "requiresManualRetry": true,
+    "blackScreenResolvedInSkyrim": false
   }
 }
