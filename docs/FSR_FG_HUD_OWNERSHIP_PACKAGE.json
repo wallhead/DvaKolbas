@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-02",
+  "result": "PASS",
+  "sourceCommit": "ca36a9a176312e0b9779d852a3e55e5fd0eaf8ae",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "ca36a9a17631",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": false
+  },
+  "zip": {
+    "path": "out/packages/2026-10-02/fg-hud-ownership/ca36a9a/Standard-FSR-FG.zip",
+    "sha256": "e134040d547b024f39a64e563c568d631ec074dc543444301b258fc134ae6b3f",
+    "bytes": 48783450
+  },
+  "manifest": {
+    "path": "out/packages/2026-10-02/fg-hud-ownership/ca36a9a/Standard-FSR-FG/manifest.json",
+    "sha256": "3a88926736878159b7e7bba18a7e0712e57d1a2f7c07a21bf63cd049ceb0d1ad",
+    "bytes": 8410
+  },
+  "dll": {
+    "path": "out/packages/2026-10-02/fg-hud-ownership/ca36a9a/Standard-FSR-FG/SKSE/Plugins/TheosRenderPipeline.dll",
+    "sha256": "42417ba809b66a4e234b899d6ef01aa21d8860670bc081b4c493c7a27043c2e8",
+    "bytes": 2557952
+  },
+  "configureLog": {
+    "path": "out/research/hud-ownership-clean-configure.log",
+    "sha256": "da768ed602a61c37c49305d011ab4a497f58eac15961ed5bafc20502e380f4b5",
+    "bytes": 4403
+  },
+  "buildLog": {
+    "path": "out/research/hud-ownership-clean-build.log",
+    "sha256": "d7fe37750321ded552908023fb53b575603cec64c94a3b12be5809e998c2026e",
+    "bytes": 12379
+  },
+  "stageLog": {
+    "path": "out/research/hud-ownership-clean-stage.log",
+    "sha256": "a0fa0e1d5fdb373a6976fd12bb5f952274026b68424042b4bb55c2d5f558bf07",
+    "bytes": 354
+  },
+  "packageValidationLog": {
+    "path": "out/research/hud-ownership-clean-validate.log",
+    "sha256": "128ed7d50da895a157ff350bf8765078f107e43b5b888f836a018da088386d02",
+    "bytes": 212
+  },
+  "zipValidationLog": {
+    "path": "out/research/hud-ownership-zip-validate.log",
+    "sha256": "e940b5ae7007272ebe89e7ac22b18f97d43b062cb3339c5a54b1da277561bb1b",
+    "bytes": 206
+  },
+  "verifiedSourceBlobCount": 3,
+  "productSourceUnchangedSince133PassingChecks": true,
+  "skyrimAcceptancePending": true,
+  "installed": true,
+  "installationState": "Updated same FG trial; NativeAA INI, ImGui settings, MO2/profile and SR/DLSS rollback files preserved; installed validation PASS",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}
