@@ -1,0 +1,77 @@
+{
+  "scope": "Static reverse engineering of exact AIO18 SkyrimUpscaler.dll and PDPerfPlugin.dll; no game/GPU execution.",
+  "primary_reset": {
+    "external_payload_offset": "0x100",
+    "host_zero_origin_rva": "0x2A23BB",
+    "host_store_rva": "0x2A24E5",
+    "common_evaluation_value": 0,
+    "camera_cut_writer_found_in_common_path": false,
+    "classification": "STATIC_OBSERVED"
+  },
+  "extra_pass_reset": {
+    "reset_byte_array_base": "backend+0xC8",
+    "new_feature_sets_reset_to_one_rva": "0xA1B3B",
+    "pass_loop_load_rva": "0x9F3A2",
+    "successful_evaluate_clears_reset_rva": "0x9F408",
+    "release_clears_reset_rva": "0xA193A",
+    "other_reset_writer_found_in_mapped_region": false,
+    "semantic": "first-use/reset-after-feature-creation latch",
+    "classification": "STATIC_OBSERVED"
+  },
+  "feature_pool": {
+    "maximum_slots": 16,
+    "release_one_rva": "0xA18B0",
+    "resize_pool_rva": "0xA19E0",
+    "work_size_rebuild_rva": "0x9C870",
+    "feature_create_helper_rva": "0x9C510",
+    "behavior": "releases excess slots, creates missing slots, recreates feature ownership when work dimensions/scale require it"
+  },
+  "recovery_levels": {
+    "lightweight": {
+      "scope": "feature creation command-list/swapchain resources",
+      "diagnostic": "DLSSNR: BeginCommandList failed (lost=%d device=%p queue=%p list=%p fence=%p), recreating SwapChain resources",
+      "retry_failure_diagnostic": "DLSSNR: BeginCommandList still failed while creating feature"
+    },
+    "full_device_recreate": {
+      "entry_rva": "0xA1830",
+      "shutdown_call_rva": "0xA185B",
+      "reinit_call_rva": "0xA1878",
+      "diagnostic": "DLSSNR: ReinitAfterDeviceRecreate %s",
+      "behavior": "snapshot init descriptor, full backend teardown, clear old device/context fields, initialize again"
+    }
+  },
+  "release": {
+    "host_router_rva": "0xF4E30",
+    "backend_registry_release_rva": "0xA1D20",
+    "backend_record_release_rva": "0xA1BB0",
+    "full_backend_shutdown_rva": "0xA1E40",
+    "destroy_parameters_call_rva": "0xA2466",
+    "synchronization_helper_before_feature_drop": "0xA1770",
+    "gpu_retirement_semantics_fully_proven": false,
+    "qualification": "The mapped release path invokes broader synchronization/ownership helpers before feature/resource destruction, but static analysis has not proved their exact fence-completion contract."
+  },
+  "release_failure_concern": {
+    "extra_feature_release_call_rva": "0xA18DC",
+    "pointer_cleared_rva": "0xA1931",
+    "reset_latch_cleared_rva": "0xA193A",
+    "primary_release_call_rva": "0xA1C4F",
+    "classification": "STATIC_CONCERN",
+    "statement": "Feature handles are discarded after ReleaseFeature is attempted even when diagnostics report failure; whether that leaks/retains vendor ownership after device loss requires runtime validation."
+  },
+  "companion_local_staging": {
+    "requires_committed_depth_motion": true,
+    "backbuffer_nt_shared_copy_to_local_staging": true,
+    "diagnostics": [
+      "DLSSNR: skip local eval, depth=%p motion=%p (need committed GPU1 staging, not NT-shared)",
+      "DLSSNR: failed to copy NT-shared backbuffer to local staging",
+      "DLSSNR: skip present eval, committed color/output missing"
+    ]
+  },
+  "ui_lifetime": {
+    "ngx_ui": null,
+    "ngx_ui_alpha": null,
+    "ngx_ui_correction": 0,
+    "private_post_nr_ui_composition": true,
+    "implication": "Mapped core NGX evaluation does not own/read UI; UI lifetime extends through PD private post-NR composition instead."
+  }
+}

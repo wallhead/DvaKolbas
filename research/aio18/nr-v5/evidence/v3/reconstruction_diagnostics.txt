@@ -1,0 +1,13 @@
+11a2b88 DLSSNR feature id=%d created (%d x %d) ratio=%.4f
+11a2d40 DLSSNR: using external input scale %.3f work=%dx%d
+11a2f28 DLSSNR: resolve scratch alloc failed, falling back to 1:1
+11a2f68 DLSSNR: resolve pipeline unavailable, falling back to 1:1
+11a3078 DLSSNR: work-surface alloc failed, falling back to one pass
+11a3128 DLSSNR: extra pass %u failed, keeping %u pass(es)
+11a3160 DLSSNR: UI compose pipeline unavailable, skipping UI composite
+11a31f8 DLSSNR: UI compose scratch alloc failed, skipping UI composite
+11a3670 NGX extra pass ReleaseFeature failed
+11a3698 DLSSNR extra pass %u ReleaseFeature failed = 0x%08x, info: %ls
+11a36d8 DLSSNR: extra pass %u would not create; running %u pass(es)
+11a3718 DLSSNR extra pass %u released
+11a3778 DLSSNR extra pass %u created (%d x %d)

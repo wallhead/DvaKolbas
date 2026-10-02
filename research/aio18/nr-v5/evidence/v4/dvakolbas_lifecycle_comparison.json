@@ -1,0 +1,40 @@
+{
+  "repository": "wallhead/DvaKolbas",
+  "branch": "codex/fsr-sr",
+  "reviewed_head": "78d6e4bd9db2146104a7485d46174684b954c3f1",
+  "matches_or_stronger": {
+    "retirement": "Backend::Quiesce stops session, signals final D3D11 work, drains interop, then destroys NeuralPass/NGX feature ownership.",
+    "failed_recording": "Backend refuses to destroy a failed unsubmitted NR recording.",
+    "creation_failure": "CreationContext retains failed feature session when GPU creation completion is unconfirmed.",
+    "camera_history_reset": "NeuralHistory resets on camera reset, activation changes, and image-affecting option changes.",
+    "second_pass_reset": "second.reset includes first.reset, second-history-invalid, and first evaluation of second feature."
+  },
+  "high_confidence_parity_mismatch": {
+    "aio18_core": {
+      "DLSSNR.UI": null,
+      "DLSSNR.UIAlpha": null,
+      "DLSSNR.UICorrection": 0,
+      "private_ui_composition": true
+    },
+    "dvakolbas": {
+      "DLSSNR.UI": "a_input.ui",
+      "DLSSNR.UIAlpha": "a_input.uiAlpha",
+      "DLSSNR.UICorrection": "tuning.uiCorrection",
+      "private_ui_composition": true
+    },
+    "classification": "PARITY_MISMATCH_NOT_PROVEN_BUG",
+    "recommended_test": "A/B test AIO-style NGX UI-null/UICorrection=0 versus current DvaKolbas path while keeping the same private post-NR UI composition."
+  },
+  "do_not_copy_from_aio18": [
+    "Primary Reset fixed to zero in the common AIO18 producer",
+    "Extra-pass reset only on feature creation/first successful use",
+    "Discarding feature handle after failed ReleaseFeature without a retained retry owner"
+  ],
+  "extensions_not_aio18_parity": [
+    "peripheral 80/90 compression",
+    "fused preparation",
+    "producer-color HDR proxy",
+    "independently sized/configured second pass",
+    "DvaKolbas-specific extended-range/gamut reconstruction"
+  ]
+}

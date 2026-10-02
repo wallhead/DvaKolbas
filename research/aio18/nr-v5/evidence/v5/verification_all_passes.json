@@ -1,0 +1,28 @@
+{
+  "scope": "Fresh static verification summary. AIO18 vendor binaries were read/hashed/disassembled only, not executed.",
+  "passes": {
+    "pass1": {
+      "checks": 13,
+      "failures": 0,
+      "basis": "3 module hashes + 10 required parameter/hook strings"
+    },
+    "pass2": {
+      "checks": 86,
+      "failures": 0
+    },
+    "pass3": {
+      "checks": 14,
+      "failures": 0
+    },
+    "pass4": {
+      "checks": 43,
+      "failures": 0
+    },
+    "pass5": {
+      "checks": 35,
+      "failures": 0
+    }
+  },
+  "total_checks": 191,
+  "total_failures": 0
+}

@@ -1,0 +1,120 @@
+{
+  "SkyrimUpscaler.dll": [
+    {
+      "rva": "0x2A2120",
+      "role": "common NR init producer"
+    },
+    {
+      "rva": "0x2A2137",
+      "role": "ReleaseDLSSNR call"
+    },
+    {
+      "rva": "0x2A2144",
+      "role": "IsDLSSNRAvailable call"
+    },
+    {
+      "rva": "0x2A226B",
+      "role": "InitDLSSNR call"
+    },
+    {
+      "rva": "0x2A2300",
+      "role": "common 0x138 NR evaluate producer"
+    },
+    {
+      "rva": "0x2A25E0",
+      "role": "EvaluateDLSSNR call"
+    },
+    {
+      "rva": "0x18FA4B",
+      "role": "direct common-evaluate caller"
+    },
+    {
+      "rva": "0x265B0A",
+      "role": "specialized/live bridge common-evaluate caller"
+    },
+    {
+      "rva": "0x294E24",
+      "role": "before-upscale common-evaluate caller"
+    },
+    {
+      "rva": "0x297AE6",
+      "role": "direct common-evaluate caller"
+    },
+    {
+      "rva": "0x2AB0CF",
+      "role": "late/Present common-evaluate caller"
+    },
+    {
+      "rva": "0x2AB5CC",
+      "role": "late conditional common-evaluate caller"
+    },
+    {
+      "rva": "0x2ABF50",
+      "role": "late conditional common-evaluate caller"
+    }
+  ],
+  "PDPerfPlugin.dll": [
+    {
+      "rva": "0xF9F80",
+      "role": "IsDLSSNRAvailable export"
+    },
+    {
+      "rva": "0xFA150",
+      "role": "InitDLSSNR export"
+    },
+    {
+      "rva": "0xFA180",
+      "role": "EvaluateDLSSNR export / 0x138 copy"
+    },
+    {
+      "rva": "0xFA240",
+      "role": "ReleaseDLSSNR export"
+    },
+    {
+      "rva": "0xF4960",
+      "role": "internal NR init"
+    },
+    {
+      "rva": "0xF4AE0",
+      "role": "internal D3D11/interop NR evaluate router"
+    },
+    {
+      "rva": "0xF4E30",
+      "role": "internal NR release"
+    },
+    {
+      "rva": "0x9B800",
+      "role": "NR backend object constructor/helper"
+    },
+    {
+      "rva": "0x9C9A0",
+      "role": "NR backend initialization helper"
+    },
+    {
+      "rva": "0xA0B10",
+      "role": "deeper NR backend evaluator"
+    },
+    {
+      "rva": "0xA1D20",
+      "role": "NR backend release helper"
+    }
+  ],
+  "nvngx_dlssnr.dll": [
+    {
+      "rva": "0x13F50",
+      "role": "NVSDK_NGX_D3D12_Init"
+    },
+    {
+      "rva": "0x15750",
+      "role": "NVSDK_NGX_D3D12_CreateFeature"
+    },
+    {
+      "rva": "0x159C0",
+      "role": "NVSDK_NGX_D3D12_EvaluateFeature"
+    },
+    {
+      "rva": "0x16040",
+      "role": "NVSDK_NGX_D3D12_ReleaseFeature"
+    }
+  ]
+}

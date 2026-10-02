@@ -1,0 +1,368 @@
+{
+  "size_bytes": 272,
+  "writer_rva": "0x9AF70",
+  "fields": [
+    {
+      "offset": "0x000",
+      "size": 8,
+      "role": "Color",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x008",
+      "size": 8,
+      "role": "MVec",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x010",
+      "size": 8,
+      "role": "Depth",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x018",
+      "size": 8,
+      "role": "Output",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x020",
+      "size": 8,
+      "role": "ControlMask",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x028",
+      "size": 8,
+      "role": "UI",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x030",
+      "size": 8,
+      "role": "UIAlpha",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x038",
+      "size": 8,
+      "role": "Backbuffer",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x040",
+      "size": 8,
+      "role": "BidirectionalDistortionField",
+      "setter": "SetD3d12Resource"
+    },
+    {
+      "offset": "0x048",
+      "size": 4,
+      "role": "ColorSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x04C",
+      "size": 4,
+      "role": "ColorSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x050",
+      "size": 4,
+      "role": "ColorSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x054",
+      "size": 4,
+      "role": "ColorSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x058",
+      "size": 4,
+      "role": "MVecSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x05C",
+      "size": 4,
+      "role": "MVecSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x060",
+      "size": 4,
+      "role": "MVecSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x064",
+      "size": 4,
+      "role": "MVecSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x068",
+      "size": 4,
+      "role": "DepthSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x06C",
+      "size": 4,
+      "role": "DepthSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x070",
+      "size": 4,
+      "role": "DepthSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x074",
+      "size": 4,
+      "role": "DepthSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x078",
+      "size": 4,
+      "role": "OutputSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x07C",
+      "size": 4,
+      "role": "OutputSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x080",
+      "size": 4,
+      "role": "OutputSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x084",
+      "size": 4,
+      "role": "OutputSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x088",
+      "size": 4,
+      "role": "ControlMaskSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x08C",
+      "size": 4,
+      "role": "ControlMaskSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x090",
+      "size": 4,
+      "role": "ControlMaskSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x094",
+      "size": 4,
+      "role": "ControlMaskSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x098",
+      "size": 4,
+      "role": "UISubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x09C",
+      "size": 4,
+      "role": "UISubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0A0",
+      "size": 4,
+      "role": "UISubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0A4",
+      "size": 4,
+      "role": "UISubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0A8",
+      "size": 4,
+      "role": "UIAlphaSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0AC",
+      "size": 4,
+      "role": "UIAlphaSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0B0",
+      "size": 4,
+      "role": "UIAlphaSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0B4",
+      "size": 4,
+      "role": "UIAlphaSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0B8",
+      "size": 4,
+      "role": "BackbufferSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0BC",
+      "size": 4,
+      "role": "BackbufferSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0C0",
+      "size": 4,
+      "role": "BackbufferSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0C4",
+      "size": 4,
+      "role": "BackbufferSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0C8",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectBaseX",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0CC",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectBaseY",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0D0",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectWidth",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0D4",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectHeight",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0D8",
+      "size": 4,
+      "role": "MVecScaleX",
+      "setter": "SetF"
+    },
+    {
+      "offset": "0x0DC",
+      "size": 4,
+      "role": "MVecScaleY",
+      "setter": "SetF"
+    },
+    {
+      "offset": "0x0E0",
+      "size": 4,
+      "role": "Intensity",
+      "setter": "SetF"
+    },
+    {
+      "offset": "0x0E4",
+      "size": 4,
+      "role": "LocalToneStrength",
+      "setter": "SetF"
+    },
+    {
+      "offset": "0x0E8",
+      "size": 4,
+      "role": "LocalStructureStrength",
+      "setter": "SetF"
+    },
+    {
+      "offset": "0x0EC",
+      "size": 4,
+      "role": "SkinStructureStrength",
+      "setter": "SetF"
+    },
+    {
+      "offset": "0x0F0",
+      "size": 4,
+      "role": "UseAutoMask",
+      "setter": "SetI"
+    },
+    {
+      "offset": "0x0F4",
+      "size": 4,
+      "role": "Style",
+      "setter": "SetUI"
+    },
+    {
+      "offset": "0x0F8",
+      "size": 4,
+      "role": "Reset",
+      "setter": "SetI"
+    },
+    {
+      "offset": "0x0FC",
+      "size": 4,
+      "role": "DepthInverted",
+      "setter": "SetI"
+    },
+    {
+      "offset": "0x100",
+      "size": 4,
+      "role": "Enabled",
+      "setter": "SetI"
+    },
+    {
+      "offset": "0x104",
+      "size": 4,
+      "role": "UICorrection",
+      "setter": "SetI"
+    },
+    {
+      "offset": "0x108",
+      "size": 4,
+      "role": "IndicatorInvertX",
+      "setter": "SetI"
+    },
+    {
+      "offset": "0x10C",
+      "size": 4,
+      "role": "IndicatorInvertY",
+      "setter": "SetI"
+    }
+  ],
+  "observed_core_overrides": {
+    "UI": "null",
+    "UIAlpha": "null",
+    "UICorrection": 0,
+    "IndicatorInvertX": 0,
+    "IndicatorInvertY": 0,
+    "MVecScaleZeroFallback": 1.0
+  }
+}

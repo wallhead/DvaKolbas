@@ -1,0 +1,90 @@
+{
+  "module": "SkyrimUpscaler.dll",
+  "fields": [
+    {
+      "host_offset": "0x2AA",
+      "name": "mDLSSNRBeforeUpscaling",
+      "type": "bool"
+    },
+    {
+      "host_offset": "0x2AC",
+      "name": "mDLSSNRPreset",
+      "type": "int32"
+    },
+    {
+      "host_offset": "0x2B0",
+      "name": "mDLSSNRStyle",
+      "type": "uint32"
+    },
+    {
+      "host_offset": "0x2B4",
+      "name": "mDLSSNRIntensity",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2B8",
+      "name": "mDLSSNRLocalToneStrength",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2BC",
+      "name": "mDLSSNRLocalStructureStrength",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2C0",
+      "name": "mDLSSNRSkinStructureStrength",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2C4",
+      "name": "mDLSSNRUseAutoMask",
+      "type": "bool"
+    },
+    {
+      "host_offset": "0x2C5",
+      "name": "mDLSSNRUICorrection",
+      "type": "bool"
+    },
+    {
+      "host_offset": "0x2C8",
+      "name": "mDLSSNRResolveMethod",
+      "type": "int32"
+    },
+    {
+      "host_offset": "0x2CC",
+      "name": "mDLSSNRInputResolutionScale",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2D0",
+      "name": "mDLSSNRTransferStrength",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2D4",
+      "name": "mDLSSNRColourStrength",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2D8",
+      "name": "mDLSSNRMaxRatio",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2DC",
+      "name": "mDLSSNRWhitePoint",
+      "type": "float"
+    },
+    {
+      "host_offset": "0x2E0",
+      "name": "mDLSSNRColorIsHdr",
+      "type": "bool"
+    },
+    {
+      "host_offset": "0x2E4",
+      "name": "mDLSSNRPass",
+      "type": "int32"
+    }
+  ]
+}

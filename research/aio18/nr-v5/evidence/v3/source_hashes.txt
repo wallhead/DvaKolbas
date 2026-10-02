@@ -1,0 +1,4 @@
+136cbacda0d75373ad47e07c6017924edaaddbda063abaeb53f7e30734076af8  /mnt/data/SkyrimUpscalerAIOBuild18-Hotfix1(1).7z
+5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81  /mnt/data/aio18_nr_work/SkyrimUpscaler.dll
+53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1  /mnt/data/aio18_nr_work/PDPerfPlugin.dll
+8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206  /mnt/data/aio18_nr_work/nvngx_dlssnr.dll

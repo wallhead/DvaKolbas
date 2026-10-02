@@ -1,0 +1,60 @@
+{
+  "analysis": "AIO18 DLSS Neural Rendering / Neural Reconstruction RE Pass 1",
+  "archive": {
+    "name": "SkyrimUpscalerAIOBuild18-Hotfix1(1).7z",
+    "sha256": "136cbacda0d75373ad47e07c6017924edaaddbda063abaeb53f7e30734076af8",
+    "bytes": 204178443
+  },
+  "modules": {
+    "SkyrimUpscaler.dll": {
+      "sha256": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+      "bytes": 15039488
+    },
+    "PDPerfPlugin.dll": {
+      "sha256": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+      "bytes": 18932736
+    },
+    "nvngx_dlssnr.dll": {
+      "sha256": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+      "bytes": 165840496
+    }
+  },
+  "codeview": {
+    "PDPerfPlugin.dll": {
+      "guid": "5505ca9d-fcdf-40c6-8bf2-1f3b26ce2b25",
+      "age": 1
+    },
+    "nvngx_dlssnr.dll": {
+      "guid": "4413bf99-b777-416c-907a-c4e6fcf26fdd",
+      "age": 1,
+      "file_version": "310.8.0.0"
+    }
+  },
+  "host_delay_imports": {
+    "EvaluateDLSSNR": "0x472C60",
+    "ReleaseDLSSNR": "0x472C80",
+    "IsDLSSNRAvailable": "0x472C88",
+    "InitDLSSNR": "0x472C90"
+  },
+  "pd_exports": {
+    "IsDLSSNRAvailable": "0xF9F80",
+    "InitDLSSNR": "0xFA150",
+    "EvaluateDLSSNR": "0xFA180",
+    "ReleaseDLSSNR": "0xFA240"
+  },
+  "payload": {
+    "DLSSNREvaluateParams_bytes": 312
+  },
+  "backend": {
+    "object_bytes": 1864,
+    "constructor": "0x9B800",
+    "initialize": "0x9C9A0",
+    "evaluate": "0xA0B10",
+    "release": "0xA1D20"
+  },
+  "analysis_limits": [
+    "static only",
+    "no target execution",
+    "semantic names for most 0x138 payload offsets deferred to Pass 2"
+  ]
+}

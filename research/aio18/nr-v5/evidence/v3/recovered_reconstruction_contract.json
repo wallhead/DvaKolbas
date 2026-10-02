@@ -1,0 +1,13 @@
+{
+  "input_scale": {"native_if_zero_or_ge_1": true, "minimum_reduced_scale": 0.25},
+  "resolve_methods": {
+    "0": {"name":"Auto", "native_scale":"Direct", "reduced_scale":"Residual"},
+    "1": {"name":"Residual", "formula":"I + Lanczos3(NR_low - I_low)"},
+    "2": {"name":"Ratio", "description":"luma ratio + OkLab"}
+  },
+  "defaults": {"transferStrength":1.0,"colourStrength":1.0,"maxRatio":2.0,"whitePoint":1.0},
+  "max_feature_slots_observed": 16,
+  "extra_pass_failure_policy":"keep last successful pass",
+  "ngx_ui_in_core_path": {"UI":null,"UIAlpha":null,"UICorrection":0},
+  "private_ui_composition": true
+}

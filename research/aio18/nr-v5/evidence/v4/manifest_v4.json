@@ -1,0 +1,27 @@
+{
+  "pass": 4,
+  "analysis_type": "static reverse engineering",
+  "runtime_execution": false,
+  "target_archive_sha256": "136cbacda0d75373ad47e07c6017924edaaddbda063abaeb53f7e30734076af8",
+  "modules": {
+    "SkyrimUpscaler.dll": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "PDPerfPlugin.dll": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "nvngx_dlssnr.dll": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+  },
+  "focus": [
+    "primary and extra-pass reset propagation",
+    "feature pool recreation",
+    "lightweight and full device recovery",
+    "release ordering and failure ownership",
+    "companion/local committed staging",
+    "before-SR and late NR-to-FG ordering",
+    "Community Shaders integration",
+    "UI lifetime",
+    "DvaKolbas lifecycle and UI parity comparison"
+  ],
+  "dvakolbas_snapshot": {
+    "branch": "codex/fsr-sr",
+    "commit": "78d6e4bd9db2146104a7485d46174684b954c3f1"
+  },
+  "next_pass": "runtime validation"
+}

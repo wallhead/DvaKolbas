@@ -1,0 +1,36 @@
+{
+  "analysis": "AIO18 DLSS Neural Rendering / Neural Reconstruction RE Pass 2",
+  "archive": {
+    "name": "SkyrimUpscalerAIOBuild18-Hotfix1(1).7z",
+    "sha256": "136cbacda0d75373ad47e07c6017924edaaddbda063abaeb53f7e30734076af8",
+    "bytes": 204178443
+  },
+  "modules": {
+    "SkyrimUpscaler.dll": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "PDPerfPlugin.dll": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "nvngx_dlssnr.dll": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+  },
+  "structures": {
+    "external_evaluate_bytes": 312,
+    "internal_ngx_block_bytes": 272,
+    "ngx_writer_rva": "0x9AF70",
+    "internal_builder_rva": "0x9FDB0",
+    "core_d3d12_evaluator_rva": "0x9E5A0"
+  },
+  "high_confidence_findings": [
+    "external payload resource map +0x08..+0x48 recovered",
+    "external +0xE0/+0xE4 are base motion-vector scales, not jitter",
+    "exact NGX setter types recovered",
+    "core NGX UI and UIAlpha are null",
+    "core NGX UICorrection is forced to zero",
+    "external/private UI correction remains active in PD private layer",
+    "Backbuffer is route-selected and can fall back when external +0x40 is null",
+    "core D3D12 Color/Output/Depth/MVec states recovered"
+  ],
+  "limits": [
+    "static only",
+    "no target execution",
+    "optional-resource state behavior varies by route",
+    "resolve equations deferred to Pass 3"
+  ]
+}

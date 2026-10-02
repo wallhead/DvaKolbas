@@ -1,0 +1,152 @@
+{
+  "scope": "Pass-5 static cross-review verification; original binaries hashed/read only; no DLL/GPU/Skyrim execution.",
+  "checks": [
+    {
+      "check": "Pass 2 verifier fresh PASS",
+      "passed": true
+    },
+    {
+      "check": "Pass 3 verifier fresh PASS",
+      "passed": true
+    },
+    {
+      "check": "Pass 4 verifier fresh PASS",
+      "passed": true
+    },
+    {
+      "check": "SkyrimUpscaler.dll exact hash",
+      "passed": true,
+      "detail": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81"
+    },
+    {
+      "check": "PDPerfPlugin.dll exact hash",
+      "passed": true,
+      "detail": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1"
+    },
+    {
+      "check": "nvngx_dlssnr.dll exact hash",
+      "passed": true,
+      "detail": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+    },
+    {
+      "check": "archive exact hash",
+      "passed": true,
+      "detail": "136cbacda0d75373ad47e07c6017924edaaddbda063abaeb53f7e30734076af8"
+    },
+    {
+      "check": "external payload remains 0x138",
+      "passed": true
+    },
+    {
+      "check": "internal NGX block remains 0x110",
+      "passed": true
+    },
+    {
+      "check": "AIO core NGX UI contract stable",
+      "passed": true
+    },
+    {
+      "check": "reconstruction UI contract agrees with v2",
+      "passed": true
+    },
+    {
+      "check": "lifecycle UI contract agrees with v2/v3",
+      "passed": true
+    },
+    {
+      "check": "Auto selector stable",
+      "passed": true
+    },
+    {
+      "check": "minimum reduced scale stable",
+      "passed": true
+    },
+    {
+      "check": "feature pool bound stable",
+      "passed": true
+    },
+    {
+      "check": "primary Reset=0 stable",
+      "passed": true
+    },
+    {
+      "check": "normal integration order stable",
+      "passed": true
+    },
+    {
+      "check": "before-upscale order stable",
+      "passed": true
+    },
+    {
+      "check": "no cross-pass contradictions recorded",
+      "passed": true
+    },
+    {
+      "check": "five retained corrections",
+      "passed": true
+    },
+    {
+      "check": "Dva current head recorded",
+      "passed": true
+    },
+    {
+      "check": "Dva NR blobs unchanged since Pass 4",
+      "passed": true
+    },
+    {
+      "check": "combined log marker 0x138",
+      "passed": true
+    },
+    {
+      "check": "combined log marker 0x110",
+      "passed": true
+    },
+    {
+      "check": "combined log marker UI=null",
+      "passed": true
+    },
+    {
+      "check": "combined log marker Reset = 0",
+      "passed": true
+    },
+    {
+      "check": "combined log marker 16 slots",
+      "passed": true
+    },
+    {
+      "check": "combined log marker Pass 1: 13",
+      "passed": true
+    },
+    {
+      "check": "combined log marker f6a29f75db0029acf013227627a52e2e490733c6",
+      "passed": true
+    },
+    {
+      "check": "combined log marker PARITY MISMATCH",
+      "passed": true
+    },
+    {
+      "check": "Pass 5 marker no contradiction",
+      "passed": true
+    },
+    {
+      "check": "Pass 5 marker runtime-only",
+      "passed": true
+    },
+    {
+      "check": "Pass 5 marker A/B",
+      "passed": true
+    },
+    {
+      "check": "Pass 5 marker f6a29f75db0029acf013227627a52e2e490733c6",
+      "passed": true
+    },
+    {
+      "check": "no vendor binaries/PDBs in package",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "passed": 35,
+  "failed": 0
+}

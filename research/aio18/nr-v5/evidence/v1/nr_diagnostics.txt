@@ -1,0 +1,79 @@
+11a2760 DLSSNR: SEH in NVSDK_NGX_D3D12_Init code=0x%08lx
+11a2798 DLSSNR: SEH in NGX_D3D12_CREATE_DLSSNR_EXT code=0x%08lx
+11a27d0 DLSSNR: SEH in NVSDK_NGX_D3D12_Shutdown1 code=0x%08lx
+11a2810 DLSSNR: D3D12Interop is not ready (missing device or command queue).
+11a2858 DLSSNR: SEH in NGX_D3D12_EVALUATE_DLSSNR_EXT code=0x%08lx
+11a28b0 DLSSNR: cannot initialize NGX without a D3D12 device.
+11a2940 DLSSNR: failed to load/hook nvngx_dlssnr.dll.
+11a29d0 NGX_D3D12_CREATE_DLSSNR_EXT (local) (%d x %d) failed = 0x%08x, info: %ls
+11a2a20 DLSSNR: BeginLocalCommandList failed for CreateFeature
+11a2a60 DLSSNR: BeginCommandList failed (lost=%d device=%p queue=%p list=%p fence=%p), recreating SwapChain resources
+11a2ad0 NGX_D3D12_CREATE_DLSSNR_EXT local failed
+11a2b00 NGX_D3D12_CREATE_DLSSNR_EXT (%d x %d) failed = 0x%08x, info: %ls
+11a2b48 DLSSNR: BeginCommandList still failed while creating feature
+11a2b88 DLSSNR feature id=%d created (%d x %d) ratio=%.4f
+11a2bc0 NGX_D3D12_CREATE_DLSSNR_EXT failed
+11a2bf0 DLSSNR: running on companion GPU adapterIndex=%d companionDevice=%p
+11a2c40 DLSSNR: running on game GPU (local D3D12) adapterIndex=%d localDevice=%p companionDevice=%p
+11a2ca0 DLSSNR: failed to create local committed NR output (%dx%d fmt=%d)
+11a2cf0 DLSSNR: failed to create in-place color copy target slot=%d (%dx%d fmt=%d)
+11a2d40 DLSSNR: using external input scale %.3f work=%dx%d
+11a2d78 DLSSNR: failed to rebuild feature at work size %dx%d
+11a2db0 DLSSNR: serialize resolve root signature failed 0x%08x
+11a2de8 DLSSNR: create %s PSO failed 0x%08x
+11a2e20 DLSSNR: create resolve root signature failed 0x%08x
+11a2e70 DLSSNR: create resolve descriptor heap failed 0x%08x
+11a2eb8 DLSSNR: map resolve constant buffer failed 0x%08x
+11a2ef0 DLSSNR: create resolve constant buffer failed 0x%08x
+11a2f28 DLSSNR: resolve scratch alloc failed, falling back to 1:1
+11a2f68 DLSSNR: resolve pipeline unavailable, falling back to 1:1
+11a2fa8 NGX_D3D12_EVALUATE_DLSSNR_EXT failed
+11a2fd0 NGX_D3D12_EVALUATE_DLSSNR_EXT failed = 0x%08x, info: %ls
+11a3078 DLSSNR: work-surface alloc failed, falling back to one pass
+11a30b8 DLSSNR: debug overwrite pipeline unavailable
+11a3128 DLSSNR: extra pass %u failed, keeping %u pass(es)
+11a3160 DLSSNR: UI compose pipeline unavailable, skipping UI composite
+11a31f8 DLSSNR: UI compose scratch alloc failed, skipping UI composite
+11a3238 DLSSNR: BeginLocalCommandList failed for immediate evaluate.
+11a3278 DLSSNR: missing output share pair for immediate evaluate.
+11a32b8 NGX_D3D12_EVALUATE_DLSSNR_EXT immediate local D3D11 failed
+11a3300 DLSSNR: skip immediate local eval, missing committed staging (output=%p color=%p depth=%p motion=%p)
+11a3368 DLSSNR: immediate D3D12 evaluate missing output.
+11a33a0 NGX_D3D12_EVALUATE_DLSSNR_EXT immediate D3D11 failed
+11a33d8 DLSSNR: Evaluate called before Init for id=%d
+11a3408 NGX_D3D12_EVALUATE_DLSSNR_EXT immediate D3D12 failed
+11a3440 DLSSNR: skip present eval, committed color/output missing
+11a3480 DLSSNR: EnsureFeatureMatchesEval failed for id=%d
+11a34b8 DLSSNR: BeginLocalCommandList failed for present evaluate.
+11a34f8 NGX_D3D12_EVALUATE_DLSSNR_EXT present failed
+11a3530 DLSSNR: skip local eval, depth=%p motion=%p (need committed GPU1 staging, not NT-shared)
+11a3590 DLSSNR: failed to copy NT-shared backbuffer to local staging
+11a35d0 NGX_D3D12_EVALUATE_DLSSNR_EXT local present failed
+11a3608 DLSSNR: skip local eval, committed color/output missing
+11a3640 DLSSNR: ReinitAfterDeviceRecreate %s
+11a3698 DLSSNR extra pass %u ReleaseFeature failed = 0x%08x, info: %ls
+11a36d8 DLSSNR: extra pass %u would not create; running %u pass(es)
+11a3718 DLSSNR extra pass %u released
+11a3778 DLSSNR extra pass %u created (%d x %d)
+11a37a0 DLSSNR feature id=%d released.
+11a37e0 DLSSNR: snippet Shutdown1 result=0x%08x device=%p lost=%d
+11a3820 DLSSNR: snippet Shutdown1=0x%08x, lib Shutdown1=0x%08x device=%p lost=%d
+11a38b8 NGXNRHook: failed to read nvngx.dll path.
+11a38f0 NGXNRHook: nvngx.dll is not loaded; cannot spoof GetModuleFileName.
+11a3960 NGXNRHook: spoof path = %ls
+11a3a60 NGXNRHook: failed to load nvngx_dlssnr.dll.
+11a3a90 NGXNRHook: nvngx_dlssnr.dll is missing Create/Evaluate/Release exports.
+11a3b10 NGXNRHook: GetModuleFileNameA not imported; W hook is in place.
+11a3b50 NGXNRHook: failed to IAT-hook GetModuleFileNameW on nvngx_dlssnr.dll.
+11a3b98 NGXNRHook: IAT restored.
+11a3bb8 NGXNRHook: installed IAT hook on nvngx_dlssnr.dll.
+11a3bf0 NGXNRHook: calling snippet D3D12_Init device=%p
+11a3c20 NGXNRHook: snippet has no D3D12_Init export; CreateFeature may still work.
+11a3c70 NGXNRHook snippet NVSDK_NGX_D3D12_Init = 0x%08x, info: %ls
+11a3cb0 NGXNRHook: SEH in snippet NVSDK_NGX_D3D12_Init code=0x%08lx
+11a3cf0 NGXNRHook: SEH in snippet NVSDK_NGX_D3D12_Shutdown code=0x%08lx
+11a3d30 NGXNRHook: SEH in snippet NVSDK_NGX_D3D12_Shutdown1 code=0x%08lx
+11a3d90 NGXNRHook snippet Shutdown1 result=0x%08x device=%p hasShutdown1=%d hasShutdown=%d
+11aa070 DLSSNR: failed to create D3D12 interop queue.
+11aa0d0 DLSSNR: failed to create local D3D12 device on game GPU.
+11aa110 DLSSNR: failed to create companion D3D12 device.

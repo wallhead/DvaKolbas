@@ -1,0 +1,209 @@
+{
+  "scope": "Fresh static verification against exact original AIO18 module bytes. No DLL/GPU execution.",
+  "module_hashes": {
+    "SkyrimUpscaler.dll": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "PDPerfPlugin.dll": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "nvngx_dlssnr.dll": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+  },
+  "checks": [
+    {
+      "check": "SkyrimUpscaler.dll hash",
+      "passed": true,
+      "detail": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81"
+    },
+    {
+      "check": "PDPerfPlugin.dll hash",
+      "passed": true,
+      "detail": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1"
+    },
+    {
+      "check": "nvngx_dlssnr.dll hash",
+      "passed": true,
+      "detail": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+    },
+    {
+      "check": "host primary reset zero source",
+      "passed": true,
+      "detail": "RVA=0x2a23bb actual=4533e4"
+    },
+    {
+      "check": "host primary reset store external+100",
+      "passed": true,
+      "detail": "RVA=0x2a24e5 actual=44886520"
+    },
+    {
+      "check": "host before-SR NR call",
+      "passed": true,
+      "detail": "RVA=0x294e24 actual=e8d7d40000"
+    },
+    {
+      "check": "host following SR import call",
+      "passed": true,
+      "detail": "RVA=0x294fbd actual=ff155ddc1d00"
+    },
+    {
+      "check": "host late NR call",
+      "passed": true,
+      "detail": "RVA=0x2ab0cf actual=e82c72ffff"
+    },
+    {
+      "check": "host following FSR-FG producer call",
+      "passed": true,
+      "detail": "RVA=0x2ab349 actual=e8528efeff"
+    },
+    {
+      "check": "host CS bridge r9=1",
+      "passed": true,
+      "detail": "RVA=0x265af9 actual=41b101"
+    },
+    {
+      "check": "host CS bridge r8=r9",
+      "passed": true,
+      "detail": "RVA=0x265afc actual=450fb6c1"
+    },
+    {
+      "check": "host CS common NR call",
+      "passed": true,
+      "detail": "RVA=0x265b0a actual=e8f1c70300"
+    },
+    {
+      "check": "PD first-pass external reset pointer",
+      "passed": true,
+      "detail": "RVA=0x9f37a actual=4d8d8d00010000"
+    },
+    {
+      "check": "PD extra-pass reset load",
+      "passed": true,
+      "detail": "RVA=0x9f3a2 actual=410fb601"
+    },
+    {
+      "check": "PD clear extra-pass reset after success",
+      "passed": true,
+      "detail": "RVA=0x9f408 actual=c60600"
+    },
+    {
+      "check": "PD new feature arms reset latch",
+      "passed": true,
+      "detail": "RVA=0xa1b3b actual=c68418c800000001"
+    },
+    {
+      "check": "PD extra ReleaseFeature call",
+      "passed": true,
+      "detail": "RVA=0xa18dc actual=e87f280000"
+    },
+    {
+      "check": "PD released feature pointer clear",
+      "passed": true,
+      "detail": "RVA=0xa1931 actual=48c744df4800000000"
+    },
+    {
+      "check": "PD released feature reset clear",
+      "passed": true,
+      "detail": "RVA=0xa193a actual=c6843bc800000000"
+    },
+    {
+      "check": "PD device-recreate shutdown call",
+      "passed": true,
+      "detail": "RVA=0xa185b actual=e8e0050000"
+    },
+    {
+      "check": "PD device-recreate reinit call",
+      "passed": true,
+      "detail": "RVA=0xa1878 actual=e823b1ffff"
+    },
+    {
+      "check": "PD primary ReleaseFeature call",
+      "passed": true,
+      "detail": "RVA=0xa1c4f actual=e80c250000"
+    },
+    {
+      "check": "PD DestroyParameters call",
+      "passed": true,
+      "detail": "RVA=0xa2466 actual=e805070600"
+    },
+    {
+      "check": "PD release-router backend call",
+      "passed": true,
+      "detail": "RVA=0xf4e5c actual=e8bfcefaff"
+    },
+    {
+      "check": "PD diagnostic: DLSSNR: ReinitAfterDeviceRecreate %s",
+      "passed": true
+    },
+    {
+      "check": "PD diagnostic: DLSSNR: BeginCommandList failed (lost=%d device=%p queue=%p list=%p fence=%p), recreating SwapChain resources",
+      "passed": true
+    },
+    {
+      "check": "PD diagnostic: DLSSNR: BeginCommandList still failed while creating feature",
+      "passed": true
+    },
+    {
+      "check": "PD diagnostic: DLSSNR: extra pass %u failed, keeping %u pass(es)",
+      "passed": true
+    },
+    {
+      "check": "PD diagnostic: DLSSNR: skip local eval, depth=%p motion=%p (need committed GPU1 staging, not NT-shared)",
+      "passed": true
+    },
+    {
+      "check": "PD diagnostic: DLSSNR: failed to copy NT-shared backbuffer to local staging",
+      "passed": true
+    },
+    {
+      "check": "PD diagnostic: DLSSNR: skip present eval, committed color/output missing",
+      "passed": true
+    },
+    {
+      "check": "report marker: 4 / 4 static NR passes are complete",
+      "passed": true
+    },
+    {
+      "check": "report marker: common primary Reset = 0",
+      "passed": true
+    },
+    {
+      "check": "report marker: first-use reset latches",
+      "passed": true
+    },
+    {
+      "check": "report marker: two recovery levels",
+      "passed": true
+    },
+    {
+      "check": "report marker: SR \u2192 NR \u2192 FSR FG preparation",
+      "passed": true
+    },
+    {
+      "check": "report marker: HIGH-CONFIDENCE PARITY MISMATCH",
+      "passed": true
+    },
+    {
+      "check": "report marker: Pass 5 \u2014 runtime validation",
+      "passed": true
+    },
+    {
+      "check": "evidence file exists: recovered_lifecycle_contract.json",
+      "passed": true
+    },
+    {
+      "check": "evidence file exists: integration_order.json",
+      "passed": true
+    },
+    {
+      "check": "evidence file exists: dvakolbas_lifecycle_comparison.json",
+      "passed": true
+    },
+    {
+      "check": "evidence file exists: nr_lifecycle_diagnostics.txt",
+      "passed": true
+    },
+    {
+      "check": "no vendor binary/PDB artifacts in evidence tree",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "passed": 43,
+  "failed": 0
+}

@@ -1,0 +1,43 @@
+{
+  "SkyrimUpscaler.dll": {
+    "expected": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "actual": "5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+    "match": true
+  },
+  "PDPerfPlugin.dll": {
+    "expected": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "actual": "53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+    "match": true
+  },
+  "nvngx_dlssnr.dll": {
+    "expected": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+    "actual": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+    "match": true
+  },
+  "required_pd_strings": {
+    "DLSSNR.Color": true,
+    "DLSSNR.Depth": true,
+    "DLSSNR.MVec": true,
+    "DLSSNR.Output": true,
+    "DLSSNR.UIAlpha": true,
+    "DLSSNR.UI": true,
+    "DLSSNR.Backbuffer": true,
+    "DLSSNR.Reset": true,
+    "DLSSNR.UICorrection": true,
+    "NGXNRHook": true
+  },
+  "landmark_text": {
+    "1802a2120": true,
+    "1802a226b": true,
+    "1802a2300": true,
+    "1802a25e0": true,
+    "180294e24": true,
+    "1802ab0cf": true,
+    "1800fa180": true,
+    "1800f4960": true,
+    "1800f4ae0": true
+  },
+  "parameter_string_lines": 73,
+  "diagnostic_string_lines": 79,
+  "all_pass": true
+}

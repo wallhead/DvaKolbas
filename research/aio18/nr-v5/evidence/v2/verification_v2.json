@@ -1,0 +1,351 @@
+{
+  "result": "PASS",
+  "checks": 86,
+  "failures": 0,
+  "details": [
+    {
+      "check": "SkyrimUpscaler.dll SHA256 = 5ded74be9bccefe4cff12cdd93e87cd079c017b0500dd1c5ec3150eaf08f7f81",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll SHA256 = 53b5068c01700aa1c6d551fce3827cf23f0cc3cf9f543737e6c6166a2ff441d1",
+      "passed": true
+    },
+    {
+      "check": "nvngx_dlssnr.dll SHA256 = 8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+      "passed": true
+    },
+    {
+      "check": "archive SHA256 = 136cbacda0d75373ad47e07c6017924edaaddbda063abaeb53f7e30734076af8",
+      "passed": true
+    },
+    {
+      "check": "SkyrimUpscaler.dll+0x2a25e0 bytes ff157a061d00",
+      "passed": true
+    },
+    {
+      "check": "SkyrimUpscaler.dll+0x2a2492 bytes c5fa104310",
+      "passed": true
+    },
+    {
+      "check": "SkyrimUpscaler.dll+0x2a24f8 bytes 4c89652844",
+      "passed": true
+    },
+    {
+      "check": "SkyrimUpscaler.dll+0x2a2513 bytes c6453001",
+      "passed": true
+    },
+    {
+      "check": "SkyrimUpscaler.dll+0x2a2524 bytes c5f81083cc020000",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9af8c bytes 4d8b01",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9afa7 bytes e8f4860600",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9aff8 bytes 4c8b4728",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9b44c bytes 448b8704010000",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9fdb4 bytes 4180b80301000000",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9ff96 bytes 41898a04010000",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9e643 bytes 33f6",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9e7eb bytes 4889742478",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9e7f0 bytes 4889b42480000000",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0xa0957 bytes 48837f2000",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0xa09f6 bytes 488b4708",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0xa0a02 bytes 4c8b6f20",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0xa0a1a bytes 488b7f48",
+      "passed": true
+    },
+    {
+      "check": "PDPerfPlugin.dll+0x9f1c1 bytes 4180bd0301000000",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Color",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.MVec",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Depth",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Output",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.ControlMask",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.UI",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.UIAlpha",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Backbuffer",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.BidirectionalDistortionField",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.MVecScaleX",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.MVecScaleY",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Intensity",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.LocalToneStrength",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.LocalStructureStrength",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.SkinStructureStrength",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.UseAutoMask",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Style",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Reset",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.DepthInverted",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.Enabled",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR.UICorrection",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSS.Indicator.Invert.X.Axis",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSS.Indicator.Invert.Y.Axis",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR debug: UIAlpha overwrite requested but uiAlpha is null",
+      "passed": true
+    },
+    {
+      "check": "PD string: DLSSNR: immediate D3D12 evaluate missing output.",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRBeforeUpscaling",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRPreset",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRStyle",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRIntensity",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRLocalToneStrength",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRLocalStructureStrength",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRSkinStructureStrength",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRUseAutoMask",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRUICorrection",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRResolveMethod",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRInputResolutionScale",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRTransferStrength",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRColourStrength",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRMaxRatio",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRWhitePoint",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRColorIsHdr",
+      "passed": true
+    },
+    {
+      "check": "host string: mDLSSNRPass",
+      "passed": true
+    },
+    {
+      "check": "external payload size 0x138",
+      "passed": true
+    },
+    {
+      "check": "internal NGX block size 0x110",
+      "passed": true
+    },
+    {
+      "check": "external map Color=0x008",
+      "passed": true
+    },
+    {
+      "check": "external map MVec=0x010",
+      "passed": true
+    },
+    {
+      "check": "external map Depth=0x018",
+      "passed": true
+    },
+    {
+      "check": "external map Output=0x020",
+      "passed": true
+    },
+    {
+      "check": "external map UI=0x030",
+      "passed": true
+    },
+    {
+      "check": "external map UIAlpha=0x038",
+      "passed": true
+    },
+    {
+      "check": "external map Backbuffer=0x040",
+      "passed": true
+    },
+    {
+      "check": "external map BidirectionalDistortionField=0x048",
+      "passed": true
+    },
+    {
+      "check": "external map PrivateUICorrectionRequest=0x103",
+      "passed": true
+    },
+    {
+      "check": "external map ResolveMethod=0x114",
+      "passed": true
+    },
+    {
+      "check": "external map PassCountOrPassMode=0x130",
+      "passed": true
+    },
+    {
+      "check": "internal map Color=0x000",
+      "passed": true
+    },
+    {
+      "check": "internal map UI=0x028",
+      "passed": true
+    },
+    {
+      "check": "internal map UIAlpha=0x030",
+      "passed": true
+    },
+    {
+      "check": "internal map Backbuffer=0x038",
+      "passed": true
+    },
+    {
+      "check": "internal map MVecScaleX=0x0D8",
+      "passed": true
+    },
+    {
+      "check": "internal map UICorrection=0x104",
+      "passed": true
+    },
+    {
+      "check": "internal map IndicatorInvertY=0x10C",
+      "passed": true
+    },
+    {
+      "check": "core UI/UIAlpha null and NGX UICorrection=0",
+      "passed": true
+    }
+  ]
+}

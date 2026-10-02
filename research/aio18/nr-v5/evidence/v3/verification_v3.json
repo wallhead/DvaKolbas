@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "check": "PD hash",
+      "passed": true
+    },
+    {
+      "check": "scale minimum 0.25",
+      "passed": true
+    },
+    {
+      "check": "scale native 1.0",
+      "passed": true
+    },
+    {
+      "check": "ratio defaults 1 1 2 1",
+      "passed": true
+    },
+    {
+      "check": "scale clamp maxss 0.25",
+      "passed": true
+    },
+    {
+      "check": "ratio selector compare method 2",
+      "passed": true
+    },
+    {
+      "check": "pass count external +130",
+      "passed": true
+    },
+    {
+      "check": "feature slot cap 16",
+      "passed": true
+    },
+    {
+      "check": "UI correction external +103 test",
+      "passed": true
+    },
+    {
+      "check": "private UI pipeline call",
+      "passed": true
+    },
+    {
+      "check": "report marker Auto is a selector",
+      "passed": true
+    },
+    {
+      "check": "report marker Lanczos3",
+      "passed": true
+    },
+    {
+      "check": "report marker luma ratio + OkLab",
+      "passed": true
+    },
+    {
+      "check": "report marker max_feature_slots_observed",
+      "passed": true
+    }
+  ],
+  "passed": 14,
+  "failed": 0
+}

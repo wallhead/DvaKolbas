@@ -1,0 +1,68 @@
+[DLSS NR]
+
+#NVIDIA DLSS Neural Reconstruction. Requires a compatible NVIDIA GPU and nvngx_dlssnr.dll.
+mEnableDLSSNR = false
+
+#GPU Description used for DLSS NR. Empty = same GPU as the game.
+#Selecting the same name as frame generation shares the FG device.
+#Requires a restart to take effect.
+mDLSSNRAdapterName =
+
+#Network preset used when creating the NR feature.
+#This DLL's weight table only ships preset 1 (Shipping); others fall back to default.
+#0 = Default
+#1 = Shipping
+#2-7 = Unused / fallback
+mDLSSNRPreset = 0
+
+#Style names were not recovered from the snippet. Range 0-7.
+mDLSSNRStyle = 0
+
+#NR effect strength. Range 0.0-1.0, default 1.0.
+mDLSSNRIntensity = 1.000000
+
+#Local tone reconstruction strength. Range 0.0-1.0, default 1.0.
+mDLSSNRLocalToneStrength = 1.000000
+
+#Local structure reconstruction strength. Range 0.0-1.0, default 1.0.
+mDLSSNRLocalStructureStrength = 1.000000
+
+#Skin structure reconstruction strength. Range 0.0-1.0, default 1.0.
+#Set to -1 to automatically copy Local Structure Strength when Auto Mask is enabled.
+mDLSSNRSkinStructureStrength = 1.000000
+
+#Automatically generate a skin mask instead of using an explicit control mask.
+mDLSSNRUseAutoMask = false
+
+#Attempt to preserve UI when reconstructing the image.
+mDLSSNRUICorrection = false
+
+#0 = Auto: scale>=1 uses 1:1; scale<1 uses Residual
+#1 = Residual: I + Lanczos3(NR_low - I_low)
+#2 = Ratio: luma ratio + OkLab
+mDLSSNRResolveMethod = 0
+
+#0 or >=1 = no downsample. Otherwise clamped to [0.25, 1).
+mDLSSNRInputResolutionScale = 1.000000
+
+#Ratio method only. 0 = bit-identical original.
+mDLSSNRTransferStrength = 1.000000
+
+#Ratio method only.
+mDLSSNRColourStrength = 1.000000
+
+#Ratio method only. 0 = default 2.
+mDLSSNRMaxRatio = 2.000000
+
+#Ratio encode white point. 0 = default 1.
+mDLSSNRWhitePoint = 1.000000
+
+#Tell NR the input color is HDR.
+mDLSSNRColorIsHdr = false
+
+#NR passes per frame when Yeah is false. Range 1-10, default 1.
+mDLSSNRPass = 1
+
+#Apply DLSS NR before upscaling to gain more performance.
+mDLSSNRBeforeUpscaling = false
+

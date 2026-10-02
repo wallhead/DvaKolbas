@@ -1,0 +1,96 @@
+{
+  "scope": "Pass 5 is a cross-pass static verification/review. It does not execute AIO18 or Skyrim and is not a substitute for live breakpoint/GPU capture.",
+  "passes_reviewed": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "contradictions": [],
+  "corrections_retained": [
+    {
+      "from": "Pass 1 tentative +0xE0/+0xE4 jitter interpretation",
+      "to": "MVecScaleX/MVecScaleY",
+      "closed_in": 2
+    },
+    {
+      "from": "external 0x138 payload treated as if directly equivalent to NGX parameters",
+      "to": "PD transforms 0x138 external payload into a separate 0x110 internal NGX block",
+      "closed_in": 2
+    },
+    {
+      "from": "UI/UIAlpha parameter-name presence could imply active NGX UI correction",
+      "to": "mapped AIO18 core writes NGX UI=null, UIAlpha=null, UICorrection=0 and performs private post-NR UI composition",
+      "closed_in": 2
+    },
+    {
+      "from": "Auto potentially separate reconstruction shader",
+      "to": "Auto is a selector: direct at native scale, Residual below native scale",
+      "closed_in": 3
+    },
+    {
+      "from": "generic multi-pass assumption",
+      "to": "separate feature handles, bounded pool (16), sequential extra passes, keep last successful pass",
+      "closed_in": 3
+    }
+  ],
+  "stable_architecture": {
+    "external_payload_bytes": 312,
+    "internal_ngx_block_bytes": 272,
+    "default_order": [
+      "scene",
+      "SR",
+      "late NR",
+      "FG prepare/presentation"
+    ],
+    "before_upscale_order": [
+      "scene/guides",
+      "NR",
+      "SR"
+    ],
+    "common_primary_reset": 0,
+    "core_ngx_ui": null,
+    "core_ngx_ui_alpha": null,
+    "core_ngx_ui_correction": 0,
+    "private_ui_composition": true,
+    "resolve_methods": {
+      "Auto": "direct at 1.0, Residual below 1.0",
+      "Residual": "I + Lanczos3(NR_low - I_low)",
+      "Ratio": "luma-ratio + OkLab family"
+    },
+    "minimum_reduced_input_scale": 0.25,
+    "max_feature_slots_observed": 16,
+    "extra_pass_failure": "keep last successful pass"
+  },
+  "aio18_static_concerns": [
+    "common primary NR Reset is fixed to zero; no camera-cut propagation found in mapped producer",
+    "extra-pass reset latches appear first-use/feature-create only in mapped region",
+    "feature handle is cleared after ReleaseFeature attempt even when diagnostics can report failure; runtime ownership consequence unknown"
+  ],
+  "dvakolbas_assessment": {
+    "stronger_than_literal_aio18": [
+      "camera/history reset policy",
+      "drain-before-destruction retirement",
+      "retain ownership after failed/unsubmitted recording"
+    ],
+    "high_confidence_parity_mismatch": "AIO18 core: UI=null, UIAlpha=null, UICorrection=0 + private UI composition; DvaKolbas can pass UI and enable UICorrection while also composing privately",
+    "classification": "parity mismatch, not proven bug",
+    "recommended_ab": "keep identical private UI composition and compare current path against NGX UI=null/UIAlpha=null/UICorrection=0",
+    "extensions_not_parity": [
+      "peripheral 80/90 compression",
+      "fused preparation",
+      "producer-color HDR proxy",
+      "independently sized/configured pass 2",
+      "DvaKolbas-specific extended-range/gamut reconstruction"
+    ]
+  },
+  "runtime_only_unknowns": [
+    "actual AIO18 per-frame Reset value under camera cut/load in a live run",
+    "exact fence/event completion semantics behind PD release synchronization helper",
+    "resource dimensions/formats/states at every live scheduling site",
+    "whether AIO18 companion-GPU NR is used on a target system and exact cross-adapter latency",
+    "visual/temporal effect of AIO18-style NGX UI-null contract versus DvaKolbas current UI input contract",
+    "exact runtime branch chosen for CS/ENB/ReShade combinations",
+    "feature handle lifetime during real device loss/recreate"
+  ]
+}

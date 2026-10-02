@@ -1,0 +1,30 @@
+{
+  "exact_build_only": true,
+  "before_upscale": {
+    "nr_call": "SkyrimUpscaler+0x294E24 -> common NR evaluator +0x2A2300",
+    "sr_call": "SkyrimUpscaler+0x294FBD -> PDPerfPlugin!EvaluateUpscaler",
+    "order": ["scene/guides", "NR", "SR"]
+  },
+  "normal_late_after_upscale": {
+    "prior_sr_landmark_from_fsr_re": "SkyrimUpscaler+0x19FA14",
+    "nr_call": "SkyrimUpscaler+0x2AB0CF -> common NR evaluator +0x2A2300",
+    "fsr_fg_prepare_call": "SkyrimUpscaler+0x2AB349 -> FG producer +0x2941A0",
+    "order": ["scene", "SR", "late NR", "FG prepare/presentation"],
+    "qualification": "UI/private composition and specialized deferred DLSS-G/FrameWarp branches have additional ordering and are not reduced to this single sequence."
+  },
+  "community_shaders_bridge": {
+    "call_rva": "0x265B0A",
+    "mode_arg_r8": 1,
+    "mode_arg_r9": 1,
+    "resource_wrapper": "host+0xAF8",
+    "classification": "STATIC_OBSERVED; exact semantic ownership of host+0xAF8 remains integration-specific"
+  },
+  "enb": {
+    "nr_specific_named_render_callback_found": false,
+    "previous_static_evidence": "AIO18 named ENB SDK use is limited to ENBGetSDKVersion; render ordering otherwise follows D3D11/proxy interposition."
+  },
+  "reshade": {
+    "previous_static_evidence": "begin_effects/finish_effects routing gates and reshade_present event exist; final ordering can be branch-dependent.",
+    "nr_specific_new_callback_found_in_pass4": false
+  }
+}

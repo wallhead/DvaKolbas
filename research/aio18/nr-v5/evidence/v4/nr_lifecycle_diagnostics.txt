@@ -1,0 +1,11 @@
+Selected exact AIO18 PDPerfPlugin.dll diagnostics used in Pass 4:
+
+DLSSNR: BeginCommandList failed (lost=%d device=%p queue=%p list=%p fence=%p), recreating SwapChain resources
+DLSSNR: BeginCommandList still failed while creating feature
+DLSSNR: ReinitAfterDeviceRecreate %s
+DLSSNR: extra pass %u failed, keeping %u pass(es)
+DLSSNR: skip local eval, depth=%p motion=%p (need committed GPU1 staging, not NT-shared)
+DLSSNR: failed to copy NT-shared backbuffer to local staging
+DLSSNR: skip present eval, committed color/output missing
+
+These strings are evidence of branches/intent; they are not runtime observations from this analysis session.

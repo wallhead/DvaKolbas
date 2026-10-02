@@ -4,6 +4,8 @@ This is a plain folder of reports, evidence, and address maps. Read it directly 
 
 ## Start here
 
+NR workstream (2026-10-03): [research checkpoint](NR_RESEARCH.md), [artifact/verification receipt](NR_RESEARCH.json), [supplied NR v5 report](../research/aio18/nr-v5/AIO18_NR_RE_v5.md), and [NR design draft](superpowers/specs/2026-10-03-nr-design.md). The NR archive is a separate evidence package from the FSR packages below. Its 79 checksummed members were verified; its scripts and disassembly were not rerun. The requested post-FG NR ordering is a new requirement, beyond the recovered AIO late-before-FG path.
+
 | Item | Contents |
 | --- | --- |
 | [Our RE findings](FSR_AIO_RE_NOTES.md) | Ghidra/Capstone findings, verified v2–v5 additions, and implications for TRP |

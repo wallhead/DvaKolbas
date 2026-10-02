@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-03",
+  "timezone": "Europe/Moscow",
+  "sourceBase": "90e8693572c1a688c805538fbf205b3faa72792e",
+  "referenceRepository": "C:/Users/user/Documents/ChatGPT/RazKolbas",
+  "referenceHead": "c89f7996aa4fc7888bfe3227f812f5e16601a8c2",
+  "archive": {
+    "path": "C:/Users/user/Downloads/AIO18_NR_RE_Evidence_v5.zip",
+    "sha256": "9fbb3221df4311e1e6d18cc88fbb442a52ec290d7008eae2e84bf66bc4393e7d",
+    "listedMemberChecksumsVerified": 79,
+    "extractedTextFiles": 80,
+    "embeddedScriptsExecuted": false,
+    "disassemblyIndependentlyRecomputed": false
+  },
+  "runtimeProfiles": [
+    {
+      "familySource": "5_series",
+      "path": "C:/Users/user/Downloads/nvngx_dlssnr_5_series/nvngx_dlssnr.dll",
+      "size": 165840496,
+      "sha256": "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",
+      "version": "310,8,0,0",
+      "authenticode": "Valid",
+      "signer": "CN=NVIDIA Corporation, OU=1005bk6, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US",
+      "executedByDvaKolbasThisResearch": false
+    },
+    {
+      "familySource": "4_series",
+      "path": "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+      "size": 165840496,
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "version": "310,8,0,0",
+      "authenticode": "HashMismatch",
+      "signer": "CN=NVIDIA Corporation, OU=1005bk6, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US",
+      "executedByDvaKolbasThisResearch": false
+    },
+    {
+      "familySource": "plainfp16_for_2_3_series",
+      "path": "C:/Users/user/Downloads/nvngx_dlssnr_plainfp16_for_2_3_series/nvngx_dlssnr.dll",
+      "size": 309671536,
+      "sha256": "6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8",
+      "version": "310,8,0,0",
+      "authenticode": "HashMismatch",
+      "signer": "CN=NVIDIA Corporation, OU=1005bk6, O=NVIDIA Corporation, L=Santa Clara, S=California, C=US",
+      "executedByDvaKolbasThisResearch": false
+    }
+  ],
+  "sourceBlobMatches": [
+    {
+      "path": "src/FrameGen/NeuralRenderingFeatureSession.cpp",
+      "gitBlob": "de1dc91e021f01b0b5bfe2aa205fae0c48505b63",
+      "matchesSuppliedReview": true
+    },
+    {
+      "path": "src/FrameGen/NeuralRenderingRuntimeContract.h",
+      "gitBlob": "7d1b5d4caa04767bceb30d71fd153dea4aa67d27",
+      "matchesSuppliedReview": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGBackend.cpp",
+      "gitBlob": "ef4c95a11adadec3369a12ddd244fbb46ed31976",
+      "matchesSuppliedReview": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGNeuralRendering.cpp",
+      "gitBlob": "b18e1e4525b932d292d307d5098dbab3285b6d1a",
+      "matchesSuppliedReview": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGNeuralSecondPass.inl",
+      "gitBlob": "cac5f1d849f599e2030918c9fbcffe99b8a411fe",
+      "matchesSuppliedReview": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGNeuralState.h",
+      "gitBlob": "b180989157f3c7d8e22c5d2f9b9e428edb98aa8e",
+      "matchesSuppliedReview": true
+    }
+  ],
+  "gpuInventory": [
+    {
+      "Name": "AMD Radeon(TM) Graphics",
+      "PNPDeviceID": "PCI\\VEN_1002&DEV_13C0&SUBSYS_7E471462&REV_E6\\4&30EE4ECB&0&0041",
+      "DriverVersion": "32.0.21043.5001"
+    },
+    {
+      "Name": "NVIDIA GeForce RTX 4080 SUPER",
+      "PNPDeviceID": "PCI\\VEN_10DE&DEV_2702&SUBSYS_F3041569&REV_A1\\4&B365045&0&0009",
+      "DriverVersion": "32.0.16.1714"
+    }
+  ],
+  "userClarifications": [
+    "One NR pass: Before or After",
+    "After FG, including generated frames"
+  ],
+  "fsrPostOutputBoundary": "Pinned FfxApiPresentCallbackFunc exposes currentBackBuffer/currentUI/outputSwapChainBuffer/isGeneratedFrame/frameID/commandList",
+  "nvidiaPostOutputBoundary": "No per-output callback in inspected public Streamline 2.11.1 sl_dlss_g.h; private adapter must be proven",
+  "generatedNrGuideBoundary": "NOT ESTABLISHED: matching generated-image depth/motion and temporal history require standalone validation",
+  "runtimeHardwareTestsThisResearch": "NOT RUN",
+  "rendererOrGameOrMo2SettingsChanged": false
+}

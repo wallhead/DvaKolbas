@@ -1,0 +1,423 @@
+{
+  "size_bytes": 312,
+  "module": "SkyrimUpscaler.dll -> PDPerfPlugin.dll external evaluate ABI",
+  "fields": [
+    {
+      "offset": "0x000",
+      "size": 4,
+      "role": "reserved_or_route_header",
+      "type": "uint32",
+      "notes": "common host producer writes zero; not consumed as an NGX parameter by the mapped core writer"
+    },
+    {
+      "offset": "0x008",
+      "size": 8,
+      "role": "Color",
+      "type": "resource"
+    },
+    {
+      "offset": "0x010",
+      "size": 8,
+      "role": "MVec",
+      "type": "resource"
+    },
+    {
+      "offset": "0x018",
+      "size": 8,
+      "role": "Depth",
+      "type": "resource"
+    },
+    {
+      "offset": "0x020",
+      "size": 8,
+      "role": "Output",
+      "type": "resource"
+    },
+    {
+      "offset": "0x028",
+      "size": 8,
+      "role": "ControlMask",
+      "type": "resource"
+    },
+    {
+      "offset": "0x030",
+      "size": 8,
+      "role": "UI",
+      "type": "resource",
+      "notes": "used by PD private correction/composition; core NGX block nulls UI"
+    },
+    {
+      "offset": "0x038",
+      "size": 8,
+      "role": "UIAlpha",
+      "type": "resource",
+      "notes": "identified by PD diagnostic; core NGX block nulls UIAlpha"
+    },
+    {
+      "offset": "0x040",
+      "size": 8,
+      "role": "Backbuffer",
+      "type": "resource",
+      "notes": "distinct route input; common Skyrim producer leaves null"
+    },
+    {
+      "offset": "0x048",
+      "size": 8,
+      "role": "BidirectionalDistortionField",
+      "type": "resource"
+    },
+    {
+      "offset": "0x050",
+      "size": 4,
+      "role": "ColorSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x054",
+      "size": 4,
+      "role": "ColorSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x058",
+      "size": 4,
+      "role": "ColorSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x05C",
+      "size": 4,
+      "role": "ColorSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x060",
+      "size": 4,
+      "role": "MVecSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x064",
+      "size": 4,
+      "role": "MVecSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x068",
+      "size": 4,
+      "role": "MVecSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x06C",
+      "size": 4,
+      "role": "MVecSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x070",
+      "size": 4,
+      "role": "DepthSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x074",
+      "size": 4,
+      "role": "DepthSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x078",
+      "size": 4,
+      "role": "DepthSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x07C",
+      "size": 4,
+      "role": "DepthSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x080",
+      "size": 4,
+      "role": "OutputSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x084",
+      "size": 4,
+      "role": "OutputSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x088",
+      "size": 4,
+      "role": "OutputSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x08C",
+      "size": 4,
+      "role": "OutputSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x090",
+      "size": 4,
+      "role": "ControlMaskSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x094",
+      "size": 4,
+      "role": "ControlMaskSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x098",
+      "size": 4,
+      "role": "ControlMaskSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x09C",
+      "size": 4,
+      "role": "ControlMaskSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0A0",
+      "size": 4,
+      "role": "UISubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0A4",
+      "size": 4,
+      "role": "UISubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0A8",
+      "size": 4,
+      "role": "UISubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0AC",
+      "size": 4,
+      "role": "UISubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0B0",
+      "size": 4,
+      "role": "UIAlphaSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0B4",
+      "size": 4,
+      "role": "UIAlphaSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0B8",
+      "size": 4,
+      "role": "UIAlphaSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0BC",
+      "size": 4,
+      "role": "UIAlphaSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0C0",
+      "size": 4,
+      "role": "BackbufferSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0C4",
+      "size": 4,
+      "role": "BackbufferSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0C8",
+      "size": 4,
+      "role": "BackbufferSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0CC",
+      "size": 4,
+      "role": "BackbufferSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0D0",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectBaseX",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0D4",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectBaseY",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0D8",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectWidth",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0DC",
+      "size": 4,
+      "role": "BidirectionalDistortionFieldSubrectHeight",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x0E0",
+      "size": 4,
+      "role": "BaseMVecScaleX",
+      "type": "float",
+      "notes": "Pass-1 jitter label corrected; host source is host+0x10"
+    },
+    {
+      "offset": "0x0E4",
+      "size": 4,
+      "role": "BaseMVecScaleY",
+      "type": "float",
+      "notes": "Pass-1 jitter label corrected; host source is host+0x14"
+    },
+    {
+      "offset": "0x0E8",
+      "size": 4,
+      "role": "Intensity",
+      "type": "float"
+    },
+    {
+      "offset": "0x0EC",
+      "size": 4,
+      "role": "LocalToneStrength",
+      "type": "float"
+    },
+    {
+      "offset": "0x0F0",
+      "size": 4,
+      "role": "LocalStructureStrength",
+      "type": "float"
+    },
+    {
+      "offset": "0x0F4",
+      "size": 4,
+      "role": "SkinStructureStrength",
+      "type": "float"
+    },
+    {
+      "offset": "0x0F8",
+      "size": 1,
+      "role": "UseAutoMask",
+      "type": "bool8"
+    },
+    {
+      "offset": "0x0FC",
+      "size": 4,
+      "role": "Style",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x100",
+      "size": 1,
+      "role": "Reset",
+      "type": "bool8"
+    },
+    {
+      "offset": "0x101",
+      "size": 1,
+      "role": "DepthInverted",
+      "type": "bool8"
+    },
+    {
+      "offset": "0x102",
+      "size": 1,
+      "role": "Enabled",
+      "type": "bool8"
+    },
+    {
+      "offset": "0x103",
+      "size": 1,
+      "role": "PrivateUICorrectionRequest",
+      "type": "bool8",
+      "notes": "PD private path flag; not forwarded to NGX UICorrection"
+    },
+    {
+      "offset": "0x108",
+      "size": 8,
+      "role": "reserved_or_route_state",
+      "type": "uint64",
+      "notes": "common Skyrim producer writes zero"
+    },
+    {
+      "offset": "0x110",
+      "size": 1,
+      "role": "RouteSelector",
+      "type": "uint8",
+      "notes": "routing/private behavior; not part of the 0x110 internal NGX parameter block"
+    },
+    {
+      "offset": "0x114",
+      "size": 4,
+      "role": "ResolveMethod",
+      "type": "uint32"
+    },
+    {
+      "offset": "0x118",
+      "size": 4,
+      "role": "InputResolutionScale",
+      "type": "float"
+    },
+    {
+      "offset": "0x11C",
+      "size": 4,
+      "role": "TransferStrength",
+      "type": "float"
+    },
+    {
+      "offset": "0x120",
+      "size": 4,
+      "role": "ColourStrength",
+      "type": "float"
+    },
+    {
+      "offset": "0x124",
+      "size": 4,
+      "role": "MaxRatio",
+      "type": "float"
+    },
+    {
+      "offset": "0x128",
+      "size": 4,
+      "role": "WhitePoint",
+      "type": "float"
+    },
+    {
+      "offset": "0x12C",
+      "size": 1,
+      "role": "ColorIsHdr",
+      "type": "bool8"
+    },
+    {
+      "offset": "0x130",
+      "size": 4,
+      "role": "PassCountOrPassMode",
+      "type": "uint32"
+    }
+  ]
+}

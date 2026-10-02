@@ -1,0 +1,24 @@
+{
+  "repository": "wallhead/DvaKolbas",
+  "branch": "codex/fsr-sr",
+  "current_head": "f6a29f75db0029acf013227627a52e2e490733c6",
+  "pass4_reviewed_head": "78d6e4bd9db2146104a7485d46174684b954c3f1",
+  "nr_blobs_unchanged_since_pass4": true,
+  "files": {
+    "src/FrameGen/NeuralRenderingFeatureSession.cpp": "de1dc91e021f01b0b5bfe2aa205fae0c48505b63",
+    "src/FrameGen/NeuralRenderingRuntimeContract.h": "7d1b5d4caa04767bceb30d71fd153dea4aa67d27",
+    "src/FrameGen/SourceDLSSGBackend.cpp": "ef4c95a11adadec3369a12ddd244fbb46ed31976",
+    "src/FrameGen/SourceDLSSGNeuralRendering.cpp": "b18e1e4525b932d292d307d5098dbab3285b6d1a",
+    "src/FrameGen/SourceDLSSGNeuralSecondPass.inl": "cac5f1d849f599e2030918c9fbcffe99b8a411fe",
+    "src/FrameGen/SourceDLSSGNeuralState.h": "b180989157f3c7d8e22c5d2f9b9e428edb98aa8e"
+  },
+  "current_contract": {
+    "ngx_resources": "FeatureSession::RecordEvaluation sets Color/MVec/Depth/Output/ControlMask/Backbuffer/UI/UIAlpha/BDF from EvaluationInput",
+    "ngx_ui_correction": "WriteTuningParameters can set DLSSNR.UICorrection from tuning.uiCorrection; default Tuning.uiCorrection=false",
+    "private_ui_composition": true,
+    "camera_history_reset": "NeuralHistory::ResetFor includes cameraReset, activation transitions and image-affecting option changes",
+    "retirement": "Backend::Quiesce stops session, signals final D3D11 work, drains interop, then destroys NeuralPass and feature ownership",
+    "failed_recording_policy": "failed/unsubmitted NR recording prevents quiescent destruction",
+    "second_pass_reset": "first.reset OR secondHistoryInvalid OR second feature first evaluation"
+  }
+}

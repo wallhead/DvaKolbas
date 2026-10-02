@@ -1,0 +1,34 @@
+{
+  "reviewed_dvakolbas_head": "7f4ac08539b9cf655bfd2d0e6fc0f8c344daeb34",
+  "matches": [
+    "NGX resource key vocabulary",
+    "310.8 reconstruction runtime identity",
+    "SetI for UseAutoMask/Reset/DepthInverted/Enabled/UICorrection",
+    "SetUI for Style",
+    "SetF tuning values and motion scales",
+    "separate private reconstruction/resolve layer"
+  ],
+  "static_behavior_differences": [
+    {
+      "topic": "NGX UI resources",
+      "AIO18": "core NGX block sets DLSSNR.UI and DLSSNR.UIAlpha null",
+      "DvaKolbas": "RecordEvaluation forwards non-null UI/UIAlpha when supplied"
+    },
+    {
+      "topic": "NGX UICorrection",
+      "AIO18": "core NGX block forces DLSSNR.UICorrection=0; external correction flag drives PD private composition",
+      "DvaKolbas": "WriteTuningParameters forwards requested uiCorrection into NGX"
+    },
+    {
+      "topic": "Subrect policy",
+      "AIO18": "common external payload starts with zero subrects; builder selectively transforms/overrides effective work rectangles",
+      "DvaKolbas": "writes explicit full subrects for core inputs/outputs and optional resources"
+    },
+    {
+      "topic": "Backbuffer",
+      "AIO18": "external Backbuffer can be null; route selects/falls back to context resource or Output",
+      "DvaKolbas": "RecordEvaluation requires a non-null backbuffer"
+    }
+  ],
+  "qualification": "These are static behavioral differences, not by themselves confirmed DvaKolbas bugs. Pass 3/4 and runtime evidence are needed before changing working behavior."
+}
