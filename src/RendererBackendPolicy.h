@@ -5,7 +5,7 @@
 
 namespace TheosRenderPipeline
 {
-    inline Upscaling::BackendDecision ResolveBackend(const Upscaling::BackendConfiguration& config, bool fsrBuilt)
+    inline Upscaling::BackendDecision ResolveBackend(const Upscaling::BackendConfiguration& config, bool fsrBuilt, bool fsrFgBuilt = false)
     {
         using namespace Upscaling;
         BackendDecision decision{config.backend, PresentationKind::Nvidia, false, config.generationEnabled, {}};
@@ -15,9 +15,16 @@ namespace TheosRenderPipeline
             else { decision.valid = true; }
         } else if (config.backend == BackendKind::Fsr) {
             decision.presentation = PresentationKind::Ordinary;
+            if (config.generationBackend == 2) decision.presentation = PresentationKind::Fsr;
             if (!fsrBuilt) { decision.diagnostic = "FSR support is unavailable in this build."; }
-            else if (config.generationEnabled || config.generationBackend != 0) {
-                decision.diagnostic = "FSR currently requires frame generation off and ordinary presentation (backend 0).";
+            else if (config.generationBackend != 0 && config.generationBackend != 2) {
+                decision.diagnostic = "FSR requires ordinary presentation (backend 0) or the FSR presenter (backend 2).";
+            } else if (config.generationBackend == 0 && config.generationEnabled) {
+                decision.diagnostic = "Ordinary FSR presentation requires frame generation off.";
+            } else if (config.generationBackend == 2 && !fsrFgBuilt) {
+                decision.diagnostic = "FSR frame generation support is unavailable in this build.";
+            } else if (config.generationBackend == 2 && config.providerPolicy != ProviderPolicy::Analytical) {
+                decision.diagnostic = "FSR frame generation initially requires the analytical SR provider.";
             } else if (config.neuralRendering) { decision.diagnostic = "Neural Rendering is unavailable with FSR."; }
             else if (config.hdr) { decision.diagnostic = "HDR output is not validated with FSR."; }
             else if (config.dynamicResolution) { decision.diagnostic = "FSR currently requires fixed render dimensions."; }

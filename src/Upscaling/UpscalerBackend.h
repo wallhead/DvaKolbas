@@ -18,7 +18,7 @@ namespace TheosRenderPipeline::Upscaling
     struct ProviderInfo { std::uint64_t id{}; std::string name; };
     enum class GenerationPreparationStatus { NotRequested, Succeeded, Failed };
     enum class UpscaleOutcome { Temporal, SpatialRecovery, SkippedInvalidInput, Fatal };
-    enum class PresentationKind { Ordinary, Nvidia };
+    enum class PresentationKind { Ordinary, Nvidia, Fsr };
     enum class ErrorKind {
         MissingRuntime, WrongArchitecture, MissingExport, IncompatibleAbi,
         NoProvider, UnsupportedDevice, InvalidInput, ContextFailure,

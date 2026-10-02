@@ -25,3 +25,15 @@ Probe command: `TRPFsrGenerationProviderProbe <absolute plugin root containing F
 Validation: observed failing optional-load, deterministic-selection and typed-created-provider tests before implementation; targeted `FsrRuntime` and `FsrGenerationRuntime` passed 2/2. `FSRGenerationAcquisitionTests.ps1` passed SR-only, opt-in and tamper cases. The SR-only Standard Release build succeeded and its full runnable suite passed 119/119 (22.28 seconds). Three Graphics Tools-dependent tests remain unavailable and excluded as previously authorized.
 
 Remaining: source/rate policy; typed FG context and SDK session; scene/UI transport and fences; AMD presentation/lifecycle; actual-GPU generation fixture; host/settings/ReShade integration; package and gameplay acceptance. FG is not activated in Skyrim.
+
+## Source identity and suppression
+
+Backend 2 is reserved for FSR's AMD presenter. The explicit resolver capability requires both SR and FG support plus analytical SR, SDR, fixed dimensions and NR off. Backend 0 remains ordinary SR, and 1 remains NVIDIA. Disabling generation retains an already selected AMD presenter. Host/INI/settings admission stays closed until standalone validation and Task 7 integration.
+
+History admits each real source once. Duplicate/out-of-order/zero IDs cannot enter Configure; a forward gap admits one disabled source and clears reentry. SDK generation success remains separate from this eligibility decision. Reasons use static string views. `Decide` mutates its source/rate history; `AcknowledgePrepared` accepts only the current eligible pending source, and invalidation clears that acknowledgment.
+
+Analytical rate policy: rolling mean of eight source deltas; suppress at three successive means below 60 FPS; enable after eight successive means at least 66 FPS. Initial eligible source is 15 for a steady qualifying input. Invalid time, a delta >=100ms, menus, non-temporal sources, incomplete UI, invalid guides/camera and camera/extent resets clear reentry. Reentry requires Prepare(reset=true); its success acknowledges history.
+
+Audit: 165 source/package commits reachable from `HEAD`, `codex/dlss-fg-baseline` and `wallhead/codex/fsr-sr`; unrelated broken application capture refs excluded. The historical `mode==2` ternary selected FSR upscaling and set presentation backend 0. No existing backend 2 meaning was found in the named reachable history.
+
+Validation: old resolver failed the new supported-FG request before implementation. New policy covers both compiled capability states, exact rate boundaries/hysteresis, duplicate/gapped sources, non-temporal/menu/UI suppression, stalls, invalid camera/time and failed/stale acknowledgment. The FG-enabled Standard Release build and full runnable suite passed 121/121 (22.57 seconds), including settings/actions, startup preferences and runtime regressions. No game-facing FG activation or DLL installation.
