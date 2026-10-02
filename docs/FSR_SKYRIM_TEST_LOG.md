@@ -28,3 +28,11 @@ Before the diagnostic correction, a new regression reproduced the missing spatia
 
 
 The diagnostic Standard build from clean code revision `ceb5c18e333f89a38270f1f5c26d2a7e866624f2` passed all 118 runnable tests and is installed in the same test mod. Installed DLL SHA-256: `fbb585b9c2ff1f729c5341285e45c3fd57f49bdb52d343715989cb38f59d27f2`. Exact package/runtime/import/configuration validation passed. The existing INI and MO2 profile were preserved, and the previous DLL/log were backed up. The next manual launch must capture the failing spatial-conversion stage; this is an instrumented investigation build, not a claim that the black screen is fixed.
+
+## 2026-10-02: future logging improved; next manual run pending
+
+The spatial diagnostic build above was superseded before a further Skyrim launch by logging build `902f1ec0bb103b8d18a701b08278deb1edd0c519`. Installed DLL SHA-256: `8338c2be0444e680d94f2c75581b31d63d15d17de41005d8687cba113a74e6e3`. The Standard build passed 118 runnable tests; FSR-disabled Standard passed 108. Installed package hashes, pinned runtimes, configuration and imports passed validation. Previous DLL/INI/manifest/meta/log were backed up locally. The MO2 profile hash was unchanged; the INI gained only quiet diagnostic switches.
+
+The renderer now retains its logger during SKSE initialization, preserving the edition/source revision/DLL-path/runtime banner previously erased by CommonLib's default logger. Logs include date and thread and rotate on opening/at 5 MiB, retaining up to three archives. Normal logs contain startup identity/provider/extents, first-frame descriptors, bounded spatial/temporal transitions and an automatic failure snapshot. Frame and performance detail are opt-in; performance summaries default to a ten-second wall-time interval. GPU measurements remain available independently of text logging. A current operation error takes priority over any older frame-adapter error.
+
+Regression checks cover quiet defaults, INI round trips, interval bounds and production WARP GPU measurement with text logs disabled/enabled. The SKSE banner and in-game failure snapshot are still awaiting the next actual Skyrim launch. See [logging options](DIAGNOSTICS.md). The black-screen root cause remains unconfirmed; frame delivery and gameplay have not passed acceptance.

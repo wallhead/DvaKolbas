@@ -711,7 +711,7 @@
     "fsrDisabledStandardReleaseRunnableTestsPassed": 108,
     "productionD3D11CacheAndUiSentinelAndResize": "PASS",
     "correctedStandardDllInstalled": true,
-    "manualSkyrimRetry": "PENDING",
+    "manualSkyrimRetry": "RETRIED: buffers/context initialize; later first-loading-frame delivery failure",
     "graphicsToolsChecks": "3 excluded per configuration; unavailable",
     "crossVendor": "NOT RUN",
     "frameGeneration": "NOT IMPLEMENTED"
@@ -722,8 +722,22 @@
     "secondSkyrimLaunch": "Context and buffers initialized; first loading-menu spatial frame failed and stopped rendering",
     "rootCause": "UNCONFIRMED; prior spatial error reason was not retained",
     "diagnosticRegression": "Failed before error-retention fix; extent/descriptor/bridge diagnostics pass afterward",
-    "installed": true,
-    "nextManualRun": "REQUIRED",
+    "installed": false,
+    "nextManualRun": "Superseded by logging diagnostic build",
     "blackScreenResolved": false
+  },
+  "loggingDiagnosticBuild": {
+    "sourceRevision": "902f1ec0bb103b8d18a701b08278deb1edd0c519",
+    "standardReleaseRunnableTestsPassed": 118,
+    "fsrDisabledStandardReleaseRunnableTestsPassed": 108,
+    "quietDefaultsAndIniRoundTrip": "PASS",
+    "wallTimeRateLimit": "PASS",
+    "productionGpuMeasurementIndependentOfTextLogs": "PASS",
+    "installed": true,
+    "installedPackageValidation": "PASS",
+    "skseStartupBannerAndFailureSnapshots": "PENDING actual Skyrim launch",
+    "graphicsToolsChecks": "3 excluded per configuration; unavailable",
+    "blackScreenResolved": false,
+    "requiresManualDiagnosticRun": true
   }
 }
