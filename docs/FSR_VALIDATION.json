@@ -804,5 +804,20 @@
     "inGameCrashResolutionVerified": true,
     "acceptanceScope": "NR click retry reported successful by user; latest log shows menu spatial SR and overlay open/close, not a new loaded-world temporal acceptance run",
     "retryLogErrorsOrCriticalEntries": 0
+  },
+  "fsrFrameGeneration": {
+    "builtCodeRevision": "495035ff8cfa5088b7dd45c0d861306dbc2cb218",
+    "implementation": "implemented; acceptance pending",
+    "buildConfigurationsPassed": 6,
+    "totalRunnableTestsPassed": 754.0,
+    "record": "FSR_FG_BUILD_VALIDATION.json",
+    "packages": "FSR_FG_PACKAGES.json",
+    "graphicsToolsChecks": "3 excluded; unavailable",
+    "amdIntelHardware": "not run",
+    "visibleUiAndCadence": "pending: user cannot run test yet",
+    "skyrimFg": "not installed",
+    "installedSrUnchanged": true,
+    "additionalSrOnlyMinimalSdkTestsPassed": 121,
+    "allBuildConfigurationTestsPassed": 875
   }
 }

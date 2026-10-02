@@ -1,0 +1,1431 @@
+{
+  "date": "2026-10-02",
+  "builtCodeRevision": "495035ff8cfa5088b7dd45c0d861306dbc2cb218",
+  "state": "staged and validated; not installed",
+  "frameGenerationImplemented": true,
+  "automaticUiAppearance": "pending: user cannot run visible fixture yet",
+  "physicalCadence": "pending",
+  "skyrimFgGameplay": "not run",
+  "packages": [
+    {
+      "preset": "fsr-fg-standard",
+      "buildIdentity": {
+        "edition": "Standard",
+        "sourceRevision": "495035ff8cfa",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": true
+      },
+      "pluginSha256": "95e00f60ff1821fefc47b35c341da4d27d2490787dfbe824d59269f51be11b88",
+      "package": {
+        "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-standard\\Standard-FSR-FG",
+        "zip": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-standard\\Standard-FSR-FG.zip",
+        "zipSha256": "f54ea91b401712a54fb51d29b817a495b64c69cf3f10d25f112a7156f557efe6",
+        "manifestSha256": "cf991b40835f446e2cd8bfe270b6a40990f2d96e51f5e4ab1ed996395f97a3d0",
+        "manifest": {
+          "schema": 2,
+          "edition": "Standard",
+          "fsrEnabled": true,
+          "neuralRenderingCompiled": true,
+          "frameGenerationImplemented": true,
+          "frameGenerationCompiled": true,
+          "buildIdentity": {
+            "edition": "Standard",
+            "sourceRevision": "495035ff8cfa",
+            "sourceClean": true,
+            "fsrCompiled": true,
+            "frameGenerationCompiled": true,
+            "neuralRenderingCompiled": true
+          },
+          "dllImports": {
+            "SKSE/Plugins/TheosRenderPipeline.dll": [
+              {
+                "module": "d3d12.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "D3DCOMPILER_47.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "bcrypt.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ADVAPI32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ole32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "IMM32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-filesystem-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-locale-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-multibyte-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-time-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-utility-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "SHELL32.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "WINMM.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll": [
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              }
+            ]
+          },
+          "providerVersions": [
+            {
+              "effect": "FrameGeneration",
+              "id": "17726168133342859270",
+              "name": "3.1.6"
+            },
+            {
+              "effect": "FrameGenerationSwapChain",
+              "id": "17752306900579389447",
+              "name": "3.1.7"
+            }
+          ],
+          "sdkRelease": "v2.3.0",
+          "sdkCommit": "60f4ea81909200d8542eca14dccb2628b763a9a3",
+          "files": [
+            {
+              "path": "AMD-FidelityFX-license.md",
+              "bytes": 60891,
+              "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963"
+            },
+            {
+              "path": "FSR_TEST_CHECKLIST.md",
+              "bytes": 8550,
+              "sha256": "630a35c14a8bab0a0821f67a07073dd8bd04cd0f420371d693c208285fe8ebde"
+            },
+            {
+              "path": "FSR-API-MIT-NOTICE.txt",
+              "bytes": 1136,
+              "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5"
+            },
+            {
+              "path": "LICENSE",
+              "bytes": 37453,
+              "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d"
+            },
+            {
+              "path": "README.md",
+              "bytes": 1856,
+              "sha256": "e5b1caaa7a3f2a3f98a6f25a21832058b1679406f320a19dd23124423b6805de"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll",
+              "bytes": 40085776,
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll",
+              "bytes": 26376,
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll",
+              "bytes": 28761864,
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.dll",
+              "bytes": 2809344,
+              "sha256": "95e00f60ff1821fefc47b35c341da4d27d2490787dfbe824d59269f51be11b88"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.ini",
+              "bytes": 4817,
+              "sha256": "5a4afd28db453a95181569b22e0f98c41e04881ab6a0d968b7905600328ac55d"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl",
+              "bytes": 5670,
+              "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipelineImGui.ini",
+              "bytes": 915,
+              "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616"
+            },
+            {
+              "path": "THIRD_PARTY_FSR.md",
+              "bytes": 2668,
+              "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11"
+            }
+          ]
+        },
+        "unpackedValidation": "PASS",
+        "installed": false
+      }
+    },
+    {
+      "preset": "fsr-fg-universal",
+      "buildIdentity": {
+        "edition": "Universal",
+        "sourceRevision": "495035ff8cfa",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": true
+      },
+      "pluginSha256": "439c0d7e39c28a03fdba793e4cfd56675ae21f010a130ae9f8290ce2528cf42a",
+      "package": {
+        "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-universal\\Universal-FSR-FG",
+        "zip": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-universal\\Universal-FSR-FG.zip",
+        "zipSha256": "127970aae7e676f3bb37843400cd0601da7e6c0cb2ef5c68f156b3537a6bc128",
+        "manifestSha256": "2687f2ca114c6b4a8a98c44fae7bde4698ca31a95e72b287f0ce7f5cc33facf2",
+        "manifest": {
+          "schema": 2,
+          "edition": "Universal",
+          "fsrEnabled": true,
+          "neuralRenderingCompiled": true,
+          "frameGenerationImplemented": true,
+          "frameGenerationCompiled": true,
+          "buildIdentity": {
+            "edition": "Universal",
+            "sourceRevision": "495035ff8cfa",
+            "sourceClean": true,
+            "fsrCompiled": true,
+            "frameGenerationCompiled": true,
+            "neuralRenderingCompiled": true
+          },
+          "dllImports": {
+            "SKSE/Plugins/TheosRenderPipeline.dll": [
+              {
+                "module": "d3d12.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "D3DCOMPILER_47.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "bcrypt.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ADVAPI32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ole32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "IMM32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-filesystem-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-locale-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-multibyte-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-time-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-utility-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "SHELL32.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "WINMM.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll": [
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              }
+            ]
+          },
+          "providerVersions": [
+            {
+              "effect": "FrameGeneration",
+              "id": "17726168133342859270",
+              "name": "3.1.6"
+            },
+            {
+              "effect": "FrameGenerationSwapChain",
+              "id": "17752306900579389447",
+              "name": "3.1.7"
+            }
+          ],
+          "sdkRelease": "v2.3.0",
+          "sdkCommit": "60f4ea81909200d8542eca14dccb2628b763a9a3",
+          "files": [
+            {
+              "path": "AMD-FidelityFX-license.md",
+              "bytes": 60891,
+              "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963"
+            },
+            {
+              "path": "FSR_TEST_CHECKLIST.md",
+              "bytes": 8550,
+              "sha256": "630a35c14a8bab0a0821f67a07073dd8bd04cd0f420371d693c208285fe8ebde"
+            },
+            {
+              "path": "FSR-API-MIT-NOTICE.txt",
+              "bytes": 1136,
+              "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5"
+            },
+            {
+              "path": "LICENSE",
+              "bytes": 37453,
+              "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d"
+            },
+            {
+              "path": "README.md",
+              "bytes": 1857,
+              "sha256": "aba1d190403d8bba99e28f4ac911410c494b80b537b5a8a49ce6e16eeef16456"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll",
+              "bytes": 40085776,
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll",
+              "bytes": 26376,
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll",
+              "bytes": 28761864,
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.dll",
+              "bytes": 2933760,
+              "sha256": "439c0d7e39c28a03fdba793e4cfd56675ae21f010a130ae9f8290ce2528cf42a"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.ini",
+              "bytes": 4817,
+              "sha256": "5a4afd28db453a95181569b22e0f98c41e04881ab6a0d968b7905600328ac55d"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl",
+              "bytes": 5670,
+              "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipelineImGui.ini",
+              "bytes": 915,
+              "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616"
+            },
+            {
+              "path": "THIRD_PARTY_FSR.md",
+              "bytes": 2668,
+              "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11"
+            }
+          ]
+        },
+        "unpackedValidation": "PASS",
+        "installed": false
+      }
+    },
+    {
+      "preset": "fsr-fg-standard-nr-off",
+      "buildIdentity": {
+        "edition": "Standard",
+        "sourceRevision": "495035ff8cfa",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": false
+      },
+      "pluginSha256": "b8050763aa3492678d7d9924ca2ea699c5af9cee91d70b01a74c5199659dead3",
+      "package": {
+        "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-standard-nr-off\\Standard-FSR-FG",
+        "zip": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-standard-nr-off\\Standard-FSR-FG.zip",
+        "zipSha256": "72008d915c312a802316a11d043d033b0cd479c5de91cce461df916bffb1f693",
+        "manifestSha256": "f3bb1ec56cbe3e10fad40a4856130505c1270b150526a89af87e3e4e6cd97a32",
+        "manifest": {
+          "schema": 2,
+          "edition": "Standard",
+          "fsrEnabled": true,
+          "neuralRenderingCompiled": false,
+          "frameGenerationImplemented": true,
+          "frameGenerationCompiled": true,
+          "buildIdentity": {
+            "edition": "Standard",
+            "sourceRevision": "495035ff8cfa",
+            "sourceClean": true,
+            "fsrCompiled": true,
+            "frameGenerationCompiled": true,
+            "neuralRenderingCompiled": false
+          },
+          "dllImports": {
+            "SKSE/Plugins/TheosRenderPipeline.dll": [
+              {
+                "module": "d3d12.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "D3DCOMPILER_47.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "bcrypt.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ADVAPI32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ole32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "IMM32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-filesystem-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-locale-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-multibyte-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-time-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-utility-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "SHELL32.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "WINMM.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll": [
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              }
+            ]
+          },
+          "providerVersions": [
+            {
+              "effect": "FrameGeneration",
+              "id": "17726168133342859270",
+              "name": "3.1.6"
+            },
+            {
+              "effect": "FrameGenerationSwapChain",
+              "id": "17752306900579389447",
+              "name": "3.1.7"
+            }
+          ],
+          "sdkRelease": "v2.3.0",
+          "sdkCommit": "60f4ea81909200d8542eca14dccb2628b763a9a3",
+          "files": [
+            {
+              "path": "AMD-FidelityFX-license.md",
+              "bytes": 60891,
+              "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963"
+            },
+            {
+              "path": "FSR_TEST_CHECKLIST.md",
+              "bytes": 8550,
+              "sha256": "630a35c14a8bab0a0821f67a07073dd8bd04cd0f420371d693c208285fe8ebde"
+            },
+            {
+              "path": "FSR-API-MIT-NOTICE.txt",
+              "bytes": 1136,
+              "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5"
+            },
+            {
+              "path": "LICENSE",
+              "bytes": 37453,
+              "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d"
+            },
+            {
+              "path": "README.md",
+              "bytes": 1856,
+              "sha256": "e5b1caaa7a3f2a3f98a6f25a21832058b1679406f320a19dd23124423b6805de"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll",
+              "bytes": 40085776,
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll",
+              "bytes": 26376,
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll",
+              "bytes": 28761864,
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.dll",
+              "bytes": 2536448,
+              "sha256": "b8050763aa3492678d7d9924ca2ea699c5af9cee91d70b01a74c5199659dead3"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.ini",
+              "bytes": 4817,
+              "sha256": "5a4afd28db453a95181569b22e0f98c41e04881ab6a0d968b7905600328ac55d"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl",
+              "bytes": 5670,
+              "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipelineImGui.ini",
+              "bytes": 915,
+              "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616"
+            },
+            {
+              "path": "THIRD_PARTY_FSR.md",
+              "bytes": 2668,
+              "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11"
+            }
+          ]
+        },
+        "unpackedValidation": "PASS",
+        "installed": false
+      }
+    },
+    {
+      "preset": "fsr-fg-universal-nr-off",
+      "buildIdentity": {
+        "edition": "Universal",
+        "sourceRevision": "495035ff8cfa",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": false
+      },
+      "pluginSha256": "e187604ae48279a239b7a828770c3d3c4e594e0844428c7afdfdee32a6cd2876",
+      "package": {
+        "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-universal-nr-off\\Universal-FSR-FG",
+        "zip": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\2026-10-02\\fg-final\\495035ff8cfa\\fsr-fg-universal-nr-off\\Universal-FSR-FG.zip",
+        "zipSha256": "d557b52988a9f18aa3184cdc25de4c3b15dcdf59b9202cbfd29f925933b33f2b",
+        "manifestSha256": "291d0a33032a65a5d12607fb82f6b5ec97abe158d0cd1e299cc8c7862cf80dd9",
+        "manifest": {
+          "schema": 2,
+          "edition": "Universal",
+          "fsrEnabled": true,
+          "neuralRenderingCompiled": false,
+          "frameGenerationImplemented": true,
+          "frameGenerationCompiled": true,
+          "buildIdentity": {
+            "edition": "Universal",
+            "sourceRevision": "495035ff8cfa",
+            "sourceClean": true,
+            "fsrCompiled": true,
+            "frameGenerationCompiled": true,
+            "neuralRenderingCompiled": false
+          },
+          "dllImports": {
+            "SKSE/Plugins/TheosRenderPipeline.dll": [
+              {
+                "module": "d3d12.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "D3DCOMPILER_47.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "bcrypt.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ADVAPI32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "ole32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "IMM32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-filesystem-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-locale-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-multibyte-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-time-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-utility-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "SHELL32.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "WINMM.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "USER32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll": [
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              }
+            ],
+            "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll": [
+              {
+                "module": "dxgi.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "MSVCP140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VERSION.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "VCRUNTIME140_1.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-heap-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-string-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-convert-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-math-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-environment-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+                "kind": "normal"
+              },
+              {
+                "module": "KERNEL32.dll",
+                "kind": "normal"
+              }
+            ]
+          },
+          "providerVersions": [
+            {
+              "effect": "FrameGeneration",
+              "id": "17726168133342859270",
+              "name": "3.1.6"
+            },
+            {
+              "effect": "FrameGenerationSwapChain",
+              "id": "17752306900579389447",
+              "name": "3.1.7"
+            }
+          ],
+          "sdkRelease": "v2.3.0",
+          "sdkCommit": "60f4ea81909200d8542eca14dccb2628b763a9a3",
+          "files": [
+            {
+              "path": "AMD-FidelityFX-license.md",
+              "bytes": 60891,
+              "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963"
+            },
+            {
+              "path": "FSR_TEST_CHECKLIST.md",
+              "bytes": 8550,
+              "sha256": "630a35c14a8bab0a0821f67a07073dd8bd04cd0f420371d693c208285fe8ebde"
+            },
+            {
+              "path": "FSR-API-MIT-NOTICE.txt",
+              "bytes": 1136,
+              "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5"
+            },
+            {
+              "path": "LICENSE",
+              "bytes": 37453,
+              "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d"
+            },
+            {
+              "path": "README.md",
+              "bytes": 1857,
+              "sha256": "aba1d190403d8bba99e28f4ac911410c494b80b537b5a8a49ce6e16eeef16456"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll",
+              "bytes": 40085776,
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll",
+              "bytes": 26376,
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "path": "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll",
+              "bytes": 28761864,
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.dll",
+              "bytes": 2660864,
+              "sha256": "e187604ae48279a239b7a828770c3d3c4e594e0844428c7afdfdee32a6cd2876"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline.ini",
+              "bytes": 4817,
+              "sha256": "5a4afd28db453a95181569b22e0f98c41e04881ab6a0d968b7905600328ac55d"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl",
+              "bytes": 5670,
+              "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a"
+            },
+            {
+              "path": "SKSE/Plugins/TheosRenderPipelineImGui.ini",
+              "bytes": 915,
+              "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616"
+            },
+            {
+              "path": "THIRD_PARTY_FSR.md",
+              "bytes": 2668,
+              "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11"
+            }
+          ]
+        },
+        "unpackedValidation": "PASS",
+        "installed": false
+      }
+    }
+  ]
+}

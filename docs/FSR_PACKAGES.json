@@ -3,7 +3,7 @@
   "builtCodeRevision": "30115005cfd4c158e774e1d43a0b3f8536b90a65",
   "state": "Historical ZIPs staged; current Standard source device ownership correction installed in V5.4 NO-LORE",
   "skyrimGameplayTested": true,
-  "frameGenerationImplemented": false,
+  "frameGenerationImplemented": true,
   "packages": [
     {
       "preset": "fsr-standard",
@@ -111,5 +111,14 @@
     "mo2ProfileUnchanged": true,
     "iniUnchanged": true,
     "nrClickUserAcceptance": "PASS: user reports no crash"
+  },
+  "frameGenerationGameplayTested": false,
+  "fsrFrameGenerationPackages": {
+    "builtCodeRevision": "495035ff8cfa5088b7dd45c0d861306dbc2cb218",
+    "record": "FSR_FG_PACKAGES.json",
+    "count": 4,
+    "validated": true,
+    "installed": false,
+    "visibleAcceptance": "pending"
   }
 }
