@@ -90,7 +90,7 @@
     "standardRunnableTestsPassed": 118,
     "fsrDisabledRunnableTestsPassed": 108,
     "actualV54ReShadeFixturesPassed": true,
-    "installed": true,
+    "installed": false,
     "settingsAndImportsValidated": true,
     "mo2ProfileUnchanged": true,
     "iniUnchanged": true,
@@ -98,5 +98,17 @@
     "blackScreenResolvedInSkyrim": true,
     "resolutionScope": "Startup and world entry in 2026-10-02 run; broader acceptance pending"
   },
-  "skyrimGameplayTestScope": "Initial loaded-world temporal FSR confirmed; full visual/performance/lifecycle acceptance pending"
+  "skyrimGameplayTestScope": "Initial loaded-world temporal FSR confirmed; full visual/performance/lifecycle acceptance pending",
+  "installedNeuralTabCorrection": {
+    "sourceRevision": "8e78f5136772fbbbb23c2aafe341ab931256c475",
+    "embeddedSourceRevision": "8e78f5136772",
+    "pluginSha256": "a62a2acb05799c2cd1028594d024f1cfda4ace02cd7270acf02d8cb253933add",
+    "standardRunnableTestsPassed": 119,
+    "installed": true,
+    "installedPackageValidation": "PASS",
+    "requiresManualNrClickRetry": true,
+    "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-131406-fsr-nr-tab",
+    "mo2ProfileUnchanged": true,
+    "iniUnchanged": true
+  }
 }

@@ -754,7 +754,7 @@
     "enabledV54ReShadeSha256": "b2945c29e7095491a901746b400e58db9b1592ab092bacf2a888ce37f02d08da",
     "standardReleaseRunnableTestsPassed": 118,
     "fsrDisabledStandardReleaseRunnableTestsPassed": 108,
-    "installed": true,
+    "installed": false,
     "installedPackageValidation": "PASS",
     "graphicsToolsChecks": "3 excluded per configuration; unavailable",
     "blackScreenResolvedInSkyrim": true,
@@ -785,5 +785,22 @@
     "lifecycleAcceptance": "PENDING",
     "controlledPerformanceComparison": "NOT RUN",
     "fullGameplayAcceptanceComplete": false
+  },
+  "fsrNeuralTabCorrection": {
+    "sourceRevision": "8e78f5136772fbbbb23c2aafe341ab931256c475",
+    "embeddedSourceRevision": "8e78f5136772",
+    "rootCause": "FSR NR early exit used right-column cleanup while left/details children were open",
+    "productionImGuiRegression": "FAIL before availability gate correction; PASS afterward",
+    "repeatedSelectionFramesPerBackendState": 120,
+    "fsrNrContentsBlocked": true,
+    "supportedNrContentsAvailable": true,
+    "imGuiStacksBalanced": true,
+    "standardReleaseRunnableTestsPassed": 119,
+    "fsrDisabledPluginRebuilt": false,
+    "graphicsToolsChecks": "3 excluded; unavailable",
+    "installed": true,
+    "installedPackageValidation": "PASS",
+    "manualSkyrimNrClickRetry": "PENDING",
+    "inGameCrashResolutionVerified": false
   }
 }
