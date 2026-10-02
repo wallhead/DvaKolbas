@@ -42,13 +42,13 @@ namespace TheosRenderPipeline
         auto progress=state_->fence->GetCompletedValue();DWORD stalled{};
         for(;;){
             const auto completed=state_->fence->GetCompletedValue();
-            if(completed==std::numeric_limits<std::uint64_t>::max())return state_->fault=DXGI_ERROR_DEVICE_REMOVED;
+            if(completed==(std::numeric_limits<std::uint64_t>::max)())return state_->fault=DXGI_ERROR_DEVICE_REMOVED;
             if(completed>=state_->value)return S_OK;
-            const auto result=WaitForSingleObject(state_->event,std::max(1ul,state_->wait.sliceMs));
+            const auto result=WaitForSingleObject(state_->event,(std::max)(1ul,state_->wait.sliceMs));
             if(result!=WAIT_OBJECT_0 && result!=WAIT_TIMEOUT)return state_->fault=HRESULT_FROM_WIN32(GetLastError());
             if(FAILED(hr=state_->device->GetDeviceRemovedReason()))return state_->fault=hr;
             const auto next=state_->fence->GetCompletedValue();
-            if(next>progress){progress=next;stalled=0;}else if(result==WAIT_TIMEOUT && (stalled+=std::max(1ul,state_->wait.sliceMs))>=state_->wait.stallLimitMs)
+            if(next>progress){progress=next;stalled=0;}else if(result==WAIT_TIMEOUT && (stalled+=(std::max)(1ul,state_->wait.sliceMs))>=state_->wait.stallLimitMs)
                 return state_->fault=HRESULT_FROM_WIN32(WAIT_TIMEOUT);
         }
     }

@@ -2,7 +2,7 @@
 
 Starting revision: `246d152c42a83308beb7a6f4930e7c472ef0d4ce` (TRP 0.3.5).
 Branch: `codex/fsr-sr`.
-Status: approved SR design executing inline. Backend/frame contracts and optional runtime/provider boundary implemented; startup still rejects FSR until the ordinary host and GPU integration are ready. FSR is not installed in Skyrim.
+Status: FSR SR rendering/settings implemented and six-build/GPU/package checks passed. Enabled builds accept coherent FSR settings, while FSR-off builds reject FSR. Final branch review is pending. FSR is not installed in Skyrim; gameplay acceptance and FSR frame generation remain open.
 
 The user approved shared buffers/native UI, NVIDIA-independent FSR SR first, then FSR FG, and the [written spec](superpowers/specs/2026-10-01-fsr-sr-design.md). The [implementation plan](superpowers/plans/2026-10-01-fsr-sr.md) defines eight tested increments. The user’s “next step” continued implementation inline in the existing FSR worktree. Pushes to `https://github.com/wallhead/DvaKolbas` are authorized. This record will gain executed commands, artifacts, hashes, and acceptance outcomes as implementation proceeds.
 
@@ -27,7 +27,7 @@ References below were inspected at the starting revision. Line numbers describe 
 | Outer swapchain | `src/FrameGen/GameSwapChain.cpp`, Present and ResizeBuffers variants | Preserve D3D11-facing stable wrapper and host lifecycle; do not substitute a late wrapper or cast it to AMD's D3D12 FG proxy. |
 | Build/source list | `CMakeLists.txt`, `cmake/BaselineSources.cmake` | Add optional FSR sources and SDK path without changing FSR-off dependency requirements or Standard/Universal/NR variants. |
 
-## Proposed changes, not implemented
+## Planning evidence before implementation
 
 The user's subsequent AIO archive was inspected offline with Ghidra and Capstone. [The RE evidence record](FSR_AIO_RE_NOTES.md) identifies separate SR/FG classes, a D3D11-to-D3D12 bridge/presenter, PrepareV2/matching source IDs, millisecond timing, and UI buffering. Those findings support the plan but are not FSR implementation or gameplay acceptance. The archive's binaries were not executed or deployed.
 
@@ -126,3 +126,38 @@ Verification command: `C:/Python314/python.exe out/research/run_task6_tests.py`.
 FSR quality, provider policy and finite sharpness now round-trip through the existing Apply/Discard/Save draft and startup/requested/effective snapshots. Backend, quality and provider changes require restart; sharpness applies after Present without replacing allocations. The FSR mode choice explicitly prepares generation off/backend 0/NR off/HDR off. Contradictory or invalid requests are rejected before controller mutation. Packaged NVIDIA defaults remain selected; package/examples/FSR-SR supplies the separate FSR-only configuration. Enabled plugin admission now validates FSR selectors and settings. FSR-off builds still reject FSR.
 
 Status requires an actual successful temporal frame and cached provider identity. Waiting, spatial recovery, terminal failure, requested changes and Community Shaders ownership are distinct. UI/settings queries avoid NVIDIA runtime services during FSR sessions. New settings tests first failed on the absent production header, then passed round trips, invalid numeric/quality input, allocation staging, discard, persistence, unsupported combinations and requested-versus-active checks. Both enabled Standard/Universal Release builds passed 114/114 runnable tests and normal/delayed import inspection. Three Graphics Tools cases remain SKIPPED per edition. No live setup changed.
+
+## Executed increment 8: build matrix, fresh process and packages (2026-10-02)
+
+All six Release configurations passed. The exact plugin SHA-256 values, actual provider identity, GPU allocations/VRAM and fixture outcomes are in [FSR_VALIDATION.json](FSR_VALIDATION.json).
+
+| Configuration | Runnable CTest cases | Result |
+| --- | ---: | --- |
+| Standard FSR, NR compiled | 117 | PASS |
+| Universal FSR, NR compiled | 117 | PASS |
+| Standard FSR, NR excluded | 117 | PASS |
+| Universal FSR, NR excluded | 117 | PASS |
+| Standard FSR excluded | 107 | PASS |
+| Universal FSR excluded | 107 | PASS |
+
+The two FSR-off builds configured and built against `C:/deliberately-missing-fidelityfx-sdk`, which does not exist. Normal and delayed PE import inspections found no mandatory NVIDIA/AMD runtime imports in any plugin. Exactly `NativeUIComposition`, `NativeUIBlendState` and `NeuralPeripheralPixels` remain Graphics Tools-dependent SKIPPED checks per configuration; no test body or exclusion was weakened.
+
+Each enabled edition ran the official analytical 3.1.5 provider through the production frame adapter for 1,000 temporal frames / 25 context lifetimes, 75 native readbacks / 74 changing samples, native UI sentinels, three outstanding transfers per context, 25 loading/spatial frames, 25 invalid attempts and 75 deliberate resets. All 650 SDK committed allocations were released (peak 26); no SDK heaps were created by this provider. VRAM observations remain bounded, rather than claimed zero or constant. Both debug layers were unavailable.
+
+The separate fresh-process smoke loaded the built plugin through its normal imports, then exercised production ordinary-presenter, sizing, deferred FSR startup and frame helpers. Twelve temporal dispatches produced 12 native readbacks / 11 changing samples, followed by successful resource retirement and AMD module unloading. Missing approved runtimes failed even with the real DLLs in the working directory. NVIDIA runtime module count was zero. NVIDIA graphics-driver modules are expected on the RTX 4080 Super and are distinct from Streamline/NGX/NVAPI runtime dependencies. The fixture does not invoke the Skyrim SKSE entrypoint and explicitly reports Skyrim startup/gameplay as NOT RUN.
+
+Package scripts validate source/header/license/runtime pins, selected build edition, manifest hashes, required files, selector combinations and normal/delayed imports before creating a ZIP. Positive fixtures and independent mutations reject altered runtimes, even after an altered manifest, missing shaders, the wrong edition, an extra AMD DLL, invalid quality spelling and unsupported delegation. Each negative case restores the valid package before the next mutation. Binary redistribution license and API MIT notices are retained verbatim. Existing NVIDIA defaults/packages remain intact.
+
+The matrix exposed ordinary presentation's accidental reliance on an FSR library's `NOMINMAX` definition. `OrdinaryMacroEnvironment` reproduced the compilation failure with Windows macros enabled; parenthesized standard-library `max` calls made the actual presenter independent of that optional library. The dedicated regression and all six rebuilt suites pass.
+
+Executed commands used VS2022 pinned through `VCPKG_VISUAL_STUDIO_PATH`, with dependency mutation kept sequential:
+
+```powershell
+cmake --preset <each of the six fsr-* presets>
+cmake --build out/build/<preset> --config Release --parallel 2 -- /p:UseMultiToolTask=true /p:MultiProcMaxCount=4 /p:EnforceProcessCountAcrossBuilds=true
+ctest --test-dir out/build/<preset> -C Release --output-on-failure -E '^(NativeUIComposition|NativeUIBlendState|NeuralPeripheralPixels)$'
+pwsh -NoProfile -File tests/FSRPackageTests.ps1 -Edition <Standard|Universal> -BuildDirectory out/build/<preset> -RuntimeDirectory out/research/sdk-v2.3.0/runtime -ScratchRoot out/research/package-tests
+pwsh -NoProfile -File tools/fsr/Stage-Package.ps1 -Edition <Standard|Universal> -BuildDirectory out/build/<preset> -RuntimeDirectory out/research/sdk-v2.3.0/runtime -OutputDirectory out/packages/2026-10-02/candidate/<preset>
+```
+
+The four enabled candidates are staged under `out/packages/2026-10-02/candidate/`, each with an edition-specific ZIP, complete notices and a manifest. They are not installed. The [gameplay checklist](FSR_TEST_CHECKLIST.md) covers installed motion/jitter/depth and color calibration, ENB, transparency, ReShade/CS, native UI/previews, quality/odd/ultrawide dimensions, loading/camera/resize/alt-tab and GPU/CPU/VRAM measurements. Skyrim gameplay and AMD/Intel hardware remain NOT RUN. FSR frame generation remains NOT IMPLEMENTED / NOT RUN; this milestone establishes its SR prerequisite and does not advertise generated frames.

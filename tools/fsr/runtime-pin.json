@@ -76,5 +76,12 @@
   ],
   "upscalerHeaderVersion": "4.1.1",
   "initialProviderPolicy": "Analytical FSR 3.1.5, discovered dynamically; no fixed provider IDs",
-  "license": "SDK license.md retained verbatim; API headers include their own MIT notices; binaries are covered by the SDK binary license."
+  "license": "SDK license.md retained verbatim; API headers include their own MIT notices; binaries are covered by the SDK binary license.",
+  "validationRecord": "docs/FSR_VALIDATION.json",
+  "observedProvider": {
+    "name": "3.1.5",
+    "id": "17700776140660019205",
+    "policy": "Analytical",
+    "note": "Observed in fixtures; selection still enumerates providers and does not hardcode this ID"
+  }
 }

@@ -1,5 +1,7 @@
 # Theo's Render Pipeline — Universal, 0.3.5
 
+FSR SR development builds use a separate, validated FSR-only package and `[FSR]` settings; the default package below retains its NVIDIA selection. See [the FSR gameplay checklist](https://github.com/wallhead/DvaKolbas/blob/codex/fsr-sr/docs/FSR_TEST_CHECKLIST.md) and `THIRD_PARTY_FSR.md`. FSR frame generation is unavailable. Standalone GPU/plugin-load checks do not establish Skyrim acceptance. Do not install the staged test package over a running game or edit MO2 while it is open.
+
 Version 0.3.5 enables DLSS-G UI recomposition by default to reduce HUD
 ghosting; toggle it live under Frame generation. GPU retirement waits now
 continue while the fence progresses, avoiding permanent black screens from
