@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-02",
+  "builtCodeRevision": "843057399b473a1c017f2a9c4b7aa09621223277",
+  "profile": "V5.4 NO-LORE",
+  "fsrQuality": "NativeAA",
+  "frameGenerationBackend": 2,
+  "userReport": "Works fine in game",
+  "basicGameplay": "PASS: user reported successful gameplay",
+  "buildIdentity": [
+    "[2026-10-02 21:29:44.542] [thread 33392] [info] [Renderer build] TRP_BUILD|edition=Standard|source=843057399b47|FSR=1|FG=1|NR=0"
+  ],
+  "successfulGenerationStateTransitions": 1,
+  "generationEvidence": [
+    "[2026-10-02 21:32:36.204] [thread 33392] [info] [FSR FG] source=8316 presentCount=8315 renderedAtCapture=8315 renderedNow=8315 camera=2946917904000 guideCapture=109 temporalGuides=true configuredId=8316 preparedId=8316 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000"
+  ],
+  "rateSuppressionOrWarmupLogEntries": 0,
+  "errorOrCriticalLogEntries": 0,
+  "logSnapshot": {
+    "path": "out/research/no-rate-gate-skyrim-gameplay.log",
+    "sha256": "284f7828cceb0cec35cde049a6f490579b2604a9808982881380878be3619f1f",
+    "bytes": 16323
+  },
+  "evidenceScope": "User gameplay report plus logged successful generation callback; transition logs are not total generated-frame or scanout counts",
+  "remainingAcceptance": [
+    "Detailed HUD/menu visual checks",
+    "Save/load and fast travel stress",
+    "Alt-tab/minimize and window transitions",
+    "Matched-scene timing and color/ENB comparison",
+    "Whole-plan final review"
+  ],
+  "milestonesComplete": 7,
+  "milestonesTotal": 8
+}

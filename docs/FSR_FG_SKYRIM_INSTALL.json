@@ -16,7 +16,7 @@
   "workingSrModEnabled": false,
   "fgTrialModEnabled": true,
   "standaloneVisibleGate": "PASS",
-  "skyrimFgGameplay": "pending manual launch of updated trial",
+  "skyrimFgGameplay": "PASS: user reports Works fine in game; basic gameplay with no-rate-gate NativeAA trial",
   "frameGenerationBackend": 2,
   "sourceColorEncoding": "Gamma22 provisional",
   "sharpness": 0,
@@ -43,5 +43,6 @@
     "beforeSha256": "3269f805e5426aa6d986a73dbe1cafeb0ab9b375569dde34c029f9b73bbe1e00",
     "afterSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
     "change": "Only FrameGeneration/Enabled set true; NativeAA and other INI settings preserved"
-  }
+  },
+  "gameplayReceipt": "docs/FSR_FG_SKYRIM_GAMEPLAY.json"
 }

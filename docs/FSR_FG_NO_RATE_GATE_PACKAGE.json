@@ -56,5 +56,6 @@
   "installed": true,
   "installationState": "Updated same FG trial; NativeAA and other INI settings preserved; FG startup enabled; ImGui settings, MO2/profile and SR/DLSS rollback files unchanged; installed validation PASS",
   "milestonesComplete": 7,
-  "milestonesTotal": 8
+  "milestonesTotal": 8,
+  "basicSkyrimGameplay": "PASS: user report; see FSR_FG_SKYRIM_GAMEPLAY.json; detailed acceptance remains pending"
 }
