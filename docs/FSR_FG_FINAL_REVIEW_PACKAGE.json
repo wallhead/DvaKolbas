@@ -54,11 +54,12 @@
   "productSourceUnchangedSince133PassingChecks": true,
   "passedChecks": 133,
   "failedChecks": 0,
-  "installed": false,
-  "installationState": "Prepared; awaiting closed MO2/Skyrim for safe replacement; NativeAA and existing settings will be preserved",
+  "installed": true,
+  "installationState": "Updated same FG trial; NativeAA INI, ImGui settings, MO2/profile and SR/DLSS rollback files preserved; installed validation PASS",
   "previousInstalledSource": "843057399b473a1c017f2a9c4b7aa09621223277",
   "previousInstalledManualChecklist": "PASS: user report",
-  "updatedBuildGameplay": "Pending installation/manual smoke check",
+  "updatedBuildGameplay": "Installed; awaiting manual smoke/timing run",
   "milestonesComplete": 7,
-  "milestonesTotal": 8
+  "milestonesTotal": 8,
+  "installationReceipt": "docs/FSR_FG_SKYRIM_INSTALL.json"
 }

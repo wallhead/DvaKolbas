@@ -1,48 +1,59 @@
 {
-  "date": "2026-10-02 21:27:22",
-  "builtCodeRevision": "843057399b473a1c017f2a9c4b7aa09621223277",
+  "date": "2026-10-02 23:56:08",
+  "builtCodeRevision": "be05d936e4772739974b4aff1be8f343c4691867",
   "edition": "Standard",
   "neuralRenderingCompiled": false,
   "installedMod": "TRP FSR FG Standard - DvaKolbas test",
   "modPath": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test",
   "profile": "V5.4 NO-LORE",
-  "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-212721-972-fsr-fg-no-rate-gate",
-  "pluginSha256": "105f4b849a7ebb8dfbdb665107fb2ea65ad3d3abc64d6ab1c2c90d8ffb4b563d",
+  "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-235608-408-fsr-fg-final-review",
+  "pluginSha256": "2f6eebd9efb05cf0433687dc2bf70d43fec26290d05f3e3b56231c142e3867b6",
   "installedPackageValidation": "PASS",
   "modlistSha256": "c9e43a0408a0ced30c104b7494fc06ed113c1594fe071547539eec2498a96635",
-  "mo2SettingsSha256": "5f5a34a757737b31dfa5da1aa0c460c06e984fc7834ad1b34d9961ecf12c7123",
+  "mo2SettingsSha256": "9f23bcf0c42f09f7b083ec31b4fbdbf1c148f52aa82b8b58aa6081ef44358db0",
   "mo2SettingsUnchanged": true,
   "workingSrDllAndIniUnchanged": true,
   "workingSrModEnabled": false,
   "fgTrialModEnabled": true,
   "standaloneVisibleGate": "PASS",
-  "skyrimFgGameplay": "PASS: user reports Works fine in game; basic gameplay with no-rate-gate NativeAA trial",
+  "skyrimFgGameplay": "pending manual launch of updated trial",
   "frameGenerationBackend": 2,
   "sourceColorEncoding": "Gamma22 provisional",
   "sharpness": 0,
   "rollback": "With MO2/game closed, disable the FG trial mod and re-enable the preserved SR mod; restore backed-up profile if needed.",
-  "previousInstall": {
-    "date": "2026-10-02 21:05:48",
-    "builtCodeRevision": "ca36a9a176312e0b9779d852a3e55e5fd0eaf8ae",
-    "pluginSha256": "42417ba809b66a4e234b899d6ef01aa21d8860670bc081b4c493c7a27043c2e8",
-    "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-210548-127-fsr-fg-hud-ownership"
+  "iniUpdate": {
+    "beforeSha256": "9a64badafc57265b2edc8d8574a721dfbd702a8b7bcbdf54e8dad523bfd84934",
+    "afterSha256": "9a64badafc57265b2edc8d8574a721dfbd702a8b7bcbdf54e8dad523bfd84934",
+    "change": "No INI changes during final-review installation; NativeAA, FG on and prepared timing logging preserved"
   },
-  "updateReason": "User requested removal of the 60/66 FPS gate; startup FG request enabled",
+  "gameplayReceipt": "docs/FSR_FG_SKYRIM_GAMEPLAY.json",
+  "previousInstall": {
+    "date": "2026-10-02 21:27:22",
+    "builtCodeRevision": "843057399b473a1c017f2a9c4b7aa09621223277",
+    "pluginSha256": "105f4b849a7ebb8dfbdb665107fb2ea65ad3d3abc64d6ab1c2c90d8ffb4b563d",
+    "backupPath": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\2026-10-02-212721-972-fsr-fg-no-rate-gate",
+    "iniUpdate": {
+      "beforeSha256": "3269f805e5426aa6d986a73dbe1cafeb0ab9b375569dde34c029f9b73bbe1e00",
+      "afterSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
+      "change": "Only FrameGeneration/Enabled set true; NativeAA and other INI settings preserved"
+    }
+  },
+  "updateReason": "Final whole-plan review: ReShade foreground resource ownership and effective AMD presenter Native UI validation",
   "fsrQuality": "NativeAA",
-  "preservedIniSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
+  "preservedIniSha256": "9a64badafc57265b2edc8d8574a721dfbd702a8b7bcbdf54e8dad523bfd84934",
   "preservedFiles": {
-    "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test/SKSE/Plugins/TheosRenderPipelineImGui.ini": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
     "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "c9e43a0408a0ced30c104b7494fc06ed113c1594fe071547539eec2498a96635",
-    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP FSR SR Standard - DvaKolbas test/SKSE/Plugins/TheosRenderPipeline.dll": "a62a2acb05799c2cd1028594d024f1cfda4ace02cd7270acf02d8cb253933add",
-    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP FSR SR Standard - DvaKolbas test/SKSE/Plugins/TheosRenderPipeline.ini": "93ecdb4b590a820699f0750f437670f4c23f9bee6765eb9af6f23b85295b30de",
+    "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test/SKSE/Plugins/TheosRenderPipeline.ini": "9a64badafc57265b2edc8d8574a721dfbd702a8b7bcbdf54e8dad523bfd84934",
+    "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test/SKSE/Plugins/TheosRenderPipelineImGui.ini": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
     "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP 0.3.5 Standard - DvaKolbas baseline/SKSE/Plugins/TheosRenderPipeline.dll": "4d3bae0192dd5286ee748208e57cf139108f4ee14c7d803477fc6b52a378cec7",
     "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP 0.3.5 Standard - DvaKolbas baseline/SKSE/Plugins/TheosRenderPipeline.ini": "4b2345deb163a324b7c95f28ddbc0ac11adf1b4127dc0819336a88a95a8a8e9d",
-    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "5f5a34a757737b31dfa5da1aa0c460c06e984fc7834ad1b34d9961ecf12c7123"
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP FSR SR Standard - DvaKolbas test/SKSE/Plugins/TheosRenderPipeline.dll": "a62a2acb05799c2cd1028594d024f1cfda4ace02cd7270acf02d8cb253933add",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "9f23bcf0c42f09f7b083ec31b4fbdbf1c148f52aa82b8b58aa6081ef44358db0",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP FSR SR Standard - DvaKolbas test/SKSE/Plugins/TheosRenderPipeline.ini": "93ecdb4b590a820699f0750f437670f4c23f9bee6765eb9af6f23b85295b30de"
   },
-  "iniUpdate": {
-    "beforeSha256": "3269f805e5426aa6d986a73dbe1cafeb0ab9b375569dde34c029f9b73bbe1e00",
-    "afterSha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
-    "change": "Only FrameGeneration/Enabled set true; NativeAA and other INI settings preserved"
-  },
-  "gameplayReceipt": "docs/FSR_FG_SKYRIM_GAMEPLAY.json"
+  "installedValidationLog": {
+    "path": "out/research/final-review-installed-validate.log",
+    "sha256": "b707aa8781bd60704eb060f8c5632368c6cd22f35b801ab9e27c004d81b3ec6b",
+    "bytes": 171
+  }
 }
