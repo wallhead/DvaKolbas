@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "featureId": "0x12",
+  "initApiVersion": "0x15",
+  "appId": "0x0876232c",
+  "commonInfo": "null",
+  "profiles": [
+    {"id":"rtx50","relativePath":"NR/rtx50/nvngx_dlssnr.dll","bytes":165840496,"sha256":"e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e","families":["RTX50"],"compatibility":"SignedDirect","gpuOutput":"NOT RUN"},
+    {"id":"rtx40","relativePath":"NR/rtx40/nvngx_dlssnr.dll","bytes":165840496,"sha256":"e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a","families":["RTX40"],"compatibility":"CallerIdentityProbeRequired","gpuOutput":"30-frame standalone RTX4080SUPER prototype passed; game integration pending"},
+    {"id":"rtx20-30","relativePath":"NR/rtx20-30/nvngx_dlssnr.dll","bytes":309671536,"sha256":"6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8","families":["RTX20","RTX30"],"compatibility":"CallerIdentityProbeRequired","gpuOutput":"NOT RUN"}
+  ],
+  "amd": {"status":"Unsupported","runtime":null},
+  "qualifiedProbeDriverCore": {"filename":"_nvngx.dll","bytes":1428200,"sha256":"66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b","driver":"32.0.16.1714","parameterInterface":"local pinned NGX C++ Set/Get ABI; int roundtrip verified, direct exports retained","otherDriverCores":"unqualified; no basename-only fallback"},
+  "rtx40ObservedCreation": {"inputExtent":[640,360],"outputExtent":[640,360],"preset":{"type":"uint","value":0},"scalingRatio":{"type":"float","value":1.0},"upscaling":{"type":"int","value":0},"createFlags":{"type":"int","value":"0x42"},"perfQuality":{"type":"uint","value":2},"colorFormat":"RGBA16F","depthFormat":"R32F","motionFormat":"RG16F","ui":"null","uiAlpha":"null","uiCorrection":{"type":"int","value":0}},
+  "scope":"Exact artifact/catalog pins plus measured prototype ABI. No packaging/redistribution or temporal/post-FG/game qualification implied. Legacy NR owner remains unchanged until shared-stage integration."
+}

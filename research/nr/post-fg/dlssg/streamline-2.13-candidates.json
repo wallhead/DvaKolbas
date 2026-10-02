@@ -1,0 +1,406 @@
+{
+  "schema": 1,
+  "binary": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.dlss_g.dll",
+  "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+  "capstone": "5.0.7",
+  "pefile": "2024.8.26",
+  "references": [
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x46241",
+      "instructionBytes": "4c8d05c80c0300",
+      "instruction": "lea r8, [rip + 0x30cc8]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x4651d",
+      "instructionBytes": "488d15ec090300",
+      "instruction": "lea rdx, [rip + 0x309ec]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x46558",
+      "instructionBytes": "488d15b1090300",
+      "instruction": "lea rdx, [rip + 0x309b1]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x46cf5",
+      "instructionBytes": "488d1514020300",
+      "instruction": "lea rdx, [rip + 0x30214]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x46d39",
+      "instructionBytes": "488d15d0010300",
+      "instruction": "lea rdx, [rip + 0x301d0]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x46e36",
+      "instructionBytes": "488d05d3000300",
+      "instruction": "lea rax, [rip + 0x300d3]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x46ef0",
+      "instructionBytes": "488d0519000300",
+      "instruction": "lea rax, [rip + 0x30019]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x47021",
+      "instructionBytes": "488d35e8fe0200",
+      "instruction": "lea rsi, [rip + 0x2fee8]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x470ef",
+      "instructionBytes": "488d351afe0200",
+      "instruction": "lea rsi, [rip + 0x2fe1a]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x4740d",
+      "instructionBytes": "488d15fcfa0200",
+      "instruction": "lea rdx, [rip + 0x2fafc]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x4743a",
+      "instructionBytes": "488d15cffa0200",
+      "instruction": "lea rdx, [rip + 0x2facf]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x4748a",
+      "instructionBytes": "488d157ffa0200",
+      "instruction": "lea rdx, [rip + 0x2fa7f]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentCommon",
+      "stringRva": "0x76f10",
+      "instructionRva": "0x474b4",
+      "instructionBytes": "488d1555fa0200",
+      "instruction": "lea rdx, [rip + 0x2fa55]",
+      "unwindFunction": [
+        "0x461a0",
+        "0x47897"
+      ]
+    },
+    {
+      "string": "presentFrame",
+      "stringRva": "0x77430",
+      "instructionRva": "0x47d34",
+      "instructionBytes": "4c8d05f5f60200",
+      "instruction": "lea r8, [rip + 0x2f6f5]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "presentFrame",
+      "stringRva": "0x77430",
+      "instructionRva": "0x47e95",
+      "instructionBytes": "4c8d0594f50200",
+      "instruction": "lea r8, [rip + 0x2f594]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "presentFrame",
+      "stringRva": "0x77430",
+      "instructionRva": "0x47ed7",
+      "instructionBytes": "4c8d0552f50200",
+      "instruction": "lea r8, [rip + 0x2f552]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "presentFrame",
+      "stringRva": "0x77430",
+      "instructionRva": "0x47f42",
+      "instructionBytes": "4c8d05e7f40200",
+      "instruction": "lea r8, [rip + 0x2f4e7]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "presentFrame",
+      "stringRva": "0x77430",
+      "instructionRva": "0x47fcc",
+      "instructionBytes": "4c8d055df40200",
+      "instruction": "lea r8, [rip + 0x2f45d]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "presentFrame",
+      "stringRva": "0x77430",
+      "instructionRva": "0x480c4",
+      "instructionBytes": "4c8d0565f30200",
+      "instruction": "lea r8, [rip + 0x2f365]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "event.cmdBuf.present-interpolated",
+      "stringRva": "0x77510",
+      "instructionRva": "0x48632",
+      "instructionBytes": "488d15d7ee0200",
+      "instruction": "lea rdx, [rip + 0x2eed7]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "event.cmdBuf.present-real",
+      "stringRva": "0x77638",
+      "instructionRva": "0x488a3",
+      "instructionBytes": "488d158eed0200",
+      "instruction": "lea rdx, [rip + 0x2ed8e]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "presentFrame",
+      "stringRva": "0x77430",
+      "instructionRva": "0x4915e",
+      "instructionBytes": "4c8d05cbe20200",
+      "instruction": "lea r8, [rip + 0x2e2cb]",
+      "unwindFunction": [
+        "0x47cc0",
+        "0x49504"
+      ]
+    },
+    {
+      "string": "slHookPresent",
+      "stringRva": "0x798d8",
+      "instructionRva": "0x591e6",
+      "instructionBytes": "488d15eb060200",
+      "instruction": "lea rdx, [rip + 0x206eb]",
+      "unwindFunction": [
+        "0x59040",
+        "0x5944d"
+      ]
+    },
+    {
+      "string": "slHookPresent1",
+      "stringRva": "0x798c8",
+      "instructionRva": "0x59206",
+      "instructionBytes": "488d15bb060200",
+      "instruction": "lea rdx, [rip + 0x206bb]",
+      "unwindFunction": [
+        "0x59040",
+        "0x5944d"
+      ]
+    },
+    {
+      "string": "DLSSG.MVecs",
+      "stringRva": "0x7a1c8",
+      "instructionRva": "0x5f185",
+      "instructionBytes": "488d153cb00100",
+      "instruction": "lea rdx, [rip + 0x1b03c]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.Depth",
+      "stringRva": "0x7a1a0",
+      "instructionRva": "0x5f1e1",
+      "instructionBytes": "488d15b8af0100",
+      "instruction": "lea rdx, [rip + 0x1afb8]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.HUDLess",
+      "stringRva": "0x7a210",
+      "instructionRva": "0x5f20f",
+      "instructionBytes": "488d15faaf0100",
+      "instruction": "lea rdx, [rip + 0x1affa]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.UI",
+      "stringRva": "0x7a220",
+      "instructionRva": "0x5f23d",
+      "instructionBytes": "488d15dcaf0100",
+      "instruction": "lea rdx, [rip + 0x1afdc]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.OutputInterpolated",
+      "stringRva": "0x7a270",
+      "instructionRva": "0x5f2c5",
+      "instructionBytes": "488d15a4af0100",
+      "instruction": "lea rdx, [rip + 0x1afa4]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.OutputReal",
+      "stringRva": "0x7a290",
+      "instructionRva": "0x5f2f2",
+      "instructionBytes": "488d1597af0100",
+      "instruction": "lea rdx, [rip + 0x1af97]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.MVecs",
+      "stringRva": "0x7a1c8",
+      "instructionRva": "0x5f391",
+      "instructionBytes": "488d1530ae0100",
+      "instruction": "lea rdx, [rip + 0x1ae30]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.Depth",
+      "stringRva": "0x7a1a0",
+      "instructionRva": "0x5f3fb",
+      "instructionBytes": "488d159ead0100",
+      "instruction": "lea rdx, [rip + 0x1ad9e]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.HUDLess",
+      "stringRva": "0x7a210",
+      "instructionRva": "0x5f430",
+      "instructionBytes": "488d15d9ad0100",
+      "instruction": "lea rdx, [rip + 0x1add9]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.UI",
+      "stringRva": "0x7a220",
+      "instructionRva": "0x5f465",
+      "instructionBytes": "488d15b4ad0100",
+      "instruction": "lea rdx, [rip + 0x1adb4]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.OutputInterpolated",
+      "stringRva": "0x7a270",
+      "instructionRva": "0x5f4fa",
+      "instructionBytes": "488d156fad0100",
+      "instruction": "lea rdx, [rip + 0x1ad6f]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    },
+    {
+      "string": "DLSSG.OutputReal",
+      "stringRva": "0x7a290",
+      "instructionRva": "0x5f52c",
+      "instructionBytes": "488d155dad0100",
+      "instruction": "lea rdx, [rip + 0x1ad5d]",
+      "unwindFunction": [
+        "0x5eff0",
+        "0x5fe78"
+      ]
+    }
+  ],
+  "qualification": "Static candidates only. No observed generated outputs, guide times, state or retirement contract."
+}

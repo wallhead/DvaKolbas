@@ -488,6 +488,8 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     target_link_libraries(TRPD3D11EntryObserverTests PRIVATE TRPD3D11EntryObservers d3d11 d3dcompiler)
     add_test(NAME D3D11EntryObserver COMMAND TRPD3D11EntryObserverTests)
     add_executable(TRPNeuralWorldContractTests tests/NeuralWorldContractTests.cpp)
+    add_subdirectory(tests/nr-postfg)
+    add_subdirectory(tests/nr-runtime)
     target_compile_features(TRPNeuralWorldContractTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNeuralWorldContractTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNeuralWorldContractTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src"

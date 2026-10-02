@@ -29,8 +29,14 @@ The inspected pinned AMD header `out/research/sdk-v2.3.0/Kits/FidelityFX/framege
 
 The inspected local Streamline 2.11.1 `sl_dlss_g.h` contains options/state and an API-error callback, without an equivalent public output-image callback. The current [NVIDIA public header](https://github.com/NVIDIA-RTX/Streamline/blob/main/include/sl_dlss_g.h) and [integration guide](https://github.com/NVIDIA-RTX/Streamline/blob/main/docs/ProgrammingGuideDLSS_G.md) were checked as additional context; they do not change our runtime pin or prove a private interface. A version-specific post-generation adapter and matching guide/history contract require controlled observation.
 
-## Next gate
+## Implementation checkpoint
 
-Review the [written NR design](superpowers/specs/2026-10-03-nr-design.md), then write its implementation plan. The first implementation gate must prove post-FG output/guide access for both providers. The final result must retain the user's literal ordering; unavailable generated outputs cannot be silently replaced by pre-FG NR.
+The direct runtime owner, exact GPU catalog, held-file hashing and narrow caller-name shim are now implemented on `codex/nr`. DvaKolbas independently reproduced RTX 40 unshimmed `0xBAD00002` initialization rejection and shimmed 30-frame GPU output on the RTX 4080 SUPER. The experiment uses the actual driver core hash `66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b`, documented parameter Set/Get calls, and confirmed output-fence retirement before feature release, parameter destruction and shutdown. This later implementation result does not alter the earlier static-input receipt.
+
+See [the runtime checkpoint](../research/nr/runtime-catalog/README.md) for reproducible commands and limits. The new owner is linked into research/test targets; the Skyrim NR path has not yet been replaced. RTX 20/30/50 hardware remains NOT RUN; AMD remains unsupported.
+
+## Remaining gate
+
+The [implementation plan](superpowers/plans/2026-10-03-nr.md) is underway. True After FG still requires observed generated output access and matching depth/motion/history for both providers. The FSR standalone callback baseline verifies generated color, UI and retirement; it does not prove generated guides or NR in that callback. Exact installed Streamline 2.13 output-string/function candidates have been inventoried offline; they are not observed ownership contracts. Unavailable generated outputs cannot be silently replaced by pre-FG NR.
 
 The accepted FSR FG package, INI and MO2 settings are unchanged. No GPU probe was launched while Skyrim was running. [Machine-readable receipt](NR_RESEARCH.json) records artifact identities, hardware inventory and the exact six matching source blobs.

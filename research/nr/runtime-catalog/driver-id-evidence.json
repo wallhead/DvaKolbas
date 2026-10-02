@@ -1,0 +1,1126 @@
+{
+  "schema": 1,
+  "driverInf": {
+    "path": "C:\\Windows\\System32\\DriverStore\\FileRepository\\nv_dispi.inf_amd64_da865124972e1f80\\nv_dispi.inf",
+    "sha256": "f460d1d2573ec3d0e33d8bddd0856a4f29e0d44f483a70da6daa7b034af87d9c"
+  },
+  "catalogSourceSha256": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+  "desktopIds": [
+    {
+      "deviceId": "10de:1e04",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2080 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1e07",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2080 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1e81",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2080 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1e82",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2080",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1e84",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2070 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1e87",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2080",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1e89",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1ec2",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2070 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1ec7",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2070 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1f02",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1f03",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1f06",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2060 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1f07",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1f08",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1f42",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2060 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:1f47",
+      "catalogFamily": "RTX 20",
+      "infName": "NVIDIA GeForce RTX 2060 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2203",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3090 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2204",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3090",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2206",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3080",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2207",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3070 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2208",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3080 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:220a",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3080",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2216",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3080",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2414",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2482",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3070 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2484",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2486",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2487",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2488",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2489",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:24c7",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:24c9",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2503",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2504",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2507",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3050",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2508",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3050 OEM",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2544",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2582",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3050",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2584",
+      "catalogFamily": "RTX 30",
+      "infName": "NVIDIA GeForce RTX 3050",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2684",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4090",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2685",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4090 D",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2689",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2702",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4080 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2704",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4080",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2705",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2709",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2782",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4070 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2783",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4070 SUPER",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2786",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2788",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2803",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2805",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2808",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2882",
+      "catalogFamily": "RTX 40",
+      "infName": "NVIDIA GeForce RTX 4060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2b85",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5090",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2b87",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5090 D",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2b8c",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5090 D v2",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2c02",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5080",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2c05",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5070 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2c09",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2d04",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5060 Ti",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2d05",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5060",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2d83",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5050",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2f04",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5070",
+      "familyNameMatches": true
+    },
+    {
+      "deviceId": "10de:2f06",
+      "catalogFamily": "RTX 50",
+      "infName": "NVIDIA GeForce RTX 5060",
+      "familyNameMatches": true
+    }
+  ],
+  "allIdsVerified": true,
+  "providers": [
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.dlss_g.dll",
+      "bytes": 625792,
+      "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+      "machine": "0x8664",
+      "sizeOfImage": 630784,
+      "exports": [
+        {
+          "name": "DllMain",
+          "rva": "0x512a0"
+        },
+        {
+          "name": "slGetPluginFunction",
+          "rva": "0x59040"
+        }
+      ],
+      "imports": [
+        {
+          "module": "WINMM.dll",
+          "symbols": [
+            "timeBeginPeriod",
+            "timeEndPeriod"
+          ]
+        },
+        {
+          "module": "VERSION.dll",
+          "symbols": [
+            "GetFileVersionInfoExW",
+            "GetFileVersionInfoSizeExW",
+            "VerQueryValueW"
+          ]
+        },
+        {
+          "module": "KERNEL32.dll",
+          "symbols": [
+            "GetStartupInfoW",
+            "ReadFile",
+            "GetModuleFileNameW",
+            "CreatePipe",
+            "PeekNamedPipe",
+            "WaitForSingleObject",
+            "GetModuleHandleA",
+            "GetLastError",
+            "CloseHandle",
+            "CreateProcessW",
+            "GetModuleHandleW",
+            "LocalAlloc",
+            "GetProcAddress",
+            "LocalFree",
+            "LoadLibraryExW",
+            "QueryPerformanceCounter",
+            "GetCurrentThreadId",
+            "SetThreadDescription",
+            "SetThreadPriority",
+            "QueryPerformanceFrequency",
+            "SetEnvironmentVariableA",
+            "FreeLibrary",
+            "GetConsoleWindow",
+            "Sleep",
+            "OutputDebugStringW",
+            "EnterCriticalSection",
+            "LeaveCriticalSection",
+            "GetSystemDirectoryW",
+            "GetFileAttributesW",
+            "CreateFileW",
+            "SetLastError",
+            "GetModuleFileNameA",
+            "VerifyVersionInfoW",
+            "VerSetConditionMask",
+            "GetFullPathNameW",
+            "GetCurrentProcess",
+            "GetFileAttributesExW",
+            "GetFinalPathNameByHandleW",
+            "GetCurrentProcessId",
+            "FormatMessageA",
+            "InitializeSListHead",
+            "TerminateProcess",
+            "IsProcessorFeaturePresent",
+            "IsDebuggerPresent",
+            "GetSystemTimeAsFileTime",
+            "UnhandledExceptionFilter",
+            "RtlVirtualUnwind",
+            "RtlLookupFunctionEntry",
+            "RtlCaptureContext",
+            "CreateEventW",
+            "WaitForSingleObjectEx",
+            "ResetEvent",
+            "SetEvent",
+            "DeleteCriticalSection",
+            "InitializeCriticalSectionAndSpinCount",
+            "WideCharToMultiByte",
+            "GetFileInformationByHandleEx",
+            "AreFileApisANSI",
+            "SetUnhandledExceptionFilter"
+          ]
+        },
+        {
+          "module": "USER32.dll",
+          "symbols": [
+            "GetWindowThreadProcessId",
+            "MonitorFromWindow",
+            "IsWindowVisible",
+            "FindWindowExA",
+            "GetWindowLongA"
+          ]
+        },
+        {
+          "module": "ADVAPI32.dll",
+          "symbols": [
+            "RegOpenKeyExW",
+            "RegGetValueW",
+            "RegCloseKey"
+          ]
+        },
+        {
+          "module": "SHELL32.dll",
+          "symbols": [
+            "SHGetKnownFolderPath"
+          ]
+        },
+        {
+          "module": "ole32.dll",
+          "symbols": [
+            "CoTaskMemFree"
+          ]
+        },
+        {
+          "module": "MSVCP140.dll",
+          "symbols": [
+            "_Thrd_detach",
+            "?_Getcat@?$codecvt@DDU_Mbstatet@@@std@@SA_KPEAPEBVfacet@locale@2@PEBV42@@Z",
+            "??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV01@P6AAEAVios_base@1@AEAV21@@Z@Z",
+            "??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV01@I@Z",
+            "?sgetc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAAHXZ",
+            "?snextc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAAHXZ",
+            "?sputc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAAHD@Z",
+            "?pbase@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEBAPEADXZ",
+            "?widen@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBADD@Z",
+            "?unshift@?$codecvt@DDU_Mbstatet@@@std@@QEBAHAEAU_Mbstatet@@PEAD1AEAPEAD@Z",
+            "??0?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEAA@XZ",
+            "?getloc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEBA?AVlocale@2@XZ",
+            "?_Init@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEAAXXZ",
+            "?_Osfx@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAXXZ",
+            "?flush@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV12@XZ",
+            "??0?$basic_istream@DU?$char_traits@D@std@@@std@@QEAA@PEAV?$basic_streambuf@DU?$char_traits@D@std@@@1@_N@Z",
+            "?_Ipfx@?$basic_istream@DU?$char_traits@D@std@@@std@@QEAA_N_N@Z",
+            "?in@?$codecvt@DDU_Mbstatet@@@std@@QEBAHAEAU_Mbstatet@@PEBD1AEAPEBDPEAD3AEAPEAD@Z",
+            "?out@?$codecvt@DDU_Mbstatet@@@std@@QEBAHAEAU_Mbstatet@@PEBD1AEAPEBDPEAD3AEAPEAD@Z",
+            "?sputn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAA_JPEBD_J@Z",
+            "_Cnd_do_broadcast_at_thread_exit",
+            "?gptr@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEBAPEADXZ",
+            "?pptr@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEBAPEADXZ",
+            "?egptr@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEBAPEADXZ",
+            "?epptr@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEBAPEADXZ",
+            "?_Pninc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEAAPEADXZ",
+            "?setstate@?$basic_ios@DU?$char_traits@D@std@@@std@@QEAAXH_N@Z",
+            "??0?$basic_ios@DU?$char_traits@D@std@@@std@@IEAA@XZ",
+            "??0?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAA@PEAV?$basic_streambuf@DU?$char_traits@D@std@@@1@_N@Z",
+            "??4?$_Yarn@D@std@@QEAAAEAV01@PEBD@Z",
+            "??1?$basic_streambuf@DU?$char_traits@D@std@@@std@@UEAA@XZ",
+            "?sbumpc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAAHXZ",
+            "?_Lock@?$basic_streambuf@DU?$char_traits@D@std@@@std@@UEAAXXZ",
+            "?_Unlock@?$basic_streambuf@DU?$char_traits@D@std@@@std@@UEAAXXZ",
+            "?showmanyc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MEAA_JXZ",
+            "?uflow@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MEAAHXZ",
+            "?xsgetn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MEAA_JPEAD_J@Z",
+            "?xsputn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MEAA_JPEBD_J@Z",
+            "?setbuf@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MEAAPEAV12@PEAD_J@Z",
+            "?sync@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MEAAHXZ",
+            "?imbue@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MEAAXAEBVlocale@2@@Z",
+            "??1?$basic_ios@DU?$char_traits@D@std@@@std@@UEAA@XZ",
+            "?clear@?$basic_ios@DU?$char_traits@D@std@@@std@@QEAAXH_N@Z",
+            "??1?$basic_ostream@DU?$char_traits@D@std@@@std@@UEAA@XZ",
+            "?write@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV12@PEBD_J@Z",
+            "??1?$basic_istream@DU?$char_traits@D@std@@@std@@UEAA@XZ",
+            "?seekg@?$basic_istream@DU?$char_traits@D@std@@@std@@QEAAAEAV12@V?$fpos@U_Mbstatet@@@2@@Z",
+            "?rdstate@ios_base@std@@QEBAHXZ",
+            "?_Getcat@?$ctype@D@std@@SA_KPEAPEBVfacet@locale@2@PEBV42@@Z",
+            "?tolower@?$ctype@D@std@@QEBAPEBDPEADPEBD@Z",
+            "?tolower@?$ctype@D@std@@QEBADD@Z",
+            "??1?$codecvt@_WDU_Mbstatet@@@std@@MEAA@XZ",
+            "??0?$codecvt@_WDU_Mbstatet@@@std@@QEAA@_K@Z",
+            "?in@?$codecvt@_WDU_Mbstatet@@@std@@QEBAHAEAU_Mbstatet@@PEBD1AEAPEBDPEA_W3AEAPEA_W@Z",
+            "_Strcoll",
+            "?_Addfac@_Locimp@locale@std@@AEAAXPEAVfacet@23@_K@Z",
+            "??1facet@locale@std@@MEAA@XZ",
+            "??0facet@locale@std@@IEAA@_K@Z",
+            "?_Decref@facet@locale@std@@UEAAPEAV_Facet_base@3@XZ",
+            "?_Incref@facet@locale@std@@UEAAXXZ",
+            "??Bid@locale@std@@QEAA_KXZ",
+            "?_Getcoll@_Locinfo@std@@QEBA?AU_Collvec@@XZ",
+            "??1_Locinfo@std@@QEAA@XZ",
+            "??0_Locinfo@std@@QEAA@PEBD@Z",
+            "_Cnd_signal",
+            "_Mtx_current_owns",
+            "_Cnd_timedwait",
+            "_Mtx_destroy_in_situ",
+            "_Mtx_lock",
+            "_Mtx_init_in_situ",
+            "_Xtime_get_ticks",
+            "_Mtx_unlock",
+            "_Mtx_trylock",
+            "??0?$basic_iostream@DU?$char_traits@D@std@@@std@@QEAA@PEAV?$basic_streambuf@DU?$char_traits@D@std@@@1@@Z",
+            "??1?$basic_iostream@DU?$char_traits@D@std@@@std@@UEAA@XZ",
+            "_Cnd_init_in_situ",
+            "_Cnd_wait",
+            "_Cnd_broadcast",
+            "_Cnd_destroy_in_situ",
+            "_Thrd_sleep",
+            "_Thrd_id",
+            "_Thrd_join",
+            "??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV01@H@Z",
+            "?_Syserror_map@std@@YAPEBDH@Z",
+            "?id@?$collate@D@std@@2V0locale@2@A",
+            "?id@?$codecvt@_WDU_Mbstatet@@@std@@2V0locale@2@A",
+            "?_Xlength_error@std@@YAXPEBD@Z",
+            "?id@?$ctype@D@std@@2V0locale@2@A",
+            "?_Fiopen@std@@YAPEAU_iobuf@@PEB_WHH@Z",
+            "?id@?$codecvt@DDU_Mbstatet@@@std@@2V0locale@2@A",
+            "?_Throw_C_error@std@@YAXH@Z",
+            "?_Xbad_function_call@std@@YAXXZ",
+            "?_Winerror_map@std@@YAHH@Z",
+            "?_Xregex_error@std@@YAXW4error_type@regex_constants@1@@Z",
+            "?_Xout_of_range@std@@YAXPEBD@Z",
+            "?_Xinvalid_argument@std@@YAXPEBD@Z",
+            "?_Xbad_alloc@std@@YAXXZ",
+            "?_Init@locale@std@@CAPEAV_Locimp@12@_N@Z",
+            "?_Getgloballocale@locale@std@@CAPEAV_Locimp@12@XZ",
+            "?_New_Locimp@_Locimp@locale@std@@CAPEAV123@AEBV123@@Z",
+            "?uncaught_exceptions@std@@YAHXZ",
+            "?_Throw_Cpp_error@std@@YAXH@Z",
+            "??0_Lockit@std@@QEAA@H@Z",
+            "??1_Lockit@std@@QEAA@XZ",
+            "_Query_perf_frequency",
+            "_Strxfrm",
+            "_Query_perf_counter",
+            "?eback@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IEBAPEADXZ",
+            "?always_noconv@codecvt_base@std@@QEBA_NXZ"
+          ]
+        },
+        {
+          "module": "VCRUNTIME140_1.dll",
+          "symbols": [
+            "__CxxFrameHandler4"
+          ]
+        },
+        {
+          "module": "VCRUNTIME140.dll",
+          "symbols": [
+            "memset",
+            "__C_specific_handler",
+            "strchr",
+            "strstr",
+            "wcsstr",
+            "__std_exception_copy",
+            "__std_exception_destroy",
+            "memmove",
+            "memcmp",
+            "memcpy",
+            "memchr",
+            "__current_exception",
+            "__current_exception_context",
+            "wcsrchr",
+            "_CxxThrowException",
+            "__std_type_info_destroy_list",
+            "__std_terminate"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-stdio-l1-1-0.dll",
+          "symbols": [
+            "ungetc",
+            "__stdio_common_vsscanf",
+            "setvbuf",
+            "fgetpos",
+            "_fseeki64",
+            "__stdio_common_vsprintf",
+            "fread",
+            "fwrite",
+            "__stdio_common_vswprintf_s",
+            "fflush",
+            "fgetc",
+            "fputc",
+            "_get_stream_buffer_pointers",
+            "fsetpos",
+            "fclose"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-heap-l1-1-0.dll",
+          "symbols": [
+            "free",
+            "malloc",
+            "_callnewh",
+            "realloc"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-string-l1-1-0.dll",
+          "symbols": [
+            "toupper",
+            "_wcsnicmp",
+            "_wcsicmp",
+            "isalpha",
+            "isspace",
+            "strcmp",
+            "strncmp",
+            "isdigit"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-math-l1-1-0.dll",
+          "symbols": [
+            "floorf",
+            "roundf",
+            "ceilf",
+            "_dclass",
+            "_dsign"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-convert-l1-1-0.dll",
+          "symbols": [
+            "strtod",
+            "strtoull",
+            "strtoll"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-runtime-l1-1-0.dll",
+          "symbols": [
+            "_initterm",
+            "_cexit",
+            "_crt_atexit",
+            "_initterm_e",
+            "terminate",
+            "_execute_onexit_table",
+            "_register_onexit_function",
+            "_initialize_onexit_table",
+            "_errno",
+            "_invalid_parameter_noinfo_noreturn",
+            "_initialize_narrow_environment",
+            "_configure_narrow_argv",
+            "_seh_filter_dll",
+            "_beginthreadex"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-filesystem-l1-1-0.dll",
+          "symbols": [
+            "_unlock_file",
+            "_lock_file"
+          ]
+        },
+        {
+          "module": "api-ms-win-crt-locale-l1-1-0.dll",
+          "symbols": [
+            "localeconv",
+            "___lc_codepage_func"
+          ]
+        }
+      ],
+      "interpretation": "static inventory; no output/guide ownership observed"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\nvngx_dlssg.dll",
+      "bytes": 7453808,
+      "sha256": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b",
+      "machine": "0x8664",
+      "sizeOfImage": 7557120,
+      "exports": [
+        {
+          "name": "NVSDK_NGX_CUDA_CreateFeature",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_CUDA_EvaluateFeature",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_CUDA_GetScratchBufferSize",
+          "rva": "0x178d0"
+        },
+        {
+          "name": "NVSDK_NGX_CUDA_Init",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_CUDA_Init_Ext",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_CUDA_PopulateParameters_Impl",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_CUDA_ReleaseFeature",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_CUDA_Shutdown",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_CreateFeature",
+          "rva": "0x12060"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_EvaluateFeature",
+          "rva": "0x122e0"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_GetFeatureRequirements",
+          "rva": "0x12440"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_GetScratchBufferSize",
+          "rva": "0x12560"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_Init",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_Init_Ext",
+          "rva": "0x12680"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_PopulateDeviceParameters_Impl",
+          "rva": "0x12800"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_PopulateParameters_Impl",
+          "rva": "0x129a0"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_ReleaseFeature",
+          "rva": "0x12b00"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_Shutdown",
+          "rva": "0x12c20"
+        },
+        {
+          "name": "NVSDK_NGX_D3D11_Shutdown1",
+          "rva": "0x12d40"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_CreateFeature",
+          "rva": "0x12fa0"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_EvaluateFeature",
+          "rva": "0x131d0"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_GetFeatureRequirements",
+          "rva": "0x13330"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_GetScratchBufferSize",
+          "rva": "0x13450"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_Init",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_Init_Ext",
+          "rva": "0x13550"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_PopulateDeviceParameters_Impl",
+          "rva": "0x13700"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_PopulateParameters_Impl",
+          "rva": "0x138d0"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_ReleaseFeature",
+          "rva": "0x13a30"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_Shutdown",
+          "rva": "0x13b50"
+        },
+        {
+          "name": "NVSDK_NGX_D3D12_Shutdown1",
+          "rva": "0x13c70"
+        },
+        {
+          "name": "NVSDK_NGX_GetAPIVersion",
+          "rva": "0x13dd0"
+        },
+        {
+          "name": "NVSDK_NGX_GetApplicationId",
+          "rva": "0x13de0"
+        },
+        {
+          "name": "NVSDK_NGX_GetDriverVersionEx",
+          "rva": "0x13df0"
+        },
+        {
+          "name": "NVSDK_NGX_GetGPUArchitecture",
+          "rva": "0x13e40"
+        },
+        {
+          "name": "NVSDK_NGX_GetSnippetVersion",
+          "rva": "0x13e50"
+        },
+        {
+          "name": "NVSDK_NGX_SetOverrideStatusCallback",
+          "rva": "0x13e60"
+        },
+        {
+          "name": "NVSDK_NGX_SetTelemetryEvaluateCallback",
+          "rva": "0xbf40"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_CreateFeature",
+          "rva": "0x17a20"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_CreateFeature1",
+          "rva": "0x17b70"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_EvaluateFeature",
+          "rva": "0x17d30"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_GetFeatureRequirements",
+          "rva": "0x17e90"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_GetScratchBufferSize",
+          "rva": "0x17fb0"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_Init",
+          "rva": "0x12670"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_Init_Ext",
+          "rva": "0x180b0"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_Init_Ext2",
+          "rva": "0x182a0"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_PopulateDeviceParameters_Impl",
+          "rva": "0x184a0"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_PopulateParameters_Impl",
+          "rva": "0x186c0"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_ReleaseFeature",
+          "rva": "0x18820"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_Shutdown",
+          "rva": "0x18940"
+        },
+        {
+          "name": "NVSDK_NGX_VULKAN_Shutdown1",
+          "rva": "0x18a60"
+        }
+      ],
+      "imports": [
+        {
+          "module": "VERSION.dll",
+          "symbols": [
+            "VerQueryValueA",
+            "GetFileVersionInfoA",
+            "GetFileVersionInfoSizeA"
+          ]
+        },
+        {
+          "module": "ADVAPI32.dll",
+          "symbols": [
+            "RegQueryValueExW",
+            "RegOpenKeyExW",
+            "RegCloseKey"
+          ]
+        },
+        {
+          "module": "USER32.dll",
+          "symbols": [
+            "GetWindowThreadProcessId"
+          ]
+        },
+        {
+          "module": "KERNEL32.dll",
+          "symbols": [
+            "SetStdHandle",
+            "WriteConsoleW",
+            "SetEndOfFile",
+            "GetProcessHeap",
+            "SetEnvironmentVariableW",
+            "FreeEnvironmentStringsW",
+            "GetEnvironmentStringsW",
+            "CloseHandle",
+            "GetCurrentProcessId",
+            "CreateFileW",
+            "GetFileSizeEx",
+            "MultiByteToWideChar",
+            "GetModuleFileNameW",
+            "GetModuleHandleA",
+            "GetStdHandle",
+            "OutputDebugStringA",
+            "GetCurrentThreadId",
+            "AllocConsole",
+            "WriteConsoleA",
+            "SetConsoleTitleA",
+            "GetConsoleWindow",
+            "WideCharToMultiByte",
+            "VerSetConditionMask",
+            "GetFileAttributesW",
+            "GetFullPathNameW",
+            "GetLastError",
+            "SetLastError",
+            "GetSystemDirectoryW",
+            "FreeLibrary",
+            "GetModuleFileNameA",
+            "GetModuleHandleW",
+            "GetModuleHandleExA",
+            "GetProcAddress",
+            "LoadLibraryExW",
+            "LoadLibraryW",
+            "LocalAlloc",
+            "LocalFree",
+            "VerifyVersionInfoW",
+            "OutputDebugStringW",
+            "DeleteCriticalSection",
+            "EnterCriticalSection",
+            "LeaveCriticalSection",
+            "Sleep",
+            "InitializeSRWLock",
+            "ReleaseSRWLockExclusive",
+            "AcquireSRWLockExclusive",
+            "InitializeCriticalSectionEx",
+            "TryEnterCriticalSection",
+            "InitializeConditionVariable",
+            "WakeConditionVariable",
+            "WakeAllConditionVariable",
+            "SleepConditionVariableCS",
+            "SleepConditionVariableSRW",
+            "QueryPerformanceCounter",
+            "QueryPerformanceFrequency",
+            "WaitForSingleObjectEx",
+            "GetExitCodeThread",
+            "FlsAlloc",
+            "FlsGetValue",
+            "FlsSetValue",
+            "FlsFree",
+            "GetSystemTimeAsFileTime",
+            "EncodePointer",
+            "DecodePointer",
+            "GetCPInfo",
+            "GetStringTypeW",
+            "InitializeCriticalSectionAndSpinCount",
+            "SetEvent",
+            "ResetEvent",
+            "CreateEventW",
+            "RtlCaptureContext",
+            "RtlLookupFunctionEntry",
+            "RtlVirtualUnwind",
+            "UnhandledExceptionFilter",
+            "SetUnhandledExceptionFilter",
+            "GetCurrentProcess",
+            "TerminateProcess",
+            "IsProcessorFeaturePresent",
+            "IsDebuggerPresent",
+            "GetStartupInfoW",
+            "InitializeSListHead",
+            "GetCommandLineW",
+            "RtlPcToFileHeader",
+            "RaiseException",
+            "RtlUnwindEx",
+            "InterlockedFlushSList",
+            "TlsAlloc",
+            "TlsGetValue",
+            "TlsSetValue",
+            "TlsFree",
+            "CreateThread",
+            "ExitThread",
+            "FreeLibraryAndExitThread",
+            "GetModuleHandleExW",
+            "ExitProcess",
+            "HeapFree",
+            "HeapAlloc",
+            "GetFileType",
+            "HeapReAlloc",
+            "GetDateFormatW",
+            "GetTimeFormatW",
+            "CompareStringW",
+            "LCMapStringW",
+            "FlushFileBuffers",
+            "WriteFile",
+            "GetConsoleOutputCP",
+            "GetConsoleMode",
+            "ReadFile",
+            "SetFilePointerEx",
+            "ReadConsoleW",
+            "GetTimeZoneInformation",
+            "HeapSize",
+            "FindClose",
+            "FindFirstFileExW",
+            "FindNextFileW",
+            "IsValidCodePage",
+            "GetACP",
+            "GetOEMCP",
+            "GetCommandLineA"
+          ]
+        }
+      ],
+      "interpretation": "static inventory; no output/guide ownership observed"
+    }
+  ],
+  "hardwareQualification": "NOT RUN by this offline tool"
+}

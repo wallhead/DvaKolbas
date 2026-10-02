@@ -1,0 +1,6 @@
+#pragma once
+namespace NrRuntimeResearch {
+inline constexpr const char* buildRevision="@nrProbeRevision@";
+inline constexpr bool buildClean=@nrProbeClean@;
+inline constexpr const char* compiledSourcesJson=R"nr_identity(@nrProbeSourcesJson@)nr_identity";
+}
