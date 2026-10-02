@@ -136,6 +136,7 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     if (draft.upscaleType == FSR) {
         if (!capabilities.fsrBuilt) return "FSR is not included in this build.";
         if (!Upscaling::ValidFsrSettings(draft.fsr)) return "FSR quality/provider/sharpness is invalid.";
+        if (!Upscaling::IsKnownColorEncoding(draft.fsr.sourceColorEncoding)) return "FSR requires an explicit source color encoding: Linear, Gamma22 or SRGB. Check the source producer before choosing.";
         if (draft.generationEnabled || draft.generationBackend!=0) return "FSR frame generation is unavailable; disable generation and choose ordinary backend 0.";
         if (draft.sourceDLSSG.neuralEnabled) return "Neural Rendering is unavailable with FSR.";
         if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";

@@ -5,10 +5,9 @@
 #include <cmath>
 namespace TheosRenderPipeline::Upscaling
 {
-    static bool Known(ColorEncoding encoding){return encoding==ColorEncoding::Linear || encoding==ColorEncoding::Gamma22 || encoding==ColorEncoding::SRGB;}
     Result<float> ConvertColorChannel(float value,ColorEncoding from,ColorEncoding to)
     {
-        if(!std::isfinite(value) || !Known(from) || !Known(to))return std::unexpected(RuntimeError{ErrorKind::InvalidInput,0,"Explicit finite SDR encoding required"});
+        if(!std::isfinite(value) || !IsKnownColorEncoding(from) || !IsKnownColorEncoding(to))return std::unexpected(RuntimeError{ErrorKind::InvalidInput,0,"Explicit finite SDR encoding required"});
         float c=std::clamp(value,0.0f,1.0f);
         if(from==ColorEncoding::Gamma22)c=std::pow(c,2.2f);
         else if(from==ColorEncoding::SRGB)c=c<=0.04045f?c/12.92f:std::pow((c+0.055f)/1.055f,2.4f);
@@ -43,10 +42,9 @@ float4 ps(Vertex v):SV_Target{float4 c=inputImage.SampleLevel(sampling,v.uv,0);r
     }
     HRESULT FsrColorConverter::Convert(ID3D11DeviceContext* context,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding from,ColorEncoding to)
     {
-        if(!Known(from) || !Known(to) || !D3D11FrameCopy::ValidResources(context,input,output))return E_INVALIDARG;
+        if(!IsKnownColorEncoding(from) || !IsKnownColorEncoding(to) || !D3D11FrameCopy::ValidResources(context,input,output))return E_INVALIDARG;
         D3D11_TEXTURE2D_DESC in{},out{};input->GetDesc(&in);output->GetDesc(&out);
-        auto supported=[](DXGI_FORMAT format){return format==DXGI_FORMAT_R8G8B8A8_UNORM || format==DXGI_FORMAT_B8G8R8A8_UNORM || format==DXGI_FORMAT_R16G16B16A16_FLOAT || format==DXGI_FORMAT_R32G32B32A32_FLOAT;};
-        if(!supported(in.Format) || !supported(out.Format) || !(in.BindFlags&D3D11_BIND_SHADER_RESOURCE) || !(out.BindFlags&D3D11_BIND_RENDER_TARGET) ||
+        if(!SupportsFsrHandoffFormat(in.Format) || !SupportsFsrHandoffFormat(out.Format) || !(in.BindFlags&D3D11_BIND_SHADER_RESOURCE) || !(out.BindFlags&D3D11_BIND_RENDER_TARGET) ||
             in.SampleDesc.Count!=1 || out.SampleDesc.Count!=1 || in.MipLevels!=1 || out.MipLevels!=1 || in.ArraySize!=1 || out.ArraySize!=1)return E_INVALIDARG;
         Ptr<ID3D11Device> device;context->GetDevice(&device);auto hr=Initialize(device.Get());if(FAILED(hr))return hr;
         if(input_.Get()!=input){Ptr<ID3D11ShaderResourceView> view;hr=device->CreateShaderResourceView(input,nullptr,&view);if(FAILED(hr))return hr;srv_=view;input_=input;}

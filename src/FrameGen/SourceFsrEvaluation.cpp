@@ -50,7 +50,7 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         frame.sharpness=host.sourceUpscalerSettings_.Effective().fsr.sharpness;
         auto makeAdapter=[&]{
             if(!host.fsrFrame_)host.fsrFrame_=std::make_unique<FsrFrameAdapter>(*host.fsrResources_->Upscaler(),host.fsrResources_->Bridge(),host.fsrResources_->Resources(),
-                host.fsrResources_->Color11(),host.fsrResources_->Depth11(),host.fsrResources_->Motion11(),host.fsrResources_->Output11(),ColorEncoding::Gamma22);
+                host.fsrResources_->Color11(),host.fsrResources_->Depth11(),host.fsrResources_->Motion11(),host.fsrResources_->Output11(),host.fsrResources_->HandoffEncoding());
         };
         makeAdapter();
         if(spatial) { host.loadingScreenRoute_.SpatialSucceeded();return host.fsrFrame_->Spatial(frame); }
@@ -73,7 +73,8 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         auto result=host.fsrFrame_->Evaluate(frame);
         if(!result)error=result.error();
         if(result && *result==UpscaleOutcome::SkippedInvalidInput) {
-            host.status_="FSR requested; source parameters rejected, spatial recovery";
+            const auto* reason=host.fsrFrame_->LastError();
+            host.status_=reason?reason->message:"FSR requested; source parameters rejected, spatial recovery";
             return host.fsrFrame_->Spatial(frame);
         }
         return result;

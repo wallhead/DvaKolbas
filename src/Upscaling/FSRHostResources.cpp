@@ -1,5 +1,7 @@
 #include "FSRHostResources.h"
 #include "FSRProviderPolicy.h"
+#include "FSRColorContract.h"
+#include "FSRPreparedResources.h"
 #include "RendererBackendPolicy.h"
 #include <dxgi1_4.h>
 namespace TheosRenderPipeline::Upscaling
@@ -11,6 +13,7 @@ namespace TheosRenderPipeline::Upscaling
         ComPtr<ID3D12Device> device;ComPtr<ID3D12CommandQueue> queue;
         std::unique_ptr<FsrUpscaler> upscaler;ProviderInfo provider;BackendConfiguration config;Extent render{},output{};
         Graphics::SharedTexture color,depth,motion,native;bool contextOwned{};
+        ColorEncoding handoffEncoding{ColorEncoding::Unknown};
     };
     static std::unexpected<RuntimeError> Failure(ErrorKind kind,HRESULT code,const char* text){return std::unexpected(RuntimeError{kind,code,text});}
     FsrHostResources::FsrHostResources(std::filesystem::path plugin):state_(std::make_unique<State>()),pluginDirectory_(std::move(plugin)){}
@@ -23,11 +26,14 @@ namespace TheosRenderPipeline::Upscaling
     ID3D11Texture2D* FsrHostResources::Color11()const{return state_->color.texture11.Get();}ID3D11Texture2D* FsrHostResources::Depth11()const{return state_->depth.texture11.Get();}
     ID3D11Texture2D* FsrHostResources::Motion11()const{return state_->motion.texture11.Get();}ID3D11Texture2D* FsrHostResources::Output11()const{return state_->native.texture11.Get();}
     const ProviderInfo& FsrHostResources::Provider()const{return state_->provider;}
-    Result<Extent> FsrHostResources::PrepareSizing(ID3D11Device* device11,const BackendConfiguration& config,Extent output)
+    ColorEncoding FsrHostResources::HandoffEncoding()const{return state_->handoffEncoding;}
+    Result<Extent> FsrHostResources::PrepareSizing(ID3D11Device* device11,const BackendConfiguration& config,Extent output,DXGI_FORMAT handoffFormat,ColorEncoding handoffEncoding)
     {
         auto backend=TheosRenderPipeline::ResolveBackend(config,true);
         if(!device11 || !pluginDirectory_.is_absolute() || !backend.valid || config.backend!=BackendKind::Fsr || state_->bridge)
             return Failure(ErrorKind::InvalidInput,0,"FSR sizing requires a fresh owner, valid FSR configuration and absolute plugin directory");
+        const auto handoff=ValidateFsrHandoff(handoffFormat,handoffEncoding);
+        if(!handoff)return std::unexpected(handoff.error());
         auto fail=[&](HRESULT hr,const char* text)->Result<Extent>{return Failure(ErrorKind::UnsupportedDevice,hr,text);};
         ComPtr<IDXGIDevice> dxgi;ComPtr<IDXGIAdapter> adapter;HRESULT hr=device11->QueryInterface(IID_PPV_ARGS(&dxgi));
         if(FAILED(hr) || FAILED(hr=dxgi->GetAdapter(&adapter)))return fail(hr,"FSR actual adapter query failed");
@@ -40,20 +46,18 @@ namespace TheosRenderPipeline::Upscaling
         state_->bridge=std::make_shared<Graphics::D3D11D3D12Interop>();
         if(FAILED(hr=state_->bridge->Initialize(device11,state_->device.Get(),state_->queue.Get())))return fail(hr,"FSR shared texture/fence interfaces unsupported");
         // Probe actual sharing/UAV support before committing reduced game buffers.
-        D3D11_TEXTURE2D_DESC desc{};desc.Width=desc.Height=4;desc.MipLevels=desc.ArraySize=1;desc.SampleDesc.Count=1;
-        desc.Usage=D3D11_USAGE_DEFAULT;desc.BindFlags=D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_UNORDERED_ACCESS;
-        for(auto format:{DXGI_FORMAT_R16G16B16A16_FLOAT,DXGI_FORMAT_R32_FLOAT,DXGI_FORMAT_R16G16_FLOAT}) {
-            desc.Format=format;Graphics::SharedTexture probe;
+        for(auto role:{FsrResourceRole::Color,FsrResourceRole::Depth,FsrResourceRole::Motion,FsrResourceRole::Output}) {
+            const auto desc=FsrPreparedTextureDesc(role,{4,4});Graphics::SharedTexture probe;
             if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,probe)))return fail(hr,"FSR prepared format cannot share between the actual devices");
-            D3D12_FEATURE_DATA_FORMAT_SUPPORT support{format};
+            D3D12_FEATURE_DATA_FORMAT_SUPPORT support{desc.Format};
             if(FAILED(hr=state_->device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT,&support,sizeof(support))) ||
-                !(support.Support1&D3D12_FORMAT_SUPPORT1_SHADER_LOAD) || !(support.Support2&D3D12_FORMAT_SUPPORT2_UAV_TYPED_STORE))return fail(hr,"FSR prepared format lacks shader/UAV capability");
+                !FsrPreparedFormatSupported(role,support))return fail(hr,"FSR prepared format lacks its required shader/UAV capability");
         }
         state_->runtime=std::make_shared<FsrRuntime>();auto loaded=state_->runtime->Load(pluginDirectory_);if(!loaded)return std::unexpected(loaded.error());
         auto providers=state_->runtime->Enumerate(state_->device.Get());if(!providers)return std::unexpected(providers.error());
         auto provider=SelectProvider(*providers,config.providerPolicy);if(!provider)return std::unexpected(provider.error());state_->provider=*provider;
         auto render=state_->runtime->QueryRenderExtent(state_->device.Get(),*provider,config.quality,output);if(!render)return std::unexpected(render.error());
-        state_->render=*render;state_->output=output;state_->config=config;return *render;
+        state_->render=*render;state_->output=output;state_->config=config;state_->handoffEncoding=handoffEncoding;return *render;
     }
     Result<void> FsrHostResources::CompleteStartup()
     {
@@ -61,13 +65,11 @@ namespace TheosRenderPipeline::Upscaling
         if(!state_->runtime || !state_->bridge || !state_->bridge->Ready() || !state_->render.width)
             return Failure(ErrorKind::ContextFailure,0,"FSR deferred startup has no valid pre-query sizing");
         if(state_->contextOwned || state_->upscaler)return Failure(ErrorKind::ContextFailure,0,"FSR partial startup retained; retirement required before retry");
-        D3D11_TEXTURE2D_DESC desc{};desc.Width=state_->render.width;desc.Height=state_->render.height;desc.MipLevels=desc.ArraySize=1;desc.SampleDesc.Count=1;
-        desc.Usage=D3D11_USAGE_DEFAULT;desc.BindFlags=D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_UNORDERED_ACCESS;
-        HRESULT hr{};desc.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;
+        HRESULT hr{};auto desc=FsrPreparedTextureDesc(FsrResourceRole::Color,state_->render);
         if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,state_->color)))return Failure(ErrorKind::UnsupportedDevice,hr,"FSR shared color allocation failed");
-        desc.Format=DXGI_FORMAT_R32_FLOAT;if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,state_->depth)))return Failure(ErrorKind::UnsupportedDevice,hr,"FSR shared depth allocation failed");
-        desc.Format=DXGI_FORMAT_R16G16_FLOAT;if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,state_->motion)))return Failure(ErrorKind::UnsupportedDevice,hr,"FSR shared motion allocation failed");
-        desc.Width=state_->output.width;desc.Height=state_->output.height;desc.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;
+        desc=FsrPreparedTextureDesc(FsrResourceRole::Depth,state_->render);if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,state_->depth)))return Failure(ErrorKind::UnsupportedDevice,hr,"FSR shared depth allocation failed");
+        desc=FsrPreparedTextureDesc(FsrResourceRole::Motion,state_->render);if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,state_->motion)))return Failure(ErrorKind::UnsupportedDevice,hr,"FSR shared motion allocation failed");
+        desc=FsrPreparedTextureDesc(FsrResourceRole::Output,state_->output);
         if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,state_->native)))return Failure(ErrorKind::UnsupportedDevice,hr,"FSR native output allocation failed");
         state_->upscaler=std::make_unique<FsrUpscaler>();auto attached=state_->upscaler->SetRetirementBridge(state_->bridge);if(!attached)return attached;
         auto created=state_->upscaler->Initialize(state_->runtime,state_->device.Get(),state_->provider,state_->config.quality,state_->render,state_->output);

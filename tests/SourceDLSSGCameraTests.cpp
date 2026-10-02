@@ -74,6 +74,19 @@ int main()
             }
         }
         auto invalid = forward; invalid._43 = 0;
+        auto infiniteProjection=forward;
+        infiniteProjection._33=infiniteProjection._34;infiniteProjection._43=-nearPlane;
+        for(bool infiniteInverted:{false,true}) {
+            auto measuredProjection=infiniteProjection;
+            if(infiniteInverted)for(unsigned row=0;row<4;++row)measuredProjection.m[row][2]=infiniteProjection.m[row][3]-infiniteProjection.m[row][2];
+            auto measured=TheosRenderPipeline::MeasureCamera(measuredProjection,view,{0,0,0},nearPlane,std::numeric_limits<float>::infinity(),1,false);
+            Require(measured && measured->depthInfinite && measured->depthInverted==infiniteInverted && std::isinf(measured->farDistance),
+                "shared measurements accept actual forward/reversed LH/RH infinite projection");
+            Require(!TheosRenderPipeline::MeasureCamera(measuredProjection,view,{0,0,0},nearPlane,-std::numeric_limits<float>::infinity(),1,false),
+                "negative infinite far plane rejected");
+        }
+        Require(!TheosRenderPipeline::MeasureCamera(forward,view,{0,0,0},nearPlane,std::numeric_limits<float>::infinity(),1,false),
+            "finite projection cannot be declared infinite by metadata alone");
         Require(!history.Build(invalid, view, {0, 0, 0}, nearPlane, farPlane, 0, 0, 1, ++frame, false, constants),
             "depth-degenerate projection rejected");
         Require(!history.valid, "invalid projection clears temporal history");

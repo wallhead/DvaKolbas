@@ -1,11 +1,10 @@
 #pragma once
-#include "UpscalerBackend.h"
+#include "FSRColorContract.h"
 #include "FrameGen/D3D11ContextIsolation.h"
 #include <d3d11.h>
 #include <wrl/client.h>
 namespace TheosRenderPipeline::Upscaling
 {
-    enum class ColorEncoding { Unknown,Linear,Gamma22,SRGB };
     Result<float> ConvertColorChannel(float,ColorEncoding source,ColorEncoding destination);
     class FsrColorConverter
     {

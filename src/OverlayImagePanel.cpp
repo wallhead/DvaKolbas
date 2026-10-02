@@ -247,12 +247,16 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         }
         if(view.fsrActive || settingsDraft.upscaleType==FSR) {
             ImGui::TextWrapped("%s",view.fsrStatus.text.c_str());
-            DrawSettingsHelp("FSR (SR only) sets generation off, ordinary backend 0, NR off and HDR off. Save and restart to change mode, quality or provider. Sharpness applies after Present.");
+            DrawSettingsHelp("FSR (SR only) sets generation off, ordinary backend 0, NR off and HDR off. Save and restart to change mode, quality, provider or source color encoding. Sharpness applies after Present.");
         }
         if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"Analytical (3.1.5)","Compatible (runtime selected)"};
             int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);
             if(ImGui::Combo("Provider##fsr",&policy,policies,2))settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
+            const char* encodings[]{"Unknown (choose before enabling FSR)","Linear SDR","Gamma 2.2 SDR","sRGB SDR"};
+            int encoding=static_cast<int>(settingsDraft.fsr.sourceColorEncoding);
+            if(ImGui::Combo("Source color encoding##fsr",&encoding,encodings,4))settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);
+            DrawSettingsHelp("Choose the actual Skyrim/ENB source encoding. Texture format does not determine it. Unknown prevents FSR startup; changing encoding requires Save and restart.");
             ImGui::SliderFloat("Sharpness##fsr",&settingsDraft.fsr.sharpness,0,1,"%.2f");
             ImGui::TextWrapped("Reactive and transparency masks are unavailable. Auto exposure is enabled. Camera jitter uses the selected provider.");
         } else {

@@ -181,8 +181,11 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
         config.backend=TheosRenderPipeline::Upscaling::BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;
         config.quality=sourceUpscalerSettings_.Startup().fsr.quality;config.providerPolicy=sourceUpscalerSettings_.Startup().fsr.providerPolicy;
         config.sharpness=sourceUpscalerSettings_.Startup().fsr.sharpness;
-        auto render=fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_});
+        const auto encoding=sourceUpscalerSettings_.Startup().fsr.sourceColorEncoding;
+        auto render=fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_},outputDesc.Format,encoding);
         if(!render){status_=render.error().message;logger::error("[FSR] {}",status_);return false;}
+        logger::info("[FSR startup] source/output format={} sourceColorEncoding={} SDR-only contract; installed producer calibration required",
+            static_cast<unsigned>(outputDesc.Format),TheosRenderPipeline::Upscaling::ColorEncodingName(encoding));
         queriedRenderWidth=render->width;queriedRenderHeight=render->height;sized=true;
     } else
 #endif

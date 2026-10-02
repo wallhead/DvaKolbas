@@ -2,10 +2,13 @@
 #include <dx12/ffx_api_dx12.h>
 #include <cstdio>
 #include <cstring>
+#include <wrl/client.h>
+#include <vector>
 
 static unsigned mode{}, enumerations{}, destructions{};
 static uint64_t queryId{}, createId{};
 static char name[64]{"fixture analytical FSR 3.1.5"};
+struct FixtureContext { std::vector<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> heaps; };
 extern "C" __declspec(dllexport) void FixtureMode(unsigned value)
 { mode = value; enumerations = 0; std::strcpy(name, "fixture analytical FSR 3.1.5"); }
 extern "C" __declspec(dllexport) uint64_t FixtureQueryId() { return queryId; }
@@ -26,11 +29,11 @@ static bool ReadChain(const ffxApiHeader* header, uint64_t& id)
 }
 #if FSR_MISSING_EXPORT != 1
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxCreateContext(ffxContext* context, ffxCreateContextDescHeader* desc, const ffxAllocationCallbacks*)
-{ if (!ReadChain(desc, createId)) return FFX_API_RETURN_ERROR_PARAMETER; *context = reinterpret_cast<void*>(1); return FFX_API_RETURN_OK; }
+{ if (!ReadChain(desc, createId)) return FFX_API_RETURN_ERROR_PARAMETER; *context = new FixtureContext; return FFX_API_RETURN_OK; }
 #endif
 #if FSR_MISSING_EXPORT != 2
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxDestroyContext(ffxContext* context, const ffxAllocationCallbacks*)
-{ ++destructions; *context = nullptr; return FFX_API_RETURN_OK; }
+{ ++destructions; delete static_cast<FixtureContext*>(*context); *context = nullptr; return FFX_API_RETURN_OK; }
 #endif
 #if FSR_MISSING_EXPORT != 3
 extern "C" __declspec(dllexport) ffxReturnCode_t ffxConfigure(ffxContext*, const ffxConfigureDescHeader*) { return FFX_API_RETURN_OK; }
@@ -76,8 +79,29 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
 }
 #endif
 #if FSR_MISSING_EXPORT != 5
-extern "C" __declspec(dllexport) ffxReturnCode_t ffxDispatch(ffxContext*, const ffxDispatchDescHeader* header)
+extern "C" __declspec(dllexport) ffxReturnCode_t ffxDispatch(ffxContext* context, const ffxDispatchDescHeader* header)
 {
+    if(mode==9) {
+        // A deterministic successful vendor seam. Record an actual GPU write,
+        // keeping descriptors alive until the caller proves context retirement.
+        if(!context || !*context || header->type!=FFX_API_DISPATCH_DESC_TYPE_UPSCALE)return FFX_API_RETURN_ERROR_PARAMETER;
+        const auto* desc=reinterpret_cast<const ffxDispatchDescUpscale*>(header);
+        auto* list=static_cast<ID3D12GraphicsCommandList*>(desc->commandList);auto* output=static_cast<ID3D12Resource*>(desc->output.resource);
+        Microsoft::WRL::ComPtr<ID3D12Device> device;
+        if(!list || !output || FAILED(output->GetDevice(IID_PPV_ARGS(&device))))return FFX_API_RETURN_ERROR_PARAMETER;
+        D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};heapDesc.Type=D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;heapDesc.NumDescriptors=1;
+        Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> cpuHeap,gpuHeap;
+        if(FAILED(device->CreateDescriptorHeap(&heapDesc,IID_PPV_ARGS(&cpuHeap))))return FFX_API_RETURN_ERROR;
+        heapDesc.Flags=D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        if(FAILED(device->CreateDescriptorHeap(&heapDesc,IID_PPV_ARGS(&gpuHeap))))return FFX_API_RETURN_ERROR;
+        device->CreateUnorderedAccessView(output,nullptr,nullptr,cpuHeap->GetCPUDescriptorHandleForHeapStart());
+        device->CopyDescriptorsSimple(1,gpuHeap->GetCPUDescriptorHandleForHeapStart(),cpuHeap->GetCPUDescriptorHandleForHeapStart(),heapDesc.Type);
+        ID3D12DescriptorHeap* heaps[]{gpuHeap.Get()};list->SetDescriptorHeaps(1,heaps);
+        const float color[]{0.005f,0.25f,0.75f,0.5f};
+        list->ClearUnorderedAccessViewFloat(gpuHeap->GetGPUDescriptorHandleForHeapStart(),cpuHeap->GetCPUDescriptorHandleForHeapStart(),output,color,0,nullptr);
+        auto& owned=static_cast<FixtureContext*>(*context)->heaps;owned.push_back(cpuHeap);owned.push_back(gpuHeap);
+        return FFX_API_RETURN_OK;
+    }
     if(mode==8) {
         auto* desc=reinterpret_cast<const ffxDispatchDescUpscale*>(header);
         auto* list=static_cast<ID3D12GraphicsCommandList*>(desc->commandList);

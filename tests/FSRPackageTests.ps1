@@ -37,6 +37,14 @@ Remove-Item -LiteralPath $extra
 $originalManifest | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
 $config=Join-Path $package 'SKSE/Plugins/TheosRenderPipeline.ini'
 $configOriginal=[IO.File]::ReadAllText($config)
+foreach($encoding in @('Unknown','Guess','')) {
+    $replacement=if($encoding){"SourceColorEncoding=$encoding"}else{''}
+    [IO.File]::WriteAllText($config,$configOriginal.Replace('SourceColorEncoding=Gamma22',$replacement))
+    $manifest=$originalManifest | ConvertFrom-Json
+    foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
+    $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
+    Rejected {& $validate -Edition $Edition -PackageDirectory $package} "UnspecifiedOrInvalidColor-$encoding"
+}
 [IO.File]::WriteAllText($config,$configOriginal.Replace('Quality=Quality','Quality=quality'))
 $manifest=$originalManifest | ConvertFrom-Json
 foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}

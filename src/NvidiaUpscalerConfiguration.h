@@ -47,7 +47,8 @@ namespace TheosRenderPipeline::Upscaler
         bool NeedsRestart() const
         {
             return requested_.mode != startup_.mode ||
-                (requested_.mode == 4 ? requested_.fsr.quality != startup_.fsr.quality || requested_.fsr.providerPolicy != startup_.fsr.providerPolicy :
+                (requested_.mode == 4 ? requested_.fsr.quality != startup_.fsr.quality || requested_.fsr.providerPolicy != startup_.fsr.providerPolicy ||
+                requested_.fsr.sourceColorEncoding != startup_.fsr.sourceColorEncoding :
                 requested_.mode != 3 && requested_.quality != startup_.quality);
         }
         Creation LiveCandidate() const
@@ -57,6 +58,7 @@ namespace TheosRenderPipeline::Upscaler
             value.quality = startup_.quality;
             value.fsr.quality = startup_.fsr.quality;
             value.fsr.providerPolicy = startup_.fsr.providerPolicy;
+            value.fsr.sourceColorEncoding = startup_.fsr.sourceColorEncoding;
             if (startup_.mode == 4) {
                 value.preset = startup_.preset; value.autoExposure = startup_.autoExposure; value.sharpening = startup_.sharpening;
             } else { value.fsr = startup_.fsr; }

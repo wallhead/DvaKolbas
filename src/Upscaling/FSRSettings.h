@@ -1,5 +1,6 @@
 #pragma once
 #include "UpscalerBackend.h"
+#include "FSRColorContract.h"
 #include "RendererBackendPolicy.h"
 #include "RendererSettingsAction.h"
 #include <charconv>
@@ -10,6 +11,7 @@ struct FsrSettings {
     Quality quality{Quality::Quality};
     ProviderPolicy providerPolicy{ProviderPolicy::Analytical};
     float sharpness{};
+    ColorEncoding sourceColorEncoding{ColorEncoding::Unknown};
     bool operator==(const FsrSettings&) const = default;
 };
 inline const char* QualityName(Quality value) {
@@ -20,7 +22,8 @@ inline const char* ProviderPolicyName(ProviderPolicy value){return value==Provid
 inline bool ValidFsrSettings(const FsrSettings& value) {
     return value.quality>=Quality::Quality && value.quality<=Quality::NativeAA &&
         (value.providerPolicy==ProviderPolicy::Analytical || value.providerPolicy==ProviderPolicy::Compatible) &&
-        std::isfinite(value.sharpness) && value.sharpness>=0 && value.sharpness<=1;
+        std::isfinite(value.sharpness) && value.sharpness>=0 && value.sharpness<=1 &&
+        (value.sourceColorEncoding==ColorEncoding::Unknown || IsKnownColorEncoding(value.sourceColorEncoding));
 }
 template<class Ini> Result<FsrSettings> ReadFsrSettings(const Ini& ini) {
     auto invalid=[](const char* reason)->Result<FsrSettings>{return std::unexpected(RuntimeError{ErrorKind::InvalidInput,0,reason});};
@@ -36,12 +39,18 @@ template<class Ini> Result<FsrSettings> ReadFsrSettings(const Ini& ini) {
     const std::string_view sharpness=ini.GetValue("FSR","Sharpness","0");
     const auto parsed=std::from_chars(sharpness.data(),sharpness.data()+sharpness.size(),result.sharpness);
     if(parsed.ec!=std::errc{} || parsed.ptr!=sharpness.data()+sharpness.size() || !ValidFsrSettings(result))return invalid("[FSR] Sharpness must be a finite number from 0 to 1.");
+    const std::string_view encoding=ini.GetValue("FSR","SourceColorEncoding","Unknown");
+    found=false;
+    for(auto value:{ColorEncoding::Unknown,ColorEncoding::Linear,ColorEncoding::Gamma22,ColorEncoding::SRGB})
+        if(encoding==ColorEncodingName(value)){result.sourceColorEncoding=value;found=true;break;}
+    if(!found)return invalid("[FSR] SourceColorEncoding must be Unknown, Linear, Gamma22 or SRGB.");
     return result;
 }
 template<class Ini> void StoreFsrSettings(Ini& ini,const FsrSettings& value) {
     ini.SetValue("FSR","Quality",QualityName(value.quality));
     ini.SetValue("FSR","ProviderPolicy",ProviderPolicyName(value.providerPolicy));
     ini.SetDoubleValue("FSR","Sharpness",value.sharpness);
+    ini.SetValue("FSR","SourceColorEncoding",ColorEncodingName(value.sourceColorEncoding));
 }
 inline bool FsrChangeRequiresRestart(const BackendConfiguration& old,const BackendConfiguration& next) {
     return old.backend!=next.backend || old.quality!=next.quality || old.providerPolicy!=next.providerPolicy ||

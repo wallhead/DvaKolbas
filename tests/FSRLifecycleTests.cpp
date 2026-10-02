@@ -8,7 +8,7 @@ int main(int argc,char** argv)
 {
     Require(argc==2,"fixture root supplied");Rig rig;BackendConfiguration config;
     config.backend=BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;config.quality=Quality::Performance;
-    FsrHostResources fsr(std::filesystem::absolute(argv[1]));Require(bool(fsr.PrepareSizing(rig.device11.Get(),config,{321,181})),"prepare lifecycle sizing");
+    FsrHostResources fsr(std::filesystem::absolute(argv[1]));Require(bool(fsr.PrepareSizing(rig.device11.Get(),config,{321,181},DXGI_FORMAT_R8G8B8A8_UNORM,ColorEncoding::Gamma22)),"prepare lifecycle sizing");
     Require(bool(fsr.CompleteStartup()),"create lifecycle feature");auto bridge=fsr.Bridge();bridge->SetRetirementWaitPolicy({1,10});
     ComPtr<ID3D12Fence> gate12;ComPtr<ID3D11Fence> gate11;rig.SharedGate(gate12,gate11);
     Check(rig.context4->Wait(gate11.Get(),1),"delay native reader");auto* resource=fsr.Resources().output;

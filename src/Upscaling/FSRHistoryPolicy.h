@@ -1,5 +1,6 @@
 #pragma once
 #include "UpscalerBackend.h"
+#include "CameraDepthPolicy.h"
 #include <cmath>
 namespace TheosRenderPipeline::Upscaling
 {
@@ -14,8 +15,7 @@ namespace TheosRenderPipeline::Upscaling
             for(float value:camera.projection)finite &= std::isfinite(value);
             for(float value:camera.position)finite &= std::isfinite(value);
             if(skipped || transition || !sourceId || (seen_ && sourceId<=lastSource_) || !extent.width || !extent.height ||
-                !camera.identity || !finite || !std::isfinite(camera.nearDistance) || !std::isfinite(camera.farDistance) ||
-                camera.nearDistance<=0 || camera.farDistance<=camera.nearDistance || !std::isfinite(camera.verticalFovRadians) ||
+                !camera.identity || !finite || !ValidCameraDepthRange(camera.nearDistance,camera.farDistance,camera.depthInfinite) || !std::isfinite(camera.verticalFovRadians) ||
                 camera.verticalFovRadians<=0 || camera.verticalFovRadians>=3.141593f || !std::isfinite(camera.worldUnitsToMeters) || camera.worldUnitsToMeters<=0) {
                 Invalidate();return {};
             }

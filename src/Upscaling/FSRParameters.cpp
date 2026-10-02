@@ -1,4 +1,5 @@
 #include "FSRParameters.h"
+#include "CameraDepthPolicy.h"
 #include <dx12/ffx_api_dx12.h>
 #include <wrl/client.h>
 #include <algorithm>
@@ -31,9 +32,7 @@ namespace TheosRenderPipeline::Upscaling
             !finite(frame.sharpness) || frame.sharpness<0 || frame.sharpness>1)
             return invalid("FSR time must be positive milliseconds; jitter, exposure and sharpening must be finite and valid");
         if (!camera.identity || !std::ranges::all_of(camera.view,finite) || !std::ranges::all_of(camera.projection,finite) ||
-            !std::ranges::all_of(camera.position,finite) || !finite(camera.nearDistance) || camera.nearDistance<=0 ||
-            (!camera.depthInfinite && (!finite(camera.farDistance) || camera.farDistance<=camera.nearDistance)) ||
-            (camera.depthInfinite && !(std::isinf(camera.farDistance) && camera.farDistance>0)) ||
+            !std::ranges::all_of(camera.position,finite) || !ValidCameraDepthRange(camera.nearDistance,camera.farDistance,camera.depthInfinite) ||
             !finite(camera.verticalFovRadians) || camera.verticalFovRadians<=0 || camera.verticalFovRadians>=std::numbers::pi_v<float> ||
             !finite(camera.worldUnitsToMeters) || camera.worldUnitsToMeters<=0)
             return invalid("FSR camera measurements are invalid");

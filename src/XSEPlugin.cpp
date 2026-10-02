@@ -199,6 +199,8 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     if (baselineIni.GetLongValue("Settings", "UpscaleType", 0)==FSR) {
         const auto settings=TheosRenderPipeline::Upscaling::ReadFsrSettings(baselineIni);
         if(!settings)util::report_and_fail(std::format("Theo's Render Pipeline FSR configuration error: {}",settings.error().message));
+        if(!TheosRenderPipeline::Upscaling::IsKnownColorEncoding(settings->sourceColorEncoding))
+            util::report_and_fail("Theo's Render Pipeline FSR configuration error: set [FSR] SourceColorEncoding to Linear, Gamma22 or SRGB after checking the Skyrim/ENB source producer. Missing/Unknown encoding is not guessed.");
     }
 
 	// Capture the engine callee before post-load renderer hooks replace its call.

@@ -28,7 +28,7 @@ foreach($pair in @(@('LICENSE','LICENSE'),@('package/THIRD_PARTY_FSR.md','THIRD_
 
 This package enables FSR Super Resolution with ordinary presentation. FSR frame generation, Neural Rendering, HDR and dynamic resolution are unavailable in this configuration.
 
-Quality, provider policy and sharpness are configured under [FSR] in SKSE/Plugins/TheosRenderPipeline.ini. Quality/provider/mode changes need Save and restart; sharpness can change live. The Image tab reports waiting, active temporal FSR, spatial recovery or failure separately.
+Quality, provider policy, SourceColorEncoding and sharpness are configured under [FSR] in SKSE/Plugins/TheosRenderPipeline.ini. Quality/provider/mode/encoding changes need Save and restart; sharpness can change live. SourceColorEncoding must explicitly be Linear, Gamma22 or SRGB; missing/Unknown encoding prevents FSR startup. The example's Gamma22 value is provisional and requires installed Skyrim/ENB color calibration. The Image tab reports waiting, active temporal FSR, spatial recovery or failure separately.
 
 Install as a separate mod only after authorization, with Skyrim and MO2 closed. Target profile: V5.4 NO-LORE. Preserve the working DLSS mod for rollback. The user starts Skyrim manually through the existing MO2 SKSE entry. This package has been staged and validated; Skyrim gameplay acceptance remains open.
 

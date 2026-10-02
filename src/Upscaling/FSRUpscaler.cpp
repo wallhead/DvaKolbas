@@ -72,6 +72,8 @@ namespace TheosRenderPipeline::Upscaling
         state_->limits.render=render; state_->limits.output=output;
         auto& policy=state_->limits.input;
         ffxCreateContextDescUpscale create{}; create.header.type=FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE;
+        // This pinned C API uses bit 9 for debug visualization. AIO's older
+        // FSR3 RCAS-compensation bit is not a flag in this descriptor ABI.
         create.flags=FFX_UPSCALE_ENABLE_AUTO_EXPOSURE |
             (policy.depthInverted?FFX_UPSCALE_ENABLE_DEPTH_INVERTED:0) |
             (policy.depthInfinite?FFX_UPSCALE_ENABLE_DEPTH_INFINITE:0) |

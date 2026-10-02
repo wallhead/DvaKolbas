@@ -41,13 +41,18 @@ namespace TheosRenderPipeline::Upscaling
     Result<UpscaleOutcome> FsrFrameAdapter::Evaluate(const UpscaleFrame& frame)
     {
         state_->lastReset=false;
+        if(!state_->recovery)state_->error.reset();
         auto invalid=[&]()->Result<UpscaleOutcome>{state_->history.Invalidate();return UpscaleOutcome::SkippedInvalidInput;};
         auto fatal=[&](HRESULT hr,const char* text)->Result<UpscaleOutcome>{state_->history.Invalidate();const bool removed=hr==DXGI_ERROR_DEVICE_REMOVED || hr==DXGI_ERROR_DEVICE_RESET || hr==DXGI_ERROR_DEVICE_HUNG || FAILED(state_->bridge->Device12()->GetDeviceRemovedReason());state_->error=RuntimeError{removed?ErrorKind::DeviceLost:ErrorKind::RetirementFailure,hr,text};return std::unexpected(*state_->error);};
         if(frame.backend!=BackendKind::Fsr || !frame.sourceId || !std::isfinite(frame.deltaMilliseconds) || frame.deltaMilliseconds<=0 || !NativeImage(frame))return invalid();
         if(!state_->bridge)return std::unexpected(RuntimeError{ErrorKind::ContextFailure,0,"FSR frame has no bridge"});
         if(!state_->bridge->Ready())return fatal(state_->bridge->Fault(),"FSR bridge fault; stop rendering");
         if(state_->recovery)return Spatial(frame);
-        if(!frame.depth || !frame.motion || frame.exposure || frame.reactive || frame.transparencyComposition)return invalid();
+        if(frame.exposure || frame.reactive || frame.transparencyComposition) {
+            state_->error=RuntimeError{ErrorKind::InvalidInput,0,"FSR external exposure/reactive/transparency guides are unsupported by this SR adapter; using spatial recovery"};
+            return invalid();
+        }
+        if(!frame.depth || !frame.motion)return invalid();
         D3D11_TEXTURE2D_DESC depth{},motion{};frame.depth->GetDesc(&depth);frame.motion->GetDesc(&motion);
         if(depth.Width!=frame.render.width || depth.Height!=frame.render.height || motion.Width!=frame.render.width || motion.Height!=frame.render.height || motion.Format!=DXGI_FORMAT_R16G16_FLOAT)return invalid();
         UpscaleFrame prepared=frame;prepared.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;prepared.depthFormat=DXGI_FORMAT_R32_FLOAT;prepared.motionFormat=DXGI_FORMAT_R16G16_FLOAT;prepared.colorIsLinear=true;

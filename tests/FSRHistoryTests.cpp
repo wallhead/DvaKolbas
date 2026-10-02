@@ -22,5 +22,19 @@ int main()
     camera.position[0]=std::numeric_limits<float>::quiet_NaN();Require(!history.Accept(10,camera,extent,false,false).valid,"nonfinite camera rejected");
     camera.position[0]=100;Require(history.Accept(11,camera,extent,false,false).reset,"skipped invalid source resets reentry");
     Require(!history.Accept(12,camera,extent,false,false).reset,"paused simulation still accepts advancing source IDs");
+    camera.depthInfinite=true;camera.farDistance=std::numeric_limits<float>::infinity();
+    auto infinite=history.Accept(13,camera,extent,false,false);
+    Require(infinite.valid && infinite.reset,"finite to infinite depth is accepted and resets once");
+    auto continued=history.Accept(14,camera,extent,false,false);
+    Require(continued.valid && !continued.reset,"stable infinite depth does not reset repeatedly");
+    camera.farDistance=100;
+    Require(!history.Accept(15,camera,extent,false,false).valid,"infinite convention rejects finite far distance");
+    camera.depthInfinite=false;camera.farDistance=std::numeric_limits<float>::infinity();
+    Require(!history.Accept(16,camera,extent,false,false).valid,"finite convention rejects infinity");
+    camera.depthInfinite=true;camera.farDistance=-std::numeric_limits<float>::infinity();
+    Require(!history.Accept(17,camera,extent,false,false).valid,"negative infinity is never a far plane");
+    camera.depthInfinite=false;camera.farDistance=100;
+    auto finite=history.Accept(18,camera,extent,false,false);
+    Require(finite.valid && finite.reset,"return to finite depth resets history");
     std::puts("PASS: source identity, camera discontinuities, loading and invalid-frame reentry");
 }

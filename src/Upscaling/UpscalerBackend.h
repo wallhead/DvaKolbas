@@ -14,6 +14,7 @@ namespace TheosRenderPipeline::Upscaling
     enum class BackendKind { Dlss, Dlaa, Fsr, External };
     enum class Quality { Quality, Balanced, Performance, NativeAA };
     enum class ProviderPolicy { Analytical, Compatible };
+    enum class ColorEncoding { Unknown, Linear, Gamma22, SRGB };
     struct ProviderInfo { std::uint64_t id{}; std::string name; };
     enum class GenerationPreparationStatus { NotRequested, Succeeded, Failed };
     enum class UpscaleOutcome { Temporal, SpatialRecovery, SkippedInvalidInput, Fatal };
