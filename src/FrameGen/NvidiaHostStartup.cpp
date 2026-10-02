@@ -421,13 +421,21 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
 {
     if (!output) return E_POINTER;*output=nullptr;
     using namespace TheosRenderPipeline;
+    logger::info("[FSR startup] requested extent={}x{} windowed={} flags=0x{:08X} swapEffect={} buffers={}",
+        descriptor.BufferDesc.Width,descriptor.BufferDesc.Height,descriptor.Windowed!=FALSE,descriptor.Flags,
+        static_cast<unsigned>(descriptor.SwapEffect),descriptor.BufferCount);
     fsrResources_=std::make_shared<Upscaling::FsrHostResources>(PluginPaths::Directory(),
         +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
             return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
         });
     fsrPresentation_=std::make_unique<FsrHostPresentation>();
     auto extent=fsrPresentation_->Create(factory,producer,fsrResources_,descriptor,sourceUpscalerSettings_.Startup().fsr);
-    if (!extent) { status_=extent.error().message;return E_FAIL; }
+    if (!extent) {
+        status_=extent.error().message;
+        logger::error("[FSR startup] rejected flags=0x{:08X} native=0x{:08X} reason={}",descriptor.Flags,
+            static_cast<std::uint32_t>(extent.error().nativeResult),status_);
+        return E_FAIL;
+    }
     fsrFactory_=factory;fsrDescriptor_=descriptor;
     fsrDescriptor_.BufferCount=2;
     renderWidth_=extent->width;renderHeight_=extent->height;

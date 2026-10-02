@@ -72,8 +72,11 @@ namespace TheosRenderPipeline
         if(!input.Windowed)return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR Windowed must be true (exclusive fullscreen unsupported)");
         if(input.SampleDesc.Count!=1 || input.SampleDesc.Quality)return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR SampleDesc requires Count=1, Quality=0");
         if(input.BufferDesc.Format!=DXGI_FORMAT_R8G8B8A8_UNORM)return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR BufferDesc.Format requires SDR R8G8B8A8_UNORM");
-        constexpr UINT allowedFlags=DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT|DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-        if(input.Flags&~allowedFlags)return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR Flags supports only waitable latency and allow tearing");
+        // Windowed Skyrim/Display Tweaks retains this legacy mode-switch bit.
+        // Preserve it; the independent Windowed and SetFullscreenState gates
+        // still forbid exclusive fullscreen on the selected AMD route.
+        constexpr UINT allowedFlags=DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH|DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT|DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+        if(input.Flags&~allowedFlags)return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR Flags supports only allow mode switch, waitable latency and allow tearing");
         constexpr UINT allowedUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT|DXGI_USAGE_SHADER_INPUT;
         if(!(input.BufferUsage&DXGI_USAGE_RENDER_TARGET_OUTPUT) || (input.BufferUsage&~allowedUsage))return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR BufferUsage requires render target output; only shader input is additionally supported");
         if(input.BufferDesc.RefreshRate.Numerator && !input.BufferDesc.RefreshRate.Denominator)return Error(ErrorKind::InvalidInput,E_INVALIDARG,"FSR BufferDesc.RefreshRate denominator must be nonzero for an explicit rate");

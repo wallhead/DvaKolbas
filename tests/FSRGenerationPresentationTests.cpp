@@ -3,6 +3,14 @@ using namespace PresentationFixture;
 int main(int argc,char** argv)
 {
     Require(argc==2,"fixture runtime root");PresentationFixture::Rig rig(argv[1]);FsrPresentation p;
+    auto legacyWindowed=rig.desc;legacyWindowed.Flags=DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH|DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    auto legacyTranslated=FsrPresentation::TranslateDescriptor(legacyWindowed);
+    Require(legacyTranslated && legacyTranslated->Flags==0x802,"WindowedDisplayTweaksFlagsPreserved");
+    legacyWindowed.Flags|=DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE;
+    Require(!FsrPresentation::TranslateDescriptor(legacyWindowed),"LegacyFlagsCannotBypassUnsupportedGdiContract");
+    legacyWindowed.Flags=0x802;
+    legacyWindowed.Windowed=FALSE;
+    Require(!FsrPresentation::TranslateDescriptor(legacyWindowed),"LegacyModeSwitchFlagDoesNotEnableExclusiveFullscreen");
     auto translated=FsrPresentation::TranslateDescriptor(rig.desc);
     Require(translated && translated->BufferCount==2 && translated->SwapEffect==DXGI_SWAP_EFFECT_FLIP_DISCARD &&
         translated->BufferDesc.RefreshRate.Numerator==120 && translated->BufferDesc.RefreshRate.Denominator==1 &&

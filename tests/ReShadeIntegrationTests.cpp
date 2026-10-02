@@ -88,7 +88,7 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     DXGI_SWAP_CHAIN_DESC desc{};desc.BufferDesc.Width=outputWidth;desc.BufferDesc.Height=outputHeight;
     desc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;desc.BufferCount=2;desc.SampleDesc.Count=1;
     desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.OutputWindow=window;desc.Windowed=TRUE;
-    desc.Flags=DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+    desc.Flags=DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH|DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING|DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
     FsrHostPresentation host;auto extent=host.Create(factory,device,resources,desc,settings);
     if(!extent)std::printf("AMD startup failure: %s native=%lld\n",extent.error().message.c_str(),extent.error().nativeResult);
     Require(extent && *extent==Extent{renderWidth,renderHeight},"actual AMD host reduced sizing on original ReShade producer");
@@ -101,6 +101,8 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     auto makeAdapter=[&]{return std::make_unique<FsrFrameAdapter>(*resources->Upscaler(),resources->Bridge(),resources->Resources(),resources->Color11(),resources->Depth11(),
         resources->Motion11(),resources->Output11(),resources->HandoffEncoding());};
     auto adapter=makeAdapter();auto* originalChain=host.SwapChain();const auto originalBridge=resources->Bridge();
+    DXGI_SWAP_CHAIN_DESC actualDesc{};Check(originalChain->GetDesc(&actualDesc),"real AMD requested flags");
+    Require(actualDesc.Flags==desc.Flags && actualDesc.Windowed,"real AMD preserves windowed Display Tweaks flags");
     Check(originalChain->SetMaximumFrameLatency(1),"real AMD maximum latency");
     Check(originalChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709),"real AMD SDR state");
     const auto cachedWaitable=originalChain->GetFrameLatencyWaitableObject();Require(cachedWaitable!=nullptr,"real AMD cached waitable handle");

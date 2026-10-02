@@ -1,0 +1,11 @@
+# Windowed Display Tweaks startup flags
+
+The first Skyrim FG trial failed before SR/FG feature creation. The installed DLL was the earlier `495035ff8cfa` trial, with FSR NativeAA selected and FG backend 2 enabled. Preserved logs show SSE Display Tweaks 0.5.25 requesting windowed 2560x1440, flip-discard, three buffers and flags `0x802`. TRP normalizes the buffer count to two, then its FSR descriptor whitelist rejected the mode-switch bit. The current review-fix source had the same restrictive whitelist; updating only to that package would also have rejected this request.
+
+`0x802` combines ALLOW_TEARING with the legacy ALLOW_MODE_SWITCH bit. [Microsoft's flag documentation](https://learn.microsoft.com/en-us/windows/win32/api/dxgi/ne-dxgi-dxgi_swap_chain_flag) defines mode switching in terms of ResizeTarget and windowed-to-fullscreen transitions; the bit itself does not select exclusive fullscreen. The pinned AMD swapchain forwards it in the native creation descriptor and retains it in its interpolation descriptor while adding latency/tearing flags.
+
+TRP now preserves this bit for the supported windowed route. Startup Windowed=false, runtime SetFullscreenState(TRUE), HDR, unknown flags and GDI compatibility remain rejected. Startup diagnostics now record the requested extent, windowed state, raw flags, swap effect and buffer count, plus the specific native error/reason on rejection. No Display Tweaks, MO2 or game display settings need modification. NativeAA is retained in the installed INI.
+
+The regression `WindowedDisplayTweaksFlagsPreserved` failed before the whitelist fix and passed afterward. It additionally checks that the legacy bits cannot bypass GDI or exclusive-fullscreen rejection. The actual AMD/ReShade fixture now starts with `0x842` (the game's `0x802` plus the cached-waitable test flag), verifies the AMD returned descriptor, and runs the existing SR/FG/UI, retained resize and suspension/restoration transactions. Both targeted tests passed; the full delivery build and local validation receipt follow below.
+
+Failure logs are preserved under `out/research/display-flags-startup/`. This startup correction is independent of the Quality-to-NativeAA INI change. Milestone 8 still requires Skyrim gameplay acceptance; seven of eight milestones are complete.
