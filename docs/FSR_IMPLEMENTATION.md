@@ -2,7 +2,7 @@
 
 Starting revision: `246d152c42a83308beb7a6f4930e7c472ef0d4ce` (TRP 0.3.5).
 Branch: `codex/fsr-sr`.
-Status: FSR SR rendering/settings implemented and six-build/GPU/package checks passed. Enabled builds accept coherent FSR settings, while FSR-off builds reject FSR. Final branch review is pending. FSR is not installed in Skyrim; gameplay acceptance and FSR frame generation remain open.
+Status: the local FSR SR milestone is complete. Six-build/GPU/package checks and the final review fix pass passed. Enabled builds accept coherent FSR settings, while FSR-off builds reject FSR. Built code revision: `49cb69f8ccb1532d42ed2b0a166010f870d4a121`. FSR is not installed in Skyrim; gameplay acceptance and FSR frame generation remain open. See the [review and preserved decisions](FSR_REVIEW.md), [validation evidence](FSR_VALIDATION.json) and [final package hashes](FSR_PACKAGES.json).
 
 The user approved shared buffers/native UI, NVIDIA-independent FSR SR first, then FSR FG, and the [written spec](superpowers/specs/2026-10-01-fsr-sr-design.md). The [implementation plan](superpowers/plans/2026-10-01-fsr-sr.md) defines eight tested increments. The user’s “next step” continued implementation inline in the existing FSR worktree. Pushes to `https://github.com/wallhead/DvaKolbas` are authorized. This record will gain executed commands, artifacts, hashes, and acceptance outcomes as implementation proceeds.
 
@@ -48,7 +48,7 @@ The producer signal/submission -> D3D12 wait/dispatch/signal -> D3D11 output wai
 * FSR runtime archive/per-DLL hashes, signing, exact package layout, and licenses: verified in increment 2 below.
 * FSR mode numeric audit: reachable baseline `UpscaleType.h` history preserves DLSS 0/DLAA 3 from publication `8164c1a`; a reachable source/package history search found no FSR/upscaler selector assigned 4. The spec selects FSR 4 and leaves legacy 1/2 rejected. Unpublished/disconnected history is outside this evidence.
 * Skyrim motion/jitter and ENB/non-ENB encoding at the FSR handoff: require controlled captures/measurements; NVIDIA adapter comments are not proof.
-* FSR dispatch and native output consumption: tested in the isolated GPU fixture in increment 4. Product startup, source-frame integration, packaging, and Skyrim gameplay remain pending.
+* FSR dispatch/native output consumption, source-frame integration, production startup helpers and packaging: tested in the isolated fixtures through increment 8. Actual Skyrim/SKSE startup and gameplay remain pending.
 * Available RTX 4080 Super: existing DLSS initial gameplay passed. AMD/Intel: not tested.
 * Graphics Tools-dependent validation: unavailable after installation error 5; do not report those checks passed.
 * FSR FG: subsequent implementation stage, not active or tested.
@@ -133,12 +133,12 @@ All six Release configurations passed. The exact plugin SHA-256 values, actual p
 
 | Configuration | Runnable CTest cases | Result |
 | --- | ---: | --- |
-| Standard FSR, NR compiled | 117 | PASS |
-| Universal FSR, NR compiled | 117 | PASS |
-| Standard FSR, NR excluded | 117 | PASS |
-| Universal FSR, NR excluded | 117 | PASS |
-| Standard FSR excluded | 107 | PASS |
-| Universal FSR excluded | 107 | PASS |
+| Standard FSR, NR compiled | 118 | PASS |
+| Universal FSR, NR compiled | 118 | PASS |
+| Standard FSR, NR excluded | 118 | PASS |
+| Universal FSR, NR excluded | 118 | PASS |
+| Standard FSR excluded | 108 | PASS |
+| Universal FSR excluded | 108 | PASS |
 
 The two FSR-off builds configured and built against `C:/deliberately-missing-fidelityfx-sdk`, which does not exist. Normal and delayed PE import inspections found no mandatory NVIDIA/AMD runtime imports in any plugin. Exactly `NativeUIComposition`, `NativeUIBlendState` and `NeuralPeripheralPixels` remain Graphics Tools-dependent SKIPPED checks per configuration; no test body or exclusion was weakened.
 
@@ -157,7 +157,13 @@ cmake --preset <each of the six fsr-* presets>
 cmake --build out/build/<preset> --config Release --parallel 2 -- /p:UseMultiToolTask=true /p:MultiProcMaxCount=4 /p:EnforceProcessCountAcrossBuilds=true
 ctest --test-dir out/build/<preset> -C Release --output-on-failure -E '^(NativeUIComposition|NativeUIBlendState|NeuralPeripheralPixels)$'
 pwsh -NoProfile -File tests/FSRPackageTests.ps1 -Edition <Standard|Universal> -BuildDirectory out/build/<preset> -RuntimeDirectory out/research/sdk-v2.3.0/runtime -ScratchRoot out/research/package-tests
-pwsh -NoProfile -File tools/fsr/Stage-Package.ps1 -Edition <Standard|Universal> -BuildDirectory out/build/<preset> -RuntimeDirectory out/research/sdk-v2.3.0/runtime -OutputDirectory out/packages/2026-10-02/candidate/<preset>
+pwsh -NoProfile -File tools/fsr/Stage-Package.ps1 -Edition <Standard|Universal> -BuildDirectory out/build/<preset> -RuntimeDirectory out/research/sdk-v2.3.0/runtime -OutputDirectory out/packages/2026-10-02/final/<preset>
 ```
 
-The four enabled candidates are staged under `out/packages/2026-10-02/candidate/`, each with an edition-specific ZIP, complete notices and a manifest. They are not installed. The [gameplay checklist](FSR_TEST_CHECKLIST.md) covers installed motion/jitter/depth and color calibration, ENB, transparency, ReShade/CS, native UI/previews, quality/odd/ultrawide dimensions, loading/camera/resize/alt-tab and GPU/CPU/VRAM measurements. Skyrim gameplay and AMD/Intel hardware remain NOT RUN. FSR frame generation remains NOT IMPLEMENTED / NOT RUN; this milestone establishes its SR prerequisite and does not advertise generated frames.
+The four final enabled packages are staged under `out/packages/2026-10-02/final/`, each with an edition-specific ZIP, complete notices and a manifest. ZIP contents were independently checked against the manifests, verified build bytes and clean embedded source revision `49cb69f8ccb1`. They are not installed. The [gameplay checklist](FSR_TEST_CHECKLIST.md) covers installed motion/jitter/depth and color calibration, ENB, transparency, ReShade/CS, native UI/previews, quality/odd/ultrawide dimensions, loading/camera/resize/alt-tab and GPU/CPU/VRAM measurements. Skyrim gameplay and AMD/Intel hardware remain NOT RUN. FSR frame generation remains NOT IMPLEMENTED / NOT RUN; this milestone establishes its SR prerequisite and does not advertise generated frames.
+
+## Final review and regression fixes
+
+The fresh whole-branch review found two Important regressions and no Critical or Minor findings. Ordinary FSR presentation now establishes ReShade manual-effects ownership through the public native swapchain handle, releases its automatic runtime before publication and rejects unprovable ownership. The NVIDIA FG checkbox now synchronizes its settings draft, preventing Apply/Save from reversing a visible immediate toggle. Both behavioral failures were reproduced before correction.
+
+The supplied ReShade 6.7.3.2150 DLL (SHA-256 `059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc`) was tested in isolated temporary directories with the actual ordinary presenter and the original NVIDIA presenter fixture. Both before/after placements, one effects pass, untouched native UI, source input, screenshots and runtime lifetime passed. Each of the six configurations now runs `ReShadePresentationRuntime` through optional `TRP_RESHADE_INTEGRATION_RUNTIME`; no injector is downloaded or installed by the build. FG Apply/Save is covered in both toggle directions with unrelated edits and saved-startup round trips. Fresh verification ran before committing the fixes, then all six builds/suites ran again from the clean committed code revision used by the final ZIPs: 688 runnable passes. The review record preserves all decisions and the separate game/hardware gates.

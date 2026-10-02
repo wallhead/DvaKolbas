@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-02",
+  "builtCodeRevision": "49cb69f8ccb1532d42ed2b0a166010f870d4a121",
+  "state": "staged, not installed",
+  "skyrimGameplayTested": false,
+  "frameGenerationImplemented": false,
+  "packages": [
+    {
+      "preset": "fsr-standard",
+      "edition": "Standard",
+      "neuralRenderingCompiled": true,
+      "zip": "out/packages/2026-10-02/final/fsr-standard/Standard-FSR-SR.zip",
+      "bytes": 18262052,
+      "sha256": "b0fc4edc41630b05dfcbf992b62185c578abc53016f4c620104def539665aaf9",
+      "pluginSha256": "7ed0caabb4d496ba43068d2c08205dfc2df80d0c6336abe98aa7b1cd9a020fe8",
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "manifestAndZipContentsValidated": true
+    },
+    {
+      "preset": "fsr-universal",
+      "edition": "Universal",
+      "neuralRenderingCompiled": true,
+      "zip": "out/packages/2026-10-02/final/fsr-universal/Universal-FSR-SR.zip",
+      "bytes": 18323305,
+      "sha256": "b3a380965c5db1499eda02c57538f03a8784aa38d69e4f450fcc25bc77121a33",
+      "pluginSha256": "5e826ef2c573b526bec0ec3ec8a96aac86e7fc61711c155d5301b850f64f096e",
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "manifestAndZipContentsValidated": true
+    },
+    {
+      "preset": "fsr-standard-nr-off",
+      "edition": "Standard",
+      "neuralRenderingCompiled": false,
+      "zip": "out/packages/2026-10-02/final/fsr-standard-nr-off/Standard-FSR-SR.zip",
+      "bytes": 18163656,
+      "sha256": "bd31ab9e222c79669f46df60c173c940cdd9882521e064d068cf3b2c7c75c61e",
+      "pluginSha256": "0142682f3dda1848b9b310ba7b6d8c972b970fb03364204bcaefce413479fc33",
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "manifestAndZipContentsValidated": true
+    },
+    {
+      "preset": "fsr-universal-nr-off",
+      "edition": "Universal",
+      "neuralRenderingCompiled": false,
+      "zip": "out/packages/2026-10-02/final/fsr-universal-nr-off/Universal-FSR-SR.zip",
+      "bytes": 18225615,
+      "sha256": "2ba8abdeaf209bcaff025d25e6d53fee472f3ae7dc83e4d7ed8617ed2227e121",
+      "pluginSha256": "6189d6dc65ee65036996971f8183113f576b2f6465942830e7e85baca26820fc",
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "manifestAndZipContentsValidated": true
+    }
+  ]
+}

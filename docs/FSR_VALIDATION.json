@@ -6,10 +6,25 @@
     {
       "preset": "fsr-standard",
       "releaseBuild": "PASS",
-      "runnableTestsPassed": 117,
+      "runnableTestsPassed": 118,
       "graphicsToolsChecks": "SKIPPED: NativeUIComposition, NativeUIBlendState, NeuralPeripheralPixels",
-      "pluginSha256": "872ef709a8ae1fff5db34ab89fc7737513cf6fd6d5f65cfc52765e42336a0d70",
+      "pluginSha256": "7ed0caabb4d496ba43068d2c08205dfc2df80d0c6336abe98aa7b1cd9a020fe8",
       "mandatoryVendorRuntimeImports": [],
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "reshade": {
+        "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+        "routes": [
+          {
+            "route": "--ordinary-reshade",
+            "result": "PASS"
+          },
+          {
+            "route": "--require-reshade",
+            "result": "PASS"
+          }
+        ],
+        "skyrimTested": false
+      },
       "gpu": {
         "result": "PASS",
         "frames": 1000,
@@ -60,10 +75,25 @@
     {
       "preset": "fsr-universal",
       "releaseBuild": "PASS",
-      "runnableTestsPassed": 117,
+      "runnableTestsPassed": 118,
       "graphicsToolsChecks": "SKIPPED: NativeUIComposition, NativeUIBlendState, NeuralPeripheralPixels",
-      "pluginSha256": "788a0f5a4220d97c80056f09cf41624e8590cbe2fe7ef1cecbaf1b11536dcdf0",
+      "pluginSha256": "5e826ef2c573b526bec0ec3ec8a96aac86e7fc61711c155d5301b850f64f096e",
       "mandatoryVendorRuntimeImports": [],
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "reshade": {
+        "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+        "routes": [
+          {
+            "route": "--ordinary-reshade",
+            "result": "PASS"
+          },
+          {
+            "route": "--require-reshade",
+            "result": "PASS"
+          }
+        ],
+        "skyrimTested": false
+      },
       "gpu": {
         "result": "PASS",
         "frames": 1000,
@@ -114,10 +144,25 @@
     {
       "preset": "fsr-standard-nr-off",
       "releaseBuild": "PASS",
-      "runnableTestsPassed": 117,
+      "runnableTestsPassed": 118,
       "graphicsToolsChecks": "SKIPPED: NativeUIComposition, NativeUIBlendState, NeuralPeripheralPixels",
-      "pluginSha256": "7db6f76405019c10425a4563b8b4be292f5807a135312162417e3a6ac029846b",
+      "pluginSha256": "0142682f3dda1848b9b310ba7b6d8c972b970fb03364204bcaefce413479fc33",
       "mandatoryVendorRuntimeImports": [],
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "reshade": {
+        "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+        "routes": [
+          {
+            "route": "--ordinary-reshade",
+            "result": "PASS"
+          },
+          {
+            "route": "--require-reshade",
+            "result": "PASS"
+          }
+        ],
+        "skyrimTested": false
+      },
       "gpu": {
         "result": "PASS",
         "frames": 1000,
@@ -168,10 +213,25 @@
     {
       "preset": "fsr-universal-nr-off",
       "releaseBuild": "PASS",
-      "runnableTestsPassed": 117,
+      "runnableTestsPassed": 118,
       "graphicsToolsChecks": "SKIPPED: NativeUIComposition, NativeUIBlendState, NeuralPeripheralPixels",
-      "pluginSha256": "75bd36ff419cb4a68c6dd45b2fb41f95df240e60313aaf277f4712fa52ba6225",
+      "pluginSha256": "6189d6dc65ee65036996971f8183113f576b2f6465942830e7e85baca26820fc",
       "mandatoryVendorRuntimeImports": [],
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "reshade": {
+        "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+        "routes": [
+          {
+            "route": "--ordinary-reshade",
+            "result": "PASS"
+          },
+          {
+            "route": "--require-reshade",
+            "result": "PASS"
+          }
+        ],
+        "skyrimTested": false
+      },
       "gpu": {
         "result": "PASS",
         "frames": 1000,
@@ -222,20 +282,56 @@
     {
       "preset": "fsr-disabled-standard",
       "releaseBuild": "PASS",
-      "runnableTestsPassed": 107,
+      "runnableTestsPassed": 108,
       "graphicsToolsChecks": "SKIPPED: NativeUIComposition, NativeUIBlendState, NeuralPeripheralPixels",
-      "pluginSha256": "1ccb66ab7c39939e892e50eac6eee2e0c0fc3a1e081b0d18e729ec8a65b8bebd",
+      "pluginSha256": "4fc24c3696b3c01ecb25edd896821dcd4f1d800e248448f7dbd5aa6b0e549d51",
       "mandatoryVendorRuntimeImports": [],
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "reshade": {
+        "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+        "routes": [
+          {
+            "route": "--ordinary-reshade",
+            "result": "PASS"
+          },
+          {
+            "route": "--require-reshade",
+            "result": "PASS"
+          }
+        ],
+        "skyrimTested": false
+      },
       "fsrSdkDirectory": "deliberately absent; configure/build succeeded"
     },
     {
       "preset": "fsr-disabled-universal",
       "releaseBuild": "PASS",
-      "runnableTestsPassed": 107,
+      "runnableTestsPassed": 108,
       "graphicsToolsChecks": "SKIPPED: NativeUIComposition, NativeUIBlendState, NeuralPeripheralPixels",
-      "pluginSha256": "1eedd9089452ebddf014b3eca841c9c88dd4c5dafa99ae8302ff436385f39c8d",
+      "pluginSha256": "ca6a7ca1fc653cdee127ebe0708651e9b38fe6f7024d3c6727d2d3324dbba182",
       "mandatoryVendorRuntimeImports": [],
+      "embeddedSourceRevision": "49cb69f8ccb1",
+      "reshade": {
+        "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+        "routes": [
+          {
+            "route": "--ordinary-reshade",
+            "result": "PASS"
+          },
+          {
+            "route": "--require-reshade",
+            "result": "PASS"
+          }
+        ],
+        "skyrimTested": false
+      },
       "fsrSdkDirectory": "deliberately absent; configure/build succeeded"
     }
+  ],
+  "builtCodeRevision": "49cb69f8ccb1532d42ed2b0a166010f870d4a121",
+  "commands": [
+    "cmake --preset <preset>",
+    "cmake --build out/build/<preset> --config Release --parallel 2 -- /p:UseMultiToolTask=true /p:MultiProcMaxCount=4 /p:EnforceProcessCountAcrossBuilds=true",
+    "ctest --test-dir out/build/<preset> -C Release --output-on-failure -E '^(NativeUIComposition|NativeUIBlendState|NeuralPeripheralPixels)$'"
   ]
 }
