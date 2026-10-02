@@ -104,7 +104,7 @@ namespace TheosRenderPipeline
         state_->closing=true;if(FAILED(hr))return hr;
         state_->sdkRetired=true;state_->pendingPresent=false;state_->registered=false;return S_OK;
     }
-    HRESULT FsrPresentationTransport::Retire()
+    HRESULT FsrPresentationTransport::DrainForRetirement()
     {
         if(!state_)return S_OK;
         state_->closing=true;
@@ -114,6 +114,11 @@ namespace TheosRenderPipeline
         // Its final D3D11 reader/writer is part of this transport's lifetime.
         auto hr=state_->bridge->SignalD3D11(InteropWork::SwapChain);if(FAILED(hr))return hr;
         hr=state_->bridge->Drain();if(FAILED(hr))return hr;
+        return S_OK;
+    }
+    HRESULT FsrPresentationTransport::Retire()
+    {
+        auto hr=DrainForRetirement();if(FAILED(hr))return hr;
         state_.reset();return S_OK;
     }
     ID3D11Texture2D* FsrPresentationTransport::SceneTarget11()const{return state_?state_->sceneTarget.Get():nullptr;}

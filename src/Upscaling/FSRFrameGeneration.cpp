@@ -194,6 +194,9 @@ namespace TheosRenderPipeline::Upscaling
         if (!session || !lock.Owns(*session) || !session->closing_ || session->present_ || session->callback_->owner != state_.get() || !session->callback_->context)
             return Error(ErrorKind::InvalidInput, 0, "FG lifecycle disable requires idle context ownership");
         auto& callback = *session->callback_;
+        // Creation installs no swapchain callback. Before the first Configure
+        // there is nothing to detach and a null-chain SDK Configure is invalid.
+        if(callback.detached && !callback.configured && !state_->chain)return {};
         ffxConfigureDescFrameGeneration config{}; config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION;
         config.swapChain = state_->chain.Get(); config.frameID = callback.sourceId;
         const auto result = callback.runtime->Functions().Configure(&callback.context, &config.header);
@@ -224,5 +227,10 @@ namespace TheosRenderPipeline::Upscaling
         const auto result = session->callback_->runtime->Functions().Query(&session->callback_->context, &query.header);
         if (result != FFX_API_RETURN_OK) return Error(ErrorKind::ContextFailure, result, "FG memory query failed");
         return usage;
+    }
+    bool FsrFrameGeneration::ContextOwned(const FsrSdkLock& lock)const
+    {
+        const auto session=state_->session;
+        return session && lock.Owns(*session) && session->callback_->owner==state_.get() && session->callback_->context;
     }
 }

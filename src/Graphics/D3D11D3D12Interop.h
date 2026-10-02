@@ -78,6 +78,7 @@ namespace TheosRenderPipeline::Graphics
         // Discard an ordinary list which has never reached ExecuteCommandLists.
         // No fence completion or GPU resource-state transition is fabricated.
         HRESULT DiscardRecording();
+        HRESULT DiscardUnsubmitted(InteropWork);
         HRESULT WaitConsumer();
         HRESULT Drain();
         ID3D12Device* Device12() const { return device12_.Get(); }

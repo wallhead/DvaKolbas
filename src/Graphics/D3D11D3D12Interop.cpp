@@ -368,6 +368,14 @@ namespace TheosRenderPipeline::Graphics
 		return index < work_.size() ? work_[index].value : 0;
 	}
 
+    HRESULT D3D11D3D12Interop::DiscardUnsubmitted(InteropWork kind)
+    {
+        if(kind==InteropWork::Upscaling)return DiscardRecording();
+        auto* work=Get(kind);if(!Ready() || !work || !work->recording)return E_UNEXPECTED;
+        const auto hr=work->lists[work->slot]->Close();if(FAILED(hr))return Check(hr);
+        work->recording=false;return S_OK;
+    }
+
 	std::size_t D3D11D3D12Interop::CurrentSlot(InteropWork a_work) const
 	{
 		const auto index = static_cast<std::size_t>(a_work);

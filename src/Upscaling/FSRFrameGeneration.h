@@ -60,6 +60,7 @@ namespace TheosRenderPipeline::Upscaling
         // retirement. No main-queue fence substitutes for WaitForPresents.
         Result<void> DestroyAfterRetirement(const FsrSdkLock&);
         Result<FfxApiEffectMemoryUsage> QueryMemoryUsage(const FsrSdkLock&);
+        bool ContextOwned(const FsrSdkLock&) const;
         FsrGenerationCallbackOutcome LastCallback(const FsrSdkLock&) const;
         static ffxReturnCode_t GenerationCallback(ffxDispatchDescFrameGeneration*, void*) noexcept;
     private:

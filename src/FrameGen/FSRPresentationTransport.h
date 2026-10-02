@@ -27,6 +27,7 @@ namespace TheosRenderPipeline
         // Lifecycle proof provided only after actual UI unregister AND SDK
         // WaitForPresents succeed. Stops admissions; failure keeps all owners.
         HRESULT AcknowledgeSdkRetirement(HRESULT);
+        HRESULT DrainForRetirement();
         HRESULT Retire();
         ID3D11Texture2D* SceneTarget11() const;
         const Upscaling::FsrGenerationResources& Resources() const;
