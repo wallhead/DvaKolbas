@@ -24,7 +24,7 @@ The reviewer declined to judge the following; the executor retains each limitati
 | Calibrated Skyrim/ENB transfer and color | Gamma22 remains provisional. FG toggle appearance passed; formal source/ENB calibration remains pending. |
 | AMD/Intel hardware | No available execution evidence; pending hardware acceptance. Current tested GPU is RTX 4080 Super. |
 | Three Graphics Tools checks | Unavailable and excluded under the user's instruction to continue; never counted as passes. |
-| Automatic Alt+Enter | Not covered by alt-tab acceptance. Keep a separate pending acceptance item; explicit unsupported fullscreen calls are gated. |
+| Fullscreen / automatic Alt+Enter | Excluded by the user on 2026-10-03: Skyrim uses borderless windowed mode. Not run or marked passing; explicit unsupported fullscreen calls remain gated. |
 | Arbitrary concurrent outer-host lifecycle calls | Retain the existing render/host-thread ownership assumption; SDK session serialization does not create an unrestricted concurrent host API. |
 | ML FSR4, other upscaler/FG combinations, HDR/exclusive fullscreen, dynamic resolution, CS expansion, multiple generated frames and async compute | Explicitly deferred features in the approved first-stage scope. |
 | Archived RE conclusions and other runtime versions | Historical research is not the implementation ABI. Acceptance applies to the pinned public SDK/providers and supplied ReShade runtime. |

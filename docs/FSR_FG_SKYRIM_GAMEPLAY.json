@@ -1,4 +1,16 @@
 {
+  "windowModeScope": {
+    "date": "2026-10-03",
+    "mode": "Borderless windowed",
+    "userStatements": [
+      "we dont need fullscreen in skyrim",
+      "skyrim works explicitly in borderless windowed",
+      "we can move on this test"
+    ],
+    "fullscreenAndAltEnterAcceptance": "EXCLUDED by user; not run or passed",
+    "uncommittedTestDraft": "Discarded; no production implementation was made",
+    "rendererOrGameOrMo2SettingsChanged": false
+  },
   "date": "2026-10-02",
   "builtCodeRevision": "843057399b473a1c017f2a9c4b7aa09621223277",
   "profile": "V5.4 NO-LORE",
@@ -23,8 +35,7 @@
   "evidenceScope": "User gameplay report plus logged successful generation callback; transition logs are not total generated-frame or scanout counts",
   "remainingAcceptance": [
     "Optical scanout/input-to-photon latency not measured",
-    "Formal ENB/source-color calibration; Gamma22 provisional",
-    "Automatic Alt+Enter"
+    "Formal ENB/source-color calibration; Gamma22 provisional"
   ],
   "milestonesComplete": 7,
   "milestonesTotal": 8,
