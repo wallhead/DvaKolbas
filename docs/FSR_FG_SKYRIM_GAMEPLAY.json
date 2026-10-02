@@ -22,8 +22,8 @@
   },
   "evidenceScope": "User gameplay report plus logged successful generation callback; transition logs are not total generated-frame or scanout counts",
   "remainingAcceptance": [
-    "Independent Skyrim presentation/scanout or latency measurement",
-    "Formal ENB/source-color calibration; Gamma22 remains provisional",
+    "Optical scanout/input-to-photon latency not measured",
+    "Formal ENB/source-color calibration; Gamma22 provisional",
     "Automatic Alt+Enter"
   ],
   "milestonesComplete": 7,
@@ -82,5 +82,14 @@
       "formalSourceColorCalibration": "Not established; Gamma22/ENB remains provisional"
     }
   },
-  "measuredBaseFrameTiming": "Captured bounded exploratory comparison; see FSR_FG_SKYRIM_TIMING.json; not scanout or isolated FG GPU cost"
+  "measuredBaseFrameTiming": "Captured bounded exploratory comparison; see FSR_FG_SKYRIM_TIMING.json; not scanout or isolated FG GPU cost",
+  "presentationCapture": {
+    "date": "2026-10-03",
+    "sourceRevision": "be05d936e477",
+    "result": "PASS: ETW display-update scope",
+    "offHz": 58.35014019574431,
+    "onHz": 115.12111714025083,
+    "ratio": 1.9729364274714638,
+    "receipt": "docs/FSR_FG_PRESENTATION_CAPTURE.json"
+  }
 }

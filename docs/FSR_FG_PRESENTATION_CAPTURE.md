@@ -1,5 +1,7 @@
 # Skyrim display-cadence capture
 
+Current result: **PASS within ETW display-update scope**. The user completed the capture; the same native swapchain measured 58.35 Hz off and 115.12 Hz on, ratio 1.973. See [measured results](FSR_FG_SKYRIM_PRESENTATION.md) and `FSR_FG_PRESENTATION_CAPTURE.json`. The preparation instructions and initial access limitations below are historical; actual elevated gameplay capture is now verified.
+
 The base-frame timing capture passed its logged live-toggle smoke checks. On 2026-10-03 the user additionally reported that the image looked fine. This accepts observed appearance for the tested setup; Gamma22/ENB transfer remains provisional rather than formally calibrated.
 
 Next capture uses the existing Intel-signed PresentMon 2.6.0 portable console binary. SHA256: `b2a706bc6ad475749e3b7e3409263aa1e6906d45bdcf993f6dbc0f660188f1af`. Its signature was valid for Intel Corporation. It was copied from Downloads into ignored `out/research/presentmon`; binaries are not committed. [PresentMon's documentation](https://github.com/GameTechDev/PresentMon/blob/v2.6.0/README-ConsoleApplication.md) describes display metrics and their scope.
@@ -13,4 +15,4 @@ The non-elevated two-second local probe failed with exit 6, `failed to start tra
 
 The helper targets only the observed Skyrim process ID, creates unique ETW session/output names, and writes two CSVs, console logs, Skyrim log snapshots and a metadata receipt under ignored `out/research/skyrim-presentation`. It does not launch Skyrim, install a service or edit game/MO2/INI settings. Preserve all CSV swapchains and dropped-frame records for analysis; identify the native display swapchain before comparing display intervals. User-selected mode labels, CSV row counts and source/API Present rates alone do not establish displayed generation. Frame-type classification requires compatible instrumentation and must not be assumed from the phase label.
 
-Automatic Alt+Enter remains untested; the supported trial is windowed SDR with exclusive fullscreen rejected. No new fullscreen capability is introduced by this capture. Seven of eight milestones remain complete, with actual presentation capture pending and previous hardware/Graphics Tools limitations retained.
+Automatic Alt+Enter remains untested; the supported trial is windowed SDR with exclusive fullscreen rejected. No new fullscreen capability is introduced by this capture. Seven of eight milestones remain complete, with formal source-color/window acceptance and previous hardware/Graphics Tools limitations retained.

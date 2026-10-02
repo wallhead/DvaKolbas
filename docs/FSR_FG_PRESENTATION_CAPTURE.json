@@ -1,6 +1,6 @@
 {
   "date": "2026-10-03",
-  "state": "Prepared; user authorized elevation and ETW recording start/stop verified; gameplay capture pending",
+  "state": "PASS: independent Skyrim ETW display-update comparison; on/off rate ratio1.973; remaining acceptance limits retained",
   "presentMonVersion": "2.6.0",
   "presentMonSha256": "b2a706bc6ad475749e3b7e3409263aa1e6906d45bdcf993f6dbc0f660188f1af",
   "signatureStatus": "Valid",
@@ -19,7 +19,7 @@
   "helperSha256": "04ecb14ce3519e99dce0767a2bec3ef710d9ce5e9728bf412eaddf678a65c9d0",
   "syntaxErrors": 0,
   "launcherTargetVerified": true,
-  "liveCaptureValidated": false,
+  "liveCaptureValidated": true,
   "gameOrMo2SettingsEdited": false,
   "milestonesComplete": 7,
   "milestonesTotal": 8,
@@ -35,5 +35,174 @@
     "stderrSha256": "b3d510ef04275ca8e698e5b3cbb0ece3949ef9252f0cdc839e9ee347409a2209",
     "gameplayCaptured": false,
     "systemSettingsChanged": false
-  }
+  },
+  "sourceRevision": "be05d936e477",
+  "userCompletion": "done",
+  "captureFiles": [
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/capture.json",
+      "sha256": "f3a99142babc69706c0c6e81298860a336a7496c9ad061d5ee347291372d0dc3",
+      "bytes": 5218
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/fg-off.csv",
+      "sha256": "b53396f8fc464a7be9dccd191d73b16905a9ccffc7fadc87dcc2e905d278e505",
+      "bytes": 506270
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/fg-on.csv",
+      "sha256": "263d943cdb3eaf94aa36da61740a741121f8f2d78d20d7594eb9776be013eb37",
+      "bytes": 981872
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/fg-off-stdout.log",
+      "sha256": "a9130f7ca0a9bf20318a0122cdf0d1189d2a1ffbb038a45a6bfaf514bf9c5931",
+      "bytes": 82
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/fg-off-stderr.log",
+      "sha256": "b3d510ef04275ca8e698e5b3cbb0ece3949ef9252f0cdc839e9ee347409a2209",
+      "bytes": 2
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/fg-on-stdout.log",
+      "sha256": "a9130f7ca0a9bf20318a0122cdf0d1189d2a1ffbb038a45a6bfaf514bf9c5931",
+      "bytes": 82
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/fg-on-stderr.log",
+      "sha256": "b3d510ef04275ca8e698e5b3cbb0ece3949ef9252f0cdc839e9ee347409a2209",
+      "bytes": 2
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/skyrim-before.log",
+      "sha256": "dbb6568dbf8da981b03820f29d38e63cb866337fbfbcef2cc6aa393be5b8fc2a",
+      "bytes": 16025
+    },
+    {
+      "path": "out/research/skyrim-presentation/20261003-003525-23566d2f89ff40989dbaa914eff7e17c/skyrim-after.log",
+      "sha256": "1a2b268a9712a8a9355e7b59c67bdc04c5c2c3a970da681f9697cfdc7eb9e7b3",
+      "bytes": 16533
+    }
+  ],
+  "analysisScript": {
+    "path": "tools/fsr/Analyze-SkyrimPresentationCapture.ps1",
+    "sha256": "18b1fc8ac17819d3b2a7e7c0bd25b7f64d278f8211b119f04eca2c165a5ba227",
+    "bytes": 4317
+  },
+  "analysisFile": {
+    "path": "out/research/skyrim-display-analysis-verified-20261003.json",
+    "sha256": "4722fb4d875ef56524c907c285b015666547a80416d07aae7455f49d4ae13898",
+    "bytes": 3694
+  },
+  "analysis": {
+    "captureDirectory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\skyrim-presentation\\20261003-003525-23566d2f89ff40989dbaa914eff7e17c",
+    "analysis": "Trim2s from each end; mean positive MsBetweenDisplayChange determines ETW display-update rate; percentiles use linear interpolation",
+    "timestampCaveat": "CSV wall-clock fields are three hours ahead of collector UTC converted to Moscow and Skyrim log. Phase alignment uses collector startedUtc plus5s delay, not raw CSV clock; relative CSV durations retained.",
+    "phases": [
+      {
+        "mode": "Off",
+        "swapchain": "0x28BED6D1310",
+        "processId": 3152,
+        "presentMode": "Hardware: Independent Flip",
+        "tearingAllowed": "1",
+        "totalRows": 1748,
+        "selectedRows": 1515,
+        "recordedSpanSeconds": 29.9584025,
+        "firstRawCsvTime": "2026-10-3 3:35:43.749222200",
+        "lastRawCsvTime": "2026-10-3 3:36:13.707624700",
+        "collectorStartUtc": "2026-10-03T00:35:43.6456724+03:00",
+        "collectorEndUtc": "2026-10-03T00:36:13.6456724+03:00",
+        "positiveDisplayIntervals": {
+          "count": 1515,
+          "mean": 17.137919405940583,
+          "min": 11.4276,
+          "max": 30.6017,
+          "p50": 16.712,
+          "p95": 21.051469999999995,
+          "p99": 25.04882599999997
+        },
+        "apiIntervals": {
+          "count": 1515,
+          "mean": 17.138324554455433,
+          "min": 15.3937,
+          "max": 31.995,
+          "p50": 16.6929,
+          "p95": 21.00148,
+          "p99": 24.63209399999997
+        },
+        "displayLatency": {
+          "count": 1515,
+          "mean": 2.702836501650165,
+          "min": 1.2379,
+          "max": 8.7596,
+          "p50": 2.7041,
+          "p95": 3.1255100000000002,
+          "p99": 3.4256619999999973
+        },
+        "displayUpdateRateHz": 58.35014019574431,
+        "nonPositiveOrUnavailableDisplayRows": 0,
+        "unavailableDisplayLatencyRows": 0
+      },
+      {
+        "mode": "On",
+        "swapchain": "0x28BED6D1310",
+        "processId": 3152,
+        "presentMode": "Hardware: Independent Flip",
+        "tearingAllowed": "1",
+        "totalRows": 3454,
+        "selectedRows": 2989,
+        "recordedSpanSeconds": 29.9694451,
+        "firstRawCsvTime": "2026-10-3 3:36:39.421710700",
+        "lastRawCsvTime": "2026-10-3 3:37:09.391155800",
+        "collectorStartUtc": "2026-10-03T00:36:39.3261789+03:00",
+        "collectorEndUtc": "2026-10-03T00:37:09.3261789+03:00",
+        "positiveDisplayIntervals": {
+          "count": 2989,
+          "mean": 8.686503613248563,
+          "min": 5.6044,
+          "max": 15.3919,
+          "p50": 9.3289,
+          "p95": 10.79634,
+          "p99": 11.666915999999999
+        },
+        "apiIntervals": {
+          "count": 2989,
+          "mean": 8.687133322181323,
+          "min": 7.5325,
+          "max": 15.3911,
+          "p50": 8.4689,
+          "p95": 9.907359999999999,
+          "p99": 13.085435999999998
+        },
+        "displayLatency": {
+          "count": 2989,
+          "mean": 1.0152424891267975,
+          "min": 0.1322,
+          "max": 2.9556,
+          "p50": 0.5818,
+          "p95": 2.33742,
+          "p99": 2.46846
+        },
+        "displayUpdateRateHz": 115.12111714025083,
+        "nonPositiveOrUnavailableDisplayRows": 0,
+        "unavailableDisplayLatencyRows": 0
+      }
+    ],
+    "displayRateRatioOnOff": 1.9729364274714638,
+    "limitations": [
+      "Allows tearing: update rate is not proof that every frame was displayed in full",
+      "No FrameType markers; individual generated frames are not labelled",
+      "No optical scanout or input-to-photon latency measurement",
+      "No claim that absence of NA records proves absence of all dropped frames"
+    ]
+  },
+  "phasesVerifiedAgainstGameLog": true,
+  "phaseStartTimesMoscow": [
+    "2026-10-03 00:35:43",
+    "2026-10-03 00:36:39"
+  ],
+  "loggedErrorOrCriticalCount": 0,
+  "loggedFailedFgStateCount": 0,
+  "recomputedAnalysisExactHashMatch": true
 }

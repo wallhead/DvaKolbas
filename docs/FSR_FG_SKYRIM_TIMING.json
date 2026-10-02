@@ -125,9 +125,10 @@
   "loggedFailedFgApiOrCallbackStates": 0,
   "loggedErrorOrCriticalEntries": 0,
   "remainingAcceptance": [
-    "Independent Skyrim presentation/scanout or latency measurement",
+    "Optical scanout/input-to-photon latency not measured",
     "Formal ENB/source-color calibration; Gamma22 provisional",
     "Automatic Alt+Enter",
     "AMD/Intel hardware unavailable; three Graphics Tools checks excluded under user authorization"
-  ]
+  ],
+  "independentPresentationCapture": "PASS: ETW display-update58.35/115.12Hz; see FSR_FG_PRESENTATION_CAPTURE.json; no optical/full-frame latency claim"
 }
