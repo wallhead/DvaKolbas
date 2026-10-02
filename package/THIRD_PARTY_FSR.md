@@ -1,6 +1,6 @@
 # FSR SR test package notices
 
-Theo's Render Pipeline source and its inherited components retain the notices and modding exceptions in `LICENSE`. Corresponding source is available at [wallhead/DvaKolbas, codex/fsr-sr](https://github.com/wallhead/DvaKolbas/tree/codex/fsr-sr). This is a local development test package, with FSR frame generation disabled and unimplemented.
+Theo's Render Pipeline source and its inherited components retain the notices and modding exceptions in `LICENSE`. Corresponding source is available at [wallhead/DvaKolbas, codex/fsr-sr](https://github.com/wallhead/DvaKolbas/tree/codex/fsr-sr). This is a local development test package, whose manifest identifies the selected SR-only or FG route; gameplay acceptance is recorded separately.
 
 The two dynamically loaded AMD x64 binaries are redistributed unchanged from FidelityFX SDK **v2.3.0**, source revision `60f4ea81909200d8542eca14dccb2628b763a9a3`. `AMD-FidelityFX-license.md` reproduces the complete SDK license, including the binary redistribution conditions, disclaimers, third-party notices and exceptions. The binary license forbids reverse engineering; integration uses the public C API and source documentation. The separate AIO research does not modify these AMD binaries.
 
@@ -9,3 +9,5 @@ The two dynamically loaded AMD x64 binaries are redistributed unchanged from Fid
 The package manifest records every installed file's size and SHA-256. Staging also checks the source pin, all API header/license hashes, selected edition and FSR build availability. Validation independently checks required files, manifests, fixed runtime hashes, FSR-only settings, and normal and delayed PE imports. NVIDIA runtime DLLs are excluded; the graphics driver and Microsoft C++ runtime remain system prerequisites.
 
 This fixture has been exercised on an RTX 4080 Super through ordinary presentation, with no NVIDIA runtime modules loaded. Skyrim gameplay, AMD/Intel operation and FSR FG are not proven by that test. See `FSR_TEST_CHECKLIST.md`.
+
+FG packages additionally contain the unchanged pinned amd_fidelityfx_framegeneration_dx12.dll (file version 4.0.1.2740, SHA256 02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18). Its public API headers use the same retained API MIT notice and SDK binary redistribution license. The initially accepted public effect catalogs select analytical FG 3.1.6 and swapchain 3.1.7; the file version and those provider versions are separate. The exact catalog observations live in fg-runtime-pin.json and the package manifest. An observed generation callback or hidden fixture does not establish visible automatic UI or display cadence. SR-only packages still contain exactly two AMD modules and need no FG headers/runtime.

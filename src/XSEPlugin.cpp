@@ -180,6 +180,7 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 		reinterpret_cast<LPCWSTR>(&InitializeLog), &renderer);
 	logger::info("[Renderer] edition={} source={} module={}", Plugin::EDITION, Plugin::SOURCE_REVISION,
 		TheosRenderPipeline::PluginPaths::ModulePath(renderer).string());
+	logger::info("[Renderer build] {}", Plugin::BUILD_IDENTITY);
 	logger::info("[Runtime] Skyrim {}", a_skse->RuntimeVersion().string());
 	// CommonLib's default logger would truncate our startup banner and replace
 	// the rotating sink. Keep the renderer-owned logger throughout this session.

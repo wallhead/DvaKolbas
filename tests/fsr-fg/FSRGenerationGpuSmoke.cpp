@@ -14,11 +14,27 @@
 #include <stdexcept>
 #include <unordered_set>
 #include <cmath>
+#include <chrono>
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
 using Microsoft::WRL::ComPtr;
 namespace
 {
+    bool visibleStop{},visibleRequested{true},visibleMenu{};
+    LRESULT CALLBACK VisibleProc(HWND window,UINT message,WPARAM key,LPARAM data)
+    {
+        if(message==WM_CLOSE || (message==WM_KEYDOWN && key==VK_ESCAPE)){visibleStop=true;return 0;}
+        if(message==WM_KEYDOWN && !(data&(1LL<<30))){
+            if(key==VK_SPACE)visibleRequested=!visibleRequested;
+            if(key=='M')visibleMenu=!visibleMenu;
+        }
+        return DefWindowProcW(window,message,key,data);
+    }
+    struct VisibleSample
+    {
+        uint64_t source{};double elapsed{},delta{};bool requested{},menu{},generated{};
+        HRESULT statisticsResult{};DXGI_FRAME_STATISTICS statistics{};
+    };
     void Need(bool condition,const char* reason){if(!condition)throw std::runtime_error(reason);}
     void Gpu(HRESULT hr,const char* reason){if(FAILED(hr)){std::ostringstream text;text<<reason<<" HRESULT=0x"<<std::hex<<static_cast<unsigned long>(hr);throw std::runtime_error(text.str());}}
     void Accepted(Result<void> result){if(!result)throw std::runtime_error(result.error().message+" native="+std::to_string(result.error().nativeResult));}
@@ -69,11 +85,12 @@ namespace
         bool debug11{},debug12{},nvidiaFree{},automaticUiPending{true},physicalCadencePending{true};
         UINT64 memoryMin{UINT64_MAX},memoryMax{};std::string failure,sourceHash;
         std::string observerHash;unsigned automaticSources{},observerSources{},renderedReadbacks{},changingGenerated{},uiSentinels{};
+        bool visible{},stoppedEarly{};DWORD refreshHz{};std::vector<VisibleSample> visibleSamples;
     };
     void WriteReport(const std::filesystem::path& path,const Evidence& e,const Collector& collector,unsigned frames,unsigned cycles)
     {
         std::filesystem::create_directories(std::filesystem::absolute(path).parent_path());std::ofstream out(path);
-        out<<"{\n\"result\":"<<JsonString(e.failure.empty()?"PASS":"FAIL")<<",\"failure\":"<<JsonString(e.failure)
+        out<<"{\n\"result\":"<<JsonString(e.failure.empty()?(e.visible?"MEASURED":"PASS"):"FAIL")<<",\"failure\":"<<JsonString(e.failure)
             <<",\n\"sourceRevision\":\""<<TRP_FG_VALIDATION_REVISION<<"\",\"fixtureSourceSha256\":"<<std::quoted(e.sourceHash)
             <<",\"sdkCommit\":\"60f4ea81909200d8542eca14dccb2628b763a9a3\",\"fgModuleSha256\":\""<<TRP_FG_MODULE_SHA<<"\""
             <<",\"observerSourceSha256\":"<<std::quoted(e.observerHash)
@@ -83,10 +100,17 @@ namespace
             <<",\"automaticModeSources\":"<<e.automaticSources<<",\"observerModeSources\":"<<e.observerSources<<",\"renderedPixelReadbacks\":"<<e.renderedReadbacks<<",\"changingGeneratedSamples\":"<<e.changingGenerated<<",\"callbackModeUiSentinels\":"<<e.uiSentinels
             <<",\n\"nvidiaRuntimeAbsent\":"<<(e.nvidiaFree?"true":"false")<<",\"d3d11DebugAvailable\":"<<(e.debug11?"true":"false")<<",\"d3d12DebugAvailable\":"<<(e.debug12?"true":"false")
             <<",\"sdkDebugMessages\":"<<collector.count.load()<<",\"sdkDebugCheckingEnabled\":true,\"automaticUiAppearance\":\"pending visible acceptance\",\"physicalCadence\":\"pending visible acceptance\""
+            <<",\"visibleRun\":"<<(e.visible?"true":"false")<<",\"stoppedEarly\":"<<(e.stoppedEarly?"true":"false")<<",\"initialMonitorRefreshHz\":"<<e.refreshHz
             <<",\"retiredMemoryRangeBytes\":"<<(e.memoryMin==UINT64_MAX?0:e.memoryMax-e.memoryMin)<<",\n\"messages\":[";
         const auto count=std::min(collector.count.load(),unsigned(collector.messages.size()));for(unsigned i=0;i<count;++i){if(i)out<<',';std::string message;
             if(!collector.messages[i].ready.load(std::memory_order_acquire)){out<<"{\"pending\":true}";continue;}
             for(auto character:collector.messages[i].text){if(!character)break;message+=character<128?char(character):'?';}out<<"{\"type\":"<<collector.messages[i].type<<",\"text\":"<<JsonString(message)<<'}';}
+        out<<"],\n\"nativeFrameStatistics\":[";
+        for(std::size_t i=0;i<e.visibleSamples.size();++i){if(i)out<<',';const auto& s=e.visibleSamples[i];
+            out<<"{\"source\":"<<s.source<<",\"elapsedSeconds\":"<<s.elapsed<<",\"sourceDeltaMilliseconds\":"<<s.delta
+                <<",\"requested\":"<<(s.requested?"true":"false")<<",\"menu\":"<<(s.menu?"true":"false")<<",\"generationCallback\":"<<(s.generated?"true":"false")
+                <<",\"hresult\":"<<static_cast<int32_t>(s.statisticsResult)<<",\"presentCount\":"<<s.statistics.PresentCount
+                <<",\"presentRefreshCount\":"<<s.statistics.PresentRefreshCount<<",\"syncRefreshCount\":"<<s.statistics.SyncRefreshCount<<",\"syncQpcTime\":"<<s.statistics.SyncQPCTime.QuadPart<<'}';}
         out<<"]\n}\n";Need(bool(out),"validation report saved");
     }
 }
@@ -96,8 +120,12 @@ int main(int argc,char** argv)
     try{
         for(int i=1;i<argc;++i){Need(i+1<argc,"option needs value");std::string key=argv[i],value=argv[++i];
             if(key=="--frames")frames=std::stoul(value);else if(key=="--recreate")cycles=std::stoul(value);else if(key=="--runtime")runtimeDirectory=std::filesystem::absolute(value);else if(key=="--output")report=value;
+            else if(key=="--visible"){Need(value=="true" || value=="false","visible requires true/false");evidence.visible=value=="true";}
             else if(key=="--debug")Need(value=="auto","only debug auto supported");else Need(false,"unknown option");}
         Need(cycles && frames>=cycles*36,"at least 36 sources per cycle for suppression/reentry");
+        Need(!evidence.visible || (cycles==1 && frames>=2160),"visible test requires one context and at least 2160 source frames");
+        struct Timer{HANDLE value{};~Timer(){if(value)CloseHandle(value);}}timer;
+        if(evidence.visible){timer.value=CreateWaitableTimerExW(nullptr,nullptr,CREATE_WAITABLE_TIMER_HIGH_RESOLUTION,TIMER_ALL_ACCESS);Need(timer.value!=nullptr,"high-resolution source timer unavailable");}
         if(!std::filesystem::exists(runtimeDirectory/"amd_fidelityfx_framegeneration_dx12.dll")){std::puts("SKIPPED: pinned FG runtime missing");return 77;}
         evidence.sourceHash=Sha256(TRP_FG_VALIDATION_SOURCE);evidence.observerHash=Sha256(TRP_FG_OBSERVER_SOURCE);evidence.nvidiaFree=NvidiaAbsent();Need(evidence.nvidiaFree,"NVIDIA upscaling/generation runtimes must be absent");
         const auto plugin=std::filesystem::absolute(report).parent_path()/"fg-runtime-plugin";std::filesystem::create_directories(plugin/"FSR");
@@ -119,14 +147,19 @@ int main(int argc,char** argv)
         auto sw=Value(SelectFsrEffectProvider(Value(runtime->EnumerateForEffect(rig.device12.Get(),FsrEffect::FrameGenerationSwapChain)),FsrEffect::FrameGenerationSwapChain));
         ComPtr<IDXGIAdapter3> memoryAdapter;Gpu(rig.adapter.As(&memoryAdapter),"GPU memory adapter");
         auto memory=[&]{DXGI_QUERY_VIDEO_MEMORY_INFO info{};Gpu(memoryAdapter->QueryVideoMemoryInfo(0,DXGI_MEMORY_SEGMENT_GROUP_LOCAL,&info),"GPU memory query");return info.CurrentUsage;};
-        HWND window=CreateWindowExW(0,L"STATIC",L"TRP actual FSR generation fixture",WS_OVERLAPPEDWINDOW,0,0,640,360,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);Need(window!=nullptr,"hidden fixture HWND");
+        WNDCLASSW wc{};wc.lpfnWndProc=VisibleProc;wc.hInstance=GetModuleHandleW(nullptr);wc.lpszClassName=L"TRPFsrVisibleAcceptance";RegisterClassW(&wc);
+        RECT bounds{0,0,640,360};const DWORD style=WS_OVERLAPPEDWINDOW&~(WS_THICKFRAME|WS_MAXIMIZEBOX);AdjustWindowRect(&bounds,style,FALSE);
+        HWND window=CreateWindowExW(0,wc.lpszClassName,L"TRP FSR: Space toggles FG, M toggles menu, Esc finishes",style,0,0,bounds.right-bounds.left,bounds.bottom-bounds.top,nullptr,nullptr,wc.hInstance,nullptr);Need(window!=nullptr,"fixture HWND");
         struct Window{HWND value;~Window(){DestroyWindow(value);}}windowOwner{window};
+        if(evidence.visible){ShowWindow(window,SW_SHOW);MONITORINFOEXW monitor{};monitor.cbSize=sizeof(monitor);
+            if(GetMonitorInfoW(MonitorFromWindow(window,MONITOR_DEFAULTTONEAREST),&monitor)){DEVMODEW mode{};mode.dmSize=sizeof(mode);if(EnumDisplaySettingsW(monitor.szDevice,ENUM_CURRENT_SETTINGS,&mode))evidence.refreshHz=mode.dmDisplayFrequency;}
+            std::puts("VISIBLE TEST: automatic composition only; red opaque HUD / green half-alpha HUD must stay fixed. Space=FG, M=menu, Esc=finish. Move to >=144 Hz display. Default phases: 10s off, 10s on, 5s menu, on again. Appearance/cadence require human review.");}
         // This fixture alone intercepts the public Configure descriptor to add
         // a public Present callback. Production generation routing is unchanged.
         // No observer field/default/API is added to the release integration.
         auto& functions=const_cast<FsrFunctions&>(runtime->Functions());FgObservation::originalConfigure=functions.Configure;functions.Configure=FgObservation::Configure;
         struct Restore{FsrFunctions& functions;~Restore(){functions.Configure=FgObservation::originalConfigure;FgObservation::activeCapture=nullptr;}}restore{functions};
-        for(unsigned observationMode=0;observationMode<2;++observationMode){
+        for(unsigned observationMode=0;observationMode<(evidence.visible?1u:2u);++observationMode){
         for(unsigned cycle=0;cycle<cycles;++cycle){
             {
                 auto bridge=std::make_shared<Graphics::D3D11D3D12Interop>();rig.Initialize(*bridge);FsrGenerationLimits limits;limits.render={320,180};limits.display={640,360};limits.debugChecking=true;
@@ -136,6 +169,10 @@ int main(int argc,char** argv)
                 ComPtr<ID3D11Texture2D> ui;Gpu(rig.device11->CreateTexture2D(&d,nullptr,&ui),"completed native UI");
                 std::vector<uint32_t> scenePixels(d.Width*d.Height,0xff40261a),uiPixels(scenePixels.size());
                 uiPixels[0]=0xff0000ff;uiPixels[8]=0x80008000;rig.context11->UpdateSubresource(ui.Get(),0,nullptr,uiPixels.data(),d.Width*4,0);
+                if(evidence.visible){for(UINT y=16;y<64;++y)for(UINT x=16;x<180;++x)uiPixels[y*d.Width+x]=x<90?0xff0000ff:0x80008000;
+                    for(UINT y=170;y<190;++y)uiPixels[y*d.Width+320]=0xffffffff;
+                    for(UINT x=310;x<330;++x)uiPixels[180*d.Width+x]=0xffffffff;
+                    rig.context11->UpdateSubresource(ui.Get(),0,nullptr,uiPixels.data(),d.Width*4,0);}
                 std::vector<float> depths(limits.render.width*limits.render.height);
                 std::vector<DirectX::PackedVector::HALF> motions(depths.size()*2);
                 FsrPresentation presenter;DXGI_SWAP_CHAIN_DESC desc{};desc.OutputWindow=window;desc.Windowed=TRUE;desc.BufferDesc.Width=d.Width;desc.BufferDesc.Height=d.Height;desc.BufferDesc.Format=d.Format;desc.SampleDesc.Count=1;desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.BufferCount=1;
@@ -148,9 +185,20 @@ int main(int argc,char** argv)
                 frame.camera.identity=7;frame.camera.nearDistance=.1f;frame.camera.farDistance=100;frame.camera.verticalFovRadians=1.04719755f;frame.camera.worldUnitsToMeters=1;
                 frame.camera.view={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};frame.camera.projection={1,0,0,0,0,1.7320508f,0,0,0,0,1.001001f,1,0,0,-.1001001f,0};
                 GpuFrameResources guides;guides.depth=depth.texture12.Get();guides.motion=motion.texture12.Get();
+                using Clock=std::chrono::steady_clock;const auto start=Clock::now();auto previousTime=start-std::chrono::microseconds(13889),deadline=start;
+                float previousVisibleShift{};
                 for(unsigned local=0;local<count;++local){
+                    double elapsed{},measuredDelta=1000.0/72;
+                    if(evidence.visible){const auto remaining=deadline-Clock::now();if(remaining>Clock::duration::zero()){
+                            LARGE_INTEGER due{};due.QuadPart=-std::max<int64_t>(1,std::chrono::duration_cast<std::chrono::nanoseconds>(remaining).count()/100);
+                            Need(SetWaitableTimer(timer.value,&due,0,nullptr,nullptr,FALSE)!=FALSE,"source timer arm");Need(WaitForSingleObject(timer.value,1000)==WAIT_OBJECT_0,"source timer timeout");}
+                        MSG message{};while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}
+                        if(visibleStop){evidence.stoppedEarly=true;break;}
+                        const auto now=Clock::now();elapsed=std::chrono::duration<double>(now-start).count();measuredDelta=std::chrono::duration<double,std::milli>(now-previousTime).count();previousTime=now;
+                        deadline=now+std::chrono::microseconds(13889);}
                     Gpu(presenter.WaitBeforeProducer(),"wait before guide overwrite");frame.sourceId=static_cast<uint64_t>(evidence.sources)+1;
-                    const float objectShift=float(local)*2/limits.display.width;const float previousShift=local?float(local-1)*2/limits.display.width:objectShift;
+                    const float objectShift=evidence.visible?.3f*std::sin(float(elapsed)*2):float(local)*2/limits.display.width;
+                    const float previousShift=evidence.visible?(local?previousVisibleShift:objectShift):(local?float(local-1)*2/limits.display.width:objectShift);previousVisibleShift=objectShift;
                     for(UINT y=0;y<limits.display.height;++y)for(UINT x=0;x<limits.display.width;++x){const float u=(float(x)+.5f)/limits.display.width;
                         const bool foreground=std::abs(u-(.4f+objectShift))<.04f && y>100 && y<260;scenePixels[y*limits.display.width+x]=foreground?0xff0d26cc:0xff40261a;}
                     for(UINT y=0;y<limits.render.height;++y)for(UINT x=0;x<limits.render.width;++x){const float u=(float(x)+.5f)/limits.render.width;const bool foreground=std::abs(u-(.4f+objectShift))<.04f && y>50 && y<130;
@@ -161,7 +209,8 @@ int main(int argc,char** argv)
                     rig.context11->UpdateSubresource(depth.texture11.Get(),0,nullptr,depths.data(),limits.render.width*4,0);
                     rig.context11->UpdateSubresource(motion.texture11.Get(),0,nullptr,motions.data(),limits.render.width*4,0);Gpu(bridge->SignalD3D11(Graphics::InteropWork::FrameGeneration),"guide producer submission");
                     bool requested=true,menu=false;frame.camera.reset=false;frame.depth=depth.texture11.Get();frame.deltaMilliseconds=1000.f/72;
-                    if(local==19){switch(cycle%5){case 0:requested=false;break;case 1:menu=true;break;case 2:frame.depth=nullptr;break;case 3:frame.camera.reset=true;break;case 4:frame.deltaMilliseconds=100;break;}}
+                    if(evidence.visible){requested=visibleRequested && elapsed>=10;menu=visibleMenu || (elapsed>=20 && elapsed<25);frame.deltaMilliseconds=float(measuredDelta);}
+                    else if(local==19){switch(cycle%5){case 0:requested=false;break;case 1:menu=true;break;case 2:frame.depth=nullptr;break;case 3:frame.camera.reset=true;break;case 4:frame.deltaMilliseconds=100;break;}}
                     Gpu(presenter.Present(frame,UpscaleOutcome::Temporal,guides,presenter.SceneTarget11(),ColorEncoding::SRGB,ui.Get(),nullptr,true,menu,requested,0,0),"production FG source handoff");
                     const auto status=presenter.Status();Need(status.sourceId==frame.sourceId && status.submitted,"source ID and submission observed");
                     Need(status.callback.invocations==(status.decision.generate?1u:0u),"one SDK generation callback exactly on eligible sources");
@@ -169,6 +218,9 @@ int main(int argc,char** argv)
                     sourceIds.insert(frame.sourceId);if(status.decision.generate)eligibleIds.insert(frame.sourceId);
                     if(observationMode)++evidence.observerSources;else ++evidence.automaticSources;
                     if(status.decision.generate && status.decision.reset)++evidence.reentries;
+                    if(evidence.visible && local%36==0){VisibleSample sample;sample.source=frame.sourceId;sample.elapsed=elapsed;sample.delta=measuredDelta;sample.requested=requested;sample.menu=menu;sample.generated=status.callback.invocations!=0;
+                        sample.statisticsResult=presenter.SwapChain()->GetFrameStatistics(&sample.statistics);evidence.visibleSamples.push_back(sample);
+                        wchar_t title[256]{};swprintf_s(title,L"TRP FSR: requested=%u menu=%u callback=%u source=%.1f Hz | Space FG, M menu, Esc finish",requested,menu,sample.generated,1000/measuredDelta);SetWindowTextW(window,title);}
                 }
                 const auto retirement=presenter.Retire();if(!retirement){(void)capture.release();Accepted(retirement);}++evidence.retired;FgObservation::activeCapture=nullptr;
                 if(capture){
@@ -196,9 +248,10 @@ int main(int argc,char** argv)
         }
         }
         evidence.nvidiaFree=NvidiaAbsent();Need(evidence.nvidiaFree,"NVIDIA runtime appeared during FSR-only generation");rig.ValidateDebug();
-        Need(!collector.count.load(),"unexpected SDK debug warning/error (see report)");Need(evidence.automaticSources==frames && evidence.observerSources==frames && evidence.retired==cycles*2,"all automatic/observer source submissions and context retirements observed");
-        Need(evidence.callbacks>cycles*2 && evidence.reentries>=cycles*4,"actual production generation callbacks and suppression/reentry exercised");
-        Need(evidence.generatedPixels>cycles && evidence.changingGenerated>=cycles,"actual generated image readbacks change");
+        Need(!collector.count.load(),"unexpected SDK debug warning/error (see report)");
+        if(!evidence.visible){Need(evidence.automaticSources==frames && evidence.observerSources==frames && evidence.retired==cycles*2,"all automatic/observer source submissions and context retirements observed");
+            Need(evidence.callbacks>cycles*2 && evidence.reentries>=cycles*4,"actual production generation callbacks and suppression/reentry exercised");
+            Need(evidence.generatedPixels>cycles && evidence.changingGenerated>=cycles,"actual generated image readbacks change");}
         Need(evidence.memoryMax-evidence.memoryMin<64ull*1024*1024,"retired GPU memory growth bounded across both modes");
     }catch(const std::exception& error){evidence.failure=error.what();std::fprintf(stderr,"FAIL: %s\n",error.what());}
     WriteReport(report,evidence,collector,frames,cycles);Collector::active=nullptr;

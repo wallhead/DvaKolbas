@@ -77,6 +77,9 @@ function(trp_add_fsr_tests)
             endif()
             add_test(NAME FsrGeneration${test} COMMAND TRPFsrGeneration${test}Tests "${CMAKE_CURRENT_BINARY_DIR}/fsr-fixtures/good")
         endforeach()
+        add_test(NAME FsrGenerationPackage COMMAND pwsh -NoProfile -File "${PROJECT_SOURCE_DIR}/tests/FSRGenerationPackageTests.ps1"
+            -BuildDirectory "${CMAKE_CURRENT_BINARY_DIR}" -RuntimeDirectory "${TRP_FSR_SDK_DIR}/runtime"
+            -ScratchRoot "${CMAKE_CURRENT_BINARY_DIR}/validation/fg-package" -Edition "${TRP_EDITION}")
         add_subdirectory(tests/fsr-fg)
     endif()
     add_executable(TRPFsrParametersTests tests/FSRParametersTests.cpp src/Graphics/D3D11D3D12Interop.cpp)

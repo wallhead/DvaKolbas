@@ -80,6 +80,13 @@ if(TRP_GIT_ROOT STREQUAL PROJECT_SOURCE_DIR)
     endif()
 endif()
 
+foreach(capability IN ITEMS FSR FSR_FG NEURAL_RENDERING)
+    set(TRP_BUILD_${capability} 0)
+    if(TRP_ENABLE_${capability})
+        set(TRP_BUILD_${capability} 1)
+    endif()
+endforeach()
+
 configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/cmake/Plugin.h.in
 	${CMAKE_CURRENT_BINARY_DIR}/cmake/Plugin.h

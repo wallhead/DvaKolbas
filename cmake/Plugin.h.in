@@ -21,4 +21,5 @@ namespace Plugin
 	inline constexpr auto RELEASE_VERSION = "@ARP_RELEASE_LABEL@"sv;
 	inline constexpr auto EDITION = "@TRP_EDITION@"sv;
 	inline constexpr auto SOURCE_REVISION = "@TRP_SOURCE_REVISION@"sv;
+	inline constexpr auto BUILD_IDENTITY = "TRP_BUILD|edition=@TRP_EDITION@|source=@TRP_SOURCE_REVISION@|FSR=@TRP_BUILD_FSR@|FG=@TRP_BUILD_FSR_FG@|NR=@TRP_BUILD_NEURAL_RENDERING@"sv;
 }

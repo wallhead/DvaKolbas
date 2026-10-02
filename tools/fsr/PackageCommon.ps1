@@ -4,7 +4,7 @@ function Assert-PinnedFile([string]$Path,[string]$Hash,[long]$Bytes=-1) {
     if($Bytes -ge 0 -and (Get-Item -LiteralPath $Path).Length -ne $Bytes){throw "Pinned size mismatch: $Path"}
     if((Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $Hash){throw "SHA-256 mismatch: $Path"}
 }
-function Assert-NoVendorImports([string]$Path) {
+function Get-PEImports([string]$Path) {
     $data=[IO.File]::ReadAllBytes($Path)
     if($data.Length -lt 256 -or [BitConverter]::ToUInt16($data,0) -ne 0x5a4d){throw "Invalid PE: $Path"}
     $pe=[BitConverter]::ToInt32($data,0x3c)
@@ -36,7 +36,7 @@ function Assert-NoVendorImports([string]$Path) {
             while($end -lt $data.Length -and $end-$nameOffset -lt 4096 -and $data[$end] -ne 0){$end++}
             if($end -eq $data.Length -or $end-$nameOffset -ge 4096){throw "Invalid import name: $Path"}
             $module=[Text.Encoding]::ASCII.GetString($data,$nameOffset,$end-$nameOffset)
-            if($module -match '^(sl\.|_?nvngx|nvapi|amd_fidelityfx)'){throw "Mandatory vendor import $module in $Path"}
+            [pscustomobject]@{module=$module;kind=$(if($directory -eq 1){'normal'}else{'delayed'})}
         }
         if($entry -ge 4096){throw "Unbounded import table: $Path"}
     }
@@ -50,4 +50,17 @@ function Read-PackageIni([string]$Path) {
         $key=$section+'/'+$Matches[1].Trim();if($settings.ContainsKey($key)){throw "Duplicate INI key: $key"};$settings[$key]=$Matches[2].Trim()
     }
     return $settings
+}
+
+function Assert-NoVendorImports([string]$Path) {
+    foreach($import in @(Get-PEImports $Path)) {
+        if($import.module -match '^(sl\.|_?nvngx|nvapi|amd_fidelityfx)'){throw "Mandatory vendor import $($import.module) in $Path"}
+    }
+}
+function Get-EmbeddedBuildIdentity([string]$Path) {
+    $text=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($Path))
+    $matches=[regex]::Matches($text,'TRP_BUILD\|edition=(Standard|Universal)\|source=([a-z0-9-]+)\|FSR=([01])\|FG=([01])\|NR=([01])')
+    if($matches.Count -ne 1){throw "Missing or ambiguous embedded build identity: $Path"}
+    $g=$matches[0].Groups
+    [pscustomobject]@{edition=$g[1].Value;sourceRevision=$g[2].Value;sourceClean=($g[2].Value -match '^[0-9a-f]{12}$');fsrCompiled=($g[3].Value -eq '1');frameGenerationCompiled=($g[4].Value -eq '1');neuralRenderingCompiled=($g[5].Value -eq '1')}
 }
