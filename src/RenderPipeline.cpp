@@ -51,6 +51,7 @@ void RenderPipeline::LoadINI()
 	performanceSettings.enableFrameTrace = ini.GetBoolValue("Performance", "EnableFrameTrace", false);
 	performanceSettings.directRCASOutput = ini.GetBoolValue("Performance", "DirectRCASOutput", false);
 	performanceSettings.directDLSSOutput = ini.GetBoolValue("Performance", "DirectDLSSOutput", false);
+	performanceSettings.diagnostics = TheosRenderPipeline::Diagnostics::Read(ini);
 	PerformanceTuning::GetSingleton()->ApplySettings(performanceSettings);
 	const bool unsupportedDynamicResolution = ini.GetBoolValue("DynamicResolution", "Enabled", false) ||
 		ini.GetBoolValue("DynamicResolution", "Oscillate", false);
@@ -125,6 +126,7 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 	ini.SetBoolValue("Performance", "EnableFrameTrace", performanceSettings.enableFrameTrace);
 	ini.SetBoolValue("Performance", "DirectRCASOutput", performanceSettings.directRCASOutput);
 	ini.SetBoolValue("Performance", "DirectDLSSOutput", performanceSettings.directDLSSOutput);
+	TheosRenderPipeline::Diagnostics::Store(ini, performanceSettings.diagnostics);
     // Preserve unrecognized and retired research keys from the loaded INI.
     const auto* frameGeneration = SourceFrameGeneration::GetSingleton();
     frameGeneration->StoreInterpolationPreference(ini);

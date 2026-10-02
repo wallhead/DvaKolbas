@@ -343,6 +343,12 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
         if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="FSR native UI resource creation failed";return false;}
         status_="FSR context ready on ordinary D3D11 presenter; waiting for validated source frames";
+        const auto& settings=sourceUpscalerSettings_.Effective().fsr;
+        logger::info("[FSR startup] provider={} quality={} policy={} sourceColorEncoding={} render={}x{} output={}x{} presentation=ordinary-D3D11 frameGeneration=off",
+            fsrResources_->Provider().name,TheosRenderPipeline::Upscaling::QualityName(settings.quality),
+            TheosRenderPipeline::Upscaling::ProviderPolicyName(settings.providerPolicy),
+            TheosRenderPipeline::Upscaling::ColorEncodingName(settings.sourceColorEncoding),
+            renderWidth_,renderHeight_,outputWidth_,outputHeight_);
         return true;
     }
 #endif

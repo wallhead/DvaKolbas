@@ -34,6 +34,7 @@ struct NvidiaHost::SourceFsrEvaluationOperations
 {
     NvidiaHost& host;RenderPipeline& pipeline;bool spatial{};
     std::optional<RuntimeError> error;
+    std::string recoveryReason;
     void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){context->CopyResource(frame.input,frame.color);}
     bool EvaluateOptionalPreUpscale(UpscaleFrame&){return true;}
     void RenderReShade(const UpscaleFrame& frame,bool before)
@@ -53,17 +54,19 @@ struct NvidiaHost::SourceFsrEvaluationOperations
                 host.fsrResources_->Color11(),host.fsrResources_->Depth11(),host.fsrResources_->Motion11(),host.fsrResources_->Output11(),host.fsrResources_->HandoffEncoding());
         };
         makeAdapter();
-        if(spatial) { host.loadingScreenRoute_.SpatialSucceeded();return host.fsrFrame_->Spatial(frame); }
+        if(spatial) { recoveryReason="main/loading menu or loading-screen presentation";host.loadingScreenRoute_.SpatialSucceeded();return host.fsrFrame_->Spatial(frame); }
         auto camera=CaptureGameCameraMeasurements(pipeline.mGraphicsState,frame.render,pipeline.mEnableJitter,frame.reset);
         if(!camera || !frame.depth || !frame.motion) {
             host.status_=camera?"FSR requested; spatial recovery while guides are unavailable":camera.error().message;
+            recoveryReason=host.status_;
             return host.fsrFrame_->Spatial(frame);
         }
         const FsrInputPolicy policy{camera->depthInverted,camera->depthInfinite,false,true};
         auto configured=host.fsrResources_->EnsureInputPolicy(policy);
         if(!configured){error=configured.error();return std::unexpected(configured.error());}
         frame.camera=*camera;
-        if(host.evaluationCount_<3 || host.evaluationCount_%600==0) {
+        if(PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails &&
+            (host.evaluationCount_<3 || host.evaluationCount_%600==0)) {
             D3D11_TEXTURE2D_DESC motion{},depth{};frame.motion->GetDesc(&motion);frame.depth->GetDesc(&depth);
             logger::info("[FSR frame] source={} deltaMs={} extent={}x{} jitter=({},{}) camera={} near={} far={} fov={} depthInverted={} unitsToMeters={} motionFormat={} depthFormat={} motionScale=({},{})",
                 frame.sourceId,frame.deltaMilliseconds,frame.render.width,frame.render.height,frame.jitterX,frame.jitterY,frame.camera.identity,
@@ -75,6 +78,7 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         if(result && *result==UpscaleOutcome::SkippedInvalidInput) {
             const auto* reason=host.fsrFrame_->LastError();
             host.status_=reason?reason->message:"FSR requested; source parameters rejected, spatial recovery";
+            recoveryReason=host.status_;
             return host.fsrFrame_->Spatial(frame);
         }
         return result;
@@ -124,7 +128,8 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     frame.motionConvention={float(renderWidth_),float(renderHeight_),true,false};
     frame.reset=resetNextEvaluation_ || pipeline.mPendingHistoryResets>0 || loadingScreenRoute_.NeedsTemporalReset();
     frame.sharpness=pipeline.mSharpening?std::clamp(pipeline.mSharpness,0.0f,1.0f):0.0f;
-    if(evaluationCount_<3) {
+    const bool frameDetails=PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails;
+    const auto logHandoff=[&] {
         auto* bridgeContext=fsrResources_->Bridge()->Context11();
         Microsoft::WRL::ComPtr<ID3D11Device> bridgeDevice;bridgeContext->GetDevice(&bridgeDevice);
         for(auto target:{frame.input,frame.output}) {
@@ -137,20 +142,24 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
                 static_cast<void*>(bridgeContext),static_cast<unsigned>(bridgeContext->GetType()),static_cast<void*>(bridgeDevice.Get()),
                 static_cast<void*>(targetDevice.Get()),D3D11FrameCopy::SameObject(bridgeDevice.Get(),targetDevice.Get()));
         }
-    }
+    };
+    const bool handoffLogged=evaluationCount_==0 || (frameDetails && (evaluationCount_<3 || evaluationCount_%600==0));
+    if(handoffLogged)logHandoff();
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
     SourceFsrEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_)};
     auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
     if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
-        if(operations.error)status_=operations.error->message;
-        if(fsrFrame_ && fsrFrame_->LastError()) {
-            status_=fsrFrame_->LastError()->message;
+        if(!handoffLogged)logHandoff();
+        const auto* error=operations.error?&*operations.error:fsrFrame_?fsrFrame_->LastError():nullptr;
+        if(error) {
+            status_=error->message;
             logger::error("[FSR frame delivery] outcome={} error=0x{:08X} {}",static_cast<unsigned>(result.outcome),
-                static_cast<std::uint32_t>(fsrFrame_->LastError()->nativeResult),status_);
+                static_cast<std::uint32_t>(error->nativeResult),status_);
         }
         FailLifecycle(E_FAIL,"FSR frame delivery");return false;
     }
     context_->CopyResource(presentation_.Buffers()[index].Get(),gameTargets_.UpscaleOutput());
+    const bool stateChanged=evaluationCount_==0 || lastFsrTemporal_!=(result.outcome==UpscaleOutcome::Temporal);
     lastFsrTemporal_=result.outcome==UpscaleOutcome::Temporal;
     if(lastFsrTemporal_) {
         resetNextEvaluation_=false;pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();
@@ -159,6 +168,14 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
         resetNextEvaluation_=true;
         status_="FSR requested; spatial recovery active, frame generation off";
         if(fsrFrame_ && fsrFrame_->LastError())status_+=std::format(" ({})",fsrFrame_->LastError()->message);
+    }
+    // Menu changes can alternate spatial/temporal routes frequently. Retain a
+    // bounded normal-mode history; opt-in frame diagnostics keep all changes.
+    if(stateChanged && (fsrTransitionLogs_<16 || frameDetails)) {
+        logger::info("[FSR state] source={} route={} provider={} menu={} reset={} deltaMs={} reason={}",
+            frame.sourceId,lastFsrTemporal_?"temporal":"spatial recovery",fsrResources_->Provider().name,
+            menu,frame.reset,frame.deltaMilliseconds,operations.recoveryReason.empty()?status_:operations.recoveryReason);
+        if(++fsrTransitionLogs_==16 && !frameDetails)logger::info("[FSR state] transition log budget reached; enable Debug/LogFrameDiagnostics for further transitions; failures remain logged");
     }
     ++evaluationCount_;return true;
 #else

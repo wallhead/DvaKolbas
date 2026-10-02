@@ -1,6 +1,9 @@
 #include "PerformanceTuning.h"
 #include "FrameTrace.h"
 #include "VideoMemoryTelemetry.h"
+#include "DiagnosticLogging.h"
+#include <SimpleIni.h>
+#include "performance/PCH.h"
 
 #include <chrono>
 #include <cmath>
@@ -120,6 +123,28 @@ static void RouteCPUChecks()
 
 static void CPUChecks()
 {
+    using namespace TheosRenderPipeline::Diagnostics;
+    CSimpleIniA ini;
+    auto diagnostics=Read(ini);
+    Require(!diagnostics.frameDetails && !diagnostics.performanceMetrics && diagnostics.performanceIntervalSeconds==10,
+        "normal logs are quiet by default");
+    ini.SetBoolValue("Debug","LogFrameDiagnostics",true);
+    ini.SetBoolValue("Debug","LogPerformanceMetrics",true);
+    ini.SetLongValue("Debug","PerformanceLogIntervalSeconds",0);
+    diagnostics=Read(ini);
+    Require(diagnostics.frameDetails && diagnostics.performanceMetrics && diagnostics.performanceIntervalSeconds==1,
+        "diagnostics opt in and clamp unsafe interval");
+    diagnostics.performanceIntervalSeconds=999;
+    Store(ini,diagnostics);
+    Require(Read(ini).performanceIntervalSeconds==120 && Read(ini).frameDetails && Read(ini).performanceMetrics,
+        "saved diagnostic switches round trip with bounded interval");
+    PeriodicLogGate gate;
+    Require(!gate.Accept(false,0,10000) && gate.Accept(true,0,10000),"disabled logs never consume first enabled sample");
+    for(std::uint64_t ms=1;ms<10000;++ms)Require(!gate.Accept(true,ms,10000),"rapid frames do not spam text logs");
+    Require(gate.Accept(true,10000,10000) && !gate.Accept(true,10001,10000),"summary logs respect wall-time interval");
+    Require(gate.Accept(true,0,10000),"clock reset cannot suppress diagnostics indefinitely");
+    Require(!gate.Accept(false,1,10000) && gate.Accept(true,2,10000),"reenabled logging starts a new window");
+    std::puts("PASS: quiet defaults; diagnostic INI round trip; bounded wall-time logging independent of frame rate");
     static_assert(Index(Stage::kFrame) == 0 && Index(Stage::kFrameGenInputs) == 1 &&
         Index(Stage::kInputColorCopy) == 2 && Index(Stage::kMaskEncode) == 3 &&
         Index(Stage::kDLSS) == 4 && Index(Stage::kRCAS) == 5 && Index(Stage::kOutputCopy) == 6 &&
@@ -587,11 +612,40 @@ static void PublicationChecks()
     std::puts("PASS: chronological wrap/trace; oldest disjoint/edge pending; latest-completed identity; independent/absent/invalid/zero smoothing; disjoint/frequency validity; old epochs; disjoint/edge hard failures; quarantine/no retry; ordinary copies; context/device replacement recovery (scripted retired WARP queries)");
 }
 
+static void TextLoggingChecks()
+{
+    Device d;
+    auto& p=Timing();
+    Start(d);
+    logger::summaryLogCount=0;
+    auto owner=Begin(d,Stage::kOutputCopy);
+    Require(static_cast<bool>(owner) && End(d,owner),"logging fixture owns real GPU scope");
+    Finish(d);
+    Retire(d);
+    p.BeginD3D11Frame(d.device.Get(),d.context.Get(),nextFrame++);
+    Require(logger::summaryLogCount==0 && p.GetTimingSnapshot().d3d11Samples>0,
+        "quiet default preserves production GPU measurements without text summaries");
+    Finish(d);Retire(d);
+    p.settings.diagnostics.performanceMetrics=true;
+    p.BeginD3D11Frame(d.device.Get(),d.context.Get(),nextFrame++);
+    Require(logger::summaryLogCount==1,"opt-in logging emits measured summary immediately");
+    Finish(d);Retire(d);
+    p.BeginD3D11Frame(d.device.Get(),d.context.Get(),nextFrame++);
+    Require(logger::summaryLogCount==1,"additional GPU frames do not bypass text-log interval");
+    Finish(d);Retire(d);
+    p.settings.diagnostics.performanceMetrics=false;
+    p.BeginD3D11Frame(d.device.Get(),d.context.Get(),nextFrame++);
+    Require(logger::summaryLogCount==1 && p.GetTimingSnapshot().d3d11Samples>=4,
+        "disabling text logs continues GPU sample publication");
+    Finish(d);Retire(d);
+    std::puts("PASS: production GPU summaries quiet by default; opt-in emits once; interval bounds spam; GPU measurement survives");
+}
+
 int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
     Require(argc == 2, "choose --cpu, --warp or --publication");
     if (std::string_view(argv[1]) == "--cpu") { CPUChecks(); }
     else if (std::string_view(argv[1]) == "--publication") { PublicationChecks(); }
-    else { Require(std::string_view(argv[1]) == "--warp", "known mode"); WARPChecks(); }
+    else { Require(std::string_view(argv[1]) == "--warp", "known mode"); WARPChecks();TextLoggingChecks(); }
 }

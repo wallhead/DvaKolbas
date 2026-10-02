@@ -1,6 +1,7 @@
 #pragma once
 
 #include <d3d11_4.h>
+#include "DiagnosticLogging.h"
 
 #include <array>
 #include <cstdint>
@@ -19,6 +20,7 @@ public:
 		bool enableFrameTrace{ false };
 		bool directRCASOutput{ false };
 		bool directDLSSOutput{ false };
+		TheosRenderPipeline::Diagnostics::Settings diagnostics{};
 	};
 
 	enum class Optimization : std::uint8_t
@@ -234,6 +236,7 @@ private:
 	std::size_t d3d11FrameCount_{ 0 };
 	std::uint64_t lastPercentileRefreshSample_{ 0 };
 	std::uint64_t lastLoggedTimingSample_{ 0 };
+	TheosRenderPipeline::Diagnostics::PeriodicLogGate timingLogGate_;
 };
 
 class ScopedD3D11PerformanceStage

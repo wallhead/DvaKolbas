@@ -1084,7 +1084,8 @@ struct UpscalerHooks
 		stl::detour_thunk<Inventory3DManagerRender>(REL::RelocationID(50882, 51755));
 		TheosRenderPipeline::LoadingArtwork::Install();
 
-			logger::info("[NvidiaHost] source NVIDIA runtime selected");
+			logger::info("[Renderer] source route selected: {}",RenderPipeline::GetSingleton()->mUpscaleType==FSR?
+				"FSR, ordinary presentation, frame generation off":"NVIDIA");
 
 		logger::info("Installed upscaler hooks");
 	}

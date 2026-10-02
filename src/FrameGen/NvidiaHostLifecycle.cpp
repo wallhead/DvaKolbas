@@ -72,6 +72,11 @@ HRESULT NvidiaHost::FailLifecycle(HRESULT result, const char* operation)
     status_ = std::format("{} failed (0x{:08X}); rendering stopped, restart required. {}",
         operation, static_cast<std::uint32_t>(failure), detail);
     logger::critical("[NvidiaHost] {}", status_);
+    logger::error("[Renderer failure] operation={} backend={} present={} evaluations={} upscales={} render={}x{} output={}x{} deviceRemovedReason=0x{:08X}",
+        operation, FsrActive()?"FSR":"NVIDIA", presentCount_, evaluationCount_, upscaleEvaluationCount_,
+        renderWidth_, renderHeight_, outputWidth_, outputHeight_, static_cast<std::uint32_t>(device_?device_->GetDeviceRemovedReason():S_OK));
+    // The failure latch above guarantees one snapshot, even with frame logs off.
+    LogNativeUIState("failure", false, true);
     // Keep ownership until the normal teardown proves retirement. In particular,
     // do not clear the feature-exists flags used by ReleaseSourceUpscaler here.
     return failure;

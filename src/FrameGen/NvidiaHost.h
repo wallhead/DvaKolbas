@@ -66,7 +66,7 @@ class NvidiaHost
     bool SourceContext(ID3D11DeviceContext* context) const { return StartupConfigured() && nativeUIContexts_.Contains(context_.Get(), context); }
     void RegisterSourceGameContext(ID3D11DeviceContext* context);
     void LogSourceContextHook(unsigned hook, ID3D11DeviceContext* context) const;
-    void LogNativeUIState(const char* stage, bool mainOrLoading);
+    void LogNativeUIState(const char* stage, bool mainOrLoading, bool force=false);
     bool TakeNativeUITraceSlot();
     HRESULT GetGameFacingBuffer(IDXGISwapChain* a_swapChain, UINT a_buffer, REFIID a_iid, void** a_surface);
     void AdjustLegacyDescForCaller(DXGI_SWAP_CHAIN_DESC* a_desc, const void* a_returnAddress) const;
@@ -153,6 +153,7 @@ class NvidiaHost
     std::unique_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;
     std::unique_ptr<TheosRenderPipeline::Upscaling::FsrFrameAdapter> fsrFrame_;
     bool lastFsrTemporal_{};
+    unsigned fsrTransitionLogs_{};
 #endif
     TheosRenderPipeline::SourceHostFailure lifecycleFailure_;
 

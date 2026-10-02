@@ -57,6 +57,7 @@ void NvidiaHost::LogSourceContextHook(unsigned hook, ID3D11DeviceContext* contex
 
 bool NvidiaHost::TakeNativeUITraceSlot()
 {
+    if (!PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails) { return false; }
     // Capture a few frames on each menu transition, plus periodic samples.
     // Every sampled frame has a fixed budget shared by all hook diagnostics.
     static std::uint64_t lastFrame = ~std::uint64_t{}, untilFrame{};
@@ -69,9 +70,9 @@ bool NvidiaHost::TakeNativeUITraceSlot()
     return StartupConfigured() && (presentCount_ < 6 || presentCount_ <= untilFrame || presentCount_ % 600 == 0) && slots++ < 48;
 }
 
-void NvidiaHost::LogNativeUIState(const char* stage, bool mainOrLoading)
+void NvidiaHost::LogNativeUIState(const char* stage, bool mainOrLoading, bool force)
 {
-    if (!context_ || !TakeNativeUITraceSlot()) { return; }
+    if (!context_ || (!force && !TakeNativeUITraceSlot())) { return; }
     mainOrLoading = MainOrLoading();
     ID3D11RenderTargetView* rtvs[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT]{};
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> dsv;

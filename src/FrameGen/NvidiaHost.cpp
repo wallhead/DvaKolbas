@@ -95,7 +95,8 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
                               "valid={} warm-up={}",
                               !splitSourceRuntimeFailureLogged_, warmupPresentsRemaining_);
     }
-    if (evaluationCount_ <= 3 || evaluationCount_ % 600 == 0)
+    if (evaluationCount_ == 1 || (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails &&
+        (evaluationCount_ <= 3 || evaluationCount_ % 600 == 0)))
     {
         if (StartupConfigured())
         {

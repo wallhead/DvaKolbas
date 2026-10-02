@@ -66,6 +66,7 @@ void PerformanceTuning::LoadStartupINI()
 	startup.enableFrameTrace = ini.GetBoolValue("Performance", "EnableFrameTrace", false);
 	startup.directRCASOutput = ini.GetBoolValue("Performance", "DirectRCASOutput", false);
 	startup.directDLSSOutput = ini.GetBoolValue("Performance", "DirectDLSSOutput", false);
+	startup.diagnostics = TheosRenderPipeline::Diagnostics::Read(ini);
 	ApplySettings(startup);
 }
 
@@ -82,6 +83,10 @@ void PerformanceTuning::ApplySettings(const Settings& a_settings)
 		ResetTimingWindow();
 	}
 	settings = applied;
+	if (old.diagnostics.performanceMetrics != settings.diagnostics.performanceMetrics ||
+		old.diagnostics.performanceIntervalSeconds != settings.diagnostics.performanceIntervalSeconds) {
+		timingLogGate_.Reset();
+	}
 
 	const std::array<bool, ToIndex(Optimization::kCount)> oldEnabled{
 		old.directRCASOutput,
@@ -111,6 +116,8 @@ void PerformanceTuning::ApplySettings(const Settings& a_settings)
 		settings.enableFrameTrace,
 		settings.directRCASOutput,
 		settings.directDLSSOutput);
+	logger::info("[Diagnostics] frameDetails={} performanceMetrics={} intervalSeconds={}; failures always logged",
+		settings.diagnostics.frameDetails, settings.diagnostics.performanceMetrics, settings.diagnostics.performanceIntervalSeconds);
 }
 
 void PerformanceTuning::ResetSessionFallbacks()
@@ -610,13 +617,14 @@ void PerformanceTuning::RecordGameFrameCadenceMs(float a_ms)
 
 void PerformanceTuning::MaybeLogTimingSummary()
 {
-	// Offline tracing already writes the frame-aligned binary stream. Avoid a
-	// second synchronous text-log path unless live timing diagnostics are also
-	// explicitly enabled.
+	// Measurement for the HUD remains independent of optional text logging.
 	if (!settings.enableGPUTimings || timingSnapshot_.d3d11Samples < 1 ||
-		timingSnapshot_.d3d11Samples < lastLoggedTimingSample_ + 120) {
+		timingSnapshot_.d3d11Samples == lastLoggedTimingSample_ || !settings.diagnostics.performanceMetrics) {
 		return;
 	}
+	const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+	if (!timingLogGate_.Accept(true, static_cast<std::uint64_t>(now),
+		static_cast<std::uint64_t>(std::clamp(settings.diagnostics.performanceIntervalSeconds, 1L, 120L)) * 1000)) { return; }
 	lastLoggedTimingSample_ = timingSnapshot_.d3d11Samples;
 	const auto& d11 = timingSnapshot_.d3d11Ms;
 	const auto d11ms = [&](D3D11Stage a_stage) {

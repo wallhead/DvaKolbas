@@ -23,6 +23,7 @@
 #include "FrameGen/NvidiaHost.h"
 #include <SimpleIni.h>
 #include <process.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 
 namespace
 {
@@ -40,7 +41,8 @@ namespace
 			util::report_and_fail("Failed to find standard logging directory"sv);
 		}
 		*path /= std::format("{}.log"sv, Plugin::NAME);
-		sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true));
+		// Keep the previous three runs, with a bounded 5 MiB per log file.
+		sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>(path->string(), 5 * 1024 * 1024, 3, true));
 
 #ifndef NDEBUG
 		const auto level = spdlog::level::trace;
@@ -53,7 +55,7 @@ namespace
 		log->flush_on(spdlog::level::info);
 
 		spdlog::set_default_logger(std::move(log));
-		spdlog::set_pattern("[%H:%M:%S.%e] [%l] %v"s);
+		spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [thread %t] [%l] %v"s);
 	}
 
 	std::filesystem::path GetPluginDirectory()
@@ -179,7 +181,9 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("[Renderer] edition={} source={} module={}", Plugin::EDITION, Plugin::SOURCE_REVISION,
 		TheosRenderPipeline::PluginPaths::ModulePath(renderer).string());
 	logger::info("[Runtime] Skyrim {}", a_skse->RuntimeVersion().string());
-	SKSE::Init(a_skse);
+	// CommonLib's default logger would truncate our startup banner and replace
+	// the rotating sink. Keep the renderer-owned logger throughout this session.
+	SKSE::Init(a_skse, SKSE::InitInfo{.log = false});
 
 	CSimpleIniA baselineIni;
 	baselineIni.SetUnicode();
