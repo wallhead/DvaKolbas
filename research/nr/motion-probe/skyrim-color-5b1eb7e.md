@@ -48,3 +48,10 @@ with `NRLocalTone=0` and normal frame logging disabled.
 This is bounded user acceptance of the previously reported color effect,
 not complete NR image-quality, performance, lifecycle, other-GPU or true-After
 qualification. Full NR milestone count remains 1 of 8.
+
+Treat the tone issue as **mitigated, root cause open**. Local tone 0 disables
+the implicated feature; it does not demonstrate corrected tone processing.
+The one-variable result does not distinguish intended scene-dependent model
+behavior from an integration problem in color/exposure preparation. Future
+investigation must compare an enabled-tone route against a qualified reference
+using the same scene/input before changing model parameters or product defaults.
