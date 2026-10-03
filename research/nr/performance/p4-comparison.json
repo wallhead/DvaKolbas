@@ -1,0 +1,3618 @@
+{
+  "schema": 1,
+  "scope": "Standalone NR/optional FSR transaction timing; source/display FPS and AIO host performance not measured",
+  "summarizerSha256": "3a2415d1a8a1a5b310bf2afd5c83229a63298c6b720d1d8eb4d04ed73fe39cdc",
+  "cases": [
+    {
+      "receipt": "p3-fsr-current-on-1.json",
+      "profile": "rtx40",
+      "nrEnabled": true,
+      "instrumentation": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "receiptSha256": "e732fff558e9ad1479ad4cba377a3924a32986df7917f3192f512ba6d339c046",
+      "identity": {
+        "schema": 1,
+        "scope": "standalone NR Before plus FSR NativeAA enqueue transaction; no FG/Skyrim FPS",
+        "sourceRevision": "97d6eca41c7753cef75c910450027d3c6e470559",
+        "cleanSource": true,
+        "compiledSourceSha256": {
+          "external/Kits/FidelityFX/api/include/ffx_api.h": "e1a9d1b559eaf75f4cb401f1c43a66e2f3dc9621abfeb58b9c6fac56443177fd",
+          "external/Kits/FidelityFX/api/include/ffx_api_types.h": "cc0adc0ffc804dd7cd03c39c15581b575e416383177ffe95060201d52cc0fc49",
+          "external/Kits/FidelityFX/api/include/dx12/ffx_api_dx12.h": "c9afbc3c4c673723e9e5369a666f0ff54560543b5a93537f8ff453bf1c3bf530",
+          "external/Kits/FidelityFX/upscalers/include/ffx_upscale.h": "65be36d5653eb71c10379e0204f7bb7cd6a8aeec96e6f8cffc5f59ffeb1f89bf",
+          "tests/nr-runtime/RuntimeProbe.cpp": "34c957b3b1a361972e255c3406569697fd617af5bc434cb8a6af7f907e9f4b87",
+          "tests/nr-runtime/RuntimeProbeReport.cpp": "b8610f842740aca359e5841206f24e5a6c8ffa221c7e7b0a7378a3332130249d",
+          "tests/nr-runtime/ObservedQueue.h": "202a1239cf124a466e49f73f25eeb5d570bc82c2b3d12cc64f4ee43c3fa90e5c",
+          "tests/NrStageTests.cpp": "38b02d120eb4419b8c45dfe07960395ac40b6f94ca71aa0dc61581d2764c78ca",
+          "tests/NrFrameSlotTests.cpp": "05687942aeccb3e15f12a908bf0a2fad6f4e176448f71b2f8b44c109f90f1e05",
+          "tests/NrDeferredDeliveryTests.cpp": "3ff49287c69c53f38a8d3a140b0f1f53160c792a56659d2e1bbc131c1bdb9625",
+          "tests/nr-runtime/PerformanceProbe.cpp": "fc4e57259de98fb53300965306a66db35e8546ea7db4335449c9ec4582ea820f",
+          "src/NeuralRendering/PerformanceMetrics.h": "697e442e6e0ebc953166f475872e8c803f5717349281a3e77ee9a1a46f9dd53f",
+          "src/NeuralRendering/PerformanceMetrics.cpp": "e9fd673b38da8af9576c2e5420d7b9d8276101584148a2883559f374c2a2bab7",
+          "src/NeuralRendering/PerformanceQueries.h": "e58efee30bc0d156368ed6dd820033e799c1c03641427296ed4d101cb9504ea2",
+          "src/NeuralRendering/PerformanceQueries.cpp": "959585cc1bdd0d91af3f45cd38e6b10eb0738ec7f0e4d46ece792156ee462662",
+          "tests/nr-runtime/RuntimeProbeReport.h": "e045c5f5b5d1bfaa718530297bc14e2367179c2f351ce0c13d372ebf0ce7cfa2",
+          "tests/nr-runtime/GpuProbeGuard.h": "d9e50f5b34ae3e0b6dbfc213a52932090ae140b07960dafba1ca3eb8cbe820fa",
+          "tests/nr-runtime/run_reshade_before.py": "b5f1dda8bae56fc25346625c3303d16f05327b87c933b47e7419959990acae32",
+          "tests/NrImagePacketTests.cpp": "8c892518d03a0cd1c78bdd22617dd5734773770e7cece3e43452e8e344de128d",
+          "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+          "src/NeuralRendering/RuntimeCatalog.h": "cd6d98ea585e723a58750c7f90b81c421afa32ac2069b1ef1bf3672bec8d67c9",
+          "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+          "src/NeuralRendering/RuntimeFileLease.h": "375c3f501a153bb37d48261665da5dcfe04f447b4fc4e5a7dec54c96bbf2b071",
+          "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+          "src/NeuralRendering/RuntimeOwner.h": "66570c1ddb97a6eb03ea04ab068fc2145bc4732d330da9c3cf3dda9cfca7e072",
+          "src/NeuralRendering/CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+          "src/NeuralRendering/CallerIdentityShim.h": "ffeb680653ade57980d7feec354e906488ccbab0a554eb7208a36e63ef0a1d87",
+          "src/NeuralRendering/Error.h": "711ac372be317db4864b6514d13b801be9824dace873bc5ae43f3fb37cc84643",
+          "src/NeuralRendering/ImagePacket.h": "6934790fe54ce07612237671be4b34098e61885cd9aafef59cb957f875886f6f",
+          "src/NeuralRendering/ImagePacket.cpp": "bdeef54790c1e49421221769d1c38a23751bb5d87f845706f1429b6f103b981f",
+          "src/NeuralRendering/History.h": "52c06ab92041387bcfa337058367b00f13b294c71f047a2edf03776b8608867a",
+          "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+          "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+          "src/NeuralRendering/MotionDiagnosticStats.h": "d18184b2cdb9c406b2d9c0dfa38f4ceae4386166fe79103b85b05d193bdcd081",
+          "tests/NrMotionDiagnosticTests.cpp": "ef08fa3d56e18a04fbe54651ace58df4df229820b291ecade95fb934c7f5b7e2",
+          "src/NeuralRendering/Stage.h": "2e8db10b05445dac0aec482f63ba11b55d9a9e70829b231224573d8620415d13",
+          "src/NeuralRendering/Stage.cpp": "5c087d63e8730693203e5500b4a7eb125acde7c26ff32887ea6c668dd6f78acb",
+          "src/NeuralRendering/TicketOwnership.h": "4d02230eb6cf70c7124daedf0803f00507a6b2666a43df9a3344dc2df0fbbcf4",
+          "src/NeuralRendering/BeforeUpscale.h": "550ad8fe36913579cb49e56bc9acaee0c1d359ee8e88dac4e36dc2e2c0613872",
+          "src/NeuralRendering/BeforeUpscale.cpp": "b00de6055381040574a9e80e5a586e93954acb8a4b6766d82b48a92f0e0842c7",
+          "tests/NrBeforeUpscaleTests.cpp": "2eae27033f34abb29fb7e1498bca8141403791b893a0594caef4ed533cc75b26",
+          "src/Graphics/D3D11D3D12Interop.h": "497d0811ea74cb383adb08f0389eab27eb46041176bc2081f7f37b58e5a72be6",
+          "src/Graphics/D3D11D3D12Interop.cpp": "801a66f94a564a346a1286d4c0a6a5301ff4b29682fa97a642a9de866ee5aa9c",
+          "src/FrameGen/D3D11FrameCopy.h": "768deef78b722d6964216011dc26db870f5b2efa7b04eed61d19749bc3d05176",
+          "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+          "src/FrameGen/NeuralRenderingTuning.h": "0ed1b913e34bdf23c0d52fecfcce5d11af773f04352d50d02faa359bce1401a0",
+          "src/FrameGen/NeuralRenderingReconstruction.h": "0752068ba6d81d6770d45a6bd9c65afe3e6a6745f04806bceae1ad03c08cfb84",
+          "src/NeuralRendering/PreparedBeforeUpscale.h": "e5d9bfcb036596e17e9ea962e5c9feafbe7af467bb65139fb5af0555d01f05dd",
+          "src/NeuralRendering/PreparedBeforeUpscale.cpp": "6d8fd6aec0464ca3a753ec6f590beace5987cfed41ea21ab24e74691482b526b",
+          "src/NeuralRendering/BeforeHost.h": "f2dfa0541faff9a92dd8da9b9e0857a5b0eea48517455067d0d0ad1ad94cb92f",
+          "src/NeuralRendering/BeforeHost.cpp": "37cbeabdf792d5d958911ec7487ab1c0ada546fc2d05254f8b70d428eeb2bc3f",
+          "src/NeuralRendering/BeforeSettings.h": "7b6eb78dd58dc33667a8090e27aa3318f8e95966929a9d10a2a2bc39d06dca7a",
+          "src/NeuralRendering/StartupSettings.h": "756de2d3200cb834139fb1009cbbc1609adca1d296272b811a6122abe84b1880",
+          "src/NeuralRendering/SourcePolicy.h": "793d2c5bb5fa460202a885b545e8bf0f9511a33c5ad3a2cb5618aba7ab4328e4",
+          "tests/NrPreparedBeforeTests.cpp": "b80796f13fda824051494a3e7fe31b8df46d0035fae0262c474c073fa2fc9510",
+          "tests/NrBeforeHostFramesTests.cpp": "90dc8958ce6788d892abcb92d7a7e52bd3096b104efc909b805c63ac23eb4434",
+          "tests/NrBeforeHostTests.cpp": "669c3aa9532aac3aee5c566c29c7a15604f0291b0b50f3cc468b2922168e78a5",
+          "tests/NrSourcePolicyTests.cpp": "72a93ec179181e2b9d8c88d853351d3a14704375c5bbc1578acab972f55955fc",
+          "src/Upscaling/FSRColorConversion.h": "eb86bbc097465d5720d99fa0a9c2c0d250b80ee67bae91f1070699af4305970c",
+          "src/Upscaling/FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+          "src/Upscaling/FSRColorContract.h": "9154489043b834246173e4ec381e7fd6b19b059239ad28ee11673bce70502f58",
+          "src/Upscaling/FSRHistoryPolicy.h": "1fc719e778dcc4553c6114634fbccb68656a80172fa79d24e41073c9d2ae3f25",
+          "src/FrameGen/NvidiaHostNeural.cpp": "84fceb0a98a2e8f1637d5d8287bfde2dedd6704df3d4b144fc496b267756dd8d",
+          "src/FrameGen/NvidiaHost.h": "7410252a0ed7fb15db30c91c10e262083d0aab7fa8d07fffea1a49b2f46e4497",
+          "src/FrameGen/NvidiaHostStartup.cpp": "df15d05e79cd6355d43b6f7c89a2e121f81778b25709b1b8477231702e956024",
+          "src/FrameGen/NvidiaHostLifecycle.cpp": "e90bdafb2a829aa0ad8cca716372a20563779b1733c3308669e0202fd2ac9a12",
+          "src/FrameGen/SourceFsrEvaluation.cpp": "8dee6e72772e2bd595af3a54e352fb7d2e72ae61ffbb43f83ce5173b5d5d05fa",
+          "src/FrameGen/SourceNvidiaEvaluation.cpp": "77ab390ee3ff130d5ba4e08f4ba4114c29ae8442fd01349313d8eff3b25926cb",
+          "src/FrameGen/SourceFrameGeneration.h": "f49c43124428586b136cc974858fefb1aa8948c4f76b2a081238ea22a088b75c",
+          "src/RendererSettings.h": "87628f093e2505a5d16d7ec74c93108c79e348353424e42646bd8df80ece1712",
+          "src/RendererSettingsController.cpp": "b39316afb07988658953217fd2dd8d562c8b466fe02f3e475989cc6e020c688a",
+          "src/RendererBackendPolicy.h": "4b43d4208994eee000141ab9691a6d92f06458bd18f704b4caffac97f5cb3206",
+          "src/OverlayNeuralPanel.cpp": "09227948ebd45e61565a637091b0754f9a0ba5be091f158ef2daed03e5b87544",
+          "src/OverlayNeuralTab.h": "2ffc4d521dfabf4354dc7f718ad6b7568d82fbf5e456a97cc53a3a82852663c6",
+          "src/OverlayFrameView.cpp": "9b6165867294802d855d4c893145bbf6ad505068df64662a60d51d7e326a5034",
+          "src/OverlayUI.cpp": "36f8a50d6b096d8a7f7685b2bff4b60b4bb918b5635c7ec326f78b0a8b8baa9a",
+          "CMakeLists.txt": "5bc4926cf9fe559c34b4abaf832446412250c6027db3c37d471b99284568ad39",
+          "src/HookSafety.h": "60121c34ac39fa4b41529d9589933fe9d1208fb09fc6190d77ae7967fc223c03",
+          "cmake/NeuralRuntime.cmake": "ff65a586f2845681517035d33394d3777babcae1948ae6dc9df1735478beab09",
+          "tests/nr-runtime/CMakeLists.txt": "77f9f9e0618a6a7a0fa8d20f16ed02c587857a118aa93f27473e7e29a7a5c778",
+          "tests/nr-runtime/FsrPerformanceRecorder.h": "a7f42492250d1c94c38d48d0d4ba3ff1cf8117c2fed8febb988aac2ad52d0ab2",
+          "src/Upscaling/FSRRuntime.h": "f87ca1c98d4aa378845842103a2206f0d549d1041e87b0994149f51771fbe424",
+          "src/Upscaling/FSRRuntime.cpp": "3166d106e74f8f5fe6ca19f58e82082d0f6b2b033d60c774c99f5953f98f43d1",
+          "src/Upscaling/FSRParameters.cpp": "346d0fb9f9fbc429c54e1759dc8eaf796972d7bd364107a4485d6057c4bc66a6",
+          "src/Upscaling/FSRUpscaler.h": "ec871a9789d290882fe2e930ef12ce29f1134c8035eb6cf0c6020f18b836b476",
+          "src/Upscaling/FSRUpscaler.cpp": "ecbbdfc2bc4a42e66419c77a98a287e45cd5512b26c8e27614f37ebde4b4131b",
+          "src/Upscaling/FSRHostResources.h": "99596ee29af6c5e7855f5114c74652ab3fa4fe4f1ec6e030da72ce6df5cd09d1",
+          "src/Upscaling/FSRHostResources.cpp": "4ee9ae3d820a3c70fb15adb373b8fc63e96b744e219f5884ee293b98be8d31df",
+          "src/Upscaling/FSRFrameAdapter.h": "82ad618b749af55441d22ca81456546f3e2ba8fb44fe385c35257fea9acf842a",
+          "src/Upscaling/FSRFrameAdapter.cpp": "241e5d6f3a9ea89152e3de2eb1143ce808c6c8502dbc31c62128cc66a6fee707",
+          "src/Upscaling/FSRParameters.h": "474394dbf0f6151a46a5fb4c38588b38c3bceebd40c32713bcc28182aed77973",
+          "src/Upscaling/UpscalerBackend.h": "1a7e5429f349a227b9f96df7d0ba4bb2897a1f18ffd7317ce7bbafb435f12f42",
+          "src/Upscaling/FSRPreparedResources.h": "3c520fae54004165013cbf097796564f4aad72abba912c6e2f0baaec250ffe61",
+          "src/Upscaling/FSRProviderPolicy.h": "9a3e42f7b70d1c31506ae680c2b3e3a805c593f6c10d07691fe85f80a2ef3776",
+          "tools/fsr/runtime-pin.json": "6b7b0476532ee9a449bdb07e3fb0553a0cee9413b3eac1fe6a1855ccd2e1d43a",
+          "external/nvsdk_ngx_params.h": "dd9ef57ac264256ddd63b3c75b2894f519c72a1a9c9c23814fb433aa71478ada",
+          "generated/PerformanceRuntimeCatalog.cpp": "4b7620d1f47a0ece56d8d004a489d93a4e095a0e30c0cc92393626f46bea1381"
+        },
+        "profile": "rtx40",
+        "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "adapterVendor": 4318,
+        "adapterDevice": 9986,
+        "adapterLuidLow": 66328,
+        "adapterLuidHigh": 0,
+        "width": 2560,
+        "height": 1440,
+        "placement": "Before",
+        "encoding": "Gamma22-to-linear-FP16",
+        "passes": 1,
+        "preset": 0,
+        "style": 0,
+        "intensity": 1,
+        "localTone": 0,
+        "localStructure": 1,
+        "inputScale": 1,
+        "resolve": "Auto",
+        "hdr": false,
+        "scene": "two static checker/ramp images; constant depth 0.5 and zero motion",
+        "resetSchedule": "first source; optional correctness-only off/on",
+        "nrEnabled": true,
+        "instrumentation": true,
+        "fsrEnabled": true,
+        "fsrVersion": "3.1.5",
+        "fsrQuality": "NativeAA",
+        "fsrEvaluations": 420,
+        "fsrRuntimeSha256": {
+          "loader": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "upscaler": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+        },
+        "fsrTimingDropped": 0,
+        "fsrTiming11Available": true,
+        "fsrTiming12Available": true,
+        "fsrDistinctOutputHashes": 0,
+        "fsrNonblackPixels": 0,
+        "readbacks": false,
+        "debugLayer": false,
+        "warmup": 120,
+        "requestedSamples": 300,
+        "timerPeriodMs": 1,
+        "rawInit": 1,
+        "rawShutdown": 1,
+        "retired": true,
+        "shimSlotRva": 704640,
+        "shimRestored": true,
+        "recorded": 420,
+        "gpuTiming11Available": true,
+        "gpuTiming12Available": true,
+        "gpuTimingDropped": 0,
+        "alphaPixels": 0,
+        "expectedAlphaPixels": 0,
+        "changedRgbPixels": 0,
+        "distinctOutputHashes": 0,
+        "timingComplete": true,
+        "failure": "",
+        "droppedFrames": 0,
+        "droppedIntervals": 0
+      },
+      "cleanSource": true,
+      "issues": [],
+      "summary": {
+        "wallMilliseconds": {
+          "count": 300,
+          "median": 9.03975,
+          "p95": 10.353765,
+          "p99": 10.739403
+        },
+        "blockMilliseconds": {
+          "count": 300,
+          "median": 8.16575,
+          "p95": 9.53407,
+          "p99": 9.814240999999999
+        },
+        "cpuUnionMilliseconds": {
+          "count": 300,
+          "median": 9.039349999999999,
+          "p95": 10.35336,
+          "p99": 10.739002
+        },
+        "waitCalls": {
+          "count": 300,
+          "median": 3.0,
+          "p95": 3.0,
+          "p99": 3.0
+        },
+        "blockingCalls": {
+          "count": 300,
+          "median": 1.0,
+          "p95": 2.0,
+          "p99": 2.0
+        },
+        "flushes": {
+          "count": 300,
+          "median": 4.0,
+          "p95": 4.0,
+          "p99": 4.0
+        },
+        "descriptorCreations": {
+          "count": 300,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "cpuMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0183,
+            "p95": 0.03461,
+            "p99": 0.050815999999999986
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.4317,
+            "p95": 0.6899000000000002,
+            "p99": 0.7788209999999999
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0011,
+            "p95": 0.002,
+            "p99": 0.0021
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0153,
+            "p95": 0.029505,
+            "p99": 0.066401
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0192,
+            "p95": 0.20674000000000003,
+            "p99": 0.5709479999999998
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0076,
+            "p95": 0.011135000000000008,
+            "p99": 0.018185999999999924
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0075,
+            "p95": 0.012305000000000002,
+            "p99": 0.025436999999999786
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.003,
+            "p95": 0.0046,
+            "p99": 0.00621099999999999
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0538,
+            "p95": 0.09924000000000001,
+            "p99": 0.145404
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0517,
+            "p95": 0.09297000000000007,
+            "p99": 0.16053399999999998
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0347,
+            "p95": 0.04655500000000006,
+            "p99": 0.08698299999999984
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.203,
+            "p95": 0.4184200000000001,
+            "p99": 0.7540109999999997
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0022,
+            "p95": 0.0041,
+            "p99": 0.005101999999999999
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.013,
+            "p95": 0.024810000000000002,
+            "p99": 0.04943199999999997
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0052,
+            "p95": 0.0101,
+            "p99": 0.015863999999999944
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.27005,
+            "p95": 9.626585,
+            "p99": 9.89989
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.055150000000000005,
+            "p95": 0.10278000000000004,
+            "p99": 0.15728499999999992
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.2386,
+            "p95": 0.42435,
+            "p99": 0.4810259999999999
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0354,
+            "p95": 0.06507500000000002,
+            "p99": 0.08635799999999995
+          },
+          "total": {
+            "count": 300,
+            "median": 8.833400000000001,
+            "p95": 10.15924,
+            "p99": 10.526838
+          }
+        },
+        "waitMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.17772000000000007,
+            "p99": 0.5473519999999998
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.16575,
+            "p95": 9.53407,
+            "p99": 9.814240999999999
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "total": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        },
+        "gpuMilliseconds": {
+          "alpha": {
+            "count": 300,
+            "median": 0.04096,
+            "p95": 0.04096,
+            "p99": 0.041984
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.029296000000000003,
+            "p95": 0.032430400000000005,
+            "p99": 0.04128607999999999
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.018432,
+            "p95": 0.02016,
+            "p99": 0.028353599999999996
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.028672,
+            "p95": 0.029696,
+            "p99": 0.032778239999999986
+          },
+          "fsrDispatch": {
+            "count": 300,
+            "median": 0.626688,
+            "p95": 0.8440320000000002,
+            "p99": 1.00250624
+          },
+          "fsrPrepare": {
+            "count": 300,
+            "median": 0.105472,
+            "p95": 0.11116960000000001,
+            "p99": 0.11470847999999997
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.066368,
+            "p95": 0.0682896,
+            "p99": 0.06896287999999999
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.03072,
+            "p95": 0.032416,
+            "p99": 0.03277535999999999
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.068608,
+            "p95": 0.07168,
+            "p99": 0.075776
+          },
+          "vendor": {
+            "count": 300,
+            "median": 7.289856,
+            "p95": 7.9574016,
+            "p99": 8.03977216
+          }
+        }
+      }
+    },
+    {
+      "receipt": "p3-fsr-current-on-2.json",
+      "profile": "rtx40",
+      "nrEnabled": true,
+      "instrumentation": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "receiptSha256": "78bef9a4eebaf2809aa859b882f522dcbb432edbf8c37517a0a832d348c7a734",
+      "identity": {
+        "schema": 1,
+        "scope": "standalone NR Before plus FSR NativeAA enqueue transaction; no FG/Skyrim FPS",
+        "sourceRevision": "97d6eca41c7753cef75c910450027d3c6e470559",
+        "cleanSource": true,
+        "compiledSourceSha256": {
+          "external/Kits/FidelityFX/api/include/ffx_api.h": "e1a9d1b559eaf75f4cb401f1c43a66e2f3dc9621abfeb58b9c6fac56443177fd",
+          "external/Kits/FidelityFX/api/include/ffx_api_types.h": "cc0adc0ffc804dd7cd03c39c15581b575e416383177ffe95060201d52cc0fc49",
+          "external/Kits/FidelityFX/api/include/dx12/ffx_api_dx12.h": "c9afbc3c4c673723e9e5369a666f0ff54560543b5a93537f8ff453bf1c3bf530",
+          "external/Kits/FidelityFX/upscalers/include/ffx_upscale.h": "65be36d5653eb71c10379e0204f7bb7cd6a8aeec96e6f8cffc5f59ffeb1f89bf",
+          "tests/nr-runtime/RuntimeProbe.cpp": "34c957b3b1a361972e255c3406569697fd617af5bc434cb8a6af7f907e9f4b87",
+          "tests/nr-runtime/RuntimeProbeReport.cpp": "b8610f842740aca359e5841206f24e5a6c8ffa221c7e7b0a7378a3332130249d",
+          "tests/nr-runtime/ObservedQueue.h": "202a1239cf124a466e49f73f25eeb5d570bc82c2b3d12cc64f4ee43c3fa90e5c",
+          "tests/NrStageTests.cpp": "38b02d120eb4419b8c45dfe07960395ac40b6f94ca71aa0dc61581d2764c78ca",
+          "tests/NrFrameSlotTests.cpp": "05687942aeccb3e15f12a908bf0a2fad6f4e176448f71b2f8b44c109f90f1e05",
+          "tests/NrDeferredDeliveryTests.cpp": "3ff49287c69c53f38a8d3a140b0f1f53160c792a56659d2e1bbc131c1bdb9625",
+          "tests/nr-runtime/PerformanceProbe.cpp": "fc4e57259de98fb53300965306a66db35e8546ea7db4335449c9ec4582ea820f",
+          "src/NeuralRendering/PerformanceMetrics.h": "697e442e6e0ebc953166f475872e8c803f5717349281a3e77ee9a1a46f9dd53f",
+          "src/NeuralRendering/PerformanceMetrics.cpp": "e9fd673b38da8af9576c2e5420d7b9d8276101584148a2883559f374c2a2bab7",
+          "src/NeuralRendering/PerformanceQueries.h": "e58efee30bc0d156368ed6dd820033e799c1c03641427296ed4d101cb9504ea2",
+          "src/NeuralRendering/PerformanceQueries.cpp": "959585cc1bdd0d91af3f45cd38e6b10eb0738ec7f0e4d46ece792156ee462662",
+          "tests/nr-runtime/RuntimeProbeReport.h": "e045c5f5b5d1bfaa718530297bc14e2367179c2f351ce0c13d372ebf0ce7cfa2",
+          "tests/nr-runtime/GpuProbeGuard.h": "d9e50f5b34ae3e0b6dbfc213a52932090ae140b07960dafba1ca3eb8cbe820fa",
+          "tests/nr-runtime/run_reshade_before.py": "b5f1dda8bae56fc25346625c3303d16f05327b87c933b47e7419959990acae32",
+          "tests/NrImagePacketTests.cpp": "8c892518d03a0cd1c78bdd22617dd5734773770e7cece3e43452e8e344de128d",
+          "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+          "src/NeuralRendering/RuntimeCatalog.h": "cd6d98ea585e723a58750c7f90b81c421afa32ac2069b1ef1bf3672bec8d67c9",
+          "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+          "src/NeuralRendering/RuntimeFileLease.h": "375c3f501a153bb37d48261665da5dcfe04f447b4fc4e5a7dec54c96bbf2b071",
+          "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+          "src/NeuralRendering/RuntimeOwner.h": "66570c1ddb97a6eb03ea04ab068fc2145bc4732d330da9c3cf3dda9cfca7e072",
+          "src/NeuralRendering/CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+          "src/NeuralRendering/CallerIdentityShim.h": "ffeb680653ade57980d7feec354e906488ccbab0a554eb7208a36e63ef0a1d87",
+          "src/NeuralRendering/Error.h": "711ac372be317db4864b6514d13b801be9824dace873bc5ae43f3fb37cc84643",
+          "src/NeuralRendering/ImagePacket.h": "6934790fe54ce07612237671be4b34098e61885cd9aafef59cb957f875886f6f",
+          "src/NeuralRendering/ImagePacket.cpp": "bdeef54790c1e49421221769d1c38a23751bb5d87f845706f1429b6f103b981f",
+          "src/NeuralRendering/History.h": "52c06ab92041387bcfa337058367b00f13b294c71f047a2edf03776b8608867a",
+          "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+          "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+          "src/NeuralRendering/MotionDiagnosticStats.h": "d18184b2cdb9c406b2d9c0dfa38f4ceae4386166fe79103b85b05d193bdcd081",
+          "tests/NrMotionDiagnosticTests.cpp": "ef08fa3d56e18a04fbe54651ace58df4df229820b291ecade95fb934c7f5b7e2",
+          "src/NeuralRendering/Stage.h": "2e8db10b05445dac0aec482f63ba11b55d9a9e70829b231224573d8620415d13",
+          "src/NeuralRendering/Stage.cpp": "5c087d63e8730693203e5500b4a7eb125acde7c26ff32887ea6c668dd6f78acb",
+          "src/NeuralRendering/TicketOwnership.h": "4d02230eb6cf70c7124daedf0803f00507a6b2666a43df9a3344dc2df0fbbcf4",
+          "src/NeuralRendering/BeforeUpscale.h": "550ad8fe36913579cb49e56bc9acaee0c1d359ee8e88dac4e36dc2e2c0613872",
+          "src/NeuralRendering/BeforeUpscale.cpp": "b00de6055381040574a9e80e5a586e93954acb8a4b6766d82b48a92f0e0842c7",
+          "tests/NrBeforeUpscaleTests.cpp": "2eae27033f34abb29fb7e1498bca8141403791b893a0594caef4ed533cc75b26",
+          "src/Graphics/D3D11D3D12Interop.h": "497d0811ea74cb383adb08f0389eab27eb46041176bc2081f7f37b58e5a72be6",
+          "src/Graphics/D3D11D3D12Interop.cpp": "801a66f94a564a346a1286d4c0a6a5301ff4b29682fa97a642a9de866ee5aa9c",
+          "src/FrameGen/D3D11FrameCopy.h": "768deef78b722d6964216011dc26db870f5b2efa7b04eed61d19749bc3d05176",
+          "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+          "src/FrameGen/NeuralRenderingTuning.h": "0ed1b913e34bdf23c0d52fecfcce5d11af773f04352d50d02faa359bce1401a0",
+          "src/FrameGen/NeuralRenderingReconstruction.h": "0752068ba6d81d6770d45a6bd9c65afe3e6a6745f04806bceae1ad03c08cfb84",
+          "src/NeuralRendering/PreparedBeforeUpscale.h": "e5d9bfcb036596e17e9ea962e5c9feafbe7af467bb65139fb5af0555d01f05dd",
+          "src/NeuralRendering/PreparedBeforeUpscale.cpp": "6d8fd6aec0464ca3a753ec6f590beace5987cfed41ea21ab24e74691482b526b",
+          "src/NeuralRendering/BeforeHost.h": "f2dfa0541faff9a92dd8da9b9e0857a5b0eea48517455067d0d0ad1ad94cb92f",
+          "src/NeuralRendering/BeforeHost.cpp": "37cbeabdf792d5d958911ec7487ab1c0ada546fc2d05254f8b70d428eeb2bc3f",
+          "src/NeuralRendering/BeforeSettings.h": "7b6eb78dd58dc33667a8090e27aa3318f8e95966929a9d10a2a2bc39d06dca7a",
+          "src/NeuralRendering/StartupSettings.h": "756de2d3200cb834139fb1009cbbc1609adca1d296272b811a6122abe84b1880",
+          "src/NeuralRendering/SourcePolicy.h": "793d2c5bb5fa460202a885b545e8bf0f9511a33c5ad3a2cb5618aba7ab4328e4",
+          "tests/NrPreparedBeforeTests.cpp": "b80796f13fda824051494a3e7fe31b8df46d0035fae0262c474c073fa2fc9510",
+          "tests/NrBeforeHostFramesTests.cpp": "90dc8958ce6788d892abcb92d7a7e52bd3096b104efc909b805c63ac23eb4434",
+          "tests/NrBeforeHostTests.cpp": "669c3aa9532aac3aee5c566c29c7a15604f0291b0b50f3cc468b2922168e78a5",
+          "tests/NrSourcePolicyTests.cpp": "72a93ec179181e2b9d8c88d853351d3a14704375c5bbc1578acab972f55955fc",
+          "src/Upscaling/FSRColorConversion.h": "eb86bbc097465d5720d99fa0a9c2c0d250b80ee67bae91f1070699af4305970c",
+          "src/Upscaling/FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+          "src/Upscaling/FSRColorContract.h": "9154489043b834246173e4ec381e7fd6b19b059239ad28ee11673bce70502f58",
+          "src/Upscaling/FSRHistoryPolicy.h": "1fc719e778dcc4553c6114634fbccb68656a80172fa79d24e41073c9d2ae3f25",
+          "src/FrameGen/NvidiaHostNeural.cpp": "84fceb0a98a2e8f1637d5d8287bfde2dedd6704df3d4b144fc496b267756dd8d",
+          "src/FrameGen/NvidiaHost.h": "7410252a0ed7fb15db30c91c10e262083d0aab7fa8d07fffea1a49b2f46e4497",
+          "src/FrameGen/NvidiaHostStartup.cpp": "df15d05e79cd6355d43b6f7c89a2e121f81778b25709b1b8477231702e956024",
+          "src/FrameGen/NvidiaHostLifecycle.cpp": "e90bdafb2a829aa0ad8cca716372a20563779b1733c3308669e0202fd2ac9a12",
+          "src/FrameGen/SourceFsrEvaluation.cpp": "8dee6e72772e2bd595af3a54e352fb7d2e72ae61ffbb43f83ce5173b5d5d05fa",
+          "src/FrameGen/SourceNvidiaEvaluation.cpp": "77ab390ee3ff130d5ba4e08f4ba4114c29ae8442fd01349313d8eff3b25926cb",
+          "src/FrameGen/SourceFrameGeneration.h": "f49c43124428586b136cc974858fefb1aa8948c4f76b2a081238ea22a088b75c",
+          "src/RendererSettings.h": "87628f093e2505a5d16d7ec74c93108c79e348353424e42646bd8df80ece1712",
+          "src/RendererSettingsController.cpp": "b39316afb07988658953217fd2dd8d562c8b466fe02f3e475989cc6e020c688a",
+          "src/RendererBackendPolicy.h": "4b43d4208994eee000141ab9691a6d92f06458bd18f704b4caffac97f5cb3206",
+          "src/OverlayNeuralPanel.cpp": "09227948ebd45e61565a637091b0754f9a0ba5be091f158ef2daed03e5b87544",
+          "src/OverlayNeuralTab.h": "2ffc4d521dfabf4354dc7f718ad6b7568d82fbf5e456a97cc53a3a82852663c6",
+          "src/OverlayFrameView.cpp": "9b6165867294802d855d4c893145bbf6ad505068df64662a60d51d7e326a5034",
+          "src/OverlayUI.cpp": "36f8a50d6b096d8a7f7685b2bff4b60b4bb918b5635c7ec326f78b0a8b8baa9a",
+          "CMakeLists.txt": "5bc4926cf9fe559c34b4abaf832446412250c6027db3c37d471b99284568ad39",
+          "src/HookSafety.h": "60121c34ac39fa4b41529d9589933fe9d1208fb09fc6190d77ae7967fc223c03",
+          "cmake/NeuralRuntime.cmake": "ff65a586f2845681517035d33394d3777babcae1948ae6dc9df1735478beab09",
+          "tests/nr-runtime/CMakeLists.txt": "77f9f9e0618a6a7a0fa8d20f16ed02c587857a118aa93f27473e7e29a7a5c778",
+          "tests/nr-runtime/FsrPerformanceRecorder.h": "a7f42492250d1c94c38d48d0d4ba3ff1cf8117c2fed8febb988aac2ad52d0ab2",
+          "src/Upscaling/FSRRuntime.h": "f87ca1c98d4aa378845842103a2206f0d549d1041e87b0994149f51771fbe424",
+          "src/Upscaling/FSRRuntime.cpp": "3166d106e74f8f5fe6ca19f58e82082d0f6b2b033d60c774c99f5953f98f43d1",
+          "src/Upscaling/FSRParameters.cpp": "346d0fb9f9fbc429c54e1759dc8eaf796972d7bd364107a4485d6057c4bc66a6",
+          "src/Upscaling/FSRUpscaler.h": "ec871a9789d290882fe2e930ef12ce29f1134c8035eb6cf0c6020f18b836b476",
+          "src/Upscaling/FSRUpscaler.cpp": "ecbbdfc2bc4a42e66419c77a98a287e45cd5512b26c8e27614f37ebde4b4131b",
+          "src/Upscaling/FSRHostResources.h": "99596ee29af6c5e7855f5114c74652ab3fa4fe4f1ec6e030da72ce6df5cd09d1",
+          "src/Upscaling/FSRHostResources.cpp": "4ee9ae3d820a3c70fb15adb373b8fc63e96b744e219f5884ee293b98be8d31df",
+          "src/Upscaling/FSRFrameAdapter.h": "82ad618b749af55441d22ca81456546f3e2ba8fb44fe385c35257fea9acf842a",
+          "src/Upscaling/FSRFrameAdapter.cpp": "241e5d6f3a9ea89152e3de2eb1143ce808c6c8502dbc31c62128cc66a6fee707",
+          "src/Upscaling/FSRParameters.h": "474394dbf0f6151a46a5fb4c38588b38c3bceebd40c32713bcc28182aed77973",
+          "src/Upscaling/UpscalerBackend.h": "1a7e5429f349a227b9f96df7d0ba4bb2897a1f18ffd7317ce7bbafb435f12f42",
+          "src/Upscaling/FSRPreparedResources.h": "3c520fae54004165013cbf097796564f4aad72abba912c6e2f0baaec250ffe61",
+          "src/Upscaling/FSRProviderPolicy.h": "9a3e42f7b70d1c31506ae680c2b3e3a805c593f6c10d07691fe85f80a2ef3776",
+          "tools/fsr/runtime-pin.json": "6b7b0476532ee9a449bdb07e3fb0553a0cee9413b3eac1fe6a1855ccd2e1d43a",
+          "external/nvsdk_ngx_params.h": "dd9ef57ac264256ddd63b3c75b2894f519c72a1a9c9c23814fb433aa71478ada",
+          "generated/PerformanceRuntimeCatalog.cpp": "4b7620d1f47a0ece56d8d004a489d93a4e095a0e30c0cc92393626f46bea1381"
+        },
+        "profile": "rtx40",
+        "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "adapterVendor": 4318,
+        "adapterDevice": 9986,
+        "adapterLuidLow": 66328,
+        "adapterLuidHigh": 0,
+        "width": 2560,
+        "height": 1440,
+        "placement": "Before",
+        "encoding": "Gamma22-to-linear-FP16",
+        "passes": 1,
+        "preset": 0,
+        "style": 0,
+        "intensity": 1,
+        "localTone": 0,
+        "localStructure": 1,
+        "inputScale": 1,
+        "resolve": "Auto",
+        "hdr": false,
+        "scene": "two static checker/ramp images; constant depth 0.5 and zero motion",
+        "resetSchedule": "first source; optional correctness-only off/on",
+        "nrEnabled": true,
+        "instrumentation": true,
+        "fsrEnabled": true,
+        "fsrVersion": "3.1.5",
+        "fsrQuality": "NativeAA",
+        "fsrEvaluations": 420,
+        "fsrRuntimeSha256": {
+          "loader": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "upscaler": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+        },
+        "fsrTimingDropped": 0,
+        "fsrTiming11Available": true,
+        "fsrTiming12Available": true,
+        "fsrDistinctOutputHashes": 0,
+        "fsrNonblackPixels": 0,
+        "readbacks": false,
+        "debugLayer": false,
+        "warmup": 120,
+        "requestedSamples": 300,
+        "timerPeriodMs": 1,
+        "rawInit": 1,
+        "rawShutdown": 1,
+        "retired": true,
+        "shimSlotRva": 704640,
+        "shimRestored": true,
+        "recorded": 420,
+        "gpuTiming11Available": true,
+        "gpuTiming12Available": true,
+        "gpuTimingDropped": 0,
+        "alphaPixels": 0,
+        "expectedAlphaPixels": 0,
+        "changedRgbPixels": 0,
+        "distinctOutputHashes": 0,
+        "timingComplete": true,
+        "failure": "",
+        "droppedFrames": 0,
+        "droppedIntervals": 0
+      },
+      "cleanSource": true,
+      "issues": [],
+      "summary": {
+        "wallMilliseconds": {
+          "count": 300,
+          "median": 8.95825,
+          "p95": 10.500915,
+          "p99": 11.051050999999998
+        },
+        "blockMilliseconds": {
+          "count": 300,
+          "median": 8.0079,
+          "p95": 9.493974999999999,
+          "p99": 10.022473
+        },
+        "cpuUnionMilliseconds": {
+          "count": 300,
+          "median": 8.9579,
+          "p95": 10.500515,
+          "p99": 11.050748999999998
+        },
+        "waitCalls": {
+          "count": 300,
+          "median": 3.0,
+          "p95": 3.0,
+          "p99": 3.0
+        },
+        "blockingCalls": {
+          "count": 300,
+          "median": 1.0,
+          "p95": 2.0,
+          "p99": 2.0
+        },
+        "flushes": {
+          "count": 300,
+          "median": 4.0,
+          "p95": 4.0,
+          "p99": 4.0
+        },
+        "descriptorCreations": {
+          "count": 300,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "cpuMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0182,
+            "p95": 0.034010000000000006,
+            "p99": 0.061916999999999896
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.5165500000000001,
+            "p95": 0.711565,
+            "p99": 0.9456469999999997
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0011,
+            "p95": 0.0014,
+            "p99": 0.0028009999999999992
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0153,
+            "p95": 0.029110000000000004,
+            "p99": 0.03459999999999982
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0189,
+            "p95": 0.15884000000000012,
+            "p99": 0.28436699999999887
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0076,
+            "p95": 0.010550000000000012,
+            "p99": 0.016048999999999956
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0075,
+            "p95": 0.010105000000000001,
+            "p99": 0.016452999999999954
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0029,
+            "p95": 0.004505000000000001,
+            "p99": 0.005800999999999999
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0537,
+            "p95": 0.101705,
+            "p99": 0.14020799999999972
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0516,
+            "p95": 0.06436000000000001,
+            "p99": 0.100703
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0345,
+            "p95": 0.04562000000000001,
+            "p99": 0.07471499999999999
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.19895000000000002,
+            "p95": 0.37634,
+            "p99": 0.4671609999999984
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.002,
+            "p95": 0.003905000000000001,
+            "p99": 0.007018999999999983
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0133,
+            "p95": 0.027410000000000004,
+            "p99": 0.04570999999999999
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0054,
+            "p95": 0.0102,
+            "p99": 0.01613499999999988
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.0867,
+            "p95": 9.639809999999999,
+            "p99": 10.15011
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0549,
+            "p95": 0.1084,
+            "p99": 0.15597499999999984
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.31205,
+            "p95": 0.46986500000000003,
+            "p99": 0.6124039999999997
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0359,
+            "p95": 0.06574,
+            "p99": 0.0965089999999997
+          },
+          "total": {
+            "count": 300,
+            "median": 8.74135,
+            "p95": 10.247505,
+            "p99": 10.859034999999997
+          }
+        },
+        "waitMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.12352000000000014,
+            "p99": 0.2609759999999988
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 7.98695,
+            "p95": 9.493974999999999,
+            "p99": 10.022473
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "total": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        },
+        "gpuMilliseconds": {
+          "alpha": {
+            "count": 300,
+            "median": 0.04096,
+            "p95": 0.041984,
+            "p99": 0.041984
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0296,
+            "p95": 0.031808,
+            "p99": 0.039594559999999994
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.019424,
+            "p95": 0.02048,
+            "p99": 0.021123839999999998
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.028672,
+            "p95": 0.03075360000000001,
+            "p99": 0.03344352
+          },
+          "fsrDispatch": {
+            "count": 300,
+            "median": 0.630784,
+            "p95": 0.827392,
+            "p99": 0.98817024
+          },
+          "fsrPrepare": {
+            "count": 300,
+            "median": 0.105088,
+            "p95": 0.11130400000000001,
+            "p99": 0.114688
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.066176,
+            "p95": 0.0680336,
+            "p99": 0.06883264
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.031648,
+            "p95": 0.032768,
+            "p99": 0.032768
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.067584,
+            "p95": 0.07275520000000002,
+            "p99": 0.074752
+          },
+          "vendor": {
+            "count": 300,
+            "median": 7.223808,
+            "p95": 8.067328,
+            "p99": 8.350924800000001
+          }
+        }
+      }
+    },
+    {
+      "receipt": "p3-fsr-current-on-3.json",
+      "profile": "rtx40",
+      "nrEnabled": true,
+      "instrumentation": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "receiptSha256": "fbd42f2b2cdc4b1803158f0825012292eb48bde050b155d59f3517169a0b4694",
+      "identity": {
+        "schema": 1,
+        "scope": "standalone NR Before plus FSR NativeAA enqueue transaction; no FG/Skyrim FPS",
+        "sourceRevision": "97d6eca41c7753cef75c910450027d3c6e470559",
+        "cleanSource": true,
+        "compiledSourceSha256": {
+          "external/Kits/FidelityFX/api/include/ffx_api.h": "e1a9d1b559eaf75f4cb401f1c43a66e2f3dc9621abfeb58b9c6fac56443177fd",
+          "external/Kits/FidelityFX/api/include/ffx_api_types.h": "cc0adc0ffc804dd7cd03c39c15581b575e416383177ffe95060201d52cc0fc49",
+          "external/Kits/FidelityFX/api/include/dx12/ffx_api_dx12.h": "c9afbc3c4c673723e9e5369a666f0ff54560543b5a93537f8ff453bf1c3bf530",
+          "external/Kits/FidelityFX/upscalers/include/ffx_upscale.h": "65be36d5653eb71c10379e0204f7bb7cd6a8aeec96e6f8cffc5f59ffeb1f89bf",
+          "tests/nr-runtime/RuntimeProbe.cpp": "34c957b3b1a361972e255c3406569697fd617af5bc434cb8a6af7f907e9f4b87",
+          "tests/nr-runtime/RuntimeProbeReport.cpp": "b8610f842740aca359e5841206f24e5a6c8ffa221c7e7b0a7378a3332130249d",
+          "tests/nr-runtime/ObservedQueue.h": "202a1239cf124a466e49f73f25eeb5d570bc82c2b3d12cc64f4ee43c3fa90e5c",
+          "tests/NrStageTests.cpp": "38b02d120eb4419b8c45dfe07960395ac40b6f94ca71aa0dc61581d2764c78ca",
+          "tests/NrFrameSlotTests.cpp": "05687942aeccb3e15f12a908bf0a2fad6f4e176448f71b2f8b44c109f90f1e05",
+          "tests/NrDeferredDeliveryTests.cpp": "3ff49287c69c53f38a8d3a140b0f1f53160c792a56659d2e1bbc131c1bdb9625",
+          "tests/nr-runtime/PerformanceProbe.cpp": "fc4e57259de98fb53300965306a66db35e8546ea7db4335449c9ec4582ea820f",
+          "src/NeuralRendering/PerformanceMetrics.h": "697e442e6e0ebc953166f475872e8c803f5717349281a3e77ee9a1a46f9dd53f",
+          "src/NeuralRendering/PerformanceMetrics.cpp": "e9fd673b38da8af9576c2e5420d7b9d8276101584148a2883559f374c2a2bab7",
+          "src/NeuralRendering/PerformanceQueries.h": "e58efee30bc0d156368ed6dd820033e799c1c03641427296ed4d101cb9504ea2",
+          "src/NeuralRendering/PerformanceQueries.cpp": "959585cc1bdd0d91af3f45cd38e6b10eb0738ec7f0e4d46ece792156ee462662",
+          "tests/nr-runtime/RuntimeProbeReport.h": "e045c5f5b5d1bfaa718530297bc14e2367179c2f351ce0c13d372ebf0ce7cfa2",
+          "tests/nr-runtime/GpuProbeGuard.h": "d9e50f5b34ae3e0b6dbfc213a52932090ae140b07960dafba1ca3eb8cbe820fa",
+          "tests/nr-runtime/run_reshade_before.py": "b5f1dda8bae56fc25346625c3303d16f05327b87c933b47e7419959990acae32",
+          "tests/NrImagePacketTests.cpp": "8c892518d03a0cd1c78bdd22617dd5734773770e7cece3e43452e8e344de128d",
+          "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+          "src/NeuralRendering/RuntimeCatalog.h": "cd6d98ea585e723a58750c7f90b81c421afa32ac2069b1ef1bf3672bec8d67c9",
+          "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+          "src/NeuralRendering/RuntimeFileLease.h": "375c3f501a153bb37d48261665da5dcfe04f447b4fc4e5a7dec54c96bbf2b071",
+          "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+          "src/NeuralRendering/RuntimeOwner.h": "66570c1ddb97a6eb03ea04ab068fc2145bc4732d330da9c3cf3dda9cfca7e072",
+          "src/NeuralRendering/CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+          "src/NeuralRendering/CallerIdentityShim.h": "ffeb680653ade57980d7feec354e906488ccbab0a554eb7208a36e63ef0a1d87",
+          "src/NeuralRendering/Error.h": "711ac372be317db4864b6514d13b801be9824dace873bc5ae43f3fb37cc84643",
+          "src/NeuralRendering/ImagePacket.h": "6934790fe54ce07612237671be4b34098e61885cd9aafef59cb957f875886f6f",
+          "src/NeuralRendering/ImagePacket.cpp": "bdeef54790c1e49421221769d1c38a23751bb5d87f845706f1429b6f103b981f",
+          "src/NeuralRendering/History.h": "52c06ab92041387bcfa337058367b00f13b294c71f047a2edf03776b8608867a",
+          "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+          "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+          "src/NeuralRendering/MotionDiagnosticStats.h": "d18184b2cdb9c406b2d9c0dfa38f4ceae4386166fe79103b85b05d193bdcd081",
+          "tests/NrMotionDiagnosticTests.cpp": "ef08fa3d56e18a04fbe54651ace58df4df229820b291ecade95fb934c7f5b7e2",
+          "src/NeuralRendering/Stage.h": "2e8db10b05445dac0aec482f63ba11b55d9a9e70829b231224573d8620415d13",
+          "src/NeuralRendering/Stage.cpp": "5c087d63e8730693203e5500b4a7eb125acde7c26ff32887ea6c668dd6f78acb",
+          "src/NeuralRendering/TicketOwnership.h": "4d02230eb6cf70c7124daedf0803f00507a6b2666a43df9a3344dc2df0fbbcf4",
+          "src/NeuralRendering/BeforeUpscale.h": "550ad8fe36913579cb49e56bc9acaee0c1d359ee8e88dac4e36dc2e2c0613872",
+          "src/NeuralRendering/BeforeUpscale.cpp": "b00de6055381040574a9e80e5a586e93954acb8a4b6766d82b48a92f0e0842c7",
+          "tests/NrBeforeUpscaleTests.cpp": "2eae27033f34abb29fb7e1498bca8141403791b893a0594caef4ed533cc75b26",
+          "src/Graphics/D3D11D3D12Interop.h": "497d0811ea74cb383adb08f0389eab27eb46041176bc2081f7f37b58e5a72be6",
+          "src/Graphics/D3D11D3D12Interop.cpp": "801a66f94a564a346a1286d4c0a6a5301ff4b29682fa97a642a9de866ee5aa9c",
+          "src/FrameGen/D3D11FrameCopy.h": "768deef78b722d6964216011dc26db870f5b2efa7b04eed61d19749bc3d05176",
+          "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+          "src/FrameGen/NeuralRenderingTuning.h": "0ed1b913e34bdf23c0d52fecfcce5d11af773f04352d50d02faa359bce1401a0",
+          "src/FrameGen/NeuralRenderingReconstruction.h": "0752068ba6d81d6770d45a6bd9c65afe3e6a6745f04806bceae1ad03c08cfb84",
+          "src/NeuralRendering/PreparedBeforeUpscale.h": "e5d9bfcb036596e17e9ea962e5c9feafbe7af467bb65139fb5af0555d01f05dd",
+          "src/NeuralRendering/PreparedBeforeUpscale.cpp": "6d8fd6aec0464ca3a753ec6f590beace5987cfed41ea21ab24e74691482b526b",
+          "src/NeuralRendering/BeforeHost.h": "f2dfa0541faff9a92dd8da9b9e0857a5b0eea48517455067d0d0ad1ad94cb92f",
+          "src/NeuralRendering/BeforeHost.cpp": "37cbeabdf792d5d958911ec7487ab1c0ada546fc2d05254f8b70d428eeb2bc3f",
+          "src/NeuralRendering/BeforeSettings.h": "7b6eb78dd58dc33667a8090e27aa3318f8e95966929a9d10a2a2bc39d06dca7a",
+          "src/NeuralRendering/StartupSettings.h": "756de2d3200cb834139fb1009cbbc1609adca1d296272b811a6122abe84b1880",
+          "src/NeuralRendering/SourcePolicy.h": "793d2c5bb5fa460202a885b545e8bf0f9511a33c5ad3a2cb5618aba7ab4328e4",
+          "tests/NrPreparedBeforeTests.cpp": "b80796f13fda824051494a3e7fe31b8df46d0035fae0262c474c073fa2fc9510",
+          "tests/NrBeforeHostFramesTests.cpp": "90dc8958ce6788d892abcb92d7a7e52bd3096b104efc909b805c63ac23eb4434",
+          "tests/NrBeforeHostTests.cpp": "669c3aa9532aac3aee5c566c29c7a15604f0291b0b50f3cc468b2922168e78a5",
+          "tests/NrSourcePolicyTests.cpp": "72a93ec179181e2b9d8c88d853351d3a14704375c5bbc1578acab972f55955fc",
+          "src/Upscaling/FSRColorConversion.h": "eb86bbc097465d5720d99fa0a9c2c0d250b80ee67bae91f1070699af4305970c",
+          "src/Upscaling/FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+          "src/Upscaling/FSRColorContract.h": "9154489043b834246173e4ec381e7fd6b19b059239ad28ee11673bce70502f58",
+          "src/Upscaling/FSRHistoryPolicy.h": "1fc719e778dcc4553c6114634fbccb68656a80172fa79d24e41073c9d2ae3f25",
+          "src/FrameGen/NvidiaHostNeural.cpp": "84fceb0a98a2e8f1637d5d8287bfde2dedd6704df3d4b144fc496b267756dd8d",
+          "src/FrameGen/NvidiaHost.h": "7410252a0ed7fb15db30c91c10e262083d0aab7fa8d07fffea1a49b2f46e4497",
+          "src/FrameGen/NvidiaHostStartup.cpp": "df15d05e79cd6355d43b6f7c89a2e121f81778b25709b1b8477231702e956024",
+          "src/FrameGen/NvidiaHostLifecycle.cpp": "e90bdafb2a829aa0ad8cca716372a20563779b1733c3308669e0202fd2ac9a12",
+          "src/FrameGen/SourceFsrEvaluation.cpp": "8dee6e72772e2bd595af3a54e352fb7d2e72ae61ffbb43f83ce5173b5d5d05fa",
+          "src/FrameGen/SourceNvidiaEvaluation.cpp": "77ab390ee3ff130d5ba4e08f4ba4114c29ae8442fd01349313d8eff3b25926cb",
+          "src/FrameGen/SourceFrameGeneration.h": "f49c43124428586b136cc974858fefb1aa8948c4f76b2a081238ea22a088b75c",
+          "src/RendererSettings.h": "87628f093e2505a5d16d7ec74c93108c79e348353424e42646bd8df80ece1712",
+          "src/RendererSettingsController.cpp": "b39316afb07988658953217fd2dd8d562c8b466fe02f3e475989cc6e020c688a",
+          "src/RendererBackendPolicy.h": "4b43d4208994eee000141ab9691a6d92f06458bd18f704b4caffac97f5cb3206",
+          "src/OverlayNeuralPanel.cpp": "09227948ebd45e61565a637091b0754f9a0ba5be091f158ef2daed03e5b87544",
+          "src/OverlayNeuralTab.h": "2ffc4d521dfabf4354dc7f718ad6b7568d82fbf5e456a97cc53a3a82852663c6",
+          "src/OverlayFrameView.cpp": "9b6165867294802d855d4c893145bbf6ad505068df64662a60d51d7e326a5034",
+          "src/OverlayUI.cpp": "36f8a50d6b096d8a7f7685b2bff4b60b4bb918b5635c7ec326f78b0a8b8baa9a",
+          "CMakeLists.txt": "5bc4926cf9fe559c34b4abaf832446412250c6027db3c37d471b99284568ad39",
+          "src/HookSafety.h": "60121c34ac39fa4b41529d9589933fe9d1208fb09fc6190d77ae7967fc223c03",
+          "cmake/NeuralRuntime.cmake": "ff65a586f2845681517035d33394d3777babcae1948ae6dc9df1735478beab09",
+          "tests/nr-runtime/CMakeLists.txt": "77f9f9e0618a6a7a0fa8d20f16ed02c587857a118aa93f27473e7e29a7a5c778",
+          "tests/nr-runtime/FsrPerformanceRecorder.h": "a7f42492250d1c94c38d48d0d4ba3ff1cf8117c2fed8febb988aac2ad52d0ab2",
+          "src/Upscaling/FSRRuntime.h": "f87ca1c98d4aa378845842103a2206f0d549d1041e87b0994149f51771fbe424",
+          "src/Upscaling/FSRRuntime.cpp": "3166d106e74f8f5fe6ca19f58e82082d0f6b2b033d60c774c99f5953f98f43d1",
+          "src/Upscaling/FSRParameters.cpp": "346d0fb9f9fbc429c54e1759dc8eaf796972d7bd364107a4485d6057c4bc66a6",
+          "src/Upscaling/FSRUpscaler.h": "ec871a9789d290882fe2e930ef12ce29f1134c8035eb6cf0c6020f18b836b476",
+          "src/Upscaling/FSRUpscaler.cpp": "ecbbdfc2bc4a42e66419c77a98a287e45cd5512b26c8e27614f37ebde4b4131b",
+          "src/Upscaling/FSRHostResources.h": "99596ee29af6c5e7855f5114c74652ab3fa4fe4f1ec6e030da72ce6df5cd09d1",
+          "src/Upscaling/FSRHostResources.cpp": "4ee9ae3d820a3c70fb15adb373b8fc63e96b744e219f5884ee293b98be8d31df",
+          "src/Upscaling/FSRFrameAdapter.h": "82ad618b749af55441d22ca81456546f3e2ba8fb44fe385c35257fea9acf842a",
+          "src/Upscaling/FSRFrameAdapter.cpp": "241e5d6f3a9ea89152e3de2eb1143ce808c6c8502dbc31c62128cc66a6fee707",
+          "src/Upscaling/FSRParameters.h": "474394dbf0f6151a46a5fb4c38588b38c3bceebd40c32713bcc28182aed77973",
+          "src/Upscaling/UpscalerBackend.h": "1a7e5429f349a227b9f96df7d0ba4bb2897a1f18ffd7317ce7bbafb435f12f42",
+          "src/Upscaling/FSRPreparedResources.h": "3c520fae54004165013cbf097796564f4aad72abba912c6e2f0baaec250ffe61",
+          "src/Upscaling/FSRProviderPolicy.h": "9a3e42f7b70d1c31506ae680c2b3e3a805c593f6c10d07691fe85f80a2ef3776",
+          "tools/fsr/runtime-pin.json": "6b7b0476532ee9a449bdb07e3fb0553a0cee9413b3eac1fe6a1855ccd2e1d43a",
+          "external/nvsdk_ngx_params.h": "dd9ef57ac264256ddd63b3c75b2894f519c72a1a9c9c23814fb433aa71478ada",
+          "generated/PerformanceRuntimeCatalog.cpp": "4b7620d1f47a0ece56d8d004a489d93a4e095a0e30c0cc92393626f46bea1381"
+        },
+        "profile": "rtx40",
+        "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "adapterVendor": 4318,
+        "adapterDevice": 9986,
+        "adapterLuidLow": 66328,
+        "adapterLuidHigh": 0,
+        "width": 2560,
+        "height": 1440,
+        "placement": "Before",
+        "encoding": "Gamma22-to-linear-FP16",
+        "passes": 1,
+        "preset": 0,
+        "style": 0,
+        "intensity": 1,
+        "localTone": 0,
+        "localStructure": 1,
+        "inputScale": 1,
+        "resolve": "Auto",
+        "hdr": false,
+        "scene": "two static checker/ramp images; constant depth 0.5 and zero motion",
+        "resetSchedule": "first source; optional correctness-only off/on",
+        "nrEnabled": true,
+        "instrumentation": true,
+        "fsrEnabled": true,
+        "fsrVersion": "3.1.5",
+        "fsrQuality": "NativeAA",
+        "fsrEvaluations": 420,
+        "fsrRuntimeSha256": {
+          "loader": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "upscaler": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+        },
+        "fsrTimingDropped": 0,
+        "fsrTiming11Available": true,
+        "fsrTiming12Available": true,
+        "fsrDistinctOutputHashes": 0,
+        "fsrNonblackPixels": 0,
+        "readbacks": false,
+        "debugLayer": false,
+        "warmup": 120,
+        "requestedSamples": 300,
+        "timerPeriodMs": 1,
+        "rawInit": 1,
+        "rawShutdown": 1,
+        "retired": true,
+        "shimSlotRva": 704640,
+        "shimRestored": true,
+        "recorded": 420,
+        "gpuTiming11Available": true,
+        "gpuTiming12Available": true,
+        "gpuTimingDropped": 0,
+        "alphaPixels": 0,
+        "expectedAlphaPixels": 0,
+        "changedRgbPixels": 0,
+        "distinctOutputHashes": 0,
+        "timingComplete": true,
+        "failure": "",
+        "droppedFrames": 0,
+        "droppedIntervals": 0
+      },
+      "cleanSource": true,
+      "issues": [],
+      "summary": {
+        "wallMilliseconds": {
+          "count": 300,
+          "median": 8.968,
+          "p95": 10.449145,
+          "p99": 10.755295999999998
+        },
+        "blockMilliseconds": {
+          "count": 300,
+          "median": 8.06845,
+          "p95": 9.5151,
+          "p99": 9.936291
+        },
+        "cpuUnionMilliseconds": {
+          "count": 300,
+          "median": 8.967600000000001,
+          "p95": 10.448654999999999,
+          "p99": 10.754895999999999
+        },
+        "waitCalls": {
+          "count": 300,
+          "median": 3.0,
+          "p95": 3.0,
+          "p99": 3.0
+        },
+        "blockingCalls": {
+          "count": 300,
+          "median": 1.0,
+          "p95": 2.0,
+          "p99": 2.0
+        },
+        "flushes": {
+          "count": 300,
+          "median": 4.0,
+          "p95": 4.0,
+          "p99": 4.0
+        },
+        "descriptorCreations": {
+          "count": 300,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "cpuMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0186,
+            "p95": 0.034505,
+            "p99": 0.05790999999999999
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.42855,
+            "p95": 0.6508400000000001,
+            "p99": 0.797942
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0012,
+            "p95": 0.0015050000000000011,
+            "p99": 0.002401999999999998
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0154,
+            "p95": 0.028710000000000003,
+            "p99": 0.05582599999999988
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0194,
+            "p95": 0.26456500000000005,
+            "p99": 0.6524589999999996
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0077,
+            "p95": 0.0102,
+            "p99": 0.05200299999999963
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0075,
+            "p95": 0.011105000000000002,
+            "p99": 0.04864999999999995
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.003,
+            "p95": 0.0047,
+            "p99": 0.0059159999999999855
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.054,
+            "p95": 0.10542000000000007,
+            "p99": 0.17387399999999995
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0518,
+            "p95": 0.056405,
+            "p99": 0.08112199999999989
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0347,
+            "p95": 0.047205,
+            "p99": 0.07933899999999997
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.20140000000000002,
+            "p95": 0.4639000000000001,
+            "p99": 0.8308249999999993
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0022,
+            "p95": 0.0041,
+            "p99": 0.006801999999999998
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0132,
+            "p95": 0.024805,
+            "p99": 0.03917899999999993
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0053,
+            "p95": 0.0102,
+            "p99": 0.013103999999999998
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.16325,
+            "p95": 9.608780000000001,
+            "p99": 10.058269
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.05475,
+            "p95": 0.10242500000000002,
+            "p99": 0.15256399999999995
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.2339,
+            "p95": 0.4001350000000001,
+            "p99": 0.43875699999999995
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0364,
+            "p95": 0.063545,
+            "p99": 0.13515399999999994
+          },
+          "total": {
+            "count": 300,
+            "median": 8.73275,
+            "p95": 10.25283,
+            "p99": 10.562312999999998
+          }
+        },
+        "waitMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.24124500000000001,
+            "p99": 0.6295539999999996
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.0618,
+            "p95": 9.5151,
+            "p99": 9.936291
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "total": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        },
+        "gpuMilliseconds": {
+          "alpha": {
+            "count": 300,
+            "median": 0.04096,
+            "p95": 0.041984,
+            "p99": 0.041984
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.02976,
+            "p95": 0.0323568,
+            "p99": 0.03752927999999998
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.019392,
+            "p95": 0.02048,
+            "p99": 0.02765823999999999
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.02944,
+            "p95": 0.031368,
+            "p99": 0.034435839999999995
+          },
+          "fsrDispatch": {
+            "count": 300,
+            "median": 0.627712,
+            "p95": 0.9479680000000005,
+            "p99": 0.99129344
+          },
+          "fsrPrepare": {
+            "count": 300,
+            "median": 0.10512,
+            "p95": 0.110592,
+            "p99": 0.11234367999999999
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.066464,
+            "p95": 0.0696352,
+            "p99": 0.07155392000000001
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.031424,
+            "p95": 0.0327376,
+            "p99": 0.03334528
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.068608,
+            "p95": 0.07070720000000001,
+            "p99": 0.075776
+          },
+          "vendor": {
+            "count": 300,
+            "median": 7.268864000000001,
+            "p95": 7.8594048,
+            "p99": 8.22073344
+          }
+        }
+      }
+    },
+    {
+      "receipt": "p4-fsr-current-on-1.json",
+      "profile": "rtx40",
+      "nrEnabled": true,
+      "instrumentation": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "receiptSha256": "f5c07c89eaa8c7184fabd56f7da28a410c24c0295941fb9c2852b7711f4a62a1",
+      "identity": {
+        "schema": 1,
+        "scope": "standalone NR Before plus FSR NativeAA enqueue transaction; no FG/Skyrim FPS",
+        "sourceRevision": "7f9afcbc4102db8cf5aace932316ba4425b575f5",
+        "cleanSource": true,
+        "compiledSourceSha256": {
+          "external/Kits/FidelityFX/api/include/ffx_api.h": "e1a9d1b559eaf75f4cb401f1c43a66e2f3dc9621abfeb58b9c6fac56443177fd",
+          "external/Kits/FidelityFX/api/include/ffx_api_types.h": "cc0adc0ffc804dd7cd03c39c15581b575e416383177ffe95060201d52cc0fc49",
+          "external/Kits/FidelityFX/api/include/dx12/ffx_api_dx12.h": "c9afbc3c4c673723e9e5369a666f0ff54560543b5a93537f8ff453bf1c3bf530",
+          "external/Kits/FidelityFX/upscalers/include/ffx_upscale.h": "65be36d5653eb71c10379e0204f7bb7cd6a8aeec96e6f8cffc5f59ffeb1f89bf",
+          "tests/nr-runtime/RuntimeProbe.cpp": "34c957b3b1a361972e255c3406569697fd617af5bc434cb8a6af7f907e9f4b87",
+          "tests/nr-runtime/RuntimeProbeReport.cpp": "b8610f842740aca359e5841206f24e5a6c8ffa221c7e7b0a7378a3332130249d",
+          "tests/nr-runtime/ObservedQueue.h": "202a1239cf124a466e49f73f25eeb5d570bc82c2b3d12cc64f4ee43c3fa90e5c",
+          "tests/NrStageTests.cpp": "38b02d120eb4419b8c45dfe07960395ac40b6f94ca71aa0dc61581d2764c78ca",
+          "tests/NrFrameSlotTests.cpp": "05687942aeccb3e15f12a908bf0a2fad6f4e176448f71b2f8b44c109f90f1e05",
+          "tests/NrDeferredDeliveryTests.cpp": "3ff49287c69c53f38a8d3a140b0f1f53160c792a56659d2e1bbc131c1bdb9625",
+          "tests/nr-runtime/PerformanceProbe.cpp": "6883831b2f5b64ba66b6ed4e463a5d23461ad4207ed16493bb644b348cdfad1c",
+          "src/NeuralRendering/PerformanceMetrics.h": "697e442e6e0ebc953166f475872e8c803f5717349281a3e77ee9a1a46f9dd53f",
+          "src/NeuralRendering/PerformanceMetrics.cpp": "e9fd673b38da8af9576c2e5420d7b9d8276101584148a2883559f374c2a2bab7",
+          "src/NeuralRendering/PerformanceQueries.h": "e58efee30bc0d156368ed6dd820033e799c1c03641427296ed4d101cb9504ea2",
+          "src/NeuralRendering/PerformanceQueries.cpp": "959585cc1bdd0d91af3f45cd38e6b10eb0738ec7f0e4d46ece792156ee462662",
+          "tests/nr-runtime/RuntimeProbeReport.h": "e045c5f5b5d1bfaa718530297bc14e2367179c2f351ce0c13d372ebf0ce7cfa2",
+          "tests/nr-runtime/GpuProbeGuard.h": "d9e50f5b34ae3e0b6dbfc213a52932090ae140b07960dafba1ca3eb8cbe820fa",
+          "tests/nr-runtime/run_reshade_before.py": "11b2ad0854aa0e9d24ba96d66e39ff890f7bc2c40ae1ba122f1098fc2a073e9b",
+          "tests/NrImagePacketTests.cpp": "8c892518d03a0cd1c78bdd22617dd5734773770e7cece3e43452e8e344de128d",
+          "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+          "src/NeuralRendering/RuntimeCatalog.h": "cd6d98ea585e723a58750c7f90b81c421afa32ac2069b1ef1bf3672bec8d67c9",
+          "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+          "src/NeuralRendering/RuntimeFileLease.h": "375c3f501a153bb37d48261665da5dcfe04f447b4fc4e5a7dec54c96bbf2b071",
+          "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+          "src/NeuralRendering/RuntimeOwner.h": "66570c1ddb97a6eb03ea04ab068fc2145bc4732d330da9c3cf3dda9cfca7e072",
+          "src/NeuralRendering/CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+          "src/NeuralRendering/CallerIdentityShim.h": "ffeb680653ade57980d7feec354e906488ccbab0a554eb7208a36e63ef0a1d87",
+          "src/NeuralRendering/Error.h": "711ac372be317db4864b6514d13b801be9824dace873bc5ae43f3fb37cc84643",
+          "src/NeuralRendering/ImagePacket.h": "6934790fe54ce07612237671be4b34098e61885cd9aafef59cb957f875886f6f",
+          "src/NeuralRendering/ImagePacket.cpp": "bdeef54790c1e49421221769d1c38a23751bb5d87f845706f1429b6f103b981f",
+          "src/NeuralRendering/History.h": "52c06ab92041387bcfa337058367b00f13b294c71f047a2edf03776b8608867a",
+          "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+          "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+          "src/NeuralRendering/MotionDiagnosticStats.h": "d18184b2cdb9c406b2d9c0dfa38f4ceae4386166fe79103b85b05d193bdcd081",
+          "tests/NrMotionDiagnosticTests.cpp": "ef08fa3d56e18a04fbe54651ace58df4df229820b291ecade95fb934c7f5b7e2",
+          "src/NeuralRendering/Stage.h": "82046f06a1b358783db27c76f67f8f8fed6eb53d62a3f1862e16c5603f3953d5",
+          "src/NeuralRendering/Stage.cpp": "1dbbb68a9366b3e40ec74e7b1511cd42212967388cdc6a266f6d81f4f68e7400",
+          "src/NeuralRendering/TicketOwnership.h": "4d02230eb6cf70c7124daedf0803f00507a6b2666a43df9a3344dc2df0fbbcf4",
+          "src/NeuralRendering/RetirementEvent.h": "aae40d625f6c204ca2657b61634edb25a45e320742b15966dfd05f505b26f7a9",
+          "src/NeuralRendering/BeforeUpscale.h": "550ad8fe36913579cb49e56bc9acaee0c1d359ee8e88dac4e36dc2e2c0613872",
+          "src/NeuralRendering/BeforeUpscale.cpp": "300497040e948ce11a1217390442bac86c7d45a7f50c71459325b3b5e513af75",
+          "tests/NrBeforeUpscaleTests.cpp": "2eae27033f34abb29fb7e1498bca8141403791b893a0594caef4ed533cc75b26",
+          "src/Graphics/D3D11D3D12Interop.h": "497d0811ea74cb383adb08f0389eab27eb46041176bc2081f7f37b58e5a72be6",
+          "src/Graphics/D3D11D3D12Interop.cpp": "801a66f94a564a346a1286d4c0a6a5301ff4b29682fa97a642a9de866ee5aa9c",
+          "src/FrameGen/D3D11FrameCopy.h": "768deef78b722d6964216011dc26db870f5b2efa7b04eed61d19749bc3d05176",
+          "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+          "src/FrameGen/NeuralRenderingTuning.h": "0ed1b913e34bdf23c0d52fecfcce5d11af773f04352d50d02faa359bce1401a0",
+          "src/FrameGen/NeuralRenderingReconstruction.h": "0752068ba6d81d6770d45a6bd9c65afe3e6a6745f04806bceae1ad03c08cfb84",
+          "src/NeuralRendering/PreparedBeforeUpscale.h": "2779badde41910ba9f20ed851610b7f18a04474b39abec776d4f9f2d3290f29f",
+          "src/NeuralRendering/PreparedBeforeUpscale.cpp": "5d344f859dd3bc531100272023528aa4ac577b830b12613b6aaf761aaa2f3a85",
+          "src/NeuralRendering/PreparedFsrInput.h": "02c00a65bbaafe49dd35ccd89efac2ba88811c45a9d4a5ab82ab1383f5dfe0b4",
+          "tests/NrPreparedFsrTests.cpp": "b494c3343c85ef87a7c448fe6f569ebc48fd5e690f28a3b7cb99ba6299b8caf1",
+          "src/NeuralRendering/BeforeHost.h": "6baa318ddf6af294d9b8ed7328ecf04913f71d3f5d5ab7b8d7ea0e1f0706df13",
+          "src/NeuralRendering/BeforeHost.cpp": "c6b8d6cbb724889b191b984f69e2d83e95fb1a396c16ac6019c8aea9c938b2c2",
+          "src/NeuralRendering/BeforeSettings.h": "7b6eb78dd58dc33667a8090e27aa3318f8e95966929a9d10a2a2bc39d06dca7a",
+          "src/NeuralRendering/StartupSettings.h": "756de2d3200cb834139fb1009cbbc1609adca1d296272b811a6122abe84b1880",
+          "src/NeuralRendering/SourcePolicy.h": "793d2c5bb5fa460202a885b545e8bf0f9511a33c5ad3a2cb5618aba7ab4328e4",
+          "tests/NrPreparedBeforeTests.cpp": "b80796f13fda824051494a3e7fe31b8df46d0035fae0262c474c073fa2fc9510",
+          "tests/NrBeforeHostFramesTests.cpp": "90dc8958ce6788d892abcb92d7a7e52bd3096b104efc909b805c63ac23eb4434",
+          "tests/NrBeforeHostTests.cpp": "669c3aa9532aac3aee5c566c29c7a15604f0291b0b50f3cc468b2922168e78a5",
+          "tests/NrSourcePolicyTests.cpp": "72a93ec179181e2b9d8c88d853351d3a14704375c5bbc1578acab972f55955fc",
+          "src/Upscaling/FSRColorConversion.h": "eb86bbc097465d5720d99fa0a9c2c0d250b80ee67bae91f1070699af4305970c",
+          "src/Upscaling/FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+          "src/Upscaling/FSRColorContract.h": "9154489043b834246173e4ec381e7fd6b19b059239ad28ee11673bce70502f58",
+          "src/Upscaling/FSRHistoryPolicy.h": "1fc719e778dcc4553c6114634fbccb68656a80172fa79d24e41073c9d2ae3f25",
+          "src/FrameGen/NvidiaHostNeural.cpp": "5ed96fb9a0934e6a786ada2b3e9693655d2eee933792b6d19a095a0da2dc29cf",
+          "src/FrameGen/NvidiaHost.h": "5d476ef5de37345592fc7b41d97e4d7f3364ea9334e65836b7445be7a9f3534f",
+          "src/FrameGen/NvidiaHostStartup.cpp": "df15d05e79cd6355d43b6f7c89a2e121f81778b25709b1b8477231702e956024",
+          "src/FrameGen/NvidiaHostLifecycle.cpp": "e90bdafb2a829aa0ad8cca716372a20563779b1733c3308669e0202fd2ac9a12",
+          "src/FrameGen/SourceFsrEvaluation.cpp": "b76810f3365a88e0cd9c3666cab7449b90d0ec7fa7078b9056fcb4664d59465e",
+          "src/FrameGen/SourceNvidiaEvaluation.cpp": "77ab390ee3ff130d5ba4e08f4ba4114c29ae8442fd01349313d8eff3b25926cb",
+          "src/FrameGen/SourceFrameGeneration.h": "f49c43124428586b136cc974858fefb1aa8948c4f76b2a081238ea22a088b75c",
+          "src/RendererSettings.h": "87628f093e2505a5d16d7ec74c93108c79e348353424e42646bd8df80ece1712",
+          "src/RendererSettingsController.cpp": "b39316afb07988658953217fd2dd8d562c8b466fe02f3e475989cc6e020c688a",
+          "src/RendererBackendPolicy.h": "4b43d4208994eee000141ab9691a6d92f06458bd18f704b4caffac97f5cb3206",
+          "src/OverlayNeuralPanel.cpp": "09227948ebd45e61565a637091b0754f9a0ba5be091f158ef2daed03e5b87544",
+          "src/OverlayNeuralTab.h": "2ffc4d521dfabf4354dc7f718ad6b7568d82fbf5e456a97cc53a3a82852663c6",
+          "src/OverlayFrameView.cpp": "9b6165867294802d855d4c893145bbf6ad505068df64662a60d51d7e326a5034",
+          "src/OverlayUI.cpp": "36f8a50d6b096d8a7f7685b2bff4b60b4bb918b5635c7ec326f78b0a8b8baa9a",
+          "CMakeLists.txt": "5bc4926cf9fe559c34b4abaf832446412250c6027db3c37d471b99284568ad39",
+          "src/HookSafety.h": "60121c34ac39fa4b41529d9589933fe9d1208fb09fc6190d77ae7967fc223c03",
+          "cmake/NeuralRuntime.cmake": "ff65a586f2845681517035d33394d3777babcae1948ae6dc9df1735478beab09",
+          "tests/nr-runtime/CMakeLists.txt": "cdd49c3a819e177dda1a648e062326900f7da16fe0561e17a9599b41babbc1fc",
+          "tests/nr-runtime/FsrPerformanceRecorder.h": "a7f42492250d1c94c38d48d0d4ba3ff1cf8117c2fed8febb988aac2ad52d0ab2",
+          "src/Upscaling/FSRRuntime.h": "f87ca1c98d4aa378845842103a2206f0d549d1041e87b0994149f51771fbe424",
+          "src/Upscaling/FSRRuntime.cpp": "3166d106e74f8f5fe6ca19f58e82082d0f6b2b033d60c774c99f5953f98f43d1",
+          "src/Upscaling/FSRParameters.cpp": "346d0fb9f9fbc429c54e1759dc8eaf796972d7bd364107a4485d6057c4bc66a6",
+          "src/Upscaling/FSRUpscaler.h": "ec871a9789d290882fe2e930ef12ce29f1134c8035eb6cf0c6020f18b836b476",
+          "src/Upscaling/FSRUpscaler.cpp": "ecbbdfc2bc4a42e66419c77a98a287e45cd5512b26c8e27614f37ebde4b4131b",
+          "src/Upscaling/FSRHostResources.h": "99596ee29af6c5e7855f5114c74652ab3fa4fe4f1ec6e030da72ce6df5cd09d1",
+          "src/Upscaling/FSRHostResources.cpp": "4ee9ae3d820a3c70fb15adb373b8fc63e96b744e219f5884ee293b98be8d31df",
+          "src/Upscaling/FSRFrameAdapter.h": "9fbf0a6807a7c0bca067db2b6c0daa73b55e8f65e3b344de92a2f535b898ba20",
+          "src/Upscaling/FSRFrameAdapter.cpp": "88101ffbee34d1bde437ad5e8f39dcbcf7c4fc8bdc6bf81d4219598fb6029c27",
+          "src/Upscaling/FSRParameters.h": "474394dbf0f6151a46a5fb4c38588b38c3bceebd40c32713bcc28182aed77973",
+          "src/Upscaling/UpscalerBackend.h": "0fd5ab23f5c36685533867931d4eaf6874d55ecef8a1f3e999d5bc9158268a5b",
+          "src/Upscaling/FSRPreparedResources.h": "3c520fae54004165013cbf097796564f4aad72abba912c6e2f0baaec250ffe61",
+          "src/Upscaling/FSRProviderPolicy.h": "9a3e42f7b70d1c31506ae680c2b3e3a805c593f6c10d07691fe85f80a2ef3776",
+          "tools/fsr/runtime-pin.json": "6b7b0476532ee9a449bdb07e3fb0553a0cee9413b3eac1fe6a1855ccd2e1d43a",
+          "external/nvsdk_ngx_params.h": "dd9ef57ac264256ddd63b3c75b2894f519c72a1a9c9c23814fb433aa71478ada",
+          "generated/PerformanceRuntimeCatalog.cpp": "4b7620d1f47a0ece56d8d004a489d93a4e095a0e30c0cc92393626f46bea1381"
+        },
+        "profile": "rtx40",
+        "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "adapterVendor": 4318,
+        "adapterDevice": 9986,
+        "adapterLuidLow": 66328,
+        "adapterLuidHigh": 0,
+        "width": 2560,
+        "height": 1440,
+        "placement": "Before",
+        "encoding": "Gamma22-to-linear-FP16",
+        "passes": 1,
+        "preset": 0,
+        "style": 0,
+        "intensity": 1,
+        "localTone": 0,
+        "localStructure": 1,
+        "inputScale": 1,
+        "resolve": "Auto",
+        "hdr": false,
+        "scene": "two static checker/ramp images; constant depth 0.5 and zero motion",
+        "resetSchedule": "first source; optional correctness-only off/on",
+        "nrEnabled": true,
+        "instrumentation": true,
+        "fsrEnabled": true,
+        "fsrVersion": "3.1.5",
+        "fsrQuality": "NativeAA",
+        "fsrEvaluations": 420,
+        "preparedFsrHandoff": true,
+        "preparedFsrEvaluations": 420,
+        "fsrRuntimeSha256": {
+          "loader": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "upscaler": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+        },
+        "fsrTimingDropped": 0,
+        "fsrTiming11Available": true,
+        "fsrTiming12Available": true,
+        "fsrDistinctOutputHashes": 0,
+        "fsrNonblackPixels": 0,
+        "readbacks": false,
+        "debugLayer": false,
+        "warmup": 120,
+        "requestedSamples": 300,
+        "timerPeriodMs": 1,
+        "rawInit": 1,
+        "rawShutdown": 1,
+        "retired": true,
+        "shimSlotRva": 704640,
+        "shimRestored": true,
+        "recorded": 420,
+        "gpuTiming11Available": true,
+        "gpuTiming12Available": true,
+        "gpuTimingDropped": 0,
+        "alphaPixels": 0,
+        "expectedAlphaPixels": 0,
+        "changedRgbPixels": 0,
+        "distinctOutputHashes": 0,
+        "timingComplete": true,
+        "failure": "",
+        "droppedFrames": 0,
+        "droppedIntervals": 0
+      },
+      "cleanSource": true,
+      "issues": [],
+      "summary": {
+        "wallMilliseconds": {
+          "count": 300,
+          "median": 9.1238,
+          "p95": 9.647955,
+          "p99": 9.954637
+        },
+        "blockMilliseconds": {
+          "count": 300,
+          "median": 8.312550000000002,
+          "p95": 8.819305,
+          "p99": 9.152771
+        },
+        "cpuUnionMilliseconds": {
+          "count": 300,
+          "median": 9.123349999999999,
+          "p95": 9.647440000000001,
+          "p99": 9.954137000000001
+        },
+        "waitCalls": {
+          "count": 300,
+          "median": 3.0,
+          "p95": 3.0,
+          "p99": 3.0
+        },
+        "blockingCalls": {
+          "count": 300,
+          "median": 2.0,
+          "p95": 2.0,
+          "p99": 2.0
+        },
+        "flushes": {
+          "count": 300,
+          "median": 4.0,
+          "p95": 4.0,
+          "p99": 4.0
+        },
+        "descriptorCreations": {
+          "count": 300,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "cpuMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.01805,
+            "p95": 0.033815,
+            "p99": 0.04689599999999982
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.42635,
+            "p95": 0.6913900000000001,
+            "p99": 0.7908589999999999
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0011,
+            "p95": 0.001905000000000001,
+            "p99": 0.0021049999999999953
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.27264999999999995,
+            "p95": 0.49274500000000004,
+            "p99": 0.681815
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0076,
+            "p95": 0.011405000000000002,
+            "p99": 0.03158499999999929
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0408,
+            "p95": 0.08406500000000001,
+            "p99": 0.12825699999999995
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0514,
+            "p95": 0.07863500000000001,
+            "p99": 0.09971
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0376,
+            "p95": 0.05383000000000001,
+            "p99": 0.072409
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.4406,
+            "p95": 0.6904250000000002,
+            "p99": 0.8452219999999998
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0021,
+            "p95": 0.0038,
+            "p99": 0.009403999999999997
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0128,
+            "p95": 0.024015000000000005,
+            "p99": 0.04302199999999998
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0053,
+            "p95": 0.010315000000000003,
+            "p99": 0.014601999999999999
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.15155,
+            "p95": 8.653005,
+            "p99": 8.958581999999998
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0547,
+            "p95": 0.10861,
+            "p99": 0.13880399999999982
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.23315,
+            "p95": 0.40370500000000004,
+            "p99": 0.46741699999999997
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0352,
+            "p95": 0.06192,
+            "p99": 0.07830899999999999
+          },
+          "total": {
+            "count": 300,
+            "median": 8.6711,
+            "p95": 9.208995,
+            "p99": 9.530506999999998
+          }
+        },
+        "waitMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.24880000000000002,
+            "p95": 0.4653750000000001,
+            "p99": 0.658034
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.056999999999999,
+            "p95": 8.57593,
+            "p99": 8.896276
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "total": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        },
+        "gpuMilliseconds": {
+          "alpha": {
+            "count": 300,
+            "median": 0.04096,
+            "p95": 0.04096,
+            "p99": 0.041984
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.029968,
+            "p95": 0.032521600000000005,
+            "p99": 0.03965407999999997
+          },
+          "encode": {
+            "count": 0,
+            "median": null,
+            "p95": null,
+            "p99": null
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.029696,
+            "p95": 0.0314592,
+            "p99": 0.03341184
+          },
+          "fsrDispatch": {
+            "count": 300,
+            "median": 0.643072,
+            "p95": 0.8592384000000001,
+            "p99": 0.9554944
+          },
+          "fsrPrepare": {
+            "count": 300,
+            "median": 0.086016,
+            "p95": 0.08976,
+            "p99": 0.09216864
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.065376,
+            "p95": 0.0668512,
+            "p99": 0.06752704
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.033792,
+            "p95": 0.03584,
+            "p99": 0.036864
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.073728,
+            "p95": 0.078848,
+            "p99": 0.080896
+          },
+          "vendor": {
+            "count": 300,
+            "median": 7.3973759999999995,
+            "p95": 7.903232,
+            "p99": 8.20470784
+          }
+        }
+      }
+    },
+    {
+      "receipt": "p4-fsr-current-on-2.json",
+      "profile": "rtx40",
+      "nrEnabled": true,
+      "instrumentation": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "receiptSha256": "618f9514a4b967b8fa6631399b97f0ece1f249f480a38e656bb40b62156a3d56",
+      "identity": {
+        "schema": 1,
+        "scope": "standalone NR Before plus FSR NativeAA enqueue transaction; no FG/Skyrim FPS",
+        "sourceRevision": "7f9afcbc4102db8cf5aace932316ba4425b575f5",
+        "cleanSource": true,
+        "compiledSourceSha256": {
+          "external/Kits/FidelityFX/api/include/ffx_api.h": "e1a9d1b559eaf75f4cb401f1c43a66e2f3dc9621abfeb58b9c6fac56443177fd",
+          "external/Kits/FidelityFX/api/include/ffx_api_types.h": "cc0adc0ffc804dd7cd03c39c15581b575e416383177ffe95060201d52cc0fc49",
+          "external/Kits/FidelityFX/api/include/dx12/ffx_api_dx12.h": "c9afbc3c4c673723e9e5369a666f0ff54560543b5a93537f8ff453bf1c3bf530",
+          "external/Kits/FidelityFX/upscalers/include/ffx_upscale.h": "65be36d5653eb71c10379e0204f7bb7cd6a8aeec96e6f8cffc5f59ffeb1f89bf",
+          "tests/nr-runtime/RuntimeProbe.cpp": "34c957b3b1a361972e255c3406569697fd617af5bc434cb8a6af7f907e9f4b87",
+          "tests/nr-runtime/RuntimeProbeReport.cpp": "b8610f842740aca359e5841206f24e5a6c8ffa221c7e7b0a7378a3332130249d",
+          "tests/nr-runtime/ObservedQueue.h": "202a1239cf124a466e49f73f25eeb5d570bc82c2b3d12cc64f4ee43c3fa90e5c",
+          "tests/NrStageTests.cpp": "38b02d120eb4419b8c45dfe07960395ac40b6f94ca71aa0dc61581d2764c78ca",
+          "tests/NrFrameSlotTests.cpp": "05687942aeccb3e15f12a908bf0a2fad6f4e176448f71b2f8b44c109f90f1e05",
+          "tests/NrDeferredDeliveryTests.cpp": "3ff49287c69c53f38a8d3a140b0f1f53160c792a56659d2e1bbc131c1bdb9625",
+          "tests/nr-runtime/PerformanceProbe.cpp": "6883831b2f5b64ba66b6ed4e463a5d23461ad4207ed16493bb644b348cdfad1c",
+          "src/NeuralRendering/PerformanceMetrics.h": "697e442e6e0ebc953166f475872e8c803f5717349281a3e77ee9a1a46f9dd53f",
+          "src/NeuralRendering/PerformanceMetrics.cpp": "e9fd673b38da8af9576c2e5420d7b9d8276101584148a2883559f374c2a2bab7",
+          "src/NeuralRendering/PerformanceQueries.h": "e58efee30bc0d156368ed6dd820033e799c1c03641427296ed4d101cb9504ea2",
+          "src/NeuralRendering/PerformanceQueries.cpp": "959585cc1bdd0d91af3f45cd38e6b10eb0738ec7f0e4d46ece792156ee462662",
+          "tests/nr-runtime/RuntimeProbeReport.h": "e045c5f5b5d1bfaa718530297bc14e2367179c2f351ce0c13d372ebf0ce7cfa2",
+          "tests/nr-runtime/GpuProbeGuard.h": "d9e50f5b34ae3e0b6dbfc213a52932090ae140b07960dafba1ca3eb8cbe820fa",
+          "tests/nr-runtime/run_reshade_before.py": "11b2ad0854aa0e9d24ba96d66e39ff890f7bc2c40ae1ba122f1098fc2a073e9b",
+          "tests/NrImagePacketTests.cpp": "8c892518d03a0cd1c78bdd22617dd5734773770e7cece3e43452e8e344de128d",
+          "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+          "src/NeuralRendering/RuntimeCatalog.h": "cd6d98ea585e723a58750c7f90b81c421afa32ac2069b1ef1bf3672bec8d67c9",
+          "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+          "src/NeuralRendering/RuntimeFileLease.h": "375c3f501a153bb37d48261665da5dcfe04f447b4fc4e5a7dec54c96bbf2b071",
+          "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+          "src/NeuralRendering/RuntimeOwner.h": "66570c1ddb97a6eb03ea04ab068fc2145bc4732d330da9c3cf3dda9cfca7e072",
+          "src/NeuralRendering/CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+          "src/NeuralRendering/CallerIdentityShim.h": "ffeb680653ade57980d7feec354e906488ccbab0a554eb7208a36e63ef0a1d87",
+          "src/NeuralRendering/Error.h": "711ac372be317db4864b6514d13b801be9824dace873bc5ae43f3fb37cc84643",
+          "src/NeuralRendering/ImagePacket.h": "6934790fe54ce07612237671be4b34098e61885cd9aafef59cb957f875886f6f",
+          "src/NeuralRendering/ImagePacket.cpp": "bdeef54790c1e49421221769d1c38a23751bb5d87f845706f1429b6f103b981f",
+          "src/NeuralRendering/History.h": "52c06ab92041387bcfa337058367b00f13b294c71f047a2edf03776b8608867a",
+          "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+          "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+          "src/NeuralRendering/MotionDiagnosticStats.h": "d18184b2cdb9c406b2d9c0dfa38f4ceae4386166fe79103b85b05d193bdcd081",
+          "tests/NrMotionDiagnosticTests.cpp": "ef08fa3d56e18a04fbe54651ace58df4df229820b291ecade95fb934c7f5b7e2",
+          "src/NeuralRendering/Stage.h": "82046f06a1b358783db27c76f67f8f8fed6eb53d62a3f1862e16c5603f3953d5",
+          "src/NeuralRendering/Stage.cpp": "1dbbb68a9366b3e40ec74e7b1511cd42212967388cdc6a266f6d81f4f68e7400",
+          "src/NeuralRendering/TicketOwnership.h": "4d02230eb6cf70c7124daedf0803f00507a6b2666a43df9a3344dc2df0fbbcf4",
+          "src/NeuralRendering/RetirementEvent.h": "aae40d625f6c204ca2657b61634edb25a45e320742b15966dfd05f505b26f7a9",
+          "src/NeuralRendering/BeforeUpscale.h": "550ad8fe36913579cb49e56bc9acaee0c1d359ee8e88dac4e36dc2e2c0613872",
+          "src/NeuralRendering/BeforeUpscale.cpp": "300497040e948ce11a1217390442bac86c7d45a7f50c71459325b3b5e513af75",
+          "tests/NrBeforeUpscaleTests.cpp": "2eae27033f34abb29fb7e1498bca8141403791b893a0594caef4ed533cc75b26",
+          "src/Graphics/D3D11D3D12Interop.h": "497d0811ea74cb383adb08f0389eab27eb46041176bc2081f7f37b58e5a72be6",
+          "src/Graphics/D3D11D3D12Interop.cpp": "801a66f94a564a346a1286d4c0a6a5301ff4b29682fa97a642a9de866ee5aa9c",
+          "src/FrameGen/D3D11FrameCopy.h": "768deef78b722d6964216011dc26db870f5b2efa7b04eed61d19749bc3d05176",
+          "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+          "src/FrameGen/NeuralRenderingTuning.h": "0ed1b913e34bdf23c0d52fecfcce5d11af773f04352d50d02faa359bce1401a0",
+          "src/FrameGen/NeuralRenderingReconstruction.h": "0752068ba6d81d6770d45a6bd9c65afe3e6a6745f04806bceae1ad03c08cfb84",
+          "src/NeuralRendering/PreparedBeforeUpscale.h": "2779badde41910ba9f20ed851610b7f18a04474b39abec776d4f9f2d3290f29f",
+          "src/NeuralRendering/PreparedBeforeUpscale.cpp": "5d344f859dd3bc531100272023528aa4ac577b830b12613b6aaf761aaa2f3a85",
+          "src/NeuralRendering/PreparedFsrInput.h": "02c00a65bbaafe49dd35ccd89efac2ba88811c45a9d4a5ab82ab1383f5dfe0b4",
+          "tests/NrPreparedFsrTests.cpp": "b494c3343c85ef87a7c448fe6f569ebc48fd5e690f28a3b7cb99ba6299b8caf1",
+          "src/NeuralRendering/BeforeHost.h": "6baa318ddf6af294d9b8ed7328ecf04913f71d3f5d5ab7b8d7ea0e1f0706df13",
+          "src/NeuralRendering/BeforeHost.cpp": "c6b8d6cbb724889b191b984f69e2d83e95fb1a396c16ac6019c8aea9c938b2c2",
+          "src/NeuralRendering/BeforeSettings.h": "7b6eb78dd58dc33667a8090e27aa3318f8e95966929a9d10a2a2bc39d06dca7a",
+          "src/NeuralRendering/StartupSettings.h": "756de2d3200cb834139fb1009cbbc1609adca1d296272b811a6122abe84b1880",
+          "src/NeuralRendering/SourcePolicy.h": "793d2c5bb5fa460202a885b545e8bf0f9511a33c5ad3a2cb5618aba7ab4328e4",
+          "tests/NrPreparedBeforeTests.cpp": "b80796f13fda824051494a3e7fe31b8df46d0035fae0262c474c073fa2fc9510",
+          "tests/NrBeforeHostFramesTests.cpp": "90dc8958ce6788d892abcb92d7a7e52bd3096b104efc909b805c63ac23eb4434",
+          "tests/NrBeforeHostTests.cpp": "669c3aa9532aac3aee5c566c29c7a15604f0291b0b50f3cc468b2922168e78a5",
+          "tests/NrSourcePolicyTests.cpp": "72a93ec179181e2b9d8c88d853351d3a14704375c5bbc1578acab972f55955fc",
+          "src/Upscaling/FSRColorConversion.h": "eb86bbc097465d5720d99fa0a9c2c0d250b80ee67bae91f1070699af4305970c",
+          "src/Upscaling/FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+          "src/Upscaling/FSRColorContract.h": "9154489043b834246173e4ec381e7fd6b19b059239ad28ee11673bce70502f58",
+          "src/Upscaling/FSRHistoryPolicy.h": "1fc719e778dcc4553c6114634fbccb68656a80172fa79d24e41073c9d2ae3f25",
+          "src/FrameGen/NvidiaHostNeural.cpp": "5ed96fb9a0934e6a786ada2b3e9693655d2eee933792b6d19a095a0da2dc29cf",
+          "src/FrameGen/NvidiaHost.h": "5d476ef5de37345592fc7b41d97e4d7f3364ea9334e65836b7445be7a9f3534f",
+          "src/FrameGen/NvidiaHostStartup.cpp": "df15d05e79cd6355d43b6f7c89a2e121f81778b25709b1b8477231702e956024",
+          "src/FrameGen/NvidiaHostLifecycle.cpp": "e90bdafb2a829aa0ad8cca716372a20563779b1733c3308669e0202fd2ac9a12",
+          "src/FrameGen/SourceFsrEvaluation.cpp": "b76810f3365a88e0cd9c3666cab7449b90d0ec7fa7078b9056fcb4664d59465e",
+          "src/FrameGen/SourceNvidiaEvaluation.cpp": "77ab390ee3ff130d5ba4e08f4ba4114c29ae8442fd01349313d8eff3b25926cb",
+          "src/FrameGen/SourceFrameGeneration.h": "f49c43124428586b136cc974858fefb1aa8948c4f76b2a081238ea22a088b75c",
+          "src/RendererSettings.h": "87628f093e2505a5d16d7ec74c93108c79e348353424e42646bd8df80ece1712",
+          "src/RendererSettingsController.cpp": "b39316afb07988658953217fd2dd8d562c8b466fe02f3e475989cc6e020c688a",
+          "src/RendererBackendPolicy.h": "4b43d4208994eee000141ab9691a6d92f06458bd18f704b4caffac97f5cb3206",
+          "src/OverlayNeuralPanel.cpp": "09227948ebd45e61565a637091b0754f9a0ba5be091f158ef2daed03e5b87544",
+          "src/OverlayNeuralTab.h": "2ffc4d521dfabf4354dc7f718ad6b7568d82fbf5e456a97cc53a3a82852663c6",
+          "src/OverlayFrameView.cpp": "9b6165867294802d855d4c893145bbf6ad505068df64662a60d51d7e326a5034",
+          "src/OverlayUI.cpp": "36f8a50d6b096d8a7f7685b2bff4b60b4bb918b5635c7ec326f78b0a8b8baa9a",
+          "CMakeLists.txt": "5bc4926cf9fe559c34b4abaf832446412250c6027db3c37d471b99284568ad39",
+          "src/HookSafety.h": "60121c34ac39fa4b41529d9589933fe9d1208fb09fc6190d77ae7967fc223c03",
+          "cmake/NeuralRuntime.cmake": "ff65a586f2845681517035d33394d3777babcae1948ae6dc9df1735478beab09",
+          "tests/nr-runtime/CMakeLists.txt": "cdd49c3a819e177dda1a648e062326900f7da16fe0561e17a9599b41babbc1fc",
+          "tests/nr-runtime/FsrPerformanceRecorder.h": "a7f42492250d1c94c38d48d0d4ba3ff1cf8117c2fed8febb988aac2ad52d0ab2",
+          "src/Upscaling/FSRRuntime.h": "f87ca1c98d4aa378845842103a2206f0d549d1041e87b0994149f51771fbe424",
+          "src/Upscaling/FSRRuntime.cpp": "3166d106e74f8f5fe6ca19f58e82082d0f6b2b033d60c774c99f5953f98f43d1",
+          "src/Upscaling/FSRParameters.cpp": "346d0fb9f9fbc429c54e1759dc8eaf796972d7bd364107a4485d6057c4bc66a6",
+          "src/Upscaling/FSRUpscaler.h": "ec871a9789d290882fe2e930ef12ce29f1134c8035eb6cf0c6020f18b836b476",
+          "src/Upscaling/FSRUpscaler.cpp": "ecbbdfc2bc4a42e66419c77a98a287e45cd5512b26c8e27614f37ebde4b4131b",
+          "src/Upscaling/FSRHostResources.h": "99596ee29af6c5e7855f5114c74652ab3fa4fe4f1ec6e030da72ce6df5cd09d1",
+          "src/Upscaling/FSRHostResources.cpp": "4ee9ae3d820a3c70fb15adb373b8fc63e96b744e219f5884ee293b98be8d31df",
+          "src/Upscaling/FSRFrameAdapter.h": "9fbf0a6807a7c0bca067db2b6c0daa73b55e8f65e3b344de92a2f535b898ba20",
+          "src/Upscaling/FSRFrameAdapter.cpp": "88101ffbee34d1bde437ad5e8f39dcbcf7c4fc8bdc6bf81d4219598fb6029c27",
+          "src/Upscaling/FSRParameters.h": "474394dbf0f6151a46a5fb4c38588b38c3bceebd40c32713bcc28182aed77973",
+          "src/Upscaling/UpscalerBackend.h": "0fd5ab23f5c36685533867931d4eaf6874d55ecef8a1f3e999d5bc9158268a5b",
+          "src/Upscaling/FSRPreparedResources.h": "3c520fae54004165013cbf097796564f4aad72abba912c6e2f0baaec250ffe61",
+          "src/Upscaling/FSRProviderPolicy.h": "9a3e42f7b70d1c31506ae680c2b3e3a805c593f6c10d07691fe85f80a2ef3776",
+          "tools/fsr/runtime-pin.json": "6b7b0476532ee9a449bdb07e3fb0553a0cee9413b3eac1fe6a1855ccd2e1d43a",
+          "external/nvsdk_ngx_params.h": "dd9ef57ac264256ddd63b3c75b2894f519c72a1a9c9c23814fb433aa71478ada",
+          "generated/PerformanceRuntimeCatalog.cpp": "4b7620d1f47a0ece56d8d004a489d93a4e095a0e30c0cc92393626f46bea1381"
+        },
+        "profile": "rtx40",
+        "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "adapterVendor": 4318,
+        "adapterDevice": 9986,
+        "adapterLuidLow": 66328,
+        "adapterLuidHigh": 0,
+        "width": 2560,
+        "height": 1440,
+        "placement": "Before",
+        "encoding": "Gamma22-to-linear-FP16",
+        "passes": 1,
+        "preset": 0,
+        "style": 0,
+        "intensity": 1,
+        "localTone": 0,
+        "localStructure": 1,
+        "inputScale": 1,
+        "resolve": "Auto",
+        "hdr": false,
+        "scene": "two static checker/ramp images; constant depth 0.5 and zero motion",
+        "resetSchedule": "first source; optional correctness-only off/on",
+        "nrEnabled": true,
+        "instrumentation": true,
+        "fsrEnabled": true,
+        "fsrVersion": "3.1.5",
+        "fsrQuality": "NativeAA",
+        "fsrEvaluations": 420,
+        "preparedFsrHandoff": true,
+        "preparedFsrEvaluations": 420,
+        "fsrRuntimeSha256": {
+          "loader": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "upscaler": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+        },
+        "fsrTimingDropped": 0,
+        "fsrTiming11Available": true,
+        "fsrTiming12Available": true,
+        "fsrDistinctOutputHashes": 0,
+        "fsrNonblackPixels": 0,
+        "readbacks": false,
+        "debugLayer": false,
+        "warmup": 120,
+        "requestedSamples": 300,
+        "timerPeriodMs": 1,
+        "rawInit": 1,
+        "rawShutdown": 1,
+        "retired": true,
+        "shimSlotRva": 704640,
+        "shimRestored": true,
+        "recorded": 420,
+        "gpuTiming11Available": true,
+        "gpuTiming12Available": true,
+        "gpuTimingDropped": 0,
+        "alphaPixels": 0,
+        "expectedAlphaPixels": 0,
+        "changedRgbPixels": 0,
+        "distinctOutputHashes": 0,
+        "timingComplete": true,
+        "failure": "",
+        "droppedFrames": 0,
+        "droppedIntervals": 0
+      },
+      "cleanSource": true,
+      "issues": [],
+      "summary": {
+        "wallMilliseconds": {
+          "count": 300,
+          "median": 9.543,
+          "p95": 10.208545,
+          "p99": 10.462259
+        },
+        "blockMilliseconds": {
+          "count": 300,
+          "median": 8.706949999999999,
+          "p95": 9.34258,
+          "p99": 9.631824
+        },
+        "cpuUnionMilliseconds": {
+          "count": 300,
+          "median": 9.5425,
+          "p95": 10.207945,
+          "p99": 10.461758
+        },
+        "waitCalls": {
+          "count": 300,
+          "median": 3.0,
+          "p95": 3.0,
+          "p99": 3.0
+        },
+        "blockingCalls": {
+          "count": 300,
+          "median": 2.0,
+          "p95": 2.0,
+          "p99": 2.0
+        },
+        "flushes": {
+          "count": 300,
+          "median": 4.0,
+          "p95": 4.0,
+          "p99": 4.0
+        },
+        "descriptorCreations": {
+          "count": 300,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "cpuMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0187,
+            "p95": 0.035225000000000006,
+            "p99": 0.08196099999999995
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.43279999999999996,
+            "p95": 0.6802250000000001,
+            "p99": 0.8216849999999989
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0012,
+            "p95": 0.0016050000000000012,
+            "p99": 0.0022069999999999937
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.26275000000000004,
+            "p95": 0.6709150000000002,
+            "p99": 0.8139929999999997
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0077,
+            "p95": 0.013010000000000002,
+            "p99": 0.035776999999999386
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.042550000000000004,
+            "p95": 0.07642,
+            "p99": 0.10946999999999993
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0528,
+            "p95": 0.076645,
+            "p99": 0.105806
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0378,
+            "p95": 0.05429000000000002,
+            "p99": 0.07863799999999997
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.43515,
+            "p95": 0.8640550000000001,
+            "p99": 0.9817889999999998
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0022500000000000003,
+            "p95": 0.004005000000000002,
+            "p99": 0.01031099999999999
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.013,
+            "p95": 0.0269,
+            "p99": 0.05798099999999993
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0054,
+            "p95": 0.010205000000000002,
+            "p99": 0.016880999999999834
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.507750000000001,
+            "p95": 9.10031,
+            "p99": 9.320647000000001
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0553,
+            "p95": 0.09802000000000001,
+            "p99": 0.15750499999999973
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.23709999999999998,
+            "p95": 0.3856300000000001,
+            "p99": 0.5410269999999999
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0361,
+            "p95": 0.05582500000000003,
+            "p99": 0.08269799999999992
+          },
+          "total": {
+            "count": 300,
+            "median": 9.02945,
+            "p95": 9.677349999999999,
+            "p99": 9.930527999999999
+          }
+        },
+        "waitMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.24015,
+            "p95": 0.6483100000000002,
+            "p99": 0.7922969999999998
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.423950000000001,
+            "p95": 9.014335,
+            "p99": 9.258237000000001
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "total": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        },
+        "gpuMilliseconds": {
+          "alpha": {
+            "count": 300,
+            "median": 0.039936,
+            "p95": 0.041984,
+            "p99": 0.06045695999999996
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.029584,
+            "p95": 0.04148,
+            "p99": 0.05296127999999997
+          },
+          "encode": {
+            "count": 0,
+            "median": null,
+            "p95": null,
+            "p99": null
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.029696,
+            "p95": 0.035424,
+            "p99": 0.038919999999999996
+          },
+          "fsrDispatch": {
+            "count": 300,
+            "median": 0.635904,
+            "p95": 1.004544,
+            "p99": 1.11924224
+          },
+          "fsrPrepare": {
+            "count": 300,
+            "median": 0.086016,
+            "p95": 0.090112,
+            "p99": 0.09308543999999998
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0648,
+            "p95": 0.0662736,
+            "p99": 0.06778144
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.033792,
+            "p95": 0.038912,
+            "p99": 0.039936
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.072704,
+            "p95": 0.07787520000000002,
+            "p99": 0.080896
+          },
+          "vendor": {
+            "count": 300,
+            "median": 7.771648,
+            "p95": 8.365107199999999,
+            "p99": 8.5361152
+          }
+        }
+      }
+    },
+    {
+      "receipt": "p4-fsr-current-on-3.json",
+      "profile": "rtx40",
+      "nrEnabled": true,
+      "instrumentation": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "receiptSha256": "9f0be15263587ac50ba62d237c997cd7e31bd9674243b5ac27cfe12410e9de66",
+      "identity": {
+        "schema": 1,
+        "scope": "standalone NR Before plus FSR NativeAA enqueue transaction; no FG/Skyrim FPS",
+        "sourceRevision": "7f9afcbc4102db8cf5aace932316ba4425b575f5",
+        "cleanSource": true,
+        "compiledSourceSha256": {
+          "external/Kits/FidelityFX/api/include/ffx_api.h": "e1a9d1b559eaf75f4cb401f1c43a66e2f3dc9621abfeb58b9c6fac56443177fd",
+          "external/Kits/FidelityFX/api/include/ffx_api_types.h": "cc0adc0ffc804dd7cd03c39c15581b575e416383177ffe95060201d52cc0fc49",
+          "external/Kits/FidelityFX/api/include/dx12/ffx_api_dx12.h": "c9afbc3c4c673723e9e5369a666f0ff54560543b5a93537f8ff453bf1c3bf530",
+          "external/Kits/FidelityFX/upscalers/include/ffx_upscale.h": "65be36d5653eb71c10379e0204f7bb7cd6a8aeec96e6f8cffc5f59ffeb1f89bf",
+          "tests/nr-runtime/RuntimeProbe.cpp": "34c957b3b1a361972e255c3406569697fd617af5bc434cb8a6af7f907e9f4b87",
+          "tests/nr-runtime/RuntimeProbeReport.cpp": "b8610f842740aca359e5841206f24e5a6c8ffa221c7e7b0a7378a3332130249d",
+          "tests/nr-runtime/ObservedQueue.h": "202a1239cf124a466e49f73f25eeb5d570bc82c2b3d12cc64f4ee43c3fa90e5c",
+          "tests/NrStageTests.cpp": "38b02d120eb4419b8c45dfe07960395ac40b6f94ca71aa0dc61581d2764c78ca",
+          "tests/NrFrameSlotTests.cpp": "05687942aeccb3e15f12a908bf0a2fad6f4e176448f71b2f8b44c109f90f1e05",
+          "tests/NrDeferredDeliveryTests.cpp": "3ff49287c69c53f38a8d3a140b0f1f53160c792a56659d2e1bbc131c1bdb9625",
+          "tests/nr-runtime/PerformanceProbe.cpp": "6883831b2f5b64ba66b6ed4e463a5d23461ad4207ed16493bb644b348cdfad1c",
+          "src/NeuralRendering/PerformanceMetrics.h": "697e442e6e0ebc953166f475872e8c803f5717349281a3e77ee9a1a46f9dd53f",
+          "src/NeuralRendering/PerformanceMetrics.cpp": "e9fd673b38da8af9576c2e5420d7b9d8276101584148a2883559f374c2a2bab7",
+          "src/NeuralRendering/PerformanceQueries.h": "e58efee30bc0d156368ed6dd820033e799c1c03641427296ed4d101cb9504ea2",
+          "src/NeuralRendering/PerformanceQueries.cpp": "959585cc1bdd0d91af3f45cd38e6b10eb0738ec7f0e4d46ece792156ee462662",
+          "tests/nr-runtime/RuntimeProbeReport.h": "e045c5f5b5d1bfaa718530297bc14e2367179c2f351ce0c13d372ebf0ce7cfa2",
+          "tests/nr-runtime/GpuProbeGuard.h": "d9e50f5b34ae3e0b6dbfc213a52932090ae140b07960dafba1ca3eb8cbe820fa",
+          "tests/nr-runtime/run_reshade_before.py": "11b2ad0854aa0e9d24ba96d66e39ff890f7bc2c40ae1ba122f1098fc2a073e9b",
+          "tests/NrImagePacketTests.cpp": "8c892518d03a0cd1c78bdd22617dd5734773770e7cece3e43452e8e344de128d",
+          "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+          "src/NeuralRendering/RuntimeCatalog.h": "cd6d98ea585e723a58750c7f90b81c421afa32ac2069b1ef1bf3672bec8d67c9",
+          "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+          "src/NeuralRendering/RuntimeFileLease.h": "375c3f501a153bb37d48261665da5dcfe04f447b4fc4e5a7dec54c96bbf2b071",
+          "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+          "src/NeuralRendering/RuntimeOwner.h": "66570c1ddb97a6eb03ea04ab068fc2145bc4732d330da9c3cf3dda9cfca7e072",
+          "src/NeuralRendering/CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+          "src/NeuralRendering/CallerIdentityShim.h": "ffeb680653ade57980d7feec354e906488ccbab0a554eb7208a36e63ef0a1d87",
+          "src/NeuralRendering/Error.h": "711ac372be317db4864b6514d13b801be9824dace873bc5ae43f3fb37cc84643",
+          "src/NeuralRendering/ImagePacket.h": "6934790fe54ce07612237671be4b34098e61885cd9aafef59cb957f875886f6f",
+          "src/NeuralRendering/ImagePacket.cpp": "bdeef54790c1e49421221769d1c38a23751bb5d87f845706f1429b6f103b981f",
+          "src/NeuralRendering/History.h": "52c06ab92041387bcfa337058367b00f13b294c71f047a2edf03776b8608867a",
+          "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+          "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+          "src/NeuralRendering/MotionDiagnosticStats.h": "d18184b2cdb9c406b2d9c0dfa38f4ceae4386166fe79103b85b05d193bdcd081",
+          "tests/NrMotionDiagnosticTests.cpp": "ef08fa3d56e18a04fbe54651ace58df4df229820b291ecade95fb934c7f5b7e2",
+          "src/NeuralRendering/Stage.h": "82046f06a1b358783db27c76f67f8f8fed6eb53d62a3f1862e16c5603f3953d5",
+          "src/NeuralRendering/Stage.cpp": "1dbbb68a9366b3e40ec74e7b1511cd42212967388cdc6a266f6d81f4f68e7400",
+          "src/NeuralRendering/TicketOwnership.h": "4d02230eb6cf70c7124daedf0803f00507a6b2666a43df9a3344dc2df0fbbcf4",
+          "src/NeuralRendering/RetirementEvent.h": "aae40d625f6c204ca2657b61634edb25a45e320742b15966dfd05f505b26f7a9",
+          "src/NeuralRendering/BeforeUpscale.h": "550ad8fe36913579cb49e56bc9acaee0c1d359ee8e88dac4e36dc2e2c0613872",
+          "src/NeuralRendering/BeforeUpscale.cpp": "300497040e948ce11a1217390442bac86c7d45a7f50c71459325b3b5e513af75",
+          "tests/NrBeforeUpscaleTests.cpp": "2eae27033f34abb29fb7e1498bca8141403791b893a0594caef4ed533cc75b26",
+          "src/Graphics/D3D11D3D12Interop.h": "497d0811ea74cb383adb08f0389eab27eb46041176bc2081f7f37b58e5a72be6",
+          "src/Graphics/D3D11D3D12Interop.cpp": "801a66f94a564a346a1286d4c0a6a5301ff4b29682fa97a642a9de866ee5aa9c",
+          "src/FrameGen/D3D11FrameCopy.h": "768deef78b722d6964216011dc26db870f5b2efa7b04eed61d19749bc3d05176",
+          "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+          "src/FrameGen/NeuralRenderingTuning.h": "0ed1b913e34bdf23c0d52fecfcce5d11af773f04352d50d02faa359bce1401a0",
+          "src/FrameGen/NeuralRenderingReconstruction.h": "0752068ba6d81d6770d45a6bd9c65afe3e6a6745f04806bceae1ad03c08cfb84",
+          "src/NeuralRendering/PreparedBeforeUpscale.h": "2779badde41910ba9f20ed851610b7f18a04474b39abec776d4f9f2d3290f29f",
+          "src/NeuralRendering/PreparedBeforeUpscale.cpp": "5d344f859dd3bc531100272023528aa4ac577b830b12613b6aaf761aaa2f3a85",
+          "src/NeuralRendering/PreparedFsrInput.h": "02c00a65bbaafe49dd35ccd89efac2ba88811c45a9d4a5ab82ab1383f5dfe0b4",
+          "tests/NrPreparedFsrTests.cpp": "b494c3343c85ef87a7c448fe6f569ebc48fd5e690f28a3b7cb99ba6299b8caf1",
+          "src/NeuralRendering/BeforeHost.h": "6baa318ddf6af294d9b8ed7328ecf04913f71d3f5d5ab7b8d7ea0e1f0706df13",
+          "src/NeuralRendering/BeforeHost.cpp": "c6b8d6cbb724889b191b984f69e2d83e95fb1a396c16ac6019c8aea9c938b2c2",
+          "src/NeuralRendering/BeforeSettings.h": "7b6eb78dd58dc33667a8090e27aa3318f8e95966929a9d10a2a2bc39d06dca7a",
+          "src/NeuralRendering/StartupSettings.h": "756de2d3200cb834139fb1009cbbc1609adca1d296272b811a6122abe84b1880",
+          "src/NeuralRendering/SourcePolicy.h": "793d2c5bb5fa460202a885b545e8bf0f9511a33c5ad3a2cb5618aba7ab4328e4",
+          "tests/NrPreparedBeforeTests.cpp": "b80796f13fda824051494a3e7fe31b8df46d0035fae0262c474c073fa2fc9510",
+          "tests/NrBeforeHostFramesTests.cpp": "90dc8958ce6788d892abcb92d7a7e52bd3096b104efc909b805c63ac23eb4434",
+          "tests/NrBeforeHostTests.cpp": "669c3aa9532aac3aee5c566c29c7a15604f0291b0b50f3cc468b2922168e78a5",
+          "tests/NrSourcePolicyTests.cpp": "72a93ec179181e2b9d8c88d853351d3a14704375c5bbc1578acab972f55955fc",
+          "src/Upscaling/FSRColorConversion.h": "eb86bbc097465d5720d99fa0a9c2c0d250b80ee67bae91f1070699af4305970c",
+          "src/Upscaling/FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+          "src/Upscaling/FSRColorContract.h": "9154489043b834246173e4ec381e7fd6b19b059239ad28ee11673bce70502f58",
+          "src/Upscaling/FSRHistoryPolicy.h": "1fc719e778dcc4553c6114634fbccb68656a80172fa79d24e41073c9d2ae3f25",
+          "src/FrameGen/NvidiaHostNeural.cpp": "5ed96fb9a0934e6a786ada2b3e9693655d2eee933792b6d19a095a0da2dc29cf",
+          "src/FrameGen/NvidiaHost.h": "5d476ef5de37345592fc7b41d97e4d7f3364ea9334e65836b7445be7a9f3534f",
+          "src/FrameGen/NvidiaHostStartup.cpp": "df15d05e79cd6355d43b6f7c89a2e121f81778b25709b1b8477231702e956024",
+          "src/FrameGen/NvidiaHostLifecycle.cpp": "e90bdafb2a829aa0ad8cca716372a20563779b1733c3308669e0202fd2ac9a12",
+          "src/FrameGen/SourceFsrEvaluation.cpp": "b76810f3365a88e0cd9c3666cab7449b90d0ec7fa7078b9056fcb4664d59465e",
+          "src/FrameGen/SourceNvidiaEvaluation.cpp": "77ab390ee3ff130d5ba4e08f4ba4114c29ae8442fd01349313d8eff3b25926cb",
+          "src/FrameGen/SourceFrameGeneration.h": "f49c43124428586b136cc974858fefb1aa8948c4f76b2a081238ea22a088b75c",
+          "src/RendererSettings.h": "87628f093e2505a5d16d7ec74c93108c79e348353424e42646bd8df80ece1712",
+          "src/RendererSettingsController.cpp": "b39316afb07988658953217fd2dd8d562c8b466fe02f3e475989cc6e020c688a",
+          "src/RendererBackendPolicy.h": "4b43d4208994eee000141ab9691a6d92f06458bd18f704b4caffac97f5cb3206",
+          "src/OverlayNeuralPanel.cpp": "09227948ebd45e61565a637091b0754f9a0ba5be091f158ef2daed03e5b87544",
+          "src/OverlayNeuralTab.h": "2ffc4d521dfabf4354dc7f718ad6b7568d82fbf5e456a97cc53a3a82852663c6",
+          "src/OverlayFrameView.cpp": "9b6165867294802d855d4c893145bbf6ad505068df64662a60d51d7e326a5034",
+          "src/OverlayUI.cpp": "36f8a50d6b096d8a7f7685b2bff4b60b4bb918b5635c7ec326f78b0a8b8baa9a",
+          "CMakeLists.txt": "5bc4926cf9fe559c34b4abaf832446412250c6027db3c37d471b99284568ad39",
+          "src/HookSafety.h": "60121c34ac39fa4b41529d9589933fe9d1208fb09fc6190d77ae7967fc223c03",
+          "cmake/NeuralRuntime.cmake": "ff65a586f2845681517035d33394d3777babcae1948ae6dc9df1735478beab09",
+          "tests/nr-runtime/CMakeLists.txt": "cdd49c3a819e177dda1a648e062326900f7da16fe0561e17a9599b41babbc1fc",
+          "tests/nr-runtime/FsrPerformanceRecorder.h": "a7f42492250d1c94c38d48d0d4ba3ff1cf8117c2fed8febb988aac2ad52d0ab2",
+          "src/Upscaling/FSRRuntime.h": "f87ca1c98d4aa378845842103a2206f0d549d1041e87b0994149f51771fbe424",
+          "src/Upscaling/FSRRuntime.cpp": "3166d106e74f8f5fe6ca19f58e82082d0f6b2b033d60c774c99f5953f98f43d1",
+          "src/Upscaling/FSRParameters.cpp": "346d0fb9f9fbc429c54e1759dc8eaf796972d7bd364107a4485d6057c4bc66a6",
+          "src/Upscaling/FSRUpscaler.h": "ec871a9789d290882fe2e930ef12ce29f1134c8035eb6cf0c6020f18b836b476",
+          "src/Upscaling/FSRUpscaler.cpp": "ecbbdfc2bc4a42e66419c77a98a287e45cd5512b26c8e27614f37ebde4b4131b",
+          "src/Upscaling/FSRHostResources.h": "99596ee29af6c5e7855f5114c74652ab3fa4fe4f1ec6e030da72ce6df5cd09d1",
+          "src/Upscaling/FSRHostResources.cpp": "4ee9ae3d820a3c70fb15adb373b8fc63e96b744e219f5884ee293b98be8d31df",
+          "src/Upscaling/FSRFrameAdapter.h": "9fbf0a6807a7c0bca067db2b6c0daa73b55e8f65e3b344de92a2f535b898ba20",
+          "src/Upscaling/FSRFrameAdapter.cpp": "88101ffbee34d1bde437ad5e8f39dcbcf7c4fc8bdc6bf81d4219598fb6029c27",
+          "src/Upscaling/FSRParameters.h": "474394dbf0f6151a46a5fb4c38588b38c3bceebd40c32713bcc28182aed77973",
+          "src/Upscaling/UpscalerBackend.h": "0fd5ab23f5c36685533867931d4eaf6874d55ecef8a1f3e999d5bc9158268a5b",
+          "src/Upscaling/FSRPreparedResources.h": "3c520fae54004165013cbf097796564f4aad72abba912c6e2f0baaec250ffe61",
+          "src/Upscaling/FSRProviderPolicy.h": "9a3e42f7b70d1c31506ae680c2b3e3a805c593f6c10d07691fe85f80a2ef3776",
+          "tools/fsr/runtime-pin.json": "6b7b0476532ee9a449bdb07e3fb0553a0cee9413b3eac1fe6a1855ccd2e1d43a",
+          "external/nvsdk_ngx_params.h": "dd9ef57ac264256ddd63b3c75b2894f519c72a1a9c9c23814fb433aa71478ada",
+          "generated/PerformanceRuntimeCatalog.cpp": "4b7620d1f47a0ece56d8d004a489d93a4e095a0e30c0cc92393626f46bea1381"
+        },
+        "profile": "rtx40",
+        "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "adapterVendor": 4318,
+        "adapterDevice": 9986,
+        "adapterLuidLow": 66328,
+        "adapterLuidHigh": 0,
+        "width": 2560,
+        "height": 1440,
+        "placement": "Before",
+        "encoding": "Gamma22-to-linear-FP16",
+        "passes": 1,
+        "preset": 0,
+        "style": 0,
+        "intensity": 1,
+        "localTone": 0,
+        "localStructure": 1,
+        "inputScale": 1,
+        "resolve": "Auto",
+        "hdr": false,
+        "scene": "two static checker/ramp images; constant depth 0.5 and zero motion",
+        "resetSchedule": "first source; optional correctness-only off/on",
+        "nrEnabled": true,
+        "instrumentation": true,
+        "fsrEnabled": true,
+        "fsrVersion": "3.1.5",
+        "fsrQuality": "NativeAA",
+        "fsrEvaluations": 420,
+        "preparedFsrHandoff": true,
+        "preparedFsrEvaluations": 420,
+        "fsrRuntimeSha256": {
+          "loader": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "upscaler": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+        },
+        "fsrTimingDropped": 0,
+        "fsrTiming11Available": true,
+        "fsrTiming12Available": true,
+        "fsrDistinctOutputHashes": 0,
+        "fsrNonblackPixels": 0,
+        "readbacks": false,
+        "debugLayer": false,
+        "warmup": 120,
+        "requestedSamples": 300,
+        "timerPeriodMs": 1,
+        "rawInit": 1,
+        "rawShutdown": 1,
+        "retired": true,
+        "shimSlotRva": 704640,
+        "shimRestored": true,
+        "recorded": 420,
+        "gpuTiming11Available": true,
+        "gpuTiming12Available": true,
+        "gpuTimingDropped": 0,
+        "alphaPixels": 0,
+        "expectedAlphaPixels": 0,
+        "changedRgbPixels": 0,
+        "distinctOutputHashes": 0,
+        "timingComplete": true,
+        "failure": "",
+        "droppedFrames": 0,
+        "droppedIntervals": 0
+      },
+      "cleanSource": true,
+      "issues": [],
+      "summary": {
+        "wallMilliseconds": {
+          "count": 300,
+          "median": 9.34285,
+          "p95": 10.06106,
+          "p99": 10.377296999999999
+        },
+        "blockMilliseconds": {
+          "count": 300,
+          "median": 8.518149999999999,
+          "p95": 9.212135,
+          "p99": 9.473679
+        },
+        "cpuUnionMilliseconds": {
+          "count": 300,
+          "median": 9.34245,
+          "p95": 10.06047,
+          "p99": 10.376698
+        },
+        "waitCalls": {
+          "count": 300,
+          "median": 3.0,
+          "p95": 3.0,
+          "p99": 3.0
+        },
+        "blockingCalls": {
+          "count": 300,
+          "median": 2.0,
+          "p95": 2.0,
+          "p99": 2.0
+        },
+        "flushes": {
+          "count": 300,
+          "median": 4.0,
+          "p95": 4.0,
+          "p99": 4.0
+        },
+        "descriptorCreations": {
+          "count": 300,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "cpuMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.01815,
+            "p95": 0.03423000000000001,
+            "p99": 0.05900799999999981
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.42375,
+            "p95": 0.7597600000000003,
+            "p99": 0.9864469999999999
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0011,
+            "p95": 0.001905000000000001,
+            "p99": 0.002101999999999998
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.2618,
+            "p95": 0.6160000000000003,
+            "p99": 0.7914539999999998
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0075,
+            "p95": 0.014210000000000004,
+            "p99": 0.0661089999999998
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0412,
+            "p95": 0.07361500000000003,
+            "p99": 0.14418199999999992
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.051949999999999996,
+            "p95": 0.097015,
+            "p99": 0.14614599999999894
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0371,
+            "p95": 0.06894000000000002,
+            "p99": 0.093601
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.4319,
+            "p95": 0.816345,
+            "p99": 0.971028
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0022,
+            "p95": 0.003905000000000001,
+            "p99": 0.0070149999999999865
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0125,
+            "p95": 0.0252,
+            "p99": 0.03648999999999974
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0054,
+            "p95": 0.0103,
+            "p99": 0.017700999999999998
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.34225,
+            "p95": 8.95753,
+            "p99": 9.379222
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.054,
+            "p95": 0.09915,
+            "p99": 0.21774499999999997
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.23249999999999998,
+            "p95": 0.426625,
+            "p99": 0.6157569999999993
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0352,
+            "p95": 0.06670999999999999,
+            "p99": 0.09854399999999996
+          },
+          "total": {
+            "count": 300,
+            "median": 8.88875,
+            "p95": 9.600195,
+            "p99": 10.002647
+          }
+        },
+        "waitMilliseconds": {
+          "begin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "bridge": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "completionWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "consumerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "drain": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "encode": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrBegin": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrPrepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrProducerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrRecord": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrSubmit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "fsrTotal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "interopWait": {
+            "count": 300,
+            "median": 0.2382,
+            "p95": 0.5932400000000003,
+            "p99": 0.7704589999999998
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "preparedWait": {
+            "count": 300,
+            "median": 8.2694,
+            "p95": 8.89639,
+            "p99": 9.317932999999998
+          },
+          "producerSignal": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "producerWait": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "record": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "submit": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          },
+          "total": {
+            "count": 300,
+            "median": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        },
+        "gpuMilliseconds": {
+          "alpha": {
+            "count": 300,
+            "median": 0.039936,
+            "p95": 0.04096,
+            "p99": 0.04608
+          },
+          "delivery": {
+            "count": 300,
+            "median": 0.030511999999999997,
+            "p95": 0.03897920000000002,
+            "p99": 0.05331359999999997
+          },
+          "encode": {
+            "count": 0,
+            "median": null,
+            "p95": null,
+            "p99": null
+          },
+          "fsrDelivery": {
+            "count": 300,
+            "median": 0.029696,
+            "p95": 0.03544,
+            "p99": 0.038921279999999996
+          },
+          "fsrDispatch": {
+            "count": 300,
+            "median": 0.635904,
+            "p95": 0.9995248,
+            "p99": 1.1172351999999999
+          },
+          "fsrPrepare": {
+            "count": 300,
+            "median": 0.08688,
+            "p95": 0.0896,
+            "p99": 0.09200127999999999
+          },
+          "inputCopy": {
+            "count": 300,
+            "median": 0.065168,
+            "p95": 0.066592,
+            "p99": 0.06723264
+          },
+          "prepareColor": {
+            "count": 300,
+            "median": 0.034575999999999996,
+            "p95": 0.038912,
+            "p99": 0.039936
+          },
+          "prepareGuides": {
+            "count": 300,
+            "median": 0.072704,
+            "p95": 0.080896,
+            "p99": 0.08295424
+          },
+          "vendor": {
+            "count": 300,
+            "median": 7.577088,
+            "p95": 8.186112,
+            "p99": 8.69429248
+          }
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "p3-fsr-current-on-1.json",
+      "b": "p3-fsr-current-on-2.json",
+      "kind": "same-workload",
+      "bMinusAMedianMilliseconds": -0.08150000000000013
+    },
+    {
+      "a": "p3-fsr-current-on-1.json",
+      "b": "p3-fsr-current-on-3.json",
+      "kind": "same-workload",
+      "bMinusAMedianMilliseconds": -0.07174999999999976
+    },
+    {
+      "a": "p3-fsr-current-on-1.json",
+      "b": "p4-fsr-current-on-1.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.08404999999999951
+    },
+    {
+      "a": "p3-fsr-current-on-1.json",
+      "b": "p4-fsr-current-on-2.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.5032499999999995
+    },
+    {
+      "a": "p3-fsr-current-on-1.json",
+      "b": "p4-fsr-current-on-3.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.3031000000000006
+    },
+    {
+      "a": "p3-fsr-current-on-2.json",
+      "b": "p3-fsr-current-on-3.json",
+      "kind": "same-workload",
+      "bMinusAMedianMilliseconds": 0.00975000000000037
+    },
+    {
+      "a": "p3-fsr-current-on-2.json",
+      "b": "p4-fsr-current-on-1.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.16554999999999964
+    },
+    {
+      "a": "p3-fsr-current-on-2.json",
+      "b": "p4-fsr-current-on-2.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.5847499999999997
+    },
+    {
+      "a": "p3-fsr-current-on-2.json",
+      "b": "p4-fsr-current-on-3.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.3846000000000007
+    },
+    {
+      "a": "p3-fsr-current-on-3.json",
+      "b": "p4-fsr-current-on-1.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.15579999999999927
+    },
+    {
+      "a": "p3-fsr-current-on-3.json",
+      "b": "p4-fsr-current-on-2.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.5749999999999993
+    },
+    {
+      "a": "p3-fsr-current-on-3.json",
+      "b": "p4-fsr-current-on-3.json",
+      "kind": "same-model-host-change",
+      "bMinusAMedianMilliseconds": 0.37485000000000035
+    },
+    {
+      "a": "p4-fsr-current-on-1.json",
+      "b": "p4-fsr-current-on-2.json",
+      "kind": "same-workload",
+      "bMinusAMedianMilliseconds": 0.4192
+    },
+    {
+      "a": "p4-fsr-current-on-1.json",
+      "b": "p4-fsr-current-on-3.json",
+      "kind": "same-workload",
+      "bMinusAMedianMilliseconds": 0.21905000000000108
+    },
+    {
+      "a": "p4-fsr-current-on-2.json",
+      "b": "p4-fsr-current-on-3.json",
+      "kind": "same-workload",
+      "bMinusAMedianMilliseconds": -0.20014999999999894
+    }
+  ]
+}
