@@ -22,6 +22,9 @@ public:
     void Stamp12(ID3D12GraphicsCommandList*,GpuPhase,bool begin);
     void Resolve12(ID3D12GraphicsCommandList*);
     void Submitted12(ID3D12Fence*,uint64_t value);
+    // Only after the owning command list was successfully discarded without
+    // ExecuteCommandLists. Failed/uncertain discard must retain this recording.
+    void DiscardUnsubmitted12();
     uint64_t Dropped()const;
     bool Available11()const;
     bool Available12()const;

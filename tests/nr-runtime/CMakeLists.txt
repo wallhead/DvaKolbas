@@ -4,6 +4,8 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     enable_testing()
 endif()
 get_filename_component(nrRoot "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+option(TRP_NR_PERF_WITH_FSR "Extend isolated NR performance probe with FSR NativeAA" OFF)
+set(TRP_NR_PERF_FSR_SDK "${nrRoot}/out/research/sdk-v2.3.0" CACHE PATH "Pinned FSR headers for integrated performance fixture")
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_test(NAME NrPerformanceComparison COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/test_performance_comparison.py")
 find_program(nrPresentMonPowerShell NAMES powershell.exe REQUIRED)
@@ -154,8 +156,37 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         src/RendererSettings.h src/RendererSettingsController.cpp src/RendererBackendPolicy.h
         src/OverlayNeuralPanel.cpp src/OverlayNeuralTab.h src/OverlayFrameView.cpp src/OverlayUI.cpp
         CMakeLists.txt src/HookSafety.h cmake/NeuralRuntime.cmake tests/nr-runtime/CMakeLists.txt)
+    if(TRP_NR_PERF_WITH_FSR)
+    set(TRP_NR_PERF_FSR_RUNTIME "" CACHE PATH "Pinned FSR DLL fixture root containing FSR/")
+        list(APPEND nrProbeSources tests/nr-runtime/FsrPerformanceRecorder.h
+            src/Upscaling/FSRRuntime.h src/Upscaling/FSRRuntime.cpp src/Upscaling/FSRParameters.cpp
+            src/Upscaling/FSRUpscaler.h src/Upscaling/FSRUpscaler.cpp src/Upscaling/FSRHostResources.h
+            src/Upscaling/FSRHostResources.cpp src/Upscaling/FSRFrameAdapter.h src/Upscaling/FSRFrameAdapter.cpp
+            src/Upscaling/FSRParameters.h
+            src/Upscaling/UpscalerBackend.h src/Upscaling/FSRPreparedResources.h
+            src/Upscaling/FSRProviderPolicy.h src/RendererBackendPolicy.h tools/fsr/runtime-pin.json)
+        list(REMOVE_DUPLICATES nrProbeSources)
+        file(READ "${nrRoot}/tools/fsr/runtime-pin.json" fsrPin)
+        foreach(index RANGE 0 3)
+            string(JSON headerPath GET "${fsrPin}" headers ${index} path)
+            string(JSON expectedHash GET "${fsrPin}" headers ${index} sha256)
+            file(SHA256 "${TRP_NR_PERF_FSR_SDK}/${headerPath}" actualHash)
+            set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${TRP_NR_PERF_FSR_SDK}/${headerPath}")
+            if(NOT actualHash STREQUAL expectedHash)
+                message(FATAL_ERROR "Pinned FSR performance header mismatch: ${headerPath}")
+            endif()
+        endforeach()
+    endif()
     set(nrProbeSourcesJson "{")
     set(nrProbeSeparator "")
+    if(TRP_NR_PERF_WITH_FSR)
+        foreach(index RANGE 0 3)
+            string(JSON headerPath GET "${fsrPin}" headers ${index} path)
+            string(JSON expectedHash GET "${fsrPin}" headers ${index} sha256)
+            string(APPEND nrProbeSourcesJson "${nrProbeSeparator}\"external/${headerPath}\":\"${expectedHash}\"")
+            set(nrProbeSeparator ",")
+        endforeach()
+    endif()
     foreach(nrProbeSource IN LISTS nrProbeSources)
         file(SHA256 "${nrRoot}/${nrProbeSource}" nrProbeHash)
         set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${nrRoot}/${nrProbeSource}")
@@ -201,12 +232,33 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_definitions(TRPNrPerformanceProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNrPerformanceProbe PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
     target_link_libraries(TRPNrPerformanceProbe PRIVATE TRPNrPerformanceRuntime winmm)
+    if(TRP_NR_PERF_WITH_FSR)
+    add_library(TRPNrPerformanceFsr STATIC
+        "${nrRoot}/src/Upscaling/FSRRuntime.cpp" "${nrRoot}/src/Upscaling/FSRParameters.cpp"
+        "${nrRoot}/src/Upscaling/FSRUpscaler.cpp" "${nrRoot}/src/Upscaling/FSRHostResources.cpp"
+        "${nrRoot}/src/Upscaling/FSRFrameAdapter.cpp")
+    target_compile_features(TRPNrPerformanceFsr PUBLIC cxx_std_23)
+    target_compile_definitions(TRPNrPerformanceFsr PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN TRP_ENABLE_FSR)
+    target_include_directories(TRPNrPerformanceFsr PUBLIC "${nrRoot}/src"
+        "${TRP_NR_PERF_FSR_SDK}/Kits/FidelityFX/api/include" "${TRP_NR_PERF_FSR_SDK}/Kits/FidelityFX/upscalers/include")
+    target_link_libraries(TRPNrPerformanceProbe PRIVATE TRPNrPerformanceFsr)
+    target_compile_definitions(TRPNrPerformanceProbe PRIVATE TRP_NR_PERF_WITH_FSR)
+    endif()
     if(TRP_NR_RTX40_DLL AND TRP_NR_DRIVER_CORE)
         add_test(NAME NrPerformancePrepared COMMAND TRPNrPerformanceProbe
             --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
             --width 320 --height 180 --frames 16 --warmup 2 --readback on
             --output "${CMAKE_CURRENT_BINARY_DIR}/performance-prepared.json")
         set_tests_properties(NrPerformancePrepared PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 90)
+        if(TRP_NR_PERF_WITH_FSR AND TRP_NR_PERF_FSR_RUNTIME)
+            foreach(state IN ITEMS on off)
+                add_test(NAME NrPerformanceFsr-${state} COMMAND TRPNrPerformanceProbe
+                    --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
+                    --width 320 --height 180 --frames 16 --warmup 2 --readback on --enabled ${state}
+                    --fsr-runtime "${TRP_NR_PERF_FSR_RUNTIME}" --output "${CMAKE_CURRENT_BINARY_DIR}/performance-fsr-${state}.json")
+                set_tests_properties(NrPerformanceFsr-${state} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 90)
+            endforeach()
+        endif()
     endif()
 endif()
 add_executable(TRPNrRuntimeOwnerTests ../NrRuntimeOwnerTests.cpp)

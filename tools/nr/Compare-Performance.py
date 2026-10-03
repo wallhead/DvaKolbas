@@ -11,9 +11,14 @@ CONTROLS=('scope','driverCoreSha256','adapterVendor','adapterDevice','adapterLui
           'inputScale','resolve','hdr','encoding','scene','resetSchedule','debugLayer','timerPeriodMs','readbacks','warmup')
 IDENTITIES=('runtimeSha256','compiledSourceSha256','instrumentation','nrEnabled')
 BEFORE_PHASES=('prepareColor','prepareGuides','inputCopy','vendor','alpha','delivery','encode')
+FSR_PHASES=('fsrPrepare','fsrDispatch','fsrDelivery')
+FSR_IDENTITIES=('fsrVersion','fsrQuality','fsrRuntimeSha256')
 
 
 def match_kind(a,b):
+    if bool(a.get('fsrEnabled'))!=bool(b.get('fsrEnabled')):return 'unmatched'
+    if a.get('fsrEnabled') and any(not r.get(k) for r in (a,b) for k in FSR_IDENTITIES):return 'unmatched'
+    if a.get('fsrEnabled') and any(a[k]!=b[k] for k in FSR_IDENTITIES):return 'unmatched'
     if any(k not in r or r[k] is None for r in (a,b) for k in (*CONTROLS,*IDENTITIES)):return 'unmatched'
     if any(a.get(k)!=b.get(k) for k in CONTROLS):return 'unmatched'
     runtime=a.get('runtimeSha256')!=b.get('runtimeSha256')
@@ -39,6 +44,11 @@ def issues(receipt):
     if not receipt.get('timingComplete'):problems.append('timing incomplete')
     if any(receipt.get(k,0) for k in ('droppedFrames','droppedIntervals','gpuTimingDropped')):problems.append('dropped timing samples')
     samples=receipt.get('samples',[])
+    if receipt.get('fsrEnabled'):
+        hashes=receipt.get('fsrRuntimeSha256')
+        if any(not receipt.get(k) for k in FSR_IDENTITIES) or not isinstance(hashes,dict) or any(not hashes.get(k) for k in ('loader','upscaler')):problems.append('missing FSR identity')
+        if receipt.get('fsrEvaluations')!=receipt.get('requestedSamples',0)+receipt.get('warmup',0):problems.append('FSR evaluation count mismatch')
+        if receipt.get('fsrTimingDropped',0):problems.append('dropped FSR timing samples')
     if len(samples)!=receipt.get('requestedSamples'):problems.append('sample count mismatch')
     if len({s.get('source') for s in samples})!=len(samples):problems.append('duplicate source identity')
     for sample in samples:
@@ -54,6 +64,8 @@ def issues(receipt):
             if any(sample.get('gpuMilliseconds',{}).get(p) is None for p in BEFORE_PHASES):problems.append('missing Before GPU timing')
             if any(sample.get(k)!=1 for k in ('descriptorCreations','submitted','completed')) or sample.get('waitCalls',0)<1:
                 problems.append('incomplete source transaction')
+        if receipt.get('instrumentation') and receipt.get('fsrEnabled'):
+            if any(sample.get('gpuMilliseconds',{}).get(p) is None for p in FSR_PHASES):problems.append('missing FSR GPU timing')
     return problems
 
 

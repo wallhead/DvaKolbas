@@ -9,7 +9,8 @@
 namespace TheosRenderPipeline::NeuralRendering {
 enum class CpuPhase : size_t { Total, Bridge, PrepareColor, PrepareGuides, InputCopy, ProducerSignal,
     ProducerWait, Begin, Record, Submit, Delivery, ConsumerWait, CompletionWait, Drain,
-    Encode, PreparedWait, InteropWait, Count };
+    Encode, PreparedWait, InteropWait, FsrTotal, FsrPrepareColor, FsrPrepareGuides,
+    FsrProducerSignal, FsrBegin, FsrRecord, FsrSubmit, FsrDelivery, Count };
 enum class GpuPhase : size_t { PrepareColor, PrepareGuides, InputCopy, Vendor, Alpha,
     Delivery, Encode, FsrPrepare, FsrDispatch, FsrDelivery, Count };
 std::string_view PhaseName(CpuPhase) noexcept;

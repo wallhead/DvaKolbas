@@ -12,6 +12,7 @@ param(
     [ValidateRange(0,1)][int]$TimerPeriodMs=1,
     [ValidateRange(1,3)][int]$Repeats=3,
     [string]$Executable,
+    [string]$FsrRuntime,
     [string]$Output
 )
 $ErrorActionPreference='Stop'
@@ -26,7 +27,9 @@ foreach($file in @($Executable,$RuntimeDll,$DriverCore)){if(-not (Test-Path -Lit
 for($run=1;$run -le $Repeats;$run++){
     if(Get-Process SkyrimSE -ErrorAction SilentlyContinue){throw 'Close Skyrim before standalone GPU work.'}
     $receiptPath="$Output-$run.json"
-    & $Executable --profile $RuntimeProfile --dll $RuntimeDll --core $DriverCore --frames $Frames --warmup $Warmup --width $Width --height $Height --enabled $Enabled --instrumentation $Instrumentation --readback $Readback --timer-period-ms $TimerPeriodMs --output $receiptPath
+    $probeArgs=@('--profile',$RuntimeProfile,'--dll',$RuntimeDll,'--core',$DriverCore,'--frames',"$Frames",'--warmup',"$Warmup",'--width',"$Width",'--height',"$Height",'--enabled',$Enabled,'--instrumentation',$Instrumentation,'--readback',$Readback,'--timer-period-ms',"$TimerPeriodMs",'--output',$receiptPath)
+    if($FsrRuntime){$probeArgs+=@('--fsr-runtime',[IO.Path]::GetFullPath($FsrRuntime))}
+    & $Executable @probeArgs
     $probeExit=$LASTEXITCODE
     if($probeExit -ne 0){throw "Probe exited $probeExit; inspect $receiptPath"}
     $receipt=Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json

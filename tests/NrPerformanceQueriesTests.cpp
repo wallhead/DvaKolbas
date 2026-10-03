@@ -1,4 +1,5 @@
 #include "NeuralRendering/PerformanceQueries.h"
+#include "Graphics/D3D11D3D12Interop.h"
 #include "nr-runtime/GpuProbeGuard.h"
 #include <cstdio>
 #include <d3d11_4.h>
@@ -36,6 +37,23 @@ int main(){
     queries.Collect11(context.Get());check(!metrics.Snapshot().frames[1].gpuMilliseconds[size_t(GpuPhase::PrepareColor)],"PendingD3D11QueriesDoNotForceFlushOrWait");
     Need(gate->Signal(2));event=CreateEventW(nullptr,FALSE,FALSE,nullptr);Need(gate->SetEventOnCompletion(3,event));if(WaitForSingleObject(event,20000)!=WAIT_OBJECT_0)ExitProcess(1);CloseHandle(event);
     queries.Collect11(context.Get());check(metrics.Snapshot().frames[1].gpuMilliseconds[size_t(GpuPhase::PrepareColor)].has_value(),"RetiredD3D11TimestampAndFrequencyCollected");
+    metrics.BeginFrame(3,true);
+    for(unsigned i=0;i<20;++i){
+        queries.Begin12(list.Get(),3);queries.DiscardUnsubmitted12();
+    }
+    check(queries.Dropped()==0,"SuccessfullyDiscardedUnsubmittedQueriesReuseBoundedSlots");
+    check(!metrics.Snapshot().frames[2].gpuMilliseconds[size_t(GpuPhase::Vendor)],"DiscardedRecordingNeverInventsGpuTiming");
+    metrics.BeginFrame(4,false);
+    TheosRenderPipeline::Graphics::D3D11D3D12Interop interop;Need(interop.Initialize(device11.Get(),device.Get(),queue.Get()));
+    struct Submission {PerformanceQueries* queries;ID3D12Fence* fence{};uint64_t value{};unsigned calls{};} submission{&queries};
+    interop.SetPerformanceSink({&submission,nullptr,nullptr,[](void* owner,TheosRenderPipeline::Graphics::InteropWork work,ID3D12Fence* fence,uint64_t value){
+        auto& p=*static_cast<Submission*>(owner);if(work==TheosRenderPipeline::Graphics::InteropWork::Upscaling){p.fence=fence;p.value=value;++p.calls;p.queries->Submitted12(fence,value);}}});
+    Need(queue->Wait(gate.Get(),5));Need(interop.SignalProducer());ID3D12GraphicsCommandList* observed{};Need(interop.Begin(&observed));
+    queries.Begin12(observed,4);queries.Stamp12(observed,GpuPhase::FsrDispatch,true);queries.Stamp12(observed,GpuPhase::FsrDispatch,false);queries.Resolve12(observed);Need(interop.Submit());
+    check(submission.calls==1&&submission.fence&&submission.value==interop.LastValue(TheosRenderPipeline::Graphics::InteropWork::Upscaling),"SubmissionObserverUsesActualInteropQueueFenceAndValue");
+    queries.Collect12();check(!metrics.Snapshot().frames[3].gpuMilliseconds[size_t(GpuPhase::FsrDispatch)],"ObservedFsrSubmissionCannotCollectBeforeRealGpuGate");
+    Need(gate->Signal(5));Need(interop.WaitConsumer());Need(interop.Drain());queries.Collect12();interop.SetPerformanceSink({});
+    check(metrics.Snapshot().frames[3].gpuMilliseconds[size_t(GpuPhase::FsrDispatch)].has_value(),"ObservedFsrTimestampCollectsAfterGenuineRetirement");
     PerformanceMetrics off;PerformanceQueries disabled(&off);
     check(disabled.Initialize12(device.Get(),queue.Get())==S_FALSE&&!disabled.Available12(),"DisabledQueriesCreateNoGpuInstrumentation");
     return failures?1:0;

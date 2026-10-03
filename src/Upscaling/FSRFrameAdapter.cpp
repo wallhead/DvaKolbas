@@ -5,6 +5,21 @@
 namespace TheosRenderPipeline::Upscaling
 {
     using Microsoft::WRL::ComPtr;
+    namespace {
+        struct CpuObservation {
+            FsrPerformanceObserver* observer;FsrCpuPhase phase;
+            CpuObservation(FsrPerformanceObserver* p,FsrCpuPhase v):observer(p),phase(v){if(observer)observer->Cpu(phase,true);}
+            ~CpuObservation(){if(observer)observer->Cpu(phase,false);}
+        };
+        template<class Operation>decltype(auto) Observe(FsrPerformanceObserver* p,FsrCpuPhase phase,Operation&& operation){
+            CpuObservation scope(p,phase);return std::forward<Operation>(operation)();
+        }
+        struct Query11Observation {
+            FsrPerformanceObserver* observer;ID3D11DeviceContext* context;
+            Query11Observation(FsrPerformanceObserver* p,ID3D11DeviceContext* c,uint64_t source):observer(p),context(c){if(observer)observer->Begin11(context,source);}
+            ~Query11Observation(){if(observer)observer->End11(context);}
+        };
+    }
     struct FsrFrameAdapter::State
     {
         FsrUpscaler* upscaler{};std::shared_ptr<Graphics::D3D11D3D12Interop> bridge;GpuFrameResources resources;
@@ -12,12 +27,14 @@ namespace TheosRenderPipeline::Upscaling
         ColorEncoding encoding{ColorEncoding::Unknown};FsrColorConverter decode,encode,spatial;
         D3D11FrameCopy::Depth depthCopy;D3D11ContextIsolation isolation;FsrHistoryPolicy history;
         std::optional<RuntimeError> error;bool recovery{},lastReset{};
+        FsrPerformanceObserver* performance{};
     };
     FsrFrameAdapter::FsrFrameAdapter(FsrUpscaler& upscaler,std::shared_ptr<Graphics::D3D11D3D12Interop> bridge,GpuFrameResources resources,
-        ID3D11Texture2D* color,ID3D11Texture2D* depth,ID3D11Texture2D* motion,ID3D11Texture2D* output,ColorEncoding encoding):state_(std::make_unique<State>())
+        ID3D11Texture2D* color,ID3D11Texture2D* depth,ID3D11Texture2D* motion,ID3D11Texture2D* output,ColorEncoding encoding,FsrPerformanceObserver* performance):state_(std::make_unique<State>())
     {
         state_->upscaler=&upscaler;state_->bridge=std::move(bridge);state_->resources=resources;
         state_->color=color;state_->depth=depth;state_->motion=motion;state_->output=output;state_->encoding=encoding;
+        state_->performance=performance;
     }
     FsrFrameAdapter::~FsrFrameAdapter(){if(state_->bridge && FAILED(state_->bridge->Drain()))(void)state_.release();}
     void FsrFrameAdapter::InvalidateHistory(){state_->history.Invalidate();}
@@ -50,6 +67,7 @@ namespace TheosRenderPipeline::Upscaling
     }
     Result<UpscaleOutcome> FsrFrameAdapter::Evaluate(const UpscaleFrame& frame)
     {
+        CpuObservation total(state_->performance,FsrCpuPhase::Total);
         state_->lastReset=false;
         if(!state_->recovery)state_->error.reset();
         auto invalid=[&]()->Result<UpscaleOutcome>{state_->history.Invalidate();return UpscaleOutcome::SkippedInvalidInput;};
@@ -70,23 +88,31 @@ namespace TheosRenderPipeline::Upscaling
         auto decision=state_->history.Accept(frame.sourceId,frame.camera,frame.render,false,false);if(!decision.valid)return invalid();
         prepared.reset=frame.reset || decision.reset;state_->lastReset=prepared.reset;
         auto* context=state_->bridge->Context11();HRESULT hr{};
+        auto* performance=state_->performance;
+        Query11Observation query11(performance,context,frame.sourceId);
+        if(performance)performance->Stamp11(context,FsrGpuPhase::Prepare,true);
         const auto inputEncoding=frame.colorIsLinear?ColorEncoding::Linear:state_->encoding;
         if(frame.input!=state_->color.Get()) {
-            hr=state_->decode.Convert(context,frame.input,state_->color.Get(),inputEncoding,ColorEncoding::Linear);
+            hr=Observe(performance,FsrCpuPhase::PrepareColor,[&]{return state_->decode.Convert(context,frame.input,state_->color.Get(),inputEncoding,ColorEncoding::Linear);});
             if(FAILED(hr)){if(FAILED(state_->bridge->Device12()->GetDeviceRemovedReason()))return fatal(hr,"FSR device removed during input conversion");state_->error=RuntimeError{ErrorKind::InvalidInput,hr,"FSR explicit input color conversion failed"};return invalid();}
         } else if(inputEncoding!=ColorEncoding::Linear)return invalid();
         {
+            CpuObservation guides(performance,FsrCpuPhase::PrepareGuides);
             D3D11ContextIsolation::Scope scope(state_->isolation,context);if(!scope)return fatal(E_FAIL,"FSR producer state isolation failed");
             if(frame.depth!=state_->depth.Get())hr=state_->depthCopy.Copy(context,frame.depth,state_->depth.Get(),{frame.render.width,frame.render.height});
             if(SUCCEEDED(hr) && frame.motion!=state_->motion.Get())hr=D3D11FrameCopy::Color(context,frame.motion,state_->motion.Get(),{frame.render.width,frame.render.height});
             if(FAILED(hr)){state_->error=RuntimeError{ErrorKind::InvalidInput,hr,"FSR prepared depth/motion conversion failed"};return invalid();}
         }
-        if(FAILED(hr=state_->bridge->SignalProducer()))return fatal(hr,"FSR producer submission failed");
-        ID3D12GraphicsCommandList* list{};if(FAILED(hr=state_->bridge->Begin(&list)))return fatal(hr,"FSR command slot unavailable");
-        auto dispatch=state_->upscaler->Dispatch(list,state_->resources,prepared);
+        if(performance)performance->Stamp11(context,FsrGpuPhase::Prepare,false);
+        if(FAILED(hr=Observe(performance,FsrCpuPhase::ProducerSignal,[&]{return state_->bridge->SignalProducer();})))return fatal(hr,"FSR producer submission failed");
+        ID3D12GraphicsCommandList* list{};if(FAILED(hr=Observe(performance,FsrCpuPhase::Begin,[&]{return state_->bridge->Begin(&list);})))return fatal(hr,"FSR command slot unavailable");
+        if(performance){performance->Begin12(list,frame.sourceId);performance->Stamp12(list,FsrGpuPhase::Dispatch,true);}
+        auto dispatch=Observe(performance,FsrCpuPhase::Record,[&]{return state_->upscaler->Dispatch(list,state_->resources,prepared);});
+        if(performance)performance->Stamp12(list,FsrGpuPhase::Dispatch,false);
         if(!dispatch) {
             state_->error=dispatch.error();state_->history.Invalidate();
-            if(FAILED(hr=state_->bridge->DiscardRecording()) || FAILED(hr=state_->bridge->Drain()))return fatal(hr,"FSR failed dispatch could not retire safely");
+            hr=state_->bridge->DiscardRecording();if(SUCCEEDED(hr)&&performance)performance->DiscardUnsubmitted12();
+            if(FAILED(hr) || FAILED(hr=state_->bridge->Drain()))return fatal(hr,"FSR failed dispatch could not retire safely");
             if(dispatch.error().kind==ErrorKind::DeviceLost || dispatch.error().kind==ErrorKind::RetirementFailure || dispatch.error().kind==ErrorKind::ContextFailure)return std::unexpected(dispatch.error());
             if(dispatch.error().kind!=ErrorKind::DispatchFailure)return invalid();
             // The vendor may have changed CPU-side history while recording.
@@ -94,8 +120,11 @@ namespace TheosRenderPipeline::Upscaling
             // restart, retaining the poisoned context until normal retirement.
             state_->recovery=true;return Spatial(frame);
         }
-        if(FAILED(hr=state_->bridge->Submit()) || FAILED(hr=state_->bridge->WaitConsumer()))return fatal(hr,"FSR dispatch/consumer dependency failed");
-        hr=state_->encode.Convert(context,state_->output.Get(),frame.output,ColorEncoding::Linear,state_->encoding);
+        if(performance)performance->Resolve12(list);
+        if(FAILED(hr=Observe(performance,FsrCpuPhase::Submit,[&]{return state_->bridge->Submit();})) || FAILED(hr=state_->bridge->WaitConsumer()))return fatal(hr,"FSR dispatch/consumer dependency failed");
+        if(performance)performance->Stamp11(context,FsrGpuPhase::Delivery,true);
+        hr=Observe(performance,FsrCpuPhase::Delivery,[&]{return state_->encode.Convert(context,state_->output.Get(),frame.output,ColorEncoding::Linear,state_->encoding);});
+        if(performance)performance->Stamp11(context,FsrGpuPhase::Delivery,false);
         if(FAILED(hr))return fatal(hr,"FSR native output delivery failed");
         state_->error.reset();return UpscaleOutcome::Temporal;
     }

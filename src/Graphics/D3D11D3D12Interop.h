@@ -27,6 +27,7 @@ namespace TheosRenderPipeline::Graphics
         void* owner{};
         void(*wait)(void*,bool,std::uint64_t){};
         void(*flush)(void*){};
+        void(*submitted)(void*,InteropWork,ID3D12Fence*,std::uint64_t){};
     };
 
 	struct SharedTexture

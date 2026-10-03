@@ -36,6 +36,18 @@ struct AdapterOperations
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
 };
 struct FaultBridge:Interop{void SimulateFault(HRESULT result){fault_=result;}};
+struct TimingObservation final:FsrPerformanceObserver {
+    unsigned cpuBegin{},cpuEnd{},begin11{},end11{},begin12{},resolved{},discarded{};
+    bool recording12{};
+    void Cpu(FsrCpuPhase,bool begin)override{begin?++cpuBegin:++cpuEnd;}
+    void Begin11(ID3D11DeviceContext*,uint64_t source)override{Require(source!=0,"timing keeps real source identity");++begin11;}
+    void Stamp11(ID3D11DeviceContext*,FsrGpuPhase,bool)override{}
+    void End11(ID3D11DeviceContext*)override{++end11;}
+    void Begin12(ID3D12GraphicsCommandList*,uint64_t)override{Require(!recording12,"previous diagnostic recording must close");recording12=true;++begin12;}
+    void Stamp12(ID3D12GraphicsCommandList*,FsrGpuPhase,bool)override{}
+    void Resolve12(ID3D12GraphicsCommandList*)override{Require(recording12,"resolve belongs to actual recording");recording12=false;++resolved;}
+    void DiscardUnsubmitted12()override{Require(recording12,"discard belongs to actual unsubmitted recording");recording12=false;++discarded;}
+};
 int main(int argc,char** argv)
 {
     Require(argc==2,"fixture root supplied");Rig rig;
@@ -52,7 +64,8 @@ int main(int argc,char** argv)
     }
     FsrHostResources host(std::filesystem::absolute(argv[1]));BackendConfiguration config;config.backend=BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;
     auto render=host.PrepareSizing(rig.device11.Get(),config,{65,37},DXGI_FORMAT_R8G8B8A8_UNORM,ColorEncoding::Gamma22);Require(bool(render),"frame sizing");Require(bool(host.CompleteStartup()),"frame context");
-    FsrFrameAdapter adapter(*host.Upscaler(),host.Bridge(),host.Resources(),host.Color11(),host.Depth11(),host.Motion11(),host.Output11(),ColorEncoding::Gamma22);
+    TimingObservation timing;
+    FsrFrameAdapter adapter(*host.Upscaler(),host.Bridge(),host.Resources(),host.Color11(),host.Depth11(),host.Motion11(),host.Output11(),ColorEncoding::Gamma22,&timing);
     auto desc=rig.Description();desc.Width=render->width;desc.Height=render->height;desc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;desc.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;
     ComPtr<ID3D11Texture2D> input,output,depth,motion;Check(rig.device11->CreateTexture2D(&desc,nullptr,&input),"game color");desc.Width=65;desc.Height=37;Check(rig.device11->CreateTexture2D(&desc,nullptr,&output),"native handoff");
     desc.Width=render->width;desc.Height=render->height;desc.Format=DXGI_FORMAT_R32_FLOAT;Check(rig.device11->CreateTexture2D(&desc,nullptr,&depth),"real depth input");desc.Format=DXGI_FORMAT_R16G16_FLOAT;Check(rig.device11->CreateTexture2D(&desc,nullptr,&motion),"real motion input");
@@ -68,6 +81,8 @@ int main(int argc,char** argv)
     Require(!adapter.LastError(),"a later unrelated rejection cannot retain an obsolete optional-guide diagnostic");frame.deltaMilliseconds=16;
     auto dll=GetModuleHandleW((std::filesystem::absolute(argv[1])/"FSR/amd_fidelityfx_loader_dx12.dll").c_str());auto mode=reinterpret_cast<void(*)(unsigned)>(GetProcAddress(dll,"FixtureMode"));mode(8);
     auto slot=host.Bridge()->CurrentSlot(Work::Upscaling);auto recovered=adapter.Evaluate(frame);Require(recovered && *recovered==UpscaleOutcome::SpatialRecovery,"SpatialRecoveryNativeOutput after vendor dispatch failure");
+    Require(timing.discarded==1&&timing.resolved==0&&!timing.recording12&&timing.begin11==timing.end11&&timing.cpuBegin==timing.cpuEnd,
+        "failed temporal dispatch closes D3D11 queries and cancels only successfully discarded D3D12 recording");
     Require(host.Bridge()->CurrentSlot(Work::Upscaling)==slot,"failed unsubmitted vendor commands discarded without a fake submission");
     desc.Width=65;desc.Height=37;desc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;desc.BindFlags=0;desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ;desc.Usage=D3D11_USAGE_STAGING;ComPtr<ID3D11Texture2D> readback;Check(rig.device11->CreateTexture2D(&desc,nullptr,&readback),"recovery readback");
     rig.context11->CopyResource(readback.Get(),output.Get());D3D11_MAPPED_SUBRESOURCE mapped{};Check(rig.context11->Map(readback.Get(),0,D3D11_MAP_READ,0,&mapped),"recover pixels");auto* bytes=static_cast<unsigned char*>(mapped.pData);
@@ -86,11 +101,14 @@ int main(int argc,char** argv)
         mode(9);FsrHostResources colorHost(std::filesystem::absolute(argv[1]));
         auto extent=colorHost.PrepareSizing(rig.device11.Get(),config,{65,37},DXGI_FORMAT_R8G8B8A8_UNORM,encoding);
         Require(extent && *extent==*render && colorHost.CompleteStartup() && colorHost.HandoffEncoding()==encoding,"configured encoding admitted and retained by startup owner");
-        FsrFrameAdapter colorAdapter(*colorHost.Upscaler(),colorHost.Bridge(),colorHost.Resources(),colorHost.Color11(),colorHost.Depth11(),colorHost.Motion11(),colorHost.Output11(),colorHost.HandoffEncoding());
+        TimingObservation colorTiming;
+        FsrFrameAdapter colorAdapter(*colorHost.Upscaler(),colorHost.Bridge(),colorHost.Resources(),colorHost.Color11(),colorHost.Depth11(),colorHost.Motion11(),colorHost.Output11(),colorHost.HandoffEncoding(),&colorTiming);
         auto colorFrame=frame;colorFrame.sourceId=1;colorFrame.deltaMilliseconds=16;
         AdapterOperations colorOperations{colorAdapter};
         auto temporal=SourceFrameEvaluator::Evaluate(rig.context11.Get(),colorFrame,colorOperations);
         Require(temporal.outcome==UpscaleOutcome::Temporal,"successful fixture dispatch must deliver configured temporal output");
+        Require(colorTiming.begin11==1&&colorTiming.end11==1&&colorTiming.begin12==1&&colorTiming.resolved==1&&colorTiming.discarded==0&&colorTiming.cpuBegin==colorTiming.cpuEnd,
+            "successful temporal diagnostics stay paired and resolve the submitted recording");
         auto linearDesc=desc;linearDesc.Width=render->width;linearDesc.Height=render->height;linearDesc.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;
         ComPtr<ID3D11Texture2D> decodedReadback;Check(rig.device11->CreateTexture2D(&linearDesc,nullptr,&decodedReadback),"decoded prepared input staging");
         rig.context11->CopyResource(decodedReadback.Get(),colorHost.Color11());Check(rig.context11->Map(decodedReadback.Get(),0,D3D11_MAP_READ,0,&mapped),"decoded temporal input readback");

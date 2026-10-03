@@ -287,6 +287,7 @@ namespace TheosRenderPipeline::Graphics
 		hr = queue_->Signal(work->fence12.Get(), ++work->value);
 		if (FAILED(hr)) { return Check(hr); }
 		work->submitted[work->slot] = work->value;
+        if(performanceSink_.submitted)performanceSink_.submitted(performanceSink_.owner,a_work,work->fence12.Get(),work->value);
 		work->slot = (work->slot + 1) % kCommandSlots;
 		return S_OK;
 	}

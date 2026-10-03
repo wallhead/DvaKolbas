@@ -52,7 +52,8 @@ PerformanceScope::PerformanceScope(PerformanceMetrics* metrics,CpuPhase phase)no
     metrics_(metrics&&metrics->Enabled()?metrics:nullptr),phase_(phase){if(metrics_)begin_=PerformanceNow();}
 PerformanceScope::~PerformanceScope(){if(metrics_)metrics_->RecordCpu(phase_,begin_,PerformanceNow());}
 std::string_view PhaseName(CpuPhase phase)noexcept{
-    constexpr std::array names{"total","bridge","prepareColor","prepareGuides","inputCopy","producerSignal","producerWait","begin","record","submit","delivery","consumerWait","completionWait","drain","encode","preparedWait","interopWait"};
+    constexpr std::array names{"total","bridge","prepareColor","prepareGuides","inputCopy","producerSignal","producerWait","begin","record","submit","delivery","consumerWait","completionWait","drain","encode","preparedWait","interopWait",
+        "fsrTotal","fsrPrepareColor","fsrPrepareGuides","fsrProducerSignal","fsrBegin","fsrRecord","fsrSubmit","fsrDelivery"};
     static_assert(names.size()==size_t(CpuPhase::Count));return phase<CpuPhase::Count?names[size_t(phase)]:"invalid";
 }
 std::string_view PhaseName(GpuPhase phase)noexcept{

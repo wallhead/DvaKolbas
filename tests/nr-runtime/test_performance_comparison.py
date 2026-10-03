@@ -1,5 +1,6 @@
 """Benchmark validity checks; no GPU execution or fixture DLL loading."""
 import importlib.util
+import copy
 from pathlib import Path
 import unittest
 
@@ -67,6 +68,20 @@ class Validity(unittest.TestCase):
         self.assertIn('initialization', ' '.join(comparison.issues(a)))
         a=self.receipt();b=self.receipt();a['warmup']=120;b['warmup']=0
         self.assertEqual(comparison.match_kind(a,b),'unmatched')
+
+    def test_fsr_scope_requires_effect_identity_and_all_three_gpu_phases(self):
+        a=self.receipt();a['fsrEnabled']=True
+        self.assertIn('FSR identity', ' '.join(comparison.issues(a)))
+        a.update(fsrVersion='FSR 3.1.5',fsrQuality='NativeAA',fsrRuntimeSha256={'loader':'a','upscaler':'b'},fsrEvaluations=a['requestedSamples']+a['warmup'])
+        self.assertIn('missing FSR GPU timing', ' '.join(comparison.issues(a)))
+        for s in a['samples']:s['gpuMilliseconds'].update(fsrPrepare=.1,fsrDispatch=1,fsrDelivery=.1)
+        self.assertEqual(comparison.issues(a),[])
+        b=copy.deepcopy(a);b['fsrVersion']='other';self.assertEqual(comparison.match_kind(a,b),'unmatched')
+        b=copy.deepcopy(a);b['fsrQuality']='Quality';self.assertEqual(comparison.match_kind(a,b),'unmatched')
+        b=copy.deepcopy(a);b['fsrRuntimeSha256']['loader']='other';self.assertEqual(comparison.match_kind(a,b),'unmatched')
+        b=copy.deepcopy(a);b['fsrEvaluations']=2;self.assertIn('FSR evaluation count', ' '.join(comparison.issues(b)))
+        b=copy.deepcopy(a);b['nrEnabled']=False;b['samples'][0]['gpuMilliseconds']['fsrDelivery']=None
+        self.assertIn('missing FSR GPU timing', ' '.join(comparison.issues(b)))
 
     def test_complete_flag_cannot_hide_missing_gpu_phase_or_retirement(self):
         a=self.receipt();a['samples'][0]['gpuMilliseconds']['encode']=None

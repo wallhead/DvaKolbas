@@ -105,6 +105,10 @@ void PerformanceQueries::Submitted12(ID3D12Fence* fence,uint64_t value){
     frame.fence=fence;frame.completion=value;frame.pending=true;frame.recording=false;s.active12=-1;
 }
 uint64_t PerformanceQueries::Dropped()const{return state_->dropped;}
+void PerformanceQueries::DiscardUnsubmitted12(){
+    auto& s=*state_;if(s.active12<0)return;auto& frame=s.frames12[size_t(s.active12)];
+    if(!frame.recording||frame.pending)return;frame=State::Frame12{};s.active12=-1;
+}
 bool PerformanceQueries::Available11()const{return state_->available11;}
 bool PerformanceQueries::Available12()const{return state_->available12;}
 }
