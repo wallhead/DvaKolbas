@@ -10,9 +10,15 @@ Synthetic timing receipts measure an enqueue transaction with actual capacity wa
 
 The trial uses the complete existing user INI: NativeAA, one NR Before pass, tone 0, FSR FG requested and ordinary frame logging off. Tone 0 remains a mitigation for the observed camera-dependent color changes, not a proved root-cause fix. Clean staging checks all three model files, AMD runtime files, the driver core, vendor imports and the full manifest. Installation backs up the trial/profile/MO2 settings and preserves the INI, launch settings, accepted FG/SR/DLSS rollback files and other profile files. Only the existing NR trial is enabled in the mod list; competing test upscalers stay disabled. Skyrim is not launched automatically.
 
-## Next game session
+## Initial game session — 2026-10-04
 
-1. Start **V5.4 NO-LORE** through the existing MO2 SKSE entry and load the same test save. Press End and confirm NR is active on world frames.
+The user started Skyrim and reported: “Game started, perf is good!” The captured log identifies the installed Standard source `ea8b84d6bc64`, RTX40 single-pass NR Before and FSR 3.1.5 NativeAA at 2560×1440. FSR entered its temporal route after loading. At the snapshot cutoff, NR had evaluated 20,400 frames and recovered from five logged off/on cycles; its latest record was active without a reset. There were zero error/critical entries and two unsupported UI-adapter hash warnings (KreatE and Open Animation Replacer). The exact snapshot hash, cutoff and observations are recorded in the machine receipt; the raw local snapshot stays under ignored `out/`.
+
+FG generated successfully in an early callback and was then turned off; its latest logged state requested no generation. This is initial smoke evidence, with a qualitative performance report. It does not measure recovery of the FPS gap, prove displayed FG cadence or complete camera-color/HUD/lifecycle acceptance. Installation receipt fields describe the earlier installer action and are preserved.
+
+## Remaining game checks
+
+1. Continue **V5.4 NO-LORE** in the same test save. World-frame NR and live off/on recovery are observed; confirm the enhanced image, camera-motion colors and HUD visually for this candidate.
 2. Turn FG off in the overlay for the source-performance comparison. Compare NR off (`[`) and on (`]`) in the same view, then rotate the camera. Check color, motion and HUD before benchmarking.
 3. Run the existing elevated `Start-NR-PresentMon.cmd` / `Run-PresentMonComparison.ps1 -BenchmarkHost DvaKolbas -Repeats 3` capture. Keep the same save, route, time/weather, native input, one pass, tone/style/preset/intensity/structure/resolve, sharpening, frame cap/VSync, ENB/ReShade order and diagnostics. Record effective provider/model/version/extents/placement. AIO comparison with different model/provider/placement is confounded and cannot pass the matched-host gate.
 4. Separately turn FG on and check source versus generated presentation cadence, HUD/inventory/map/dialogue, NR/FG off-on recovery, save/load/fast travel, alt-tab/minimize and stale-image behavior. NR counters alone cannot prove generated-frame coverage or smoother presentation.

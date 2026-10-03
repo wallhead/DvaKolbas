@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "scope": "P1-P4 Before-only performance candidate, local preparation complete; Skyrim launch/manual acceptance pending",
+  "scope": "P1-P4 Before-only performance candidate, user-launched game smoke observed; matched performance and visual/lifecycle acceptance pending",
   "originalNrMilestones": {
     "done": 1,
     "total": 8
@@ -13,7 +13,7 @@
       "P4 owned linear FSR"
     ],
     "baselineMatchedGameplay": "PENDING",
-    "P5": "Build/review/package/install complete; manual acceptance pending"
+    "P5": "Build/review/package/install complete; initial game smoke observed; matched performance and visual/lifecycle acceptance pending"
   },
   "productMatrix": [
     {
@@ -560,7 +560,8 @@
   "manualGates": [
     {
       "name": "Load save, camera motion, enhanced image/color/HUD and live toggles",
-      "status": "NOT RUN"
+      "status": "PARTIAL",
+      "observed": "World-frame NR evaluation and five NR off/on recoveries logged; user reports good performance. Camera-motion color, enhanced image and HUD inspection remain unconfirmed for this candidate."
     },
     {
       "name": "Matched three-repeat NR off/on source performance, FG off",
@@ -581,6 +582,57 @@
     "AMD NR unsupported",
     "Tone instability root cause"
   ],
-  "skyrimLaunched": false,
-  "overallPerformanceAcceptance": "PENDING GAMEPLAY"
+  "skyrimLaunched": true,
+  "gameSmoke": {
+    "date": "2026-10-04",
+    "launchedBy": "User",
+    "userReport": "Game started, perf is good!",
+    "result": "Initial world-frame and live-toggle smoke observed; performance report qualitative",
+    "logSnapshot": "out/research/nr/performance/game-smoke-2026-10-04/launch.log",
+    "logSha256": "9a4c2c2a1c3f770c549e44bd0383149b327ffafeb37b3cb3d176f8877fb77430",
+    "logLineCount": 238,
+    "logCutoffLocal": "2026-10-04 00:05:35.906",
+    "buildIdentity": "TRP_BUILD|edition=Standard|source=ea8b84d6bc64|FSR=1|FG=1|NR=1",
+    "nr": {
+      "profile": "rtx40",
+      "placement": "Before",
+      "passes": 1,
+      "evaluatedFramesAtLastRecord": 20400,
+      "sourceIdAtLastRecord": 31317,
+      "settingsRevisionAtLastRecord": 21,
+      "resetsAtLastRecord": 17,
+      "lastRecordRequested": true,
+      "lastRecordEvaluated": true,
+      "lastRecordReset": false,
+      "loggedOffOnRecoveries": 5
+    },
+    "fsr": {
+      "provider": "3.1.5",
+      "quality": "NativeAA",
+      "policy": "Analytical",
+      "sourceColorEncoding": "Gamma22",
+      "renderExtent": "2560x1440",
+      "outputExtent": "2560x1440",
+      "lastLoggedRoute": "temporal"
+    },
+    "fg": {
+      "successfulGenerateCallbackObserved": true,
+      "lastLoggedRequested": false,
+      "lastLoggedGenerate": false,
+      "lastLoggedStateLocal": "2026-10-03 23:58:09.507",
+      "independentPresentationCadenceVerified": false
+    },
+    "severityCounts": {
+      "error": 0,
+      "critical": 0,
+      "warning": 2
+    },
+    "warnings": [
+      "KreatE 1.5.0 UI adapter rejected: unsupported DLL hash",
+      "Open Animation Replacer 3.1.5 UI adapter rejected: unsupported DLL hash"
+    ],
+    "measuredFps": null,
+    "limitations": "Periodic NR counters are not an FPS capture; callback success does not prove displayed generated frames. Matched three-repeat performance, visual/color/HUD and lifecycle gates remain open. Installation fields retain their historical pre-launch state. No game/MO2 settings or binaries changed during this observation."
+  },
+  "overallPerformanceAcceptance": "PENDING MATCHED PERFORMANCE AND VISUAL/LIFECYCLE ACCEPTANCE"
 }
