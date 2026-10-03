@@ -80,6 +80,8 @@ namespace TheosRenderPipeline::Graphics
 		HRESULT Submit(InteropWork a_work);
 		// Ordinary SR adds strict producer order and final D3D11 reader retirement.
         HRESULT SignalProducer();
+        // Snapshot only a genuinely submitted ordinary D3D11 producer signal.
+        HRESULT ProducerDependency(ID3D12Fence** a_fence,std::uint64_t* a_value);
         HRESULT Begin(ID3D12GraphicsCommandList** a_list);
         HRESULT Submit();
         // Discard an ordinary list which has never reached ExecuteCommandLists.

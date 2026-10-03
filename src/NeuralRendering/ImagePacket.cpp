@@ -44,7 +44,7 @@ Result<void> FenceDeviceIdentity::Validate(ID3D12Fence* fence,ID3D12Device* expe
     }
     return {};
 }
-Result<void> ValidateImagePacket(ID3D12GraphicsCommandList* list,const ImagePacket& p,const StageContract& c,const FenceDeviceIdentity* fences){
+static Result<void> ValidatePacket(ID3D12GraphicsCommandList* list,const ImagePacket& p,const StageContract& c,const FenceDeviceIdentity* fences,bool pending){
     if(!c.device || !c.queue || !c.adapterLuid.Valid())return Invalid("NR stage device/queue identity missing");
     const auto luid=c.device->GetAdapterLuid();
     if(luid.LowPart!=c.adapterLuid.low || luid.HighPart!=c.adapterLuid.high)
@@ -87,11 +87,17 @@ Result<void> ValidateImagePacket(ID3D12GraphicsCommandList* list,const ImagePack
         else if(!OnDevice(p.producerFence.Get(),c.device.Get()))return std::unexpected(Error{ErrorKind::IdentityMismatch,0,"NR producer fence belongs to a different device"});
         const auto completed=p.producerFence->GetCompletedValue();
         if(completed==UINT64_MAX)return std::unexpected(Error{ErrorKind::Retirement,0,"NR producer fence reports device removal"});
-        if(completed<p.producerFenceValue){
+        if(!pending&&completed<p.producerFenceValue){
             std::ostringstream message;message<<"NR producer ownership has not retired: target="<<p.producerFenceValue<<" completed="<<completed;
             return std::unexpected(Error{ErrorKind::Retirement,0,message.str()});
         }
     }
     return {};
+}
+Result<void> ValidateImagePacket(ID3D12GraphicsCommandList* list,const ImagePacket& p,const StageContract& c,const FenceDeviceIdentity* fences){
+    return ValidatePacket(list,p,c,fences,false);
+}
+Result<void> QueuedImageAdmission::Validate(ID3D12GraphicsCommandList* list,const ImagePacket& p,const StageContract& c,const FenceDeviceIdentity& fences){
+    return ValidatePacket(list,p,c,&fences,true);
 }
 }

@@ -333,6 +333,14 @@ namespace TheosRenderPipeline::Graphics
         }
         return hr;
     }
+    HRESULT D3D11D3D12Interop::ProducerDependency(ID3D12Fence** fence,std::uint64_t* value)
+    {
+        if(!fence||!value)return E_POINTER;
+        *fence=nullptr;*value=0;
+        const auto* work=Get(InteropWork::Upscaling);
+        if(!Ready()||!work||!srProducerSubmitted_||srDispatchSubmitted_||!work->value)return E_UNEXPECTED;
+        *fence=work->fence12.Get();(*fence)->AddRef();*value=work->value;return S_OK;
+    }
     HRESULT D3D11D3D12Interop::Begin(ID3D12GraphicsCommandList** list)
     {
         if (!list) { return E_POINTER; }

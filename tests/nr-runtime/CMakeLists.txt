@@ -126,11 +126,12 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_features(TRPNrStageTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrStageTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_link_libraries(TRPNrStageTests PRIVATE TRPNeuralRuntime)
-    foreach(mode IN ITEMS unsubmitted record-failure)
+    foreach(mode IN ITEMS unsubmitted record-failure queued-admission)
         add_test(NAME NrStage-${mode} COMMAND TRPNrStageTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" ${mode})
         set_tests_properties(NrStage-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 30 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
     set(nrProbeSources tests/nr-runtime/RuntimeProbe.cpp tests/nr-runtime/RuntimeProbeReport.cpp
+        tests/nr-runtime/ObservedQueue.h tests/NrStageTests.cpp
         tests/nr-runtime/PerformanceProbe.cpp
         src/NeuralRendering/PerformanceMetrics.h src/NeuralRendering/PerformanceMetrics.cpp
         src/NeuralRendering/PerformanceQueries.h src/NeuralRendering/PerformanceQueries.cpp
@@ -208,6 +209,10 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_definitions(TRPNrRuntimeProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNrRuntimeProbe PRIVATE "${nrRoot}/src" "${TRP_NR_NGX_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
     target_link_libraries(TRPNrRuntimeProbe PRIVATE TRPNeuralRuntime)
+    add_test(NAME NrPendingProducerOutput COMMAND TRPNrRuntimeProbe
+        --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}" --profile rtx40
+        --caller-shim on --frames 6 --queued-producer on --output "${CMAKE_CURRENT_BINARY_DIR}/pending-producer.json")
+    set_tests_properties(NrPendingProducerOutput PROPERTIES TIMEOUT 90 RUN_SERIAL TRUE LABELS GPU)
     # Isolated executable only: reproduce the production catalog source with
     # one exact research model with direct/shim policies. Shipping pins stay immutable.
     file(READ "${nrRoot}/src/NeuralRendering/RuntimeCatalog.cpp" nrPerformanceCatalog)

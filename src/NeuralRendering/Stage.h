@@ -30,6 +30,9 @@ public:
     Stage(const Stage&)=delete;Stage& operator=(const Stage&)=delete;
     Result<void> Initialize(std::shared_ptr<RuntimeOwner>,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);
     Result<EvaluationTicket> Record(ID3D12GraphicsCommandList*,const ImagePacket&,const SettingsSnapshot&);
+    // Orders this exact producer on the retained queue before recording. This
+    // returns a pending ticket, never a claim of CPU/GPU completion.
+    Result<EvaluationTicket> RecordQueued(ID3D12GraphicsCommandList*,const ImagePacket&,const SettingsSnapshot&);
     // Caller has executed its closed list on the retained contract queue.
     // This enqueues our completion signal AFTER that work; it is not a wait.
     Result<void> MarkSubmitted(const EvaluationTicket&,ID3D12Fence*,uint64_t value);
@@ -38,6 +41,7 @@ public:
     Result<void> Retire();
     StageDiagnostics Diagnostics()const;
 private:
+    Result<EvaluationTicket> RecordInternal(ID3D12GraphicsCommandList*,const ImagePacket&,const SettingsSnapshot&,bool queued);
     struct State;std::unique_ptr<State> state_;
 };
 }

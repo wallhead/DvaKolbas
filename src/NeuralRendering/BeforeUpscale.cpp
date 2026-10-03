@@ -44,11 +44,6 @@ struct BeforeUpscale::State {
         auto r=Gpu(contract.device->GetDeviceRemovedReason(),"NR Before D3D12 device removed");if(!r)return r;
         return Gpu(device11->GetDeviceRemovedReason(),"NR Before D3D11 device removed");
     }
-    Result<void> Handoff(){
-        if(handoffValue==UINT64_MAX){terminal=true;return Fail(ErrorKind::Runtime,"NR Before handoff sequence exhausted");}
-        auto r=Gpu(interop.Context11()->Signal(handoff11.Get(),++handoffValue),"NR Before D3D11 handoff signal failed");
-        interop.Context11()->Flush();if(metrics)metrics->RecordFlush();if(!r)return r;return Wait(handoffFence.Get(),handoffValue);
-    }
     bool Texture(ID3D11Texture2D* texture,DXGI_FORMAT format)const {
         if(!texture)return false;ComPtr<ID3D11Device> device;texture->GetDevice(&device);
         D3D11_TEXTURE2D_DESC d{};texture->GetDesc(&d);
@@ -126,15 +121,14 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.motion.Get(),s.motion);}),"NR Before motion copy rejected");if(!r)return std::unexpected(r.error());
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::InputCopy,false);
     r=gpu(MeasurePerformance(s.metrics,CpuPhase::ProducerSignal,[&]{return s.interop.SignalProducer();}),"NR Before producer submission failed");if(!r)return std::unexpected(r.error());
-    r=s.Handoff();if(!r)return std::unexpected(r.error());
+    r=gpu(s.interop.ProducerDependency(&p.producerFence,&p.producerFenceValue),"NR Before submitted producer dependency missing");if(!r)return std::unexpected(r.error());
     ID3D12GraphicsCommandList* list{};r=gpu(MeasurePerformance(s.metrics,CpuPhase::Begin,[&]{return s.interop.Begin(&list);}),"NR Before command recording begin failed");if(!r)return std::unexpected(r.error());
     constexpr auto read=D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
     for(auto* resource:{s.color.texture12.Get(),s.depth.texture12.Get(),s.motion.texture12.Get()})Transition(list,resource,D3D12_RESOURCE_STATE_COMMON,read);
     Transition(list,s.output.texture12.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     p.color=s.color.texture12;p.depth=s.depth.texture12;p.motion=s.motion.texture12;p.output=s.output.texture12;
-    p.producerFence=s.handoffFence;p.producerFenceValue=s.handoffValue;
     p.colorState=p.depthState=p.motionState=read;p.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-    p.reset=history->Reset();auto ticket=s.stage.Record(list,p,settings);
+    p.reset=history->Reset();auto ticket=s.stage.RecordQueued(list,p,settings);
     if(!ticket){s.terminal=true;return std::unexpected(ticket.error());}
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}
     for(auto* resource:{s.color.texture12.Get(),s.depth.texture12.Get(),s.motion.texture12.Get()})Transition(list,resource,read,D3D12_RESOURCE_STATE_COMMON);

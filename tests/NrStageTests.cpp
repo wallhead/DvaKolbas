@@ -1,5 +1,6 @@
 #include "NeuralRendering/Stage.h"
 #include "nr-runtime/GpuProbeGuard.h"
+#include "nr-runtime/ObservedQueue.h"
 #include <dxgi1_6.h>
 #include <cstdio>
 using namespace TheosRenderPipeline::NeuralRendering;
@@ -25,6 +26,9 @@ int wmain(int argc,wchar_t** argv){try{
     if(FAILED(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&c.device))))return 77;
     c.adapterLuid={d.AdapterLuid.LowPart,d.AdapterLuid.HighPart};D3D12_COMMAND_QUEUE_DESC queue{};
     if(FAILED(c.device->CreateCommandQueue(&queue,IID_PPV_ARGS(&c.queue))))return 1;
+    const bool admission=std::wstring_view(argv[3])==L"queued-admission";
+    ObservedQueue* observed{};
+    if(admission){observed=new ObservedQueue(c.queue.Get());c.queue.Attach(observed);}
     auto owner=std::make_shared<RuntimeOwner>(RuntimeOwnerPaths{argv[1],argv[2],std::filesystem::absolute("nr-stage-cache"),true});
     const AdapterIdentity id{d.VendorId,d.DeviceId,d.SubSysId,c.adapterLuid,false};
     auto opened=owner->Open(RuntimeCatalog()[1],c.device.Get(),id);if(!opened){std::puts(opened.error().message.c_str());return 1;}
@@ -43,6 +47,23 @@ int wmain(int argc,wchar_t** argv){try{
     auto bad=p;bad.guideSourceId=2;Check(!stage->Record(list.Get(),bad,s)&&stage->Diagnostics().evaluate==0,"InvalidPacketRejectedBeforeVendorWork");
     auto ratio=s;ratio.reconstruction.method=ResolveMethod::Ratio;
     Check(!stage->Record(list.Get(),p,ratio)&&stage->Diagnostics().evaluate==0,"CoreStageCannotSilentlyIgnoreRequestedRatioResolve");
+    if(admission){
+        c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&p.producerFence));p.producerFenceValue=1;
+        auto rejected=stage->Record(list.Get(),p,s);
+        Check(!rejected&&rejected.error().kind==ErrorKind::Retirement&&observed->waits==0,"PendingProducerStillRejectedByStrictRecord");
+        auto stale=p;stale.guideSourceId=2;
+        Check(!stage->RecordQueued(list.Get(),stale,s)&&observed->waits==0,"InvalidIdentityNeverQueued");
+        Check(!stage->RecordQueued(list.Get(),p,disabled)&&observed->waits==0,"DisabledPendingProducerNeverQueued");
+        ComPtr<IDXGIAdapter> warp;ComPtr<ID3D12Device> foreign;auto foreignPacket=p;
+        if(FAILED(factory->EnumWarpAdapter(IID_PPV_ARGS(&warp)))||FAILED(D3D12CreateDevice(warp.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&foreign))))return 1;
+        foreignPacket.producerFence.Reset();if(FAILED(foreign->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&foreignPacket.producerFence))))return 1;
+        rejected=stage->RecordQueued(list.Get(),foreignPacket,s);
+        Check(!rejected&&rejected.error().kind==ErrorKind::IdentityMismatch&&observed->waits==0,"ForeignFenceNeverQueued");
+        observed->failWait=true;rejected=stage->RecordQueued(list.Get(),p,s);
+        Check(!rejected&&observed->waits==1&&stage->Diagnostics().evaluate==0&&stage->Diagnostics().recorded==0&&stage->Diagnostics().terminal,"QueueWaitFailureRecordsNoNr");
+        Check(!stage->RecordQueued(list.Get(),p,s)&&observed->waits==1,"FailedQueueWaitCannotRetryTerminalStage");
+        return failed?1:0;
+    }
     if(failed)return 1;
     if(std::wstring_view(argv[3])==L"record-failure"){
         const_cast<RuntimeExports&>(owner->Exports()).evaluate=&FailEvaluate;

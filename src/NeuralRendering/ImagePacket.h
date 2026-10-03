@@ -65,4 +65,10 @@ private:
 };
 Result<void> ValidateImagePacket(ID3D12GraphicsCommandList*,const ImagePacket&,const StageContract&,
     const FenceDeviceIdentity* = nullptr);
+// Only Stage can request admission of a pending dependency. Callers cannot
+// weaken the public completion validator with a flag or an alternate fence.
+class QueuedImageAdmission {
+    friend class Stage;
+    static Result<void> Validate(ID3D12GraphicsCommandList*,const ImagePacket&,const StageContract&,const FenceDeviceIdentity&);
+};
 }

@@ -5,6 +5,8 @@ int main()
     Rig rig;Interop interop;rig.Initialize(interop);
     ID3D12GraphicsCommandList* list{};
     Require(FAILED(interop.Begin(&list)) && !list,"unsubmitted producer cannot start ordinary dispatch");
+    ComPtr<ID3D12Fence> producerFence;uint64_t producerValue=42;
+    Require(FAILED(interop.ProducerDependency(&producerFence,&producerValue))&&!producerFence&&!producerValue,"unsubmitted producer exports no dependency");
     ComPtr<IDXGIAdapter> warp;ComPtr<ID3D12Device> foreign;Check(rig.factory->EnumWarpAdapter(IID_PPV_ARGS(&warp)),"foreign WARP adapter");
     Check(D3D12CreateDevice(warp.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&foreign)),"foreign actual device");
     Interop mismatch;Require(mismatch.Initialize(rig.device11.Get(),foreign.Get(),rig.queue.Get())==E_INVALIDARG,"adapter mismatch rejected");
@@ -28,8 +30,11 @@ int main()
         uint32_t pixels[6];for(unsigned i=0;i<6;++i)pixels[i]=0xff001000+frame*17+i;
         rig.context11->UpdateSubresource(source.Get(),0,nullptr,pixels,12,0);
         Check(interop.CopyInput(source.Get(),input),"copy source once");Check(interop.SignalProducer(),"submit/flush producer");
+        Check(interop.ProducerDependency(&producerFence,&producerValue),"capture actual submitted producer");
+        Require(producerFence&&producerValue==interop.LastValue(Work::Upscaling),"producer dependency matches real bridge signal");
         Check(interop.Begin(&list),"begin only after producer");Check(Interop::RecordCopy(list,input.texture12.Get(),output.texture12.Get()),"COMMON-state D3D12 copy");
         Check(interop.Submit(),"submit D3D12 work");Check(interop.WaitConsumer(),"D3D11 waits for native output");
+        Require(FAILED(interop.ProducerDependency(&producerFence,&producerValue))&&!producerFence&&!producerValue,"consumer phase exports no stale producer");
         rig.context11->CopyResource(staging.Get(),output.texture11.Get());Check(interop.Drain(),"retire native output readback");
         D3D11_MAPPED_SUBRESOURCE mapped{};Check(rig.context11->Map(staging.Get(),0,D3D11_MAP_READ,0,&mapped),"read GPU pixels");
         for(unsigned row=0;row<2;++row)Require(!std::memcmp(static_cast<char*>(mapped.pData)+row*mapped.RowPitch,pixels+row*3,12),"changing exact pixels survive D3D11/D3D12 round trip");

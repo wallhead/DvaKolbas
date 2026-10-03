@@ -32,6 +32,8 @@ std::vector<std::string> rgbHashes;
 AdapterIdentity adapterIdentity;
 uint64_t shimRva{};
 bool delayedGpuReaderVerified{};
+bool queuedProducerRequested{},queuedProducerVerified{};
+unsigned queuedReferenceMatches{};
 void WriteReport() {
     std::filesystem::create_directories(std::filesystem::absolute(reportPath).parent_path());
     std::ofstream out(reportPath);
@@ -53,6 +55,9 @@ void WriteReport() {
         <<",\"spatiallyVariedFrames\":"<<report.spatiallyVariedFrames
         <<",\"sharedStage\":true,\"sourceAlphaPreservedPixels\":"<<report.sourceAlphaPreservedPixels
         <<",\"delayedGpuReaderVerified\":"<<(delayedGpuReaderVerified?"true":"false")
+        <<",\"queuedProducerRequested\":"<<(queuedProducerRequested?"true":"false")
+        <<",\"queuedProducerVerified\":"<<(queuedProducerVerified?"true":"false")
+        <<",\"queuedSerialReferenceMatches\":"<<queuedReferenceMatches
         <<",\"finitePixels\":"<<report.finitePixels<<",\"overwrittenPixels\":"<<report.overwrittenPixels
         <<",\"changedFromInputPixels\":"<<report.changedFromInputPixels<<",\"allocations\":"<<report.allocations
         <<",\"releases\":"<<report.releases<<",\"runtimeHeldAndMatched\":"<<(report.runtimeHeldAndMatched?"true":"false")
@@ -116,10 +121,12 @@ int wmain(int argc,wchar_t** argv){
             if(key==L"--dll")dll=value;else if(key==L"--core")core=value;else if(key==L"--output")reportPath=value;
             else if(key==L"--profile")profileId=std::filesystem::path(value).string();
             else if(key==L"--caller-shim"){Need(std::wstring_view(value)==L"on"||std::wstring_view(value)==L"off","shim needs on/off");shimRequested=std::wstring_view(value)==L"on";}
+            else if(key==L"--queued-producer"){Need(std::wstring_view(value)==L"on"||std::wstring_view(value)==L"off","queued producer needs on/off");queuedProducerRequested=std::wstring_view(value)==L"on";}
             else if(key==L"--frames")report.requestedFrames=std::stoul(value);else Stop("unknown option");}
         report.profile=profileId;report.shimRequested=shimRequested;report.requireSourceAlpha=true;
         Need(!NrRuntimeResearch::GameRunningOrUnknown(),"Skyrim running or process inventory unavailable; GPU probe refused");
         Need(report.requestedFrames>=2 && report.requestedFrames<=240,"frame count outside bounded probe range");
+        Need(!queuedProducerRequested||(report.requestedFrames>=4&&report.requestedFrames%2==0),"queued reference test needs at least two complete pairs");
         const RuntimeProfile* profile{};for(const auto& p:RuntimeCatalog())if(p.id==profileId)profile=&p;Need(profile!=nullptr,"profile missing/unknown");
         Need(!shimRequested || profile->compatibility==CompatibilityPolicy::CallerIdentityProbeRequired,"signed profile has no caller-shim justification");
         auto runtimeLease=Value(RuntimeFileLease::Open(dll,*profile));report.runtimeSha256=runtimeLease.Sha256();
@@ -146,30 +153,76 @@ int wmain(int argc,wchar_t** argv){
         const auto initialized=stage.Initialize(owner,stageContract);report.create=stage.Diagnostics().create;
         if(!initialized)Stop(initialized.error().message);
         Gpu(list->Close(),"initial empty list close");
-        const auto submit=[&](const EvaluationTicket& ticket){Gpu(list->Close(),"list close");ID3D12CommandList* l[]={list.Get()};queue->ExecuteCommandLists(1,l);
-            const auto marked=stage.MarkSubmitted(ticket,fence.Get(),++fenceValue);if(!marked)Stop(marked.error().message);
+        ComPtr<ID3D12CommandQueue> producer;
+        ComPtr<ID3D12CommandAllocator> producerAllocator;
+        ComPtr<ID3D12GraphicsCommandList> producerList;
+        ComPtr<ID3D12Fence> producerGate,producerDone;
+        if(queuedProducerRequested){
+            Gpu(device->CreateCommandQueue(&q,IID_PPV_ARGS(&producer)),"producer queue");
+            Gpu(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&producerAllocator)),"producer allocator");
+            Gpu(device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,producerAllocator.Get(),nullptr,IID_PPV_ARGS(&producerList)),"producer list");
+            Gpu(producerList->Close(),"producer initial close");
+            Gpu(device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&producerGate)),"producer gate");
+            Gpu(device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&producerDone)),"producer completion");
+        }
+        const auto submit=[&](const EvaluationTicket& ticket,bool alreadySubmitted=false){Gpu(list->Close(),"list close");ID3D12CommandList* l[]={list.Get()};queue->ExecuteCommandLists(1,l);
+            const auto marked=alreadySubmitted?stage.TrackReader(ticket,fence.Get(),++fenceValue):stage.MarkSubmitted(ticket,fence.Get(),++fenceValue);if(!marked)Stop(marked.error().message);
+            if(alreadySubmitted)Gpu(queue->Signal(fence.Get(),fenceValue),"actual readback completion signal");
             Gpu(fence->SetEventOnCompletion(fenceValue,event),"fence event arm");Need(WaitForSingleObject(event,15000)==WAIT_OBJECT_0 && fence->GetCompletedValue()==fenceValue,"output fence incomplete");Gpu(device->GetDeviceRemovedReason(),"device removed");};
         auto color=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT),motion=Texture(device.Get(),DXGI_FORMAT_R16G16_FLOAT),depth=Texture(device.Get(),DXGI_FORMAT_R32_FLOAT),output=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT,true);
         auto colorUpload=MakeTransfer(device.Get(),color.Get(),D3D12_HEAP_TYPE_UPLOAD),motionUpload=MakeTransfer(device.Get(),motion.Get(),D3D12_HEAP_TYPE_UPLOAD),depthUpload=MakeTransfer(device.Get(),depth.Get(),D3D12_HEAP_TYPE_UPLOAD),outputUpload=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_UPLOAD),readback=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_READBACK);
         std::vector<uint16_t> colors(width*height*4),motions(width*height*2),sentinel(width*height*4,DirectX::PackedVector::XMConvertFloatToHalf(-.25f)),pixels(colors.size());std::vector<float> depths(width*height,.5f);
         SettingsSnapshot settings;settings.revision=1;settings.enabled=true;
         std::set<std::string> distinct;
+        std::vector<uint16_t> queuedReference;
         for(UINT frame=0;frame<report.requestedFrames;++frame){
-            for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const size_t i=(size_t(y)*width+x)*4;const float a=((x/8+y/8+frame)&1)?.1f:.9f;
-                colors[i]=DirectX::PackedVector::XMConvertFloatToHalf(a);colors[i+1]=DirectX::PackedVector::XMConvertFloatToHalf(float(x)/width);colors[i+2]=DirectX::PackedVector::XMConvertFloatToHalf(float(y)/height + .002f*frame);colors[i+3]=DirectX::PackedVector::XMConvertFloatToHalf(float((x+frame)%5)/4);}
+            const UINT pattern=queuedProducerRequested?frame/2:frame;
+            for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const size_t i=(size_t(y)*width+x)*4;const float a=((x/8+y/8+pattern)&1)?.1f:.9f;
+                colors[i]=DirectX::PackedVector::XMConvertFloatToHalf(a);colors[i+1]=DirectX::PackedVector::XMConvertFloatToHalf(float(x)/width);colors[i+2]=DirectX::PackedVector::XMConvertFloatToHalf(float(y)/height + .002f*pattern);colors[i+3]=DirectX::PackedVector::XMConvertFloatToHalf(float((x+pattern)%5)/4);}
             Gpu(allocator->Reset(),"allocator reset");Gpu(list->Reset(allocator.Get(),nullptr),"list reset");
-            if(frame){Barrier(list.Get(),color.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(list.Get(),motion.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(list.Get(),depth.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(list.Get(),output.Get(),D3D12_RESOURCE_STATE_COPY_SOURCE,D3D12_RESOURCE_STATE_COPY_DEST);}
-            Upload(list.Get(),color.Get(),colorUpload,colors.data(),width*8);Upload(list.Get(),motion.Get(),motionUpload,motions.data(),width*4);Upload(list.Get(),depth.Get(),depthUpload,depths.data(),width*4);Upload(list.Get(),output.Get(),outputUpload,sentinel.data(),width*8);
-            Barrier(list.Get(),color.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(list.Get(),motion.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(list.Get(),depth.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(list.Get(),output.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+            auto* evaluationList=list.Get();
+            if(queuedProducerRequested){Gpu(producerAllocator->Reset(),"producer allocator reset");Gpu(producerList->Reset(producerAllocator.Get(),nullptr),"producer reset");}
+            auto* uploadList=queuedProducerRequested?producerList.Get():list.Get();
+            if(frame){Barrier(uploadList,color.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(uploadList,motion.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(uploadList,depth.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(uploadList,output.Get(),D3D12_RESOURCE_STATE_COPY_SOURCE,D3D12_RESOURCE_STATE_COPY_DEST);}
+            Upload(uploadList,color.Get(),colorUpload,colors.data(),width*8);Upload(uploadList,motion.Get(),motionUpload,motions.data(),width*4);Upload(uploadList,depth.Get(),depthUpload,depths.data(),width*4);Upload(uploadList,output.Get(),outputUpload,sentinel.data(),width*8);
+            Barrier(uploadList,color.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(uploadList,motion.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(uploadList,depth.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(uploadList,output.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
             ImagePacket packet;packet.color=color;packet.output=output;packet.depth=depth;packet.motion=motion;
             packet.epoch=packet.guideEpoch=1;packet.sourceId=packet.guideSourceId=packet.batchId=packet.imageId=frame+1;packet.previousSourceId=frame;
             packet.kind=ImageKind::Real;packet.interpolationFraction=1;packet.presentationTime=double(frame)/60;
             packet.colorExtent=packet.guideExtent={width,height};packet.colorDomain=ColorDomain::Linear;packet.guideOrigin=GuideOrigin::RealSource;
             packet.motionScaleX=packet.motionScaleY=1;packet.reset=frame==0;
             packet.colorState=packet.depthState=packet.motionState=D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;packet.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-            auto ticket=Value(stage.Record(list.Get(),packet,settings));report.evaluate=stage.Diagnostics().evaluate;
-            Barrier(list.Get(),output.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COPY_SOURCE);D3D12_TEXTURE_COPY_LOCATION dst{},src{};dst.pResource=readback.buffer.Get();dst.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;dst.PlacedFootprint=readback.footprint;src.pResource=output.Get();src.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;list->CopyTextureRegion(&dst,0,0,0,&src,nullptr);submit(ticket);
+            const bool gated=queuedProducerRequested&&frame%2==0;
+            if(queuedProducerRequested){
+                Gpu(producerList->Close(),"producer close");
+                if(gated)Gpu(producer->Wait(producerGate.Get(),frame+1),"producer gate wait");
+                ID3D12CommandList* uploads[]={producerList.Get()};producer->ExecuteCommandLists(1,uploads);
+                Gpu(producer->Signal(producerDone.Get(),frame+1),"actual producer signal");
+                packet.producerFence=producerDone;packet.producerFenceValue=frame+1;packet.reset=true;
+                if(!gated){Gpu(producerDone->SetEventOnCompletion(frame+1,event),"reference producer arm");Need(WaitForSingleObject(event,15000)==WAIT_OBJECT_0,"reference producer completion");}
+                if(gated){
+                    Need(producerDone->GetCompletedValue()<frame+1,"producer gate unexpectedly open");
+                    auto strict=stage.Record(evaluationList,packet,settings);
+                    Need(!strict&&strict.error().kind==ErrorKind::Retirement,"PendingProducerStillRejectedByStrictRecord");
+                    Need(!ValidateImagePacket(evaluationList,packet,stageContract),"public validator admitted pending producer");
+                }
+            }
+            auto ticket=Value(gated?stage.RecordQueued(evaluationList,packet,settings):stage.Record(evaluationList,packet,settings));report.evaluate=stage.Diagnostics().evaluate;
+            if(gated){
+                Need(producerDone->GetCompletedValue()<frame+1,"RecordQueued did not return before gate release");
+                // Submit real NR work behind the pending input dependency, then
+                // prove its private completion has not retired before release.
+                Gpu(list->Close(),"gated NR close");ID3D12CommandList* work[]={list.Get()};queue->ExecuteCommandLists(1,work);
+                auto marked=stage.MarkSubmitted(ticket,fence.Get(),++fenceValue);if(!marked)Stop(marked.error().message);
+                Need(!stage.RetireTicket(ticket)&&fence->GetCompletedValue()<fenceValue,"pending producer output retired early");
+                Gpu(producerGate->Signal(frame+1),"external producer gate release");
+                Gpu(fence->SetEventOnCompletion(fenceValue,event),"gated NR completion arm");Need(WaitForSingleObject(event,15000)==WAIT_OBJECT_0,"gated NR completion");
+                Gpu(allocator->Reset(),"readback allocator reset");Gpu(list->Reset(allocator.Get(),nullptr),"readback list reset");
+                queuedProducerVerified=true;
+            }
+            Barrier(list.Get(),output.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COPY_SOURCE);D3D12_TEXTURE_COPY_LOCATION dst{},src{};dst.pResource=readback.buffer.Get();dst.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;dst.PlacedFootprint=readback.footprint;src.pResource=output.Get();src.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;list->CopyTextureRegion(&dst,0,0,0,&src,nullptr);submit(ticket,gated);
             unsigned char* mapped{};Gpu(readback.buffer->Map(0,nullptr,reinterpret_cast<void**>(&mapped)),"readback map");for(UINT y=0;y<height;++y)std::memcpy(pixels.data()+size_t(y)*width*4,mapped+readback.footprint.Offset+size_t(y)*readback.footprint.Footprint.RowPitch,width*8);D3D12_RANGE noWrite{};readback.buffer->Unmap(0,&noWrite);
+            if(queuedProducerRequested){if(gated)queuedReference=pixels;else {Need(pixels==queuedReference,"PendingProducerQueueWaitOrdersRealOutput differs from serial reset reference");++queuedReferenceMatches;}}
             for(size_t i=3;i<pixels.size();i+=4)if(pixels[i]==colors[i])++report.sourceAlphaPreservedPixels;
             std::array<float,3> minimum{INFINITY,INFINITY,INFINITY},maximum{-INFINITY,-INFINITY,-INFINITY};
             for(size_t i=0;i<pixels.size();i+=4){bool finite=true,changed=false;for(size_t c=0;c<3;++c){const float value=DirectX::PackedVector::XMConvertHalfToFloat(pixels[i+c]);finite&=std::isfinite(value);minimum[c]=std::min(minimum[c],value);maximum[c]=std::max(maximum[c],value);changed|=pixels[i+c]!=colors[i+c];}++report.outputPixels;if(finite)++report.finitePixels;if(NrRuntimeResearch::AllRgbOverwritten(std::span<const uint16_t,4>{pixels.data()+i,4},std::span<const uint16_t,4>{sentinel.data()+i,4}))++report.overwrittenPixels;if(changed)++report.changedFromInputPixels;}
@@ -208,6 +261,7 @@ int wmain(int argc,wchar_t** argv){
         if(!stageRetired)Stop(stageRetired.error().message);
         const auto retired=owner->Retire();report.shutdown=owner->LastShutdownResult();if(!retired)Stop(retired.error().message);
         report.shimRestored=shimRequested;
+        Need(!queuedProducerRequested||(queuedProducerVerified&&queuedReferenceMatches==report.requestedFrames/2),"queued producer/reference coverage incomplete");
         WriteReport();
         const auto issues=NrRuntimeResearch::Validate(report);for(const auto& issue:issues)std::fprintf(stderr,"UNQUALIFIED %s\n",issue.c_str());
         CloseHandle(event);

@@ -125,22 +125,37 @@ Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageCo
     r=s.Gpu(c.device->GetDeviceRemovedReason(),"NR device removed during creation");if(!r)return r;s.ready=true;return {};
 }
 Result<EvaluationTicket> Stage::Record(ID3D12GraphicsCommandList* list,const ImagePacket& packet,const SettingsSnapshot& settings){
+    return RecordInternal(list,packet,settings,false);
+}
+Result<EvaluationTicket> Stage::RecordQueued(ID3D12GraphicsCommandList* list,const ImagePacket& packet,const SettingsSnapshot& settings){
+    return RecordInternal(list,packet,settings,true);
+}
+Result<EvaluationTicket> Stage::RecordInternal(ID3D12GraphicsCommandList* list,const ImagePacket& packet,const SettingsSnapshot& settings,bool queued){
     PerformanceScope performance(state_->metrics,CpuPhase::Record);
     auto& s=*state_;if(!s.ready||s.terminal)return Fail(ErrorKind::Runtime,"NR stage unavailable/terminal");if(s.pending)return Fail(ErrorKind::Retirement,"NR prior recording/readers have not retired");
     if(settings.reconstruction.preset!=s.preset || settings.reconstruction.inputScale!=1 || settings.reconstruction.peripheralCompression || settings.reconstruction.fusedPreparation || settings.reconstruction.producerColor || settings.reconstruction.colorIsHDR ||
         settings.reconstruction.method>ResolveMethod::Ratio || EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR shared native stage requires adapter-owned reconstruction before/after it");
-    auto validated=ValidateImagePacket(list,packet,s.contract,&s.fences);if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
+    auto validated=queued?QueuedImageAdmission::Validate(list,packet,s.contract,s.fences):ValidateImagePacket(list,packet,s.contract,&s.fences);
+    if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
     if(s.serial==UINT64_MAX)return Fail(ErrorKind::Runtime,"NR ticket sequence exhausted");
-    auto pending=std::make_unique<State::Pending>();pending->packet=packet;pending->id=++s.serial;
+    // Retain the whole packet before touching the queue, including when a
+    // subsequent descriptor allocation or vendor recording fails terminally.
+    s.pending=std::make_unique<State::Pending>();s.pending->packet=packet;s.pending->id=++s.serial;
+    // Validate every input/history identity first. A failed Wait records no NR
+    // commands, and only this retained queue may admit the exact dependency.
+    if(queued&&packet.producerFence){
+        auto wait=s.Gpu(s.contract.queue->Wait(packet.producerFence.Get(),packet.producerFenceValue),"NR producer queue wait failed; no evaluation recorded");
+        if(!wait)return std::unexpected(wait.error());
+    }
     if(s.timing)s.timing->Begin12(list,packet.sourceId);
     D3D12_DESCRIPTOR_HEAP_DESC heap{};heap.Type=D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;heap.NumDescriptors=2;heap.Flags=D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    auto r=s.Gpu(s.contract.device->CreateDescriptorHeap(&heap,IID_PPV_ARGS(&pending->views)),"NR per-record descriptor owner creation failed");if(!r)return std::unexpected(r.error());
+    auto r=s.Gpu(s.contract.device->CreateDescriptorHeap(&heap,IID_PPV_ARGS(&s.pending->views)),"NR per-record descriptor owner creation failed");if(!r)return std::unexpected(r.error());
     if(s.metrics)s.metrics->RecordDescriptorCreation();
-    auto cpu=pending->views->GetCPUDescriptorHandleForHeapStart();D3D12_SHADER_RESOURCE_VIEW_DESC srv{};srv.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;srv.ViewDimension=D3D12_SRV_DIMENSION_TEXTURE2D;srv.Shader4ComponentMapping=D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;srv.Texture2D.MipLevels=1;
+    auto cpu=s.pending->views->GetCPUDescriptorHandleForHeapStart();D3D12_SHADER_RESOURCE_VIEW_DESC srv{};srv.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;srv.ViewDimension=D3D12_SRV_DIMENSION_TEXTURE2D;srv.Shader4ComponentMapping=D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;srv.Texture2D.MipLevels=1;
     s.contract.device->CreateShaderResourceView(packet.color.Get(),&srv,cpu);cpu.ptr+=s.contract.device->GetDescriptorHandleIncrementSize(heap.Type);
     D3D12_UNORDERED_ACCESS_VIEW_DESC uav{};uav.Format=srv.Format;uav.ViewDimension=D3D12_UAV_DIMENSION_TEXTURE2D;s.contract.device->CreateUnorderedAccessView(packet.output.Get(),nullptr,&uav,cpu);
-    s.pending=std::move(pending);auto& p=*s.parameters;p.Set("DLSSNR.Color",packet.color.Get());p.Set("DLSSNR.MVec",packet.motion.Get());p.Set("DLSSNR.Depth",packet.depth.Get());p.Set("DLSSNR.Output",packet.output.Get());
+    auto& p=*s.parameters;p.Set("DLSSNR.Color",packet.color.Get());p.Set("DLSSNR.MVec",packet.motion.Get());p.Set("DLSSNR.Depth",packet.depth.Get());p.Set("DLSSNR.Output",packet.output.Get());
     p.Set("DLSSNR.UI",static_cast<ID3D12Resource*>(nullptr));p.Set("DLSSNR.UIAlpha",static_cast<ID3D12Resource*>(nullptr));
     for(const char* plane:{"Color","MVec","Depth","Output"}){const auto prefix=std::string("DLSSNR.")+plane+"Subrect";p.Set((prefix+"BaseX").c_str(),0u);p.Set((prefix+"BaseY").c_str(),0u);p.Set((prefix+"Width").c_str(),packet.colorExtent.width);p.Set((prefix+"Height").c_str(),packet.colorExtent.height);}
     p.Set("DLSSNR.MVecScaleX",packet.motionScaleX);p.Set("DLSSNR.MVecScaleY",packet.motionScaleY);auto tuning=settings.tuning;tuning.uiCorrection=false;WriteTuningParameters(p,tuning,history->Reset(),packet.depthInverted,RuntimeBuild::Build14);
