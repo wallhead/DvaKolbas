@@ -82,6 +82,9 @@ namespace TheosRenderPipeline::Graphics
         HRESULT SignalProducer();
         // Snapshot only a genuinely submitted ordinary D3D11 producer signal.
         HRESULT ProducerDependency(ID3D12Fence** a_fence,std::uint64_t* a_value);
+        // Queue a genuine ordinary D3D11 reader signal without declaring a
+        // temporal producer/dispatch. Drain still retires this actual value.
+        HRESULT SignalReader(ID3D12Fence** a_fence,std::uint64_t* a_value);
         HRESULT Begin(ID3D12GraphicsCommandList** a_list);
         HRESULT Submit();
         // Discard an ordinary list which has never reached ExecuteCommandLists.

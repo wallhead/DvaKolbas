@@ -89,8 +89,7 @@ namespace TheosRenderPipeline::Upscaling
                 auto result=Spatial(spatialFrame);if(!result||*result!=UpscaleOutcome::SpatialRecovery)return result;
                 // Spatial recovery draws directly from the leased NR color;
                 // its genuine final reader is this draw, not an FSR dispatch.
-                auto hr=state_->bridge->SignalProducer();if(FAILED(hr))return fatal(hr,"FSR spatial NR reader submission failed");
-                ComPtr<ID3D12Fence> drawn;uint64_t value{};hr=state_->bridge->ProducerDependency(&drawn,&value);if(FAILED(hr))return fatal(hr,"FSR spatial NR reader dependency missing");
+                ComPtr<ID3D12Fence> drawn;uint64_t value{};auto hr=state_->bridge->SignalReader(&drawn,&value);if(FAILED(hr))return fatal(hr,"FSR spatial NR reader submission failed");
                 auto tracked=linear->TrackReader(drawn.Get(),value);if(!tracked)return fatal(E_FAIL,"FSR spatial NR reader ownership rejected");return result;
             }
         }

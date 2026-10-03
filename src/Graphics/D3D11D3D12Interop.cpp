@@ -348,6 +348,13 @@ namespace TheosRenderPipeline::Graphics
         if (!srProducerSubmitted_ || srDispatchSubmitted_) { return E_UNEXPECTED; }
         return Begin(InteropWork::Upscaling, list);
     }
+    HRESULT D3D11D3D12Interop::SignalReader(ID3D12Fence** fence,std::uint64_t* value)
+    {
+        if(!fence||!value)return E_POINTER;*fence=nullptr;*value=0;
+        if(!Ready()||srProducerSubmitted_||Get(InteropWork::Upscaling)->recording||(srDispatchSubmitted_&&!srConsumerQueued_))return E_UNEXPECTED;
+        const auto hr=SignalD3D11(InteropWork::Upscaling);if(FAILED(hr))return hr;
+        auto* work=Get(InteropWork::Upscaling);*fence=work->fence12.Get();(*fence)->AddRef();*value=work->value;return S_OK;
+    }
     HRESULT D3D11D3D12Interop::Submit()
     {
         if (!srProducerSubmitted_) { return E_UNEXPECTED; }
