@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "date": "2026-10-03",
+  "sourceRevision": "7eb33a7f3ebb",
+  "scope": "First Skyrim RTX40 native SDR Before smoke test with FSR NativeAA and FSR FG; broader visual/lifecycle acceptance pending",
+  "userReport": "seems its working!",
+  "saveLoadAndWorldSourceObserved": true,
+  "configuration": {
+    "nrProfile": "rtx40",
+    "nrPlacement": "Before",
+    "nrPasses": 1,
+    "fsrQuality": "NativeAA",
+    "fsrProviderPolicy": "Analytical",
+    "fsrProvider": "3.1.5",
+    "sourceEncoding": "Gamma22",
+    "extent": [
+      2560,
+      1440
+    ]
+  },
+  "observations": {
+    "nrEvaluationCountAtLeast": 7800,
+    "lastLoggedNrSource": 16130,
+    "nrDisableTransitions": 3,
+    "successfulGenerationLogRecords": 11,
+    "nrResumedAfterEachRecordedDisable": true,
+    "temporalFsrObserved": true,
+    "renderErrorsInSnapshot": 0
+  },
+  "unrelatedCompatibilityWarnings": [
+    "KreatE adapter rejected: unsupported DLL hash",
+    "Open Animation Replacer adapter rejected: unsupported DLL hash"
+  ],
+  "excerpt": {
+    "path": "7eb33a7-skyrim-before-smoke.log",
+    "sha256": "6085ac95cd0c9545127dc8d6cfe94bfa60d87c4404107bd6ddb969cda7c0823d",
+    "encoding": "UTF-8 with LF line endings"
+  },
+  "fullSnapshotSha256": "ac8789d166fffd1531b9b6576e8fc1ed3d218faccd820e81a05351e68852d4ff",
+  "notEstablished": [
+    "Detailed moving-scene model/color quality",
+    "Complete menu/save/reload/fast-travel/alt-tab matrix",
+    "Measured performance or physical generated-frame cadence",
+    "DLSS backend gameplay",
+    "True After FG",
+    "Other GPU families"
+  ],
+  "wholeNrPlan": {
+    "complete": 1,
+    "total": 8
+  },
+  "reportedMotionArtifact": {
+    "description": "NR image appears to fade/change when rotating the camera",
+    "overlayNrRemainsActive": true,
+    "weatherPresetsLoaded": 0,
+    "cause": "unresolved"
+  },
+  "visualAcceptance": false
+}

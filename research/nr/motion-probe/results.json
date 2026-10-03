@@ -1,0 +1,334 @@
+{
+  "schema": 1,
+  "date": "2026-10-03",
+  "scope": "Isolated native SDR NR stationary/pan/stationary investigation; no SR/FG/ReShade/Skyrim reproduction",
+  "repositoryHeadAtBuild": "77ae28d4f4b7f0b67d1abf0127a5b1abd49079b4",
+  "researchSourcesUncommittedAtBuild": true,
+  "productionBehaviorChanged": false,
+  "installedPackageChanged": false,
+  "adapter": {
+    "vendorId": "0x10DE",
+    "deviceId": "0x2702",
+    "luid": "66328:0",
+    "name": "RTX 4080 SUPER"
+  },
+  "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+  "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+  "sourceEncoding": "Gamma22",
+  "modelInputDomain": "linear FP16",
+  "extent": [
+    640,
+    360
+  ],
+  "depth": 0.5,
+  "depthInverted": false,
+  "motionScale": [
+    640,
+    360
+  ],
+  "settings": "base defaults, one Before pass, revision 1",
+  "routes": {
+    "correct": {
+      "sources": 120,
+      "nrEvaluations": 120,
+      "resets": 1,
+      "panPixelsPerSource": 2,
+      "phases": {
+        "stationary": {
+          "meanRgbCorrection": 3.6130645,
+          "warpedMeanRgbDifference": 0.21300555
+        },
+        "panning": {
+          "meanRgbCorrection": 3.437928,
+          "warpedMeanRgbDifference": 0.2351181
+        },
+        "stationaryAfterPan": {
+          "meanRgbCorrection": 3.5251605,
+          "warpedMeanRgbDifference": 0.21955955
+        }
+      },
+      "csv": "correct.csv",
+      "csvSha256": "80ba2bce79b30706ae11a41a63a223cad00aafa916220ecbd322de24b0c3c76e",
+      "executableSha256": "4a07ef218e725dff39b97fb76fdc4bf1b4f5569e6386dff55f01456fa4a10ff8",
+      "savedReadbackSha256": {
+        "nr-100.ppm": "295859df13ca2fc37f88b8626f341a8dc9e2d02f6ccdc908d69677d617b09bd3",
+        "nr-40.ppm": "99941e25665b41873279da5bbb6947aa351fca10e43a60fb8401e79e7a02fa2a",
+        "nr-60.ppm": "706b0872c0215321a955510286141f5cde7c84db129b44c5ef216fcaa6c4e898",
+        "nr-80.ppm": "0cde7479e6b50d161e48bdbca56209dcff6095350f34ae284a45b53aa2b56ad9",
+        "source-100.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d",
+        "source-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "source-60.ppm": "58ac55489dcaaea7a593a5b1331af85eb0fa2aa4da9d10c3fccc7712422da4a3",
+        "source-80.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d"
+      }
+    },
+    "reverse": {
+      "sources": 120,
+      "nrEvaluations": 120,
+      "resets": 1,
+      "panPixelsPerSource": 2,
+      "phases": {
+        "stationary": {
+          "meanRgbCorrection": 3.6130645,
+          "warpedMeanRgbDifference": 0.21300555
+        },
+        "panning": {
+          "meanRgbCorrection": 3.279917,
+          "warpedMeanRgbDifference": 0.43788445
+        },
+        "stationaryAfterPan": {
+          "meanRgbCorrection": 3.5165129999999998,
+          "warpedMeanRgbDifference": 0.2118371
+        }
+      },
+      "csv": "reverse.csv",
+      "csvSha256": "588dce2221afc605dbc2725546057850d9212a7e369026cd402c1369016a58b7",
+      "executableSha256": "4a07ef218e725dff39b97fb76fdc4bf1b4f5569e6386dff55f01456fa4a10ff8",
+      "savedReadbackSha256": {
+        "nr-100.ppm": "6378b777bc4e12faee237208a389abc15c62ac47a3d805036790d492a902acff",
+        "nr-40.ppm": "99941e25665b41873279da5bbb6947aa351fca10e43a60fb8401e79e7a02fa2a",
+        "nr-60.ppm": "6541adfb400420d27565759d0197b8a635c671851283d218456d693fd145da9d",
+        "nr-80.ppm": "b4e8e7c9a6aa26b38cf6e360d927f96a5c18c17df5c3e6ae925ab92c47c6b6ee",
+        "source-100.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d",
+        "source-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "source-60.ppm": "58ac55489dcaaea7a593a5b1331af85eb0fa2aa4da9d10c3fccc7712422da4a3",
+        "source-80.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d"
+      }
+    },
+    "zero": {
+      "sources": 120,
+      "nrEvaluations": 120,
+      "resets": 1,
+      "panPixelsPerSource": 2,
+      "phases": {
+        "stationary": {
+          "meanRgbCorrection": 3.6130645,
+          "warpedMeanRgbDifference": 0.21300555
+        },
+        "panning": {
+          "meanRgbCorrection": 3.8379135,
+          "warpedMeanRgbDifference": 0.5457368
+        },
+        "stationaryAfterPan": {
+          "meanRgbCorrection": 3.731954,
+          "warpedMeanRgbDifference": 0.21177425
+        }
+      },
+      "csv": "zero.csv",
+      "csvSha256": "dd3d92e90d645cf6da3e2036c5bf890c2e45a7ec155daff719a488c619d5ca62",
+      "executableSha256": "4a07ef218e725dff39b97fb76fdc4bf1b4f5569e6386dff55f01456fa4a10ff8",
+      "savedReadbackSha256": {
+        "nr-100.ppm": "c571cb34182ceef4472027f133d2c461f4eea83f36293289b73b950b01cbb23b",
+        "nr-40.ppm": "99941e25665b41873279da5bbb6947aa351fca10e43a60fb8401e79e7a02fa2a",
+        "nr-60.ppm": "c5600a1a7f11bc409c73288fe8170eed250a84aadc37a3447a225e94e007feca",
+        "nr-80.ppm": "e0899a7b32ec4b86e7909ed443cb4076e5e1e91bee201c782ee30240514facbf",
+        "source-100.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d",
+        "source-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "source-60.ppm": "58ac55489dcaaea7a593a5b1331af85eb0fa2aa4da9d10c3fccc7712422da4a3",
+        "source-80.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d"
+      }
+    },
+    "off": {
+      "sources": 120,
+      "nrEvaluations": 0,
+      "resets": 0,
+      "panPixelsPerSource": 2,
+      "phases": {
+        "stationary": {
+          "meanRgbCorrection": 0.0,
+          "warpedMeanRgbDifference": 0.0
+        },
+        "panning": {
+          "meanRgbCorrection": 0.0,
+          "warpedMeanRgbDifference": 0.0
+        },
+        "stationaryAfterPan": {
+          "meanRgbCorrection": 0.0,
+          "warpedMeanRgbDifference": 0.0
+        }
+      },
+      "csv": "off.csv",
+      "csvSha256": "5f3b24b2b421fbb50a7734b2921e9a9f48d7a7964bffb58396d367146569618c",
+      "executableSha256": "4a07ef218e725dff39b97fb76fdc4bf1b4f5569e6386dff55f01456fa4a10ff8",
+      "savedReadbackSha256": {
+        "nr-100.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d",
+        "nr-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "nr-60.ppm": "58ac55489dcaaea7a593a5b1331af85eb0fa2aa4da9d10c3fccc7712422da4a3",
+        "nr-80.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d",
+        "source-100.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d",
+        "source-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "source-60.ppm": "58ac55489dcaaea7a593a5b1331af85eb0fa2aa4da9d10c3fccc7712422da4a3",
+        "source-80.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d"
+      }
+    },
+    "fast16": {
+      "sources": 120,
+      "nrEvaluations": 120,
+      "resets": 1,
+      "panPixelsPerSource": 16,
+      "phases": {
+        "stationary": {
+          "meanRgbCorrection": 3.6130645,
+          "warpedMeanRgbDifference": 0.21300555
+        },
+        "panning": {
+          "meanRgbCorrection": 3.4357155,
+          "warpedMeanRgbDifference": 0.25982700000000003
+        },
+        "stationaryAfterPan": {
+          "meanRgbCorrection": 3.560525,
+          "warpedMeanRgbDifference": 0.21319844999999998
+        }
+      },
+      "csv": "fast16.csv",
+      "csvSha256": "30dc8bd2c8fd072e7dd675b6bdd4c78e52550a02892d29fde886d6e6d88cdfec",
+      "executableSha256": "4a07ef218e725dff39b97fb76fdc4bf1b4f5569e6386dff55f01456fa4a10ff8",
+      "savedReadbackSha256": {
+        "nr-100.ppm": "f3e4d6b1d27cefd7a214a7b6b01dd823e260633c5a16e81b38a83f252ab2dca8",
+        "nr-40.ppm": "99941e25665b41873279da5bbb6947aa351fca10e43a60fb8401e79e7a02fa2a",
+        "nr-60.ppm": "22b3186c72c4932f723393e815b213b0205cc445bd71d352737da525cf626668",
+        "nr-80.ppm": "1ae0706c0ddca6227d75ed97bb0f1659e7287a8cd2eea3390a85bb76ebc1bcb1",
+        "source-100.ppm": "7c283b97b63ac5d5c57396c1ba9ef6c73e362035c60bfee206ec2914f5c9c3f1",
+        "source-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "source-60.ppm": "96c04d276b538a4c5bfd92f55facd6fd6ba40a6db742f1e0e023e7d3b0702f00",
+        "source-80.ppm": "7c283b97b63ac5d5c57396c1ba9ef6c73e362035c60bfee206ec2914f5c9c3f1"
+      }
+    },
+    "fast64": {
+      "sources": 120,
+      "nrEvaluations": 120,
+      "resets": 1,
+      "panPixelsPerSource": 64,
+      "phases": {
+        "stationary": {
+          "meanRgbCorrection": 3.6130645,
+          "warpedMeanRgbDifference": 0.21300555
+        },
+        "panning": {
+          "meanRgbCorrection": 3.482794,
+          "warpedMeanRgbDifference": 0.30677095
+        },
+        "stationaryAfterPan": {
+          "meanRgbCorrection": 3.3341375,
+          "warpedMeanRgbDifference": 0.22579145
+        }
+      },
+      "csv": "fast64.csv",
+      "csvSha256": "84ed937132b56313bc44ef30c54a9b8cd990e2b689a3d395071fbf843b43548f",
+      "executableSha256": "4a07ef218e725dff39b97fb76fdc4bf1b4f5569e6386dff55f01456fa4a10ff8",
+      "savedReadbackSha256": {
+        "nr-100.ppm": "05b96e059a193c7eeb603b41ac574cbd2ff8dcfae3118913eb5c8d47068e15b7",
+        "nr-40.ppm": "99941e25665b41873279da5bbb6947aa351fca10e43a60fb8401e79e7a02fa2a",
+        "nr-60.ppm": "573364a35392f676cabeb7ac5b5734a8aa225f09ee2b05fde8dd31df0ece0776",
+        "nr-80.ppm": "3272a265d715a4c0a04092d016616ae07bc835a4f9958f53aabe95563e5b814d",
+        "source-100.ppm": "87ea4b8a26d7efee73a2c1947a23d56be134eda416445731cee58c121010524d",
+        "source-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "source-60.ppm": "dbdf5cf1c8941373377cc360c662a5562a7cdcab3da99e5ebf69aef20c5592a7",
+        "source-80.ppm": "87ea4b8a26d7efee73a2c1947a23d56be134eda416445731cee58c121010524d"
+      }
+    },
+    "backbuffer": {
+      "sources": 120,
+      "nrEvaluations": 120,
+      "resets": 1,
+      "panPixelsPerSource": 2,
+      "phases": {
+        "stationary": {
+          "meanRgbCorrection": 3.6130645,
+          "warpedMeanRgbDifference": 0.21300555
+        },
+        "panning": {
+          "meanRgbCorrection": 3.437928,
+          "warpedMeanRgbDifference": 0.2351181
+        },
+        "stationaryAfterPan": {
+          "meanRgbCorrection": 3.5251605,
+          "warpedMeanRgbDifference": 0.21955955
+        }
+      },
+      "csv": "backbuffer.csv",
+      "csvSha256": "80ba2bce79b30706ae11a41a63a223cad00aafa916220ecbd322de24b0c3c76e",
+      "executableSha256": "25e6b9671401dd2e84359a9be05d81e95a70243ee5d9794715ffeea822c7d93b",
+      "savedReadbackSha256": {
+        "nr-100.ppm": "295859df13ca2fc37f88b8626f341a8dc9e2d02f6ccdc908d69677d617b09bd3",
+        "nr-40.ppm": "99941e25665b41873279da5bbb6947aa351fca10e43a60fb8401e79e7a02fa2a",
+        "nr-60.ppm": "706b0872c0215321a955510286141f5cde7c84db129b44c5ef216fcaa6c4e898",
+        "nr-80.ppm": "0cde7479e6b50d161e48bdbca56209dcff6095350f34ae284a45b53aa2b56ad9",
+        "source-100.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d",
+        "source-40.ppm": "5e35f8067b4aad98e535d57e3e3bf5d1da59fb1c6a6c163e9926d60e57e2c581",
+        "source-60.ppm": "58ac55489dcaaea7a593a5b1331af85eb0fa2aa4da9d10c3fccc7712422da4a3",
+        "source-80.ppm": "b772a889a141cb7be654d91de755767ebae133f5b639938fb0c60896a76dec0d"
+      }
+    }
+  },
+  "backbufferSavedImagesExactlyMatch": true,
+  "compiledInputSha256": {
+    "cmake/NeuralRuntime.cmake": "235c02e6450caaaf4051261e989ccfa3e822108f2948de4bc324edcb6a6ad4f5",
+    "research/nr/motion-probe/CMakeLists.txt": "4211dee7ca0daa94dcc28b59b7f410a5ea3acb0778c38667902fa247122caab8",
+    "research/nr/motion-probe/MotionProbe.cpp": "82eed25a4d80ae6542615446d454a4f68aa1f413d7fc290ea2ff7dcd96329d0b",
+    "src/FrameGen/D3D11FrameCopy.h": "768deef78b722d6964216011dc26db870f5b2efa7b04eed61d19749bc3d05176",
+    "src/FrameGen/NeuralRenderingReconstruction.h": "0752068ba6d81d6770d45a6bd9c65afe3e6a6745f04806bceae1ad03c08cfb84",
+    "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+    "src/FrameGen/NeuralRenderingTuning.h": "0ed1b913e34bdf23c0d52fecfcce5d11af773f04352d50d02faa359bce1401a0",
+    "src/Graphics/D3D11D3D12Interop.cpp": "a51f96604a0b218ccf86459cd8326df2d2b0e6f33ee57a147fc15d0ba8e6e49c",
+    "src/Graphics/D3D11D3D12Interop.h": "715dd6a182be846a0c65acdb123e2b7a208151ed5433ae6a38d87fa2ad9f6efd",
+    "src/NeuralRendering/BeforeHost.cpp": "37cbeabdf792d5d958911ec7487ab1c0ada546fc2d05254f8b70d428eeb2bc3f",
+    "src/NeuralRendering/BeforeHost.h": "f2dfa0541faff9a92dd8da9b9e0857a5b0eea48517455067d0d0ad1ad94cb92f",
+    "src/NeuralRendering/BeforeSettings.h": "7b6eb78dd58dc33667a8090e27aa3318f8e95966929a9d10a2a2bc39d06dca7a",
+    "src/NeuralRendering/BeforeUpscale.cpp": "2aa46498dcdc665204e4a4ed576492971b08b071d69aa0e0337c26772c2e5f27",
+    "src/NeuralRendering/BeforeUpscale.h": "84dab1d23548783730463cb9fa8f59dd8dcbc811c179e60345b765d33a68a6eb",
+    "src/NeuralRendering/CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+    "src/NeuralRendering/CallerIdentityShim.h": "ffeb680653ade57980d7feec354e906488ccbab0a554eb7208a36e63ef0a1d87",
+    "src/NeuralRendering/Error.h": "711ac372be317db4864b6514d13b801be9824dace873bc5ae43f3fb37cc84643",
+    "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+    "src/NeuralRendering/History.h": "52c06ab92041387bcfa337058367b00f13b294c71f047a2edf03776b8608867a",
+    "src/NeuralRendering/ImagePacket.cpp": "1d659dc2dbbfb5c0648f963236eb31f6b8cd28b4209b5270d7b0882896a78632",
+    "src/NeuralRendering/ImagePacket.h": "a95e54fc4cc8ac5419a38a859d8e8ae3757a2fafc0455b76f25a7d424ea56a47",
+    "src/NeuralRendering/PreparedBeforeUpscale.cpp": "c13703de3aaa7fb4c7cccc1e03429ffb0d9d246c3ac59114dc0ccdea3f487461",
+    "src/NeuralRendering/PreparedBeforeUpscale.h": "1b9bea599b272c01efe7b0a0e06c43d189337392698a966337bebf41e4f477f5",
+    "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+    "src/NeuralRendering/RuntimeCatalog.h": "cd6d98ea585e723a58750c7f90b81c421afa32ac2069b1ef1bf3672bec8d67c9",
+    "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+    "src/NeuralRendering/RuntimeFileLease.h": "375c3f501a153bb37d48261665da5dcfe04f447b4fc4e5a7dec54c96bbf2b071",
+    "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+    "src/NeuralRendering/RuntimeOwner.h": "66570c1ddb97a6eb03ea04ab068fc2145bc4732d330da9c3cf3dda9cfca7e072",
+    "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+    "src/NeuralRendering/SourcePolicy.h": "793d2c5bb5fa460202a885b545e8bf0f9511a33c5ad3a2cb5618aba7ab4328e4",
+    "src/NeuralRendering/Stage.cpp": "e7e02c14158026663c991436054ee14c1930ea1fb606545b0819e40481958f89",
+    "src/NeuralRendering/Stage.h": "50aa942ce727925c46397a10129198fdee5bd9b17e1491872182f81c350b161e",
+    "src/NeuralRendering/StartupSettings.h": "756de2d3200cb834139fb1009cbbc1609adca1d296272b811a6122abe84b1880",
+    "src/NeuralRendering/TicketOwnership.h": "4d02230eb6cf70c7124daedf0803f00507a6b2666a43df9a3344dc2df0fbbcf4",
+    "src/Upscaling/FSRColorContract.h": "9154489043b834246173e4ec381e7fd6b19b059239ad28ee11673bce70502f58",
+    "src/Upscaling/FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+    "src/Upscaling/FSRColorConversion.h": "eb86bbc097465d5720d99fa0a9c2c0d250b80ee67bae91f1070699af4305970c"
+  },
+  "researchStageVariantSha256": "40a022e1bbc3863a02acb7939a2b59b6112743a38179a4b12820b36128cfcc24",
+  "csvHashEncoding": "Committed UTF-8 LF bytes",
+  "gameMotionDefectReproduced": false,
+  "gameVisualAcceptance": false,
+  "nextGate": "Same Skyrim camera motion with NR on/FG off, then NR off; actual source/guide capture if it persists",
+  "phaseSummaryWindows": {
+    "stationary": {
+      "firstSource": 21,
+      "lastSource": 40,
+      "samples": 20
+    },
+    "panning": {
+      "firstSource": 51,
+      "lastSource": 70,
+      "samples": 20
+    },
+    "stationaryAfterPan": {
+      "firstSource": 101,
+      "lastSource": 120,
+      "samples": 20
+    }
+  },
+  "summaryWindowRationale": "Compare settled behavior away from initial history and movement/stop boundaries; inspect complete CSVs for transients",
+  "freshStandaloneRegression": {
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 31.71,
+    "productionCodeChanged": false
+  }
+}
