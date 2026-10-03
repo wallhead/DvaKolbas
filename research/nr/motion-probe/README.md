@@ -48,6 +48,23 @@ surface reprojection differences than reversed/zero guides. Enhancement did not
 collapse during these simple pans. See [bounded measurements](results.json).
 These observations do **not** establish the cause or fix the reported game defect.
 
+A second isolated research variant clears the NGX creation flag `0x40`
+(`AutoExposure` in the pinned NGX SDK), leaving the low-resolution motion flag
+`0x02`. `NR_RE_AUTO_EXPOSURE_OFF=ON` builds that private Stage/Header copy. In
+the same 120-source fixture, all four saved NR images for both the 2-pixel and
+64-pixel pan matched the unmodified build byte for byte. This does not rule out
+auto-exposure behavior in Skyrim's scene, but it gives no basis to change the
+product creation flags. The original [bounded measurements](results.json) were
+generated at commit `de4662a` before this CMake variant was added; their
+source-hash manifest remains an immutable receipt for that revision.
+
+In Skyrim the user also confirmed that the color shift persists with FG off,
+stops with NR off, and appears while the overlay still reports NR active. The
+live log loaded zero appearance presets. The next gated game probe compares
+same-source color entering and leaving NR and summarizes the actual motion
+texture during a camera pan. Diagnostic sampling is opt-in via
+`[Debug] LogFrameDiagnostics` and capped at 16 source frames per session.
+
 Build this directory as a standalone CMake project, supplying `NR_NGX_INCLUDE`
 with the existing local SDK. The executable takes:
 
@@ -56,7 +73,9 @@ NrMotionProbe.exe <three-profile runtime root> <pinned driver core> <output dire
 ```
 
 Run variants serially and only with Skyrim closed. The executable checks this
-before GPU use. `NR_RE_BACKBUFFER_OUTPUT=ON` selects the isolated parity experiment.
+before GPU use. `NR_RE_BACKBUFFER_OUTPUT=ON` selects the isolated parity experiment;
+`NR_RE_AUTO_EXPOSURE_OFF=ON` selects the independent flag experiment. They are
+mutually exclusive.
 The next game comparison is the same stationary/pan scene with **NR on, FG off**,
 then FG on, followed by NR off as a source-image control. If it persists without
 FG, actual source/guide capture is needed before changing guide conversions or

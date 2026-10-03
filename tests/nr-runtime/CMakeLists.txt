@@ -56,6 +56,11 @@ target_compile_features(TRPNrRuntimeParameterTests PRIVATE cxx_std_23)
 target_compile_definitions(TRPNrRuntimeParameterTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 target_link_libraries(TRPNrRuntimeParameterTests PRIVATE TRPNeuralRuntime)
 add_test(NAME NrRuntimeParameters COMMAND TRPNrRuntimeParameterTests)
+add_executable(TRPNrMotionDiagnosticTests ../NrMotionDiagnosticTests.cpp)
+target_compile_features(TRPNrMotionDiagnosticTests PRIVATE cxx_std_23)
+target_compile_definitions(TRPNrMotionDiagnosticTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_include_directories(TRPNrMotionDiagnosticTests PRIVATE "${nrRoot}/src")
+add_test(NAME NrMotionDiagnostic COMMAND TRPNrMotionDiagnosticTests)
 add_executable(TRPNrRuntimeProbeReportTests ../NrRuntimeProbeReportTests.cpp RuntimeProbeReport.cpp)
 target_compile_features(TRPNrRuntimeProbeReportTests PRIVATE cxx_std_23)
 add_test(NAME NrRuntimeProbeReport COMMAND TRPNrRuntimeProbeReportTests)
@@ -115,6 +120,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         src/NeuralRendering/CallerIdentityShim.cpp src/NeuralRendering/CallerIdentityShim.h
         src/NeuralRendering/Error.h src/NeuralRendering/ImagePacket.h src/NeuralRendering/ImagePacket.cpp
         src/NeuralRendering/History.h src/NeuralRendering/History.cpp src/NeuralRendering/RuntimeParameters.h
+        src/NeuralRendering/MotionDiagnosticStats.h tests/NrMotionDiagnosticTests.cpp
         src/NeuralRendering/Stage.h src/NeuralRendering/Stage.cpp src/NeuralRendering/TicketOwnership.h
         src/NeuralRendering/BeforeUpscale.h src/NeuralRendering/BeforeUpscale.cpp tests/NrBeforeUpscaleTests.cpp
         src/Graphics/D3D11D3D12Interop.h src/Graphics/D3D11D3D12Interop.cpp src/FrameGen/D3D11FrameCopy.h src/FrameGen/NeuralRenderingRuntimeContract.h

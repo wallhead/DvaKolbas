@@ -6,11 +6,96 @@
 #include "../RenderPipeline.h"
 #include "CommunityShaderIntegration.h"
 #include "NeuralRendering/BeforeSettings.h"
+#include "NeuralRendering/MotionDiagnosticStats.h"
+#include "PerformanceTuning.h"
 #include "PluginPaths.h"
 #include <chrono>
+#include <cstring>
+#include <vector>
 
 using namespace TheosRenderPipeline;
 namespace NR=TheosRenderPipeline::NeuralRendering;
+namespace {
+using Microsoft::WRL::ComPtr;
+
+struct NrMotionDiagnostic {
+    unsigned eligibleFrames{}, samples{};
+    bool disabled{};
+    void Reset() { eligibleFrames=0; samples=0; disabled=false; }
+    bool Due() { return !disabled && samples<16 && (++eligibleFrames==1 || eligibleFrames%120==0); }
+    void Failure(const char* step,HRESULT hr) {
+        logger::warn("[NR color probe] disabled step={} hr=0x{:08X}; rendering continues",step,static_cast<uint32_t>(hr));
+        disabled=true;
+    }
+    bool CopyToStaging(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* source,
+        DXGI_FORMAT expected,ComPtr<ID3D11Texture2D>& staging) {
+        if(!device||!context||!source){Failure("missing readback resource",E_INVALIDARG);return false;}
+        D3D11_TEXTURE2D_DESC desc{};source->GetDesc(&desc);
+        if(desc.Format!=expected || desc.SampleDesc.Count!=1 || desc.MipLevels!=1 || desc.ArraySize!=1){
+            Failure("unexpected texture format/shape",E_INVALIDARG);return false;
+        }
+        desc.Usage=D3D11_USAGE_STAGING;desc.BindFlags=0;desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ;desc.MiscFlags=0;
+        const auto hr=device->CreateTexture2D(&desc,nullptr,&staging);
+        if(FAILED(hr)){Failure("create staging",hr);return false;}
+        context->CopyResource(staging.Get(),source);
+        return true;
+    }
+    bool ReadRows(ID3D11DeviceContext* context,ID3D11Texture2D* staging,
+        UINT width,UINT height,UINT bytesPerPixel,std::vector<std::uint8_t>& rows) {
+        D3D11_MAPPED_SUBRESOURCE mapped{};
+        const auto hr=context->Map(staging,0,D3D11_MAP_READ,0,&mapped);
+        if(FAILED(hr)){Failure("map staging",hr);return false;}
+        const auto rowBytes=std::size_t(width)*bytesPerPixel;
+        if(mapped.RowPitch<rowBytes){context->Unmap(staging,0);Failure("short staging pitch",E_INVALIDARG);return false;}
+        rows.resize(rowBytes*height);
+        for(UINT y=0;y<height;++y)
+            std::memcpy(rows.data()+std::size_t(y)*rowBytes,
+                static_cast<const std::uint8_t*>(mapped.pData)+std::size_t(y)*mapped.RowPitch,rowBytes);
+        context->Unmap(staging,0);
+        return true;
+    }
+    struct Capture {
+        std::vector<std::uint8_t> color;
+        std::optional<NR::MotionStats> motion;
+        DXGI_FORMAT depthFormat{};
+        bool ready{};
+    };
+    Capture Before(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* color,
+        ID3D11Texture2D* depth,ID3D11Texture2D* motion,UINT width,UINT height) {
+        Capture capture;
+        if(!depth||width>4096||height>4096||!width||!height){Failure("invalid diagnostic extent/depth",E_INVALIDARG);return capture;}
+        D3D11_TEXTURE2D_DESC depthDesc{};depth->GetDesc(&depthDesc);capture.depthFormat=depthDesc.Format;
+        ComPtr<ID3D11Texture2D> colorCopy,motionCopy;
+        if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,colorCopy) ||
+           !CopyToStaging(device,context,motion,DXGI_FORMAT_R16G16_FLOAT,motionCopy))return capture;
+        std::vector<std::uint8_t> rawMotion;
+        if(!ReadRows(context,colorCopy.Get(),width,height,4,capture.color) ||
+           !ReadRows(context,motionCopy.Get(),width,height,4,rawMotion))return capture;
+        capture.motion=NR::SummarizeMotionRg16(rawMotion.data(),std::size_t(width)*4,width,height,width,height);
+        capture.ready=bool(capture.motion);
+        return capture;
+    }
+    void After(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* color,
+        UINT width,UINT height,uint64_t sourceId,uint64_t revision,bool reset,const Capture& before) {
+        if(!before.ready)return;
+        ComPtr<ID3D11Texture2D> colorCopy;
+        if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,colorCopy))return;
+        std::vector<std::uint8_t> after;
+        if(!ReadRows(context,colorCopy.Get(),width,height,4,after))return;
+        const auto rgb=NR::CompareRgba8(before.color.data(),after.data(),std::size_t(width)*4,std::size_t(width)*4,width,height);
+        if(!rgb){Failure("color summary",E_INVALIDARG);return;}
+        ++samples;
+        logger::info("[NR color probe] sample={}/16 source={} revision={} reset={} extent={}x{} depthFormat={} rgbIn=({:.2f},{:.2f},{:.2f}) rgbOut=({:.2f},{:.2f},{:.2f}) rgbSigned=({:+.2f},{:+.2f},{:+.2f}) rgbAbs=({:.2f},{:.2f},{:.2f}) motionPxMean=({:+.2f},{:+.2f}) motionPxAbs={:.2f} motionSamples={} motionZero={} motionInvalid={} motionOutsideUv={}",
+            samples,sourceId,revision,reset,width,height,static_cast<unsigned>(before.depthFormat),
+            rgb->before[0],rgb->before[1],rgb->before[2],rgb->after[0],rgb->after[1],rgb->after[2],
+            rgb->signedChange[0],rgb->signedChange[1],rgb->signedChange[2],
+            rgb->absoluteChange[0],rgb->absoluteChange[1],rgb->absoluteChange[2],
+            before.motion->meanXpixels,before.motion->meanYpixels,before.motion->meanMagnitudePixels,before.motion->samples,
+            before.motion->zeroVectors,before.motion->nonFinite,before.motion->outsideUv);
+    }
+};
+NrMotionDiagnostic nrMotionDiagnostic;
+}
 void NvidiaHost::InspectCommunityNeural()
 {
     if (!SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community || communityNeural_) return;
@@ -67,8 +152,15 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     // Reset retained temporal state on menus, invalid camera, or an unavailable
     // request; the user's authoritative enabled/placement choices stay intact.
     if (!eligible || unavailable) snapshot.enabled=false;
+    const bool probe=eligible && snapshot.enabled && communityNeural_->Available() &&
+        PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && nrMotionDiagnostic.Due();
+    const auto probeBefore=probe?nrMotionDiagnostic.Before(device_.Get(),context_.Get(),color,depth,motion,width,height):
+        NrMotionDiagnostic::Capture{};
     const bool previouslyActive=communityNeural_->Active();
     const auto result=communityNeural_->Evaluate(input,snapshot);
+    if(probe && result && result->evaluated)
+        nrMotionDiagnostic.After(device_.Get(),context_.Get(),color,width,height,sourceId,snapshot.revision,
+            result->effectiveReset,probeBefore);
     std::string status=communityNeural_->Status();
     if (p.neuralEnabled && communityNeural_->Available() && !communityNeural_->Terminal()) {
         if (unavailable) status=unavailable;
@@ -94,6 +186,6 @@ bool NvidiaHost::RetireCommunityNeural()
     if (!communityNeural_) return true;
     const auto retired=communityNeural_->Retire();
     if (!retired) {status_=retired.error().message;FailLifecycle(E_FAIL,"community NR retirement");return false;}
-    communityNeural_.reset();communitySnapshotValid_=false;communityCameraHistory_.Invalidate();
+    communityNeural_.reset();communitySnapshotValid_=false;communityCameraHistory_.Invalidate();nrMotionDiagnostic.Reset();
     ++communityEpoch_;communityLastStatus_.clear();return true;
 }
