@@ -12,6 +12,10 @@ The shared Stage now establishes the alternate fence device identity through a p
 
 The original completed-fence rejection was observed RED then GREEN with the actual supplied ReShade DLL. A fresh read-only review identified the public-validator anchor/contract mismatch; its WARP-device regression was also observed RED before fixing the host binding. The isolated full Before host tests real wrapped identities, 240 sources, 239 NR evaluations, live off/on, one resize, unchanged bypass pixels, exact source alpha and explicit reader/runtime retirement. These synthetic tests do not replace the user's next Skyrim loading/visual check.
 
+Clean code `aa3df47ec509` built the Standard NR/SR/FG plugin and passed **159/159 runnable product checks** in 96.98 seconds. The three unavailable Graphics Tools checks (`NativeUIComposition`, `NativeUIBlendState`, `NeuralPeripheralPixels`) were explicitly excluded. Final standalone checks passed **24/24**, without skips, before committing the same code. The [clean ReShade host receipt](../research/nr/runtime-catalog/rtx40-aa3df47-reshade-before.json) and [validation summary](../research/nr/runtime-catalog/reshade-loading-fix-aa3df47.json) retain source/runtime identities, RED/GREEN logs and qualified scope.
+
+The clean plugin DLL and its manifest are now installed in the existing V5.4 NO-LORE trial, with Skyrim absent during replacement and the previous DLL backed up. Hashes confirm the game INI, ImGui INI, MO2 modlist and launch settings were preserved. Corrected Skyrim acceptance remains pending.
+
 ## Supplied review findings
 
 | Finding | Checked result and disposition |

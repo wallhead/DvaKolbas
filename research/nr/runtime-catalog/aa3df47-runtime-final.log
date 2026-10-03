@@ -1,0 +1,58 @@
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/nr-runtime
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/nr-runtime
+      Start  1: NrRuntimeCatalog
+ 1/24 Test  #1: NrRuntimeCatalog ...................   Passed    0.02 sec
+      Start  2: NrRuntimeFileLease
+ 2/24 Test  #2: NrRuntimeFileLease .................   Passed    0.02 sec
+      Start  3: NrCallerIdentityShim-normal
+ 3/24 Test  #3: NrCallerIdentityShim-normal ........   Passed    0.11 sec
+      Start  4: NrCallerIdentityShim-conflict
+ 4/24 Test  #4: NrCallerIdentityShim-conflict ......   Passed    0.09 sec
+      Start  5: NrImagePacket
+ 5/24 Test  #5: NrImagePacket ......................   Passed    0.19 sec
+      Start  6: NrHistory
+ 6/24 Test  #6: NrHistory ..........................   Passed    0.02 sec
+      Start  7: NrStartupSettings
+ 7/24 Test  #7: NrStartupSettings ..................   Passed    0.02 sec
+      Start  8: NrSourcePolicy
+ 8/24 Test  #8: NrSourcePolicy .....................   Passed    0.01 sec
+      Start  9: NrTicketOwnership
+ 9/24 Test  #9: NrTicketOwnership ..................   Passed    0.01 sec
+      Start 10: NrRuntimeParameters
+10/24 Test #10: NrRuntimeParameters ................   Passed    0.02 sec
+      Start 11: NrRuntimeProbeReport
+11/24 Test #11: NrRuntimeProbeReport ...............   Passed    0.01 sec
+      Start 12: NrBeforeUpscale
+12/24 Test #12: NrBeforeUpscale ....................   Passed    1.64 sec
+      Start 13: NrPreparedBefore
+13/24 Test #13: NrPreparedBefore ...................   Passed    7.48 sec
+      Start 14: NrBeforeHostFrames
+14/24 Test #14: NrBeforeHostFrames .................   Passed    7.77 sec
+      Start 15: NrBeforeHost
+15/24 Test #15: NrBeforeHost .......................   Passed    0.22 sec
+      Start 16: NrReShadeBefore
+16/24 Test #16: NrReShadeBefore ....................   Passed   10.06 sec
+      Start 17: NrStage-unsubmitted
+17/24 Test #17: NrStage-unsubmitted ................   Passed    0.59 sec
+      Start 18: NrStage-record-failure
+18/24 Test #18: NrStage-record-failure .............   Passed    0.56 sec
+      Start 19: NrRuntimeOwner-missing-export
+19/24 Test #19: NrRuntimeOwner-missing-export ......   Passed    0.02 sec
+      Start 20: NrRuntimeOwner-normal
+20/24 Test #20: NrRuntimeOwner-normal ..............   Passed    0.33 sec
+      Start 21: NrRuntimeOwner-foreign-device
+21/24 Test #21: NrRuntimeOwner-foreign-device ......   Passed    0.13 sec
+      Start 22: NrRuntimeOwner-resident-conflict
+22/24 Test #22: NrRuntimeOwner-resident-conflict ...   Passed    0.13 sec
+      Start 23: NrRuntimeOwner-shutdown-failure
+23/24 Test #23: NrRuntimeOwner-shutdown-failure ....   Passed    0.32 sec
+      Start 24: NrRuntimeOwner-changed-shim
+24/24 Test #24: NrRuntimeOwner-changed-shim ........   Passed    0.32 sec
+
+100% tests passed, 0 tests failed out of 24
+
+Label Time Summary:
+GPU        =  29.75 sec*proc (13 tests)
+ReShade    =  10.06 sec*proc (1 test)
+
+Total Test time (real) =  30.10 sec

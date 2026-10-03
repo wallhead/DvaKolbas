@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "sourceRevision": "aa3df47ec509c3b41c5151744bcaab63b086e47b",
+  "sourceClean": true,
+  "scope": "Native SDR Before ReShade fence-ownership/loading fix; corrected Skyrim retest pending",
+  "gameFailureSources": [
+    7786,
+    8023
+  ],
+  "gameFailure": "NR producer ownership has not retired after save loading completed",
+  "redGreen": [
+    "completed host fence rejected with actual installed ReShade -> accepted",
+    "foreign anchor wrongly admitted completed foreign fence -> rejected"
+  ],
+  "productChecks": {
+    "passed": 159,
+    "failed": 0,
+    "excluded": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "elapsedSeconds": 96.98
+  },
+  "standaloneFinalChecks": {
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "builtBeforeCodeCommit": true
+  },
+  "reshade": {
+    "runtimeSha256": "b2945c29e7095491a901746b400e58db9b1592ab092bacf2a888ce37f02d08da",
+    "skyrimTested": false,
+    "wrappedDeviceRequired": true,
+    "cases": [
+      {
+        "case": "packet",
+        "result": "PASS",
+        "exeSha256": "e2487b065a49b4eb5fdb86b96016debb88bf522399a5ba3e7c2d63cdbfc42b98"
+      },
+      {
+        "case": "host",
+        "result": "PASS",
+        "exeSha256": "d61998fda84d4d1efdf21cdd7f2cbc482a19c4441ec0cebed30bbbe5ea3ddeb7"
+      }
+    ]
+  },
+  "installed": {
+    "iniAndMo2HashesPreserved": true,
+    "sourceRevision": "aa3df47ec509",
+    "changedFiles": [
+      "SKSE/Plugins/TheosRenderPipeline.dll",
+      "nr-trial-manifest.json"
+    ],
+    "dllSha256": "1bea3f657f65fcf1cfbcb3218f42a0d74af5a485314573f75f1c431353ddc92f"
+  },
+  "logSha256": {
+    "packet-green": "ca71838304c0c6c1f4f0ad2cb1b63c6bff1733bf032962d513c0c6e7b9d74a12",
+    "runtime-final": "e4e81a767049a51c9b166566a640c6f227a6fdad0623bba4a5856664857fb1ad",
+    "foreign-anchor-red": "e7288453f3c2b919f526fa1a5f24d6b9dd7aea00bd9989cd8599e500b97073c5",
+    "product-clean": "ef05400ec18940c7375fbbab20a40326ddb48016f1d2502ca0397b3637d9c53b",
+    "packet-red": "0ac41706b542d2a07a5341dedf7a62ad9c7a4fb387dc669f9e1cfe7e8d9281ee"
+  },
+  "wholeNrPlan": {
+    "complete": 1,
+    "otherGpuFamiliesTested": false,
+    "afterFgQualified": false,
+    "total": 8
+  }
+}
