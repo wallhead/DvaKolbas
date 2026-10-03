@@ -1,6 +1,7 @@
 #include "RuntimeOwner.h"
 #include "RuntimeFileLease.h"
 #include "CallerIdentityShim.h"
+#include "RuntimeParameters.h"
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 #include <array>
@@ -93,7 +94,7 @@ Result<void> RuntimeOwner::Open(const RuntimeProfile& requested,ID3D12Device* de
         s.shimRva=s.shim.SlotRva();
     }
     s.device=device;processProfile=profile->id;activeOwner=&s;s.initAttempted=true;
-    s.lastInit=e.init(0x0876232cULL,s.paths.dataDirectory.c_str(),device,0x15,nullptr);
+    s.lastInit=e.init(kDirectNrAppId,s.paths.dataDirectory.c_str(),device,kDirectNrApiVersion,nullptr);
     if(s.lastInit!=1){s.phase=Phase::Quarantined;return Fail(ErrorKind::Runtime,"NR Init_Ext rejected; partial runtime/device ownership retained",s.lastInit);}
     s.phase=Phase::Ready;return {};
 }

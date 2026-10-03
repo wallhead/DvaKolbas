@@ -1,5 +1,6 @@
 #include "NeuralRendering/CallerIdentityShim.h"
 #include "NeuralRendering/RuntimeOwner.h"
+#include "NeuralRendering/RuntimeParameters.h"
 #include "RuntimeProbeReport.h"
 #include "ProbeBuildIdentity.h"
 #include "GpuProbeGuard.h"
@@ -151,9 +152,8 @@ int wmain(int argc,wchar_t** argv){
         NVSDK_NGX_Parameter* p{};Need(allocate(&p)==1 && p,"parameters allocate");allocationDevice=device.Get();
         p->Set("DLSSNR.Upscaling",0);int roundtrip=-1;Need(static_cast<uint32_t>(p->Get("DLSSNR.Upscaling",&roundtrip))==1 && roundtrip==0,"parameter int ABI roundtrip");
         p->Set("ResourceAllocCallback",reinterpret_cast<void*>(&Allocate));p->Set("ResourceReleaseCallback",reinterpret_cast<void*>(&ReleaseResource));p->Set("DLSSNRComputeScalingRatioCallback",reinterpret_cast<void*>(&Scaling));
-        for(const char* k:{"Width","OutWidth","DLSSNR.Width","DLSSNR.InputWidth","DLSSNR.OutputWidth","DLSSNR.Output.Width"})p->Set(k,width);
-        for(const char* k:{"Height","OutHeight","DLSSNR.Height","DLSSNR.InputHeight","DLSSNR.OutputHeight","DLSSNR.Output.Height"})p->Set(k,height);
-        p->Set("DLSSNR.ScalingRatio",1.f);p->Set("DLSSNR.Scale",1.f);p->Set("DLSSNR.Hint.Render.Preset",0u);p->Set("PerfQualityValue",2u);p->Set("DLSS.Feature.Create.Flags",0x42);p->Set("CreationNodeMask",1u);p->Set("VisibilityNodeMask",1u);
+        const auto configured=WriteDirectCreationParameters(*p,{profileId,{width,height},{width,height},0});
+        if(!configured)Stop(configured.error().message);
         ComPtr<ID3D12CommandQueue> queue;D3D12_COMMAND_QUEUE_DESC q{};Gpu(device->CreateCommandQueue(&q,IID_PPV_ARGS(&queue)),"queue");
         ComPtr<ID3D12CommandAllocator> allocator;Gpu(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&allocator)),"allocator");
         ComPtr<ID3D12GraphicsCommandList> list;Gpu(device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,allocator.Get(),nullptr,IID_PPV_ARGS(&list)),"list");
@@ -161,7 +161,7 @@ int wmain(int argc,wchar_t** argv){
         const auto event=CreateEventW(nullptr,FALSE,FALSE,nullptr);Need(event!=nullptr,"fence event");uint64_t fenceValue{};
         const auto submit=[&]{Gpu(list->Close(),"list close");ID3D12CommandList* l[]={list.Get()};queue->ExecuteCommandLists(1,l);Gpu(queue->Signal(fence.Get(),++fenceValue),"queue signal");
             Gpu(fence->SetEventOnCompletion(fenceValue,event),"fence event arm");Need(WaitForSingleObject(event,15000)==WAIT_OBJECT_0 && fence->GetCompletedValue()==fenceValue,"output fence incomplete");Gpu(device->GetDeviceRemovedReason(),"device removed");};
-        void* feature{};report.create=create(list.Get(),0x12,p,&feature);Need(report.create==1 && feature && !allocationFailed,"NR feature create");submit();
+        void* feature{};report.create=create(list.Get(),kDirectNrFeatureId,p,&feature);Need(report.create==1 && feature && !allocationFailed,"NR feature create");submit();
         auto color=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT),motion=Texture(device.Get(),DXGI_FORMAT_R16G16_FLOAT),depth=Texture(device.Get(),DXGI_FORMAT_R32_FLOAT),output=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT,true);
         auto colorUpload=MakeTransfer(device.Get(),color.Get(),D3D12_HEAP_TYPE_UPLOAD),motionUpload=MakeTransfer(device.Get(),motion.Get(),D3D12_HEAP_TYPE_UPLOAD),depthUpload=MakeTransfer(device.Get(),depth.Get(),D3D12_HEAP_TYPE_UPLOAD),outputUpload=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_UPLOAD),readback=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_READBACK);
         std::vector<uint16_t> colors(width*height*4),motions(width*height*2),sentinel(width*height*4,DirectX::PackedVector::XMConvertFloatToHalf(-.25f)),pixels(colors.size());std::vector<float> depths(width*height,.5f);

@@ -6,7 +6,9 @@ if(NOT TARGET TRPNeuralRuntime)
         "${trpNrRoot}/src/NeuralRendering/RuntimeCatalog.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeFileLease.cpp"
         "${trpNrRoot}/src/NeuralRendering/CallerIdentityShim.cpp"
-        "${trpNrRoot}/src/NeuralRendering/RuntimeOwner.cpp")
+        "${trpNrRoot}/src/NeuralRendering/RuntimeOwner.cpp"
+        "${trpNrRoot}/src/NeuralRendering/ImagePacket.cpp"
+        "${trpNrRoot}/src/NeuralRendering/History.cpp")
     target_compile_features(TRPNeuralRuntime PUBLIC cxx_std_23)
     target_compile_definitions(TRPNeuralRuntime PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNeuralRuntime PUBLIC "${trpNrRoot}/src")
