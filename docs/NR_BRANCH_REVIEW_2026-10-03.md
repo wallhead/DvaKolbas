@@ -18,6 +18,16 @@ The clean plugin DLL and its manifest are now installed in the existing V5.4 NO-
 
 ## Supplied review findings
 
+### Subsequent FSR device-ownership failure
+
+The next game run loaded the clean `aa3df47ec509` DLL. Save loading completed at 11:04:39; source 16665 evaluated NR successfully at 11:04:40.165. FSR then rejected its command-list/resource device at 11:04:40.174, and the AMD source presenter stopped with `0x80070057`. The fence fix therefore reached NR output, but did not qualify interoperability with the already initialized native AMD presenter. Game device removal remained zero.
+
+An added combined fixture initializes actual FSR SR/FG and manual ReShade first, then lazily evaluates NR before the first temporal dispatch. Using the installed ReShade DLL, the original independent `D3D12CreateDevice` reproduced the exact FSR rejection on source 1. Retaining NR's new ReShade proxy changes the identity exposed by existing native-device children. Independent wrapped NR-only tests had not exercised this native AMD owner boundary.
+
+The game host now supplies NR with its existing FSR bridge device, or its NVIDIA source transport device. BeforeHost retains that exact device, verifies its adapter LUID and removal state before admission, and creates only a separate DIRECT queue. Standalone owners may still create their own device. The game path never requests another device while its presenter is live. FSR's strict ownership check remains unchanged; its failure message now includes the retained host, command-list owner and color-resource owner. NR startup logs the supplied presenter identity. A foreign WARP device is rejected before model initialization.
+
+Both combined routes passed with the installed ReShade: Performance/SRGB and the trial's NativeAA/Gamma22, each with 176 sources, 170 NR evaluations, six NR bypasses, real temporal SR, generation callbacks, UI/foreground preservation, two resized cycles and two suspension/restoration cycles. NR retires before AMD readers on resize and final teardown. These checks qualify synthetic interoperability, not physical display cadence or Skyrim image quality. Fresh read-only review found no blocking issue; absent-presenter late arrival is outside the currently eligible startup routes, exact scene pixels are intentionally unqualified with NR enabled, and After/other GPU/performance work remains open. The corrected Skyrim save-load and visual retest remains required.
+
 | Finding | Checked result and disposition |
 | --- | --- |
 | Exact NVIDIA driver-core pin and absolute path | Confirmed in `RuntimeOwner.cpp` and staging. Retain for this qualified local trial. A versioned driver-core qualification catalog is needed before a general release; no basename fallback. |

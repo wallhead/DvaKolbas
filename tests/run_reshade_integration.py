@@ -12,12 +12,16 @@ parser.add_argument('--exe', type=Path, required=True)
 parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--fsr-runtime-dir', type=Path)
+parser.add_argument('--nr-runtime-root', type=Path)
+parser.add_argument('--nr-driver-core', type=Path)
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 records = []
 (args.output / 'results.json').unlink(missing_ok=True)
-routes = ['--ordinary-reshade', '--require-reshade']
-if args.fsr_runtime_dir:
+routes = ['--fsr-reshade-nr', '--fsr-reshade-nr-native'] if args.nr_runtime_root else ['--ordinary-reshade', '--require-reshade']
+if args.nr_runtime_root and (not args.fsr_runtime_dir or not args.nr_driver_core):
+    parser.error('combined NR requires FSR runtime and driver core')
+if args.fsr_runtime_dir and not args.nr_runtime_root:
     routes.append('--fsr-reshade')
 for route in routes:
     with tempfile.TemporaryDirectory(prefix='trp-reshade-', dir=args.output.resolve()) as temporary:
@@ -25,7 +29,7 @@ for route in routes:
         shutil.copy2(args.exe, root / args.exe.name)
         shutil.copy2(args.runtime, root / 'dxgi.dll')
         runtime_records = []
-        if route == '--fsr-reshade':
+        if route.startswith('--fsr-reshade'):
             pins = Path(__file__).parent.parent / 'tools' / 'fsr'
             for pin_name in ('runtime-pin.json', 'fg-runtime-pin.json'):
                 for entry in json.loads((pins / pin_name).read_text())['runtime']:
@@ -39,7 +43,8 @@ for route in routes:
         fixture = Path(__file__).parent / 'fixtures' / 'reshade'
         shutil.copytree(fixture, root, dirs_exist_ok=True)
         (root / 'screenshots').mkdir(exist_ok=True)
-        result = subprocess.run([str(root / args.exe.name), route], cwd=root,
+        extra = [str(args.nr_runtime_root.resolve()), str(args.nr_driver_core.resolve())] if args.nr_runtime_root else []
+        result = subprocess.run([str(root / args.exe.name), route, *extra], cwd=root,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=120)
         log = args.output / (route.removeprefix('--') + '.log')
         log.write_bytes(result.stdout)
@@ -49,4 +54,5 @@ for route in routes:
         records.append({'route': route, 'result': 'PASS', 'fsrRuntime': runtime_records})
 (args.output / 'results.json').write_text(json.dumps({
     'runtimeSha256': hashlib.sha256(args.runtime.read_bytes()).hexdigest(),
+    'executableSha256': hashlib.sha256(args.exe.read_bytes()).hexdigest(),
     'routes': records, 'skyrimTested': False}, indent=2) + '\n')

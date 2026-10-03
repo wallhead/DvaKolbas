@@ -393,6 +393,10 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     set(TRP_FSR_RESHADE_ARGUMENTS "")
     if(TRP_ENABLE_FSR_FG)
         target_link_libraries(TRPReShadeIntegrationTests PRIVATE TRPFsrRuntime)
+        if(TRP_ENABLE_NEURAL_RENDERING)
+            target_link_libraries(TRPReShadeIntegrationTests PRIVATE TRPNeuralRuntime)
+            target_compile_definitions(TRPReShadeIntegrationTests PRIVATE TRP_TEST_NR_FSR)
+        endif()
         list(APPEND TRP_FSR_RESHADE_ARGUMENTS --fsr-runtime-dir "${TRP_FSR_SDK_DIR}/runtime")
     endif()
     add_library(TRPReShadeUnresolvedDouble SHARED tests/ReShadeUnresolvedDouble.cpp)
@@ -497,6 +501,15 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     add_executable(TRPNeuralWorldContractTests tests/NeuralWorldContractTests.cpp)
     add_subdirectory(tests/nr-postfg)
     add_subdirectory(tests/nr-runtime)
+    if(TRP_ENABLE_NEURAL_RENDERING AND TRP_ENABLE_FSR_FG AND TRP_NR_RESHADE_RUNTIME AND TRP_NR_TEST_RUNTIME_ROOT)
+        find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+        add_test(NAME NrFsrReShadeBefore COMMAND "${Python3_EXECUTABLE}"
+            "${PROJECT_SOURCE_DIR}/tests/run_reshade_integration.py"
+            --exe "$<TARGET_FILE:TRPReShadeIntegrationTests>" --runtime "${TRP_NR_RESHADE_RUNTIME}"
+            --fsr-runtime-dir "${TRP_FSR_SDK_DIR}/runtime" --nr-runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+            --nr-driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_BINARY_DIR}/validation/nr-fsr-reshade")
+        set_tests_properties(NrFsrReShadeBefore PROPERTIES TIMEOUT 300 RUN_SERIAL TRUE LABELS "GPU;ReShade")
+    endif()
     target_compile_features(TRPNeuralWorldContractTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNeuralWorldContractTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNeuralWorldContractTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src"

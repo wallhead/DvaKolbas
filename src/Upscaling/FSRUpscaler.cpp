@@ -1,6 +1,7 @@
 #include "FSRUpscaler.h"
 #include <dx12/ffx_api_dx12.h>
 #include <cmath>
+#include <format>
 
 namespace TheosRenderPipeline::Upscaling
 {
@@ -127,7 +128,8 @@ namespace TheosRenderPipeline::Upscaling
         ComPtr<ID3D12Device> commandDevice; ComPtr<ID3D12Device> resourceDevice;
         if(FAILED(list->GetDevice(IID_PPV_ARGS(&commandDevice))) || FAILED(resources.color->GetDevice(IID_PPV_ARGS(&resourceDevice))) ||
             commandDevice.Get()!=state_->device.Get() || resourceDevice.Get()!=state_->device.Get())
-            return Error(ErrorKind::UnsupportedDevice,0,"FSR command list/resources belong to another device");
+            return std::unexpected(RuntimeError{ErrorKind::UnsupportedDevice,0,std::format("FSR command list/resources belong to another device (host={}, command={}, color={})",
+                static_cast<void*>(state_->device.Get()),static_cast<void*>(commandDevice.Get()),static_cast<void*>(resourceDevice.Get()))});
         auto hr=state_->device->GetDeviceRemovedReason(); if(FAILED(hr)) return Error(ErrorKind::DeviceLost,hr,"FSR device removed before dispatch");
         auto all=resources.All();
         for(std::size_t i=0;i<all.size();++i) {

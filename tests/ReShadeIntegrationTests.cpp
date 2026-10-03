@@ -10,6 +10,10 @@
 #include "Upscaling/FSRFrameAdapter.h"
 #include "Upscaling/FSRPresentationColor.h"
 #endif
+#if defined(TRP_TEST_NR_FSR)
+#include "NeuralRendering/BeforeHost.h"
+#include "nr-runtime/GpuProbeGuard.h"
+#endif
 #include <reshade/reshade_events.hpp>
 #include <dxgi1_4.h>
 #include <d3d12.h>
@@ -29,9 +33,11 @@ static bool creatingOrdinary{};
 static api::effect_runtime* automaticOrdinary{};
 // Both placements exceed ReShade 6.8's 160x120 minimum runtime size.
 static constexpr UINT outputWidth = 512, outputHeight = 256;
-static constexpr UINT renderWidth = 256, renderHeight = 128;
+static UINT renderWidth = 256, renderHeight = 128;
+static bool nrNative{};
 static UINT expectedDepthWidth{}, expectedDepthHeight{};
 static bool depthExtentMatched{};
+static std::filesystem::path nrRoot,nrCore;
 static void Init(api::effect_runtime* runtime)
 { if (creatingOrdinary) { automaticOrdinary = runtime; ++automaticRuntimes; }
   else if (runtime->get_device()->get_api() == api::device_api::d3d11) { owned = runtime; } else { ++automaticRuntimes; } }
@@ -86,7 +92,8 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
         +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** output)->HRESULT {
             return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,output,true);
         });
-    FsrSettings settings;settings.quality=Quality::Performance;settings.sourceColorEncoding=ColorEncoding::SRGB;
+    FsrSettings settings;settings.quality=nrNative?Quality::NativeAA:Quality::Performance;settings.sourceColorEncoding=nrNative?ColorEncoding::Gamma22:ColorEncoding::SRGB;
+    const UINT largeWidth=nrNative?640:320,largeHeight=nrNative?360:180;
     DXGI_SWAP_CHAIN_DESC desc{};desc.BufferDesc.Width=outputWidth;desc.BufferDesc.Height=outputHeight;
     desc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;desc.BufferCount=2;desc.SampleDesc.Count=1;
     desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.OutputWindow=window;desc.Windowed=TRUE;
@@ -95,6 +102,37 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     if(!extent)std::printf("AMD startup failure: %s native=%lld\n",extent.error().message.c_str(),extent.error().nativeResult);
     Require(extent && *extent==Extent{renderWidth,renderHeight},"actual AMD host reduced sizing on original ReShade producer");
     Require(bool(resources->CompleteStartup()),"real analytical SR context");
+#if defined(TRP_TEST_NR_FSR)
+    // Catches lazy NR creating a second ReShade device proxy which changes
+    // GetDevice identity on an already prepared native FSR/FG host.
+    namespace NR=NeuralRendering;
+    std::unique_ptr<NR::BeforeHost> neural;
+    unsigned nrEvaluations{},nrBypasses{};std::uint64_t nrRevision{};bool nrEnabled{};
+    auto retireNeural=[&]{if(neural){Require(bool(neural->Retire()),"NR retires before AMD readers/device");neural.reset();}};
+    auto evaluateNeural=[&](UpscaleFrame& f,bool enabled){
+        if(nrRoot.empty())return;
+        if(!neural){
+            neural=std::make_unique<NR::BeforeHost>();NR::StartupSettings startup;
+            startup.community=true;startup.runtimeRoot=nrRoot;startup.driverCore=nrCore;startup.sourceEncoding=settings.sourceColorEncoding;
+            auto inspected=neural->Inspect(device,startup,std::filesystem::absolute("nr-fsr-cache"),resources->Bridge()->Device12());
+            if(!inspected)std::fprintf(stderr,"NR inspection: %s\n",inspected.error().message.c_str());
+            Require(bool(inspected),"combined NR renderer inspection");
+            const auto luid=resources->Bridge()->Device12()->GetAdapterLuid();
+            std::printf("NR retained presenter profile=%s luid=%lu:%ld device=%p\n",std::string(neural->ProfileId()).c_str(),luid.LowPart,luid.HighPart,resources->Bridge()->Device12());
+        }
+        NR::BeforeInput input;input.context=context;input.color=f.input;input.depth=f.depth;input.motion=f.motion;
+        input.colorExtent=input.guideExtent={f.render.width,f.render.height};input.epoch=input.guideEpoch=1;
+        input.sourceId=input.guideSourceId=f.sourceId;input.previousSourceId=f.sourceId-1;input.presentationTime=double(f.sourceId)/72;
+        input.motionScaleX=float(f.render.width);input.motionScaleY=float(f.render.height);input.reset=f.reset;
+        NR::SettingsSnapshot snapshot;snapshot.enabled=enabled;
+        if(!nrRevision || enabled!=nrEnabled){++nrRevision;nrEnabled=enabled;}
+        snapshot.revision=nrRevision;
+        auto result=neural->Evaluate(input,snapshot);
+        if(!result)std::fprintf(stderr,"NR source=%llu: %s\n",static_cast<unsigned long long>(f.sourceId),result.error().message.c_str());
+        Require(result && result->evaluated==enabled,"one real NR pass before SR only when enabled");
+        f.reset|=result->effectiveReset;enabled?++nrEvaluations:++nrBypasses;
+    };
+#endif
     Require(automaticRuntimes==0,"AMD presenter has no automatic ReShade runtime");
     Surface source(device,renderWidth,renderHeight),input(device,renderWidth,renderHeight),output(device,outputWidth,outputHeight);
     Surface depth(device,renderWidth,renderHeight,DXGI_FORMAT_R32_FLOAT),motion(device,renderWidth,renderHeight,DXGI_FORMAT_R16G16_FLOAT),hud(device,outputWidth,outputHeight);
@@ -154,17 +192,21 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
             source.Paint(context,scene);context->CopyResource(input.texture.Get(),source.texture.Get());hud.Paint(context,ui);
             frame.sourceId=++sourceId;frame.reset=i==0;auto outcome=UpscaleOutcome::Temporal;
             const bool menu=i==31,requested=i!=23;
+#if defined(TRP_TEST_NR_FSR)
+            evaluateNeural(frame,!menu && i!=11);
+#endif
             const auto drawCount=draws,automaticCount=automaticDraws;
             Check(effects.Render(input.texture.Get(),menu?nullptr:depth.texture.Get(),{renderWidth,renderHeight},{renderWidth,renderHeight},true),"AMD before effects stage");
             auto evaluated=menu?adapter->Spatial(frame):adapter->Evaluate(frame);
-            if(!evaluated && adapter->LastError())std::printf("AMD SR failure: %s\n",adapter->LastError()->message.c_str());
+            if(adapter->LastError())std::fprintf(stderr,"AMD SR source=%llu failure: %s\n",static_cast<unsigned long long>(frame.sourceId),adapter->LastError()->message.c_str());
             Require(evaluated && (*evaluated==UpscaleOutcome::Temporal || *evaluated==UpscaleOutcome::SpatialRecovery),"exactly one real SR/spatial pass");
             outcome=*evaluated;++upscales;
             Check(effects.Render(output.texture.Get(),menu?nullptr:depth.texture.Get(),{outputWidth,outputHeight},{renderWidth,renderHeight},false),"AMD after effects stage");
             Check(effects.FinishUI(hud.texture.Get()),"AMD completed GUI before SDK handoff");
             const auto hudPixel=Pixel(device,context,hud.texture.Get(),outputWidth-1,outputHeight-1);
             const auto scenePixel=Pixel(device,context,output.texture.Get());
-            if(!menu && draws==drawCount+1 && scenePixel[0]>=94 && scenePixel[0]<=98 && scenePixel[1]>=126 && scenePixel[1]<=130 && depthExtentMatched)++stable;
+            if(!menu && draws==drawCount+1 && depthExtentMatched &&
+                (!nrRoot.empty() || (scenePixel[0]>=94 && scenePixel[0]<=98 && scenePixel[1]>=126 && scenePixel[1]<=130)))++stable;
             context->CopyResource(host.SceneTarget11(),output.texture.Get());
             auto generationFrame=frame;generationFrame.depthFormat=DXGI_FORMAT_R32_FLOAT;generationFrame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
             generationFrame.colorIsLinear=true;generationFrame.reset |= adapter->LastTemporalReset();
@@ -189,6 +231,9 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
         if(++phase<3){
             // Exhaust old permits: a stale handle detached by context replacement
             // must not pass merely because it was signaled before resize.
+#if defined(TRP_TEST_NR_FSR)
+            retireNeural();
+#endif
             adapter.reset();Require(bool(host.BeforeResize()),"real AMD quiescence before resize");
             while(WaitForSingleObject(cachedWaitable,0)==WAIT_OBJECT_0){}
             effects.ResetAfterRetirement();
@@ -196,11 +241,11 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
             auto resize=host.Resize(enlarged);
             if(!resize)std::fprintf(stderr,"real resize: %s native=%lld\n",resize.error().message.c_str(),resize.error().nativeResult);
             else std::printf("real resize result=0x%08X render=%ux%u\n",static_cast<unsigned>(resize->result),resize->render.width,resize->render.height);
-            Require(resize && SUCCEEDED(resize->result) && resize->render==Extent{320,180},"real AMD resize to larger extent");
+            Require(resize && SUCCEEDED(resize->result) && resize->render==Extent{largeWidth,largeHeight},"real AMD resize to larger extent");
             Require(bool(resources->CompleteStartup()),"real SR feature at larger extent");
             {
-                Surface largeSource(device,320,180),largeInput(device,320,180),largeOutput(device,640,360);
-                Surface largeDepth(device,320,180,DXGI_FORMAT_R32_FLOAT),largeMotion(device,320,180,DXGI_FORMAT_R16G16_FLOAT),largeHud(device,640,360);
+                Surface largeSource(device,largeWidth,largeHeight),largeInput(device,largeWidth,largeHeight),largeOutput(device,640,360);
+                Surface largeDepth(device,largeWidth,largeHeight,DXGI_FORMAT_R32_FLOAT),largeMotion(device,largeWidth,largeHeight,DXGI_FORMAT_R16G16_FLOAT),largeHud(device,640,360);
                 largeDepth.Paint(context,{.5f,0,0,0});largeMotion.Paint(context,{0,0,0,0});adapter=makeAdapter();
                 effects.Configure(device,context,{640,360});effects.SetBeforeUpscaling(false);
                 expectedDepthWidth=640;expectedDepthHeight=360;
@@ -208,7 +253,7 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
                 Require(owned!=nullptr,"larger source manual runtime");owned->open_overlay(false,api::input_source::none);
                 auto largeFrame=frame;largeFrame.color=largeSource.texture.Get();largeFrame.input=largeInput.texture.Get();largeFrame.output=largeOutput.texture.Get();
                 largeFrame.depth=largeDepth.texture.Get();largeFrame.motion=largeMotion.texture.Get();
-                largeFrame.render=largeFrame.subrect={320,180};largeFrame.display={640,360};largeFrame.motionConvention={320,180,true,false};
+                largeFrame.render=largeFrame.subrect={largeWidth,largeHeight};largeFrame.display={640,360};largeFrame.motionConvention={float(largeWidth),float(largeHeight),true,false};
                 const auto beforeLargeCallbacks=largerCallbacks;bool generatedAfterRestore{};
                 for(unsigned sample=0;sample<40;++sample){
                     if(sample==18){
@@ -221,8 +266,11 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
                     Check(host.WaitBeforeProducer(),"larger guide producer wait");largeSource.Paint(context,scene);
                     context->CopyResource(largeInput.texture.Get(),largeSource.texture.Get());largeHud.Paint(context,ui);
                     largeFrame.sourceId=++sourceId;largeFrame.reset=sample==0;
+#if defined(TRP_TEST_NR_FSR)
+                    evaluateNeural(largeFrame,true);
+#endif
                     auto evaluated=adapter->Evaluate(largeFrame);Require(evaluated && *evaluated==UpscaleOutcome::Temporal,"actual temporal SR dispatch at larger extent");
-                    Check(effects.Render(largeOutput.texture.Get(),largeDepth.texture.Get(),{640,360},{320,180},false),"larger ReShade effects");
+                    Check(effects.Render(largeOutput.texture.Get(),largeDepth.texture.Get(),{640,360},{largeWidth,largeHeight},false),"larger ReShade effects");
                     Check(effects.FinishUI(largeHud.texture.Get()),"larger completed UI");
                     const auto sentinel=Pixel(device,context,largeHud.texture.Get(),639,359);
                     context->CopyResource(host.SceneTarget11(),largeOutput.texture.Get());
@@ -238,6 +286,9 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
                 }
                 Require(largerCallbacks>beforeLargeCallbacks && generatedAfterRestore,"generation at larger extent and after suspension reset");
                 Require(WaitForSingleObject(cachedWaitable,2000)==WAIT_OBJECT_0,"cached handle signals at larger generated extent");
+#if defined(TRP_TEST_NR_FSR)
+                retireNeural();
+#endif
                 adapter.reset();Require(bool(host.BeforeResize()),"larger SDK/SR/UI readers retired");
                 while(WaitForSingleObject(cachedWaitable,0)==WAIT_OBJECT_0){}
                 effects.ResetAfterRetirement();
@@ -259,6 +310,13 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     }
     Require(sourceTransactions==96 && upscales==96 && uiChecks==96 && callbacks>0 && disabledSources==3 && spatialSources==3,"actual host source/effects/FG/UI observations");
     for(auto name:{L"sl.interposer.dll",L"sl.dlss.dll",L"sl.dlss_g.dll",L"nvngx_dlss.dll",L"nvngx_dlssg.dll"})Require(!GetModuleHandleW(name),"AMD fixture loads no NVIDIA runtime");
+#if defined(TRP_TEST_NR_FSR)
+    retireNeural();
+    if(!nrRoot.empty()){
+        Require(nrEvaluations==170 && nrBypasses==6,"combined real NR sources and live/menu bypasses");
+        std::printf("PASS: combined NR/FSR/FG/ReShade nrEvaluations=%u nrBypasses=%u\n",nrEvaluations,nrBypasses);
+    }
+#endif
     owned->get_command_queue()->wait_idle();Require(bool(host.Retire()),"AMD async readers retire before SR owner release");
     effects.ResetAfterRetirement();DestroyWindow(window);
     CloseHandle(cachedWaitable);
@@ -276,8 +334,20 @@ template<class Effects> static HRESULT RequireNativeDevice(Effects& effects,IUnk
 int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
+    std::setvbuf(stdout,nullptr,_IONBF,0);
     const bool unresolvedRoute=argc==3 && std::string_view(argv[1])=="--unresolved-reshade";
-    const bool fsrRoute=argc==2 && std::string_view(argv[1])=="--fsr-reshade";
+    nrNative=argc==4 && std::string_view(argv[1])=="--fsr-reshade-nr-native";
+    const bool nrRoute=nrNative || (argc==4 && std::string_view(argv[1])=="--fsr-reshade-nr");
+    if(nrNative){renderWidth=outputWidth;renderHeight=outputHeight;}
+    const bool fsrRoute=nrRoute || (argc==2 && std::string_view(argv[1])=="--fsr-reshade");
+#if defined(TRP_TEST_NR_FSR)
+    if(nrRoute){
+        Require(!NrRuntimeResearch::GameRunningOrUnknown(),"Skyrim closed before combined GPU probe");
+        nrRoot=std::filesystem::absolute(std::filesystem::u8path(argv[2]));nrCore=std::filesystem::u8path(argv[3]);
+    }
+#else
+    Require(!nrRoute,"combined NR not built");
+#endif
     const bool ordinaryRoute = argc == 2 && std::string_view(argv[1]) == "--ordinary-reshade";
     const bool requireReShade = fsrRoute || ordinaryRoute || (argc == 2 && std::string_view(argv[1]) == "--require-reshade");
     Require(argc == 1 || requireReShade || unresolvedRoute, "supported arguments");

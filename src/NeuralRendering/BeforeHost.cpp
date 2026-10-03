@@ -19,7 +19,7 @@ struct BeforeHost::State {
 };
 BeforeHost::BeforeHost():state_(std::make_unique<State>()){}
 BeforeHost::~BeforeHost(){if(state_->uncertain)state_.release();}
-Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& settings,const std::filesystem::path& cache){
+Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& settings,const std::filesystem::path& cache,ID3D12Device* presenter){
     auto& s=*state_;if(s.inspected)return s.available?Result<void>{}:Fail(ErrorKind::Unsupported,s.status.c_str());s.inspected=true;
     auto stop=[&](ErrorKind kind,const char* why,int64_t native=0)->Result<void>{s.status=why;return Fail(kind,why,native);};
     if(!settings.community||!device||!settings.runtimeRoot.is_absolute()||!settings.driverCore.is_absolute()||!cache.is_absolute())
@@ -29,6 +29,13 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& set
     auto hr=device->QueryInterface(IID_PPV_ARGS(&dxgi));if(FAILED(hr))return stop(ErrorKind::IdentityMismatch,"NR cannot inspect renderer DXGI device",hr);
     if(FAILED(hr=dxgi->GetAdapter(&adapter))||FAILED(hr=adapter.As(&s.dxgiAdapter))||FAILED(hr=s.dxgiAdapter->GetDesc1(&d)))return stop(ErrorKind::IdentityMismatch,"NR renderer adapter unavailable",hr);
     s.adapter={d.VendorId,d.DeviceId,d.SubSysId,{d.AdapterLuid.LowPart,d.AdapterLuid.HighPart},bool(d.Flags&DXGI_ADAPTER_FLAG_SOFTWARE)};
+    if(presenter){
+        const auto luid=presenter->GetAdapterLuid();
+        if(AdapterLuid{luid.LowPart,luid.HighPart}!=s.adapter.luid)
+            return stop(ErrorKind::IdentityMismatch,"NR presenter device does not match renderer adapter");
+        if(FAILED(hr=presenter->GetDeviceRemovedReason()))return stop(ErrorKind::IdentityMismatch,"NR presenter device is removed",hr);
+        s.contract.device=presenter;
+    }
     const auto family=ClassifyGpu(d.VendorId,d.DeviceId,s.adapter.software);
     if(family==GpuFamily::AmdUnsupported||settings.profile=="amd-unsupported")return stop(ErrorKind::Unsupported,"AMD 6000/7000/9000 NR is unsupported");
     for(const auto& p:RuntimeCatalog())if((settings.profile=="Auto"&&(p.primaryFamily==family||(p.includeRtx30&&family==GpuFamily::Rtx30)))||p.id==settings.profile){s.profile=&p;break;}
@@ -55,7 +62,9 @@ Result<BeforeResult> BeforeHost::Evaluate(const BeforeInput& input,const Setting
     }
     if(!s.owner){
         s.contract.adapterLuid=s.adapter.luid;
-        auto hr=D3D12CreateDevice(s.dxgiAdapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&s.contract.device));if(FAILED(hr)){s.status="NR D3D12 device unavailable; source upscaling continues";s.available=false;return BeforeResult{false,wasActive||input.reset};}
+        auto hr=S_OK;
+        if(!s.contract.device)hr=D3D12CreateDevice(s.dxgiAdapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&s.contract.device));
+        if(FAILED(hr)){s.status="NR D3D12 device unavailable; source upscaling continues";s.available=false;return BeforeResult{false,wasActive||input.reset};}
         D3D12_COMMAND_QUEUE_DESC q{};hr=s.contract.device->CreateCommandQueue(&q,IID_PPV_ARGS(&s.contract.queue));if(FAILED(hr)){s.status="NR DIRECT queue unavailable; source upscaling continues";s.available=false;return BeforeResult{false,wasActive||input.reset};}
         s.owner=std::make_shared<RuntimeOwner>(RuntimeOwnerPaths{s.nrFile,s.settings.driverCore,s.cache,s.profile->compatibility==CompatibilityPolicy::CallerIdentityProbeRequired});s.uncertain=true;
         auto opened=s.owner->Open(*s.profile,s.contract.device.Get(),s.adapter);

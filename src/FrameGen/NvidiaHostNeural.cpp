@@ -1,6 +1,7 @@
 #include <PCH.h>
 #include "NvidiaHost.h"
 #include "SourceFrameGeneration.h"
+#include "SourceDLSSGBackend.h"
 #include "GameCameraMeasurements.h"
 #include "../RenderPipeline.h"
 #include "CommunityShaderIntegration.h"
@@ -16,11 +17,18 @@ void NvidiaHost::InspectCommunityNeural()
     communityNeural_=std::make_unique<NR::BeforeHost>();
     const auto& startup=SourceFrameGeneration::GetSingleton()->settings.neuralStartup;
     const auto cache=PluginPaths::Directory()/"TheosRenderPipeline"/"NR"/"cache";
-    const auto inspected=communityNeural_->Inspect(device_.Get(),startup,cache);
-    communityLastStatus_=communityNeural_->Status();
-    logger::info("[Community NR startup] available={} profile={} encoding={} root={} core={} status={}",
+    ID3D12Device* presenter{};
+#if defined(TRP_ENABLE_FSR)
+    if(fsrResources_ && fsrResources_->Bridge())presenter=fsrResources_->Bridge()->Device12();
+#endif
+    if(!presenter)presenter=SourceDLSSG::Backend::Get().Transport().Device12();
+    // Never create another injector device proxy while the presenter is live.
+    const auto inspected=presenter?communityNeural_->Inspect(device_.Get(),startup,cache,presenter):
+        NR::Result<void>{std::unexpected(NR::Error{NR::ErrorKind::Unsupported,0,"NR waiting for presenter D3D12 device"})};
+    communityLastStatus_=inspected?communityNeural_->Status():inspected.error().message;
+    logger::info("[Community NR startup] available={} profile={} encoding={} root={} core={} presenterDevice={} status={}",
         bool(inspected),communityNeural_->ProfileId(),Upscaling::ColorEncodingName(startup.sourceEncoding),
-        startup.runtimeRoot.string(),startup.driverCore.string(),communityNeural_->Status());
+        startup.runtimeRoot.string(),startup.driverCore.string(),fmt::ptr(presenter),communityLastStatus_);
 }
 bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Texture2D* depth,
     ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible)
