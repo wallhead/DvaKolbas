@@ -84,7 +84,15 @@ namespace TheosRenderPipeline::Upscaling
             if(!linear->Valid()||linear->SourceId()!=frame.sourceId||linear->Epoch()!=frame.sourceEpoch||!linear->ProducerFence()||!linear->ProducerValue()||linear->Width()!=frame.render.width||linear->Height()!=frame.render.height||!D3D11FrameCopy::SameObject(linear->Context(),state_->bridge->Context11()))return invalid();
             const auto valid=[&](ID3D11Texture2D* texture,DXGI_FORMAT format){if(!texture)return false;D3D11_TEXTURE2D_DESC desc{};texture->GetDesc(&desc);ComPtr<ID3D11Device> actual,expected;texture->GetDevice(&actual);state_->bridge->Context11()->GetDevice(&expected);return D3D11FrameCopy::SameObject(actual.Get(),expected.Get())&&desc.Format==format&&desc.Width==frame.render.width&&desc.Height==frame.render.height&&desc.SampleDesc.Count==1&&desc.ArraySize==1&&desc.MipLevels==1;};
             if(!valid(linear->Color(),DXGI_FORMAT_R16G16B16A16_FLOAT)||!valid(linear->Depth(),DXGI_FORMAT_R32_FLOAT)||!valid(linear->Motion(),DXGI_FORMAT_R16G16_FLOAT))return invalid();
-            if(state_->recovery)return std::unexpected(RuntimeError{ErrorKind::DispatchFailure,0,"FSR recovery cannot consume a prepared NR lease"});
+            if(state_->recovery){
+                auto spatialFrame=frame;spatialFrame.input=spatialFrame.color=linear->Color();spatialFrame.colorIsLinear=true;
+                auto result=Spatial(spatialFrame);if(!result||*result!=UpscaleOutcome::SpatialRecovery)return result;
+                // Spatial recovery draws directly from the leased NR color;
+                // its genuine final reader is this draw, not an FSR dispatch.
+                auto hr=state_->bridge->SignalProducer();if(FAILED(hr))return fatal(hr,"FSR spatial NR reader submission failed");
+                ComPtr<ID3D12Fence> drawn;uint64_t value{};hr=state_->bridge->ProducerDependency(&drawn,&value);if(FAILED(hr))return fatal(hr,"FSR spatial NR reader dependency missing");
+                auto tracked=linear->TrackReader(drawn.Get(),value);if(!tracked)return fatal(E_FAIL,"FSR spatial NR reader ownership rejected");return result;
+            }
         }
         if(state_->recovery)return Spatial(frame);
         if(frame.exposure || frame.reactive || frame.transparencyComposition) {
@@ -141,7 +149,10 @@ namespace TheosRenderPipeline::Upscaling
             // The vendor may have changed CPU-side history while recording.
             // Discard its unsubmitted list and keep this session spatial until
             // restart, retaining the poisoned context until normal retirement.
-            state_->recovery=true;return Spatial(frame);
+            state_->recovery=true;
+            // Prepared input was already copied and its reader registered.
+            // Recover from that enhanced linear copy on the failing frame too.
+            auto spatialFrame=frame;if(linear){spatialFrame.input=spatialFrame.color=state_->color.Get();spatialFrame.colorIsLinear=true;}return Spatial(spatialFrame);
         }
         if(performance)performance->Resolve12(list);
         if(FAILED(hr=Observe(performance,FsrCpuPhase::Submit,[&]{return state_->bridge->Submit();})) || FAILED(hr=state_->bridge->WaitConsumer()))return fatal(hr,"FSR dispatch/consumer dependency failed");

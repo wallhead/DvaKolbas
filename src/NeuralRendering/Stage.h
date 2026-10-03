@@ -42,6 +42,8 @@ public:
     // Capacity/lifecycle only. Wait on this ticket's genuine registered readers;
     // the caller still collects the ticket, and timeout retains every owner.
     Result<void> WaitForRetirement(const EvaluationTicket&,uint32_t timeoutMilliseconds);
+    // Capacity only: wake on progress from any submitted slot, then collect.
+    Result<void> WaitForProgress(uint32_t timeoutMilliseconds);
     Result<uint32_t> CollectCompleted();
     Result<void> Retire();
     StageDiagnostics Diagnostics()const;

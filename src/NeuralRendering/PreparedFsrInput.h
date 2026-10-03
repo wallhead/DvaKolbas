@@ -24,6 +24,9 @@ public:
     uint64_t Epoch()const noexcept{return epoch_;}
     bool Reset()const noexcept{return reset_;}
     ID3D11DeviceContext* Context()const noexcept{return context_.Get();}
+    // After TrackReader consumes this lease, COM ownership preserves object
+    // lifetime only. Contents may change when the registered reader completes
+    // and the producer reuses its slot; consumed getters are not a snapshot.
     ID3D11Texture2D* Color()const noexcept{return color_.Get();}
     ID3D11Texture2D* Depth()const noexcept{return depth_.Get();}
     ID3D11Texture2D* Motion()const noexcept{return motion_.Get();}

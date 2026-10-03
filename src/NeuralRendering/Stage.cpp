@@ -219,6 +219,12 @@ Result<void> Stage::WaitForRetirement(const EvaluationTicket& ticket,uint32_t ti
     for(const auto& reader:slot->pending->readers){auto waited=s.retirement.Wait(reader.fence.Get(),reader.value,s.contract.device.Get(),deadline);if(!waited){s.terminal=true;return waited;}}
     return {};
 }
+Result<void> Stage::WaitForProgress(uint32_t timeoutMilliseconds){
+    auto& s=*state_;if(s.terminal||!s.ready||!timeoutMilliseconds)return Fail(ErrorKind::Retirement,"NR capacity wait state/deadline invalid");
+    std::vector<RetirementEvent::Dependency> readers;
+    for(const auto& slot:s.slots)if(slot.pending&&slot.pending->submitted)for(const auto& reader:slot.pending->readers)readers.push_back({reader.fence.Get(),reader.value});
+    auto result=s.retirement.WaitAny(readers,s.contract.device.Get(),std::chrono::steady_clock::now()+std::chrono::milliseconds(timeoutMilliseconds));if(!result)s.terminal=true;return result;
+}
 Result<uint32_t> Stage::CollectCompleted(){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; ownership retained");if(!s.ready)return uint32_t{0};auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during collection");if(!r)return std::unexpected(r.error());uint32_t count{};
     for(auto& slot:s.slots)if(slot.pending){auto complete=s.Complete(*slot.pending);if(!complete)return std::unexpected(complete.error());if(*complete){if(s.metrics)s.metrics->RecordCompletedFor(slot.pending->packet.sourceId);slot.pending.reset();++count;}}return count;

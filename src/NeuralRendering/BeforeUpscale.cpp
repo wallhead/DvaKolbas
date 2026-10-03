@@ -53,7 +53,7 @@ struct BeforeUpscale::State {
     Result<void> WaitProgress(std::chrono::steady_clock::time_point deadline,Slot* selected=nullptr){
         Slot* oldest{};for(auto& slot:slots)if(slot.ticket&&(!selected||selected==&slot)&&(!oldest||slot.id<oldest->id))oldest=&slot;if(!oldest)return {};
         auto remaining=std::chrono::ceil<std::chrono::milliseconds>(deadline-std::chrono::steady_clock::now()).count();if(remaining<=0){terminal=true;return Fail(ErrorKind::Retirement,"NR Before reader retirement deadline exceeded; ownership retained");}
-        auto waited=stage.WaitForRetirement(*oldest->ticket,uint32_t(remaining));if(!waited)terminal=true;return waited;
+        auto waited=selected?stage.WaitForRetirement(*oldest->ticket,uint32_t(remaining)):stage.WaitForProgress(uint32_t(remaining));if(!waited)terminal=true;return waited;
     }
     bool Texture(ID3D11Texture2D* texture,DXGI_FORMAT format)const {
         if(!texture)return false;ComPtr<ID3D11Device> device;texture->GetDevice(&device);

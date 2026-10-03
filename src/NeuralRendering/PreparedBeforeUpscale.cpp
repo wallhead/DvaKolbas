@@ -47,6 +47,7 @@ struct PreparedBeforeUpscale::State {
             auto start=metrics?PerformanceNow():0;auto waited=WaitProgress(deadline,selected);if(!waited)return waited;slept=true;if(metrics)blocked+=PerformanceNow()-start;}
     }
     Result<void> WaitProgress(std::chrono::steady_clock::time_point deadline,Slot* selected=nullptr){
+        if(!selected){std::vector<RetirementEvent::Dependency> readers;for(const auto& slot:slots)if(slot.busy){readers.push_back({readerFence.Get(),slot.readerValue});if(slot.borrowed)readers.push_back({slot.leaseFence.Get(),slot.leaseValue});for(const auto& reader:slot.readers)readers.push_back({reader.fence.Get(),reader.value});}auto r=retirement.WaitAny(readers,device12.Get(),deadline);if(!r)terminal=true;return r;}
         Slot* oldest{};for(auto& slot:slots)if(slot.busy&&(!selected||selected==&slot)&&(!oldest||slot.id<oldest->id))oldest=&slot;if(!oldest)return {};
         auto wait=[&](ID3D12Fence* fence,uint64_t value){auto r=retirement.Wait(fence,value,device12.Get(),deadline);if(!r)terminal=true;return r;};
         auto r=wait(readerFence.Get(),oldest->readerValue);if(!r)return r;
