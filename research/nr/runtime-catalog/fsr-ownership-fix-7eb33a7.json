@@ -225,19 +225,19 @@
   "logs": {
     "combined-red": {
       "path": "7eb33a7-combined-red.log",
-      "sha256": "50255831c409358919fad7e594d0b3e184a4fe935f6ef9c9976717b2ac6227b6"
+      "sha256": "cc83e62b12c216c3ec730c6e07aad9b2d08b06b9271ad660db62b31f35e624eb"
     },
     "combined-performance-green": {
       "path": "7eb33a7-combined-performance-green.log",
-      "sha256": "d0479373b36f9d1aa9edb0b30abd05d76de8c1f35fe6b3052898d031d0422a82"
+      "sha256": "004c50995319bf36589f8271831091e9807bc0a9a97b01ed9740caf4be8a47a9"
     },
     "combined-native-green": {
       "path": "7eb33a7-combined-native-green.log",
-      "sha256": "d3f0d6095608e6932c01a3b2bfac6f0f1d6e847c66902d7e704fb1a49789186d"
+      "sha256": "42cd21646024eae666f0820c0c29fd1de2ea2d51b2952cd924e0882bf213b6f3"
     },
     "product-clean": {
       "path": "7eb33a7-product-clean.log",
-      "sha256": "e6fb23c69ddcb0796f324aca0408a831ebf3ddab56507b856a1789d117705d77"
+      "sha256": "551a3431edcb735128516796719d5bf4282a6c59c55e20e862ddf1839fa80837"
     }
   },
   "wholeNrPlan": {
@@ -246,5 +246,6 @@
     "afterFgQualified": false,
     "otherGpuFamiliesTested": false,
     "skyrimAccepted": false
-  }
+  },
+  "logHashEncoding": "SHA256 of committed Git blob bytes; line endings normalized by Git"
 }
