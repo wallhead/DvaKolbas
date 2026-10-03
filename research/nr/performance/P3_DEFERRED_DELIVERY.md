@@ -1,0 +1,11 @@
+# P3 queued delivery
+
+Source `97d6eca` returns after ordered D3D11 delivery is queued. Sealed source/epoch/slot tickets retain original input, NR resources, descriptors, parameter blocks and command ownership through genuine NR completion and the private D3D11 copy/encoder reader. Collection never waits. Three occupied slots apply a 20-second capacity deadline; explicit readback, off, resize and teardown drain readers. Terminal timeouts retain owners and reject retries. Shared interop semantics are unchanged.
+
+The old implementation failed the gated-encoder early-return test. The queued implementation proves NR completes while its encoder remains gated, a higher unrelated queue signal cannot retire that encoder, later source consumers preserve alpha, and capacity/resize wait for genuine delivery. Actual ReShade repeats the pressure/retirement cases on its wrapped D3D12 device. The 39 standalone tests also cover live off/on/reset/resize and partial/unsubmitted failures. A timeout diagnostics test failed first and then passed after adapter terminal states were propagated.
+
+The [clean comparison](p3-comparison.json) contains three 300-source repeats per revision with 120 warmup sources, unchanged RTX40 model and FSR 3.1.5 NativeAA at 2560×1440. P2 medians were 10.324–10.416 ms, p95 11.049–11.068 ms; P3 medians are 8.958–9.040 ms, p95 10.351–10.502 ms. Capacity pressure still occurs on the measured source stream; blocking moves to retained-slot admission. Vendor GPU medians also drift to 7.22–7.29 ms. Historical/new captures lack clock and thermal controls. This is an enqueue transaction including real capacity waits, excluding upload and final drain, and does not establish Skyrim FPS.
+
+The clean 32-source correctness capture has 31 NR / 32 FSR evaluations, all 1,843,200 source alpha values intact, 32 distinct FSR output hashes, no timing drops, successful retirement, one shutdown and restored caller shim. [Qualification](p3-qualification.json) preserves controls and raw evidence hashes. Raw captures remain under `out/research/nr/performance/clean-p3`.
+
+Original NR progress remains 1/8. Matched game performance, FG source/display acceptance and camera-motion color acceptance remain open. No installed mod, INI or MO2 settings changed at this checkpoint.
