@@ -33,6 +33,8 @@ public:
     Result<void> Open(const RuntimeProfile&,ID3D12Device*,AdapterIdentity renderer);
     const RuntimeExports& Exports() const;
     bool Ready() const noexcept;
+    std::string_view ProfileId()const noexcept;
+    Result<void> CheckClientDevice(ID3D12Device*)const;
     // A client covers parameters, feature, every recording and every reader.
     // Only its owner may release it after confirmed fences + feature/parameter
     // release. Abandoning a client prevents module/device retirement.

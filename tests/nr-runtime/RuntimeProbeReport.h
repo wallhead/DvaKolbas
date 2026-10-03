@@ -10,6 +10,8 @@ struct ProbeReport {
     uint32_t init{}, create{}, evaluate{}, release{}, destroyParameters{}, shutdown{};
     uint32_t requestedFrames{}, readbackFrames{}, distinctOutputHashes{}, spatiallyVariedFrames{};
     uint64_t outputPixels{}, finitePixels{}, overwrittenPixels{}, changedFromInputPixels{};
+    uint64_t sourceAlphaPreservedPixels{};
+    bool requireSourceAlpha{};
     uint32_t allocations{}, releases{};
     bool runtimeHeldAndMatched{}, coreHeldAndMatched{}, shimRequested{}, shimRestored{}, outputReadersRetired{};
 };

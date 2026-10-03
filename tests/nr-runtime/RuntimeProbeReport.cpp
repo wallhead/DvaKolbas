@@ -27,6 +27,8 @@ std::vector<std::string> Validate(const ProbeReport& r) {
         !r.changedFromInputPixels || r.changedFromInputPixels>r.outputPixels)issues.push_back("NR pixels are unqualified");
     if(!r.outputReadersRetired || r.allocations!=r.releases || (r.shimRequested && !r.shimRestored))
         issues.push_back("runtime/output retirement incomplete");
+    if(r.requireSourceAlpha && r.sourceAlphaPreservedPixels!=r.outputPixels)
+        issues.push_back("shared stage did not preserve every source alpha pixel");
     return issues;
 }
 }

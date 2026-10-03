@@ -14,14 +14,14 @@ Result<HistoryDecision> History::Check(const ImagePacket& p,const SettingsSnapsh
     if(p.epoch<epoch_)return Invalid("NR temporal image belongs to old epoch");
     if(p.epoch==epoch_ && (p.sourceId<=source_ || p.imageId<=image_ || p.presentationTime<=time_))
         return Invalid("NR temporal image is duplicate/stale/backward");
-    HistoryDecision d;d.owner_=this;d.generation_=generation_;d.epoch_=p.epoch;d.source_=p.sourceId;
+    HistoryDecision d;d.owner_=owner_.Seal();d.generation_=generation_;d.epoch_=p.epoch;d.source_=p.sourceId;
     d.image_=p.imageId;d.settingsRevision_=s.revision;d.time_=p.presentationTime;
     d.reset_=resetNext_ || p.reset || p.epoch!=epoch_ || source_==UINT64_MAX ||
         p.sourceId!=source_+1 || p.previousSourceId!=source_;
     return d;
 }
 Result<void> History::CommitRecorded(const HistoryDecision& d){
-    if(exhausted_ || d.owner_!=this || d.generation_!=generation_ || generation_==UINT64_MAX)
+    if(exhausted_ || !owner_.Owns(d.owner_) || d.generation_!=generation_ || generation_==UINT64_MAX)
         return Invalid("NR history decision is stale/foreign");
     epoch_=d.epoch_;source_=d.source_;image_=d.image_;settingsRevision_=d.settingsRevision_;time_=d.time_;
     resetNext_=false;++generation_;return {};

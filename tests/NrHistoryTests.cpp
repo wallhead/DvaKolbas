@@ -1,6 +1,7 @@
 #include "NeuralRendering/History.h"
 #include <cstdio>
 #include <limits>
+#include <memory>
 using namespace TheosRenderPipeline::NeuralRendering;
 int main(){
     int failed{};const auto check=[&](bool ok,const char* name){std::printf("%s %s\n",ok?"PASS":"FAIL",name);if(!ok)++failed;};
@@ -27,5 +28,10 @@ int main(){
     auto e=h.Check(epoch,settings);check(e&&e->Reset(),"NewEpochAllowsRestartedSourceAndTimeWithReset");
     History other;if(e)check(!other.CommitRecorded(*e),"DecisionFromAnotherHistoryOwnerRejected");
     if(e)check(bool(h.CommitRecorded(*e)),"NewEpochRecordedIdentityCommitted");check(!h.Check(next,settings),"OldEpochRejectedAfterNewEpochRecording");
+    alignas(History) unsigned char storage[sizeof(History)];
+    auto* recycled=std::construct_at(reinterpret_cast<History*>(storage));auto staleOwner=recycled->Check(p,settings);
+    std::destroy_at(recycled);recycled=std::construct_at(reinterpret_cast<History*>(storage));
+    if(staleOwner)check(!recycled->CommitRecorded(*staleOwner),"DecisionCannotCommitToSameAddressReplacementHistory");
+    std::destroy_at(recycled);
     return failed?1:0;
 }

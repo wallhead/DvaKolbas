@@ -1,5 +1,6 @@
 #pragma once
 #include "ImagePacket.h"
+#include "TicketOwnership.h"
 namespace TheosRenderPipeline::NeuralRendering {
 class History;
 class HistoryDecision {
@@ -8,7 +9,7 @@ public:
 private:
     friend class History;
     HistoryDecision()=default;
-    const History* owner_{};
+    Detail::TicketOwnership::Token owner_;
     uint64_t generation_{},epoch_{},source_{},image_{},settingsRevision_{};
     double time_{};
     bool reset_{};
@@ -24,6 +25,7 @@ public:
     Result<void> CommitRecorded(const HistoryDecision&);
     void ResetNext()noexcept;
 private:
+    Detail::TicketOwnership owner_;
     uint64_t generation_{},epoch_{},source_{},image_{},settingsRevision_{};
     double time_{};
     bool resetNext_{true},exhausted_{};

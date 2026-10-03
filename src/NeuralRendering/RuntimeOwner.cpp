@@ -45,6 +45,7 @@ struct RuntimeOwner::State {
     uint32_t clients{};
     std::atomic_uint lastInit{},lastShutdown{};
     uint64_t shimRva{};
+    std::string_view profileId;
     ~State(){ if(nr)FreeLibrary(nr);if(core)FreeLibrary(core); }
 };
 RuntimeOwner::RuntimeOwner(RuntimeOwnerPaths paths):state_(std::make_unique<State>()){state_->paths=std::move(paths);}
@@ -93,13 +94,22 @@ Result<void> RuntimeOwner::Open(const RuntimeProfile& requested,ID3D12Device* de
         if(!installed){if(s.shim.Active())s.phase=Phase::Quarantined;return installed;}
         s.shimRva=s.shim.SlotRva();
     }
-    s.device=device;processProfile=profile->id;activeOwner=&s;s.initAttempted=true;
+    s.device=device;s.profileId=profile->id;processProfile=profile->id;activeOwner=&s;s.initAttempted=true;
     s.lastInit=e.init(kDirectNrAppId,s.paths.dataDirectory.c_str(),device,kDirectNrApiVersion,nullptr);
     if(s.lastInit!=1){s.phase=Phase::Quarantined;return Fail(ErrorKind::Runtime,"NR Init_Ext rejected; partial runtime/device ownership retained",s.lastInit);}
     s.phase=Phase::Ready;return {};
 }
 const RuntimeExports& RuntimeOwner::Exports() const {return state_->exports;}
 bool RuntimeOwner::Ready() const noexcept{return state_->phase==Phase::Ready;}
+std::string_view RuntimeOwner::ProfileId()const noexcept{return state_->profileId;}
+Result<void> RuntimeOwner::CheckClientDevice(ID3D12Device* device)const{
+    std::scoped_lock lock(processMutex);const auto& s=*state_;
+    ComPtr<IUnknown> actual,expected;
+    if(s.phase!=Phase::Ready || !device || FAILED(device->QueryInterface(IID_PPV_ARGS(&actual))) ||
+        FAILED(s.device.As(&expected)) || actual.Get()!=expected.Get())
+        return Fail(ErrorKind::IdentityMismatch,"NR client device differs from retained runtime device");
+    return {};
+}
 Result<void> RuntimeOwner::AcquireClient(){std::scoped_lock lock(processMutex);auto& s=*state_;
     if(s.phase!=Phase::Ready || s.clients==UINT32_MAX)return Fail(ErrorKind::Conflict,"NR owner cannot admit another client");++s.clients;return {};}
 Result<void> RuntimeOwner::ReleaseClientAfterRetirement(){std::scoped_lock lock(processMutex);auto& s=*state_;

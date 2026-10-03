@@ -31,5 +31,9 @@ int main() {
     const std::array<uint16_t,4> sentinel{99,99,99,99},partial{1,99,99,0},complete{1,2,3,99};
     check(!AllRgbOverwritten(partial,sentinel),"PartiallyWrittenRgbIsRejected");
     check(AllRgbOverwritten(complete,sentinel),"AllRgbWrittenRegardlessOfAlpha");
+    r=good;r.requireSourceAlpha=true;r.sourceAlphaPreservedPixels=999;
+    check(!Validate(r).empty(),"OneCorruptAlphaPixelRejectsSharedStage");
+    r=good;r.requireSourceAlpha=true;r.sourceAlphaPreservedPixels=1000;
+    check(Validate(r).empty(),"EveryOriginalAlphaPixelPreserved");
     return failed?1:0;
 }
