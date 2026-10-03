@@ -1,0 +1,351 @@
+{
+  "scope": "Static selected windows; no transitive async or live-host binding claim",
+  "binaries": [
+    {
+      "path": "UpscalerBasePlugin/PDPerfPlugin.dll",
+      "sha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+      "windows": [
+        {
+          "rva": "0x89c0",
+          "unwindRanges": [
+            [
+              "0x89c0",
+              "0x8b95"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x89c0",
+              "bytes": "48895c2418",
+              "text": "mov qword ptr [rsp + 0x18], rbx"
+            },
+            {
+              "rva": "0x89c5",
+              "bytes": "4889742420",
+              "text": "mov qword ptr [rsp + 0x20], rsi"
+            },
+            {
+              "rva": "0x89ca",
+              "bytes": "55",
+              "text": "push rbp"
+            }
+          ]
+        },
+        {
+          "rva": "0x8bb24",
+          "unwindRanges": [
+            [
+              "0x8bae0",
+              "0x8bb35"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x8bb24",
+              "bytes": "ff157e560a00",
+              "text": "call qword ptr [rip + 0xa567e]",
+              "ripRelativeImport": "WaitForSingleObject"
+            },
+            {
+              "rva": "0x8bb2a",
+              "bytes": "3d02010000",
+              "text": "cmp eax, 0x102"
+            },
+            {
+              "rva": "0x8bb2f",
+              "bytes": "0f85cc030000",
+              "text": "jne 0x18008bf01"
+            }
+          ]
+        },
+        {
+          "rva": "0x110990",
+          "unwindRanges": [
+            [
+              "0x110990",
+              "0x110b10"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x110990",
+              "bytes": "48895c2410",
+              "text": "mov qword ptr [rsp + 0x10], rbx"
+            },
+            {
+              "rva": "0x110995",
+              "bytes": "48896c2418",
+              "text": "mov qword ptr [rsp + 0x18], rbp"
+            },
+            {
+              "rva": "0x11099a",
+              "bytes": "4889742420",
+              "text": "mov qword ptr [rsp + 0x20], rsi"
+            }
+          ]
+        },
+        {
+          "rva": "0x110b10",
+          "unwindRanges": [
+            [
+              "0x110b10",
+              "0x110e44"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x110b10",
+              "bytes": "48895c2418",
+              "text": "mov qword ptr [rsp + 0x18], rbx"
+            },
+            {
+              "rva": "0x110b15",
+              "bytes": "4889742420",
+              "text": "mov qword ptr [rsp + 0x20], rsi"
+            },
+            {
+              "rva": "0x110b1a",
+              "bytes": "55",
+              "text": "push rbp"
+            }
+          ]
+        },
+        {
+          "rva": "0x110e60",
+          "unwindRanges": [
+            [
+              "0x110e60",
+              "0x1110e5"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x110e60",
+              "bytes": "48895c2418",
+              "text": "mov qword ptr [rsp + 0x18], rbx"
+            },
+            {
+              "rva": "0x110e65",
+              "bytes": "4889742420",
+              "text": "mov qword ptr [rsp + 0x20], rsi"
+            },
+            {
+              "rva": "0x110e6a",
+              "bytes": "55",
+              "text": "push rbp"
+            }
+          ]
+        },
+        {
+          "rva": "0x111100",
+          "unwindRanges": [
+            [
+              "0x111100",
+              "0x11113c"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x111100",
+              "bytes": "48895c2408",
+              "text": "mov qword ptr [rsp + 8], rbx"
+            },
+            {
+              "rva": "0x111105",
+              "bytes": "57",
+              "text": "push rdi"
+            },
+            {
+              "rva": "0x111106",
+              "bytes": "4883ec20",
+              "text": "sub rsp, 0x20"
+            }
+          ]
+        }
+      ],
+      "contiguousMethodPointersRva": "0x12fade0",
+      "methodRvas": [
+        "0x110990",
+        "0x110b10",
+        "0x110e60",
+        "0x111100"
+      ],
+      "submitResultRttiStrings": 2,
+      "mainHelperFragment": {
+        "begin": "0x89c0",
+        "endExclusive": "0x8b95",
+        "sha256": "cf0b518d0c5025d4f732c138dfacd263fa89b77bb42e971eb8ae5f4fa6f7d48b",
+        "calls": [
+          {
+            "rva": "0x8a04",
+            "bytes": "ff155e8b1200",
+            "text": "call qword ptr [rip + 0x128b5e]",
+            "ripRelativeImport": "?_Xbad_function_call@std@@YAXXZ"
+          },
+          {
+            "rva": "0x8a0e",
+            "bytes": "ff5010",
+            "text": "call qword ptr [rax + 0x10]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8a24",
+            "bytes": "ff5020",
+            "text": "call qword ptr [rax + 0x20]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8a48",
+            "bytes": "e8d3feffff",
+            "text": "call 0x180008920",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8a72",
+            "bytes": "e8d9700000",
+            "text": "call 0x18000fb50",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8a8f",
+            "bytes": "ff5008",
+            "text": "call qword ptr [rax + 8]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8a9f",
+            "bytes": "e8ac700000",
+            "text": "call 0x18000fb50",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8ad8",
+            "bytes": "e873700000",
+            "text": "call 0x18000fb50",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8af2",
+            "bytes": "e8c9750000",
+            "text": "call 0x1800100c0",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8b0e",
+            "bytes": "ff5020",
+            "text": "call qword ptr [rax + 0x20]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8b25",
+            "bytes": "ff5010",
+            "text": "call qword ptr [rax + 0x10]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8b3f",
+            "bytes": "ff5020",
+            "text": "call qword ptr [rax + 0x20]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8b4e",
+            "bytes": "ff5010",
+            "text": "call qword ptr [rax + 0x10]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8b67",
+            "bytes": "ff5020",
+            "text": "call qword ptr [rax + 0x20]",
+            "ripRelativeImport": null
+          },
+          {
+            "rva": "0x8b78",
+            "bytes": "e883171200",
+            "text": "call 0x18012a300",
+            "ripRelativeImport": null
+          }
+        ],
+        "directWaitForSingleObjectImportCalls": [],
+        "limit": "Only this unwind fragment. No claim about thunks, continuations, other branches or transitive calls."
+      }
+    },
+    {
+      "path": "SKSE/Plugins/SkyrimUpscaler.dll",
+      "sha256": "ac699b5883d4deeafdfff81ab041c3f191b1970e68c3408ffdb18068a6f5482a",
+      "windows": [
+        {
+          "rva": "0x281f3f",
+          "unwindRanges": [
+            [
+              "0x281580",
+              "0x2820c4"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x281f3f",
+              "bytes": "ffd0",
+              "text": "call rax"
+            },
+            {
+              "rva": "0x281f41",
+              "bytes": "8983d80c0000",
+              "text": "mov dword ptr [rbx + 0xcd8], eax"
+            },
+            {
+              "rva": "0x281f47",
+              "bytes": "eb06",
+              "text": "jmp 0x180281f4f"
+            }
+          ]
+        },
+        {
+          "rva": "0x2fabb7",
+          "unwindRanges": [
+            [
+              "0x2faba1",
+              "0x2fabd0"
+            ]
+          ],
+          "instructions": [
+            {
+              "rva": "0x2fabb7",
+              "bytes": "ffd0",
+              "text": "call rax"
+            },
+            {
+              "rva": "0x2fabb9",
+              "bytes": "8983d80c0000",
+              "text": "mov dword ptr [rbx + 0xcd8], eax"
+            },
+            {
+              "rva": "0x2fabbf",
+              "bytes": "eb07",
+              "text": "jmp 0x1802fabc8"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "notEstablished": [
+    "Both Skyrim indirect call sites dynamically bind EvaluateDLSSNRChain in the measured session",
+    "Complete async behavior or absence of waits in all helper continuations/callees",
+    "NR and SR fused into a command list or quantitative causes of live FPS gap",
+    "Named vtable identity/offsets from only the contiguous method pointer sequence"
+  ],
+  "reviewScriptSha256": "9e58adc2e00c4f0f8be966f6096984492149ff697d87d776fce727a3b6f1d673",
+  "suppliedDocument": {
+    "path": "supplied/DvaKolbas_vs_AIO19_NR_Performance_Analysis_2026-10-03.md",
+    "bytes": 18735,
+    "sha256": "cec0507d83f0a347a5bb59641077ef327a232063e63b664b4e26df20f049302d"
+  },
+  "coreStaticReproduction": {
+    "inspector": "tools/nr/Inspect-Aio19Performance.py",
+    "revision": "27ad903",
+    "result": "4 artifacts, 8 historical source blobs, 6 exports, 32 witnesses passed",
+    "archiveSha256": "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439"
+  }
+}

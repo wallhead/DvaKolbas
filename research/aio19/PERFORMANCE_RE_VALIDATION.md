@@ -1,5 +1,7 @@
 # AIO19 NR performance: independent validation, 2026-10-03
 
+The initial static audit below retains its original measurement limits. The later **New analysis and gameplay scout** section updates the model A/B and gameplay evidence.
+
 The supplied source checkpoint is accurate at Dva revision `27ad903`. The main AIO19 scheduling observations are supported by independent PE parsing and Capstone disassembly of the supplied archive. They identify credible optimization targets, **not a measured explanation of the user's approximately 15 FPS gap**. No AIO19 binary was executed, installed, or loaded into Dva during this audit.
 
 ## Inputs and reproduction
@@ -59,3 +61,28 @@ For the current Dva trial keep local tone 0: the camera-related color issue is m
 Prioritize a measured Before performance gate inside milestone 3: timing and matched/runtime baselines, queue-proven producer readiness, retained multi-ticket/resource slots, deferred final readers, then removal of redundant FSR conversions/copies and measured alpha/descriptor costs. Preserve teardown/device/proxy identity safeguards. The detailed [performance plan](../../docs/superpowers/plans/2026-10-03-nr-performance.md) precedes further shipping After work; post-FG feasibility research remains independently useful.
 
 No game settings or plugin code changed during this audit. Overall NR completion remains **1 of 8**. Performance implementation, matched game benchmarking, true After FG and other GPU-family qualification remain unfinished.
+
+## New analysis and gameplay scout
+
+The newly supplied [performance analysis](supplied/DvaKolbas_vs_AIO19_NR_Performance_Analysis_2026-10-03.md) reviews the older `de4662a` revision, which exists locally. Its recommendations are proposals to validate. The shipping path still has the producer handoff, per-source Drain, final query polling, descriptor creation, alpha restoration and NR-to-FSR color roundtrip described. Optional instrumentation added since that revision does not remove those operations.
+
+Fresh reproduction passed all four artifact identities, eight historical source blobs, six exports and 32 instruction witnesses using the existing inspector. The archive without `(1)` has exactly the reported SHA-256. Additional [bounded witnesses](new-performance-review-witnesses.json) confirm the four contiguous method pointers, SubmitResult RTTI strings, indirect calls at the two reported Skyrim RVAs, and `WaitForSingleObject` at PD `0x8bb24`. No direct call to that import appears in the fully decoded main unwind fragment `0x89c0..0x8b95`. This narrow negative does not establish transitive async behavior. The method sequence alone does not establish named vtable offsets; the two indirect calls alone do not prove their live binding to the chain export.
+
+The [standalone baseline](../nr/performance/baseline.json) already fulfills the proposed exact-hash model A/B for the synthetic native Before transaction. Current-model alternating medians were 10.01/10.01/10.15 ms; AIO-model medians 10.00/10.21/10.19 ms. Vendor GPU medians span 6.80–7.15 ms across clean runs, with drift in both models. No material model advantage is isolated in this scene. This does not establish equivalence for all gameplay, histories or presets. Shipping runtime pins remain unchanged.
+
+All four new raw PresentMon CSV hashes/counts match their collection receipts, each has one complete stream, and independently calculated timestamp cadence agrees within 0.05 FPS. After trimming two seconds from each end, 11,423 records remain from 12,234 raw records. The [scout receipt](../nr/performance/skyrim-scout-2026-10-03.json) retains settings, binary/log hashes, state evidence, timing statistics and limitations.
+
+| Host | NR off mean app FPS | NR on mean app FPS | Off → on mean frame time | NR-on p95 / p99 |
+| --- | ---: | ---: | ---: | ---: |
+| AIO19 | 60.105 | 51.333 | 16.638 → 19.481 ms | 20.274 / 21.233 ms |
+| DvaKolbas | 58.124 | 34.641 | 17.205 → 28.867 ms | 30.344 / 31.198 ms |
+
+The NR-on gap is **16.692 FPS / 9.387 ms**. Within-host mean increments are 2.843 ms and 11.663 ms; their difference is 8.820 ms. These are measurements of **unmatched configurations**, not isolated NR inference or host overhead. Saved settings/logs identify AIO DLAA with late NR, tone/style 1 versus Dva FSR 3.1.5 Native AA with Before NR, tone/style 0; saved ReShade ordering also differs. Both are native 2560×1440 and one pass. AIO scale 0 means no downsampling. Dva's saved FG=true is superseded by its logged session-only FG-off transition before capture; AIO saved FG=false and FrameWarp-off log support the source-rate interpretation, but no optical/generated-frame classification was performed.
+
+One 60-second run per state and scene label `river` do not verify identical weather, view, caps or clocks. CSV wall time is three hours ahead of the Moscow collector/game windows; use relative intervals and collector UTC for correlation. Valid display latency on every selected row does not prove absence of optical drops. The new Dva +11.663 ms increment agrees in scale with the historical smoke numbers, but does not authenticate those old source-ID records; their original receipt remains unavailable.
+
+### Updated ruling
+
+Host scheduling remains a credible priority, with its quantitative share open. Do not inherit the report's “very high” causal confidence or equate separate queues with a defect. Synthetic producer waits (~0.68–0.72 ms), final polling (~1.43–1.60 ms), six Flushes and one descriptor heap/source are measured. Consumer blocking overlaps dependent GPU work and cannot be added to vendor time. Alpha (~0.04 ms) and final encode (~0.02 ms) are low priorities there; FSR preparation/dispatch remains unmeasured.
+
+Finish the FSR timing slice and a matched repeated gameplay baseline. Keep the bounded order: queue-proven producer admission → retained resource/ticket slots → deferred final readers → direct prepared FSR handoff. Queue waits must establish real dependencies; slot reuse must follow every genuine reader. Preserve lifecycle drains and alpha until correctness evidence permits an alternative. No game/MO2 settings, installation or plugin behavior changed in this review. Main NR progress remains **1 of 8**; P0 remains partial.
