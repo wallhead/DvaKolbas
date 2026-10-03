@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Restore missing NVIDIA runtime assets for preserved user DLAA selection",
+  "sourceRevision": "bc2ef9d4ed06",
+  "trial": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial",
+  "runtimeSource": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP 0.3.5 Standard - DvaKolbas baseline",
+  "sourceManifestSha256": "1b95e94266ff0182fbc30f383939b26f804902e87c57478f54dad28a684264d1",
+  "addedFiles": [
+    {
+      "path": "NVIDIA-Streamline-license.txt",
+      "bytes": 1591,
+      "sha256": "7b6f23e7d6f3ad6292f9308d2b42cdc3d82ae4e9b2abb55f230279d83bedd43d"
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/nvngx_dlss.dll",
+      "bytes": 58956400,
+      "sha256": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e"
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/nvngx_dlssg.dll",
+      "bytes": 7453808,
+      "sha256": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b"
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.common.dll",
+      "bytes": 830592,
+      "sha256": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d"
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.dlss_g.dll",
+      "bytes": 625792,
+      "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02"
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.interposer.dll",
+      "bytes": 651392,
+      "sha256": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570"
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.pcl.dll",
+      "bytes": 360064,
+      "sha256": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d"
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.reflex.dll",
+      "bytes": 382080,
+      "sha256": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3"
+    }
+  ],
+  "protected": [
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\AMD-FidelityFX-license.md",
+      "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\FSR-API-MIT-NOTICE.txt",
+      "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\LICENSE",
+      "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\README.md",
+      "sha256": "a131d92eb7055b563fd52625c5495dff5e70f6a6bf05eac52af46e985cf33b6d"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\THIRD_PARTY_FSR.md",
+      "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "sha256": "b4c3b357ee646f8d0eaf65404e045163e46d0258f85f5a7a492fd740afce53e7"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "sha256": "3d02680023729e6037f8627e9d081e76c3fd20c6555314d01ae64306506eec1b"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipelineImGui.ini",
+      "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\FSR\\amd_fidelityfx_framegeneration_dx12.dll",
+      "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\FSR\\amd_fidelityfx_loader_dx12.dll",
+      "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\FSR\\amd_fidelityfx_upscaler_dx12.dll",
+      "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\RCAS.hlsl",
+      "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NR\\rtx20-30\\nvngx_dlssnr.dll",
+      "sha256": "6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NR\\rtx40\\nvngx_dlssnr.dll",
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NR\\rtx50\\nvngx_dlssnr.dll",
+      "sha256": "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e"
+    },
+    {
+      "path": "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini",
+      "sha256": "39b0eea7eb4ad19ef13f9e2eeafee3b31609788af9b1e06dc88ec65d78e6578f"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\archives.txt",
+      "sha256": "b5d6031773354069317958be89a2ccbc0e030debc1b19aaf2b2c473810403fa8"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\initweaks.ini",
+      "sha256": "c35e72b526cf46723f3559435de33c388f431966e48f66dfb6556283609cd27c"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\loadorder.txt",
+      "sha256": "5cb8f8b0b024699210bd869f10f0f8aa54cb22ec29814709a1ca59f525e8b494"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\loadorder.txt.2026_09_22_18_30_53",
+      "sha256": "eabe6ba130f4be5be4eba9247c92c0bfc8b9c399e1a2e0d851644c721d4e1ac3"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\lockedorder.txt",
+      "sha256": "f76bad6f87889c2ef94b459fa4ac5b7d35ede54b8d51dd518fd15a8381c04f95"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\lockedorder.txt.2026_09_22_18_30_53",
+      "sha256": "f76bad6f87889c2ef94b459fa4ac5b7d35ede54b8d51dd518fd15a8381c04f95"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\modlist.txt",
+      "sha256": "27f0cfad3d35c12d7231c2ee42875091f10a7789c13d6ee5c540c17977fec98d"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\modlist.txt.2026_09_22_18_31_31",
+      "sha256": "5314319db315e0dadba2f38c78c8db01d109ff5e071a69a86a37bfc8f045e850"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\plugins.txt",
+      "sha256": "9ba837c50ff4a60be21377721cac1105290659695925a9759d48598afc8aa81a"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\plugins.txt.2026_09_22_18_30_53",
+      "sha256": "411ea57083ca4474bfb0fcdb820c23330b3ad79db8caca49bd4eccd9dbee28ea"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\settings.ini",
+      "sha256": "40196cc186af865412c5ef0f629355ad7bf96dcc61907d41df8c00ebfaf2c7fb"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\Skyrim.ini",
+      "sha256": "0b22d1b41e4c39795242c44539c4583647a2a379361bb8a6f1ceee1747eff870"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\SkyrimCustom.ini",
+      "sha256": "0065612d39f810e4c934fedd96f02429fc41ff0996fd531ef26d8e135716563d"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\SkyrimPrefs.ini",
+      "sha256": "aa5ebf01b1465b60883ae4afbc17a0eeac541d703065d2e1f055bed851d8c739"
+    }
+  ],
+  "manifestSha256": "57f31170055bc93797bb02a8bec0b171e1ecea380c94c25e70676f040051f948",
+  "iniSha256": "3d02680023729e6037f8627e9d081e76c3fd20c6555314d01ae64306506eec1b",
+  "dllSha256": "b4c3b357ee646f8d0eaf65404e045163e46d0258f85f5a7a492fd740afce53e7",
+  "gpuTestsRun": false,
+  "gameplayAcceptance": "PENDING RELAUNCH",
+  "mo2SettingsEdited": false,
+  "iniEdited": false,
+  "failedStartupLog": {
+    "path": "out/research/nr/performance/post-p4-install/runtime-repair/failed-startup.log",
+    "sha256": "11e549a4cc136a796f34517229598f410ac3c9848efcd1cee0be1b37330ec05f"
+  },
+  "nativeLoadCheck": {
+    "receipt": {
+      "path": "out/research/nr/performance/post-p4-install/runtime-repair/native-load-green.json",
+      "sha256": "fed04791e2d0b642932d4f8506fed5e7e4e2f860b054bfb749238d089652fe10"
+    },
+    "results": [
+      {
+        "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.interposer.dll",
+        "loaded": true,
+        "released": true,
+        "initializationCalled": false
+      },
+      {
+        "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\nvngx_dlss.dll",
+        "loaded": true,
+        "released": true,
+        "initializationCalled": false
+      }
+    ],
+    "gpuInitializationCalled": false
+  },
+  "missingAssetEvidence": {
+    "path": "out/research/nr/performance/post-p4-install/runtime-repair/preflight-red.json",
+    "sha256": "12541d4fdca364866bd09e850b33a88a03f7c7d96355b57f08b6dba4d080740e"
+  },
+  "followUp": "Restart MO2 to refresh virtual mappings, then launch Skyrim; current DLAA/NR settings and FG-off state preserved"
+}
