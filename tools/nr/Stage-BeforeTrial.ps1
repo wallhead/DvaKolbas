@@ -49,7 +49,7 @@ for($i=0;$i -lt $lines.Count;$i++){
 }
 if($changes.Count){throw 'Reference INI lacks a required explicit trial setting'}
 if($ini.ContainsKey('NeuralRendering/CommunityRuntime')){throw 'Reference INI already contains community startup settings'}
-$lines.AddRange([string[]]@('','[NeuralRendering]','CommunityRuntime = true','Profile = Auto','RuntimeRoot =','DriverCore = '+[IO.Path]::GetFullPath($DriverCore),'SourceColorEncoding = Gamma22'))
+$lines.AddRange([string[]]@('','[NeuralRendering]','CommunityRuntime = true','Profile = Auto','RuntimeRoot =',('DriverCore = '+[IO.Path]::GetFullPath($DriverCore)),'SourceColorEncoding = Gamma22'))
 [IO.File]::WriteAllLines((Join-Path $root 'SKSE/Plugins/TheosRenderPipeline.ini'),$lines,[Text.UTF8Encoding]::new($false))
 Copy-Item -LiteralPath (Join-Path $repository 'docs/NR_BEFORE_TRIAL.md') -Destination (Join-Path $root 'README.md')
 foreach($relative in @('LICENSE','THIRD_PARTY_FSR.md','AMD-FidelityFX-license.md','FSR-API-MIT-NOTICE.txt')){
