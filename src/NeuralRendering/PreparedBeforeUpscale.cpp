@@ -1,6 +1,7 @@
 #include "PreparedBeforeUpscale.h"
 #include "PerformanceQueries.h"
 #include "History.h"
+#include "RetirementEvent.h"
 #include "Upscaling/FSRColorConversion.h"
 #include "FrameGen/D3D11FrameCopy.h"
 #include <chrono>
@@ -14,7 +15,10 @@ struct PreparedBeforeUpscale::State {
     BeforeUpscale bridge;History history;
     ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context;ComPtr<ID3D11DeviceContext4> context4;ComPtr<ID3D12Device> device12;
     struct Reader {ComPtr<ID3D12Fence> fence;uint64_t value{};};
-    struct Slot {ComPtr<ID3D11Texture2D> color,depth,motion;BeforeInput held;BeforeResult bridgeDelivery;std::vector<Reader> readers;uint64_t id{},source{},epoch{},readerValue{};bool busy{};};
+    struct Slot {ComPtr<ID3D11Texture2D> color,depth,motion;ComPtr<ID3D12Fence> leaseFence;BeforeInput held;BeforeResult bridgeDelivery;std::vector<Reader> readers;uint64_t id{},source{},epoch{},readerValue{},leaseValue{};bool busy{},borrowed{};};
+    // Intentional quarantine until genuine retirement; leases also own State.
+    std::shared_ptr<State> retainedSelf;
+    RetirementEvent retirement;
     std::array<Slot,3> slots;size_t nextSlot{};
     Detail::TicketOwnership deliveryOwner;uint64_t deliverySerial{},readerSerial{};ComPtr<ID3D12Fence> readerFence;ComPtr<ID3D11Fence> reader11;
     Upscaling::FsrColorConverter decode,encode;
@@ -26,20 +30,29 @@ struct PreparedBeforeUpscale::State {
     Result<uint32_t> Collect(){
         if(terminal)return Fail(ErrorKind::Retirement,"NR preparation terminal; ownership retained");if(!ready)return uint32_t{0};
         auto r=Gpu(device->GetDeviceRemovedReason(),"NR preparation D3D11 device removed");if(!r)return std::unexpected(r.error());r=Gpu(device12->GetDeviceRemovedReason(),"NR preparation D3D12 device removed");if(!r)return std::unexpected(r.error());auto collected=bridge.CollectCompleted();if(!collected){terminal=true;return std::unexpected(collected.error());}auto completed=readerFence->GetCompletedValue();if(completed==UINT64_MAX){terminal=true;return Fail(ErrorKind::Retirement,"NR preparation private reader fence reports device loss");}uint32_t count{};
-        for(auto& slot:slots)if(slot.busy&&slot.readerValue&&completed>=slot.readerValue){bool done=true;for(const auto& reader:slot.readers){auto value=reader.fence->GetCompletedValue();if(value==UINT64_MAX){terminal=true;return Fail(ErrorKind::Retirement,"NR preparation external reader reports device loss");}done&=value>=reader.value;}if(done){slot.held={};slot.readers.clear();slot.busy=false;++count;}}
+        for(auto& slot:slots)if(slot.busy&&!slot.borrowed&&slot.readerValue&&completed>=slot.readerValue){bool done=true;for(const auto& reader:slot.readers){auto value=reader.fence->GetCompletedValue();if(value==UINT64_MAX){terminal=true;return Fail(ErrorKind::Retirement,"NR preparation external reader reports device loss");}done&=value>=reader.value;}if(done){slot.held={};slot.readers.clear();slot.busy=false;++count;}}
         return count;
     }
     Result<size_t> Acquire(){
         auto find=[&]()->std::optional<size_t>{for(size_t i=0;i<slots.size();++i){auto index=(nextSlot+i)%slots.size();if(!slots[index].busy)return index;}return std::nullopt;};
         auto collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find())return *index;
         PerformanceScope performance(metrics,CpuPhase::PreparedWait);if(metrics)metrics->RecordSlotPressure();context->Flush();if(metrics)metrics->RecordFlush();auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(20);uint64_t blocked{};
-        for(;;){collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find()){if(metrics)metrics->RecordWait(CpuPhase::PreparedWait,true,blocked);return *index;}if(std::chrono::steady_clock::now()>=deadline){terminal=true;return Fail(ErrorKind::Retirement,"NR preparation slot capacity reader retirement deadline exceeded; ownership retained");}auto start=metrics?PerformanceNow():0;Sleep(1);if(metrics)blocked+=PerformanceNow()-start;}
+        for(;;){collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find()){if(metrics)metrics->RecordWait(CpuPhase::PreparedWait,true,blocked);return *index;}auto start=metrics?PerformanceNow():0;auto waited=WaitProgress(deadline);if(!waited)return std::unexpected(waited.error());if(metrics)blocked+=PerformanceNow()-start;}
     }
     Result<void> WaitPending(Slot* selected=nullptr){
         if(terminal)return Fail(ErrorKind::Retirement,"NR preparation terminal; ownership retained");if(!ready)return {};
+        auto initial=Collect();if(!initial)return std::unexpected(initial.error());bool pending=false;for(const auto& slot:slots)pending|=slot.busy&&(!selected||selected==&slot);if(!pending)return {};
         PerformanceScope performance(metrics,CpuPhase::PreparedWait);context->Flush();if(metrics)metrics->RecordFlush();auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(20);uint64_t blocked{};bool slept=false;
         for(;;){auto collected=Collect();if(!collected)return std::unexpected(collected.error());bool busy=false;for(const auto& slot:slots)busy|=slot.busy&&(!selected||selected==&slot);if(!busy){if(metrics)metrics->RecordWait(CpuPhase::PreparedWait,slept,blocked);return {};}
-            if(std::chrono::steady_clock::now()>=deadline){terminal=true;return Fail(ErrorKind::Retirement,"NR preparation delivery retirement deadline exceeded; ownership retained");}auto start=metrics?PerformanceNow():0;Sleep(1);slept=true;if(metrics)blocked+=PerformanceNow()-start;}
+            auto start=metrics?PerformanceNow():0;auto waited=WaitProgress(deadline,selected);if(!waited)return waited;slept=true;if(metrics)blocked+=PerformanceNow()-start;}
+    }
+    Result<void> WaitProgress(std::chrono::steady_clock::time_point deadline,Slot* selected=nullptr){
+        Slot* oldest{};for(auto& slot:slots)if(slot.busy&&(!selected||selected==&slot)&&(!oldest||slot.id<oldest->id))oldest=&slot;if(!oldest)return {};
+        auto wait=[&](ID3D12Fence* fence,uint64_t value){auto r=retirement.Wait(fence,value,device12.Get(),deadline);if(!r)terminal=true;return r;};
+        auto r=wait(readerFence.Get(),oldest->readerValue);if(!r)return r;
+        if(oldest->borrowed){r=wait(oldest->leaseFence.Get(),oldest->leaseValue);if(!r)return r;}
+        for(const auto& reader:oldest->readers){r=wait(reader.fence.Get(),reader.value);if(!r)return r;}
+        return {};
     }
     bool Shape(ID3D11Texture2D* texture,D3D11_TEXTURE2D_DESC& d)const{
         if(!texture)return false;ComPtr<ID3D11Device> actual;texture->GetDevice(&actual);texture->GetDesc(&d);
@@ -47,8 +60,8 @@ struct PreparedBeforeUpscale::State {
             d.MipLevels==1&&d.ArraySize==1&&d.SampleDesc.Count==1&&!d.SampleDesc.Quality&&d.Usage==D3D11_USAGE_DEFAULT;
     }
 };
-PreparedBeforeUpscale::PreparedBeforeUpscale():state_(std::make_unique<State>()){}
-PreparedBeforeUpscale::~PreparedBeforeUpscale(){if(state_->uncertain)state_.release();}
+PreparedBeforeUpscale::PreparedBeforeUpscale():state_(std::make_shared<State>()){}
+PreparedBeforeUpscale::~PreparedBeforeUpscale()=default;
 Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& c,unsigned preset,PerformanceMetrics* metrics){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR source preparation initialization already attempted");s.attempted=true;
     if(!device||c.colorExtent!=c.guideExtent||!c.colorExtent.width||!c.colorExtent.height||preset>1)return Fail(ErrorKind::InvalidInput,"NR source preparation native contract invalid");
@@ -62,13 +75,15 @@ Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> own
     auto make=[&](DXGI_FORMAT format,UINT bind,ComPtr<ID3D11Texture2D>& out){D3D11_TEXTURE2D_DESC d{};d.Width=s.extent.width;d.Height=s.extent.height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=format;d.Usage=D3D11_USAGE_DEFAULT;d.BindFlags=bind;return s.Gpu(device->CreateTexture2D(&d,nullptr,&out),"NR prepared source allocation failed");};
     Result<void> r;
     for(auto& slot:s.slots){r=make(DXGI_FORMAT_R16G16B16A16_FLOAT,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE,slot.color);if(!r)return r;
+        r=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&slot.leaseFence)),"NR prepared lease fence allocation failed");if(!r)return r;
         r=make(DXGI_FORMAT_R32_FLOAT,D3D11_BIND_UNORDERED_ACCESS|D3D11_BIND_SHADER_RESOURCE,slot.depth);if(!r)return r;
         r=make(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE,slot.motion);if(!r)return r;
     }
-    s.uncertain=true;r=s.bridge.Initialize(std::move(owner),device,c,preset,s.metrics,s.timing.get());if(!r){s.terminal=true;return r;}s.ready=true;return {};
+    s.uncertain=true;s.retainedSelf=state_;r=s.bridge.Initialize(std::move(owner),device,c,preset,s.metrics,s.timing.get());if(!r){s.terminal=true;return r;}s.ready=true;return {};
 }
-Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Upscaling::ColorEncoding encoding,const SettingsSnapshot& settings){
+Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Upscaling::ColorEncoding encoding,const SettingsSnapshot& settings,PreparedFsrInput* linearOutput){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Runtime,"NR source preparation terminal; ownership retained");
+    if(linearOutput&&linearOutput->Valid())return Fail(ErrorKind::InvalidInput,"NR prepared output already holds a reader lease");
     PerformanceScope performance(s.metrics,CpuPhase::Total);
     if(!settings.enabled){auto drained=s.WaitPending();if(!drained)return std::unexpected(drained.error());s.history.ResetNext();return s.bridge.Evaluate(input,settings);}
     if(!s.ready)return Fail(ErrorKind::InvalidInput,"NR source preparation not initialized");
@@ -100,19 +115,35 @@ Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Up
     auto linear=input;linear.color=slot.color;linear.depth=slot.depth;linear.motion=slot.motion;linear.colorDomain=ColorDomain::Linear;linear.reset=history->Reset();
     auto result=s.bridge.Evaluate(linear,settings);if(!result){s.terminal=true;return std::unexpected(result.error());}
     slot.bridgeDelivery=*result;
-    if(s.timing)s.timing->Stamp11(input.context.Get(),GpuPhase::Encode,true);
-    r=s.Gpu(MeasurePerformance(s.metrics,CpuPhase::Encode,[&]{return s.encode.Convert(input.context.Get(),slot.color.Get(),input.color.Get(),Upscaling::ColorEncoding::Linear,encoding);}),"NR explicit SDR source delivery failed");if(!r)return std::unexpected(r.error());
-    if(s.timing){s.timing->Stamp11(input.context.Get(),GpuPhase::Encode,false);s.timing->End11(input.context.Get());}
+    if(!linearOutput){
+        if(s.timing)s.timing->Stamp11(input.context.Get(),GpuPhase::Encode,true);
+        r=s.Gpu(MeasurePerformance(s.metrics,CpuPhase::Encode,[&]{return s.encode.Convert(input.context.Get(),slot.color.Get(),input.color.Get(),Upscaling::ColorEncoding::Linear,encoding);}),"NR explicit SDR source delivery failed");if(!r)return std::unexpected(r.error());
+        if(s.timing)s.timing->Stamp11(input.context.Get(),GpuPhase::Encode,false);
+    }
+    if(s.timing)s.timing->End11(input.context.Get());
     if(s.readerSerial==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR preparation reader sequence exhausted");}slot.readerValue=++s.readerSerial;
     r=s.Gpu(s.context4->Signal(s.reader11.Get(),slot.readerValue),"NR preparation encoder reader signal failed");if(!r)return std::unexpected(r.error());
     r=s.bridge.TrackReader(slot.bridgeDelivery.delivery,s.readerFence.Get(),slot.readerValue);if(!r){s.terminal=true;return std::unexpected(r.error());}
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}
-    DeliveryTicket delivery;delivery.owner_=s.deliveryOwner.Seal();delivery.id_=slot.id;delivery.source_=slot.source;delivery.epoch_=slot.epoch;delivery.slot_=*index;s.nextSlot=(*index+1)%s.slots.size();result->delivery=delivery;return *result;
+    DeliveryTicket delivery;delivery.owner_=s.deliveryOwner.Seal();delivery.id_=slot.id;delivery.source_=slot.source;delivery.epoch_=slot.epoch;delivery.slot_=*index;s.nextSlot=(*index+1)%s.slots.size();result->delivery=delivery;
+    if(linearOutput){
+        // This CPU-owned per-slot lease gate is never a GPU dependency. Register
+        // the genuine FSR reader before releasing it; no unrelated later lease
+        // can advance this slot's gate or impersonate completion of that reader.
+        if(slot.leaseValue==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR prepared lease sequence exhausted");}
+        r=s.bridge.TrackReader(slot.bridgeDelivery.delivery,slot.leaseFence.Get(),++slot.leaseValue);if(!r){s.terminal=true;return std::unexpected(r.error());}
+        slot.borrowed=true;PreparedFsrInput lease;lease.source_=slot.source;lease.epoch_=slot.epoch;lease.reset_=result->effectiveReset;lease.width_=s.extent.width;lease.height_=s.extent.height;
+        lease.context_=input.context;lease.color_=slot.color;lease.depth_=slot.depth;lease.motion_=slot.motion;lease.producer_=s.readerFence;lease.producerValue_=slot.readerValue;
+        lease.track_=[owner=state_,delivery](ID3D12Fence* fence,uint64_t value)->Result<void>{auto* held=owner->Find(delivery);if(owner->terminal||!held||!held->busy||!held->borrowed)return Fail(ErrorKind::InvalidInput,"NR prepared FSR lease expired/foreign");auto r=owner->bridge.TrackReader(held->bridgeDelivery.delivery,fence,value);if(!r){owner->terminal=true;return r;}held->readers.push_back({fence,value});r=owner->Gpu(held->leaseFence->Signal(held->leaseValue),"NR prepared lease release failed");if(!r)return r;held->borrowed=false;return {};};
+        lease.abandon_=[owner=state_,delivery]{auto* held=owner->Find(delivery);if(held&&held->busy&&held->borrowed)owner->terminal=true;};
+        *linearOutput=std::move(lease);
+    }
+    return *result;
 }
 Result<uint32_t> PreparedBeforeUpscale::CollectCompleted(){return state_->Collect();}
 Result<void> PreparedBeforeUpscale::WaitDelivery(const BeforeResult& result){auto& s=*state_;if(!result.evaluated)return {};auto* slot=s.Find(result.delivery);if(!slot)return Fail(ErrorKind::InvalidInput,"NR prepared delivery ticket expired/foreign");auto drained=s.WaitPending(slot);if(!drained)return drained;return s.bridge.WaitDelivery(slot->bridgeDelivery);}
 Result<void> PreparedBeforeUpscale::TrackReader(const DeliveryTicket& delivery,ID3D12Fence* fence,uint64_t value){auto& s=*state_;auto* slot=s.Find(delivery);if(s.terminal||!slot||!slot->busy)return Fail(ErrorKind::InvalidInput,"NR prepared reader delivery expired/foreign");auto result=s.bridge.TrackReader(slot->bridgeDelivery.delivery,fence,value);if(!result){s.terminal=true;return result;}slot->readers.push_back({fence,value});return {};}
 Result<void> PreparedBeforeUpscale::Retire(){auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR preparation terminal; no teardown retry");if(!s.ready)return {};
-    auto drained=s.WaitPending();if(!drained)return drained;if(s.timing)s.timing->Collect11(s.context.Get());auto r=s.bridge.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;return {};}
+    auto drained=s.WaitPending();if(!drained)return drained;if(s.timing)s.timing->Collect11(s.context.Get());auto r=s.bridge.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;s.retainedSelf.reset();return {};}
 StageDiagnostics PreparedBeforeUpscale::Diagnostics()const{auto d=state_->bridge.Diagnostics();d.terminal|=state_->terminal;d.preparedSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->timing){d.gpuTiming11Available=state_->timing->Available11();d.gpuTimingDropped+=state_->timing->Dropped();}return d;}
 }

@@ -1,6 +1,7 @@
 #include "Stage.h"
 #include "PerformanceQueries.h"
 #include "History.h"
+#include "RetirementEvent.h"
 #include "RuntimeParameters.h"
 #include "FrameGen/NeuralRenderingRuntimeContract.h"
 #include <nvsdk_ngx_params.h>
@@ -67,6 +68,7 @@ struct Stage::State {
     struct Pending {ImagePacket packet;ComPtr<ID3D12GraphicsCommandList> list;uint64_t id{};bool submitted{};std::vector<Reader> readers;};
     struct Slot {std::unique_ptr<Pending> pending;ComPtr<ID3D12DescriptorHeap> views;NVSDK_NGX_Parameter* parameters{};};
     std::array<Slot,3> slots;
+    RetirementEvent retirement;
     size_t nextSlot{};
     bool HasPending()const{for(const auto& slot:slots)if(slot.pending)return true;return false;}
     Slot* Find(const EvaluationTicket& ticket){if(!ticketOwner.Owns(ticket.owner_))return nullptr;for(auto& slot:slots)if(slot.pending&&slot.pending->id==ticket.id_)return &slot;return nullptr;}
@@ -210,6 +212,12 @@ Result<void> Stage::TrackReader(const EvaluationTicket& ticket,ID3D12Fence* fenc
 Result<void> Stage::RetireTicket(const EvaluationTicket& ticket){
     auto& s=*state_;auto* slot=s.Find(ticket);if(s.terminal||!slot||!slot->pending->submitted)return Fail(ErrorKind::Retirement,"NR ticket unsubmitted/foreign/terminal");auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during ticket retirement");if(!r)return r;
     auto completed=s.Complete(*slot->pending);if(!completed)return std::unexpected(completed.error());if(!*completed)return Fail(ErrorKind::Retirement,"NR output readers remain pending");if(s.metrics)s.metrics->RecordCompletedFor(slot->pending->packet.sourceId);slot->pending.reset();return {};
+}
+Result<void> Stage::WaitForRetirement(const EvaluationTicket& ticket,uint32_t timeoutMilliseconds){
+    auto& s=*state_;auto* slot=s.Find(ticket);if(s.terminal||!slot||!slot->pending->submitted||!timeoutMilliseconds)return Fail(ErrorKind::Retirement,"NR retirement wait ticket/deadline invalid");
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::milliseconds(timeoutMilliseconds);
+    for(const auto& reader:slot->pending->readers){auto waited=s.retirement.Wait(reader.fence.Get(),reader.value,s.contract.device.Get(),deadline);if(!waited){s.terminal=true;return waited;}}
+    return {};
 }
 Result<uint32_t> Stage::CollectCompleted(){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; ownership retained");if(!s.ready)return uint32_t{0};auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during collection");if(!r)return std::unexpected(r.error());uint32_t count{};

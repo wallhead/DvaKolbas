@@ -70,7 +70,7 @@ namespace TheosRenderPipeline::Upscaling
         DXGI_FORMAT colorFormat{DXGI_FORMAT_UNKNOWN}, depthFormat{DXGI_FORMAT_UNKNOWN}, motionFormat{DXGI_FORMAT_UNKNOWN};
         CameraMeasurements camera{};
         MotionConvention motionConvention{};
-        std::uint64_t sourceId{};
+        std::uint64_t sourceId{},sourceEpoch{};
         float deltaMilliseconds{}, jitterX{}, jitterY{}, preExposure{1}, sharpness{};
         bool reset{}, colorIsLinear{};
     };

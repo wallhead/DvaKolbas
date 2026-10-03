@@ -39,11 +39,16 @@ struct NvidiaHost::SourceFsrEvaluationOperations
     NvidiaHost& host;RenderPipeline& pipeline;bool spatial{},nativeUIHandoff{};
     std::optional<RuntimeError> error;
     std::string recoveryReason;
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    NeuralRendering::PreparedFsrInput preparedNr;
+#endif
     void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){context->CopyResource(frame.input,frame.color);}
     bool EvaluateOptionalPreUpscale(UpscaleFrame& frame){
 #if !defined(TRP_NO_NEURAL_RENDERING)
+        frame.sourceEpoch=host.communityEpoch_;
         return host.EvaluateCommunityNeuralBefore(frame.input,frame.depth,frame.motion,frame.render.width,frame.render.height,
-            frame.sourceId,frame.reset,NeuralRendering::SourceWorldEligible(!spatial,nativeUIHandoff,host.nativeUI_.Dedicated(),CommunityShaders::Active()));
+            frame.sourceId,frame.reset,NeuralRendering::SourceWorldEligible(!spatial,nativeUIHandoff,host.nativeUI_.Dedicated(),CommunityShaders::Active()),
+            pipeline.mReShadeBeforeUpscaling?nullptr:&preparedNr);
 #else
         (void)frame;return true;
 #endif
@@ -68,6 +73,9 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         if(spatial) { recoveryReason="main/loading menu or loading-screen presentation";host.loadingScreenRoute_.SpatialSucceeded();return host.fsrFrame_->Spatial(frame); }
         auto camera=CaptureGameCameraMeasurements(pipeline.mGraphicsState,frame.render,pipeline.mEnableJitter,frame.reset);
         if(!camera || !frame.depth || !frame.motion) {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+            if(preparedNr.Valid()){error=RuntimeError{ErrorKind::InvalidInput,0,"FSR prepared NR input lost its temporal camera/guides"};return std::unexpected(*error);}
+#endif
             host.status_=camera?"FSR requested; spatial recovery while guides are unavailable":camera.error().message;
             recoveryReason=host.status_;
             return host.fsrFrame_->Spatial(frame);
@@ -87,9 +95,19 @@ struct NvidiaHost::SourceFsrEvaluationOperations
                 frame.camera.nearDistance,frame.camera.farDistance,frame.camera.verticalFovRadians,frame.camera.depthInverted,frame.camera.worldUnitsToMeters,
                 static_cast<unsigned>(motion.Format),static_cast<unsigned>(depth.Format),frame.motionConvention.scaleX,frame.motionConvention.scaleY);
         }
+        // Before-upscale ReShade edits the game-format image, so it retains the
+        // encoded P3 route. Direct linear handoff preserves after-upscale effects.
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        const bool direct=preparedNr.Valid();
+        auto result=direct?host.fsrFrame_->EvaluatePrepared(frame,preparedNr):host.fsrFrame_->Evaluate(frame);
+#else
         auto result=host.fsrFrame_->Evaluate(frame);
+#endif
         if(!result)error=result.error();
         if(result && *result==UpscaleOutcome::SkippedInvalidInput) {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+            if(direct){error=RuntimeError{ErrorKind::InvalidInput,0,"FSR rejected an owned prepared NR input"};return std::unexpected(*error);}
+#endif
             const auto* reason=host.fsrFrame_->LastError();
             host.status_=reason?reason->message:"FSR requested; source parameters rejected, spatial recovery";
             recoveryReason=host.status_;

@@ -25,28 +25,12 @@ struct BeforeUpscale::State {
     Detail::TicketOwnership deliveryOwner;uint64_t deliverySerial{};
     ComPtr<ID3D12Fence> handoffFence,completionFence;
     ComPtr<ID3D11Fence> handoff11;
-    HANDLE event{};
     uint64_t handoffValue{},completionValue{};
     unsigned preset{};
     History history;
     bool attempted{},ready{},uncertain{},terminal{};
     Slot* Find(const DeliveryTicket& t){if(!deliveryOwner.Owns(t.owner_)||t.slot_>=slots.size())return nullptr;auto& slot=slots[t.slot_];return slot.id&&slot.id==t.id_&&slot.source==t.source_&&slot.epoch==t.epoch_?&slot:nullptr;}
-    ~State(){if(event)CloseHandle(event);}
     Result<void> Gpu(HRESULT hr,const char* text){if(FAILED(hr)){terminal=true;return Fail(ErrorKind::Runtime,text,hr);}return {};}
-    Result<void> Wait(ID3D12Fence* fence,uint64_t value,CpuPhase phase=CpuPhase::ProducerWait){
-        PerformanceScope timing(metrics,phase);
-        auto completed=fence->GetCompletedValue();
-        if(completed==UINT64_MAX){terminal=true;return Fail(ErrorKind::Retirement,"NR Before device removed at handoff fence");}
-        if(completed<value){auto r=Gpu(fence->SetEventOnCompletion(value,event),"NR Before fence event registration failed");if(!r)return r;
-            const auto begin=metrics?PerformanceNow():0;const auto waited=WaitForSingleObject(event,20000);
-            if(metrics)metrics->RecordWait(phase,true,PerformanceNow()-begin);
-            if(waited!=WAIT_OBJECT_0){terminal=true;return Fail(ErrorKind::Retirement,"NR Before handoff completion unconfirmed; ownership retained");}
-            completed=fence->GetCompletedValue();}
-        else if(metrics)metrics->RecordWait(phase,false,0);
-        if(completed==UINT64_MAX||completed<value){terminal=true;return Fail(ErrorKind::Retirement,"NR Before handoff fence incomplete");}
-        auto r=Gpu(contract.device->GetDeviceRemovedReason(),"NR Before D3D12 device removed");if(!r)return r;
-        return Gpu(device11->GetDeviceRemovedReason(),"NR Before D3D11 device removed");
-    }
     Result<uint32_t> Collect(){
         if(terminal)return Fail(ErrorKind::Retirement,"NR Before terminal; ownership retained");if(!ready)return uint32_t{0};
         auto r=Gpu(device11->GetDeviceRemovedReason(),"NR Before D3D11 device removed during collection");if(!r)return std::unexpected(r.error());uint32_t count{};
@@ -57,13 +41,19 @@ struct BeforeUpscale::State {
         auto find=[&]()->std::optional<size_t>{for(size_t i=0;i<slots.size();++i){auto index=(nextSlot+i)%slots.size();if(!slots[index].ticket)return index;}return std::nullopt;};
         auto collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find())return *index;
         PerformanceScope performance(metrics,CpuPhase::ConsumerWait);if(metrics)metrics->RecordSlotPressure();interop.Context11()->Flush();if(metrics)metrics->RecordFlush();auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(20);uint64_t blocked{};
-        for(;;){collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find()){if(metrics)metrics->RecordWait(CpuPhase::ConsumerWait,true,blocked);return *index;}if(std::chrono::steady_clock::now()>=deadline){terminal=true;return Fail(ErrorKind::Retirement,"NR Before slot capacity reader retirement deadline exceeded; ownership retained");}auto start=metrics?PerformanceNow():0;Sleep(1);if(metrics)blocked+=PerformanceNow()-start;}
+        for(;;){collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find()){if(metrics)metrics->RecordWait(CpuPhase::ConsumerWait,true,blocked);return *index;}auto start=metrics?PerformanceNow():0;auto waited=WaitProgress(deadline);if(!waited)return std::unexpected(waited.error());if(metrics)blocked+=PerformanceNow()-start;}
     }
     Result<void> WaitPending(Slot* selected=nullptr){
         if(terminal)return Fail(ErrorKind::Retirement,"NR Before terminal; ownership retained");if(!ready)return {};
+        auto initial=Collect();if(!initial)return std::unexpected(initial.error());bool pending=false;for(const auto& slot:slots)pending|=bool(slot.ticket)&&(!selected||selected==&slot);if(!pending)return {};
         PerformanceScope performance(metrics,CpuPhase::ConsumerWait);interop.Context11()->Flush();if(metrics)metrics->RecordFlush();auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(20);uint64_t blocked{};bool slept=false;
         for(;;){auto collected=Collect();if(!collected)return std::unexpected(collected.error());bool busy=false;for(const auto& slot:slots)busy|=bool(slot.ticket)&&(!selected||selected==&slot);if(!busy){if(metrics)metrics->RecordWait(CpuPhase::ConsumerWait,slept,blocked);return {};}
-            if(std::chrono::steady_clock::now()>=deadline){terminal=true;return Fail(ErrorKind::Retirement,"NR Before delivery retirement deadline exceeded; ownership retained");}auto start=metrics?PerformanceNow():0;Sleep(1);slept=true;if(metrics)blocked+=PerformanceNow()-start;}
+            auto start=metrics?PerformanceNow():0;auto waited=WaitProgress(deadline,selected);if(!waited)return waited;slept=true;if(metrics)blocked+=PerformanceNow()-start;}
+    }
+    Result<void> WaitProgress(std::chrono::steady_clock::time_point deadline,Slot* selected=nullptr){
+        Slot* oldest{};for(auto& slot:slots)if(slot.ticket&&(!selected||selected==&slot)&&(!oldest||slot.id<oldest->id))oldest=&slot;if(!oldest)return {};
+        auto remaining=std::chrono::ceil<std::chrono::milliseconds>(deadline-std::chrono::steady_clock::now()).count();if(remaining<=0){terminal=true;return Fail(ErrorKind::Retirement,"NR Before reader retirement deadline exceeded; ownership retained");}
+        auto waited=stage.WaitForRetirement(*oldest->ticket,uint32_t(remaining));if(!waited)terminal=true;return waited;
     }
     bool Texture(ID3D11Texture2D* texture,DXGI_FORMAT format)const {
         if(!texture)return false;ComPtr<ID3D11Device> device;texture->GetDevice(&device);
@@ -87,7 +77,6 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
         if(!queries11){s.ownTiming11=std::make_unique<PerformanceQueries>(metrics);s.ownTiming11->Initialize11(device);s.queries11=s.ownTiming11.get();}
         s.interop.SetPerformanceSink({metrics,[](void* p,bool blocked,uint64_t ns){static_cast<PerformanceMetrics*>(p)->RecordWait(CpuPhase::InteropWait,blocked,ns);},[](void* p){static_cast<PerformanceMetrics*>(p)->RecordFlush();}});
     }
-    s.event=CreateEventW(nullptr,FALSE,FALSE,nullptr);if(!s.event)return Fail(ErrorKind::Io,"NR Before event creation failed",GetLastError());
     r=s.Gpu(contract.device->CreateFence(0,D3D12_FENCE_FLAG_SHARED,IID_PPV_ARGS(&s.handoffFence)),"NR Before shared handoff fence creation failed");if(!r)return r;
     ComPtr<ID3D11Device5> device5;r=s.Gpu(device->QueryInterface(IID_PPV_ARGS(&device5)),"NR Before requires D3D11 shared-fence device");if(!r)return r;
     HANDLE shared{};r=s.Gpu(contract.device->CreateSharedHandle(s.handoffFence.Get(),nullptr,GENERIC_ALL,nullptr,&shared),"NR Before shared fence handle failed");if(!r)return r;

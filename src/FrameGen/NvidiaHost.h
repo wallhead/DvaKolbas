@@ -148,7 +148,7 @@ class NvidiaHost
 #if !defined(TRP_NO_NEURAL_RENDERING)
     void InspectCommunityNeural();
     bool RetireCommunityNeural();
-    bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,UINT,UINT,uint64_t,bool&,bool);
+    bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,UINT,UINT,uint64_t,bool&,bool,TheosRenderPipeline::NeuralRendering::PreparedFsrInput* linearOutput=nullptr);
     std::unique_ptr<TheosRenderPipeline::NeuralRendering::BeforeHost> communityNeural_;
     TheosRenderPipeline::NeuralRendering::SettingsSnapshot communitySnapshot_;
     uint64_t communityEpoch_{1};

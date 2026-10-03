@@ -49,7 +49,7 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& set
     if(!selected.profile)return stop(ErrorKind::Unsupported,selected.reason.c_str());
     s.available=true;s.status="NR ready for first real-world frame; GPU profile="+std::string(s.profile->id);return {};
 }
-Result<BeforeResult> BeforeHost::Evaluate(const BeforeInput& input,const SettingsSnapshot& settings){
+Result<BeforeResult> BeforeHost::Evaluate(const BeforeInput& input,const SettingsSnapshot& settings,PreparedFsrInput* linearOutput){
     auto& s=*state_;const bool wasActive=s.active;s.active=false;if(s.terminal)return Fail(ErrorKind::Runtime,s.status.c_str());
     if(!settings.enabled){if(s.available)s.status="NR off";if(s.prepared){auto result=s.prepared->Evaluate(input,s.settings.sourceEncoding,settings);if(result)result->effectiveReset|=wasActive;return result;}return BeforeResult{false,input.reset};}
     if(!s.available)return BeforeResult{false,input.reset};
@@ -72,7 +72,7 @@ Result<BeforeResult> BeforeHost::Evaluate(const BeforeInput& input,const Setting
     }
     if(!s.prepared){s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.prepared=std::make_unique<PreparedBeforeUpscale>();
         auto initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract);if(!initialized){s.MarkTerminal(initialized.error());return std::unexpected(initialized.error());}}
-    auto result=s.prepared->Evaluate(input,s.settings.sourceEncoding,settings);
+    auto result=s.prepared->Evaluate(input,s.settings.sourceEncoding,settings,linearOutput);
     if(!result){if(result.error().kind==ErrorKind::InvalidInput||result.error().kind==ErrorKind::Unsupported){s.status=result.error().message;auto off=settings;off.enabled=false;auto reset=s.prepared->Evaluate(input,s.settings.sourceEncoding,off);if(reset)return BeforeResult{false,wasActive||input.reset};}
         s.MarkTerminal(result.error());return std::unexpected(result.error());}
     s.active=result->evaluated;if(s.active){++s.recorded;s.resets+=result->effectiveReset;s.status="NR active before upscaling; "+std::string(s.profile->id)+"; one native SDR pass";}return *result;

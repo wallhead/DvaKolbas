@@ -116,7 +116,7 @@ void NvidiaHost::InspectCommunityNeural()
         startup.runtimeRoot.string(),startup.driverCore.string(),fmt::ptr(presenter),communityLastStatus_);
 }
 bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Texture2D* depth,
-    ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible)
+    ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible,NR::PreparedFsrInput* linearOutput)
 {
     const auto& startup=SourceFrameGeneration::GetSingleton()->settings.neuralStartup;
     if (!startup.community) return true;
@@ -157,7 +157,7 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     const auto probeBefore=probe?nrMotionDiagnostic.Before(device_.Get(),context_.Get(),color,depth,motion,width,height):
         NrMotionDiagnostic::Capture{};
     const bool previouslyActive=communityNeural_->Active();
-    const auto result=communityNeural_->Evaluate(input,snapshot);
+    const auto result=communityNeural_->Evaluate(input,snapshot,probe?nullptr:linearOutput);
     if(probe && result && result->evaluated)
         nrMotionDiagnostic.After(device_.Get(),context_.Get(),color,width,height,sourceId,snapshot.revision,
             result->effectiveReset,probeBefore);

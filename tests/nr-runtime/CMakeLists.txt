@@ -160,11 +160,11 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         src/NeuralRendering/Error.h src/NeuralRendering/ImagePacket.h src/NeuralRendering/ImagePacket.cpp
         src/NeuralRendering/History.h src/NeuralRendering/History.cpp src/NeuralRendering/RuntimeParameters.h
         src/NeuralRendering/MotionDiagnosticStats.h tests/NrMotionDiagnosticTests.cpp
-        src/NeuralRendering/Stage.h src/NeuralRendering/Stage.cpp src/NeuralRendering/TicketOwnership.h
+        src/NeuralRendering/Stage.h src/NeuralRendering/Stage.cpp src/NeuralRendering/TicketOwnership.h src/NeuralRendering/RetirementEvent.h
         src/NeuralRendering/BeforeUpscale.h src/NeuralRendering/BeforeUpscale.cpp tests/NrBeforeUpscaleTests.cpp
         src/Graphics/D3D11D3D12Interop.h src/Graphics/D3D11D3D12Interop.cpp src/FrameGen/D3D11FrameCopy.h src/FrameGen/NeuralRenderingRuntimeContract.h
         src/FrameGen/NeuralRenderingTuning.h src/FrameGen/NeuralRenderingReconstruction.h
-        src/NeuralRendering/PreparedBeforeUpscale.h src/NeuralRendering/PreparedBeforeUpscale.cpp
+        src/NeuralRendering/PreparedBeforeUpscale.h src/NeuralRendering/PreparedBeforeUpscale.cpp src/NeuralRendering/PreparedFsrInput.h tests/NrPreparedFsrTests.cpp
         src/NeuralRendering/BeforeHost.h src/NeuralRendering/BeforeHost.cpp src/NeuralRendering/BeforeSettings.h
         src/NeuralRendering/StartupSettings.h src/NeuralRendering/SourcePolicy.h tests/NrPreparedBeforeTests.cpp
         tests/NrBeforeHostFramesTests.cpp tests/NrBeforeHostTests.cpp tests/NrSourcePolicyTests.cpp
@@ -266,6 +266,22 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         "${TRP_NR_PERF_FSR_SDK}/Kits/FidelityFX/api/include" "${TRP_NR_PERF_FSR_SDK}/Kits/FidelityFX/upscalers/include")
     target_link_libraries(TRPNrPerformanceProbe PRIVATE TRPNrPerformanceFsr)
     target_compile_definitions(TRPNrPerformanceProbe PRIVATE TRP_NR_PERF_WITH_FSR)
+    add_executable(TRPNrPreparedFsrTests ../NrPreparedFsrTests.cpp)
+    target_compile_features(TRPNrPreparedFsrTests PRIVATE cxx_std_23)
+    target_link_libraries(TRPNrPreparedFsrTests PRIVATE TRPNrPerformanceRuntime TRPNrPerformanceFsr)
+    target_include_directories(TRPNrPreparedFsrTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+    foreach(mode IN ITEMS native quality gated abandon)
+        add_test(NAME NrPreparedFsr-${mode} COMMAND TRPNrPreparedFsrTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" "${TRP_NR_PERF_FSR_RUNTIME}" ${mode})
+        set_tests_properties(NrPreparedFsr-${mode} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 90 SKIP_RETURN_CODE 77)
+    endforeach()
+    if(TRP_NR_RESHADE_RUNTIME AND TRP_NR_TEST_RUNTIME_ROOT AND TRP_NR_PERF_FSR_RUNTIME)
+        add_test(NAME NrReShadePreparedFsr COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+            --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>" --host-exe "$<TARGET_FILE:TRPNrBeforeHostFramesTests>"
+            --prepared-fsr-exe "$<TARGET_FILE:TRPNrPreparedFsrTests>" --fsr-runtime "${TRP_NR_PERF_FSR_RUNTIME}"
+            --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+            --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-prepared-fsr")
+        set_tests_properties(NrReShadePreparedFsr PROPERTIES RUN_SERIAL TRUE TIMEOUT 240 LABELS "GPU;ReShade")
+    endif()
     endif()
     if(TRP_NR_RTX40_DLL AND TRP_NR_DRIVER_CORE)
         add_test(NAME NrPerformancePrepared COMMAND TRPNrPerformanceProbe

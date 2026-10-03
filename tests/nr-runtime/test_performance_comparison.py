@@ -11,6 +11,16 @@ spec.loader.exec_module(comparison)
 
 
 class Validity(unittest.TestCase):
+    def test_direct_handoff_requires_owned_delivery_evidence(self):
+        receipt=self.receipt();receipt.update(fsrEnabled=True,fsrVersion='3.1.5',fsrQuality='NativeAA',fsrRuntimeSha256={'loader':'a','upscaler':'b'},fsrEvaluations=123,preparedFsrHandoff=True,preparedFsrEvaluations=123,recorded=123)
+        for sample in receipt['samples']:
+            del sample['gpuMilliseconds']['encode']
+            sample['gpuMilliseconds'].update(fsrPrepare=.1,fsrDispatch=.5,fsrDelivery=.1)
+        self.assertEqual(comparison.issues(receipt),[])
+        receipt['preparedFsrEvaluations']=0
+        self.assertIn('prepared', ' '.join(comparison.issues(receipt)))
+        a=self.receipt();b=copy.deepcopy(a);b['preparedFsrHandoff']=True
+        self.assertEqual(comparison.match_kind(a,b),'unmatched')
     def test_retained_descriptors_need_no_per_source_allocation(self):
         receipt=self.receipt()
         for sample in receipt['samples']:sample['descriptorCreations']=0

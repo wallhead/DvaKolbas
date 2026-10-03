@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser()
 for name in ("packet_exe", "host_exe", "runtime", "runtime_root", "driver_core", "output"):
     parser.add_argument("--" + name.replace("_", "-"), type=Path, required=True)
 parser.add_argument("--deferred-exe", type=Path)
+parser.add_argument("--prepared-fsr-exe", type=Path)
+parser.add_argument("--fsr-runtime", type=Path)
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 result_file = args.output / "results.json"
@@ -22,7 +24,7 @@ result_file.unlink(missing_ok=True)
 records = []
 with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()) as temporary:
     root = Path(temporary)
-    for exe in (args.packet_exe, args.host_exe, *([args.deferred_exe] if args.deferred_exe else [])):
+    for exe in (args.packet_exe, args.host_exe, *([args.deferred_exe] if args.deferred_exe else []), *([args.prepared_fsr_exe] if args.prepared_fsr_exe else [])):
         shutil.copy2(exe, root / exe.name)
     shutil.copy2(args.runtime, root / "dxgi.dll")
     shutil.copy2(Path(__file__).parent.parent / "fixtures" / "reshade" / "ReShade.ini", root)
@@ -36,6 +38,12 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
                         [str((args.runtime_root / "NR" / "rtx40" / "nvngx_dlssnr.dll").resolve()),
                          str(args.driver_core.resolve()), mode, "--require-wrapped"])
                        for mode in ("pressure", "retire"))
+    if args.prepared_fsr_exe:
+        if not args.fsr_runtime:raise SystemExit('Prepared FSR requires its pinned runtime root')
+        cases += tuple(("prepared-fsr-" + mode, args.prepared_fsr_exe,
+                        [str((args.runtime_root / "NR" / "rtx40" / "nvngx_dlssnr.dll").resolve()),
+                         str(args.driver_core.resolve()), str(args.fsr_runtime.resolve()), mode, "--require-wrapped"])
+                       for mode in ("native", "quality", "gated", "abandon"))
     for name, exe, extra in cases:
         result = subprocess.run([str(root / exe.name), *extra], cwd=root,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)

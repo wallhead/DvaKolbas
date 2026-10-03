@@ -13,6 +13,7 @@ param(
     [ValidateRange(1,3)][int]$Repeats=3,
     [string]$Executable,
     [string]$FsrRuntime,
+    [ValidateSet('on','off')][string]$PreparedFsr='off',
     [string]$Output
 )
 $ErrorActionPreference='Stop'
@@ -29,6 +30,7 @@ for($run=1;$run -le $Repeats;$run++){
     $receiptPath="$Output-$run.json"
     $probeArgs=@('--profile',$RuntimeProfile,'--dll',$RuntimeDll,'--core',$DriverCore,'--frames',"$Frames",'--warmup',"$Warmup",'--width',"$Width",'--height',"$Height",'--enabled',$Enabled,'--instrumentation',$Instrumentation,'--readback',$Readback,'--timer-period-ms',"$TimerPeriodMs",'--output',$receiptPath)
     if($FsrRuntime){$probeArgs+=@('--fsr-runtime',[IO.Path]::GetFullPath($FsrRuntime))}
+    $probeArgs+=@('--prepared-fsr',$PreparedFsr)
     & $Executable @probeArgs
     $probeExit=$LASTEXITCODE
     if($probeExit -ne 0){throw "Probe exited $probeExit; inspect $receiptPath"}

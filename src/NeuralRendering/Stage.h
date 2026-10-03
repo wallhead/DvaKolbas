@@ -39,6 +39,9 @@ public:
     Result<void> MarkSubmitted(const EvaluationTicket&,ID3D12Fence*,uint64_t value);
     Result<void> TrackReader(const EvaluationTicket&,ID3D12Fence*,uint64_t value);
     Result<void> RetireTicket(const EvaluationTicket&);
+    // Capacity/lifecycle only. Wait on this ticket's genuine registered readers;
+    // the caller still collects the ticket, and timeout retains every owner.
+    Result<void> WaitForRetirement(const EvaluationTicket&,uint32_t timeoutMilliseconds);
     Result<uint32_t> CollectCompleted();
     Result<void> Retire();
     StageDiagnostics Diagnostics()const;

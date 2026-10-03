@@ -107,9 +107,10 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     // GetDevice identity on an already prepared native FSR/FG host.
     namespace NR=NeuralRendering;
     std::unique_ptr<NR::BeforeHost> neural;
-    unsigned nrEvaluations{},nrBypasses{};std::uint64_t nrRevision{};bool nrEnabled{};
+    NR::PreparedFsrInput nrPrepared;
+    unsigned nrEvaluations{},nrBypasses{},nrDirect{};std::uint64_t nrRevision{};bool nrEnabled{};
     auto retireNeural=[&]{if(neural){Require(bool(neural->Retire()),"NR retires before AMD readers/device");neural.reset();}};
-    auto evaluateNeural=[&](UpscaleFrame& f,bool enabled){
+    auto evaluateNeural=[&](UpscaleFrame& f,bool enabled,bool direct){
         if(nrRoot.empty())return;
         if(!neural){
             neural=std::make_unique<NR::BeforeHost>();NR::StartupSettings startup;
@@ -127,10 +128,12 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
         NR::SettingsSnapshot snapshot;snapshot.enabled=enabled;
         if(!nrRevision || enabled!=nrEnabled){++nrRevision;nrEnabled=enabled;}
         snapshot.revision=nrRevision;
-        auto result=neural->Evaluate(input,snapshot);
+        f.sourceEpoch=input.epoch;
+        auto result=neural->Evaluate(input,snapshot,direct?&nrPrepared:nullptr);
         if(!result)std::fprintf(stderr,"NR source=%llu: %s\n",static_cast<unsigned long long>(f.sourceId),result.error().message.c_str());
         Require(result && result->evaluated==enabled,"one real NR pass before SR only when enabled");
         f.reset|=result->effectiveReset;enabled?++nrEvaluations:++nrBypasses;
+        if(nrPrepared.Valid())++nrDirect;
     };
 #endif
     Require(automaticRuntimes==0,"AMD presenter has no automatic ReShade runtime");
@@ -193,11 +196,15 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
             frame.sourceId=++sourceId;frame.reset=i==0;auto outcome=UpscaleOutcome::Temporal;
             const bool menu=i==31,requested=i!=23;
 #if defined(TRP_TEST_NR_FSR)
-            evaluateNeural(frame,!menu && i!=11);
+            evaluateNeural(frame,!menu && i!=11,!before);
 #endif
             const auto drawCount=draws,automaticCount=automaticDraws;
             Check(effects.Render(input.texture.Get(),menu?nullptr:depth.texture.Get(),{renderWidth,renderHeight},{renderWidth,renderHeight},true),"AMD before effects stage");
+#if defined(TRP_TEST_NR_FSR)
+            auto evaluated=menu?adapter->Spatial(frame):nrPrepared.Valid()?adapter->EvaluatePrepared(frame,nrPrepared):adapter->Evaluate(frame);
+#else
             auto evaluated=menu?adapter->Spatial(frame):adapter->Evaluate(frame);
+#endif
             if(adapter->LastError())std::fprintf(stderr,"AMD SR source=%llu failure: %s\n",static_cast<unsigned long long>(frame.sourceId),adapter->LastError()->message.c_str());
             Require(evaluated && (*evaluated==UpscaleOutcome::Temporal || *evaluated==UpscaleOutcome::SpatialRecovery),"exactly one real SR/spatial pass");
             outcome=*evaluated;++upscales;
@@ -267,9 +274,14 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
                     context->CopyResource(largeInput.texture.Get(),largeSource.texture.Get());largeHud.Paint(context,ui);
                     largeFrame.sourceId=++sourceId;largeFrame.reset=sample==0;
 #if defined(TRP_TEST_NR_FSR)
-                    evaluateNeural(largeFrame,true);
+                    evaluateNeural(largeFrame,true,true);
 #endif
-                    auto evaluated=adapter->Evaluate(largeFrame);Require(evaluated && *evaluated==UpscaleOutcome::Temporal,"actual temporal SR dispatch at larger extent");
+#if defined(TRP_TEST_NR_FSR)
+                    auto evaluated=nrPrepared.Valid()?adapter->EvaluatePrepared(largeFrame,nrPrepared):adapter->Evaluate(largeFrame);
+#else
+                    auto evaluated=adapter->Evaluate(largeFrame);
+#endif
+                    Require(evaluated && *evaluated==UpscaleOutcome::Temporal,"actual temporal SR dispatch at larger extent");
                     Check(effects.Render(largeOutput.texture.Get(),largeDepth.texture.Get(),{640,360},{largeWidth,largeHeight},false),"larger ReShade effects");
                     Check(effects.FinishUI(largeHud.texture.Get()),"larger completed UI");
                     const auto sentinel=Pixel(device,context,largeHud.texture.Get(),639,359);
@@ -314,6 +326,7 @@ static void FsrReShadeHost(HWND window,IDXGIFactory* factory,ID3D11Device* devic
     retireNeural();
     if(!nrRoot.empty()){
         Require(nrEvaluations==170 && nrBypasses==6,"combined real NR sources and live/menu bypasses");
+        Require(nrDirect==140,"DirectNrFsrFgRetainsBeforeReShadeFallback");
         std::printf("PASS: combined NR/FSR/FG/ReShade nrEvaluations=%u nrBypasses=%u\n",nrEvaluations,nrBypasses);
     }
 #endif

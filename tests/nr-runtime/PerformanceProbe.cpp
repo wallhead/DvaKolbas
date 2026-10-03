@@ -20,7 +20,7 @@ using Microsoft::WRL::ComPtr;
 namespace {
 struct Options {
     std::string profile{"rtx40"};std::filesystem::path dll,core,output,fsrRuntime;
-    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{};
+    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{},preparedFsr{};
 } options;
 struct WallSample {uint64_t id{},nanoseconds{};};
 PerformanceMetrics metrics;std::vector<WallSample> wall;
@@ -29,7 +29,7 @@ StageDiagnostics diagnostics;AdapterIdentity adapterIdentity;
 uint32_t rawInit{},rawShutdown{};uint64_t alphaPixels{},changedPixels{},expectedAlpha{};
 uint64_t shimSlotRva{};bool shimRestored{};
 std::set<uint64_t> hashes;bool retired{},timingComplete{};
-uint64_t fsrEvaluations{};std::string fsrVersion;
+uint64_t fsrEvaluations{},preparedFsrEvaluations{};std::string fsrVersion;
 std::set<uint64_t> fsrHashes;uint64_t fsrNonblackPixels{};
 std::string fsrLoaderHash,fsrUpscalerHash;uint64_t fsrTimingDropped{};bool fsrTiming11{},fsrTiming12{};
 void Write(){
@@ -46,6 +46,7 @@ void Write(){
         <<",\"scene\":\"two static checker/ramp images; constant depth 0.5 and zero motion\",\"resetSchedule\":\"first source; optional correctness-only off/on\""
         <<",\"nrEnabled\":"<<(options.enabled?"true":"false")<<",\"instrumentation\":"<<(options.instrumentation?"true":"false")
         <<",\"fsrEnabled\":"<<(!options.fsrRuntime.empty()?"true":"false")<<",\"fsrVersion\":"<<std::quoted(fsrVersion)<<",\"fsrQuality\":\"NativeAA\",\"fsrEvaluations\":"<<fsrEvaluations
+        <<",\"preparedFsrHandoff\":"<<(options.preparedFsr?"true":"false")<<",\"preparedFsrEvaluations\":"<<preparedFsrEvaluations
         <<",\"fsrRuntimeSha256\":{\"loader\":"<<std::quoted(fsrLoaderHash)<<",\"upscaler\":"<<std::quoted(fsrUpscalerHash)<<"},\"fsrTimingDropped\":"<<fsrTimingDropped<<",\"fsrTiming11Available\":"<<(fsrTiming11?"true":"false")<<",\"fsrTiming12Available\":"<<(fsrTiming12?"true":"false")
         <<",\"fsrDistinctOutputHashes\":"<<fsrHashes.size()<<",\"fsrNonblackPixels\":"<<fsrNonblackPixels
         <<",\"readbacks\":"<<(options.readback?"true":"false")<<",\"debugLayer\":false,\"warmup\":"<<options.warmup<<",\"requestedSamples\":"<<options.frames
@@ -82,6 +83,7 @@ int wmain(int argc,wchar_t** argv){try{
         if(key==L"--profile")options.profile=std::filesystem::path(value).string();else if(key==L"--dll")options.dll=value;
         else if(key==L"--core")options.core=value;else if(key==L"--output")options.output=std::filesystem::absolute(value);
         else if(key==L"--fsr-runtime")options.fsrRuntime=std::filesystem::absolute(value);
+        else if(key==L"--prepared-fsr")options.preparedFsr=Boolean(value);
         else if(key==L"--frames")options.frames=Number(value);else if(key==L"--warmup")options.warmup=Number(value);
         else if(key==L"--timer-period-ms")options.timerPeriodMs=Number(value);
         else if(key==L"--width")options.width=Number(value);else if(key==L"--height")options.height=Number(value);
@@ -90,6 +92,7 @@ int wmain(int argc,wchar_t** argv){try{
     Need(!options.output.empty(),"output required");Need(!NrRuntimeResearch::GameRunningOrUnknown(),"Skyrim running or process inventory unavailable; refused");
     Need(options.frames>=2&&options.frames<=1000&&options.warmup<=240&&options.width>=16&&options.height>=16&&options.width<=3840&&options.height<=2160,"bounded workload violated");
     Need(options.timerPeriodMs<=1,"timer period must be 0/system or 1 ms");if(options.timerPeriodMs)Need(timeBeginPeriod(options.timerPeriodMs)==TIMERR_NOERROR,"cannot request probe-local timer period");
+    Need(!options.preparedFsr||!options.fsrRuntime.empty(),"prepared handoff requires FSR");
 #if !defined(TRP_NR_PERF_WITH_FSR)
     Need(options.fsrRuntime.empty(),"FSR probe extension not built; configure TRP_NR_PERF_WITH_FSR=ON with pinned headers");
 #endif
@@ -157,10 +160,10 @@ int wmain(int argc,wchar_t** argv){try{
     for(UINT frame=0;frame<options.frames+options.warmup;++frame){const auto& data=pattern[frame%pattern.size()];context->UpdateSubresource(color.Get(),0,nullptr,data.data(),options.width*4,0);
         input.sourceId=input.guideSourceId=frame+1;input.previousSourceId=frame;input.presentationTime=double(frame+1)/60.;settings.enabled=options.enabled&&!(options.readback&&frame==10);
         if(options.readback&&(frame==10||frame==11))++settings.revision;
-        metrics.BeginFrame(input.sourceId,settings.enabled);const auto begin=PerformanceNow();auto evaluated=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,settings);
+        metrics.BeginFrame(input.sourceId,settings.enabled);PreparedFsrInput linear;const auto begin=PerformanceNow();auto evaluated=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,settings,options.preparedFsr?&linear:nullptr);
         if(!evaluated)Stop(evaluated.error().message);
 #if defined(TRP_NR_PERF_WITH_FSR)
-        if(fsrAdapter){fsrFrame.sourceId=input.sourceId;fsrFrame.reset=evaluated->effectiveReset;auto result=fsrAdapter->Evaluate(fsrFrame);if(!result)Stop(result.error().message);Need(*result==TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal,"FSR did not produce temporal output");++fsrEvaluations;}
+        if(fsrAdapter){fsrFrame.sourceId=input.sourceId;fsrFrame.sourceEpoch=input.epoch;fsrFrame.reset=evaluated->effectiveReset;const bool direct=linear.Valid();auto result=direct?fsrAdapter->EvaluatePrepared(fsrFrame,linear):fsrAdapter->Evaluate(fsrFrame);if(!result)Stop(result.error().message);Need(*result==TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal,"FSR did not produce temporal output");++fsrEvaluations;preparedFsrEvaluations+=direct;}
 #endif
         const auto end=PerformanceNow();
         wall.push_back({input.sourceId,end-begin});metrics.EndFrame();if(!evaluated)Stop(evaluated.error().message);Need(evaluated->evaluated==settings.enabled,"NR enable state mismatch");
@@ -178,14 +181,15 @@ int wmain(int argc,wchar_t** argv){try{
     if(fsrHost){auto bridge=fsrHost->Bridge();auto result=fsrHost->Retire();if(!result)Stop(result.error().message);if(fsrTiming){fsrTiming->Collect(context.Get());fsrTiming11=fsrTiming->Available11();fsrTiming12=fsrTiming->Available12();fsrTimingDropped=fsrTiming->Dropped();}bridge->SetPerformanceSink({});}
 #endif
     Value(prepared.Retire());diagnostics=prepared.Diagnostics();Value(owner->Retire());rawShutdown=owner->LastShutdownResult();retired=true;shimRestored=shim;
-    if(options.readback){Need(alphaPixels==expectedAlpha,"source alpha corrupted");Need(hashes.size()>1,"output constant");if(options.enabled)Need(changedPixels>0,"no changed NR RGB pixels");}
+    Need(!options.preparedFsr||preparedFsrEvaluations==diagnostics.recorded,"prepared FSR owned delivery count mismatch");
+    if(options.readback){Need(alphaPixels==expectedAlpha,"source alpha corrupted");Need(hashes.size()>1,"output constant");if(options.enabled&&!options.preparedFsr)Need(changedPixels>0,"no changed NR RGB pixels");if(options.preparedFsr)Need(changedPixels==0,"direct handoff changed original game-format input");}
     if(options.readback&&!options.fsrRuntime.empty())Need(fsrHashes.size()>1&&fsrNonblackPixels>0,"FSR output black or constant");
     timingComplete=!options.instrumentation||!options.enabled;
     if(options.instrumentation){const auto s=metrics.Snapshot();timingComplete=s.droppedFrames==0&&s.droppedIntervals==0;}
     if(options.instrumentation&&options.enabled){const auto s=metrics.Snapshot();timingComplete=s.droppedFrames==0&&s.droppedIntervals==0&&diagnostics.gpuTimingDropped==0;
         for(const auto& f:s.frames)if(f.sourceId>options.warmup&&f.nrEnabled)timingComplete&=f.waitCalls>0&&f.descriptorCreations<=1&&f.submitted==1&&f.completed==1&&
             f.gpuMilliseconds[size_t(GpuPhase::Vendor)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::Alpha)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::PrepareColor)].has_value()&&
-            f.gpuMilliseconds[size_t(GpuPhase::PrepareGuides)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::InputCopy)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::Delivery)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::Encode)].has_value();}
+            f.gpuMilliseconds[size_t(GpuPhase::PrepareGuides)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::InputCopy)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::Delivery)].has_value()&&(options.preparedFsr||f.gpuMilliseconds[size_t(GpuPhase::Encode)].has_value());}
     if(options.instrumentation&&!options.fsrRuntime.empty()){timingComplete&=fsrTiming11&&fsrTiming12&&!fsrTimingDropped;for(const auto& f:metrics.Snapshot().frames)if(f.sourceId>options.warmup)timingComplete&=
         f.gpuMilliseconds[size_t(GpuPhase::FsrPrepare)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::FsrDispatch)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::FsrDelivery)].has_value();}
     Write();if(options.timerPeriodMs)timeEndPeriod(options.timerPeriodMs);std::printf("PERF samples=%u recorded=%llu timingComplete=%u retired=%u\n",options.frames,diagnostics.recorded,timingComplete,retired);return timingComplete?0:2;

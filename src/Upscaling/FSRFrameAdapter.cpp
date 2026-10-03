@@ -1,5 +1,6 @@
 #include "FSRFrameAdapter.h"
 #include "FrameGen/D3D11FrameCopy.h"
+#include "NeuralRendering/PreparedFsrInput.h"
 #include <cmath>
 #include <optional>
 namespace TheosRenderPipeline::Upscaling
@@ -66,6 +67,10 @@ namespace TheosRenderPipeline::Upscaling
         return UpscaleOutcome::SpatialRecovery;
     }
     Result<UpscaleOutcome> FsrFrameAdapter::Evaluate(const UpscaleFrame& frame)
+    {return EvaluateInternal(frame,nullptr);}
+    Result<UpscaleOutcome> FsrFrameAdapter::EvaluatePrepared(const UpscaleFrame& frame,NeuralRendering::PreparedFsrInput& input)
+    {return EvaluateInternal(frame,&input);}
+    Result<UpscaleOutcome> FsrFrameAdapter::EvaluateInternal(const UpscaleFrame& frame,NeuralRendering::PreparedFsrInput* linear)
     {
         CpuObservation total(state_->performance,FsrCpuPhase::Total);
         state_->lastReset=false;
@@ -75,6 +80,12 @@ namespace TheosRenderPipeline::Upscaling
         if(frame.backend!=BackendKind::Fsr || !frame.sourceId || !std::isfinite(frame.deltaMilliseconds) || frame.deltaMilliseconds<=0 || !NativeImage(frame))return invalid();
         if(!state_->bridge)return std::unexpected(RuntimeError{ErrorKind::ContextFailure,0,"FSR frame has no bridge"});
         if(!state_->bridge->Ready())return fatal(state_->bridge->Fault(),"FSR bridge fault; stop rendering");
+        if(linear){
+            if(!linear->Valid()||linear->SourceId()!=frame.sourceId||linear->Epoch()!=frame.sourceEpoch||!linear->ProducerFence()||!linear->ProducerValue()||linear->Width()!=frame.render.width||linear->Height()!=frame.render.height||!D3D11FrameCopy::SameObject(linear->Context(),state_->bridge->Context11()))return invalid();
+            const auto valid=[&](ID3D11Texture2D* texture,DXGI_FORMAT format){if(!texture)return false;D3D11_TEXTURE2D_DESC desc{};texture->GetDesc(&desc);ComPtr<ID3D11Device> actual,expected;texture->GetDevice(&actual);state_->bridge->Context11()->GetDevice(&expected);return D3D11FrameCopy::SameObject(actual.Get(),expected.Get())&&desc.Format==format&&desc.Width==frame.render.width&&desc.Height==frame.render.height&&desc.SampleDesc.Count==1&&desc.ArraySize==1&&desc.MipLevels==1;};
+            if(!valid(linear->Color(),DXGI_FORMAT_R16G16B16A16_FLOAT)||!valid(linear->Depth(),DXGI_FORMAT_R32_FLOAT)||!valid(linear->Motion(),DXGI_FORMAT_R16G16_FLOAT))return invalid();
+            if(state_->recovery)return std::unexpected(RuntimeError{ErrorKind::DispatchFailure,0,"FSR recovery cannot consume a prepared NR lease"});
+        }
         if(state_->recovery)return Spatial(frame);
         if(frame.exposure || frame.reactive || frame.transparencyComposition) {
             state_->error=RuntimeError{ErrorKind::InvalidInput,0,"FSR external exposure/reactive/transparency guides are unsupported by this SR adapter; using spatial recovery"};
@@ -86,17 +97,23 @@ namespace TheosRenderPipeline::Upscaling
         UpscaleFrame prepared=frame;prepared.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;prepared.depthFormat=DXGI_FORMAT_R32_FLOAT;prepared.motionFormat=DXGI_FORMAT_R16G16_FLOAT;prepared.colorIsLinear=true;
         auto parameters=BuildFsrDispatch(state_->resources,prepared,state_->upscaler->Limits());if(!parameters){state_->error=parameters.error();return invalid();}
         auto decision=state_->history.Accept(frame.sourceId,frame.camera,frame.render,false,false);if(!decision.valid)return invalid();
-        prepared.reset=frame.reset || decision.reset;state_->lastReset=prepared.reset;
+        prepared.reset=frame.reset || decision.reset || (linear&&linear->Reset());state_->lastReset=prepared.reset;
         auto* context=state_->bridge->Context11();HRESULT hr{};
         auto* performance=state_->performance;
         Query11Observation query11(performance,context,frame.sourceId);
         if(performance)performance->Stamp11(context,FsrGpuPhase::Prepare,true);
         const auto inputEncoding=frame.colorIsLinear?ColorEncoding::Linear:state_->encoding;
-        if(frame.input!=state_->color.Get()) {
+        if(linear){
+            D3D11ContextIsolation::Scope scope(state_->isolation,context);if(!scope)return fatal(E_FAIL,"FSR prepared copy state isolation failed");
+            hr=D3D11FrameCopy::Color(context,linear->Color(),state_->color.Get(),{frame.render.width,frame.render.height});
+            if(SUCCEEDED(hr))hr=D3D11FrameCopy::Color(context,linear->Depth(),state_->depth.Get(),{frame.render.width,frame.render.height});
+            if(SUCCEEDED(hr))hr=D3D11FrameCopy::Color(context,linear->Motion(),state_->motion.Get(),{frame.render.width,frame.render.height});
+            if(FAILED(hr))return fatal(hr,"FSR prepared NR input copies failed");
+        } else if(frame.input!=state_->color.Get()) {
             hr=Observe(performance,FsrCpuPhase::PrepareColor,[&]{return state_->decode.Convert(context,frame.input,state_->color.Get(),inputEncoding,ColorEncoding::Linear);});
             if(FAILED(hr)){if(FAILED(state_->bridge->Device12()->GetDeviceRemovedReason()))return fatal(hr,"FSR device removed during input conversion");state_->error=RuntimeError{ErrorKind::InvalidInput,hr,"FSR explicit input color conversion failed"};return invalid();}
         } else if(inputEncoding!=ColorEncoding::Linear)return invalid();
-        {
+        if(!linear){
             CpuObservation guides(performance,FsrCpuPhase::PrepareGuides);
             D3D11ContextIsolation::Scope scope(state_->isolation,context);if(!scope)return fatal(E_FAIL,"FSR producer state isolation failed");
             if(frame.depth!=state_->depth.Get())hr=state_->depthCopy.Copy(context,frame.depth,state_->depth.Get(),{frame.render.width,frame.render.height});
@@ -105,6 +122,12 @@ namespace TheosRenderPipeline::Upscaling
         }
         if(performance)performance->Stamp11(context,FsrGpuPhase::Prepare,false);
         if(FAILED(hr=Observe(performance,FsrCpuPhase::ProducerSignal,[&]{return state_->bridge->SignalProducer();})))return fatal(hr,"FSR producer submission failed");
+        if(linear){
+            // The last reader of the leased textures is their D3D11 input copy,
+            // not dispatch: dispatch uses FSR's independently retained images.
+            ComPtr<ID3D12Fence> copied;uint64_t value{};if(FAILED(hr=state_->bridge->ProducerDependency(&copied,&value)))return fatal(hr,"FSR prepared input reader dependency missing");
+            auto retained=linear->TrackReader(copied.Get(),value);if(!retained)return fatal(E_FAIL,"FSR prepared input reader ownership rejected");
+        }
         ID3D12GraphicsCommandList* list{};if(FAILED(hr=Observe(performance,FsrCpuPhase::Begin,[&]{return state_->bridge->Begin(&list);})))return fatal(hr,"FSR command slot unavailable");
         if(performance){performance->Begin12(list,frame.sourceId);performance->Stamp12(list,FsrGpuPhase::Dispatch,true);}
         auto dispatch=Observe(performance,FsrCpuPhase::Record,[&]{return state_->upscaler->Dispatch(list,state_->resources,prepared);});
