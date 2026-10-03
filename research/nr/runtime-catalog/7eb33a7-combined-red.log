@@ -1,0 +1,2 @@
+AMD SR source=1 failure: FSR command list/resources belong to another device
+FAIL: exactly one real SR/spatial pass; stage=ReShade after upscaling

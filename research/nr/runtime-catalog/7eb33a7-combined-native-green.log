@@ -1,0 +1,11 @@
+HUD ownership producer=000001DB545B2A60 viewDevice=000001DB54557FF0 textureDevice=000001DB545B2A60 sameView=0 sameTexture=1
+Foreground producer pixel=127,0,0,127
+NR retained presenter profile=rtx40 luid=66328:0 device=000001DB98B326F0
+real resize result=0x00000000 render=640x360
+NR retained presenter profile=rtx40 luid=66328:0 device=000001DB98B326F0
+NR retained presenter profile=rtx40 luid=66328:0 device=000001DB98B326F0
+real resize result=0x00000000 render=640x360
+NR retained presenter profile=rtx40 luid=66328:0 device=000001DB98B326F0
+NR retained presenter profile=rtx40 luid=66328:0 device=000001DB98B326F0
+PASS: combined NR/FSR/FG/ReShade nrEvaluations=170 nrBypasses=6
+PASS: actual AMD/ReShade host sources=96 upscales=96 generationCallbacks=81 completedUi=96 liveOff=3 spatial=3 resizeCycles=2 largerSources=80 largerCallbacks=78 suspendRestore=2 cachedWaitableSignaled=true; physical cadence unobserved

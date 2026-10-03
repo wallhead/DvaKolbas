@@ -16,9 +16,7 @@ Clean code `aa3df47ec509` built the Standard NR/SR/FG plugin and passed **159/15
 
 The clean plugin DLL and its manifest are now installed in the existing V5.4 NO-LORE trial, with Skyrim absent during replacement and the previous DLL backed up. Hashes confirm the game INI, ImGui INI, MO2 modlist and launch settings were preserved. Corrected Skyrim acceptance remains pending.
 
-## Supplied review findings
-
-### Subsequent FSR device-ownership failure
+## Subsequent FSR device-ownership failure
 
 The next game run loaded the clean `aa3df47ec509` DLL. Save loading completed at 11:04:39; source 16665 evaluated NR successfully at 11:04:40.165. FSR then rejected its command-list/resource device at 11:04:40.174, and the AMD source presenter stopped with `0x80070057`. The fence fix therefore reached NR output, but did not qualify interoperability with the already initialized native AMD presenter. Game device removal remained zero.
 
@@ -27,6 +25,10 @@ An added combined fixture initializes actual FSR SR/FG and manual ReShade first,
 The game host now supplies NR with its existing FSR bridge device, or its NVIDIA source transport device. BeforeHost retains that exact device, verifies its adapter LUID and removal state before admission, and creates only a separate DIRECT queue. Standalone owners may still create their own device. The game path never requests another device while its presenter is live. FSR's strict ownership check remains unchanged; its failure message now includes the retained host, command-list owner and color-resource owner. NR startup logs the supplied presenter identity. A foreign WARP device is rejected before model initialization.
 
 Both combined routes passed with the installed ReShade: Performance/SRGB and the trial's NativeAA/Gamma22, each with 176 sources, 170 NR evaluations, six NR bypasses, real temporal SR, generation callbacks, UI/foreground preservation, two resized cycles and two suspension/restoration cycles. NR retires before AMD readers on resize and final teardown. These checks qualify synthetic interoperability, not physical display cadence or Skyrim image quality. Fresh read-only review found no blocking issue; absent-presenter late arrival is outside the currently eligible startup routes, exact scene pixels are intentionally unqualified with NR enabled, and After/other GPU/performance work remains open. The corrected Skyrim save-load and visual retest remains required.
+
+Clean `7eb33a7f3ebb` was rebuilt and passed **160/160 runnable product checks** in 122.35 seconds, with the same three unavailable Graphics Tools checks excluded. Its validated DLL and manifest are installed in V5.4 NO-LORE. All other mod assets and the trial INIs, MO2 modlist and launch settings were hash-checked and preserved; the previous DLL/manifest were backed up. [Combined regression receipts](../research/nr/runtime-catalog/fsr-ownership-fix-7eb33a7.json) record RED/GREEN evidence, exact executable/runtime identities and bounded qualification. Game acceptance remains pending.
+
+## Supplied review findings
 
 | Finding | Checked result and disposition |
 | --- | --- |
