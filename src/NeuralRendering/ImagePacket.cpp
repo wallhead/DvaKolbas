@@ -1,6 +1,7 @@
 #include "ImagePacket.h"
 #include <cmath>
 #include <array>
+#include <sstream>
 namespace TheosRenderPipeline::NeuralRendering {
 namespace {
 using Microsoft::WRL::ComPtr;
@@ -20,7 +21,30 @@ bool Texture(ID3D12Resource* r,ImageExtent e,DXGI_FORMAT format,bool uav=false){
         (!uav||(d.Flags&D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS));
 }
 }
-Result<void> ValidateImagePacket(ID3D12GraphicsCommandList* list,const ImagePacket& p,const StageContract& c){
+Result<void> FenceDeviceIdentity::Initialize(ID3D12Device* device){
+    if(!device||reference_)return Invalid("NR fence identity initialization missing/already attempted");
+    ComPtr<ID3D12Device> native;
+    auto hr=device->QueryInterface(IID_PPV_ARGS(&host_));
+    if(SUCCEEDED(hr))hr=device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&reference_));
+    if(SUCCEEDED(hr))hr=reference_->GetDevice(IID_PPV_ARGS(&native));
+    if(SUCCEEDED(hr))hr=native.As(&native_);
+    if(FAILED(hr))return std::unexpected(Error{ErrorKind::IdentityMismatch,hr,"NR private fence device identity capture failed"});
+    return {};
+}
+Result<void> FenceDeviceIdentity::Validate(ID3D12Fence* fence,ID3D12Device* expectedHost)const{
+    if(!host_||!native_||!fence||!expectedHost)return Invalid("NR fence identity not initialized or fence/host missing");
+    if(!SameObject(host_.Get(),expectedHost))return std::unexpected(Error{ErrorKind::IdentityMismatch,0,"NR fence anchor belongs to a different host device"});
+    ComPtr<ID3D12Device> device;ComPtr<IUnknown> actual;
+    auto hr=fence->GetDevice(IID_PPV_ARGS(&device));
+    if(SUCCEEDED(hr))hr=device.As(&actual);
+    if(FAILED(hr))return std::unexpected(Error{ErrorKind::IdentityMismatch,hr,"NR input fence device query failed"});
+    if(actual!=host_&&actual!=native_){
+        std::ostringstream message;message<<"NR foreign fence device: host="<<host_.Get()<<" referenceOwner="<<native_.Get()<<" inputOwner="<<actual.Get();
+        return std::unexpected(Error{ErrorKind::IdentityMismatch,0,message.str()});
+    }
+    return {};
+}
+Result<void> ValidateImagePacket(ID3D12GraphicsCommandList* list,const ImagePacket& p,const StageContract& c,const FenceDeviceIdentity* fences){
     if(!c.device || !c.queue || !c.adapterLuid.Valid())return Invalid("NR stage device/queue identity missing");
     const auto luid=c.device->GetAdapterLuid();
     if(luid.LowPart!=c.adapterLuid.low || luid.HighPart!=c.adapterLuid.high)
@@ -59,9 +83,14 @@ Result<void> ValidateImagePacket(ID3D12GraphicsCommandList* list,const ImagePack
         p.outputState!=D3D12_RESOURCE_STATE_UNORDERED_ACCESS)return Invalid("NR declared evaluation states invalid");
     if(bool(p.producerFence)!=bool(p.producerFenceValue))return Invalid("NR producer fence/value incomplete");
     if(p.producerFence){
+        if(fences){auto identity=fences->Validate(p.producerFence.Get(),c.device.Get());if(!identity)return identity;}
+        else if(!OnDevice(p.producerFence.Get(),c.device.Get()))return std::unexpected(Error{ErrorKind::IdentityMismatch,0,"NR producer fence belongs to a different device"});
         const auto completed=p.producerFence->GetCompletedValue();
-        if(!OnDevice(p.producerFence.Get(),c.device.Get()) || completed==UINT64_MAX || completed<p.producerFenceValue)
-            return std::unexpected(Error{ErrorKind::Retirement,0,"NR producer ownership has not retired"});
+        if(completed==UINT64_MAX)return std::unexpected(Error{ErrorKind::Retirement,0,"NR producer fence reports device removal"});
+        if(completed<p.producerFenceValue){
+            std::ostringstream message;message<<"NR producer ownership has not retired: target="<<p.producerFenceValue<<" completed="<<completed;
+            return std::unexpected(Error{ErrorKind::Retirement,0,message.str()});
+        }
     }
     return {};
 }

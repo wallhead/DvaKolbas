@@ -30,7 +30,7 @@ endforeach()
 add_executable(TRPNrImagePacketTests ../NrImagePacketTests.cpp)
 target_compile_features(TRPNrImagePacketTests PRIVATE cxx_std_23)
 target_compile_definitions(TRPNrImagePacketTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
-target_link_libraries(TRPNrImagePacketTests PRIVATE TRPNeuralRuntime)
+target_link_libraries(TRPNrImagePacketTests PRIVATE TRPNeuralRuntime d3d11)
 add_test(NAME NrImagePacket COMMAND TRPNrImagePacketTests)
 set_tests_properties(NrImagePacket PROPERTIES SKIP_RETURN_CODE 77 RUN_SERIAL TRUE LABELS GPU)
 add_executable(TRPNrHistoryTests ../NrHistoryTests.cpp)
@@ -83,11 +83,22 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_definitions(TRPNrBeforeHostFramesTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_link_libraries(TRPNrBeforeHostFramesTests PRIVATE TRPNeuralRuntime)
     set(TRP_NR_TEST_RUNTIME_ROOT "" CACHE PATH "Controlled three-profile NR fixture root")
+    set(TRP_NR_RESHADE_RUNTIME "" CACHE FILEPATH "Supplied ReShade DLL for isolated NR Before/fence regression")
     if(TRP_NR_TEST_RUNTIME_ROOT)
         add_test(NAME NrBeforeHostFrames COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrBeforeHostFrames PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrBeforeHost COMMAND TRPNrBeforeHostTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrBeforeHost PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+        if(TRP_NR_RESHADE_RUNTIME)
+            find_package(Python3 COMPONENTS Interpreter REQUIRED)
+            add_test(NAME NrReShadeBefore COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+                --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>"
+                --host-exe "$<TARGET_FILE:TRPNrBeforeHostFramesTests>"
+                --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+                --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-before")
+            set_tests_properties(NrReShadeBefore PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
+        endif()
     endif()
     add_executable(TRPNrStageTests ../NrStageTests.cpp)
     target_compile_features(TRPNrStageTests PRIVATE cxx_std_23)
@@ -98,7 +109,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         set_tests_properties(NrStage-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 30 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
     set(nrProbeSources tests/nr-runtime/RuntimeProbe.cpp tests/nr-runtime/RuntimeProbeReport.cpp
-        tests/nr-runtime/RuntimeProbeReport.h tests/nr-runtime/GpuProbeGuard.h src/NeuralRendering/RuntimeCatalog.cpp src/NeuralRendering/RuntimeCatalog.h
+        tests/nr-runtime/RuntimeProbeReport.h tests/nr-runtime/GpuProbeGuard.h tests/nr-runtime/run_reshade_before.py tests/NrImagePacketTests.cpp src/NeuralRendering/RuntimeCatalog.cpp src/NeuralRendering/RuntimeCatalog.h
         src/NeuralRendering/RuntimeFileLease.cpp src/NeuralRendering/RuntimeFileLease.h
         src/NeuralRendering/RuntimeOwner.cpp src/NeuralRendering/RuntimeOwner.h
         src/NeuralRendering/CallerIdentityShim.cpp src/NeuralRendering/CallerIdentityShim.h

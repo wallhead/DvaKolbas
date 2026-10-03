@@ -47,6 +47,7 @@ struct Stage::State {
     Detail::TicketOwnership ticketOwner;
     std::shared_ptr<RuntimeOwner> owner;
     StageContract contract;
+    FenceDeviceIdentity fences;
     AllocationContext allocation;
     NVSDK_NGX_Parameter* parameters{};
     void* feature{};
@@ -97,6 +98,7 @@ Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageCo
     auto r=owner->CheckClientDevice(c.device.Get());if(!r)return r;const auto luid=c.device->GetAdapterLuid();
     if(luid.LowPart!=c.adapterLuid.low||luid.HighPart!=c.adapterLuid.high||!OnDevice(c.queue.Get(),c.device.Get())||c.queue->GetDesc().Type!=D3D12_COMMAND_LIST_TYPE_DIRECT)
         return Fail(ErrorKind::IdentityMismatch,"NR stage queue/device identity invalid");
+    r=s.fences.Initialize(c.device.Get());if(!r)return r;
     r=owner->AcquireClient();if(!r)return r;s.client=true;s.owner=std::move(owner);s.contract=c;s.preset=preset;s.allocation.device=c.device;
     {std::scoped_lock lock(allocationMutex);if(activeAllocation){r=s.owner->ReleaseClientAfterRetirement();if(!r){s.terminal=true;return r;}s.client=false;return Fail(ErrorKind::Conflict,"Another NR shared stage owns allocator callbacks");}activeAllocation=&s.allocation;}
     r=s.BuildAlpha();if(!r)return r;const auto& e=s.owner->Exports();r=s.Native(e.allocate(&s.parameters),"NR shared parameters allocation failed");if(!r)return r;
@@ -123,7 +125,7 @@ Result<EvaluationTicket> Stage::Record(ID3D12GraphicsCommandList* list,const Ima
     if(settings.reconstruction.preset!=s.preset || settings.reconstruction.inputScale!=1 || settings.reconstruction.peripheralCompression || settings.reconstruction.fusedPreparation || settings.reconstruction.producerColor || settings.reconstruction.colorIsHDR ||
         settings.reconstruction.method>ResolveMethod::Ratio || EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR shared native stage requires adapter-owned reconstruction before/after it");
-    auto validated=ValidateImagePacket(list,packet,s.contract);if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
+    auto validated=ValidateImagePacket(list,packet,s.contract,&s.fences);if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
     if(s.serial==UINT64_MAX)return Fail(ErrorKind::Runtime,"NR ticket sequence exhausted");
     auto pending=std::make_unique<State::Pending>();pending->packet=packet;pending->id=++s.serial;
     D3D12_DESCRIPTOR_HEAP_DESC heap{};heap.Type=D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;heap.NumDescriptors=2;heap.Flags=D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
@@ -141,7 +143,8 @@ Result<EvaluationTicket> Stage::Record(ID3D12GraphicsCommandList* list,const Ima
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}++s.recorded;EvaluationTicket ticket;ticket.owner_=s.ticketOwner.Seal();ticket.id_=s.pending->id;ticket.image_=packet.imageId;ticket.output_=packet.output;return ticket;
 }
 Result<void> Stage::MarkSubmitted(const EvaluationTicket& ticket,ID3D12Fence* fence,uint64_t value){
-    auto& s=*state_;if(s.terminal||!s.Owns(ticket)||s.pending->submitted||!value||!OnDevice(fence,s.contract.device.Get()))return Fail(ErrorKind::InvalidInput,"NR submission ticket/fence invalid");
+    auto& s=*state_;if(s.terminal||!s.Owns(ticket)||s.pending->submitted||!value)return Fail(ErrorKind::InvalidInput,"NR submission ticket/fence invalid");
+    auto identity=s.fences.Validate(fence,s.contract.device.Get());if(!identity)return identity;
     if(fence->GetCompletedValue()>=value || s.submissionValue==UINT64_MAX)
         return Fail(ErrorKind::InvalidInput,"NR submission value already completed/exhausted");
     // An external fence can be signalled by another owner. Our private fence
@@ -151,7 +154,8 @@ Result<void> Stage::MarkSubmitted(const EvaluationTicket& ticket,ID3D12Fence* fe
     r=s.Gpu(s.contract.queue->Signal(fence,value),"NR recording completion signal failed; ownership retained");if(!r)return r;s.pending->submitted=true;return {};
 }
 Result<void> Stage::TrackReader(const EvaluationTicket& ticket,ID3D12Fence* fence,uint64_t value){
-    auto& s=*state_;if(s.terminal||!s.Owns(ticket)||!s.pending->submitted||!value||!OnDevice(fence,s.contract.device.Get()))return Fail(ErrorKind::InvalidInput,"NR output reader ticket/fence invalid");s.pending->readers.push_back({fence,value});return {};
+    auto& s=*state_;if(s.terminal||!s.Owns(ticket)||!s.pending->submitted||!value)return Fail(ErrorKind::InvalidInput,"NR output reader ticket/fence invalid");
+    auto identity=s.fences.Validate(fence,s.contract.device.Get());if(!identity)return identity;s.pending->readers.push_back({fence,value});return {};
 }
 Result<void> Stage::RetireTicket(const EvaluationTicket& ticket){
     auto& s=*state_;if(s.terminal||!s.Owns(ticket)||!s.pending->submitted)return Fail(ErrorKind::Retirement,"NR ticket unsubmitted/foreign/terminal");auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during ticket retirement");if(!r)return r;

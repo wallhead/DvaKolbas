@@ -4,12 +4,14 @@
 #include <cstdio>
 #include <vector>
 #include <fstream>
+#include <string_view>
 #include "ProbeBuildIdentity.h"
 using namespace TheosRenderPipeline::NeuralRendering;
 using Microsoft::WRL::ComPtr;
 namespace {int failures{};void Check(bool v,const char* name){std::printf("%s %s\n",v?"PASS":"FAIL",name);failures+=!v;}void Need(HRESULT h){if(FAILED(h))throw h;}}
 int wmain(int argc,wchar_t** argv){try{
-    if((argc!=3&&argc!=4)||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
+    const bool wrapped=argc==5&&std::wstring_view(argv[4])==L"--require-wrapped";
+    if((argc!=3&&argc!=4&&!wrapped)||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
     if(NrRuntimeResearch::GameRunningOrUnknown())return 1;
     BeforeHost prepared;SettingsSnapshot s;s.enabled=false;s.revision=1;
     Check(bool(prepared.Evaluate({},s)),"DisabledPreparedNrRequiresNoColorDecoder");
@@ -17,6 +19,13 @@ int wmain(int argc,wchar_t** argv){try{
     for(UINT i=0;;++i){ComPtr<IDXGIAdapter1> v;const auto hr=f->EnumAdapterByGpuPreference(i,DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&v));if(hr==DXGI_ERROR_NOT_FOUND)break;Need(hr);Need(v->GetDesc1(&d));if(d.VendorId==0x10de&&d.DeviceId==0x2702){a=v;break;}}
     if(!a)return 77;StageContract c;c.colorExtent=c.guideExtent={320,180};c.adapterLuid={d.AdapterLuid.LowPart,d.AdapterLuid.HighPart};
     ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context;Need(D3D11CreateDevice(a.Get(),D3D_DRIVER_TYPE_UNKNOWN,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&device,nullptr,&context));
+    if(wrapped){
+        Need(D3D12CreateDevice(a.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&c.device)));
+        ComPtr<ID3D12Fence> probe;ComPtr<ID3D12Device> native;ComPtr<IUnknown> hostIdentity,nativeIdentity;
+        Need(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&probe)));Need(probe->GetDevice(IID_PPV_ARGS(&native)));Need(c.device.As(&hostIdentity));Need(native.As(&nativeIdentity));
+        std::printf("NR_DEVICE host=%p fenceOwner=%p wrapped=%u\n",hostIdentity.Get(),nativeIdentity.Get(),hostIdentity!=nativeIdentity);
+        Check(hostIdentity!=nativeIdentity,"WrappedHostRegressionUsesActualReShadeFenceIdentity");if(failures)return 1;
+    }
     StartupSettings startup;startup.community=true;startup.runtimeRoot=std::filesystem::absolute(argv[1]);startup.driverCore=argv[2];startup.sourceEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
     auto inspected=prepared.Inspect(device.Get(),startup,std::filesystem::absolute("nr-host-frames-cache"));
     if(!inspected){std::puts(inspected.error().message.c_str());return 1;}
@@ -66,12 +75,13 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
     Check(alpha==expectedAlpha,"AllUnormAlphaValuesSurviveDecodeNrEncode");Check(changed>320*180,"NrModifiedRgbDeliveredToOriginalSdrColor");
     Check(prepared.Recorded()==expectedNr,"PreparedNrOffOnUsesOnePassPerEnabledSource");
     Check(bool(prepared.Retire()) && !prepared.Terminal(),"PreparedReadersAndRuntimeRetire");
-    if(argc==4){std::ofstream report{std::filesystem::path(argv[3])};
+    if(argc>=4){std::ofstream report{std::filesystem::path(argv[3])};
         report << "{\n\"schema\":1,\"scope\":\"synthetic native SDR real-source host; game quality pending\",\n\"result\":\"" << (failures?"FAIL":"PASS")
             << "\",\"sourceRevision\":\"" << NrRuntimeResearch::buildRevision << "\",\"sourceClean\":" << (NrRuntimeResearch::buildClean?"true":"false")
             << ",\n\"profile\":\"rtx40\",\"vendorId\":" << d.VendorId << ",\"deviceId\":" << d.DeviceId
             << ",\"adapterLuidLow\":" << d.AdapterLuid.LowPart << ",\"adapterLuidHigh\":" << d.AdapterLuid.HighPart
             << ",\"frames\":240,\"nrEvaluations\":" << expectedNr << ",\"resizes\":1,\"sourceAlphaPixels\":" << alpha
+            << ",\"wrappedDeviceRequired\":" << (wrapped?"true":"false")
             << ",\"changedRgbPixels\":" << changed << ",\"bypassedSourcePixels\":" << bypassPixels
             << ",\"runtimeSha256\":\"" << RuntimeCatalog()[1].sha256 << "\",\"driverCoreSha256\":\"" << QualifiedProbeDriverCore().sha256
             << "\",\"retired\":true,\n\"compiledSourcesSha256\":" << NrRuntimeResearch::compiledSourcesJson << "\n}\n";

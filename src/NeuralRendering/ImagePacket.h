@@ -51,5 +51,18 @@ struct StageContract {
     AdapterLuid adapterLuid;
     ImageExtent colorExtent,guideExtent;
 };
-Result<void> ValidateImagePacket(ID3D12GraphicsCommandList*,const ImagePacket&,const StageContract&);
+// ReShade can forward CreateFence to its native device while resources and
+// queues report the wrapper. Establish that native identity only through a
+// private reference fence created by the retained host device, never through
+// an incoming fence, adapter LUID, or caller-supplied alternate device.
+class FenceDeviceIdentity {
+public:
+    Result<void> Initialize(ID3D12Device*);
+    Result<void> Validate(ID3D12Fence*,ID3D12Device* expectedHost)const;
+private:
+    Microsoft::WRL::ComPtr<IUnknown> host_,native_;
+    Microsoft::WRL::ComPtr<ID3D12Fence> reference_;
+};
+Result<void> ValidateImagePacket(ID3D12GraphicsCommandList*,const ImagePacket&,const StageContract&,
+    const FenceDeviceIdentity* = nullptr);
 }
