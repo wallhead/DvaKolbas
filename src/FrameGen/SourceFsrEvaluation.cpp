@@ -36,11 +36,18 @@ using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
 struct NvidiaHost::SourceFsrEvaluationOperations
 {
-    NvidiaHost& host;RenderPipeline& pipeline;bool spatial{};
+    NvidiaHost& host;RenderPipeline& pipeline;bool spatial{},nativeUIHandoff{};
     std::optional<RuntimeError> error;
     std::string recoveryReason;
     void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){context->CopyResource(frame.input,frame.color);}
-    bool EvaluateOptionalPreUpscale(UpscaleFrame&){return true;}
+    bool EvaluateOptionalPreUpscale(UpscaleFrame& frame){
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        return host.EvaluateCommunityNeuralBefore(frame.input,frame.depth,frame.motion,frame.render.width,frame.render.height,
+            frame.sourceId,frame.reset,NeuralRendering::SourceWorldEligible(!spatial,nativeUIHandoff,host.nativeUI_.Dedicated(),CommunityShaders::Active()));
+#else
+        (void)frame;return true;
+#endif
+    }
     void RenderReShade(const UpscaleFrame& frame,bool before)
     {
         auto& effects=ReShadeIntegration::Get();effects.SetBeforeUpscaling(pipeline.mReShadeBeforeUpscaling);
@@ -154,7 +161,7 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     const bool handoffLogged=evaluationCount_==0 || (frameDetails && (evaluationCount_<3 || evaluationCount_%600==0));
     if(handoffLogged)logHandoff();
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
-    SourceFsrEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_)};
+    SourceFsrEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_),nativeUIHandoff};
 #if defined(TRP_ENABLE_FSR_FG)
     if(FsrFgActive()) {
         auto waited=fsrPresentation_->WaitBeforeProducer();

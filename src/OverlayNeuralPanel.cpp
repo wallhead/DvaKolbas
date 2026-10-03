@@ -13,6 +13,7 @@ using namespace TheosRenderPipeline::Overlay;
 
 #include "CommunityShaderIntegration.h"
 #include "NeuralRenderingMode.h"
+#include "NeuralRendering/BeforeSettings.h"
 #include "RenderPipeline.h"
 
 namespace
@@ -334,8 +335,39 @@ void DrawSourceNeuralControls(TheosRenderPipeline::SourceDLSSG::Preferences& dra
 
 void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
 {
-    if (!BeginNeuralRenderingTab(requestedPage == SettingsPage::NeuralRendering, view.fsrActive))
+    const bool community=SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community;
+    if (!BeginNeuralRenderingTab(requestedPage == SettingsPage::NeuralRendering, view.fsrActive, community))
         return;
+    if (community) {
+        const auto* host=NvidiaHost::GetSingleton();
+        if (BeginSettingsColumns("communityNeural",height,view)) {
+            DrawStatusLabel(host->CommunityNeuralTerminal()?"NR failed":host->CommunityNeuralActive()?"NR active":"NR inactive",
+                host->CommunityNeuralTerminal()?UIHealth::kError:host->CommunityNeuralActive()?UIHealth::kHealthy:UIHealth::kIdle);
+            ImGui::TextWrapped("%s",host->CommunityNeuralStatus().c_str());
+            DrawSettingsValue("Placement","Before upscaling and frame generation");
+            DrawSettingsValue("Model","Native SDR, one pass");
+            ImGui::TextDisabled("After FG is awaiting validation.");
+            ImGui::TextWrapped("RTX 50, RTX 40 and RTX 20/30 use separate runtime files. AMD NR is currently unsupported.");
+            NextSettingsColumn(height);
+            auto& p=settingsDraft.sourceDLSSG;
+            ImGui::BeginDisabled(!TheosRenderPipeline::CanEditNeuralEnabled(p.neuralEnabled,host->CommunityNeuralAvailable()));
+            ImGui::Checkbox("Neural Rendering",&p.neuralEnabled);
+            ImGui::EndDisabled();
+            ImGui::TextDisabled("Use Apply for this session or Save as default.");
+            const char* styles[]{"Style 0","Style 1","Style 2","Style 3","Style 4","Style 5","Style 6","Style 7"};
+            ImGui::BeginDisabled(!host->CommunityNeuralAvailable());
+            ImGui::Combo("Style",&p.neuralTuning.style,styles,IM_ARRAYSIZE(styles));
+            ImGui::SliderFloat("Intensity",&p.neuralTuning.intensity,0,2);
+            ImGui::SliderFloat("Local tone",&p.neuralTuning.localToneStrength,0,2);
+            ImGui::SliderFloat("Local structure",&p.neuralTuning.localStructureStrength,0,2);
+            ImGui::SliderFloat("Skin structure",&p.neuralTuning.skinStructureStrength,-1,2);
+            ImGui::Checkbox("Automatic skin mask",&p.neuralTuning.useAutoSkinMask);
+            ImGui::EndDisabled();
+            if (const auto error=TheosRenderPipeline::NeuralRendering::NativeBeforeUnavailable(p)) ImGui::TextWrapped("%s",error);
+            EndSettingsColumns();
+        }
+        ImGui::EndTabItem();return;
+    }
     if (BeginSettingsColumns("neural", height, view))
     {
         const auto applied = TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();

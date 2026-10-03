@@ -167,6 +167,13 @@ if(NOT EXISTS "${TRP_NGX_SDK_DIR}/include/nvsdk_ngx.h")
 	)
 endif()
 
+if(TRP_ENABLE_NEURAL_RENDERING)
+    include(cmake/NeuralRuntime.cmake)
+    trp_nr_enable_source_stage("${TRP_NGX_SDK_DIR}/include")
+    target_link_libraries(TheosRenderPipeline PRIVATE TRPNeuralRuntime)
+    target_sources(TheosRenderPipeline PRIVATE src/FrameGen/NvidiaHostNeural.cpp)
+endif()
+
 if(TRP_ENABLE_OPTIONAL_FEATURES)
     target_include_directories(TheosRenderPipelineRTX40MFG PRIVATE "${TRP_NGX_SDK_DIR}/include")
 endif()

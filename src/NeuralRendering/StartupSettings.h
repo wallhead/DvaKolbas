@@ -1,0 +1,25 @@
+#pragma once
+#include "Upscaling/FSRColorContract.h"
+#include <filesystem>
+namespace TheosRenderPipeline::NeuralRendering {
+struct StartupSettings {
+    bool community{};
+    std::string profile{"Auto"};
+    std::filesystem::path runtimeRoot,driverCore;
+    Upscaling::ColorEncoding sourceEncoding{Upscaling::ColorEncoding::Unknown};
+    StartupSettings Resolve(const std::filesystem::path& pluginRoot)const{
+        auto result=*this;result.runtimeRoot=runtimeRoot.empty()?pluginRoot:runtimeRoot.is_absolute()?runtimeRoot:pluginRoot/runtimeRoot;
+        if(!result.driverCore.empty()&&!result.driverCore.is_absolute())result.driverCore=pluginRoot/result.driverCore;
+        return result;
+    }
+};
+template<class Ini> StartupSettings LoadStartupSettings(const Ini& ini){
+    StartupSettings result;result.community=ini.GetBoolValue("NeuralRendering","CommunityRuntime",false);
+    result.profile=ini.GetValue("NeuralRendering","Profile","Auto");
+    result.runtimeRoot=ini.GetValue("NeuralRendering","RuntimeRoot","");result.driverCore=ini.GetValue("NeuralRendering","DriverCore","");
+    const std::string_view encoding=ini.GetValue("NeuralRendering","SourceColorEncoding","Unknown");
+    for(auto value:{Upscaling::ColorEncoding::Linear,Upscaling::ColorEncoding::Gamma22,Upscaling::ColorEncoding::SRGB})
+        if(encoding==Upscaling::ColorEncodingName(value))result.sourceEncoding=value;
+    return result;
+}
+}

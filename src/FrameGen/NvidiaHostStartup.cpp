@@ -13,6 +13,7 @@
 #include "PresentationDevice.h"
 #include "FSRSwapChainPolicy.h"
 #include "PluginPaths.h"
+#include "NeuralRendering/SourcePolicy.h"
 #include <PCH.h>
 
 HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_device, DXGI_SWAP_CHAIN_DESC* a_desc, IDXGISwapChain** a_swapChain,
@@ -35,7 +36,11 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     requested.generationEnabled=generation.enabled;requested.generationBackend=generation.generationBackend;
     requested.quality=upscalerSettings->mFsrSettings.quality;requested.providerPolicy=upscalerSettings->mFsrSettings.providerPolicy;
     requested.sharpness=upscalerSettings->mFsrSettings.sharpness;requested.dynamicResolution=upscalerSettings->mDynamicResolutionRequested;
-    requested.neuralRendering=generation.sourceDLSSG.neuralEnabled;requested.hdr=generation.sourceDLSSG.hdrOutput.enabled;
+    requested.neuralRendering=generation.sourceDLSSG.neuralEnabled;
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    requested.communityNeural=generation.neuralStartup.community;
+#endif
+    requested.hdr=generation.sourceDLSSG.hdrOutput.enabled;
 #if defined(TRP_ENABLE_FSR)
     #if defined(TRP_ENABLE_FSR_FG)
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,true,true);
@@ -82,7 +87,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     backend.ConfigureHDROutput(settings.sourceDLSSG.hdrOutput);
     TheosRenderPipeline::SourceDLSSG::NeuralOptions options;
     options.runtimePath = settings.neuralRenderingRuntimePath;
-    options.enabled = settings.sourceDLSSG.neuralEnabled && !options.runtimePath.empty() &&
+    options.enabled = !settings.neuralStartup.community && settings.sourceDLSSG.neuralEnabled && !options.runtimePath.empty() &&
         TheosRenderPipeline::SupportsNeuralRenderingMode(upscalerSettings->mUpscaleType, TheosRenderPipeline::CommunityShaders::Active());
     options.tuning = settings.sourceDLSSG.neuralTuning;
     options.reconstruction = settings.sourceDLSSG.neuralReconstruction;
@@ -316,6 +321,9 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
     if(FsrActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
     TheosRenderPipeline::ReShadeIntegration::Get().Configure(device_.Get(), context_.Get(), {outputWidth_, outputHeight_});
     logger::info("[NvidiaHost] source upscaler initialized after D3D11 startup Present");
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    InspectCommunityNeural();
+#endif
     return true;
 }
 
@@ -463,8 +471,16 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
         if(!wasSuspended)logger::info("[FSR resize] suspended empty client extent; AMD chain and game buffers retained");
         return S_OK;
     }
-    auto before=fsrPresentation_->BeforeResize();
-    if(!before){status_=before.error().message;return FailLifecycle(E_FAIL,"AMD resize retirement");}
+    const auto admission=TheosRenderPipeline::NeuralRendering::RetireBeforeSourceResize(
+        [&]()->HRESULT {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+            if (!RetireCommunityNeural()) return FailureResult();
+#endif
+            return S_OK;
+        },
+        [&]()->HRESULT {const auto before=fsrPresentation_->BeforeResize();
+            if(!before){status_=before.error().message;return FailLifecycle(E_FAIL,"AMD resize retirement");}return S_OK;});
+    if (FAILED(admission)) return admission;
     frameGenerationEnabled_=false;fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
     resetNextEvaluation_=true;
     EndNativeUIPass();context_->ClearState();context_->Flush();

@@ -82,6 +82,14 @@ int main(int argc, char** argv)
                 owner.settings.neuralRenderingRuntimePath == (movedRoot / configuredNeural).lexically_normal().string(),
                 "saved relative paths follow a moved installation");
         }
+        CSimpleIniA communityPaths;
+        communityPaths.SetBoolValue("NeuralRendering","CommunityRuntime",true);
+        communityPaths.SetValue("NeuralRendering","DriverCore","drivers/_nvngx.dll");
+        communityPaths.SetValue("NeuralRendering","SourceColorEncoding","Gamma22");
+        owner.LoadStartupPreferences(communityPaths);owner.ResolveRuntimePaths(firstRoot);owner.ResolveRuntimePaths(movedRoot);
+        Require(owner.settings.neuralStartup.runtimeRoot==movedRoot/"TheosRenderPipeline" &&
+            owner.settings.neuralStartup.driverCore==movedRoot/"TheosRenderPipeline/drivers/_nvngx.dll",
+            "community profile root follows the controlled runtime directory on repeated resolution");
         CSimpleIniA absolutePaths;
         absolutePaths.SetValue("Experimental", "SourceDLSSGStreamlineDirectory", "E:/Custom/Streamline");
         absolutePaths.SetValue("Experimental", "NeuralRenderingRuntimePath", "E:/Custom/nvngx_dlssnr.dll");

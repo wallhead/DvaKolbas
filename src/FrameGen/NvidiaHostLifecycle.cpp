@@ -22,6 +22,9 @@ struct NvidiaHost::LifecycleOperations
     void DisableGeneration() { host.SetRuntimeEnabled(false); }
     bool Retire()
     {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        if (!host.RetireCommunityNeural()) return false;
+#endif
         if (!host.FsrActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
 #if defined(TRP_ENABLE_FSR_FG)
         if (host.FsrFgActive()) {
@@ -181,6 +184,9 @@ HRESULT NvidiaHost::UpdateFsrSuspension()
 
 void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
 {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    if (!RetireCommunityNeural()) return;
+#endif
 #if defined(TRP_ENABLE_FSR)
     if (FsrActive() && fsrResources_) {
         if(!retainFsrDevice){

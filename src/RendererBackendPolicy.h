@@ -26,7 +26,7 @@ namespace TheosRenderPipeline
                 decision.diagnostic = "FSR frame generation support is unavailable in this build.";
             } else if (config.generationBackend == 2 && config.providerPolicy != ProviderPolicy::Analytical) {
                 decision.diagnostic = "FSR frame generation initially requires the analytical SR provider.";
-            } else if (config.neuralRendering) { decision.diagnostic = "Neural Rendering is unavailable with FSR."; }
+            } else if (config.neuralRendering && !config.communityNeural) { decision.diagnostic = "Neural Rendering is unavailable with FSR."; }
             else if (config.hdr) { decision.diagnostic = "HDR output is not validated with FSR."; }
             else if (config.dynamicResolution) { decision.diagnostic = "FSR currently requires fixed render dimensions."; }
             else { decision.valid = true; }
@@ -54,7 +54,11 @@ namespace TheosRenderPipeline
                 return "FSR frame generation requires NativeUI=true and dedicated NativeUICompositionMode=0.";
             }
         } else { return "FSR requires ordinary presentation (backend 0) or FSR frame generation (backend 2)."; }
-        if (ini.GetBoolValue("SourceDLSSG", "NeuralRenderingEnabled", false)) { return "Neural Rendering is unavailable with FSR."; }
+        if (ini.GetBoolValue("SourceDLSSG", "NeuralRenderingEnabled", false) &&
+#if !defined(TRP_NO_NEURAL_RENDERING)
+            !ini.GetBoolValue("NeuralRendering", "CommunityRuntime", false) &&
+#endif
+            true) { return "Neural Rendering is unavailable with FSR."; }
         if (ini.GetBoolValue("HDROutput", "Enabled", false)) { return "HDR output is not validated with FSR."; }
         if (ini.GetBoolValue("DynamicResolution", "Enabled", false) || ini.GetBoolValue("DynamicResolution", "Oscillate", false)) {
             return "FSR currently requires fixed render dimensions.";

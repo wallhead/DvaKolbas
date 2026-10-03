@@ -85,6 +85,27 @@ void Neural()
     failed.sourceHost = false;
     Require(ValidateRendererSettings(draft, failed, &current), "unavailable source host still rejected");
 }
+void CommunityNeural()
+{
+    RendererSettingsCapabilities caps{true,true,true,false};
+    caps.fsrBuilt=true; caps.fsrFgBuilt=true; caps.communityNeural=true;
+    RendererSettingsDraft draft; draft.valid=true; draft.upscaleType=FSR;
+    draft.generationBackend=2; draft.fsr.sourceColorEncoding=Upscaling::ColorEncoding::Gamma22;
+    draft.sourceDLSSG.neuralEnabled=true; draft.sourceDLSSG.neuralBeforeUpscaling=true;
+    draft.sourceDLSSG.neuralPasses=1; draft.sourceDLSSG.neuralReconstruction={};
+    draft.sourceDLSSG.neuralReconstruction.inputScale=1;
+    Require(!ValidateRendererSettings(draft,caps),"community NR Before works with FSR FG");
+    auto after=draft; after.sourceDLSSG.neuralBeforeUpscaling=false;
+    Require(ValidateRendererSettings(after,caps),"unqualified After FG remains unavailable");
+    auto twice=draft; twice.sourceDLSSG.neuralPasses=2;
+    Require(ValidateRendererSettings(twice,caps),"first community trial permits one pass");
+    auto reduced=draft; reduced.sourceDLSSG.neuralReconstruction.inputScale=0.5f;
+    Require(ValidateRendererSettings(reduced,caps),"reduced model cannot silently run native");
+    caps.neuralRuntime=false; draft.sourceDLSSG.neuralEnabled=false;
+    Require(!ValidateRendererSettings(draft,caps),"NR off is available after runtime loss");
+    caps.communityNeural=false; caps.neuralRuntime=true; draft.sourceDLSSG.neuralEnabled=true;
+    Require(ValidateRendererSettings(draft,caps),"legacy FSR NR remains rejected");
+}
 void LiveGenerationActions()
 {
     auto& generation=*SourceFrameGeneration::GetSingleton();
@@ -132,6 +153,6 @@ void EffectivePresenterUi()
 }
 int main()
 {
-    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); EffectivePresenterUi(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
+    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

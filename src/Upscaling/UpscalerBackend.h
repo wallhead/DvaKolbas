@@ -35,6 +35,7 @@ namespace TheosRenderPipeline::Upscaling
         bool enabled{true}, generationEnabled{true};
         long generationBackend{1};
         bool neuralRendering{}, hdr{}, dynamicResolution{};
+        bool communityNeural{};
         float sharpness{};
     };
     struct BackendDecision

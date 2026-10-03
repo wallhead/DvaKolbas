@@ -6,10 +6,10 @@
 | --- | --- | --- |
 | 1. Post-FG output and matching generated guides | In progress | Independent reference renderer/schema tests; FSR color/UI/retirement baseline passes. NVIDIA static output candidates identified; generated guides remain unqualified. |
 | 2. Catalog, direct owner and compatibility loading | Complete for standalone scope | Exact 65-ID catalog, locked-file hashes, narrow IAT shim; 14/14 NR + legacy contract tests. Reviewed clean-source RTX 40 30-frame RGB readbacks and retired teardown pass. |
-| 3. Shared one-pass stage and Before integration | In progress | Owned packet/history, typed parameters and shared Stage implemented. Native linear FP16 D3D11 bridge passes 240 frames with live off/on, exact alpha and real reader retirement. Game color/reconstruction and DLSS/FSR call sites remain pending. |
+| 3. Shared one-pass stage and Before integration | In progress | Owned packet/history, typed parameters and shared Stage implemented. Native linear FP16 D3D11 bridge passes 240 frames with live off/on, exact alpha and real reader retirement. Explicit SDR color preparation and native Before call sites are now connected to DLSS/DLAA and FSR. Reduced-model reconstruction and first Skyrim source/quality acceptance remain pending. |
 | 4. FSR true After | Pending Task 1 guides | Generated color access is proven; matching generated depth/motion/history is required. |
 | 5. DLSS-G true After | Pending Task 1 boundary/guides | Exact installed Streamline 2.13 candidate functions are static research only. |
-| 6. Live controls/lifecycle | Pending stage integration | One authoritative setting, frozen batch and retained runtime identity. |
+| 6. Live controls/lifecycle | Before trial integrated; After batches pending | One authoritative NR setting feeds live Apply/Save/hotkeys. Actual source handoff, camera cuts and checked resize retirement gate the native Before path. |
 | 7. Clean matrix/packages/final review | Pending implementation | Current checkpoint review is narrower than the future whole-branch review. |
 | 8. Separate Skyrim acceptance | Pending package and user | Accepted FSR mod and MO2 settings remain unchanged. |
 
@@ -22,3 +22,11 @@ The shared Stage checkpoint adds a private submission fence, pending packet/desc
 A fresh Stage review found stale tickets could collide when an owner address was reused. Sealed tickets now retain a unique identity allocation. The same issue was reproduced and fixed for history decisions. Both deterministic same-address regressions were observed RED→GREEN. The first native Before bridge also preserved 13,824,000 alpha pixels across 240 D3D11 round trips, evaluated exactly 232 frames, bypassed eight with every pixel unchanged, and produced 232 distinct RGB hashes. No Skyrim/MO2 settings or installed DLLs were changed.
 
 Clean-source receipts for stage, native bridge and unshimmed control are saved in the [runtime checkpoint](../research/nr/runtime-catalog/README.md). The latest product-tree NR/legacy contract run passed **21/21**, without skips. This is a partial Task 3 checkpoint; the completed count stays **1 of 8**.
+
+The first opt-in **native SDR Before** game trial is now wired. It decodes an explicit SDR source to linear FP16, runs one direct NR pass, restores source alpha and encodes back before either SR provider sees it. After-FG/reduced-model/HDR combinations are unavailable. The accepted FSR Native AA and FG settings are used for this local trial; model training-domain/visual quality remains awaiting Skyrim acceptance.
+
+The prepared source test passed 240 frames with 13,824,000 exact UNORM alpha pixels. The caller's bound RTV was restored. The retained game-source host separately passed 240 frames including off/on and resize, preserving 8,640,000 alpha pixels; the off source is unchanged. Only RTX 4080 SUPER output is observed. Three-family runtime files are individually pinned; AMD remains unsupported.
+
+A fresh review of the bounded Before trial found four important integration errors: continuous SR resets when NR was unavailable, a custom AMD resize path ignoring retirement failure, missed same-camera cuts before NR, and processing fallback frames without a proven HUD-less handoff. Failure-order/world-admission/camera regressions and the unavailable-host regression were observed RED then GREEN. Failed inspection diagnostics are retained. This review does not qualify true After FG or replace the future whole-NR branch review.
+
+Standard product validation passed **158/158** checks, with three Graphics Tools dependent checks explicitly excluded (NativeUIComposition, NativeUIBlendState, NeuralPeripheralPixels). The standalone runtime suite passed **23/23**, without skips. Standard NR-disabled product compilation also passes. Clean source receipts and packaging are being finalized before installation. Completed full-plan milestone count remains **1 of 8**; first Skyrim Before acceptance is the next bounded gate.

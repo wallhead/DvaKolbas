@@ -53,6 +53,15 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
                                        : 1u;
     view.sourceNeural = view.sourceDLSSGActive ? TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralState()
                                                : TheosRenderPipeline::SourceDLSSG::NeuralSnapshot{};
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    const bool communityNR=SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community;
+    if (communityNR) {
+        view.sourceNeural.active=nvidiaHost->CommunityNeuralActive();
+        view.sourceNeural.failed=nvidiaHost->CommunityNeuralTerminal();
+        view.sourceNeural.evaluations=nvidiaHost->CommunityNeuralRecorded();
+        view.sourceNeural.status=nvidiaHost->CommunityNeuralStatus();
+    }
+#endif
     view.nativeWidth = view.nvidiaHostActive && nvidiaHost->OutputWidth() > 0
                            ? static_cast<int>(nvidiaHost->OutputWidth())
                            : upscaler->mDisplaySizeX;
@@ -117,7 +126,13 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
         view.upscaleTitle = "CS upscaling";
         std::snprintf(view.upscaleDetail, sizeof(view.upscaleDetail), "%.0f%%", view.proxyScale * 100.0f);
     }
-    const auto neural = view.sourceDLSSGActive ? TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration() : TheosRenderPipeline::SourceDLSSG::NeuralOptions{};
+    auto neural = view.sourceDLSSGActive ? TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration() : TheosRenderPipeline::SourceDLSSG::NeuralOptions{};
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    if (communityNR) {
+        const auto& prefs=SourceFrameGeneration::GetSingleton()->settings.sourceDLSSG;
+        neural.enabled=prefs.neuralEnabled;neural.beforeUpscaling=prefs.neuralBeforeUpscaling;neural.passes=1;
+    }
+#endif
     view.neuralEnabled = neural.enabled;
     view.neuralBeforeUpscaling = neural.beforeUpscaling;
     if (!neural.enabled || view.sourceNeural.failed)
@@ -127,12 +142,12 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     else if (!view.sourceNeural.active)
     {
         std::snprintf(view.neuralDetail, sizeof(view.neuralDetail), "%s %s | waiting",
-                      neural.beforeUpscaling ? "Before" : "After", TheosRenderPipeline::CommunityShaders::Active() ? "CS" : "DLSS");
+                      neural.beforeUpscaling ? "Before" : "After", TheosRenderPipeline::CommunityShaders::Active() ? "CS" : view.fsrActive?"FSR":"DLSS");
     }
     else
     {
         std::snprintf(view.neuralDetail, sizeof(view.neuralDetail), "%s %s | %d %s",
-                      neural.beforeUpscaling ? "Before" : "After", TheosRenderPipeline::CommunityShaders::Active() ? "CS" : "DLSS", view.sourceNeural.effectivePasses,
+                      neural.beforeUpscaling ? "Before" : "After", TheosRenderPipeline::CommunityShaders::Active() ? "CS" : view.fsrActive?"FSR":"DLSS", view.sourceNeural.effectivePasses,
                       view.sourceNeural.effectivePasses == 1 ? "pass" : "passes");
     }
     if(view.fsrActive) {

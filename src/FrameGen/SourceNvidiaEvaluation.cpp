@@ -9,6 +9,7 @@
 #include "SourceGenerationPolicy.h"
 #include "PerformanceTuning.h"
 #include "NeuralCombatMode.h"
+#include "CommunityShaderIntegration.h"
 #include "WeatherAppearanceRuntime.h"
 
 struct NvidiaHost::SourceNvidiaEvaluationOperations
@@ -28,6 +29,14 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
     bool EvaluateNeuralBeforeDLSS(TheosRenderPipeline::SourceNvidiaFrameInputs& frame)
     {
 #if !defined(TRP_NO_NEURAL_RENDERING)
+        if (SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community) {
+            auto* ui=RE::UI::GetSingleton();
+            const bool world=ui && !ui->IsMenuOpen(RE::MainMenu::MENU_NAME) && !ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME) &&
+                !host.loadingScreenRoute_.Active(host.presentCount_);
+            return host.EvaluateCommunityNeuralBefore(frame.input,frame.depth,frame.motion,frame.renderWidth,frame.renderHeight,
+                upscaler.mRenderedFrameCount,frame.reset,TheosRenderPipeline::NeuralRendering::SourceWorldEligible(world,
+                    frame.uiColorAndAlpha && frame.hudLessColor,host.nativeUI_.Dedicated(),TheosRenderPipeline::CommunityShaders::Active()));
+        }
         auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
         auto& options = neuralOptions;
         sl::Constants preview{};

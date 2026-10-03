@@ -12,7 +12,7 @@ void Require(bool condition, const char* message)
         throw std::runtime_error(message);
 }
 
-void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents)
+void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents, bool community=false)
 {
     ImGui::NewFrame();
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Always);
@@ -29,7 +29,7 @@ void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents)
             ImGui::TextUnformatted("Image controls");
             ImGui::EndTabItem();
         }
-        if (TheosRenderPipeline::Overlay::BeginNeuralRenderingTab(selectNeural, fsr))
+        if (TheosRenderPipeline::Overlay::BeginNeuralRenderingTab(selectNeural, fsr, community))
         {
             ++neuralContents;
             // Represents the caller's settings layout. An unavailable tab must
@@ -52,10 +52,10 @@ void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents)
             "NR tab left unbalanced control stacks");
     ImGui::End();
     ImGui::Render();
-    Require(!fsr || neuralContents == 0, "FSR NR tab allowed unsupported layout/backend work");
+    Require(!fsr || community || neuralContents == 0, "FSR NR tab allowed unsupported layout/backend work");
 }
 
-void Exercise(bool fsr)
+void Exercise(bool fsr, bool community=false)
 {
     ImGui::CreateContext();
     auto& io = ImGui::GetIO();
@@ -67,9 +67,9 @@ void Exercise(bool fsr)
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     int neural = 0, image = 0;
     for (int i = 0; i < 120; ++i)
-        Frame(fsr, (i / 10) % 2 == 0, neural, image);
+        Frame(fsr, (i / 10) % 2 == 0, neural, image, community);
     Require(image > 0, "Image tab stopped working after NR selection");
-    Require(fsr ? neural == 0 : neural > 0, "NR availability routing changed");
+    Require(fsr && !community ? neural == 0 : neural > 0, "NR availability routing changed");
     ImGui::DestroyContext();
 }
 }
@@ -80,6 +80,7 @@ int main()
     {
         Exercise(true);
         Exercise(false);
+        Exercise(true,true);
         std::cout << "Repeated FSR NR selection, ImGui stack balance and supported NR routing passed\n";
         return 0;
     }

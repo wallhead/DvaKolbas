@@ -62,5 +62,16 @@ int main()
         config = {}; config.backend = BackendKind::Fsr; config.generationEnabled = false; config.generationBackend = backend;
         Require(!TheosRenderPipeline::ResolveBackend(config, true).valid, "FSR rejects other presenter owners");
     }
+    config={};config.backend=BackendKind::Fsr;config.generationBackend=2;config.neuralRendering=true;config.communityNeural=true;
+    Require(TheosRenderPipeline::ResolveBackend(config,true,true).valid,"community NR can precede FSR FG");
+    config.communityNeural=false;
+    Require(!TheosRenderPipeline::ResolveBackend(config,true,true).valid,"legacy FSR NR remains unavailable");
+    ini.SetBoolValue("SourceDLSSG","NeuralRenderingEnabled",true);
+    ini.SetBoolValue("NeuralRendering","CommunityRuntime",true);
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    Require(!validate(),"community FSR NR survives startup configuration validation");
+#else
+    Require(validate(),"NR-disabled builds reject saved FSR NR requests");
+#endif
     std::puts("PASS: backend selection and legacy configuration");
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "SourceDLSSGSettings.h"
 #include "RuntimePathSettings.h"
+#include "NeuralRendering/StartupSettings.h"
 #include <atomic>
 #include <dxgi.h>
 #include <string>
@@ -25,6 +26,7 @@ class SourceFrameGeneration
         int nativeUICompositionMode{}; // 0 = dedicated UI; 1 = HUD-less detection.
         std::string neuralRenderingRuntimePath;
         TheosRenderPipeline::RuntimePathSettings configuredRuntimePaths;
+        TheosRenderPipeline::NeuralRendering::StartupSettings neuralStartup,configuredNeuralStartup;
     };
     Settings settings;
 
@@ -33,6 +35,7 @@ class SourceFrameGeneration
     // this startup snapshot or rebuild the presentation host.
     template<class Ini> void LoadStartupPreferences(const Ini& ini)
     {
+        settings.neuralStartup = settings.configuredNeuralStartup = TheosRenderPipeline::NeuralRendering::LoadStartupSettings(ini);
         settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", true);
         settings.generationBackend = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
         RequestRuntimeInterpolation(settings.enabled);
@@ -47,6 +50,7 @@ class SourceFrameGeneration
     }
     void ResolveRuntimePaths(const std::filesystem::path& pluginDirectory)
     {
+        settings.neuralStartup = settings.configuredNeuralStartup.Resolve(pluginDirectory / "TheosRenderPipeline");
         const auto resolved = settings.configuredRuntimePaths.Resolve(pluginDirectory);
         settings.sourceDLSSGStreamlineDirectory = resolved.streamline;
         settings.neuralRenderingRuntimePath = resolved.neural;

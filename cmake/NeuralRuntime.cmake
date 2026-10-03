@@ -14,3 +14,20 @@ if(NOT TARGET TRPNeuralRuntime)
     target_include_directories(TRPNeuralRuntime PUBLIC "${trpNrRoot}/src")
     target_link_libraries(TRPNeuralRuntime PUBLIC d3d12 dxgi bcrypt)
 endif()
+
+# Shared native source stage is compiled once for the product and research probes.
+function(trp_nr_enable_source_stage ngxInclude)
+    get_target_property(nrStageAdded TRPNeuralRuntime TRP_NR_SOURCE_STAGE)
+    if(NOT nrStageAdded)
+        target_sources(TRPNeuralRuntime PRIVATE
+            "${trpNrRoot}/src/NeuralRendering/Stage.cpp"
+            "${trpNrRoot}/src/NeuralRendering/BeforeUpscale.cpp"
+            "${trpNrRoot}/src/NeuralRendering/PreparedBeforeUpscale.cpp"
+            "${trpNrRoot}/src/NeuralRendering/BeforeHost.cpp"
+            "${trpNrRoot}/src/Graphics/D3D11D3D12Interop.cpp"
+            "${trpNrRoot}/src/Upscaling/FSRColorConversion.cpp")
+        target_include_directories(TRPNeuralRuntime PRIVATE "${ngxInclude}")
+        target_link_libraries(TRPNeuralRuntime PUBLIC d3dcompiler d3d11)
+        set_target_properties(TRPNeuralRuntime PROPERTIES TRP_NR_SOURCE_STAGE TRUE)
+    endif()
+endfunction()

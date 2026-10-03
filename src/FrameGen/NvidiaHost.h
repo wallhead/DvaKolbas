@@ -6,6 +6,10 @@
 #include <wrl/client.h>
 
 #include "GameFacingTargets.h"
+#if !defined(TRP_NO_NEURAL_RENDERING)
+#include "NeuralRendering/BeforeHost.h"
+#include "NeuralRendering/SourcePolicy.h"
+#endif
 #include "CommunityShaderAdapter.h"
 #include "NativeUIAttachments.h"
 #include "NativeUIComposition.h"
@@ -129,10 +133,30 @@ class NvidiaHost
     std::uint32_t RuntimeMinWidthOrHeight() const { return runtimeMinWidthOrHeight_; }
     std::uint32_t RuntimeMaxGeneratedFrames() const { return runtimeMaxGeneratedFrames_; }
     const std::string& Status() const { return status_; }
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    bool CommunityNeuralAvailable() const {return communityNeural_ && communityNeural_->Available();}
+    bool CommunityNeuralTerminal() const {return communityNeural_ && communityNeural_->Terminal();}
+    bool CommunityNeuralActive() const {return communityNeural_ && communityNeural_->Active();}
+    uint64_t CommunityNeuralRecorded() const {return communityNeural_?communityNeural_->Recorded():0;}
+    const std::string& CommunityNeuralStatus() const {return communityLastStatus_;}
+#endif
+
 
   private:
     NvidiaHost() = default;
     struct LifecycleOperations;
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    void InspectCommunityNeural();
+    bool RetireCommunityNeural();
+    bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,UINT,UINT,uint64_t,bool&,bool);
+    std::unique_ptr<TheosRenderPipeline::NeuralRendering::BeforeHost> communityNeural_;
+    TheosRenderPipeline::NeuralRendering::SettingsSnapshot communitySnapshot_;
+    uint64_t communityEpoch_{1};
+    TheosRenderPipeline::NeuralRendering::SourceCameraHistory communityCameraHistory_;
+    bool communitySnapshotValid_{};
+    std::string communityLastStatus_;
+#endif
+
     void ResetSessionAfterRetirement();
 
     bool CreateGameFacingResources(IDXGISwapChain* a_swapChain);

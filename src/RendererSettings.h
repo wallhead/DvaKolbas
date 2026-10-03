@@ -3,6 +3,7 @@
 #include "TextureProviderBridge.h"
 #include "UpscaleType.h"
 #include "NeuralRenderingMode.h"
+#include "NeuralRendering/BeforeSettings.h"
 #include "FrameGen/SourceDLSSGSettings.h"
 #include "WeatherAppearance.h"
 #include "Upscaling/FSRSettings.h"
@@ -86,6 +87,7 @@ struct RendererSettingsCapabilities
     bool fsrBuilt{};
     bool fsrFgBuilt{};
     bool fsrFgPresenter{};
+    bool communityNeural{};
 };
 
 template<class Generation>
@@ -116,7 +118,7 @@ inline const char* NeuralSettingsUnavailable(int mode, RendererSettingsCapabilit
         return "NR runtime DLL not found. Install nvngx_dlssnr.dll at the configured path and restart Skyrim.";
     }
     if (!capabilities.neuralOperational) { return "NR is unavailable after a runtime failure; turn NR off or restart Skyrim."; }
-    if (!SupportsNeuralRenderingMode(mode, capabilities.externalWorld) ||
+    if (!SupportsNeuralRenderingMode(mode, capabilities.externalWorld, capabilities.communityNeural) ||
         (!capabilities.externalWorld && !capabilities.dedicatedUI)) {
         return "NR requires dedicated UI composition. Turn NR off to apply other changes, or set NativeUICompositionMode=0 in the INI and restart Skyrim.";
     }
@@ -148,7 +150,7 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
             if(draft.fsr.providerPolicy!=Upscaling::ProviderPolicy::Analytical)return "FSR frame generation requires the analytical provider.";
             if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "FSR frame generation requires TRP's dedicated native UI and source ownership.";
         } else return "FSR requires ordinary presentation (backend 0) or FSR frame generation (backend 2).";
-        if (draft.sourceDLSSG.neuralEnabled) return "Neural Rendering is unavailable with FSR.";
+        if (draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural) return "Neural Rendering is unavailable with FSR.";
         if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";
         if (draft.dynamicResolution) return "Dynamic resolution is unavailable with FSR.";
     } else if (draft.generationBackend!=1) return "DLSS/DLAA require the NVIDIA presentation backend; choose backend 1.";
@@ -162,6 +164,10 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
 #if !defined(TRP_NO_NEURAL_RENDERING)
     if (draft.sourceDLSSG.neuralEnabled)
     {
+        if (capabilities.communityNeural) {
+            if (capabilities.externalWorld || !draft.nativeUI) return "Community NR requires TRP world ownership and native UI.";
+            if (const auto error=NeuralRendering::NativeBeforeUnavailable(draft.sourceDLSSG)) return error;
+        }
         if (const auto error = NeuralSettingsUnavailable(draft.upscaleType, capabilities)) {
             // Preserve an unchanged startup request when saving unrelated edits.
             // Apply separately gates execution, so this cannot restart failed NR.

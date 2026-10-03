@@ -286,6 +286,9 @@ void OverlayUI::RefreshNeuralRuntimeAvailability()
 {
 #if !defined(TRP_NO_NEURAL_RENDERING)
     // Refresh on menu open/settings actions, not on every rendered frame.
+    if (SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community) {
+        nrRuntimePresent=NvidiaHost::GetSingleton()->CommunityNeuralAvailable();return;
+    }
     if(NvidiaHost::GetSingleton()->FsrActive()){nrRuntimePresent=false;return;}
     nrRuntimePresent = TheosRenderPipeline::SourceDLSSG::NeuralRuntimePresent(
         SourceFrameGeneration::GetSingleton()->settings.neuralRenderingRuntimePath);

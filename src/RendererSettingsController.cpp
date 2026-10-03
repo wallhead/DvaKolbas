@@ -54,7 +54,7 @@ RendererSettingsDraft RendererSettingsController::Capture([[maybe_unused]] bool 
     settingsDraft.appearance = Appearance::Runtime::Get().Configuration();
 #if !defined(TRP_NO_NEURAL_RENDERING)
     // A saved NR request must not strand unrelated settings behind disabled controls.
-    settingsDraft.sourceDLSSG.neuralEnabled &= nrRuntimePresent;
+    if (!frameGen_.settings.neuralStartup.community) settingsDraft.sourceDLSSG.neuralEnabled &= nrRuntimePresent;
 #endif
     settingsDraft.textureProviderConnected = readTextures && textures_.Read(settingsDraft.textureProviderSettings);
     return settingsDraft;
@@ -92,7 +92,11 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     const bool sourceUpscaler = host_.StartupConfigured();
     RendererSettingsCapabilities capabilities{sourceUpscaler, false, host_.DedicatedUITextureMode(), CommunityShaders::Active()};
 #if !defined(TRP_NO_NEURAL_RENDERING)
-    if (!host_.FsrActive()) {
+    if (frameGen_.settings.neuralStartup.community) {
+        capabilities.communityNeural=true;
+        capabilities.neuralRuntime=host_.CommunityNeuralAvailable();
+        capabilities.neuralOperational=!host_.CommunityNeuralTerminal();
+    } else if (!host_.FsrActive()) {
     capabilities.neuralRuntime =
         TheosRenderPipeline::SourceDLSSG::NeuralRuntimePresent(frameGen_.settings.neuralRenderingRuntimePath);
     capabilities.neuralOperational = SourceDLSSG::Backend::Get().Ready() && !SourceDLSSG::Backend::Get().NeuralState().failed;
@@ -151,7 +155,7 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
         // Enabled is kept for saving; the backend applies it at the next swapchain creation.
         source.ConfigureHDROutput(frameGen_.settings.sourceDLSSG.hdrOutput);
         TheosRenderPipeline::SourceDLSSG::NeuralOptions options;
-        options.enabled = frameGen_.settings.sourceDLSSG.neuralEnabled &&
+        options.enabled = !frameGen_.settings.neuralStartup.community && frameGen_.settings.sourceDLSSG.neuralEnabled &&
             NeuralSettingsUnavailable(upscaler_.mUpscaleType, capabilities) == nullptr;
         options.runtimePath = frameGen_.settings.neuralRenderingRuntimePath;
         options.tuning = frameGen_.settings.sourceDLSSG.neuralTuning;
@@ -214,11 +218,22 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
 
 RendererSettingsResult RendererSettingsController::SetNeuralRenderingEnabled(bool enabled)
 {
-    if (host_.FsrActive()) { return {"Neural Rendering is unavailable with FSR.", true}; }
 #if defined(TRP_NO_NEURAL_RENDERING)
     (void)enabled;
     return {"Neural Rendering is not included in this build.", true};
 #else
+    if (frameGen_.settings.neuralStartup.community) {
+        if (enabled) {
+            if (!host_.StartupConfigured() || !host_.CommunityNeuralAvailable() || host_.CommunityNeuralTerminal())
+                return {"Community NR is unavailable; check its status and restart after correcting the runtime.",true};
+            if (CommunityShaders::Active() || !host_.DedicatedUITextureMode() || !upscaler_.mNativeUI)
+                return {"Community NR requires TRP world ownership and native UI.",true};
+            if (const auto error=NeuralRendering::NativeBeforeUnavailable(frameGen_.settings.sourceDLSSG)) return {error,true};
+        }
+        frameGen_.settings.sourceDLSSG.neuralEnabled=enabled;
+        return {enabled?"NR requested for the next world frame.":"NR disabled.",false,true};
+    }
+    if (host_.FsrActive()) return {"Neural Rendering is unavailable with FSR.",true};
     std::string actionMessage;
     bool actionMessageIsError = false;
 
