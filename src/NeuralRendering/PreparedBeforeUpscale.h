@@ -10,7 +10,7 @@ public:
     PreparedBeforeUpscale();~PreparedBeforeUpscale();
     PreparedBeforeUpscale(const PreparedBeforeUpscale&)=delete;
     PreparedBeforeUpscale& operator=(const PreparedBeforeUpscale&)=delete;
-    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0);
+    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);
     Result<BeforeResult> Evaluate(const BeforeInput&,Upscaling::ColorEncoding,const SettingsSnapshot&);
     Result<void> Retire();
     StageDiagnostics Diagnostics()const;

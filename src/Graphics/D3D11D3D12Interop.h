@@ -22,6 +22,12 @@ namespace TheosRenderPipeline::Graphics
 		std::uint64_t nanoseconds{};
 		bool waited{};
 	};
+    // Optional observer only; ordinary FSR/NR-off targets need no NR library.
+    struct InteropPerformanceSink {
+        void* owner{};
+        void(*wait)(void*,bool,std::uint64_t){};
+        void(*flush)(void*){};
+    };
 
 	struct SharedTexture
 	{
@@ -86,6 +92,7 @@ namespace TheosRenderPipeline::Graphics
         ID3D11DeviceContext4* Context11() const { return context11_.Get(); }
 
 		void SetRetirementWaitPolicy(RetirementWaitPolicy a_policy) { waitPolicy_ = a_policy; }
+        void SetPerformanceSink(InteropPerformanceSink sink){performanceSink_=sink;}
 		// Returns and clears the most recent wait that outlasted one slice.
 		bool TakeExtendedWait(RetirementWaitDiagnostics& a_wait);
 		HRESULT Fault() const { return fault_; }
@@ -122,6 +129,7 @@ namespace TheosRenderPipeline::Graphics
 		Microsoft::WRL::ComPtr<IUnknown> fenceDeviceIdentity_;
 		std::array<WorkContext, static_cast<std::size_t>(InteropWork::Count)> work_;
 		RetirementWaitPolicy waitPolicy_;
+        InteropPerformanceSink performanceSink_;
 		RetirementWaitDiagnostics extendedWait_;
 		bool extendedWaitPending_{ false };
 		HRESULT fault_{ S_OK };

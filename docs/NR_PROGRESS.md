@@ -2,6 +2,8 @@
 
 **1 of 8 milestones complete:** Task 2, the standalone direct runtime catalog/owner and RTX 40 GPU qualification. Task order differs from completion count: Task 1 true post-FG feasibility remains open.
 
+Performance P0 now has optional bounded CPU/wait/Flush/descriptor observations and real retired D3D11/D3D12 timestamps for the seven prepared Before NR phases. The isolated executable admits the exact AIO19 model through a research-only generated catalog; production runtime pins are unchanged. Initial matched synthetic 2560×1440 runs show approximately 6.8 ms vendor GPU time for both models and 10 ms for the current synchronous transaction. This is evidence to continue the queue/retained-slot plan, not confirmation of a Skyrim FPS gain. FSR stage timings, matched gameplay, the camera-motion tone root cause and true After remain open. Normal game telemetry and installed settings are unchanged. The completion count stays **1 of 8**.
+
 | Task | Status | Evidence or next requirement |
 | --- | --- | --- |
 | 1. Post-FG output and matching generated guides | In progress | Independent reference renderer/schema tests; FSR color/UI/retirement baseline passes. NVIDIA static output candidates identified; generated guides remain unqualified. |

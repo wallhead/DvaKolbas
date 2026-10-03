@@ -4,6 +4,7 @@
 #include "TicketOwnership.h"
 #include <memory>
 namespace TheosRenderPipeline::NeuralRendering {
+class PerformanceMetrics;
 class EvaluationTicket {
 public:
     ID3D12Resource* Output()const noexcept{return output_.Get();}
@@ -18,6 +19,8 @@ struct StageDiagnostics {
     uint32_t create{},evaluate{},release{},destroyParameters{},allocations{},releases{};
     uint64_t recorded{};
     bool terminal{};
+    bool gpuTiming11Available{},gpuTiming12Available{};
+    uint64_t gpuTimingDropped{};
 };
 class Stage {
 public:
@@ -25,7 +28,7 @@ public:
     // Current qualification is one real-image history and one pending ticket.
     Stage();~Stage();
     Stage(const Stage&)=delete;Stage& operator=(const Stage&)=delete;
-    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,const StageContract&,unsigned preset=0);
+    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);
     Result<EvaluationTicket> Record(ID3D12GraphicsCommandList*,const ImagePacket&,const SettingsSnapshot&);
     // Caller has executed its closed list on the retained contract queue.
     // This enqueues our completion signal AFTER that work; it is not a wait.

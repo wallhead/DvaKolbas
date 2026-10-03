@@ -3,6 +3,7 @@
 get_filename_component(trpNrRoot "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 if(NOT TARGET TRPNeuralRuntime)
     add_library(TRPNeuralRuntime STATIC
+        "${trpNrRoot}/src/NeuralRendering/PerformanceMetrics.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeCatalog.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeFileLease.cpp"
         "${trpNrRoot}/src/NeuralRendering/CallerIdentityShim.cpp"
@@ -21,6 +22,7 @@ function(trp_nr_enable_source_stage ngxInclude)
     if(NOT nrStageAdded)
         target_sources(TRPNeuralRuntime PRIVATE
             "${trpNrRoot}/src/NeuralRendering/Stage.cpp"
+            "${trpNrRoot}/src/NeuralRendering/PerformanceQueries.cpp"
             "${trpNrRoot}/src/NeuralRendering/BeforeUpscale.cpp"
             "${trpNrRoot}/src/NeuralRendering/PreparedBeforeUpscale.cpp"
             "${trpNrRoot}/src/NeuralRendering/BeforeHost.cpp"

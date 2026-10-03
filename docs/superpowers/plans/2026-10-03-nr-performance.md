@@ -29,19 +29,21 @@
 4. A vendor feature retains parameters or cannot record consecutive pending evaluations: qualify with real output readbacks before enabling multiple tickets; retain serial mode on unsupported semantics (P2).
 5. AIO's live model extent, pass chain or placement differs from Dva: mark the run unmatched, never rank host efficiency from it (P0/P5).
 
-## P0: Timings, matched baseline and research runtime A/B
+## Task 1: P0 — Timings, matched baseline and research runtime A/B
 
 **Files:** create `src/NeuralRendering/PerformanceMetrics.{h,cpp}`, `tests/NrPerformanceMetricsTests.cpp`, `tests/nr-runtime/PerformanceProbe.cpp`, `tools/nr/Run-PerformanceProbe.ps1`, `tools/nr/Compare-Performance.py`; modify `BeforeUpscale.cpp`, `PreparedBeforeUpscale.cpp`, `Stage.cpp`, `src/Graphics/D3D11D3D12Interop.{h,cpp}`, `src/Upscaling/FSRFrameAdapter.cpp` and `tests/nr-runtime/CMakeLists.txt`. Create bounded receipts under `research/nr/performance/`. Keep ordinary per-frame logging off.
 
 **Interfaces:** `PerformanceMetrics::Snapshot() const -> PerformanceSnapshot` contains source sample count, NR enabled/placement/profile/hash/extents, CPU phase nanoseconds, wait calls/block nanoseconds, Flushes, submitted/completed ticket IDs, slot pressure, descriptor/resource creation counts, and GPU timestamp phase records keyed by queue frequency/source ID. `Run-PerformanceProbe.ps1 -RuntimeProfile <id> -Frames 300 -Warmup 120 -Output <path>` runs only its guarded standalone process. `Compare-Performance.py <receipts...>` reports median/p95/p99 milliseconds, sample/match validity and differences; it never derives displayed FG cadence from NR counters.
 
-- [ ] Add `NrPerformanceMetrics`: a completed fence records a wait check but zero blocking; overlapping CPU phase intervals are not summed twice; missing/disjoint/unretired GPU timestamps are unavailable; mismatched extent/placement/pass/tone/runtime invalidates a matched-host comparison. Run `ctest --test-dir out/build/nr-runtime -C Release -R NrPerformanceMetrics --output-on-failure`; demonstrate semantic failures before implementing aggregation.
+- [x] Add `NrPerformanceMetrics`: a completed fence records a wait check but zero blocking; overlapping CPU phase intervals are not summed twice; missing/disjoint/unretired GPU timestamps are unavailable; mismatched extent/placement/pass/tone/runtime invalidates a matched-host comparison. Run `ctest --test-dir out/build/nr-runtime -C Release -R NrPerformanceMetrics --output-on-failure`; demonstrate semantic failures before implementing aggregation.
 - [ ] Add opt-in D3D11 disjoint/timestamp and D3D12 timestamp/frequency queries for preparation, input copies, vendor NR, alpha, result delivery and FSR stages. Read results from retired slots later; no new same-frame `GetData` loop or timing-induced Flush. CPU probes measure actual blocking around existing waits. Emit a bounded summary outside the hot path, and record whether the debug layer/readbacks were enabled.
 - [ ] Measure the unchanged host with current `e67dee20…` model, NR off/on, 120 warmup plus 300 measured frames, three repeats. Use the identical synthetic scene, native extent, tone 0, one pass and reset schedule; output correctness readbacks are a separate run so they do not serialize timing. Report query availability and overhead of instrumentation on/off.
 - [ ] Add only a research-specific exact profile for AIO model `8270b350…` (165840496 bytes), with its own documented parameter/compatibility policy in `PerformanceProbe.cpp`; keep `RuntimeCatalog.cpp` and shipping pins untouched. Test hash mismatch rejection, initialization/output/alpha/live-off-on/retirement first at small extent. If qualified on RTX4080 SUPER, repeat the same-host timing matrix at the same full extent/settings. If it cannot qualify, record raw errors and model contribution as unknown rather than substituting DLLs in Skyrim.
 - [ ] Record baseline and commit metrics/probe/receipts. GPU execution alone is not an AIO-host benchmark; user-reported 15 FPS and historical unverified smoke numbers are not the baseline. Quantify the measured share before prioritizing optional GPU-pass changes.
 
-## P1: Queue-proven pending producer admission
+**P0 checkpoint scope:** the optional metrics, real D3D11/D3D12 queries, unchanged prepared Before transaction, isolated exact AIO19 catalog and comparison validity checks are implemented. The game does not enable telemetry. Semantic RED→GREEN covered aggregation, gated query collection, prepared-path observations and comparison admission. AIO19 direct Init rejected with `0xBAD00002`; the exact model passed with the existing owned caller shim, including alpha/off-on/retirement. Shipping pins are unchanged. Full FSR stage instrumentation and a matched NR→SR/FG source-frame baseline remain open, so this checkpoint does not complete P0 or main Task 3. The bounded measurement receipt belongs in `research/nr/performance/baseline.json`; raw captures and executables stay under ignored `out/`.
+
+## Task 2: P1 — Queue-proven pending producer admission
 
 **Files:** modify `src/NeuralRendering/Stage.{h,cpp}`, `ImagePacket.cpp`, `BeforeUpscale.cpp`; extend `tests/NrImagePacketTests.cpp`, `tests/NrStageTests.cpp` and real-runtime probe modes.
 
@@ -52,7 +54,7 @@
 - [ ] In a guarded GPU fixture, leave input production behind a real queue gate; RecordQueued must return before the gate opens, NR output must retire only after it opens, and reference output/alpha must match after completion. Signal the gate externally only after the early-return assertion; never fake the work's completion fence. Verify reset/off-on and ReShade native/proxy anchors.
 - [ ] Compare P0 metrics with the unchanged model; commit source and clean receipt. A lower producer stall is not proof that total frame throughput improved.
 
-## P2: Persistent retained slots and multiple Stage tickets
+## Task 3: P2 — Persistent retained slots and multiple Stage tickets
 
 **Files:** modify `Stage.{h,cpp}`, `BeforeUpscale.{h,cpp}`, `PreparedBeforeUpscale.{h,cpp}`; extend `tests/NrStageTests.cpp`, `NrBeforeUpscaleTests.cpp`, `NrPreparedBeforeTests.cpp`, `NrTicketOwnershipTests.cpp` and probe modes. Add `tests/NrFrameSlotTests.cpp` with root/standalone CMake registration.
 
@@ -63,7 +65,7 @@
 - [ ] Delay distinct real readers; completed slots must become reusable individually, occupied slots must not alias color/depth/motion/output/parameters, and full capacity must produce device-checked backpressure with a 20-second terminal deadline (matching the current prepared reader limit). A timeout/device-loss retains owners and faults; do not copy AIO's infinite OS timeout. Three slots are the initial measurement choice, not a promised latency/performance optimum.
 - [ ] Compare pressure, memory and p95 latency with P0/P1. If the vendor semantics do not qualify, preserve serial Stage and record the exact blocker; do not invent independent feature histories to pass. Commit the qualified subset and receipt.
 
-## P3: Deferred consumer retirement in the full prepared path
+## Task 4: P3 — Deferred consumer retirement in the full prepared path
 
 **Files:** modify `BeforeUpscale.cpp`, `PreparedBeforeUpscale.cpp`, `src/Graphics/D3D11D3D12Interop.{h,cpp}`, `BeforeHost.cpp`; extend `NrBeforeUpscaleTests.cpp`, `NrPreparedBeforeTests.cpp`, `NrBeforeHostTests.cpp`, `NrBeforeHostFramesTests.cpp` and interop tests.
 
@@ -74,7 +76,7 @@
 - [ ] Run delayed-reader fixtures with actual ReShade, source off/on, resize, minimize/reentry, failure before/after submission and terminal retirement. Reuse must wait for the final encoder reader, not only vendor completion. Keep exactly one NR evaluation before selected SR work.
 - [ ] Rerun matched P0 timing and source correctness at this checkpoint; record residual wait events and legitimate pressure/lifecycle waits. Commit qualified deferred path and receipts.
 
-## P4: Direct prepared FSR handoff and measured residual work
+## Task 5: P4 — Direct prepared FSR handoff and measured residual work
 
 **Files:** modify `PreparedBeforeUpscale.{h,cpp}`, `BeforeHost.{h,cpp}`, `src/FrameGen/SourceFsrEvaluation.cpp`, `src/Upscaling/FSRFrameAdapter.{h,cpp}`; extend `tests/NrPreparedBeforeTests.cpp` and FSR color/frame GPU fixtures. Keep DLSS/game-format delivery through the P3 path.
 
@@ -85,7 +87,7 @@
 - [ ] Measure residual alpha dispatch, copies and descriptors. Reuse the already retained descriptors; consider fusing alpha preservation into an unavoidable output operation only if its measured cost warrants it and full alpha/HUD tests pass. Do not assume vendor alpha preservation or change the model's color domain to mimic an unobserved AIO input.
 - [ ] Compare timing/correctness for FSR NativeAA/Quality, FG off/on, and regress the DLSS path and source-off baseline. Commit the qualified handoff and bounded receipts.
 
-## P5: Clean review and matched Skyrim acceptance
+## Task 6: P5 — Clean review and matched Skyrim acceptance
 
 **Files:** create `docs/NR_PERFORMANCE_ACCEPTANCE.md`, `docs/NR_PERFORMANCE_ACCEPTANCE.json`; update main plan Task 3/Task 8, bounded receipts and package manifest through existing tooling. Original rollback and game settings remain protected.
 

@@ -1,4 +1,5 @@
 #include "Stage.h"
+#include "PerformanceQueries.h"
 #include "History.h"
 #include "RuntimeParameters.h"
 #include "FrameGen/NeuralRenderingRuntimeContract.h"
@@ -44,6 +45,7 @@ void UavBarrier(ID3D12GraphicsCommandList* list,ID3D12Resource* resource){
 }
 }
 struct Stage::State {
+    PerformanceMetrics* metrics{};std::unique_ptr<PerformanceQueries> timing;
     Detail::TicketOwnership ticketOwner;
     std::shared_ptr<RuntimeOwner> owner;
     StageContract contract;
@@ -90,7 +92,7 @@ Stage::~Stage(){
     // Never call vendor cleanup, wait queues or release uncertain recordings.
     if(state_->client || state_->feature || state_->parameters || state_->pending)state_.release();
 }
-Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageContract& c,unsigned preset){
+Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageContract& c,unsigned preset,PerformanceMetrics* metrics){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR stage initialization already attempted");s.attempted=true;
     if(!owner||!owner->Ready()||!c.device||!c.queue||!c.adapterLuid.Valid()||preset>1||
         c.colorExtent!=c.guideExtent||!c.colorExtent.width||!c.colorExtent.height||c.colorExtent.width>16384||c.colorExtent.height>16384)
@@ -99,6 +101,8 @@ Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageCo
     if(luid.LowPart!=c.adapterLuid.low||luid.HighPart!=c.adapterLuid.high||!OnDevice(c.queue.Get(),c.device.Get())||c.queue->GetDesc().Type!=D3D12_COMMAND_LIST_TYPE_DIRECT)
         return Fail(ErrorKind::IdentityMismatch,"NR stage queue/device identity invalid");
     r=s.fences.Initialize(c.device.Get());if(!r)return r;
+    s.metrics=metrics;
+    if(metrics&&metrics->Enabled()){s.timing=std::make_unique<PerformanceQueries>(metrics);s.timing->Initialize12(c.device.Get(),c.queue.Get());}
     r=owner->AcquireClient();if(!r)return r;s.client=true;s.owner=std::move(owner);s.contract=c;s.preset=preset;s.allocation.device=c.device;
     {std::scoped_lock lock(allocationMutex);if(activeAllocation){r=s.owner->ReleaseClientAfterRetirement();if(!r){s.terminal=true;return r;}s.client=false;return Fail(ErrorKind::Conflict,"Another NR shared stage owns allocator callbacks");}activeAllocation=&s.allocation;}
     r=s.BuildAlpha();if(!r)return r;const auto& e=s.owner->Exports();r=s.Native(e.allocate(&s.parameters),"NR shared parameters allocation failed");if(!r)return r;
@@ -121,6 +125,7 @@ Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageCo
     r=s.Gpu(c.device->GetDeviceRemovedReason(),"NR device removed during creation");if(!r)return r;s.ready=true;return {};
 }
 Result<EvaluationTicket> Stage::Record(ID3D12GraphicsCommandList* list,const ImagePacket& packet,const SettingsSnapshot& settings){
+    PerformanceScope performance(state_->metrics,CpuPhase::Record);
     auto& s=*state_;if(!s.ready||s.terminal)return Fail(ErrorKind::Runtime,"NR stage unavailable/terminal");if(s.pending)return Fail(ErrorKind::Retirement,"NR prior recording/readers have not retired");
     if(settings.reconstruction.preset!=s.preset || settings.reconstruction.inputScale!=1 || settings.reconstruction.peripheralCompression || settings.reconstruction.fusedPreparation || settings.reconstruction.producerColor || settings.reconstruction.colorIsHDR ||
         settings.reconstruction.method>ResolveMethod::Ratio || EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
@@ -128,8 +133,10 @@ Result<EvaluationTicket> Stage::Record(ID3D12GraphicsCommandList* list,const Ima
     auto validated=ValidateImagePacket(list,packet,s.contract,&s.fences);if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
     if(s.serial==UINT64_MAX)return Fail(ErrorKind::Runtime,"NR ticket sequence exhausted");
     auto pending=std::make_unique<State::Pending>();pending->packet=packet;pending->id=++s.serial;
+    if(s.timing)s.timing->Begin12(list,packet.sourceId);
     D3D12_DESCRIPTOR_HEAP_DESC heap{};heap.Type=D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;heap.NumDescriptors=2;heap.Flags=D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     auto r=s.Gpu(s.contract.device->CreateDescriptorHeap(&heap,IID_PPV_ARGS(&pending->views)),"NR per-record descriptor owner creation failed");if(!r)return std::unexpected(r.error());
+    if(s.metrics)s.metrics->RecordDescriptorCreation();
     auto cpu=pending->views->GetCPUDescriptorHandleForHeapStart();D3D12_SHADER_RESOURCE_VIEW_DESC srv{};srv.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;srv.ViewDimension=D3D12_SRV_DIMENSION_TEXTURE2D;srv.Shader4ComponentMapping=D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;srv.Texture2D.MipLevels=1;
     s.contract.device->CreateShaderResourceView(packet.color.Get(),&srv,cpu);cpu.ptr+=s.contract.device->GetDescriptorHandleIncrementSize(heap.Type);
     D3D12_UNORDERED_ACCESS_VIEW_DESC uav{};uav.Format=srv.Format;uav.ViewDimension=D3D12_UAV_DIMENSION_TEXTURE2D;s.contract.device->CreateUnorderedAccessView(packet.output.Get(),nullptr,&uav,cpu);
@@ -137,9 +144,12 @@ Result<EvaluationTicket> Stage::Record(ID3D12GraphicsCommandList* list,const Ima
     p.Set("DLSSNR.UI",static_cast<ID3D12Resource*>(nullptr));p.Set("DLSSNR.UIAlpha",static_cast<ID3D12Resource*>(nullptr));
     for(const char* plane:{"Color","MVec","Depth","Output"}){const auto prefix=std::string("DLSSNR.")+plane+"Subrect";p.Set((prefix+"BaseX").c_str(),0u);p.Set((prefix+"BaseY").c_str(),0u);p.Set((prefix+"Width").c_str(),packet.colorExtent.width);p.Set((prefix+"Height").c_str(),packet.colorExtent.height);}
     p.Set("DLSSNR.MVecScaleX",packet.motionScaleX);p.Set("DLSSNR.MVecScaleY",packet.motionScaleY);auto tuning=settings.tuning;tuning.uiCorrection=false;WriteTuningParameters(p,tuning,history->Reset(),packet.depthInverted,RuntimeBuild::Build14);
+    if(s.timing)s.timing->Stamp12(list,GpuPhase::Vendor,true);
     s.evaluate=s.owner->Exports().evaluate(list,s.feature,s.parameters,nullptr);r=s.Native(s.evaluate,"NR shared evaluation failed; recording ownership retained");if(!r)return std::unexpected(r.error());
+    if(s.timing){s.timing->Stamp12(list,GpuPhase::Vendor,false);s.timing->Stamp12(list,GpuPhase::Alpha,true);}
     UavBarrier(list,packet.output.Get());ID3D12DescriptorHeap* heaps[]={s.pending->views.Get()};list->SetDescriptorHeaps(1,heaps);list->SetComputeRootSignature(s.alphaRoot.Get());list->SetPipelineState(s.alphaPipeline.Get());
     list->SetComputeRootDescriptorTable(0,s.pending->views->GetGPUDescriptorHandleForHeapStart());list->Dispatch((packet.colorExtent.width+7)/8,(packet.colorExtent.height+7)/8,1);UavBarrier(list,packet.output.Get());
+    if(s.timing){s.timing->Stamp12(list,GpuPhase::Alpha,false);s.timing->Resolve12(list);}
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}++s.recorded;EvaluationTicket ticket;ticket.owner_=s.ticketOwner.Seal();ticket.id_=s.pending->id;ticket.image_=packet.imageId;ticket.output_=packet.output;return ticket;
 }
 Result<void> Stage::MarkSubmitted(const EvaluationTicket& ticket,ID3D12Fence* fence,uint64_t value){
@@ -151,7 +161,8 @@ Result<void> Stage::MarkSubmitted(const EvaluationTicket& ticket,ID3D12Fence* fe
     // always also covers this stage's actual queue order and is never exported.
     s.pending->readers.push_back({s.creationFence,++s.submissionValue});s.pending->readers.push_back({fence,value});
     auto r=s.Gpu(s.contract.queue->Signal(s.creationFence.Get(),s.submissionValue),"NR private completion signal failed; ownership retained");if(!r)return r;
-    r=s.Gpu(s.contract.queue->Signal(fence,value),"NR recording completion signal failed; ownership retained");if(!r)return r;s.pending->submitted=true;return {};
+    r=s.Gpu(s.contract.queue->Signal(fence,value),"NR recording completion signal failed; ownership retained");if(!r)return r;s.pending->submitted=true;
+    if(s.timing)s.timing->Submitted12(s.creationFence.Get(),s.submissionValue);if(s.metrics)s.metrics->RecordSubmitted();return {};
 }
 Result<void> Stage::TrackReader(const EvaluationTicket& ticket,ID3D12Fence* fence,uint64_t value){
     auto& s=*state_;if(s.terminal||!s.Owns(ticket)||!s.pending->submitted||!value)return Fail(ErrorKind::InvalidInput,"NR output reader ticket/fence invalid");
@@ -159,14 +170,16 @@ Result<void> Stage::TrackReader(const EvaluationTicket& ticket,ID3D12Fence* fenc
 }
 Result<void> Stage::RetireTicket(const EvaluationTicket& ticket){
     auto& s=*state_;if(s.terminal||!s.Owns(ticket)||!s.pending->submitted)return Fail(ErrorKind::Retirement,"NR ticket unsubmitted/foreign/terminal");auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during ticket retirement");if(!r)return r;
-    for(const auto& reader:s.pending->readers){const auto completed=reader.fence->GetCompletedValue();if(completed==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Retirement,"NR reader fence reports device removal");}if(completed<reader.value)return Fail(ErrorKind::Retirement,"NR output readers remain pending");}s.pending.reset();return {};
+    for(const auto& reader:s.pending->readers){const auto completed=reader.fence->GetCompletedValue();if(completed==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Retirement,"NR reader fence reports device removal");}if(completed<reader.value)return Fail(ErrorKind::Retirement,"NR output readers remain pending");}s.pending.reset();if(s.metrics)s.metrics->RecordCompleted();return {};
 }
 Result<void> Stage::Retire(){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; no teardown retry");if(s.pending)return Fail(ErrorKind::Retirement,"NR recorded output/reader owners remain pending");if(!s.client)return {};
+    if(s.timing)s.timing->Collect12();
     s.release=s.owner->Exports().release(s.feature);auto r=s.Native(s.release,"NR feature release failed; ownership retained");if(!r)return r;s.feature=nullptr;
     s.destroy=s.owner->Exports().destroy(s.parameters);r=s.Native(s.destroy,"NR parameter destruction failed; ownership retained");if(!r)return r;s.parameters=nullptr;
     {std::scoped_lock lock(allocationMutex);if(activeAllocation!=&s.allocation || !s.allocation.resources.empty() || s.allocation.failed){s.terminal=true;return Fail(ErrorKind::Retirement,"NR callback allocation ownership unbalanced");}activeAllocation=nullptr;}
     r=s.owner->ReleaseClientAfterRetirement();if(!r){s.terminal=true;return r;}s.client=false;s.ready=false;return {};
 }
-StageDiagnostics Stage::Diagnostics()const{const auto& s=*state_;return {s.create,s.evaluate,s.release,s.destroy,s.allocation.allocations,s.allocation.releases,s.recorded,s.terminal};}
+StageDiagnostics Stage::Diagnostics()const{const auto& s=*state_;StageDiagnostics d{s.create,s.evaluate,s.release,s.destroy,s.allocation.allocations,s.allocation.releases,s.recorded,s.terminal};
+    if(s.timing){d.gpuTiming12Available=s.timing->Available12();d.gpuTimingDropped=s.timing->Dropped();}return d;}
 }

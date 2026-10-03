@@ -168,7 +168,7 @@ namespace TheosRenderPipeline::Graphics
 			if (FAILED(wait)) { return Check(wait); }
 		}
 		const auto hr = context11_->Signal(work->fence11.Get(), ++work->value);
-		context11_->Flush();
+		context11_->Flush(); if(performanceSink_.flush)performanceSink_.flush(performanceSink_.owner);
 		return Check(hr);
 	}
 
@@ -189,12 +189,12 @@ namespace TheosRenderPipeline::Graphics
 	HRESULT D3D11D3D12Interop::WaitCPU(WorkContext& a_work, std::uint64_t a_value, AllocatorWaitTiming* a_timing)
 	{
 		constexpr auto removed = (std::numeric_limits<std::uint64_t>::max)();
-		if (!a_value) { return S_OK; }
+		if (!a_value) { if(performanceSink_.wait)performanceSink_.wait(performanceSink_.owner,false,0);return S_OK; }
 		const auto completed = a_work.fence12->GetCompletedValue();
 		if (completed == removed) {
 			return Check(DXGI_ERROR_DEVICE_REMOVED);
 		}
-		if (completed >= a_value) { return S_OK; }
+		if (completed >= a_value) { if(performanceSink_.wait)performanceSink_.wait(performanceSink_.owner,false,0);return S_OK; }
 		const auto begin = std::chrono::steady_clock::now();
 		auto hr = a_work.fence12->SetEventOnCompletion(a_value, a_work.event);
 		if (FAILED(hr)) { return Check(hr); }
@@ -204,8 +204,11 @@ namespace TheosRenderPipeline::Graphics
 		RetirementWaitDiagnostics wait{ static_cast<InteropWork>(&a_work - work_.data()), a_value, completed, completed };
 		auto progress = completed;
 		DWORD stalledMs = 0;
+        std::uint64_t blockedNanoseconds{};
 		for (;;) {
+            const auto blockBegin=performanceSink_.wait?std::chrono::steady_clock::now():std::chrono::steady_clock::time_point{};
 			const auto result = ::WaitForSingleObject(a_work.event, waitPolicy_.sliceMs);
+            if(performanceSink_.wait)blockedNanoseconds+=static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-blockBegin).count());
 			wait.completedAtEnd = a_work.fence12->GetCompletedValue();
 			if (result == WAIT_OBJECT_0) {
 				if (wait.completedAtEnd >= a_value) { break; }
@@ -227,6 +230,7 @@ namespace TheosRenderPipeline::Graphics
 			}
 		}
 		const auto elapsed = std::chrono::steady_clock::now() - begin;
+        if(performanceSink_.wait)performanceSink_.wait(performanceSink_.owner,true,blockedNanoseconds);
 		if (a_timing) {
 			a_timing->waited = true;
 			a_timing->nanoseconds = static_cast<std::uint64_t>(
@@ -298,11 +302,11 @@ namespace TheosRenderPipeline::Graphics
         if (srActive_ && srConsumerQueued_) {
             auto* work = Get(InteropWork::Upscaling);
             const auto hr = context11_->Signal(work->fence11.Get(), ++work->value);
-            context11_->Flush();
+            context11_->Flush(); if(performanceSink_.flush)performanceSink_.flush(performanceSink_.owner);
             if (FAILED(hr)) { return Check(hr); }
             srConsumerQueued_ = false;
         }
-		if (context11_) { context11_->Flush(); }
+		if (context11_) { context11_->Flush(); if(performanceSink_.flush)performanceSink_.flush(performanceSink_.owner); }
 		for (auto& work : work_) {
 			if (work.fence12 && work.value) {
 				const auto hr = WaitCPU(work, work.value);
