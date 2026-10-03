@@ -50,3 +50,7 @@ Relevant source: [interop](../../../src/Graphics/D3D11D3D12Interop.cpp), [Before
 The report's 1 ms / 1–3 ms / greater-than-3 ms decision bands are useful proposed heuristics, not measured thresholds or automatic acceptance criteria. Its concluding order puts large topology changes before gameplay measurement; the safer order above keeps the baseline and route qualification first, particularly now that the user reports good performance.
 
 No new implementation milestone is completed by this review. P5 matched performance/visual/lifecycle acceptance remains open; original NR progress remains **1 of 8**. No new implementation, installation or game launch was performed.
+
+## Subsequent authorized fix pass
+
+After the user requested fixes, the duplicate producer wait, actual NR-to-FSR route diagnostics and consumed-lease access were addressed. [Post-P4 qualification](POST_P4_FIXES.md) records 717 fresh passing checks, source `bc2ef9d`, clean synthetic captures and a separately staged package. The installed working candidate and user settings remain unchanged. This later implementation does not complete the matched gameplay gate or the original remaining NR milestones.
