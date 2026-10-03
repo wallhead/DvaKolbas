@@ -29,10 +29,12 @@ template<class Adapter>void Exercise(ID3D11Device* device,ID3D11DeviceContext* c
     // Complete the real NR/copy/encode work; only the three independent readers remain.
     ComPtr<ID3D11Device5> d5;ComPtr<ID3D11DeviceContext4> c4;ComPtr<ID3D11Fence> done11;Gpu(device->QueryInterface(IID_PPV_ARGS(&d5)));Gpu(context->QueryInterface(IID_PPV_ARGS(&c4)));Gpu(d5->CreateFence(0,D3D11_FENCE_FLAG_NONE,IID_PPV_ARGS(&done11)));Gpu(c4->Signal(done11.Get(),1));context->Flush();HANDLE event=CreateEventW(nullptr,FALSE,FALSE,nullptr);Need(event!=nullptr,"event");Gpu(done11->SetEventOnCompletion(1,event));Need(WaitForSingleObject(event,5000)==WAIT_OBJECT_0,"actual NR delivery complete");CloseHandle(event);
     Need(Take(a.CollectCompleted())==0&&a.Diagnostics().pendingTickets==3,"independent readers retain three slots");
-    auto release=std::thread([gates]{std::this_thread::sleep_for(std::chrono::milliseconds(250));Gpu(gates[1]->Signal(1));std::this_thread::sleep_for(std::chrono::milliseconds(1350));Gpu(gates[0]->Signal(1));Gpu(gates[2]->Signal(1));});
+    HANDLE acquired=CreateEventW(nullptr,TRUE,FALSE,nullptr);Need(acquired!=nullptr,"acquisition event");
+    auto release=std::thread([gates,acquired]{std::this_thread::sleep_for(std::chrono::milliseconds(250));Gpu(gates[1]->Signal(1));WaitForSingleObject(acquired,10000);Gpu(gates[0]->Signal(1));Gpu(gates[2]->Signal(1));});
     auto start=std::chrono::steady_clock::now();auto fourth=evaluate(3);double elapsed=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
-    std::printf("CAPACITY %s elapsedMs=%.3f oldestCompleted=%llu\n",prepared?"prepared":"before",elapsed,gates[0]->GetCompletedValue());Need(bool(fourth)&&elapsed>=100&&elapsed<900&&gates[0]->GetCompletedValue()==0,"LaterReaderCompletionWakesCapacityBeforeOldest");
-    release.join();Done(a.Retire());Done(owner->Retire());
+    const bool oldestPending=gates[0]->GetCompletedValue()==0;Gpu(SetEvent(acquired)?S_OK:HRESULT_FROM_WIN32(GetLastError()));release.join();CloseHandle(acquired);
+    std::printf("CAPACITY %s elapsedMs=%.3f oldestPendingAtReturn=%u\n",prepared?"prepared":"before",elapsed,unsigned(oldestPending));Need(bool(fourth)&&oldestPending,"LaterReaderCompletionWakesCapacityBeforeOldest");
+    Done(a.Retire());Done(owner->Retire());
 }
 }
 int wmain(int argc,wchar_t** argv){if(argc!=4)return 77;if(NrRuntimeResearch::GameRunningOrUnknown())return 1;setvbuf(stdout,nullptr,_IONBF,0);
