@@ -120,7 +120,8 @@ Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageCo
 }
 Result<EvaluationTicket> Stage::Record(ID3D12GraphicsCommandList* list,const ImagePacket& packet,const SettingsSnapshot& settings){
     auto& s=*state_;if(!s.ready||s.terminal)return Fail(ErrorKind::Runtime,"NR stage unavailable/terminal");if(s.pending)return Fail(ErrorKind::Retirement,"NR prior recording/readers have not retired");
-    if(settings.reconstruction.preset!=s.preset || settings.reconstruction.inputScale!=1 || settings.reconstruction.peripheralCompression || settings.reconstruction.fusedPreparation || settings.reconstruction.producerColor || settings.reconstruction.colorIsHDR)
+    if(settings.reconstruction.preset!=s.preset || settings.reconstruction.inputScale!=1 || settings.reconstruction.peripheralCompression || settings.reconstruction.fusedPreparation || settings.reconstruction.producerColor || settings.reconstruction.colorIsHDR ||
+        settings.reconstruction.method>ResolveMethod::Ratio || EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR shared native stage requires adapter-owned reconstruction before/after it");
     auto validated=ValidateImagePacket(list,packet,s.contract);if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
     if(s.serial==UINT64_MAX)return Fail(ErrorKind::Runtime,"NR ticket sequence exhausted");

@@ -41,6 +41,9 @@ int wmain(int argc,wchar_t** argv){try{
     SettingsSnapshot s;s.revision=1;s.enabled=true;auto disabled=s;disabled.enabled=false;
     Check(!stage->Record(list.Get(),p,disabled)&&stage->Diagnostics().evaluate==0,"DisabledNrRecordsNoVendorWork");
     auto bad=p;bad.guideSourceId=2;Check(!stage->Record(list.Get(),bad,s)&&stage->Diagnostics().evaluate==0,"InvalidPacketRejectedBeforeVendorWork");
+    auto ratio=s;ratio.reconstruction.method=ResolveMethod::Ratio;
+    Check(!stage->Record(list.Get(),p,ratio)&&stage->Diagnostics().evaluate==0,"CoreStageCannotSilentlyIgnoreRequestedRatioResolve");
+    if(failed)return 1;
     if(std::wstring_view(argv[3])==L"record-failure"){
         const_cast<RuntimeExports&>(owner->Exports()).evaluate=&FailEvaluate;
         Check(!stage->Record(list.Get(),p,s)&&stage->Diagnostics().terminal,"FailedVendorRecordingIsTerminal");

@@ -96,7 +96,8 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
         input.color.Get()==input.depth.Get()||input.color.Get()==input.motion.Get()||input.depth.Get()==input.motion.Get()||
         input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||!std::isfinite(input.motionScaleX)||!std::isfinite(input.motionScaleY)||!input.motionScaleX||!input.motionScaleY)
         return Fail(ErrorKind::InvalidInput,"NR Before input ownership/encoding/native guides invalid");
-    if(settings.reconstruction.preset!=s.preset||settings.reconstruction.inputScale!=1||settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation)
+    if(settings.reconstruction.preset!=s.preset||settings.reconstruction.inputScale!=1||settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation||
+        settings.reconstruction.method>ResolveMethod::Ratio||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR Before native bridge requires adapter-owned color/reconstruction preparation");
     ImagePacket p;p.epoch=input.epoch;p.guideEpoch=input.guideEpoch;p.sourceId=p.batchId=p.imageId=input.sourceId;
     p.guideSourceId=input.guideSourceId;p.previousSourceId=input.previousSourceId;p.presentationTime=input.presentationTime;

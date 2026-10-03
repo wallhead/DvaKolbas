@@ -74,6 +74,9 @@ int wmain(int argc,wchar_t** argv){try{
     Check(!bridge.Evaluate(stale,settings)&&bridge.Diagnostics().evaluate==0,"StaleGuidesRejectedBeforeVendorWork");
     auto late=settings;late.placement=Placement::After;
     Check(!bridge.Evaluate(input,late)&&bridge.Diagnostics().evaluate==0,"AfterCannotSilentlyRunBefore");
+    auto ratio=settings;ratio.reconstruction.method=ResolveMethod::Ratio;
+    Check(!bridge.Evaluate(input,ratio)&&bridge.Diagnostics().evaluate==0,"NativeBeforeRejectsUnpreparedRatioBeforeGpuWork");
+    if(failures)return 1;
     uint64_t alphaPixels{},finitePixels{},changedPixels{},bypassPreservedPixels{};uint32_t evaluated{},bypassed{},resumedReset{};
     std::vector<std::string> sourceHashes,outputHashes,rgbHashes;
     std::vector<uint16_t> pixels(width*height*4);
