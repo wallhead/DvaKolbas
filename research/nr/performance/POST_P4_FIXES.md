@@ -50,3 +50,5 @@ The unchanged three-slot bridge/Prepared texture payload estimate is 421.875 MiB
 The installed working candidate and MO2 settings were preserved. The current user INI selects DLAA, NVIDIA FG backend, NR Before and tone 1.018; these settings were not overwritten by the FSR staging reference. An incomplete rejected staging directory is not the qualified package above.
 
 This bounded fix pass is **3 of 3 complete**. Original NR milestones remain **1 of 8**. Matched three-repeat Skyrim performance, visual/FG/lifecycle acceptance, automatic benchmark metadata enrichment, and ownership-qualified pool/lifetime optimization remain open. Historical acceptance receipts still describe the earlier installed candidate, not this staged build.
+
+Subsequently, the user requested the next step and closed Skyrim/MO2. [Installation follow-up](POST_P4_INSTALLATION.md) records the qualified DLL update and exact AIO19-to-trial activation while preserving the current DLAA INI. The staged-package and unchanged-installation fields above describe the earlier qualification action; they are not the later installation receipt.

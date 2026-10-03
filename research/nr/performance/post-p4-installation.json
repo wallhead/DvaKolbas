@@ -1,0 +1,578 @@
+{
+  "schema": 1,
+  "scope": "DLL-only post-P4 update plus AIO19-to-existing-trial mod activation; user DLAA settings preserved",
+  "installed": true,
+  "sourceRevision": "bc2ef9d4ed060eacc15e56ce6bec909a4a64a23e",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "bc2ef9d4ed06",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "trial": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial",
+  "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr\\performance\\post-p4-install\\rollback-20261004-005614-a5deb927874841e6b18d05784598cda5",
+  "dllSha256": "b4c3b357ee646f8d0eaf65404e045163e46d0258f85f5a7a492fd740afce53e7",
+  "manifestSha256": "9b68a2594701e54c413c3f06a9cdc4ce623ee06671b2f2211f2cfe6b82bac862",
+  "currentSettings": {
+    "upscaleType": "3",
+    "fgEnabled": "false",
+    "fgBackend": "1",
+    "nrBefore": "true",
+    "tone": "1.018000",
+    "intensity": "1.043000"
+  },
+  "profileChange": "Disable only AIO19; enable only the existing NR trial",
+  "modlistBeforeSha256": "451ff0799ff4950fd9de4f9c816c562afe125a26312bd163aba406c188c36d7b",
+  "modlistAfterSha256": "27f0cfad3d35c12d7231c2ee42875091f10a7789c13d6ee5c540c17977fec98d",
+  "protected": [
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\ModOrganizer.ini",
+      "sha256": "39b0eea7eb4ad19ef13f9e2eeafee3b31609788af9b1e06dc88ec65d78e6578f",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\meta.ini",
+      "sha256": "b7eb4dee28543788111f046b396b92f61e3cd914ac3bdb37b9aacc92b2b9fea5",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\root\\dinput8.dll",
+      "sha256": "7cdc9bbc8ae39c2c3ef26260e160dff7ac995f6cdc542c8e2dad9a388eaf2c61",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\root\\S33BUR5CH.asi",
+      "sha256": "3a3b1af60887192cc30fafd2f7a03c5f676f88cdcabba7f7e6ab9562aec4f87c",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\SKSE\\Plugins\\SkyrimUpscaler_preload.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\SKSE\\Plugins\\SkyrimUpscaler.dll",
+      "sha256": "ac699b5883d4deeafdfff81ab041c3f191b1970e68c3408ffdb18068a6f5482a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\SKSE\\Plugins\\SkyrimUpscaler.ini",
+      "sha256": "d1d385427be7c0a3e4791ab971568312e0c9721088077326700a36e0941bd7fc",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\amd_fidelityfx_dx12.dll",
+      "sha256": "a0c72c0071d8da338dcd91bc2d85d0ff628131bded3206ff9a1ab1d819a55763",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\amd_fidelityfx_framegeneration_dx12.dll",
+      "sha256": "3f5e674a59b400756e98ef31fd583a4eb08ad567ec8dee362886bc96e55ed347",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\amd_fidelityfx_framegeneration_dx12.pdb",
+      "sha256": "b06ad134fdb346f98c263cbe135fe62648fa629ff6c8e2ee8d0ac69004c6985f",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\amd_fidelityfx_loader_dx12.dll",
+      "sha256": "2f36843c3bb8c059621c10574e586a883ef337f2a549c67ecf3a82b3959ac238",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\amd_fidelityfx_loader_dx12.pdb",
+      "sha256": "3e1b32a5eec4860ed9ea0e5f457e5b55429fe68240e6228fe08ed225038e8583",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\amd_fidelityfx_upscaler_dx12.dll",
+      "sha256": "2604c0b392072d715b400b2f89434274de31995a4b6e68ce38250ebbd3f6c5fc",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\ffx_backend_dx11_x64.dll",
+      "sha256": "d6005576edeb783b0e109aa160ffe06671cc801b84b7bf841cb521ef4b053c5f",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\ffx_fsr3_x64.dll",
+      "sha256": "2734c4ffa563f675df9ccb33c6cd6af60ca014e0c7d3eea284816befa83bd12a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\ffx_fsr3upscaler_x64.dll",
+      "sha256": "dbd5e7a1a6cb3074617c8e82c1d12ce49721a013ab382385d5b4657edda7f62d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\libxell.dll",
+      "sha256": "d2030dcd694fda8f2ec7e044b13e6db8f0b56d4ba9113a5efad334e3f3ded8c7",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\libxess_dx11.dll",
+      "sha256": "c7cfe86f0c9d94e4fb3696d3cd5035e2bbb6a8b1b0572f8b7395a4cdfd0c625e",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\libxess_fg.dll",
+      "sha256": "ec5e0c65e075570c6ede72618bb666d0be0c2e10b2ea9762c0fe8cb8e375ab27",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\libxess.dll",
+      "sha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\nvngx_dlss.dll",
+      "sha256": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\nvngx_dlssnr.dll",
+      "sha256": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\PDPerfPlugin.dll",
+      "sha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\Streamline\\nvngx_dlssg.dll",
+      "sha256": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\Streamline\\sl.common.dll",
+      "sha256": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\Streamline\\sl.dlss_g.dll",
+      "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\Streamline\\sl.interposer.dll",
+      "sha256": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\Streamline\\sl.pcl.dll",
+      "sha256": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\Streamline\\sl.reflex.dll",
+      "sha256": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\build-manifest.json",
+      "sha256": "1b95e94266ff0182fbc30f383939b26f804902e87c57478f54dad28a684264d1",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\LICENSE",
+      "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\meta.ini",
+      "sha256": "091d78cfd1ed83b15496f9ce2ed76f9479c6cf3dd9b264ae4a69a12119e1966c",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\NVIDIA-Streamline-license.txt",
+      "sha256": "7b6f23e7d6f3ad6292f9308d2b42cdc3d82ae4e9b2abb55f230279d83bedd43d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\README.md",
+      "sha256": "8736041be6c98e8e246f9f4ff774a820e32d521b2bb3260ef784c2dc08326865",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "sha256": "4d3bae0192dd5286ee748208e57cf139108f4ee14c7d803477fc6b52a378cec7",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "sha256": "4b2345deb163a324b7c95f28ddbc0ac11adf1b4127dc0819336a88a95a8a8e9d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\nvngx_dlssnr_.dll",
+      "sha256": "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\nvngx_dlssnr.dll",
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\nvngx_dlssg.dll",
+      "sha256": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.common.dll",
+      "sha256": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.dlss_g.dll",
+      "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.interposer.dll",
+      "sha256": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.pcl.dll",
+      "sha256": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\NVIDIA\\Streamline\\sl.reflex.dll",
+      "sha256": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\nvngx_dlss.dll",
+      "sha256": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipeline\\RCAS.hlsl",
+      "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\SKSE\\Plugins\\TheosRenderPipelineImGui.ini",
+      "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\THIRD-PARTY.md",
+      "sha256": "ef7974d0c5d90030d4153273e7efeb184feb7d94e4fb925c9f724f9f296443de",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP 0.3.5 Standard - DvaKolbas baseline\\UPSTREAM-README.md",
+      "sha256": "7c8d801d73f7b42db098617740d7614a8318bcb20c3d45528c52d81b444be938",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\AMD-FidelityFX-license.md",
+      "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\FSR_TEST_CHECKLIST.md",
+      "sha256": "dce4901600839a072c2c8556e259d6ab999cd0df61013b438d7f90a9c80ff1b0",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\FSR-API-MIT-NOTICE.txt",
+      "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\LICENSE",
+      "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\manifest.json",
+      "sha256": "f5b5aae8580ea084e92951de49a390d3f2f83394145334546f0b633a522d0d88",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\meta.ini",
+      "sha256": "8298f7dbea36ff2086bae298343fd081ddfd77ef0827ec872bed4f30543f9f71",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\README.md",
+      "sha256": "e5b1caaa7a3f2a3f98a6f25a21832058b1679406f320a19dd23124423b6805de",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\SKSE\\Plugins\\FSR\\amd_fidelityfx_framegeneration_dx12.dll",
+      "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\SKSE\\Plugins\\FSR\\amd_fidelityfx_loader_dx12.dll",
+      "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\SKSE\\Plugins\\FSR\\amd_fidelityfx_upscaler_dx12.dll",
+      "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "sha256": "2f6eebd9efb05cf0433687dc2bf70d43fec26290d05f3e3b56231c142e3867b6",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "sha256": "2dd464f0cf0e6859b03f4dd6cd0d2ed0995d57730b5e4b9c0cb0bcbd516e4984",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipeline\\RCAS.hlsl",
+      "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipelineImGui.ini",
+      "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR FG Standard - DvaKolbas test\\THIRD_PARTY_FSR.md",
+      "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\AMD-FidelityFX-license.md",
+      "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\FSR_TEST_CHECKLIST.md",
+      "sha256": "04214c45cd3566e4b2593952e7486d19a2ae2107a665aabee2904b9ccc225fd0",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\FSR-API-MIT-NOTICE.txt",
+      "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\LICENSE",
+      "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\manifest.json",
+      "sha256": "c26b396190aea3264e727df995619c9311a9ebe0afe9847fa245bdc1d0b8010d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\meta.ini",
+      "sha256": "c31d905c83eee2581b3a63e3ca268a8ff492e75a92d3e1fcd2099394c91f3216",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\README.md",
+      "sha256": "abf894c8c9e6fe79b0c7fa4ea03dd43c38b4aab72baa0c2e3b172c70ac91d382",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\SKSE\\Plugins\\FSR\\amd_fidelityfx_loader_dx12.dll",
+      "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\SKSE\\Plugins\\FSR\\amd_fidelityfx_upscaler_dx12.dll",
+      "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "sha256": "a62a2acb05799c2cd1028594d024f1cfda4ace02cd7270acf02d8cb253933add",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "sha256": "93ecdb4b590a820699f0750f437670f4c23f9bee6765eb9af6f23b85295b30de",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipeline\\RCAS.hlsl",
+      "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\SKSE\\Plugins\\TheosRenderPipelineImGui.ini",
+      "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP FSR SR Standard - DvaKolbas test\\THIRD_PARTY_FSR.md",
+      "sha256": "7e99207aa55c9ae85237e567082b46ccdf6948757c04a7f163099da22abaa9da",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\AMD-FidelityFX-license.md",
+      "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\FSR-API-MIT-NOTICE.txt",
+      "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\LICENSE",
+      "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\README.md",
+      "sha256": "a131d92eb7055b563fd52625c5495dff5e70f6a6bf05eac52af46e985cf33b6d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\FSR\\amd_fidelityfx_framegeneration_dx12.dll",
+      "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\FSR\\amd_fidelityfx_loader_dx12.dll",
+      "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\FSR\\amd_fidelityfx_upscaler_dx12.dll",
+      "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "sha256": "3d02680023729e6037f8627e9d081e76c3fd20c6555314d01ae64306506eec1b",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NR\\rtx20-30\\nvngx_dlssnr.dll",
+      "sha256": "6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NR\\rtx40\\nvngx_dlssnr.dll",
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NR\\rtx50\\nvngx_dlssnr.dll",
+      "sha256": "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\RCAS.hlsl",
+      "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipelineImGui.ini",
+      "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\THIRD_PARTY_FSR.md",
+      "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\archives.txt",
+      "sha256": "b5d6031773354069317958be89a2ccbc0e030debc1b19aaf2b2c473810403fa8",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\initweaks.ini",
+      "sha256": "c35e72b526cf46723f3559435de33c388f431966e48f66dfb6556283609cd27c",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\loadorder.txt",
+      "sha256": "5cb8f8b0b024699210bd869f10f0f8aa54cb22ec29814709a1ca59f525e8b494",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\loadorder.txt.2026_09_22_18_30_53",
+      "sha256": "eabe6ba130f4be5be4eba9247c92c0bfc8b9c399e1a2e0d851644c721d4e1ac3",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\lockedorder.txt",
+      "sha256": "f76bad6f87889c2ef94b459fa4ac5b7d35ede54b8d51dd518fd15a8381c04f95",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\lockedorder.txt.2026_09_22_18_30_53",
+      "sha256": "f76bad6f87889c2ef94b459fa4ac5b7d35ede54b8d51dd518fd15a8381c04f95",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\modlist.txt.2026_09_22_18_31_31",
+      "sha256": "5314319db315e0dadba2f38c78c8db01d109ff5e071a69a86a37bfc8f045e850",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\plugins.txt",
+      "sha256": "9ba837c50ff4a60be21377721cac1105290659695925a9759d48598afc8aa81a",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\plugins.txt.2026_09_22_18_30_53",
+      "sha256": "411ea57083ca4474bfb0fcdb820c23330b3ad79db8caca49bd4eccd9dbee28ea",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\settings.ini",
+      "sha256": "40196cc186af865412c5ef0f629355ad7bf96dcc61907d41df8c00ebfaf2c7fb",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\Skyrim.ini",
+      "sha256": "0b22d1b41e4c39795242c44539c4583647a2a379361bb8a6f1ceee1747eff870",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\SkyrimCustom.ini",
+      "sha256": "0065612d39f810e4c934fedd96f02429fc41ff0996fd531ef26d8e135716563d",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\SkyrimPrefs.ini",
+      "sha256": "aa5ebf01b1465b60883ae4afbc17a0eeac541d703065d2e1f055bed851d8c739",
+      "unchanged": true
+    }
+  ],
+  "skyrimLaunched": false,
+  "graphicsToolsExclusions": [
+    "NativeUIComposition",
+    "NativeUIBlendState",
+    "NeuralPeripheralPixels"
+  ],
+  "manualAcceptance": "PENDING GAMEPLAY",
+  "originalNrMilestones": {
+    "done": 1,
+    "total": 8
+  },
+  "date": "2026-10-04",
+  "qualification": {
+    "path": "research/nr/performance/post-p4-fixes-qualification.json",
+    "sha256": "e595f85a30e7845d8f1a68a92ebf8ca0a23070a8e59daa55304f7b6a8cfe38f1",
+    "selectedChecks": 717
+  },
+  "installationLog": {
+    "path": "out/research/nr/performance/post-p4-install/installation.log",
+    "sha256": "7308450c407966b573815ea34c83d161f4c0b234f08f5e01408b8bfaa39154b8"
+  },
+  "verification": "Exact installed DLL/source identity/imports, complete prepared file manifest and 105 protected file hashes pass; modlist differs only in AIO19 off/trial on"
+}
