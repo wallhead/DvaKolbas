@@ -158,6 +158,15 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         NrMotionDiagnostic::Capture{};
     const bool previouslyActive=communityNeural_->Active();
     const auto result=communityNeural_->Evaluate(input,snapshot,probe?nullptr:linearOutput);
+    if(FsrActive() && result){
+        const auto route=communityFsrRouteDiagnostics_.Observe(result->evaluated,linearOutput&&linearOutput->Valid(),pipeline->mReShadeBeforeUpscaling,probe);
+        if(route){
+            std::string_view modelHash="unavailable";
+            for(const auto& profile:NR::RuntimeCatalog())if(profile.id==communityNeural_->ProfileId()){modelHash=profile.sha256;break;}
+            logger::info("[NR->FSR route] source={} route={} ReShadeBefore={} diagnosticCapture={} profile={} modelSha256={} work={}x{} status={}",
+                sourceId,NR::FsrNrRouteName(route->route),route->reshadeBefore,probe,communityNeural_->ProfileId(),modelHash,width,height,communityNeural_->Status());
+        }
+    }
     if(probe && result && result->evaluated)
         nrMotionDiagnostic.After(device_.Get(),context_.Get(),color,width,height,sourceId,snapshot.revision,
             result->effectiveReset,probeBefore);
@@ -187,5 +196,5 @@ bool NvidiaHost::RetireCommunityNeural()
     const auto retired=communityNeural_->Retire();
     if (!retired) {status_=retired.error().message;FailLifecycle(E_FAIL,"community NR retirement");return false;}
     communityNeural_.reset();communitySnapshotValid_=false;communityCameraHistory_.Invalidate();nrMotionDiagnostic.Reset();
-    ++communityEpoch_;communityLastStatus_.clear();return true;
+    ++communityEpoch_;communityLastStatus_.clear();communityFsrRouteDiagnostics_.Reset();return true;
 }

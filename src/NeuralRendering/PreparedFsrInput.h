@@ -24,9 +24,8 @@ public:
     uint64_t Epoch()const noexcept{return epoch_;}
     bool Reset()const noexcept{return reset_;}
     ID3D11DeviceContext* Context()const noexcept{return context_.Get();}
-    // After TrackReader consumes this lease, COM ownership preserves object
-    // lifetime only. Contents may change when the registered reader completes
-    // and the producer reuses its slot; consumed getters are not a snapshot.
+    // Successful TrackReader clears all public resources and frame identity.
+    // The producer independently retains them through the genuine reader.
     ID3D11Texture2D* Color()const noexcept{return color_.Get();}
     ID3D11Texture2D* Depth()const noexcept{return depth_.Get();}
     ID3D11Texture2D* Motion()const noexcept{return motion_.Get();}
@@ -36,7 +35,10 @@ public:
     uint32_t Height()const noexcept{return height_;}
     Result<void> TrackReader(ID3D12Fence* fence,uint64_t value){
         if(!track_)return std::unexpected(Error{ErrorKind::InvalidInput,0,"NR prepared lease already consumed/empty"});
-        auto result=track_(fence,value);if(result){track_={};abandon_={};}return result;
+        auto result=track_(fence,value);if(result){
+            track_={};abandon_={};context_.Reset();color_.Reset();depth_.Reset();motion_.Reset();producer_.Reset();
+            source_=epoch_=producerValue_=0;width_=height_=0;reset_=false;
+        }return result;
     }
 private:
     friend class PreparedBeforeUpscale;

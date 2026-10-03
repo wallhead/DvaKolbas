@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <cstdint>
 
+namespace TheosRenderPipeline::NeuralRendering { class BeforeUpscale; }
+
 namespace TheosRenderPipeline::Graphics
 {
 	// Three allocator slots per work type, independent of the two presentation
@@ -109,6 +111,13 @@ namespace TheosRenderPipeline::Graphics
 		// Both resources enter and leave COMMON.
 		static HRESULT RecordCopy(ID3D12GraphicsCommandList* a_list,
 			ID3D12Resource* a_source, ID3D12Resource* a_destination);
+
+    private:
+        friend class TheosRenderPipeline::NeuralRendering::BeforeUpscale;
+        // Only the NR Before adapter may begin with Stage owning the actual
+        // pending-producer queue dependency. Ordinary FSR Begin still waits.
+        HRESULT BeginForStageProducer(ID3D12GraphicsCommandList** a_list);
+        HRESULT BeginRecording(InteropWork,ID3D12GraphicsCommandList**,AllocatorWaitTiming*);
 
 	protected:
 		struct WorkContext

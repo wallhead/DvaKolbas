@@ -267,6 +267,16 @@ namespace TheosRenderPipeline::Graphics
 		if (!Ready() || !work || work->recording) { return E_UNEXPECTED; }
 		auto hr = WaitD3D12(a_work);
 		if (FAILED(hr)) { return hr; }
+		return BeginRecording(a_work,a_list,a_wait);
+	}
+
+    HRESULT D3D11D3D12Interop::BeginRecording(InteropWork a_work, ID3D12GraphicsCommandList** a_list, AllocatorWaitTiming* a_wait)
+    {
+        if(a_wait)*a_wait={};
+        if(!a_list)return E_POINTER;*a_list=nullptr;
+        auto* work=Get(a_work);
+        if(!Ready()||!work||work->recording)return E_UNEXPECTED;
+        HRESULT hr{};
 		if (FAILED(hr = WaitCPU(*work, work->submitted[work->slot], a_wait))) { return hr; }
 		if (FAILED(hr = work->allocators[work->slot]->Reset())) { return Check(hr); }
 		if (FAILED(hr = work->lists[work->slot]->Reset(work->allocators[work->slot].Get(), nullptr))) { return Check(hr); }
@@ -347,6 +357,14 @@ namespace TheosRenderPipeline::Graphics
         *list = nullptr;
         if (!srProducerSubmitted_ || srDispatchSubmitted_) { return E_UNEXPECTED; }
         return Begin(InteropWork::Upscaling, list);
+    }
+    HRESULT D3D11D3D12Interop::BeginForStageProducer(ID3D12GraphicsCommandList** list)
+    {
+        if(!list)return E_POINTER;*list=nullptr;
+        if(!srProducerSubmitted_||srDispatchSubmitted_)return E_UNEXPECTED;
+        // Reset only a genuinely retired allocator; Before immediately calls
+        // strict-identity Stage::RecordQueued before submitting this list.
+        return BeginRecording(InteropWork::Upscaling,list,nullptr);
     }
     HRESULT D3D11D3D12Interop::SignalReader(ID3D12Fence** fence,std::uint64_t* value)
     {

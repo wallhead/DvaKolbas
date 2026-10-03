@@ -9,6 +9,7 @@
 #if !defined(TRP_NO_NEURAL_RENDERING)
 #include "NeuralRendering/BeforeHost.h"
 #include "NeuralRendering/SourcePolicy.h"
+#include "NeuralRendering/FsrRouteDiagnostics.h"
 #endif
 #include "CommunityShaderAdapter.h"
 #include "NativeUIAttachments.h"
@@ -155,6 +156,7 @@ class NvidiaHost
     TheosRenderPipeline::NeuralRendering::SourceCameraHistory communityCameraHistory_;
     bool communitySnapshotValid_{};
     std::string communityLastStatus_;
+    TheosRenderPipeline::NeuralRendering::FsrRouteDiagnostics communityFsrRouteDiagnostics_;
 #endif
 
     void ResetSessionAfterRetirement();

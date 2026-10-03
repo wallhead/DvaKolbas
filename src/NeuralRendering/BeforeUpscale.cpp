@@ -133,7 +133,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::InputCopy,false);
     r=gpu(MeasurePerformance(s.metrics,CpuPhase::ProducerSignal,[&]{return s.interop.SignalProducer();}),"NR Before producer submission failed");if(!r)return std::unexpected(r.error());
     r=gpu(s.interop.ProducerDependency(&p.producerFence,&p.producerFenceValue),"NR Before submitted producer dependency missing");if(!r)return std::unexpected(r.error());
-    ID3D12GraphicsCommandList* list{};r=gpu(MeasurePerformance(s.metrics,CpuPhase::Begin,[&]{return s.interop.Begin(&list);}),"NR Before command recording begin failed");if(!r)return std::unexpected(r.error());
+    ID3D12GraphicsCommandList* list{};r=gpu(MeasurePerformance(s.metrics,CpuPhase::Begin,[&]{return s.interop.BeginForStageProducer(&list);}),"NR Before command recording begin failed");if(!r)return std::unexpected(r.error());
     constexpr auto read=D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
     for(auto* resource:{slot.color.texture12.Get(),slot.depth.texture12.Get(),slot.motion.texture12.Get()})Transition(list,resource,D3D12_RESOURCE_STATE_COMMON,read);
     Transition(list,slot.output.texture12.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_UNORDERED_ACCESS);

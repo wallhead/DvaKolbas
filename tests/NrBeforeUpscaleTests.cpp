@@ -1,5 +1,6 @@
 #include "NeuralRendering/BeforeUpscale.h"
 #include "nr-runtime/GpuProbeGuard.h"
+#include "nr-runtime/ObservedQueue.h"
 #include "ProbeBuildIdentity.h"
 #include <dxgi1_6.h>
 #include <DirectXPackedVector.h>
@@ -49,6 +50,7 @@ int wmain(int argc,wchar_t** argv){try{
     StageContract contract;contract.colorExtent=contract.guideExtent={width,height};
     Need(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&contract.device)));
     D3D12_COMMAND_QUEUE_DESC queue{};Need(contract.device->CreateCommandQueue(&queue,IID_PPV_ARGS(&contract.queue)));
+    auto* observedQueue=new ObservedQueue(contract.queue.Get());contract.queue.Attach(observedQueue);
     contract.adapterLuid={desc.AdapterLuid.LowPart,desc.AdapterLuid.HighPart};
     ComPtr<ID3D11Device> device11;ComPtr<ID3D11DeviceContext> context;
     Need(D3D11CreateDevice(adapter.Get(),D3D_DRIVER_TYPE_UNKNOWN,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&device11,nullptr,&context));
@@ -77,6 +79,15 @@ int wmain(int argc,wchar_t** argv){try{
     auto ratio=settings;ratio.reconstruction.method=ResolveMethod::Ratio;
     Check(!bridge.Evaluate(input,ratio)&&bridge.Diagnostics().evaluate==0,"NativeBeforeRejectsUnpreparedRatioBeforeGpuWork");
     if(failures)return 1;
+    if(argc==4&&std::wstring_view(argv[3])==L"wait-failure"){
+        observedQueue->failWait=true;
+        auto failed=bridge.Evaluate(input,settings);
+        const auto state=bridge.Diagnostics();
+        Check(!failed&&observedQueue->waits==1&&state.evaluate==0&&state.recorded==0&&state.terminal,
+            "WholeBeforeQueueWaitFailureRecordsNoVendorEvaluation");
+        Check(!bridge.Retire()&&!owner->Retire(),"FailedBeforeWaitRetainsUncertainOwners");
+        return failures?1:0;
+    }
     uint64_t alphaPixels{},finitePixels{},changedPixels{},bypassPreservedPixels{};uint32_t evaluated{},bypassed{},resumedReset{};
     std::vector<std::string> sourceHashes,outputHashes,rgbHashes;
     std::vector<uint16_t> pixels(width*height*4);
@@ -92,8 +103,10 @@ int wmain(int argc,wchar_t** argv){try{
         input.sourceId=input.guideSourceId=frame+1;input.previousSourceId=frame;
         input.presentationTime=double(frame+1)/60.;input.reset=frame==120;
         settings.enabled=!(frame>=80&&frame<88);settings.revision=frame<80?1:frame<88?2:3;
+        const auto producerWaitsBefore=observedQueue->waits;
         auto result=bridge.Evaluate(input,settings);
         if(!result){std::printf("frame %u: %s\n",frame,result.error().message.c_str());return 1;}
+        Check(observedQueue->waits-producerWaitsBefore==(result->evaluated?1u:0u),"ExactlyOneQueueWaitForEachBeforeProducerHandoff");
         if(result->evaluated)++evaluated;else ++bypassed;
         if((frame==0||frame==88||frame==120)&&result->effectiveReset)++resumedReset;
         if(result->evaluated&&!bridge.WaitDelivery(*result))return 1;
