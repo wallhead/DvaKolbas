@@ -1,0 +1,100 @@
+# NR Before Performance Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Measure and reduce the current NR Before integration cost while preserving native SDR output, temporal history, alpha, live toggles and the working DLSS/FSR/FG routes.
+
+**Architecture:** First measure CPU blocking and individual GPU stages with unchanged model/settings. Replace synchronous producer/reader retirement with verified queue dependencies and a bounded ring owning every resource, descriptor, parameter and reader until genuine completion. Deliver prepared linear NR output directly to FSR only after that ownership contract passes delayed-reader tests; retain the compatible game-format delivery for other consumers.
+
+**Tech Stack:** C++23/MSVC, D3D11/D3D12 fences/timestamps, current exact NGX runtime pins, existing CMake/CTest and PowerShell research tooling.
+
+**Spec:** [Approved NR design](../specs/2026-10-03-nr-design.md), [main eight-milestone plan](2026-10-03-nr.md), and the [independent AIO19 validation](../../../research/aio19/PERFORMANCE_RE_VALIDATION.md). This is the performance gate inside main Task 3, not six additional completion milestones. Inline execution remains the established method.
+
+## Global Constraints
+
+- One real-source, native SDR Before NR pass. AMD NR remains unsupported; RTX20/30/50 and true After remain unqualified. Existing literal After requirements are unchanged.
+- Keep the exact shipping runtime/driver pins. An AIO-model A/B profile belongs only to the research executable until independently qualified; no basename-only admission or general trust bypass.
+- Preserve same-adapter/resource/queue identity and the proxy/native fence anchor; pending producer admission requires an actual queue Wait, not a caller-provided Boolean.
+- Retain all actual readers, parameters, descriptor heaps, allocator/list owners and image/history identities. Do not signal imaginary completion or release uncertain submissions/terminal owners.
+- Keep source alpha and exact dedicated HUD behavior. Tone 0 remains the current mitigation, not a claimed color-root-cause fix. No removal of color/alpha stages solely to improve benchmark numbers.
+- Keep separate NR/SR queues initially. No forced queue unification, eight-frame latency target or async-compute migration without measured justification.
+- No installation, launch or MO2 settings changes during standalone work. Check `GpuProbeGuard` before sequential GPU tests; never run alongside Skyrim. Binaries/captures remain ignored.
+- Report CPU wait invocations, actual blocking time and Flush counts separately. Source cadence with FG off is primary; FG-on display cadence is a separate result.
+
+## Review Focus
+
+1. An unused slot's NR work completed but FSR/D3D11 still reads it: reuse must fail until every reader retires (P2/P3/P4 delayed-reader tests).
+2. A higher shared-fence value is signaled by another queue before lower work completes: no false retirement; use queue-owned monotonic timelines and explicit dependencies (P1/P3 ordering tests).
+3. Another call path uses the strict packet validator without a queued dependency: pending packets must remain rejected (P1).
+4. A vendor feature retains parameters or cannot record consecutive pending evaluations: qualify with real output readbacks before enabling multiple tickets; retain serial mode on unsupported semantics (P2).
+5. AIO's live model extent, pass chain or placement differs from Dva: mark the run unmatched, never rank host efficiency from it (P0/P5).
+
+## P0: Timings, matched baseline and research runtime A/B
+
+**Files:** create `src/NeuralRendering/PerformanceMetrics.{h,cpp}`, `tests/NrPerformanceMetricsTests.cpp`, `tests/nr-runtime/PerformanceProbe.cpp`, `tools/nr/Run-PerformanceProbe.ps1`, `tools/nr/Compare-Performance.py`; modify `BeforeUpscale.cpp`, `PreparedBeforeUpscale.cpp`, `Stage.cpp`, `src/Graphics/D3D11D3D12Interop.{h,cpp}`, `src/Upscaling/FSRFrameAdapter.cpp` and `tests/nr-runtime/CMakeLists.txt`. Create bounded receipts under `research/nr/performance/`. Keep ordinary per-frame logging off.
+
+**Interfaces:** `PerformanceMetrics::Snapshot() const -> PerformanceSnapshot` contains source sample count, NR enabled/placement/profile/hash/extents, CPU phase nanoseconds, wait calls/block nanoseconds, Flushes, submitted/completed ticket IDs, slot pressure, descriptor/resource creation counts, and GPU timestamp phase records keyed by queue frequency/source ID. `Run-PerformanceProbe.ps1 -RuntimeProfile <id> -Frames 300 -Warmup 120 -Output <path>` runs only its guarded standalone process. `Compare-Performance.py <receipts...>` reports median/p95/p99 milliseconds, sample/match validity and differences; it never derives displayed FG cadence from NR counters.
+
+- [ ] Add `NrPerformanceMetrics`: a completed fence records a wait check but zero blocking; overlapping CPU phase intervals are not summed twice; missing/disjoint/unretired GPU timestamps are unavailable; mismatched extent/placement/pass/tone/runtime invalidates a matched-host comparison. Run `ctest --test-dir out/build/nr-runtime -C Release -R NrPerformanceMetrics --output-on-failure`; demonstrate semantic failures before implementing aggregation.
+- [ ] Add opt-in D3D11 disjoint/timestamp and D3D12 timestamp/frequency queries for preparation, input copies, vendor NR, alpha, result delivery and FSR stages. Read results from retired slots later; no new same-frame `GetData` loop or timing-induced Flush. CPU probes measure actual blocking around existing waits. Emit a bounded summary outside the hot path, and record whether the debug layer/readbacks were enabled.
+- [ ] Measure the unchanged host with current `e67dee20…` model, NR off/on, 120 warmup plus 300 measured frames, three repeats. Use the identical synthetic scene, native extent, tone 0, one pass and reset schedule; output correctness readbacks are a separate run so they do not serialize timing. Report query availability and overhead of instrumentation on/off.
+- [ ] Add only a research-specific exact profile for AIO model `8270b350…` (165840496 bytes), with its own documented parameter/compatibility policy in `PerformanceProbe.cpp`; keep `RuntimeCatalog.cpp` and shipping pins untouched. Test hash mismatch rejection, initialization/output/alpha/live-off-on/retirement first at small extent. If qualified on RTX4080 SUPER, repeat the same-host timing matrix at the same full extent/settings. If it cannot qualify, record raw errors and model contribution as unknown rather than substituting DLLs in Skyrim.
+- [ ] Record baseline and commit metrics/probe/receipts. GPU execution alone is not an AIO-host benchmark; user-reported 15 FPS and historical unverified smoke numbers are not the baseline. Quantify the measured share before prioritizing optional GPU-pass changes.
+
+## P1: Queue-proven pending producer admission
+
+**Files:** modify `src/NeuralRendering/Stage.{h,cpp}`, `ImagePacket.cpp`, `BeforeUpscale.cpp`; extend `tests/NrImagePacketTests.cpp`, `tests/NrStageTests.cpp` and real-runtime probe modes.
+
+**Interfaces:** keep `Stage::Record(...)` and public `ValidateImagePacket(...)` strict. Add `Stage::RecordQueued(ID3D12GraphicsCommandList*, const ImagePacket&, const SettingsSnapshot&) -> Result<EvaluationTicket>`: validate resource/fence/device/epoch identity, enqueue the retained contract queue's actual `Wait(producerFence, producerFenceValue)`, then use an internal validator permitting only that exact pending dependency. Any Wait failure returns before NR recording; no public flag relaxes completion checking. `BeforeUpscale` uses this entry with the actual interop producer fence/value, removing its duplicate handoff only after the dependency is proved.
+
+- [ ] Add `PendingProducerStillRejectedByStrictRecord`, `ForeignFenceNeverQueued`, `QueueWaitFailureRecordsNoNr` and `PendingProducerQueueWaitOrdersRealOutput`. Run the relevant NrStage/NrImagePacket groups and require the current completion-only path to fail the new pending-producer case.
+- [ ] Implement queue-proven admission and remove only the duplicate producer CPU handoff from Before. Keep one pending ticket and completed consumer retirement at this checkpoint, so this change has a bounded ownership scope.
+- [ ] In a guarded GPU fixture, leave input production behind a real queue gate; RecordQueued must return before the gate opens, NR output must retire only after it opens, and reference output/alpha must match after completion. Signal the gate externally only after the early-return assertion; never fake the work's completion fence. Verify reset/off-on and ReShade native/proxy anchors.
+- [ ] Compare P0 metrics with the unchanged model; commit source and clean receipt. A lower producer stall is not proof that total frame throughput improved.
+
+## P2: Persistent retained slots and multiple Stage tickets
+
+**Files:** modify `Stage.{h,cpp}`, `BeforeUpscale.{h,cpp}`, `PreparedBeforeUpscale.{h,cpp}`; extend `tests/NrStageTests.cpp`, `NrBeforeUpscaleTests.cpp`, `NrPreparedBeforeTests.cpp`, `NrTicketOwnershipTests.cpp` and probe modes. Add `tests/NrFrameSlotTests.cpp` with root/standalone CMake registration.
+
+**Interfaces:** Stage's existing Record/MarkSubmitted/TrackReader/RetireTicket operations address a bounded map of sealed ticket IDs rather than one `pending`. Add `Stage::CollectCompleted() -> Result<uint32_t>` for nonblocking retirement of submitted tickets whose actual readers all completed; `Retire()` still refuses unfinished tickets. Before/preparation each retain three coordinated image slots initially, including their full textures, allocator/list, input owners, descriptors, parameter owners and completion/readers. Slot acquisition scans all slots for reusable ownership; it never merely rotates an allocator onto a still-read image.
+
+- [ ] Add regressions: three genuine pending tickets, fourth admission backpressure, first ticket's NR done but reader pending, recycled token/epoch rejection, descriptor owner not reused early, parameters preserved, partial/unsubmitted command quarantine. Run `ctest --test-dir out/build/nr-runtime -C Release -R 'Nr(Stage|FrameSlot|TicketOwnership|Before|Prepared)' --output-on-failure` and observe the one-pending baseline fail the new multi-ticket contract.
+- [ ] Implement three persistent slots and per-slot descriptor reuse. Keep vendor Evaluate calls serialized in history order; preserve each evaluated parameter block if the runtime may retain it. Qualify multiple recorded/submitted frames against serial reference output and alpha before enabling this route in the host. Callback allocator/module ownership remains process-safe.
+- [ ] Delay distinct real readers; completed slots must become reusable individually, occupied slots must not alias color/depth/motion/output/parameters, and full capacity must produce device-checked backpressure with a 20-second terminal deadline (matching the current prepared reader limit). A timeout/device-loss retains owners and faults; do not copy AIO's infinite OS timeout. Three slots are the initial measurement choice, not a promised latency/performance optimum.
+- [ ] Compare pressure, memory and p95 latency with P0/P1. If the vendor semantics do not qualify, preserve serial Stage and record the exact blocker; do not invent independent feature histories to pass. Commit the qualified subset and receipt.
+
+## P3: Deferred consumer retirement in the full prepared path
+
+**Files:** modify `BeforeUpscale.cpp`, `PreparedBeforeUpscale.cpp`, `src/Graphics/D3D11D3D12Interop.{h,cpp}`, `BeforeHost.cpp`; extend `NrBeforeUpscaleTests.cpp`, `NrPreparedBeforeTests.cpp`, `NrBeforeHostTests.cpp`, `NrBeforeHostFramesTests.cpp` and interop tests.
+
+**Interfaces:** preserve `Result<BeforeResult> Evaluate(...)`, but update its contract explicitly: successful evaluated output means its D3D11 delivery and dependency were **queued** on the authoritative immediate context, not CPU complete. Expose a retained internal delivery record keyed by source/epoch/slot with actual NR completion and D3D11 final-reader fence. Only the owner may collect/reuse it. Direct readback callers must explicitly wait for that delivery record. `Retire()` drains genuine pending producer, NR and final consumer work for resize/toggle/teardown.
+
+- [ ] Add `EvaluateReturnsBeforeGatedDeliveryCompletes`, `PreparedEncodeReaderPreventsSlotReuse`, `LaterSourceWorkFollowsQueuedNr`, `ResizeRetainsPendingDelivery`, `HigherOtherQueueSignalCannotRetireReader` and toggle/menu reentry cases. Demonstrate the current same-frame waits/query loop fail the early-return case while existing lifetime/alpha assertions stay valid.
+- [ ] Queue D3D11 Wait → NR output copy → encoding → final reader Signal once in order. Replace steady-state completion waits, Drain and FinishReaders polling with collection of retired slots; retain CPU drains for real lifecycle transitions/capacity pressure. Assign each signal timeline a real queue owner so a later unrelated signal cannot falsely satisfy earlier work. Review shared interop changes against FSR's existing behavior; prefer a NR-specific adapter if changing a shared assumption would broaden the risk.
+- [ ] Run delayed-reader fixtures with actual ReShade, source off/on, resize, minimize/reentry, failure before/after submission and terminal retirement. Reuse must wait for the final encoder reader, not only vendor completion. Keep exactly one NR evaluation before selected SR work.
+- [ ] Rerun matched P0 timing and source correctness at this checkpoint; record residual wait events and legitimate pressure/lifecycle waits. Commit qualified deferred path and receipts.
+
+## P4: Direct prepared FSR handoff and measured residual work
+
+**Files:** modify `PreparedBeforeUpscale.{h,cpp}`, `BeforeHost.{h,cpp}`, `src/FrameGen/SourceFsrEvaluation.cpp`, `src/Upscaling/FSRFrameAdapter.{h,cpp}`; extend `tests/NrPreparedBeforeTests.cpp` and FSR color/frame GPU fixtures. Keep DLSS/game-format delivery through the P3 path.
+
+**Interfaces:** define a move-only owned `PreparedFsrInput` in `PreparedBeforeUpscale.h`, carrying source/epoch, linear FP16 color, R32 depth, RG16 motion, extents, actual producer dependency and a slot reader lease. Its `TrackReader(ID3D12Fence*, uint64_t) -> NeuralRendering::Result<void>` attaches a verified genuine final reader; its destructor cannot release an unretired/uncertain slot. FSR explicitly consumes this record through `FsrFrameAdapter::EvaluatePrepared(const UpscaleFrame&, PreparedFsrInput&) -> Upscaling::Result<UpscaleOutcome>`; it records FSR input copies/dispatch and attaches its genuine last reader before releasing the lease. No raw borrowed pointer or `colorIsLinear=true` on an unchanged Gamma22 UNORM target satisfies this contract.
+
+- [ ] Add `PreparedNrFsrSkipsEncodeDecode`, `PendingFsrReaderRetainsNrSlot`, source identity mismatch, all source alpha values, color-ramp/near-black/highlights and NR-off passthrough tests. Confirm the current path performs the extra encode/decode with stage instrumentation.
+- [ ] Deliver retained linear NR color/guides directly to FSR, avoiding game-format roundtrip and duplicate guide preparation where verified. Keep explicit barriers/dependencies and the single final game-encoding operation after SR. Record expected precision differences from removing UNORM quantization; require color/alpha tolerance tests and later camera-motion gameplay acceptance rather than claiming bit identity to the old roundtrip.
+- [ ] Measure residual alpha dispatch, copies and descriptors. Reuse the already retained descriptors; consider fusing alpha preservation into an unavoidable output operation only if its measured cost warrants it and full alpha/HUD tests pass. Do not assume vendor alpha preservation or change the model's color domain to mimic an unobserved AIO input.
+- [ ] Compare timing/correctness for FSR NativeAA/Quality, FG off/on, and regress the DLSS path and source-off baseline. Commit the qualified handoff and bounded receipts.
+
+## P5: Clean review and matched Skyrim acceptance
+
+**Files:** create `docs/NR_PERFORMANCE_ACCEPTANCE.md`, `docs/NR_PERFORMANCE_ACCEPTANCE.json`; update main plan Task 3/Task 8, bounded receipts and package manifest through existing tooling. Original rollback and game settings remain protected.
+
+- [ ] Build NR on/off Standard/Universal configurations and run the full appropriate product suite, retaining only the existing three explicit Graphics Tools exclusions. Run sequential NR/FSR/FG/actual-ReShade output and lifecycle fixtures with the game absent. Fresh whole-change review must inspect queue signal ordering, public strict validation and delivery readers; resolve confirmed defects before installation.
+- [ ] Stage a clean separate trial using existing `tools/nr/Stage-BeforeTrial.ps1` and `Validate-BeforeTrial.ps1`; install only after observed Skyrim/MO2 closure. Preserve desired tone 0 and all protected MO2/rollback hashes. Stop at the user's required Skyrim launch.
+- [ ] For manual AIO-vs-Dva comparisons use the same save, location/time/weather, camera route and native 2560x1440 input; one NR pass; matching effective Before placement, preset/style/intensity/local-tone/local-structure/resolve settings; HDR/sharpening/provider/quality/version/ENB/ReShade/frame cap/VSync and diagnostic settings. Record both model hashes and actual guide/model extents. Repeat three runs after warmup with FG off, using source-frame median/p95/p99. Label host comparison with different models confounded; the P0 same-host A/B estimates model contribution separately.
+- [ ] Then test FG on with an independent presentation capture, distinguishing source/real/generated frames and pacing. Verify HUD, camera-motion color, inventory/menu, save/load/fast travel, alt-tab/minimize, toggle recovery and no stale image. Restore normal logging after confirmed closure.
+- [ ] Record measured improvement/regressions and remaining gap in milliseconds and FPS, with sample counts and unavailable checks. A performance acceptance passes only when the matched repeated runs improve NR-on source cost without a material tail-latency, color, alpha or lifecycle regression; if the AIO gap remains, state the residual and keep it open. Do not promise recovery of all 15 FPS. Main NR progress remains based on the original eight milestones; no milestone completes from this plan alone.
+
+## Self-review
+
+All optimization phases retain the design's identity/retirement/one-pass/UI guarantees. P1 keeps strict callers safe; P2/P3 own every reused object; P4 defines the downstream reader rather than hiding it behind an encoding flag. P0/P5 distinguish model and host costs, unmatched placement and source/display cadence. Existing tone instability and literal After FG are separate open requirements. Priority is P0 → P1 → P2 → P3 → P4 → P5; After feasibility can continue independently, but shipping After integration waits for this Before gate. This document records the adjusted plan; it does not claim optimization or benchmarking has run.

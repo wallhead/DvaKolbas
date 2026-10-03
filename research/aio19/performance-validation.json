@@ -1,0 +1,749 @@
+{
+  "schema": 1,
+  "analysisScope": "Static PE/Capstone and source identity; no DLL execution",
+  "sourceRevision": "27ad9032c93d0c16aa0167f529de93440ce2d31a",
+  "archive": {
+    "bytes": 204042400,
+    "sha256": "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439"
+  },
+  "artifacts": {
+    "SKSE/Plugins/SkyrimUpscaler.dll": {
+      "bytes": 15975424,
+      "sha256": "ac699b5883d4deeafdfff81ab041c3f191b1970e68c3408ffdb18068a6f5482a"
+    },
+    "SKSE/Plugins/SkyrimUpscaler.ini": {
+      "bytes": 15300,
+      "sha256": "ad0b46779903a9fec921a3fedb4f03c84eb393fd646ba889e5875608a6979967"
+    },
+    "UpscalerBasePlugin/PDPerfPlugin.dll": {
+      "bytes": 20332032,
+      "sha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435"
+    },
+    "UpscalerBasePlugin/nvngx_dlssnr.dll": {
+      "bytes": 165840496,
+      "sha256": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+    }
+  },
+  "checkpointRelation": {
+    "base": "de4662a651ca2a6f5b5ef0f6f1f1f69ad45fcc6f",
+    "commitsAhead": 4,
+    "coreBlobsUnchanged": true
+  },
+  "dependencies": {
+    "capstone": "5.0.7",
+    "pefile": "2024.8.26"
+  },
+  "checkpointBlobs": {
+    "src/NeuralRendering/BeforeUpscale.cpp": "432da9b6be167278f2ba2780de2e00384a16b175",
+    "src/NeuralRendering/PreparedBeforeUpscale.cpp": "013dfc146b121ca0664d84fdc10eafeea79925a6",
+    "src/Graphics/D3D11D3D12Interop.cpp": "5cb677fe4788ef3e7aea5eb450bcea7aaf326764",
+    "src/Graphics/D3D11D3D12Interop.h": "57be88c6e1b9075f0db4077baaf2497b7be9820d",
+    "src/NeuralRendering/Stage.cpp": "8472af23269fc9b44ab8637168fbf28e43bd69ea",
+    "src/NeuralRendering/ImagePacket.cpp": "b8262fc28fe7cc0346857a345afef1592e0cd38c",
+    "src/NeuralRendering/BeforeHost.cpp": "414b89e8701befa70d6ae171e7c2ad1db52282d2",
+    "tools/nr/runtime-pin.json": "765f9e36fc2c54b1448ac4971c0cebd8f26aa7a9"
+  },
+  "exports": {
+    "InitDLSSNR": "0x1177e0",
+    "EvaluateDLSSNR": "0x117810",
+    "EvaluateDLSSNRChain": "0x1178d0",
+    "QueryDLSSNRChainStatus": "0x117910",
+    "QueryDLSSNRMaskCapabilities": "0x1179f0",
+    "ReleaseDLSSNR": "0x117a50"
+  },
+  "witnesses": [
+    {
+      "rva": "0x1178d5",
+      "interpretation": "Chain ABI size 0x598",
+      "instructions": [
+        {
+          "rva": "0x1178d5",
+          "bytes": "813998050000",
+          "text": "cmp dword ptr [rcx], 0x598"
+        },
+        {
+          "rva": "0x1178db",
+          "bytes": "7528",
+          "text": "jne 0x180117905"
+        },
+        {
+          "rva": "0x1178dd",
+          "bytes": "83790401",
+          "text": "cmp dword ptr [rcx + 4], 1"
+        }
+      ]
+    },
+    {
+      "rva": "0x1178dd",
+      "interpretation": "Chain ABI version 1",
+      "instructions": [
+        {
+          "rva": "0x1178dd",
+          "bytes": "83790401",
+          "text": "cmp dword ptr [rcx + 4], 1"
+        },
+        {
+          "rva": "0x1178e1",
+          "bytes": "7522",
+          "text": "jne 0x180117905"
+        },
+        {
+          "rva": "0x1178e3",
+          "bytes": "4c8b0536e52501",
+          "text": "mov r8, qword ptr [rip + 0x125e536]"
+        }
+      ]
+    },
+    {
+      "rva": "0x10f955",
+      "interpretation": "Pass count at +0x174",
+      "instructions": [
+        {
+          "rva": "0x10f955",
+          "bytes": "448ba974010000",
+          "text": "mov r13d, dword ptr [rcx + 0x174]"
+        },
+        {
+          "rva": "0x10f95c",
+          "bytes": "418d45ff",
+          "text": "lea eax, [r13 - 1]"
+        },
+        {
+          "rva": "0x10f960",
+          "bytes": "83f809",
+          "text": "cmp eax, 9"
+        }
+      ]
+    },
+    {
+      "rva": "0x10f960",
+      "interpretation": "Unsigned count-minus-one bound: count 1..10",
+      "instructions": [
+        {
+          "rva": "0x10f960",
+          "bytes": "83f809",
+          "text": "cmp eax, 9"
+        },
+        {
+          "rva": "0x10f963",
+          "bytes": "0f8712020000",
+          "text": "ja 0x18010fb7b"
+        },
+        {
+          "rva": "0x10f969",
+          "bytes": "4533ff",
+          "text": "xor r15d, r15d"
+        }
+      ]
+    },
+    {
+      "rva": "0xa607e",
+      "interpretation": "Pass table at +0x17c",
+      "instructions": [
+        {
+          "rva": "0xa607e",
+          "bytes": "488d967c010000",
+          "text": "lea rdx, [rsi + 0x17c]"
+        },
+        {
+          "rva": "0xa6085",
+          "bytes": "486bc068",
+          "text": "imul rax, rax, 0x68"
+        },
+        {
+          "rva": "0xa6089",
+          "bytes": "48057c010000",
+          "text": "add rax, 0x17c"
+        }
+      ]
+    },
+    {
+      "rva": "0xa6085",
+      "interpretation": "Pass stride 0x68",
+      "instructions": [
+        {
+          "rva": "0xa6085",
+          "bytes": "486bc068",
+          "text": "imul rax, rax, 0x68"
+        },
+        {
+          "rva": "0xa6089",
+          "bytes": "48057c010000",
+          "text": "add rax, 0x17c"
+        },
+        {
+          "rva": "0xa608f",
+          "bytes": "4803c6",
+          "text": "add rax, rsi"
+        }
+      ]
+    },
+    {
+      "rva": "0x1110b7",
+      "interpretation": "Local chain entry calls 0xa5fd0",
+      "instructions": [
+        {
+          "rva": "0x1110b7",
+          "bytes": "e8144ff9ff",
+          "text": "call 0x1800a5fd0"
+        },
+        {
+          "rva": "0x1110bc",
+          "bytes": "33c0",
+          "text": "xor eax, eax"
+        },
+        {
+          "rva": "0x1110be",
+          "bytes": "488b8d100b0000",
+          "text": "mov rcx, qword ptr [rbp + 0xb10]"
+        }
+      ]
+    },
+    {
+      "rva": "0xa627c",
+      "interpretation": "Chain wrapper calls 0xa62e0",
+      "instructions": [
+        {
+          "rva": "0xa627c",
+          "bytes": "e85f000000",
+          "text": "call 0x1800a62e0"
+        },
+        {
+          "rva": "0xa6281",
+          "bytes": "4038abc9310000",
+          "text": "cmp byte ptr [rbx + 0x31c9], bpl"
+        },
+        {
+          "rva": "0xa6288",
+          "bytes": "0f855dfeffff",
+          "text": "jne 0x1800a60eb"
+        }
+      ]
+    },
+    {
+      "rva": "0xa6557",
+      "interpretation": "Conditional local evaluation calls 0xa5360",
+      "instructions": [
+        {
+          "rva": "0xa6557",
+          "bytes": "e804eeffff",
+          "text": "call 0x1800a5360"
+        },
+        {
+          "rva": "0xa655c",
+          "bytes": "488b0dad2a2c01",
+          "text": "mov rcx, qword ptr [rip + 0x12c2aad]"
+        },
+        {
+          "rva": "0xa6563",
+          "bytes": "e8d820fdff",
+          "text": "call 0x180078640"
+        }
+      ]
+    },
+    {
+      "rva": "0xa5448",
+      "interpretation": "D3D11 producer Signal (+0x498)",
+      "instructions": [
+        {
+          "rva": "0xa5448",
+          "bytes": "ff9098040000",
+          "text": "call qword ptr [rax + 0x498]"
+        },
+        {
+          "rva": "0xa544e",
+          "bytes": "498b06",
+          "text": "mov rax, qword ptr [r14]"
+        },
+        {
+          "rva": "0xa5451",
+          "bytes": "498bce",
+          "text": "mov rcx, r14"
+        }
+      ]
+    },
+    {
+      "rva": "0xa5454",
+      "interpretation": "D3D11 producer Flush (+0x378)",
+      "instructions": [
+        {
+          "rva": "0xa5454",
+          "bytes": "ff9078030000",
+          "text": "call qword ptr [rax + 0x378]"
+        },
+        {
+          "rva": "0xa545a",
+          "bytes": "488b15af3b2c01",
+          "text": "mov rdx, qword ptr [rip + 0x12c3baf]"
+        },
+        {
+          "rva": "0xa5461",
+          "bytes": "488b8aa00b0000",
+          "text": "mov rcx, qword ptr [rdx + 0xba0]"
+        }
+      ]
+    },
+    {
+      "rva": "0xa5479",
+      "interpretation": "D3D12 queue Wait (+0x78)",
+      "instructions": [
+        {
+          "rva": "0xa5479",
+          "bytes": "ff5078",
+          "text": "call qword ptr [rax + 0x78]"
+        },
+        {
+          "rva": "0xa547c",
+          "bytes": "eb0c",
+          "text": "jmp 0x1800a548a"
+        },
+        {
+          "rva": "0xa547e",
+          "bytes": "498b06",
+          "text": "mov rax, qword ptr [r14]"
+        }
+      ]
+    },
+    {
+      "rva": "0xa547c",
+      "interpretation": "Normal fence branch skips fallback Flush at 0xa5484",
+      "instructions": [
+        {
+          "rva": "0xa547c",
+          "bytes": "eb0c",
+          "text": "jmp 0x1800a548a"
+        },
+        {
+          "rva": "0xa547e",
+          "bytes": "498b06",
+          "text": "mov rax, qword ptr [r14]"
+        },
+        {
+          "rva": "0xa5481",
+          "bytes": "498bce",
+          "text": "mov rcx, r14"
+        }
+      ]
+    },
+    {
+      "rva": "0xa548a",
+      "interpretation": "Begin persistent local command slot (0x75690)",
+      "instructions": [
+        {
+          "rva": "0xa548a",
+          "bytes": "e80102fdff",
+          "text": "call 0x180075690"
+        },
+        {
+          "rva": "0xa548f",
+          "bytes": "4c8be0",
+          "text": "mov r12, rax"
+        },
+        {
+          "rva": "0xa5492",
+          "bytes": "488945ef",
+          "text": "mov qword ptr [rbp - 0x11], rax"
+        }
+      ]
+    },
+    {
+      "rva": "0x756cf",
+      "interpretation": "Begin calls slot selector (0x75bb0)",
+      "instructions": [
+        {
+          "rva": "0x756cf",
+          "bytes": "e8dc040000",
+          "text": "call 0x180075bb0"
+        },
+        {
+          "rva": "0x756d4",
+          "bytes": "4863f8",
+          "text": "movsxd rdi, eax"
+        },
+        {
+          "rva": "0x756d7",
+          "bytes": "85c0",
+          "text": "test eax, eax"
+        }
+      ]
+    },
+    {
+      "rva": "0x75c29",
+      "interpretation": "Slot completion check: fence GetCompletedValue",
+      "instructions": [
+        {
+          "rva": "0x75c29",
+          "bytes": "ff5040",
+          "text": "call qword ptr [rax + 0x40]"
+        },
+        {
+          "rva": "0x75c2c",
+          "bytes": "483bc5",
+          "text": "cmp rax, rbp"
+        },
+        {
+          "rva": "0x75c2f",
+          "bytes": "735d",
+          "text": "jae 0x180075c8e"
+        }
+      ]
+    },
+    {
+      "rva": "0x75c33",
+      "interpretation": "Selector scans eight slots",
+      "instructions": [
+        {
+          "rva": "0x75c33",
+          "bytes": "83fe08",
+          "text": "cmp esi, 8"
+        },
+        {
+          "rva": "0x75c36",
+          "bytes": "7ca9",
+          "text": "jl 0x180075be1"
+        },
+        {
+          "rva": "0x75c38",
+          "bytes": "0fb6b7280c0000",
+          "text": "movzx esi, byte ptr [rdi + 0xc28]"
+        }
+      ]
+    },
+    {
+      "rva": "0x75c72",
+      "interpretation": "Saturated selector calls wait helper (0x70540)",
+      "instructions": [
+        {
+          "rva": "0x75c72",
+          "bytes": "e8c9a8ffff",
+          "text": "call 0x180070540"
+        },
+        {
+          "rva": "0x75c77",
+          "bytes": "8bc6",
+          "text": "mov eax, esi"
+        },
+        {
+          "rva": "0x75c79",
+          "bytes": "488b6c2440",
+          "text": "mov rbp, qword ptr [rsp + 0x40]"
+        }
+      ]
+    },
+    {
+      "rva": "0x705f7",
+      "interpretation": "Fence SetEventOnCompletion",
+      "instructions": [
+        {
+          "rva": "0x705f7",
+          "bytes": "ff5048",
+          "text": "call qword ptr [rax + 0x48]"
+        },
+        {
+          "rva": "0x705fa",
+          "bytes": "baffffffff",
+          "text": "mov edx, 0xffffffff"
+        },
+        {
+          "rva": "0x705ff",
+          "bytes": "488bcd",
+          "text": "mov rcx, rbp"
+        }
+      ]
+    },
+    {
+      "rva": "0x705fa",
+      "interpretation": "OS wait timeout INFINITE",
+      "instructions": [
+        {
+          "rva": "0x705fa",
+          "bytes": "baffffffff",
+          "text": "mov edx, 0xffffffff"
+        },
+        {
+          "rva": "0x705ff",
+          "bytes": "488bcd",
+          "text": "mov rcx, rbp"
+        },
+        {
+          "rva": "0x70602",
+          "bytes": "ff15a00b0c00",
+          "text": "call qword ptr [rip + 0xc0ba0]"
+        }
+      ]
+    },
+    {
+      "rva": "0x70602",
+      "interpretation": "Imported WaitForSingleObject; import verified separately",
+      "instructions": [
+        {
+          "rva": "0x70602",
+          "bytes": "ff15a00b0c00",
+          "text": "call qword ptr [rip + 0xc0ba0]"
+        },
+        {
+          "rva": "0x70608",
+          "bytes": "488b06",
+          "text": "mov rax, qword ptr [rsi]"
+        },
+        {
+          "rva": "0x7060b",
+          "bytes": "488bce",
+          "text": "mov rcx, rsi"
+        }
+      ]
+    },
+    {
+      "rva": "0x702f3",
+      "interpretation": "Device GetDeviceRemovedReason (+0x128)",
+      "instructions": [
+        {
+          "rva": "0x702f3",
+          "bytes": "ff9028010000",
+          "text": "call qword ptr [rax + 0x128]"
+        },
+        {
+          "rva": "0x702f9",
+          "bytes": "85c0",
+          "text": "test eax, eax"
+        },
+        {
+          "rva": "0x702fb",
+          "bytes": "0f95c0",
+          "text": "setne al"
+        }
+      ]
+    },
+    {
+      "rva": "0x7579a",
+      "interpretation": "List Close; subsequent HRESULT test",
+      "instructions": [
+        {
+          "rva": "0x7579a",
+          "bytes": "ff5048",
+          "text": "call qword ptr [rax + 0x48]"
+        },
+        {
+          "rva": "0x7579d",
+          "bytes": "85c0",
+          "text": "test eax, eax"
+        },
+        {
+          "rva": "0x7579f",
+          "bytes": "7920",
+          "text": "jns 0x1800757c1"
+        }
+      ]
+    },
+    {
+      "rva": "0x757e2",
+      "interpretation": "ExecuteCommandLists",
+      "instructions": [
+        {
+          "rva": "0x757e2",
+          "bytes": "ff5050",
+          "text": "call qword ptr [rax + 0x50]"
+        },
+        {
+          "rva": "0x757e5",
+          "bytes": "488b93700c0000",
+          "text": "mov rdx, qword ptr [rbx + 0xc70]"
+        },
+        {
+          "rva": "0x757ec",
+          "bytes": "4885d2",
+          "text": "test rdx, rdx"
+        }
+      ]
+    },
+    {
+      "rva": "0x75809",
+      "interpretation": "Queue completion Signal",
+      "instructions": [
+        {
+          "rva": "0x75809",
+          "bytes": "ff5070",
+          "text": "call qword ptr [rax + 0x70]"
+        },
+        {
+          "rva": "0x7580c",
+          "bytes": "488b83900c0000",
+          "text": "mov rax, qword ptr [rbx + 0xc90]"
+        },
+        {
+          "rva": "0x75813",
+          "bytes": "488984fb980c0000",
+          "text": "mov qword ptr [rbx + rdi*8 + 0xc98], rax"
+        }
+      ]
+    },
+    {
+      "rva": "0x75813",
+      "interpretation": "Store completion target indexed by selected slot",
+      "instructions": [
+        {
+          "rva": "0x75813",
+          "bytes": "488984fb980c0000",
+          "text": "mov qword ptr [rbx + rdi*8 + 0xc98], rax"
+        },
+        {
+          "rva": "0x7581b",
+          "bytes": "8d4701",
+          "text": "lea eax, [rdi + 1]"
+        },
+        {
+          "rva": "0x7581e",
+          "bytes": "2507000080",
+          "text": "and eax, 0x80000007"
+        }
+      ]
+    },
+    {
+      "rva": "0xa57e0",
+      "interpretation": "Submit local command slot (0x75750)",
+      "instructions": [
+        {
+          "rva": "0xa57e0",
+          "bytes": "e86bfffcff",
+          "text": "call 0x180075750"
+        },
+        {
+          "rva": "0xa57e5",
+          "bytes": "4c8b0524382c01",
+          "text": "mov r8, qword ptr [rip + 0x12c3824]"
+        },
+        {
+          "rva": "0xa57ec",
+          "bytes": "498b90800c0000",
+          "text": "mov rdx, qword ptr [r8 + 0xc80]"
+        }
+      ]
+    },
+    {
+      "rva": "0xa5800",
+      "interpretation": "D3D11 consumer Wait method (+0x4a0)",
+      "instructions": [
+        {
+          "rva": "0xa5800",
+          "bytes": "4c8b89a0040000",
+          "text": "mov r9, qword ptr [rcx + 0x4a0]"
+        },
+        {
+          "rva": "0xa5807",
+          "bytes": "4c8bc0",
+          "text": "mov r8, rax"
+        },
+        {
+          "rva": "0xa580a",
+          "bytes": "498bce",
+          "text": "mov rcx, r14"
+        }
+      ]
+    },
+    {
+      "rva": "0xa580d",
+      "interpretation": "Queue D3D11 consumer wait via r9",
+      "instructions": [
+        {
+          "rva": "0xa580d",
+          "bytes": "41ffd1",
+          "text": "call r9"
+        },
+        {
+          "rva": "0xa5810",
+          "bytes": "4c8b05f9372c01",
+          "text": "mov r8, qword ptr [rip + 0x12c37f9]"
+        },
+        {
+          "rva": "0xa5817",
+          "bytes": "488b5620",
+          "text": "mov rdx, qword ptr [rsi + 0x20]"
+        }
+      ]
+    },
+    {
+      "rva": "0xa5852",
+      "interpretation": "D3D11 regional output copy method (+0x170)",
+      "instructions": [
+        {
+          "rva": "0xa5852",
+          "bytes": "4c8b9070010000",
+          "text": "mov r10, qword ptr [rax + 0x170]"
+        },
+        {
+          "rva": "0xa5859",
+          "bytes": "488d4507",
+          "text": "lea rax, [rbp + 7]"
+        },
+        {
+          "rva": "0xa585d",
+          "bytes": "4889442440",
+          "text": "mov qword ptr [rsp + 0x40], rax"
+        }
+      ]
+    },
+    {
+      "rva": "0xa5899",
+      "interpretation": "Alternative full output CopyResource (+0x178)",
+      "instructions": [
+        {
+          "rva": "0xa5899",
+          "bytes": "ff9078010000",
+          "text": "call qword ptr [rax + 0x178]"
+        },
+        {
+          "rva": "0xa589f",
+          "bytes": "eb31",
+          "text": "jmp 0x1800a58d2"
+        },
+        {
+          "rva": "0xa58a1",
+          "bytes": "488b45c7",
+          "text": "mov rax, qword ptr [rbp - 0x39]"
+        }
+      ]
+    },
+    {
+      "rva": "0x11794a",
+      "interpretation": "Status lock at backend +0x31d0",
+      "instructions": [
+        {
+          "rva": "0x11794a",
+          "bytes": "488d88d0310000",
+          "text": "lea rcx, [rax + 0x31d0]"
+        },
+        {
+          "rva": "0x117951",
+          "bytes": "48897c2450",
+          "text": "mov qword ptr [rsp + 0x50], rdi"
+        },
+        {
+          "rva": "0x117956",
+          "bytes": "ff15ec9b0100",
+          "text": "call qword ptr [rip + 0x19bec]"
+        }
+      ]
+    }
+  ],
+  "osWaitImport": [
+    "KERNEL32.dll",
+    "WaitForSingleObject"
+  ],
+  "notEstablished": [
+    "Measured AIO19 vs Dva source-frame cost",
+    "How often either host actually blocks or saturates",
+    "Live NR input extent/color domain and guide provenance",
+    "Same-host model runtime A/B compatibility/cost",
+    "Transitive allocation/waits inside vendor or proxy calls"
+  ],
+  "suppliedDocuments": {
+    "DvaKolbas_current_codex_nr_perf_checkpoint_2026-10-03.md": {
+      "bytes": 4608,
+      "sha256": "5feb336dc7e1f55d6904525388e33cab3fa3f1be38033f232f488d76072f0dd9"
+    },
+    "AIO19_NR_PERF_RE_v5_POLISHED.md": {
+      "bytes": 39012,
+      "sha256": "1f33dd836abe96eb59bd5441a303858017954d85fc5b0cc9d853023f2f6a29f7"
+    }
+  }
+}

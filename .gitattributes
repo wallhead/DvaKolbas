@@ -22,6 +22,7 @@ CMakeLists.txt text eol=lf
 *.ini text eol=lf
 
 # Preserve archived research evidence exactly for its recorded hashes.
+research/aio19/supplied/** -text -whitespace
 research/aio18/supplied-v2/** -text -whitespace
 research/aio18/supplied-v3/** -text -whitespace
 research/aio18/supplied-v4/** -text -whitespace
