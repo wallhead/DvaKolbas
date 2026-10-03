@@ -52,3 +52,7 @@ Performance/SRGB and NativeAA/Gamma22 each pass 176 synthetic sources: 170 NR ev
 ## Skyrim processing smoke and open motion defect
 
 The [Skyrim smoke receipt](skyrim-before-smoke-7eb33a7.json) confirms completed save loading, active NR source processing, live off/on recovery, temporal FSR and successful generation records. The user then reported motion-dependent image changes while NR remained active. This is **not** visual acceptance. Zero weather/time presets loaded; the FSR NR path reads Base directly. [Controlled motion probes](../motion-probe/README.md) do not reproduce an on/off-like collapse with correct synthetic guides. The actual Skyrim source/FG comparison remains the next gate. No production change is justified by these probes alone.
+
+## Local-tone color-shift resolution
+
+[Actual game color/motion capture](../motion-probe/skyrim-color-5b1eb7e.md) confirmed scene-dependent RGB changes inside NR while its settings stayed stable. Changing only the trial's `NRLocalTone` from 1 to 0 removed the reported effect according to the user. The subsequent log retained active NR, live off/on recovery, temporal FSR and FG generation without a rendering error. Keep Local tone 0 in this V5.4 trial; product defaults and the live control remain unchanged. This resolves that specific visual defect, with full NR qualification and true After still open. Progress remains 1 of 8.

@@ -30,10 +30,21 @@ Skyrim and MO2 closed. The complete local game log is retained outside Git in
   RGB difference. Depth was logged as format 44 (`R24G8_TYPELESS`); depth
   pixels were not read back. Global RGB means may hide localized changes.
 
-The next one-variable game check sets only `NRLocalTone` from 1 to 0 in the
-trial INI. The original INI is backed up locally. This is a visual hypothesis
-about the model's scene-dependent tone adjustment, not a production default
-change; intensity, structure, sharpening, model, SR and FG settings remain as
-before. The user will compare the same building and report whether the shift
-is gone, reduced or unchanged. If unchanged, restore 1 and investigate other
-color/guide inputs rather than changing multiple controls together.
+The one-variable game check changed only `NRLocalTone` from 1 to 0 in the
+trial INI. Intensity, structure, sharpening, model, SR and FG settings remained
+as before. The original INI is backed up locally. The user reported **"Effect
+gone"** in the same building comparison. Retain Local tone 0 in this trial;
+this resolves the reported color-shifting effect in the tested setup without
+changing the global product default or removing the live Local tone control.
+
+The following live log confirms active RTX 40 NR Before, successful off/on
+recovery at sources 32821/32909, temporal FSR and actual FG generation. No
+rendering error was present in the inspected log. The successful visual report
+therefore covers the captured FG-on session; an FG-off setting was requested
+but was not observed in the log. The installed INI hash is
+`d72e2a1fa972a15b5b8fdc5e86b63b2a367d94ac06f8d7ec18f384c5bff81ae4`,
+with `NRLocalTone=0` and normal frame logging disabled.
+
+This is bounded user acceptance of the previously reported color effect,
+not complete NR image-quality, performance, lifecycle, other-GPU or true-After
+qualification. Full NR milestone count remains 1 of 8.
