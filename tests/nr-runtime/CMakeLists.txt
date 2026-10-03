@@ -123,6 +123,15 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         endif()
     endif()
     add_executable(TRPNrStageTests ../NrStageTests.cpp)
+    add_executable(TRPNrFrameSlotTests ../NrFrameSlotTests.cpp)
+    target_compile_features(TRPNrFrameSlotTests PRIVATE cxx_std_23)
+    target_compile_definitions(TRPNrFrameSlotTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_include_directories(TRPNrFrameSlotTests PRIVATE "${TRP_NR_NGX_INCLUDE_DIR}")
+    target_link_libraries(TRPNrFrameSlotTests PRIVATE TRPNeuralRuntime)
+    foreach(mode IN ITEMS output unsubmitted)
+        add_test(NAME NrFrameSlot-${mode} COMMAND TRPNrFrameSlotTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" ${mode})
+        set_tests_properties(NrFrameSlot-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 90 RUN_SERIAL TRUE LABELS GPU)
+    endforeach()
     target_compile_features(TRPNrStageTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrStageTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_link_libraries(TRPNrStageTests PRIVATE TRPNeuralRuntime)
@@ -131,7 +140,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         set_tests_properties(NrStage-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 30 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
     set(nrProbeSources tests/nr-runtime/RuntimeProbe.cpp tests/nr-runtime/RuntimeProbeReport.cpp
-        tests/nr-runtime/ObservedQueue.h tests/NrStageTests.cpp
+        tests/nr-runtime/ObservedQueue.h tests/NrStageTests.cpp tests/NrFrameSlotTests.cpp
         tests/nr-runtime/PerformanceProbe.cpp
         src/NeuralRendering/PerformanceMetrics.h src/NeuralRendering/PerformanceMetrics.cpp
         src/NeuralRendering/PerformanceQueries.h src/NeuralRendering/PerformanceQueries.cpp

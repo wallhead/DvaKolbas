@@ -21,11 +21,12 @@ struct StageDiagnostics {
     bool terminal{};
     bool gpuTiming11Available{},gpuTiming12Available{};
     uint64_t gpuTimingDropped{};
+    uint32_t slotCount{},descriptorOwners{},parameterOwners{},pendingTickets{},bridgeSlots{},preparedSlots{};
 };
 class Stage {
 public:
     // All calls, including diagnostics, are serialized by the stage's owner.
-    // Current qualification is one real-image history and one pending ticket.
+    // One serialized real-image history; three retained submitted image slots.
     Stage();~Stage();
     Stage(const Stage&)=delete;Stage& operator=(const Stage&)=delete;
     Result<void> Initialize(std::shared_ptr<RuntimeOwner>,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);
@@ -38,6 +39,7 @@ public:
     Result<void> MarkSubmitted(const EvaluationTicket&,ID3D12Fence*,uint64_t value);
     Result<void> TrackReader(const EvaluationTicket&,ID3D12Fence*,uint64_t value);
     Result<void> RetireTicket(const EvaluationTicket&);
+    Result<uint32_t> CollectCompleted();
     Result<void> Retire();
     StageDiagnostics Diagnostics()const;
 private:

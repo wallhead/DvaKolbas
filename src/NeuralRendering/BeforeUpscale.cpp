@@ -19,14 +19,14 @@ struct BeforeUpscale::State {
     StageContract contract;
     ComPtr<ID3D11Device> device11;
     ComPtr<ID3D11DeviceContext> context;
-    Graphics::SharedTexture color,depth,motion,output;
+    struct Slot {Graphics::SharedTexture color,depth,motion,output;BeforeInput heldInput;};
+    std::array<Slot,3> slots;size_t nextSlot{};
     ComPtr<ID3D12Fence> handoffFence,completionFence;
     ComPtr<ID3D11Fence> handoff11;
     HANDLE event{};
     uint64_t handoffValue{},completionValue{};
     unsigned preset{};
     History history;
-    BeforeInput heldInput;
     bool attempted{},ready{},uncertain{},terminal{};
     ~State(){if(event)CloseHandle(event);}
     Result<void> Gpu(HRESULT hr,const char* text){if(FAILED(hr)){terminal=true;return Fail(ErrorKind::Runtime,text,hr);}return {};}
@@ -82,9 +82,9 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
         const auto created=s.interop.CreateSharedTexture(d,texture);
         if(FAILED(created)) {s.terminal=true;return Result<void>{std::unexpected(Error{ErrorKind::Runtime,created,"NR Before shared texture creation failed, DXGI format="+std::to_string(unsigned(format))+" bind="+std::to_string(d.BindFlags)})};}
         return Result<void>{};};
-    for(auto [format,texture,uav]:{std::tuple{DXGI_FORMAT_R16G16B16A16_FLOAT,&s.color,false},
-        std::tuple{DXGI_FORMAT_R32_FLOAT,&s.depth,false},std::tuple{DXGI_FORMAT_R16G16_FLOAT,&s.motion,false},
-        std::tuple{DXGI_FORMAT_R16G16B16A16_FLOAT,&s.output,true}}){r=make(format,*texture,uav);if(!r)return r;}
+    for(auto& slot:s.slots)for(auto [format,texture,uav]:{std::tuple{DXGI_FORMAT_R16G16B16A16_FLOAT,&slot.color,false},
+        std::tuple{DXGI_FORMAT_R32_FLOAT,&slot.depth,false},std::tuple{DXGI_FORMAT_R16G16_FLOAT,&slot.motion,false},
+        std::tuple{DXGI_FORMAT_R16G16B16A16_FLOAT,&slot.output,true}}){r=make(format,*texture,uav);if(!r)return r;}
     // Stage initialization can submit feature creation; never destroy this
     // bridge's retained devices/queue after an uncertain result.
     s.uncertain=true;r=s.stage.Initialize(std::move(owner),contract,preset,s.metrics);if(!r){s.terminal=true;return r;}
@@ -112,33 +112,33 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     p.colorExtent=input.colorExtent;p.guideExtent=input.guideExtent;p.motionScaleX=input.motionScaleX;p.motionScaleY=input.motionScaleY;
     p.reset=input.reset;p.depthInverted=input.depthInverted;
     auto history=s.history.Check(p,settings);if(!history)return std::unexpected(history.error());
-    s.heldInput=input;
+    auto& slot=s.slots[s.nextSlot];slot.heldInput=input;
     auto gpu=[&](HRESULT hr,const char* text)->Result<void>{return s.Gpu(hr,text);};
     if(s.ownTiming11)s.queries11->Begin11(input.context.Get(),input.sourceId);
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::InputCopy,true);
-    auto r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.color.Get(),s.color);}),"NR Before color copy rejected");if(!r)return std::unexpected(r.error());
-    r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.depth.Get(),s.depth);}),"NR Before depth copy rejected");if(!r)return std::unexpected(r.error());
-    r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.motion.Get(),s.motion);}),"NR Before motion copy rejected");if(!r)return std::unexpected(r.error());
+    auto r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.color.Get(),slot.color);}),"NR Before color copy rejected");if(!r)return std::unexpected(r.error());
+    r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.depth.Get(),slot.depth);}),"NR Before depth copy rejected");if(!r)return std::unexpected(r.error());
+    r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.motion.Get(),slot.motion);}),"NR Before motion copy rejected");if(!r)return std::unexpected(r.error());
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::InputCopy,false);
     r=gpu(MeasurePerformance(s.metrics,CpuPhase::ProducerSignal,[&]{return s.interop.SignalProducer();}),"NR Before producer submission failed");if(!r)return std::unexpected(r.error());
     r=gpu(s.interop.ProducerDependency(&p.producerFence,&p.producerFenceValue),"NR Before submitted producer dependency missing");if(!r)return std::unexpected(r.error());
     ID3D12GraphicsCommandList* list{};r=gpu(MeasurePerformance(s.metrics,CpuPhase::Begin,[&]{return s.interop.Begin(&list);}),"NR Before command recording begin failed");if(!r)return std::unexpected(r.error());
     constexpr auto read=D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-    for(auto* resource:{s.color.texture12.Get(),s.depth.texture12.Get(),s.motion.texture12.Get()})Transition(list,resource,D3D12_RESOURCE_STATE_COMMON,read);
-    Transition(list,s.output.texture12.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-    p.color=s.color.texture12;p.depth=s.depth.texture12;p.motion=s.motion.texture12;p.output=s.output.texture12;
+    for(auto* resource:{slot.color.texture12.Get(),slot.depth.texture12.Get(),slot.motion.texture12.Get()})Transition(list,resource,D3D12_RESOURCE_STATE_COMMON,read);
+    Transition(list,slot.output.texture12.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    p.color=slot.color.texture12;p.depth=slot.depth.texture12;p.motion=slot.motion.texture12;p.output=slot.output.texture12;
     p.colorState=p.depthState=p.motionState=read;p.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
     p.reset=history->Reset();auto ticket=s.stage.RecordQueued(list,p,settings);
     if(!ticket){s.terminal=true;return std::unexpected(ticket.error());}
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}
-    for(auto* resource:{s.color.texture12.Get(),s.depth.texture12.Get(),s.motion.texture12.Get()})Transition(list,resource,read,D3D12_RESOURCE_STATE_COMMON);
-    Transition(list,s.output.texture12.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COMMON);
+    for(auto* resource:{slot.color.texture12.Get(),slot.depth.texture12.Get(),slot.motion.texture12.Get()})Transition(list,resource,read,D3D12_RESOURCE_STATE_COMMON);
+    Transition(list,slot.output.texture12.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COMMON);
     r=gpu(MeasurePerformance(s.metrics,CpuPhase::Submit,[&]{return s.interop.Submit();}),"NR Before recorded list submission failed");if(!r)return std::unexpected(r.error());
     if(s.completionValue==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR Before completion sequence exhausted");}
     r=s.stage.MarkSubmitted(*ticket,s.completionFence.Get(),++s.completionValue);if(!r){s.terminal=true;return std::unexpected(r.error());}
     r=gpu(s.interop.WaitConsumer(),"NR Before D3D11 consumer wait failed");if(!r)return std::unexpected(r.error());
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::Delivery,true);
-    r=gpu(MeasurePerformance(s.metrics,CpuPhase::Delivery,[&]{return D3D11FrameCopy::Color(input.context.Get(),s.output.texture11.Get(),input.color.Get(),{input.colorExtent.width,input.colorExtent.height});}),"NR Before copy back failed");if(!r)return std::unexpected(r.error());
+    r=gpu(MeasurePerformance(s.metrics,CpuPhase::Delivery,[&]{return D3D11FrameCopy::Color(input.context.Get(),slot.output.texture11.Get(),input.color.Get(),{input.colorExtent.width,input.colorExtent.height});}),"NR Before copy back failed");if(!r)return std::unexpected(r.error());
     if(s.queries11){s.queries11->Stamp11(input.context.Get(),GpuPhase::Delivery,false);if(s.ownTiming11)s.queries11->End11(input.context.Get());}
     // Queue a real D3D11 signal after the copy reading the shared NR output.
     // Stage retains the source and output through that signal's completion.
@@ -149,7 +149,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     r=s.Wait(s.completionFence.Get(),s.completionValue,CpuPhase::CompletionWait);if(!r)return std::unexpected(r.error());
     r=gpu(MeasurePerformance(s.metrics,CpuPhase::Drain,[&]{return s.interop.Drain();}),"NR Before allocator/consumer retirement failed");if(!r)return std::unexpected(r.error());
     r=s.stage.RetireTicket(*ticket);if(!r){s.terminal=true;return std::unexpected(r.error());}
-    s.heldInput={};return BeforeResult{true,history->Reset()};
+    slot.heldInput={};s.nextSlot=(s.nextSlot+1)%s.slots.size();return BeforeResult{true,history->Reset()};
 }
 Result<void> BeforeUpscale::Retire(){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR Before terminal; no teardown retry");
@@ -158,5 +158,5 @@ Result<void> BeforeUpscale::Retire(){
     if(s.ownTiming11)s.queries11->Collect11(s.context.Get());
     r=s.stage.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;return {};
 }
-StageDiagnostics BeforeUpscale::Diagnostics()const{auto d=state_->stage.Diagnostics();if(state_->ownTiming11){d.gpuTiming11Available=state_->queries11->Available11();d.gpuTimingDropped+=state_->queries11->Dropped();}return d;}
+StageDiagnostics BeforeUpscale::Diagnostics()const{auto d=state_->stage.Diagnostics();d.bridgeSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->ownTiming11){d.gpuTiming11Available=state_->queries11->Available11();d.gpuTimingDropped+=state_->queries11->Dropped();}return d;}
 }

@@ -11,6 +11,13 @@ spec.loader.exec_module(comparison)
 
 
 class Validity(unittest.TestCase):
+    def test_retained_descriptors_need_no_per_source_allocation(self):
+        receipt=self.receipt()
+        for sample in receipt['samples']:sample['descriptorCreations']=0
+        self.assertEqual(comparison.issues(receipt),[])
+        receipt['samples'][0]['descriptorCreations']=None
+        self.assertIn('incomplete source', ' '.join(comparison.issues(receipt)))
+
     def receipt(self):
         return dict(schema=1,scope='standalone prepared Before NR transaction; no FSR/FG/Skyrim FPS',
                     sourceRevision='abc',compiledSourceSha256={'stage':'def'},runtimeSha256='modelA',

@@ -64,8 +64,17 @@ struct Stage::State {
     ComPtr<ID3D12GraphicsCommandList> creationList;
     ComPtr<ID3D12Fence> creationFence;
     struct Reader {ComPtr<ID3D12Fence> fence;uint64_t value{};};
-    struct Pending {ImagePacket packet;ComPtr<ID3D12DescriptorHeap> views;uint64_t id{};bool submitted{};std::vector<Reader> readers;};
-    std::unique_ptr<Pending> pending;
+    struct Pending {ImagePacket packet;ComPtr<ID3D12GraphicsCommandList> list;uint64_t id{};bool submitted{};std::vector<Reader> readers;};
+    struct Slot {std::unique_ptr<Pending> pending;ComPtr<ID3D12DescriptorHeap> views;NVSDK_NGX_Parameter* parameters{};};
+    std::array<Slot,3> slots;
+    size_t nextSlot{};
+    bool HasPending()const{for(const auto& slot:slots)if(slot.pending)return true;return false;}
+    Slot* Find(const EvaluationTicket& ticket){if(!ticketOwner.Owns(ticket.owner_))return nullptr;for(auto& slot:slots)if(slot.pending&&slot.pending->id==ticket.id_)return &slot;return nullptr;}
+    Result<bool> Complete(const Pending& pending){
+        if(!pending.submitted)return false;
+        for(const auto& reader:pending.readers){auto value=reader.fence->GetCompletedValue();if(value==UINT64_MAX){terminal=true;return Fail(ErrorKind::Retirement,"NR reader fence reports device removal");}if(value<reader.value)return false;}
+        return true;
+    }
     Result<void> Gpu(HRESULT code,const char* text){if(FAILED(code)){terminal=true;return Fail(ErrorKind::Runtime,text,code);}return {};}
     Result<void> Native(uint32_t code,const char* text){if(code!=1 || allocation.failed){terminal=true;return Fail(ErrorKind::Runtime,text,code);}return {};}
     Result<void> BuildAlpha(){
@@ -85,12 +94,11 @@ struct Stage::State {
         D3D12_COMPUTE_PIPELINE_STATE_DESC pipeline{};pipeline.pRootSignature=alphaRoot.Get();pipeline.CS={shader->GetBufferPointer(),shader->GetBufferSize()};
         return Gpu(contract.device->CreateComputePipelineState(&pipeline,IID_PPV_ARGS(&alphaPipeline)),"NR alpha pipeline creation failed");
     }
-    bool Owns(const EvaluationTicket& ticket)const{return ticketOwner.Owns(ticket.owner_)&&pending&&pending->id==ticket.id_;}
 };
 Stage::Stage():state_(std::make_unique<State>()){}
 Stage::~Stage(){
     // Never call vendor cleanup, wait queues or release uncertain recordings.
-    if(state_->client || state_->feature || state_->parameters || state_->pending)state_.release();
+    if(state_->client || state_->feature || state_->parameters || state_->HasPending())state_.release();
 }
 Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageContract& c,unsigned preset,PerformanceMetrics* metrics){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR stage initialization already attempted");s.attempted=true;
@@ -132,16 +140,29 @@ Result<EvaluationTicket> Stage::RecordQueued(ID3D12GraphicsCommandList* list,con
 }
 Result<EvaluationTicket> Stage::RecordInternal(ID3D12GraphicsCommandList* list,const ImagePacket& packet,const SettingsSnapshot& settings,bool queued){
     PerformanceScope performance(state_->metrics,CpuPhase::Record);
-    auto& s=*state_;if(!s.ready||s.terminal)return Fail(ErrorKind::Runtime,"NR stage unavailable/terminal");if(s.pending)return Fail(ErrorKind::Retirement,"NR prior recording/readers have not retired");
+    auto& s=*state_;if(!s.ready||s.terminal)return Fail(ErrorKind::Runtime,"NR stage unavailable/terminal");
+    auto healthy=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during admission");if(!healthy)return std::unexpected(healthy.error());
+    State::Slot* available{};
+    for(size_t i=0;i<s.slots.size();++i){auto& slot=s.slots[(s.nextSlot+i)%s.slots.size()];if(!slot.pending){if(!available)available=&slot;continue;}if(!slot.pending->submitted)return Fail(ErrorKind::Retirement,"NR prior recording has not been submitted");}
+    if(!available)return Fail(ErrorKind::Retirement,"NR three image slots remain occupied; backpressure");
     if(settings.reconstruction.preset!=s.preset || settings.reconstruction.inputScale!=1 || settings.reconstruction.peripheralCompression || settings.reconstruction.fusedPreparation || settings.reconstruction.producerColor || settings.reconstruction.colorIsHDR ||
         settings.reconstruction.method>ResolveMethod::Ratio || EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR shared native stage requires adapter-owned reconstruction before/after it");
     auto validated=queued?QueuedImageAdmission::Validate(list,packet,s.contract,s.fences):ValidateImagePacket(list,packet,s.contract,&s.fences);
     if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
+    for(const auto& slot:s.slots)if(slot.pending){
+        const auto& held=slot.pending->packet;
+        for(auto* incoming:{packet.color.Get(),packet.output.Get(),packet.depth.Get(),packet.motion.Get()})
+            for(auto* occupied:{held.color.Get(),held.output.Get(),held.depth.Get(),held.motion.Get()}){
+                ComPtr<IUnknown> a,b;if(SUCCEEDED(incoming->QueryInterface(IID_PPV_ARGS(&a)))&&SUCCEEDED(occupied->QueryInterface(IID_PPV_ARGS(&b)))&&a==b)return Fail(ErrorKind::Retirement,"NR image resource aliases an occupied slot");
+            }
+    }
     if(s.serial==UINT64_MAX)return Fail(ErrorKind::Runtime,"NR ticket sequence exhausted");
+    auto& slot=*available;
+    s.nextSlot=(size_t(available-s.slots.data())+1)%s.slots.size();
     // Retain the whole packet before touching the queue, including when a
     // subsequent descriptor allocation or vendor recording fails terminally.
-    s.pending=std::make_unique<State::Pending>();s.pending->packet=packet;s.pending->id=++s.serial;
+    slot.pending=std::make_unique<State::Pending>();slot.pending->packet=packet;slot.pending->list=list;slot.pending->id=++s.serial;
     // Validate every input/history identity first. A failed Wait records no NR
     // commands, and only this retained queue may admit the exact dependency.
     if(queued&&packet.producerFence){
@@ -150,51 +171,60 @@ Result<EvaluationTicket> Stage::RecordInternal(ID3D12GraphicsCommandList* list,c
     }
     if(s.timing)s.timing->Begin12(list,packet.sourceId);
     D3D12_DESCRIPTOR_HEAP_DESC heap{};heap.Type=D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;heap.NumDescriptors=2;heap.Flags=D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    auto r=s.Gpu(s.contract.device->CreateDescriptorHeap(&heap,IID_PPV_ARGS(&s.pending->views)),"NR per-record descriptor owner creation failed");if(!r)return std::unexpected(r.error());
-    if(s.metrics)s.metrics->RecordDescriptorCreation();
-    auto cpu=s.pending->views->GetCPUDescriptorHandleForHeapStart();D3D12_SHADER_RESOURCE_VIEW_DESC srv{};srv.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;srv.ViewDimension=D3D12_SRV_DIMENSION_TEXTURE2D;srv.Shader4ComponentMapping=D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;srv.Texture2D.MipLevels=1;
+    Result<void> r;
+    if(!slot.views){r=s.Gpu(s.contract.device->CreateDescriptorHeap(&heap,IID_PPV_ARGS(&slot.views)),"NR retained slot descriptor creation failed");if(!r)return std::unexpected(r.error());if(s.metrics)s.metrics->RecordDescriptorCreation();}
+    if(!slot.parameters){r=s.Native(s.owner->Exports().allocate(&slot.parameters),"NR retained slot parameter allocation failed");if(!r)return std::unexpected(r.error());if(!slot.parameters){s.terminal=true;return Fail(ErrorKind::Runtime,"NR slot allocator returned null parameters");}
+        r=WriteDirectCreationParameters(*slot.parameters,{s.owner->ProfileId(),s.contract.colorExtent,s.contract.guideExtent,s.preset});if(!r){s.terminal=true;return std::unexpected(r.error());}
+        slot.parameters->Set("ResourceAllocCallback",reinterpret_cast<void*>(&Allocate));slot.parameters->Set("ResourceReleaseCallback",reinterpret_cast<void*>(&ReleaseResource));slot.parameters->Set("DLSSNRComputeScalingRatioCallback",reinterpret_cast<void*>(&Scaling));}
+    auto cpu=slot.views->GetCPUDescriptorHandleForHeapStart();D3D12_SHADER_RESOURCE_VIEW_DESC srv{};srv.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;srv.ViewDimension=D3D12_SRV_DIMENSION_TEXTURE2D;srv.Shader4ComponentMapping=D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;srv.Texture2D.MipLevels=1;
     s.contract.device->CreateShaderResourceView(packet.color.Get(),&srv,cpu);cpu.ptr+=s.contract.device->GetDescriptorHandleIncrementSize(heap.Type);
     D3D12_UNORDERED_ACCESS_VIEW_DESC uav{};uav.Format=srv.Format;uav.ViewDimension=D3D12_UAV_DIMENSION_TEXTURE2D;s.contract.device->CreateUnorderedAccessView(packet.output.Get(),nullptr,&uav,cpu);
-    auto& p=*s.parameters;p.Set("DLSSNR.Color",packet.color.Get());p.Set("DLSSNR.MVec",packet.motion.Get());p.Set("DLSSNR.Depth",packet.depth.Get());p.Set("DLSSNR.Output",packet.output.Get());
+    auto& p=*slot.parameters;p.Set("DLSSNR.Color",packet.color.Get());p.Set("DLSSNR.MVec",packet.motion.Get());p.Set("DLSSNR.Depth",packet.depth.Get());p.Set("DLSSNR.Output",packet.output.Get());
     p.Set("DLSSNR.UI",static_cast<ID3D12Resource*>(nullptr));p.Set("DLSSNR.UIAlpha",static_cast<ID3D12Resource*>(nullptr));
     for(const char* plane:{"Color","MVec","Depth","Output"}){const auto prefix=std::string("DLSSNR.")+plane+"Subrect";p.Set((prefix+"BaseX").c_str(),0u);p.Set((prefix+"BaseY").c_str(),0u);p.Set((prefix+"Width").c_str(),packet.colorExtent.width);p.Set((prefix+"Height").c_str(),packet.colorExtent.height);}
     p.Set("DLSSNR.MVecScaleX",packet.motionScaleX);p.Set("DLSSNR.MVecScaleY",packet.motionScaleY);auto tuning=settings.tuning;tuning.uiCorrection=false;WriteTuningParameters(p,tuning,history->Reset(),packet.depthInverted,RuntimeBuild::Build14);
     if(s.timing)s.timing->Stamp12(list,GpuPhase::Vendor,true);
-    s.evaluate=s.owner->Exports().evaluate(list,s.feature,s.parameters,nullptr);r=s.Native(s.evaluate,"NR shared evaluation failed; recording ownership retained");if(!r)return std::unexpected(r.error());
+    s.evaluate=s.owner->Exports().evaluate(list,s.feature,slot.parameters,nullptr);r=s.Native(s.evaluate,"NR shared evaluation failed; recording ownership retained");if(!r)return std::unexpected(r.error());
     if(s.timing){s.timing->Stamp12(list,GpuPhase::Vendor,false);s.timing->Stamp12(list,GpuPhase::Alpha,true);}
-    UavBarrier(list,packet.output.Get());ID3D12DescriptorHeap* heaps[]={s.pending->views.Get()};list->SetDescriptorHeaps(1,heaps);list->SetComputeRootSignature(s.alphaRoot.Get());list->SetPipelineState(s.alphaPipeline.Get());
-    list->SetComputeRootDescriptorTable(0,s.pending->views->GetGPUDescriptorHandleForHeapStart());list->Dispatch((packet.colorExtent.width+7)/8,(packet.colorExtent.height+7)/8,1);UavBarrier(list,packet.output.Get());
+    UavBarrier(list,packet.output.Get());ID3D12DescriptorHeap* heaps[]={slot.views.Get()};list->SetDescriptorHeaps(1,heaps);list->SetComputeRootSignature(s.alphaRoot.Get());list->SetPipelineState(s.alphaPipeline.Get());
+    list->SetComputeRootDescriptorTable(0,slot.views->GetGPUDescriptorHandleForHeapStart());list->Dispatch((packet.colorExtent.width+7)/8,(packet.colorExtent.height+7)/8,1);UavBarrier(list,packet.output.Get());
     if(s.timing){s.timing->Stamp12(list,GpuPhase::Alpha,false);s.timing->Resolve12(list);}
-    r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}++s.recorded;EvaluationTicket ticket;ticket.owner_=s.ticketOwner.Seal();ticket.id_=s.pending->id;ticket.image_=packet.imageId;ticket.output_=packet.output;return ticket;
+    r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}++s.recorded;EvaluationTicket ticket;ticket.owner_=s.ticketOwner.Seal();ticket.id_=slot.pending->id;ticket.image_=packet.imageId;ticket.output_=packet.output;return ticket;
 }
 Result<void> Stage::MarkSubmitted(const EvaluationTicket& ticket,ID3D12Fence* fence,uint64_t value){
-    auto& s=*state_;if(s.terminal||!s.Owns(ticket)||s.pending->submitted||!value)return Fail(ErrorKind::InvalidInput,"NR submission ticket/fence invalid");
+    auto& s=*state_;auto* slot=s.Find(ticket);if(s.terminal||!slot||slot->pending->submitted||!value)return Fail(ErrorKind::InvalidInput,"NR submission ticket/fence invalid");
     auto identity=s.fences.Validate(fence,s.contract.device.Get());if(!identity)return identity;
     if(fence->GetCompletedValue()>=value || s.submissionValue==UINT64_MAX)
         return Fail(ErrorKind::InvalidInput,"NR submission value already completed/exhausted");
     // An external fence can be signalled by another owner. Our private fence
     // always also covers this stage's actual queue order and is never exported.
-    s.pending->readers.push_back({s.creationFence,++s.submissionValue});s.pending->readers.push_back({fence,value});
+    slot->pending->readers.push_back({s.creationFence,++s.submissionValue});slot->pending->readers.push_back({fence,value});
     auto r=s.Gpu(s.contract.queue->Signal(s.creationFence.Get(),s.submissionValue),"NR private completion signal failed; ownership retained");if(!r)return r;
-    r=s.Gpu(s.contract.queue->Signal(fence,value),"NR recording completion signal failed; ownership retained");if(!r)return r;s.pending->submitted=true;
+    r=s.Gpu(s.contract.queue->Signal(fence,value),"NR recording completion signal failed; ownership retained");if(!r)return r;slot->pending->submitted=true;
     if(s.timing)s.timing->Submitted12(s.creationFence.Get(),s.submissionValue);if(s.metrics)s.metrics->RecordSubmitted();return {};
 }
 Result<void> Stage::TrackReader(const EvaluationTicket& ticket,ID3D12Fence* fence,uint64_t value){
-    auto& s=*state_;if(s.terminal||!s.Owns(ticket)||!s.pending->submitted||!value)return Fail(ErrorKind::InvalidInput,"NR output reader ticket/fence invalid");
-    auto identity=s.fences.Validate(fence,s.contract.device.Get());if(!identity)return identity;s.pending->readers.push_back({fence,value});return {};
+    auto& s=*state_;auto* slot=s.Find(ticket);if(s.terminal||!slot||!slot->pending->submitted||!value)return Fail(ErrorKind::InvalidInput,"NR output reader ticket/fence invalid");
+    auto identity=s.fences.Validate(fence,s.contract.device.Get());if(!identity)return identity;slot->pending->readers.push_back({fence,value});return {};
 }
 Result<void> Stage::RetireTicket(const EvaluationTicket& ticket){
-    auto& s=*state_;if(s.terminal||!s.Owns(ticket)||!s.pending->submitted)return Fail(ErrorKind::Retirement,"NR ticket unsubmitted/foreign/terminal");auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during ticket retirement");if(!r)return r;
-    for(const auto& reader:s.pending->readers){const auto completed=reader.fence->GetCompletedValue();if(completed==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Retirement,"NR reader fence reports device removal");}if(completed<reader.value)return Fail(ErrorKind::Retirement,"NR output readers remain pending");}s.pending.reset();if(s.metrics)s.metrics->RecordCompleted();return {};
+    auto& s=*state_;auto* slot=s.Find(ticket);if(s.terminal||!slot||!slot->pending->submitted)return Fail(ErrorKind::Retirement,"NR ticket unsubmitted/foreign/terminal");auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during ticket retirement");if(!r)return r;
+    auto completed=s.Complete(*slot->pending);if(!completed)return std::unexpected(completed.error());if(!*completed)return Fail(ErrorKind::Retirement,"NR output readers remain pending");slot->pending.reset();if(s.metrics)s.metrics->RecordCompleted();return {};
+}
+Result<uint32_t> Stage::CollectCompleted(){
+    auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; ownership retained");if(!s.ready)return uint32_t{0};auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during collection");if(!r)return std::unexpected(r.error());uint32_t count{};
+    for(auto& slot:s.slots)if(slot.pending){auto complete=s.Complete(*slot.pending);if(!complete)return std::unexpected(complete.error());if(*complete){slot.pending.reset();++count;if(s.metrics)s.metrics->RecordCompleted();}}return count;
 }
 Result<void> Stage::Retire(){
-    auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; no teardown retry");if(s.pending)return Fail(ErrorKind::Retirement,"NR recorded output/reader owners remain pending");if(!s.client)return {};
+    auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; no teardown retry");if(s.HasPending())return Fail(ErrorKind::Retirement,"NR recorded output/reader owners remain pending");if(!s.client)return {};
     if(s.timing)s.timing->Collect12();
     s.release=s.owner->Exports().release(s.feature);auto r=s.Native(s.release,"NR feature release failed; ownership retained");if(!r)return r;s.feature=nullptr;
+    for(auto& slot:s.slots)if(slot.parameters){s.destroy=s.owner->Exports().destroy(slot.parameters);r=s.Native(s.destroy,"NR slot parameter destruction failed; ownership retained");if(!r)return r;slot.parameters=nullptr;slot.views.Reset();}
     s.destroy=s.owner->Exports().destroy(s.parameters);r=s.Native(s.destroy,"NR parameter destruction failed; ownership retained");if(!r)return r;s.parameters=nullptr;
     {std::scoped_lock lock(allocationMutex);if(activeAllocation!=&s.allocation || !s.allocation.resources.empty() || s.allocation.failed){s.terminal=true;return Fail(ErrorKind::Retirement,"NR callback allocation ownership unbalanced");}activeAllocation=nullptr;}
     r=s.owner->ReleaseClientAfterRetirement();if(!r){s.terminal=true;return r;}s.client=false;s.ready=false;return {};
 }
 StageDiagnostics Stage::Diagnostics()const{const auto& s=*state_;StageDiagnostics d{s.create,s.evaluate,s.release,s.destroy,s.allocation.allocations,s.allocation.releases,s.recorded,s.terminal};
+    d.slotCount=uint32_t(s.slots.size());for(const auto& slot:s.slots){d.descriptorOwners+=bool(slot.views);d.parameterOwners+=bool(slot.parameters);d.pendingTickets+=bool(slot.pending);}
     if(s.timing){d.gpuTiming12Available=s.timing->Available12();d.gpuTimingDropped=s.timing->Dropped();}return d;}
 }

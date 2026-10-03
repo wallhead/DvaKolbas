@@ -62,7 +62,7 @@ def issues(receipt):
                 problems.append('invalid phase timing');break
         if receipt.get('instrumentation') and receipt.get('nrEnabled'):
             if any(sample.get('gpuMilliseconds',{}).get(p) is None for p in BEFORE_PHASES):problems.append('missing Before GPU timing')
-            if any(sample.get(k)!=1 for k in ('descriptorCreations','submitted','completed')) or sample.get('waitCalls',0)<1:
+            if sample.get('descriptorCreations') not in (0,1) or any(sample.get(k)!=1 for k in ('submitted','completed')) or sample.get('waitCalls',0)<1:
                 problems.append('incomplete source transaction')
         if receipt.get('instrumentation') and receipt.get('fsrEnabled'):
             if any(sample.get('gpuMilliseconds',{}).get(p) is None for p in FSR_PHASES):problems.append('missing FSR GPU timing')

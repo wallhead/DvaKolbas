@@ -45,6 +45,8 @@ int wmain(int argc,wchar_t** argv){try{
     }
     Check(alpha==320ull*180*240,"AllUnormAlphaValuesSurviveDecodeNrEncode");Check(changed>320*180,"NrModifiedRgbDeliveredToOriginalSdrColor");
     Check(prepared.Diagnostics().recorded==239,"PreparedNrOffOnUsesOnePassPerEnabledSource");
+    const auto pooled=prepared.Diagnostics();
+    Check(pooled.preparedSlots==3&&pooled.bridgeSlots==3&&pooled.parameterOwners==3&&pooled.descriptorOwners==3&&!pooled.pendingTickets,"PreparedAndBridgeRetainThreeCompleteImageSlots");
     Check(bool(prepared.Retire())&&bool(owner->Retire()),"PreparedReadersAndRuntimeRetire");
     std::printf("PREPARED_NR frames=240 alpha=%llu changed=%llu\n",(unsigned long long)alpha,(unsigned long long)changed);return failures?1:0;
 }catch(...){return 1;}}

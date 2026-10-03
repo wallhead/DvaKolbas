@@ -119,6 +119,8 @@ int wmain(int argc,wchar_t** argv){try{
     Check(bypassPreservedPixels==uint64_t(width)*height*8,"DisabledNrLeavesEverySourcePixelUnchanged");
     const std::set<std::string> distinct(rgbHashes.begin(),rgbHashes.end());
     Check(distinct.size()==232,"EveryEvaluatedNativeFrameHasDistinctRgbOutput");
+    const auto pooled=bridge.Diagnostics();
+    Check(pooled.bridgeSlots==3&&pooled.descriptorOwners==3&&pooled.parameterOwners==3&&!pooled.pendingTickets,"ThreeRetainedBridgeSlotsReuseDescriptorsAndParameters");
     const auto retired=bridge.Retire();Check(bool(retired),"BeforeRetiresStageAfterD3D11Readers");
     Check(bool(owner->Retire()),"BeforeRuntimeShutsDownAfterFeatureRetirement");
     const auto diagnostics=bridge.Diagnostics();

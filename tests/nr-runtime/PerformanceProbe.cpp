@@ -183,7 +183,7 @@ int wmain(int argc,wchar_t** argv){try{
     timingComplete=!options.instrumentation||!options.enabled;
     if(options.instrumentation){const auto s=metrics.Snapshot();timingComplete=s.droppedFrames==0&&s.droppedIntervals==0;}
     if(options.instrumentation&&options.enabled){const auto s=metrics.Snapshot();timingComplete=s.droppedFrames==0&&s.droppedIntervals==0&&diagnostics.gpuTimingDropped==0;
-        for(const auto& f:s.frames)if(f.sourceId>options.warmup&&f.nrEnabled)timingComplete&=f.waitCalls>0&&f.descriptorCreations==1&&f.submitted==1&&f.completed==1&&
+        for(const auto& f:s.frames)if(f.sourceId>options.warmup&&f.nrEnabled)timingComplete&=f.waitCalls>0&&f.descriptorCreations<=1&&f.submitted==1&&f.completed==1&&
             f.gpuMilliseconds[size_t(GpuPhase::Vendor)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::Alpha)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::PrepareColor)].has_value()&&
             f.gpuMilliseconds[size_t(GpuPhase::PrepareGuides)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::InputCopy)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::Delivery)].has_value()&&f.gpuMilliseconds[size_t(GpuPhase::Encode)].has_value();}
     if(options.instrumentation&&!options.fsrRuntime.empty()){timingComplete&=fsrTiming11&&fsrTiming12&&!fsrTimingDropped;for(const auto& f:metrics.Snapshot().frames)if(f.sourceId>options.warmup)timingComplete&=
