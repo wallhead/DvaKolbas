@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "scope": "Partial P0 standalone measurement checkpoint; product tests from precommit tree; final clean product/package/game acceptance remains open",
+  "milestonesComplete": 1,
+  "milestonesTotal": 8,
+  "cleanProbeSourceRevision": "acfa93a905669cd6a28e365cde74e58e0d8da3ef",
+  "timingCases": 24,
+  "timingSamples": 7200,
+  "warmupPerTimingCase": 120,
+  "gpuWorkFinished": true,
+  "skyrimOrMo2Changed": false,
+  "fsrPhaseTimingComplete": false,
+  "skyrimPerformanceMeasured": false,
+  "logs": [
+    {
+      "file": "product-build.log",
+      "kind": "build",
+      "scope": "Standard NR on",
+      "passed": 0,
+      "exitCode": 0,
+      "sha256": "bd8efd2c0a10788231a14ffa58fdbd65bccc4d762324aadbc4c1e0d52a909722"
+    },
+    {
+      "file": "nr-off-final-build.log",
+      "kind": "build",
+      "scope": "Standard NR off",
+      "passed": 0,
+      "exitCode": 0,
+      "sha256": "c733731fa9f0081ef3f4c14d1dd9bc46ae73c17e0442d8397bdfa44649b1b0c9"
+    },
+    {
+      "file": "product-ctest.log",
+      "kind": "ctest",
+      "scope": "Standard NR on",
+      "passed": 165,
+      "exitCode": 0,
+      "sha256": "e2951421e57e72e7353ffa1c15573f7e08cb8b76e4299a3dc2689fe8860f6a2e"
+    },
+    {
+      "file": "nr-off-ctest.log",
+      "kind": "ctest",
+      "scope": "Standard NR off; initial148 pass /7 fixture skips",
+      "passed": 148,
+      "exitCode": 0,
+      "sha256": "70d92165dd35f3140fb6fce47eb82292ede18cac933faa3dc35f5d230d4c482e"
+    },
+    {
+      "file": "nr-off-missing-fixtures-ctest.log",
+      "kind": "ctest",
+      "scope": "All7 skipped fixtures plus missing-export control rerun with actual paths",
+      "passed": 8,
+      "exitCode": 0,
+      "sha256": "366665120948675672110529dccbf3a17707d1b58a2255edbc29b5c721f78d69"
+    },
+    {
+      "file": "final-ctest.log",
+      "kind": "ctest",
+      "scope": "Standalone runtime including actual ReShade",
+      "passed": 29,
+      "exitCode": 0,
+      "sha256": "cedab016c88267d149966ad9b9596661226b993bf30798db7eac8b4b4a1a25aa"
+    }
+  ],
+  "productImports": [
+    {
+      "variant": "fsr-fg-standard",
+      "sha256": "bed20eafa0dbab78654bab11048c1741c64bead32110ce4731a4085fa6ecf600",
+      "mandatoryNormalOrDelayedVendorImports": []
+    },
+    {
+      "variant": "fsr-fg-standard-nr-off",
+      "sha256": "a0f9e51cd43ae6cd89b655a456a5adb337b9f6c9150f7a63c3764cbe29a144a2",
+      "mandatoryNormalOrDelayedVendorImports": []
+    }
+  ],
+  "excludedUnavailableChecks": [
+    "NativeUIComposition",
+    "NativeUIBlendState",
+    "NeuralPeripheralPixels"
+  ]
+}
