@@ -1,4 +1,4 @@
-"""Validate and summarize standalone NR transaction timings; never Skyrim FPS."""
+"""Validate standalone NR/optional FSR transaction timings; never Skyrim FPS."""
 import argparse
 import hashlib
 import json
@@ -111,12 +111,12 @@ def main():
             if kind=='unmatched' or cases[i]['issues'] or cases[j]['issues']:continue
             a=cases[i]['summary']['wallMilliseconds']['median'];b=cases[j]['summary']['wallMilliseconds']['median']
             comparisons.append({'a':args.receipts[i].name,'b':args.receipts[j].name,'kind':kind,'bMinusAMedianMilliseconds':b-a})
-    report={'schema':1,'scope':'NR transaction timing; source/display FPS and AIO host performance not measured',
+    report={'schema':1,'scope':'Standalone NR/optional FSR transaction timing; source/display FPS and AIO host performance not measured',
             'summarizerSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             'cases':cases,'comparisons':comparisons}
     if args.output:
         args.output.parent.mkdir(parents=True,exist_ok=True);args.output.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
-        for case in cases:print(f"{case['receipt']}: median NR transaction {case['summary']['wallMilliseconds']['median']} ms; issues={len(case['issues'])}")
+        for case in cases:print(f"{case['receipt']}: median standalone transaction {case['summary']['wallMilliseconds']['median']} ms; issues={len(case['issues'])}")
     else:print(json.dumps(report,indent=2))
     return 1 if any(c['issues'] for c in cases) else 0
 
