@@ -91,6 +91,14 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     add_test(NAME NrBeforeUpscale COMMAND TRPNrBeforeUpscaleTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}")
     set_tests_properties(NrBeforeUpscale PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
     add_executable(TRPNrPreparedBeforeTests ../NrPreparedBeforeTests.cpp)
+    add_executable(TRPNrDeferredDeliveryTests ../NrDeferredDeliveryTests.cpp)
+    target_compile_features(TRPNrDeferredDeliveryTests PRIVATE cxx_std_23)
+    target_compile_definitions(TRPNrDeferredDeliveryTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_link_libraries(TRPNrDeferredDeliveryTests PRIVATE TRPNeuralRuntime)
+    foreach(mode IN ITEMS pressure retire timeout)
+        add_test(NAME NrDeferredDelivery-${mode} COMMAND TRPNrDeferredDeliveryTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" ${mode})
+        set_tests_properties(NrDeferredDelivery-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 90 RUN_SERIAL TRUE LABELS GPU)
+    endforeach()
     target_compile_features(TRPNrPreparedBeforeTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrPreparedBeforeTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_link_libraries(TRPNrPreparedBeforeTests PRIVATE TRPNeuralRuntime)
@@ -117,6 +125,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
                 "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
                 --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>"
                 --host-exe "$<TARGET_FILE:TRPNrBeforeHostFramesTests>"
+                --deferred-exe "$<TARGET_FILE:TRPNrDeferredDeliveryTests>"
                 --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
                 --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-before")
             set_tests_properties(NrReShadeBefore PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
@@ -140,7 +149,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         set_tests_properties(NrStage-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 30 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
     set(nrProbeSources tests/nr-runtime/RuntimeProbe.cpp tests/nr-runtime/RuntimeProbeReport.cpp
-        tests/nr-runtime/ObservedQueue.h tests/NrStageTests.cpp tests/NrFrameSlotTests.cpp
+        tests/nr-runtime/ObservedQueue.h tests/NrStageTests.cpp tests/NrFrameSlotTests.cpp tests/NrDeferredDeliveryTests.cpp
         tests/nr-runtime/PerformanceProbe.cpp
         src/NeuralRendering/PerformanceMetrics.h src/NeuralRendering/PerformanceMetrics.cpp
         src/NeuralRendering/PerformanceQueries.h src/NeuralRendering/PerformanceQueries.cpp

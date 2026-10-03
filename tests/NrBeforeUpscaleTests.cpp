@@ -96,6 +96,7 @@ int wmain(int argc,wchar_t** argv){try{
         if(!result){std::printf("frame %u: %s\n",frame,result.error().message.c_str());return 1;}
         if(result->evaluated)++evaluated;else ++bypassed;
         if((frame==0||frame==88||frame==120)&&result->effectiveReset)++resumedReset;
+        if(result->evaluated&&!bridge.WaitDelivery(*result))return 1;
         // An SR consumer on this immediate context can now read the modified
         // color. This is a native bridge readback, not an SR/FG proof.
         context->CopyResource(readback.Get(),color.Get());D3D11_MAPPED_SUBRESOURCE mapped{};

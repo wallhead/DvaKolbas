@@ -13,7 +13,16 @@ struct BeforeInput {
     float motionScaleX{},motionScaleY{};
     bool reset{},depthInverted{};
 };
-struct BeforeResult {bool evaluated{},effectiveReset{};};
+class DeliveryTicket {
+public:
+    uint64_t SourceId()const noexcept{return source_;}
+    uint64_t Epoch()const noexcept{return epoch_;}
+private:
+    friend class BeforeUpscale;friend class PreparedBeforeUpscale;
+    Detail::TicketOwnership::Token owner_;
+    uint64_t id_{},source_{},epoch_{};size_t slot_{};
+};
+struct BeforeResult {bool evaluated{},effectiveReset{};DeliveryTicket delivery;};
 class BeforeUpscale {
 public:
     BeforeUpscale();~BeforeUpscale();
@@ -23,9 +32,12 @@ public:
     // same immediate D3D11 context. Caller serializes all calls and unbinds
     // writable views before Evaluate. No UI/After or game color preparation.
     Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr,PerformanceQueries* queries11=nullptr);
-    // Return success only after the copy back and its actual D3D11 reader
-    // have completed. This first bridge prioritizes proof over pipelining.
+    // Success means delivery was queued on the authoritative immediate context.
+    // Readback callers explicitly WaitDelivery; later work on that context is ordered.
     Result<BeforeResult> Evaluate(const BeforeInput&,const SettingsSnapshot&);
+    Result<uint32_t> CollectCompleted();
+    Result<void> WaitDelivery(const BeforeResult&);
+    Result<void> TrackReader(const DeliveryTicket&,ID3D12Fence*,uint64_t value);
     Result<void> Retire();
     StageDiagnostics Diagnostics()const;
 private:

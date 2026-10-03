@@ -3,6 +3,7 @@
 #include "History.h"
 #include "Graphics/D3D11D3D12Interop.h"
 #include <cmath>
+#include <chrono>
 namespace TheosRenderPipeline::NeuralRendering {
 namespace {
 using Microsoft::WRL::ComPtr;
@@ -19,8 +20,9 @@ struct BeforeUpscale::State {
     StageContract contract;
     ComPtr<ID3D11Device> device11;
     ComPtr<ID3D11DeviceContext> context;
-    struct Slot {Graphics::SharedTexture color,depth,motion,output;BeforeInput heldInput;};
+    struct Slot {Graphics::SharedTexture color,depth,motion,output;BeforeInput heldInput;std::optional<EvaluationTicket> ticket;uint64_t id{},source{},epoch{};};
     std::array<Slot,3> slots;size_t nextSlot{};
+    Detail::TicketOwnership deliveryOwner;uint64_t deliverySerial{};
     ComPtr<ID3D12Fence> handoffFence,completionFence;
     ComPtr<ID3D11Fence> handoff11;
     HANDLE event{};
@@ -28,6 +30,7 @@ struct BeforeUpscale::State {
     unsigned preset{};
     History history;
     bool attempted{},ready{},uncertain{},terminal{};
+    Slot* Find(const DeliveryTicket& t){if(!deliveryOwner.Owns(t.owner_)||t.slot_>=slots.size())return nullptr;auto& slot=slots[t.slot_];return slot.id&&slot.id==t.id_&&slot.source==t.source_&&slot.epoch==t.epoch_?&slot:nullptr;}
     ~State(){if(event)CloseHandle(event);}
     Result<void> Gpu(HRESULT hr,const char* text){if(FAILED(hr)){terminal=true;return Fail(ErrorKind::Runtime,text,hr);}return {};}
     Result<void> Wait(ID3D12Fence* fence,uint64_t value,CpuPhase phase=CpuPhase::ProducerWait){
@@ -43,6 +46,24 @@ struct BeforeUpscale::State {
         if(completed==UINT64_MAX||completed<value){terminal=true;return Fail(ErrorKind::Retirement,"NR Before handoff fence incomplete");}
         auto r=Gpu(contract.device->GetDeviceRemovedReason(),"NR Before D3D12 device removed");if(!r)return r;
         return Gpu(device11->GetDeviceRemovedReason(),"NR Before D3D11 device removed");
+    }
+    Result<uint32_t> Collect(){
+        if(terminal)return Fail(ErrorKind::Retirement,"NR Before terminal; ownership retained");if(!ready)return uint32_t{0};
+        auto r=Gpu(device11->GetDeviceRemovedReason(),"NR Before D3D11 device removed during collection");if(!r)return std::unexpected(r.error());uint32_t count{};
+        for(auto& slot:slots)if(slot.ticket){auto retired=stage.RetireTicket(*slot.ticket);if(retired){slot.ticket.reset();slot.heldInput={};++count;}else if(stage.Diagnostics().terminal||retired.error().kind!=ErrorKind::Retirement){terminal=true;return std::unexpected(retired.error());}}
+        return count;
+    }
+    Result<size_t> Acquire(){
+        auto find=[&]()->std::optional<size_t>{for(size_t i=0;i<slots.size();++i){auto index=(nextSlot+i)%slots.size();if(!slots[index].ticket)return index;}return std::nullopt;};
+        auto collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find())return *index;
+        PerformanceScope performance(metrics,CpuPhase::ConsumerWait);if(metrics)metrics->RecordSlotPressure();interop.Context11()->Flush();if(metrics)metrics->RecordFlush();auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(20);uint64_t blocked{};
+        for(;;){collected=Collect();if(!collected)return std::unexpected(collected.error());if(auto index=find()){if(metrics)metrics->RecordWait(CpuPhase::ConsumerWait,true,blocked);return *index;}if(std::chrono::steady_clock::now()>=deadline){terminal=true;return Fail(ErrorKind::Retirement,"NR Before slot capacity reader retirement deadline exceeded; ownership retained");}auto start=metrics?PerformanceNow():0;Sleep(1);if(metrics)blocked+=PerformanceNow()-start;}
+    }
+    Result<void> WaitPending(Slot* selected=nullptr){
+        if(terminal)return Fail(ErrorKind::Retirement,"NR Before terminal; ownership retained");if(!ready)return {};
+        PerformanceScope performance(metrics,CpuPhase::ConsumerWait);interop.Context11()->Flush();if(metrics)metrics->RecordFlush();auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(20);uint64_t blocked{};bool slept=false;
+        for(;;){auto collected=Collect();if(!collected)return std::unexpected(collected.error());bool busy=false;for(const auto& slot:slots)busy|=bool(slot.ticket)&&(!selected||selected==&slot);if(!busy){if(metrics)metrics->RecordWait(CpuPhase::ConsumerWait,slept,blocked);return {};}
+            if(std::chrono::steady_clock::now()>=deadline){terminal=true;return Fail(ErrorKind::Retirement,"NR Before delivery retirement deadline exceeded; ownership retained");}auto start=metrics?PerformanceNow():0;Sleep(1);slept=true;if(metrics)blocked+=PerformanceNow()-start;}
     }
     bool Texture(ID3D11Texture2D* texture,DXGI_FORMAT format)const {
         if(!texture)return false;ComPtr<ID3D11Device> device;texture->GetDevice(&device);
@@ -94,7 +115,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     auto& s=*state_;
     PerformanceScope performance(s.metrics,CpuPhase::Bridge);
     if(s.terminal)return Fail(ErrorKind::Runtime,"NR Before terminal; ownership retained");
-    if(!settings.enabled){s.history.ResetNext();return BeforeResult{false,input.reset};}
+    if(!settings.enabled){auto drained=s.WaitPending();if(!drained)return std::unexpected(drained.error());s.history.ResetNext();return BeforeResult{false,input.reset};}
     if(!s.ready)return Fail(ErrorKind::InvalidInput,"NR Before runtime/bridge not initialized");
     if(settings.placement!=Placement::Before)return Fail(ErrorKind::Unsupported,"NR Before cannot evaluate an After request");
     if(input.colorDomain!=ColorDomain::Linear||input.colorExtent!=s.contract.colorExtent||input.guideExtent!=s.contract.guideExtent||
@@ -112,7 +133,8 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     p.colorExtent=input.colorExtent;p.guideExtent=input.guideExtent;p.motionScaleX=input.motionScaleX;p.motionScaleY=input.motionScaleY;
     p.reset=input.reset;p.depthInverted=input.depthInverted;
     auto history=s.history.Check(p,settings);if(!history)return std::unexpected(history.error());
-    auto& slot=s.slots[s.nextSlot];slot.heldInput=input;
+    auto index=s.Acquire();if(!index)return std::unexpected(index.error());auto& slot=s.slots[*index];slot.heldInput=input;
+    if(s.deliverySerial==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR Before delivery sequence exhausted");}slot.id=++s.deliverySerial;slot.source=input.sourceId;slot.epoch=input.epoch;
     auto gpu=[&](HRESULT hr,const char* text)->Result<void>{return s.Gpu(hr,text);};
     if(s.ownTiming11)s.queries11->Begin11(input.context.Get(),input.sourceId);
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::InputCopy,true);
@@ -130,6 +152,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     p.colorState=p.depthState=p.motionState=read;p.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
     p.reset=history->Reset();auto ticket=s.stage.RecordQueued(list,p,settings);
     if(!ticket){s.terminal=true;return std::unexpected(ticket.error());}
+    slot.ticket=*ticket;
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}
     for(auto* resource:{slot.color.texture12.Get(),slot.depth.texture12.Get(),slot.motion.texture12.Get()})Transition(list,resource,read,D3D12_RESOURCE_STATE_COMMON);
     Transition(list,slot.output.texture12.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COMMON);
@@ -145,18 +168,19 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     if(s.handoffValue==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR Before consumer sequence exhausted");}
     r=gpu(s.interop.Context11()->Signal(s.handoff11.Get(),++s.handoffValue),"NR Before output reader signal failed");if(!r)return std::unexpected(r.error());
     r=s.stage.TrackReader(*ticket,s.handoffFence.Get(),s.handoffValue);if(!r){s.terminal=true;return std::unexpected(r.error());}
-    s.interop.Context11()->Flush();if(s.metrics)s.metrics->RecordFlush();r=s.Wait(s.handoffFence.Get(),s.handoffValue,CpuPhase::ConsumerWait);if(!r)return std::unexpected(r.error());
-    r=s.Wait(s.completionFence.Get(),s.completionValue,CpuPhase::CompletionWait);if(!r)return std::unexpected(r.error());
-    r=gpu(MeasurePerformance(s.metrics,CpuPhase::Drain,[&]{return s.interop.Drain();}),"NR Before allocator/consumer retirement failed");if(!r)return std::unexpected(r.error());
-    r=s.stage.RetireTicket(*ticket);if(!r){s.terminal=true;return std::unexpected(r.error());}
-    slot.heldInput={};s.nextSlot=(s.nextSlot+1)%s.slots.size();return BeforeResult{true,history->Reset()};
+    s.interop.Context11()->Flush();if(s.metrics)s.metrics->RecordFlush();
+    DeliveryTicket delivery;delivery.owner_=s.deliveryOwner.Seal();delivery.id_=slot.id;delivery.source_=slot.source;delivery.epoch_=slot.epoch;delivery.slot_=*index;s.nextSlot=(*index+1)%s.slots.size();return BeforeResult{true,history->Reset(),delivery};
 }
+Result<uint32_t> BeforeUpscale::CollectCompleted(){return state_->Collect();}
+Result<void> BeforeUpscale::WaitDelivery(const BeforeResult& result){auto& s=*state_;if(!result.evaluated)return {};auto* slot=s.Find(result.delivery);if(!slot)return Fail(ErrorKind::InvalidInput,"NR Before delivery ticket expired/foreign");return s.WaitPending(slot);}
+Result<void> BeforeUpscale::TrackReader(const DeliveryTicket& delivery,ID3D12Fence* fence,uint64_t value){auto& s=*state_;auto* slot=s.Find(delivery);if(s.terminal||!slot||!slot->ticket)return Fail(ErrorKind::InvalidInput,"NR Before reader delivery expired/foreign");auto result=s.stage.TrackReader(*slot->ticket,fence,value);if(!result){s.terminal=true;return result;}return {};}
 Result<void> BeforeUpscale::Retire(){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR Before terminal; no teardown retry");
     if(!s.ready)return {};
+    auto drained=s.WaitPending();if(!drained)return drained;
     auto r=s.Gpu(MeasurePerformance(s.metrics,CpuPhase::Drain,[&]{return s.interop.Drain();}),"NR Before final consumer retirement failed");if(!r)return r;
     if(s.ownTiming11)s.queries11->Collect11(s.context.Get());
     r=s.stage.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;return {};
 }
-StageDiagnostics BeforeUpscale::Diagnostics()const{auto d=state_->stage.Diagnostics();d.bridgeSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->ownTiming11){d.gpuTiming11Available=state_->queries11->Available11();d.gpuTimingDropped+=state_->queries11->Dropped();}return d;}
+StageDiagnostics BeforeUpscale::Diagnostics()const{auto d=state_->stage.Diagnostics();d.terminal|=state_->terminal;d.bridgeSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->ownTiming11){d.gpuTiming11Available=state_->queries11->Available11();d.gpuTimingDropped+=state_->queries11->Dropped();}return d;}
 }

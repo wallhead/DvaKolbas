@@ -55,6 +55,8 @@ public:
     void RecordResourceCreation();
     void RecordSubmitted();
     void RecordCompleted();
+    void RecordCompletedFor(uint64_t sourceId);
+    void RecordSlotPressure();
     PerformanceSnapshot Snapshot()const;
 private:
     size_t capacity_;

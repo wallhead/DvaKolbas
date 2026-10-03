@@ -209,11 +209,11 @@ Result<void> Stage::TrackReader(const EvaluationTicket& ticket,ID3D12Fence* fenc
 }
 Result<void> Stage::RetireTicket(const EvaluationTicket& ticket){
     auto& s=*state_;auto* slot=s.Find(ticket);if(s.terminal||!slot||!slot->pending->submitted)return Fail(ErrorKind::Retirement,"NR ticket unsubmitted/foreign/terminal");auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during ticket retirement");if(!r)return r;
-    auto completed=s.Complete(*slot->pending);if(!completed)return std::unexpected(completed.error());if(!*completed)return Fail(ErrorKind::Retirement,"NR output readers remain pending");slot->pending.reset();if(s.metrics)s.metrics->RecordCompleted();return {};
+    auto completed=s.Complete(*slot->pending);if(!completed)return std::unexpected(completed.error());if(!*completed)return Fail(ErrorKind::Retirement,"NR output readers remain pending");if(s.metrics)s.metrics->RecordCompletedFor(slot->pending->packet.sourceId);slot->pending.reset();return {};
 }
 Result<uint32_t> Stage::CollectCompleted(){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; ownership retained");if(!s.ready)return uint32_t{0};auto r=s.Gpu(s.contract.device->GetDeviceRemovedReason(),"NR device removed during collection");if(!r)return std::unexpected(r.error());uint32_t count{};
-    for(auto& slot:s.slots)if(slot.pending){auto complete=s.Complete(*slot.pending);if(!complete)return std::unexpected(complete.error());if(*complete){slot.pending.reset();++count;if(s.metrics)s.metrics->RecordCompleted();}}return count;
+    for(auto& slot:s.slots)if(slot.pending){auto complete=s.Complete(*slot.pending);if(!complete)return std::unexpected(complete.error());if(*complete){if(s.metrics)s.metrics->RecordCompletedFor(slot.pending->packet.sourceId);slot.pending.reset();++count;}}return count;
 }
 Result<void> Stage::Retire(){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR stage terminal; no teardown retry");if(s.HasPending())return Fail(ErrorKind::Retirement,"NR recorded output/reader owners remain pending");if(!s.client)return {};

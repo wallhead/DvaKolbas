@@ -61,7 +61,7 @@ void Write(){
         out<<"{\"source\":"<<sample.id<<",\"wallMilliseconds\":"<<double(sample.nanoseconds)/1e6;
         const PerformanceFrame* frame{};for(const auto& f:snapshot.frames)if(f.sourceId==sample.id){frame=&f;break;}
         if(frame){out<<",\"waitCalls\":"<<frame->waitCalls<<",\"blockingCalls\":"<<frame->blockingCalls<<",\"blockMilliseconds\":"<<double(frame->blockNanoseconds)/1e6
-            <<",\"flushes\":"<<frame->flushes<<",\"descriptorCreations\":"<<frame->descriptorCreations<<",\"submitted\":"<<frame->submitted<<",\"completed\":"<<frame->completed
+            <<",\"slotPressure\":"<<frame->slotPressure<<",\"flushes\":"<<frame->flushes<<",\"descriptorCreations\":"<<frame->descriptorCreations<<",\"submitted\":"<<frame->submitted<<",\"completed\":"<<frame->completed
             <<",\"cpuUnionMilliseconds\":"<<double(frame->cpuUnionNanoseconds)/1e6<<",\"cpuMilliseconds\":{";
             for(size_t p=0;p<size_t(CpuPhase::Count);++p){if(p)out<<',';out<<std::quoted(std::string(PhaseName(CpuPhase(p))))<<':'<<double(frame->cpuNanoseconds[p])/1e6;}
             out<<"},\"waitMilliseconds\":{";for(size_t p=0;p<size_t(CpuPhase::Count);++p){if(p)out<<',';out<<std::quoted(std::string(PhaseName(CpuPhase(p))))<<':'<<double(frame->waitNanoseconds[p])/1e6;}

@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cmath>
 using namespace TheosRenderPipeline::NeuralRendering;
+template<class T>void LateCompletion(T& metrics){if constexpr(requires{metrics.RecordCompletedFor(1);})metrics.RecordCompletedFor(1);else metrics.RecordCompleted();}
 int main() {
     int failures{};
     const auto check=[&](bool value,const char* name){std::printf("%s %s\n",value?"PASS":"FAIL",name);failures+=!value;};
@@ -42,6 +43,8 @@ int main() {
     snapshot=metrics.Snapshot();
     check(snapshot.frames[0].gpuMilliseconds[size_t(GpuPhase::Delivery)]==5.0&&
         !snapshot.frames[1].gpuMilliseconds[size_t(GpuPhase::Delivery)],"LateQueriesKeepSourceIdentity");
+    LateCompletion(metrics);snapshot=metrics.Snapshot();
+    check(snapshot.frames[0].completed==1&&snapshot.frames[1].completed==0,"LateRetirementKeepsSourceIdentity");
     metrics.EndFrame();metrics.RecordFlush();
     check(metrics.Snapshot().frames[1].flushes==0,"LifecycleCollectionDoesNotContaminateLastFrame");
     PerformanceWorkload left{2560,1440,"Before","e67dee",1,0.0f},right=left;

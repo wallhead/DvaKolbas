@@ -38,6 +38,7 @@ int wmain(int argc,wchar_t** argv){try{
         auto* target=rtv.Get();context->OMSetRenderTargets(1,&target,nullptr);
         auto result=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,s);
         if(!result){std::printf("frame %u %s\n",frame,result.error().message.c_str());return 1;}
+        if(result->evaluated&&!prepared.WaitDelivery(*result))return 1;
         ComPtr<ID3D11RenderTargetView> restored;context->OMGetRenderTargets(1,&restored,nullptr);if(restored.Get()!=rtv.Get())return 1;
         context->OMSetRenderTargets(0,nullptr,nullptr);context->CopyResource(readback.Get(),color.Get());D3D11_MAPPED_SUBRESOURCE m{};Need(context->Map(readback.Get(),0,D3D11_MAP_READ,0,&m));
         for(UINT y=0;y<180;++y){const auto* row=static_cast<const unsigned char*>(m.pData)+y*m.RowPitch;for(UINT x=0;x<320;++x){const auto p=(y*320+x)*4;alpha+=row[x*4+3]==pixels[p+3];if(row[x*4]!=pixels[p]||row[x*4+1]!=pixels[p+1]||row[x*4+2]!=pixels[p+2])++changed;}}

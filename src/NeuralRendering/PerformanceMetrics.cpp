@@ -30,6 +30,8 @@ void PerformanceMetrics::RecordDescriptorCreation(){if(current_)++current_->desc
 void PerformanceMetrics::RecordResourceCreation(){if(current_)++current_->resourceCreations;}
 void PerformanceMetrics::RecordSubmitted(){if(current_)++current_->submitted;}
 void PerformanceMetrics::RecordCompleted(){if(current_)++current_->completed;}
+void PerformanceMetrics::RecordCompletedFor(uint64_t source){if(!enabled_)return;for(auto it=data_.frames.rbegin();it!=data_.frames.rend();++it)if(it->sourceId==source){++it->completed;return;}}
+void PerformanceMetrics::RecordSlotPressure(){if(current_)++current_->slotPressure;}
 PerformanceSnapshot PerformanceMetrics::Snapshot()const{
     auto copy=data_;
     for(auto& frame:copy.frames){

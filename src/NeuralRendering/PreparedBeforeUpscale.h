@@ -12,6 +12,9 @@ public:
     PreparedBeforeUpscale& operator=(const PreparedBeforeUpscale&)=delete;
     Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);
     Result<BeforeResult> Evaluate(const BeforeInput&,Upscaling::ColorEncoding,const SettingsSnapshot&);
+    Result<uint32_t> CollectCompleted();
+    Result<void> WaitDelivery(const BeforeResult&);
+    Result<void> TrackReader(const DeliveryTicket&,ID3D12Fence*,uint64_t value);
     Result<void> Retire();
     StageDiagnostics Diagnostics()const;
 private:
