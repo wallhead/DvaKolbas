@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "First running Skyrim native DLAA/NR After/NVIDIA FG trial on RTX 4080 SUPER; bounded log prefix, not full acceptance",
+  "ownerReport": "Seems working",
+  "builtSourceRevision": "dc6a9abe3630",
+  "log": {
+    "file": "TheosRenderPipeline.log",
+    "bytes": 199095,
+    "sha256": "4e0541c167d15d3aa832efa970ae28852f8b9ef64a123f36fad82ac552bf2c2d",
+    "lastLineTimestamp": "2026-10-04 17:50:59.400",
+    "prefixOnly": true
+  },
+  "observations": {
+    "afterNrLoggedSamples": 20,
+    "beforeNrLoggedSamples": 21,
+    "nrOffLoggedSamples": 1,
+    "x2OutputSamplesWhileAfterSelected": 8,
+    "errorCriticalLines": 0,
+    "latestSettings": "[2026-10-04 17:47:18.165] [thread 23824] [info] [Community NR settings] revision=9 placement=Before SR stableColors=false tone=1.015 structure=1.015 style=0",
+    "latestFg": "[2026-10-04 17:50:59.400] [thread 23824] [info] [SourceDLSSG] frame=30600 enabled=true status=0 presented=1 maximum=1 inputFence=0x2069d1748b0 value=26196 runtimePresentedTotal=38208 stateQueries=30601 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=30600 nativeOutputs=38185 nativeBatchedAdditional=7590 nativeQueryFailures=0 outputBatches=30600 generatedPresented=7608 interpolatedNotPresented=15116 batchMismatches=0 unknownOutputBatches=0 configurationChanges=1 reflexQueries=957 reflexFailures=0 reflexReports=30560 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00"
+  },
+  "evidenceLines": [
+    "[2026-10-04 17:40:21.063] [thread 23824] [info] [Renderer build] TRP_BUILD|edition=Standard|source=dc6a9abe3630|FSR=1|FG=1|NR=1",
+    "[2026-10-04 17:41:02.622] [thread 11240] [info] [Community NR settings] revision=1 placement=After SR before FG stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 17:43:32.853] [thread 23824] [info] [Community NR settings] revision=2 placement=Before SR stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 17:43:40.499] [thread 23824] [info] [Community NR settings] revision=3 placement=After SR before FG stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 17:43:48.082] [thread 23824] [info] [Community NR settings] revision=4 placement=After SR before FG stableColors=true tone=1 structure=1 style=0",
+    "[2026-10-04 17:43:54.201] [thread 23824] [info] [Community NR settings] revision=5 placement=After SR before FG stableColors=true tone=2 structure=2 style=0",
+    "[2026-10-04 17:44:04.409] [thread 23824] [info] [Community NR settings] revision=6 placement=After SR before FG stableColors=true tone=2 structure=2 style=0",
+    "[2026-10-04 17:44:07.150] [thread 23824] [info] [Community NR settings] revision=7 placement=After SR before FG stableColors=false tone=2 structure=2 style=0",
+    "[2026-10-04 17:47:12.365] [thread 23824] [info] [Community NR settings] revision=8 placement=After SR before FG stableColors=false tone=1.015 structure=1.015 style=0",
+    "[2026-10-04 17:47:18.165] [thread 23824] [info] [Community NR settings] revision=9 placement=Before SR stableColors=false tone=1.015 structure=1.015 style=0",
+    "[2026-10-04 17:43:12.925] [thread 23824] [info] [Community NR frame] source=7778 requested=true evaluated=true profile=rtx40 revision=1 reset=true frames=1 resets=1 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 17:47:08.807] [thread 23824] [info] [Community NR frame] source=19787 requested=true evaluated=true profile=rtx40 revision=7 reset=false frames=10800 resets=28 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 17:43:33.067] [thread 23824] [info] [Community NR frame] source=8727 requested=true evaluated=true profile=rtx40 revision=2 reset=true frames=950 resets=26 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 17:50:59.140] [thread 23824] [info] [Community NR frame] source=30587 requested=true evaluated=true profile=rtx40 revision=9 reset=false frames=21600 resets=30 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 17:44:04.410] [thread 23824] [info] [Community NR frame] source=10464 requested=false evaluated=false profile=rtx40 revision=6 reset=true frames=1659 resets=27 status=NR off",
+    "[2026-10-04 17:43:26.019] [thread 23824] [info] [SourceDLSSG] frame=8400 enabled=true status=0 presented=2 maximum=1 inputFence=0x2069d1748b0 value=8400 runtimePresentedTotal=8921 stateQueries=8401 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=8400 nativeOutputs=8908 nativeBatchedAdditional=510 nativeQueryFailures=0 outputBatches=8400 generatedPresented=521 interpolatedNotPresented=3 batchMismatches=0 unknownOutputBatches=0 configurationChanges=1 reflexQueries=263 reflexFailures=0 reflexReports=8351 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+    "[2026-10-04 17:47:09.074] [thread 23824] [info] [SourceDLSSG] frame=19800 enabled=true status=0 presented=2 maximum=1 inputFence=0x2069d1748b0 value=19800 runtimePresentedTotal=25840 stateQueries=19801 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=19800 nativeOutputs=25819 nativeBatchedAdditional=6023 nativeQueryFailures=0 outputBatches=19800 generatedPresented=6040 interpolatedNotPresented=5884 batchMismatches=0 unknownOutputBatches=0 configurationChanges=1 reflexQueries=619 reflexFailures=0 reflexReports=19743 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00"
+  ],
+  "qualifications": [
+    "NR source enhancement and NVIDIA runtime x2 output observed while After selected; generated-image quality and physical cadence are not measured",
+    "User confirms this trial seems working; full menu/save/load/fast-travel/alt-tab/minimize acceptance is pending",
+    "Actual combined FSR generation/presentation and other GPU families remain unqualified",
+    "Latest observed placement is Before; settings were changed in game by user, no agent edits",
+    "No game, INI or MO2 changes by agent during this capture"
+  ],
+  "settingsChangedByAgent": false,
+  "milestonesComplete": 3,
+  "milestonesTotal": 8
+}

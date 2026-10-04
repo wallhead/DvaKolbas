@@ -54,3 +54,11 @@ and NRBeforeUpscaling=false changed. Working files are backed up; DLAA, NVIDIA
 FG, Style 0, Tone 1, Stable colors off, remaining mod files and MO2 settings were
 verified preserved. Skyrim has not been launched for this After trial. No
 Before/After or AIO performance parity claim is made.
+
+First Skyrim trial: the owner reports "Seems working". The [running-game
+receipt](skyrim-dlaa-after-game-result.json) observes native DLAA After NR,
+NVIDIA x2 output while After is selected, live Before/After and NR off/on.
+No error/critical entries occur in the captured prefix. This closes the initial
+NVIDIA execution observation gate on RTX 4080 SUPER, with broader quality,
+lifecycle, physical cadence and performance checks still pending. Latest logged
+placement is Before. This capture changes no game/INI/MO2 files; count stays 3/8.
