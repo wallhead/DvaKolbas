@@ -1,0 +1,2 @@
+# Preserve the exact source bytes pinned by the compiled research receipt.
+FormatContextProbe.cpp -text
