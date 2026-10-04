@@ -1,13 +1,8 @@
 # NR implementation progress — 2026-10-03
 
-**1 of 8 milestones complete:** Task 2, the standalone direct runtime catalog/owner and RTX 40 GPU qualification. Task order differs from completion count: Task 1 true post-FG feasibility remains open.
+**3 of 8 milestones complete:** native-size post-SR contract (Task1), inherited runtime/catalog (Task2), shared Before/After source stage (Task3).
 
-**Current scope, 2026-10-04:** the owner requests `input -> upscale -> NR -> FG -> final`.
-The [revised plan](superpowers/plans/2026-10-04-nr-post-sr.md) keeps one live
-Before/After-upscaling pass for DLSS/DLAA and FSR/NativeAA. After now enhances
-each real source before FG; generated images inherit enhanced sources without
-a separate NR evaluation. Qualify display-size real guides and actual enhanced
-FG-source handoff next. The working Before trial is unchanged; **1 of 8**.
+**Latest checkpoint, 2026-10-04:** the [source-stage evidence](../research/nr/post-sr/SOURCE_STAGE.md) qualifies Native AA/DLAA After. The stage order is `upscale -> source effects -> NR -> optional FG -> UI`. The reduced-guide experiment fails thin/unaligned surfaces, so scaled After remains unavailable. Actual FSR Native AA/NR/upload passed 55,296,000 enhanced FG-source bytes; native/ReShade stage switching with a genuine pending encoder and resize passed. Live End controls expose Before/After upscaling (before FG). Actual NVIDIA vendor chaining, combined FSR generated output, remaining lifecycle/performance and Skyrim acceptance remain open. The installed accepted Before trial and MO2 settings are preserved.
 
 **Historical post-FG research checkpoint, 2026-10-04:** resumed true After-FG feasibility.
 The [independent source-pair guide experiment](../research/nr/post-fg/GUIDE_RECONSTRUCTION.md)

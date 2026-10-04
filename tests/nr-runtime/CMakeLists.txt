@@ -152,6 +152,8 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         set_tests_properties(NrBeforeHostFrames PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrBeforeHostFrames-sdr-bytes COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/sdr-host.json" --sdr-bytes)
         set_tests_properties(NrBeforeHostFrames-sdr-bytes PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+        add_test(NAME NrPostSrHost-switch COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/post-sr-host.json" --sdr-bytes --post-sr)
+        set_tests_properties(NrPostSrHost-switch PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrBeforeHost COMMAND TRPNrBeforeHostTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrBeforeHost PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         if(TRP_NR_RESHADE_RUNTIME)
@@ -170,6 +172,12 @@ if(TRP_NR_NGX_INCLUDE_DIR)
                 --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
                 --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-sdr-before" --sdr-bytes)
             set_tests_properties(NrReShadeSdrBefore PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
+            add_test(NAME NrReShadePostSr-switch COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+                --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>" --host-exe "$<TARGET_FILE:TRPNrBeforeHostFramesTests>"
+                --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+                --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-post-sr" --sdr-bytes --post-sr)
+            set_tests_properties(NrReShadePostSr-switch PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
         endif()
     endif()
     add_executable(TRPNrStageTests ../NrStageTests.cpp)
@@ -208,6 +216,10 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         src/Graphics/D3D11D3D12Interop.h src/Graphics/D3D11D3D12Interop.cpp src/FrameGen/D3D11FrameCopy.h src/FrameGen/NeuralRenderingRuntimeContract.h
         src/FrameGen/NeuralRenderingTuning.h src/FrameGen/NeuralRenderingReconstruction.h
         src/NeuralRendering/PreparedBeforeUpscale.h src/NeuralRendering/PreparedBeforeUpscale.cpp src/NeuralRendering/PreparedFsrInput.h tests/NrPreparedFsrTests.cpp
+        src/NeuralRendering/PostSrContract.h src/NeuralRendering/PostUpscale.h src/NeuralRendering/PostUpscale.cpp
+        tests/nr-postsr/CMakeLists.txt tests/nr-postsr/PostSrContractTests.cpp tests/nr-postsr/PostSrGuideTests.cpp
+        tests/nr-postsr/PostSrNativeGpuTests.cpp tests/nr-postsr/PostUpscaleGpuTests.cpp
+        src/FrameGen/SourceFrameEvaluator.h src/FrameGen/SourceNvidiaFrameEvaluator.h
         src/NeuralRendering/BeforeHost.h src/NeuralRendering/BeforeHost.cpp src/NeuralRendering/BeforeSettings.h
         src/NeuralRendering/StartupSettings.h src/NeuralRendering/SourcePolicy.h tests/NrPreparedBeforeTests.cpp
         tests/NrBeforeHostFramesTests.cpp tests/NrBeforeHostTests.cpp tests/NrSourcePolicyTests.cpp

@@ -116,12 +116,13 @@ void NvidiaHost::InspectCommunityNeural()
         startup.runtimeRoot.string(),startup.driverCore.string(),fmt::ptr(presenter),communityLastStatus_);
 }
 bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Texture2D* depth,
-    ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible,NR::PreparedFsrInput* linearOutput)
+    ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible,NR::PreparedFsrInput* linearOutput,const Upscaling::UpscaleFrame* post,Upscaling::UpscaleOutcome outcome)
 {
     const auto& startup=SourceFrameGeneration::GetSingleton()->settings.neuralStartup;
     if (!startup.community) return true;
-    InspectCommunityNeural();
     const auto& p=SourceFrameGeneration::GetSingleton()->settings.sourceDLSSG;
+    if(post && p.neuralBeforeUpscaling)return true;
+    InspectCommunityNeural();
     NR::SettingsSnapshot snapshot;
     snapshot.enabled=p.neuralEnabled;snapshot.placement=p.neuralBeforeUpscaling?NR::Placement::Before:NR::Placement::After;
     snapshot.stableColors=p.neuralStableColors;
@@ -131,8 +132,11 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         snapshot.reconstruction!=communitySnapshot_.reconstruction;
     snapshot.revision=communitySnapshot_.revision+(changed?1:0);
     communitySnapshot_=snapshot;communitySnapshotValid_=true;
-    if(changed)logger::info("[Community NR settings] revision={} stableColors={} tone={} structure={} style={}",
-        snapshot.revision,snapshot.stableColors,snapshot.tuning.localToneStrength,snapshot.tuning.localStructureStrength,snapshot.tuning.style);
+    if(changed)logger::info("[Community NR settings] revision={} placement={} stableColors={} tone={} structure={} style={}",
+        snapshot.revision,p.neuralBeforeUpscaling?"Before SR":"After SR before FG",snapshot.stableColors,snapshot.tuning.localToneStrength,snapshot.tuning.localStructureStrength,snapshot.tuning.style);
+    // Snapshot/reset changes are seen before SR. After owns NR evaluation only
+    // at the completed source boundary, so one request cannot run two passes.
+    if(!post && !p.neuralBeforeUpscaling){reset|=changed;return true;}
     NR::BeforeInput input;input.context=context_;input.color=color;input.depth=depth;input.motion=motion;
     input.epoch=communityEpoch_;input.sourceId=input.guideSourceId=sourceId;
     input.guideEpoch=input.epoch;input.previousSourceId=sourceId?sourceId-1:0;
@@ -141,6 +145,12 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     input.motionScaleX=float(width);input.motionScaleY=float(height);
     auto* pipeline=RenderPipeline::GetSingleton();
     const char* unavailable=NR::NativeBeforeUnavailable(p);
+    if(post && post->render!=post->display)unavailable="After upscaling NR requires Native AA; reduced guides are unqualified";
+#if defined(TRP_ENABLE_FSR)
+    if(post && FsrActive() && fsrResources_->HandoffEncoding()!=startup.sourceEncoding)
+        unavailable="After upscaling NR source encoding differs from its qualified runtime route";
+#endif
+    if(post && outcome!=Upscaling::UpscaleOutcome::Temporal)eligible=false;
     if (CommunityShaders::Active() || !nativeUI_.Dedicated() || !pipeline->mNativeUI) eligible=false;
     auto camera=eligible && snapshot.enabled && communityNeural_->Available() && !unavailable?
         CaptureGameCameraMeasurements(pipeline->mGraphicsState,{width,height},pipeline->mEnableJitter,reset):
@@ -160,8 +170,23 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     const auto probeBefore=probe?nrMotionDiagnostic.Before(device_.Get(),context_.Get(),color,depth,motion,width,height):
         NrMotionDiagnostic::Capture{};
     const bool previouslyActive=communityNeural_->Active();
-    const auto result=communityNeural_->Evaluate(input,snapshot,probe?nullptr:linearOutput);
-    if(FsrActive() && result){
+    NR::PostSrInput completed;completed.resources=input;
+    if(post){
+        completed.resources.colorDomain=NR::ColorDomain::SdrBytes;
+        auto& m=completed.source;m.backend=post->backend;m.outcome=outcome;m.epoch=m.guideEpoch=input.epoch;
+        m.sourceId=m.guideSourceId=input.sourceId;m.previousSourceId=input.previousSourceId;
+        m.sourceTime=m.guideTime=input.presentationTime;m.render={post->render.width,post->render.height};
+        m.display=m.color=input.colorExtent;m.guides={post->render.width,post->render.height};
+        completed.resources.guideExtent=m.guides;
+        m.colorDomain=NR::ColorDomain::SdrBytes;m.encoding=startup.sourceEncoding;
+        D3D11_TEXTURE2D_DESC desc{};if(color)color->GetDesc(&desc);m.colorFormat=desc.Format;
+        // The source adapter converts supported game depth to R32 without resizing.
+        m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
+        m.guideOrigin=NR::GuideOrigin::RealSource;m.depthInverted=input.depthInverted;
+        m.motion=post->motionConvention;
+    }
+    const auto result=post?communityNeural_->EvaluatePost(completed,snapshot):communityNeural_->Evaluate(input,snapshot,probe?nullptr:linearOutput);
+    if(!post && FsrActive() && result){
         const auto route=communityFsrRouteDiagnostics_.Observe(result->evaluated,linearOutput&&linearOutput->Valid(),pipeline->mReShadeBeforeUpscaling,probe);
         if(route){
             std::string_view modelHash="unavailable";
@@ -192,6 +217,11 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         status_=result.error().message;FailLifecycle(E_FAIL,"community NR source evaluation");return false;}
     reset=NR::SourceResetAfterNr(reset,result->evaluated,previouslyActive,result->effectiveReset);
     return true;
+}
+bool NvidiaHost::EvaluateCommunityNeuralAfter(Upscaling::UpscaleFrame& frame,Upscaling::UpscaleOutcome outcome,bool eligible)
+{
+    return EvaluateCommunityNeuralBefore(frame.output,frame.depth,frame.motion,frame.display.width,frame.display.height,
+        frame.sourceId,frame.reset,eligible,nullptr,&frame,outcome);
 }
 bool NvidiaHost::RetireCommunityNeural()
 {

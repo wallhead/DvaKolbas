@@ -18,6 +18,7 @@ parser.add_argument("--deferred-exe", type=Path)
 parser.add_argument("--prepared-fsr-exe", type=Path)
 parser.add_argument("--fsr-runtime", type=Path)
 parser.add_argument("--sdr-bytes", action="store_true")
+parser.add_argument("--post-sr", action="store_true")
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 result_file = args.output / "results.json"
@@ -33,7 +34,7 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
         ("packet", args.packet_exe, ["--require-wrapped"]),
         ("host", args.host_exe, [str(args.runtime_root.resolve()), str(args.driver_core.resolve()),
                                 str((args.output / "host.json").resolve()), "--require-wrapped",
-                                *(["--sdr-bytes"] if args.sdr_bytes else [])]),
+                                *(["--sdr-bytes"] if args.sdr_bytes else []), *(["--post-sr"] if args.post_sr else [])]),
     )
     if args.deferred_exe:
         cases += tuple(("deferred-" + mode, args.deferred_exe,
@@ -57,5 +58,5 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
                         "exeSha256": hashlib.sha256(exe.read_bytes()).hexdigest()})
 result_file.write_text(json.dumps({
     "runtimeSha256": hashlib.sha256(args.runtime.read_bytes()).hexdigest(),
-    "skyrimTested": False, "wrappedDeviceRequired": True, "sdrBytesTrial": args.sdr_bytes, "cases": records,
+    "skyrimTested": False, "wrappedDeviceRequired": True, "sdrBytesTrial": args.sdr_bytes, "postSrSwitch": args.post_sr, "cases": records,
 }, indent=2) + "\n")

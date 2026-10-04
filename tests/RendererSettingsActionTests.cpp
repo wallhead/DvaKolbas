@@ -96,7 +96,13 @@ void CommunityNeural()
     draft.sourceDLSSG.neuralReconstruction.inputScale=1;
     Require(!ValidateRendererSettings(draft,caps),"community NR Before works with FSR FG");
     auto after=draft; after.sourceDLSSG.neuralBeforeUpscaling=false;
-    Require(ValidateRendererSettings(after,caps),"unqualified After FG remains unavailable");
+    Require(ValidateRendererSettings(after,caps),"reduced-resolution After remains unavailable");
+    after.fsr.quality=Upscaling::Quality::NativeAA;
+    Require(!ValidateRendererSettings(after,caps),"Native AA permits source NR after FSR before FG");
+    after.upscaleType=DLAA;after.generationBackend=1;
+    Require(!ValidateRendererSettings(after,caps),"DLAA permits source NR after reconstruction");
+    after.upscaleType=DLSS;
+    Require(ValidateRendererSettings(after,caps),"scaled DLSS After cannot claim qualified display guides");
     auto twice=draft; twice.sourceDLSSG.neuralPasses=2;
     Require(ValidateRendererSettings(twice,caps),"first community trial permits one pass");
     auto reduced=draft; reduced.sourceDLSSG.neuralReconstruction.inputScale=0.5f;

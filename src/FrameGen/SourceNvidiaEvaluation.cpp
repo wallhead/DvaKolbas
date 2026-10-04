@@ -89,6 +89,25 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
         }
         return evaluated;
     }
+    bool EvaluateNeuralAfterDLSS(TheosRenderPipeline::SourceNvidiaFrameInputs& frame,TheosRenderPipeline::Upscaling::UpscaleOutcome outcome)
+    {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        using namespace TheosRenderPipeline;
+        if(SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community){
+            Upscaling::UpscaleFrame completed;
+            completed.backend=upscaler.mUpscaleType==DLAA?Upscaling::BackendKind::Dlaa:Upscaling::BackendKind::Dlss;
+            completed.output=frame.output;completed.depth=frame.depth;completed.motion=frame.motion;
+            completed.render={frame.renderWidth,frame.renderHeight};completed.display={frame.outputWidth,frame.outputHeight};
+            completed.sourceId=upscaler.mRenderedFrameCount;completed.sourceEpoch=host.communityEpoch_;
+            completed.motionConvention={frame.motionScaleX,frame.motionScaleY,true,false};completed.reset=frame.reset;
+            const bool ok=host.EvaluateCommunityNeuralAfter(completed,outcome,NeuralEligible(frame) && !host.loadingScreenRoute_.Active(host.presentCount_));
+            frame.reset|=completed.reset;return ok;
+        }
+#else
+        (void)frame;(void)outcome;
+#endif
+        return true;
+    }
     void UpscaleSucceeded() { ++host.upscaleEvaluationCount_; }
     void RenderReShade(const TheosRenderPipeline::SourceNvidiaFrameInputs& frame, bool before)
     {

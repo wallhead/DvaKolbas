@@ -1,5 +1,5 @@
 #pragma once
-#include "PreparedBeforeUpscale.h"
+#include "PostUpscale.h"
 #include "StartupSettings.h"
 namespace TheosRenderPipeline::NeuralRendering {
 // Caller-serialized real source owner. Inspection does not initialize a vendor.
@@ -11,10 +11,13 @@ public:
     // injector proxy around the adapter's existing native device.
     Result<void> Inspect(ID3D11Device*,const StartupSettings&,const std::filesystem::path& cache,ID3D12Device* presenter=nullptr);
     Result<BeforeResult> Evaluate(const BeforeInput&,const SettingsSnapshot&,PreparedFsrInput* linearOutput=nullptr);
+    Result<BeforeResult> EvaluatePost(const PostSrInput&,const SettingsSnapshot&);
     Result<void> Retire();
     bool Available()const;bool Terminal()const;bool Active()const;
     std::string_view ProfileId()const;const std::string& Status()const;
     uint64_t Recorded()const;uint64_t Resets()const;
-private:struct State;std::unique_ptr<State> state_;
+private:
+    Result<BeforeResult> EvaluateSource(const BeforeInput&,const SettingsSnapshot&,PreparedFsrInput*,const PostSrSourceContract*);
+    struct State;std::unique_ptr<State> state_;
 };
 }

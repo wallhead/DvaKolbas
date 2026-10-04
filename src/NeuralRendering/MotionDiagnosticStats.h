@@ -71,7 +71,7 @@ inline std::optional<MotionStats> SummarizeMotionRg16(const std::uint8_t* data,s
             const auto px=vx*scaleX,py=vy*scaleY;
             const auto magnitude=std::hypot(px,py);
             s.meanXpixels+=px;s.meanYpixels+=py;s.meanMagnitudePixels+=magnitude;
-            s.maxMagnitudePixels=std::max(s.maxMagnitudePixels,magnitude);++s.samples;
+            s.maxMagnitudePixels=(std::max)(s.maxMagnitudePixels,magnitude);++s.samples;
         }
     }
     if(s.samples){s.meanXpixels/=s.samples;s.meanYpixels/=s.samples;s.meanMagnitudePixels/=s.samples;}

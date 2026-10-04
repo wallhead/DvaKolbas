@@ -61,12 +61,12 @@ struct Operations
     int warmup;
     unsigned upscales{}, cameras{}, prepares{}, decisions{};
     bool generation{};
-    bool neuralOK{true}, earlyNR{}, neuralReset{};
+    bool neuralOK{true}, earlyNR{}, lateNR{}, neuralReset{};
     unsigned neuralCalls{}, dlssCalls{}, reShadeCalls{};
     bool reShade{}, reShadeBefore{};
     const std::array<float, 4> shaded{0.5f, 0.125f, 0.25f, 1};
     std::array<float, 4> ExpectedInput() const { return reShade && reShadeBefore ? shaded : earlyNR ? neuralScene : scene; }
-    std::array<float, 4> ExpectedOutput() const { return reShade && !reShadeBefore ? shaded : reconstructed; }
+    std::array<float, 4> ExpectedOutput() const { return lateNR ? neuralScene : reShade && !reShadeBefore ? shaded : reconstructed; }
     const std::array<float, 4> scene{0.25f, 0.5f, 0.75f, 1};
     const std::array<float, 4> neuralScene{0.125f, 0.75f, 0.375f, 1};
     const std::array<float, 4> reconstructed{0.75f, 0.25f, 0.5f, 1};
@@ -113,6 +113,15 @@ struct Operations
         Require(Pixel(context, frame.input) == ExpectedInput(), "input snapshot does not alias outer color");
         if (dlssOK) { output.Paint(context, reconstructed); }
         return dlssOK;
+    }
+    bool EvaluateNeuralAfterDLSS(SourceNvidiaFrameInputs& frame, TheosRenderPipeline::Upscaling::UpscaleOutcome outcome)
+    {
+        Require(outcome==TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal && upscales==1 && !cameras && !prepares,
+            "post NR follows successful reconstruction and precedes FG history/tags");
+        Require(Pixel(context,frame.output)==(reShade && !reShadeBefore ? shaded : reconstructed),"post NR sees completed source effects");
+        Require(Pixel(context,frame.input)==ExpectedInput(),"post NR cannot feed SR input/history");
+        if(lateNR) output.Paint(context,neuralScene);
+        return true;
     }
     void UpscaleSucceeded() { ++upscales; }
     void RenderReShade(const SourceNvidiaFrameInputs& frame, bool before)
@@ -228,7 +237,7 @@ static void TestExtent(bool nativeResolution)
         frame.motionScaleX = 12; frame.motionScaleY = 8; frame.reset = reset; frame.jitterEnabled = true;
         Operations ops{context.Get(), world, output, frame, dlss, camera, prepare, requested, blocked, warming ? 3 : 0};
         ops.reShade = mask & 2048; ops.reShadeBefore = mask & 4096;
-        ops.neuralOK = neuralOK; ops.earlyNR = earlyNR; ops.neuralReset = neuralReset;
+        ops.neuralOK = neuralOK; ops.earlyNR = earlyNR; ops.lateNR = !earlyNR && (mask & 128); ops.neuralReset = neuralReset;
         const auto result = SourceNvidiaFrameEvaluator::Evaluate(context.Get(), frame, ops);
         Require(result.upscaled == dlss && result.cameraValid == (dlss && camera) && result.prepared == (dlss && camera && prepare), "separate reconstruction/camera/preparation outcomes");
         Require(ops.upscales == unsigned(dlss) && ops.cameras == unsigned(dlss) && ops.prepares == unsigned(dlss && camera) && ops.decisions == unsigned(dlss), "failed upscale leaves camera/preparation/generation untouched");

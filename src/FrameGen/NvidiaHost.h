@@ -149,7 +149,8 @@ class NvidiaHost
 #if !defined(TRP_NO_NEURAL_RENDERING)
     void InspectCommunityNeural();
     bool RetireCommunityNeural();
-    bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,UINT,UINT,uint64_t,bool&,bool,TheosRenderPipeline::NeuralRendering::PreparedFsrInput* linearOutput=nullptr);
+    bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,UINT,UINT,uint64_t,bool&,bool,TheosRenderPipeline::NeuralRendering::PreparedFsrInput* linearOutput=nullptr,const TheosRenderPipeline::Upscaling::UpscaleFrame* post=nullptr,TheosRenderPipeline::Upscaling::UpscaleOutcome outcome=TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal);
+    bool EvaluateCommunityNeuralAfter(TheosRenderPipeline::Upscaling::UpscaleFrame&,TheosRenderPipeline::Upscaling::UpscaleOutcome,bool);
     std::unique_ptr<TheosRenderPipeline::NeuralRendering::BeforeHost> communityNeural_;
     TheosRenderPipeline::NeuralRendering::SettingsSnapshot communitySnapshot_;
     uint64_t communityEpoch_{1};

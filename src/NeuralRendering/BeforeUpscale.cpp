@@ -30,6 +30,7 @@ struct BeforeUpscale::State {
     uint64_t handoffValue{},completionValue{};
     unsigned preset{};
     ColorDomain colorDomain{ColorDomain::Linear};
+    Placement placement{Placement::Before};
     std::optional<int> recordedStyle;
     History history;
     bool attempted{},ready{},uncertain{},terminal{};
@@ -70,12 +71,13 @@ struct BeforeUpscale::State {
 };
 BeforeUpscale::BeforeUpscale():state_(std::make_unique<State>()){}
 BeforeUpscale::~BeforeUpscale(){if(state_->uncertain)state_.release();}
-Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,PerformanceQueries* queries11,ColorDomain domain){
+Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,PerformanceQueries* queries11,ColorDomain domain,Placement placement){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR Before initialization already attempted");s.attempted=true;
     if(!device||!owner||!contract.device||!contract.queue||!contract.colorExtent.width||!contract.colorExtent.height||
-        contract.colorExtent!=contract.guideExtent||preset>1||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN)return Fail(ErrorKind::InvalidInput,"NR Before native device/extent/color contract incomplete");
+        contract.colorExtent!=contract.guideExtent||preset>1||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
+        (placement!=Placement::Before&&placement!=Placement::After))return Fail(ErrorKind::InvalidInput,"NR native source device/extent/color/placement contract incomplete");
     auto r=s.Gpu(s.interop.Initialize(device,contract.device.Get(),contract.queue.Get()),"NR Before same-adapter bridge initialization failed");if(!r)return r;
-    s.device11=device;s.contract=contract;s.preset=preset;s.colorDomain=domain;device->GetImmediateContext(&s.context);
+    s.device11=device;s.contract=contract;s.preset=preset;s.colorDomain=domain;s.placement=placement;device->GetImmediateContext(&s.context);
     r=s.Gpu(s.stableColor.Initialize(device),"NR stable color shader initialization failed");if(!r)return r;
     if(metrics&&metrics->Enabled()){
         s.metrics=metrics;s.queries11=queries11;
@@ -111,7 +113,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     if(s.terminal)return Fail(ErrorKind::Runtime,"NR Before terminal; ownership retained");
     if(!settings.enabled){auto drained=s.WaitPending();if(!drained)return std::unexpected(drained.error());s.history.ResetNext();return BeforeResult{false,input.reset};}
     if(!s.ready)return Fail(ErrorKind::InvalidInput,"NR Before runtime/bridge not initialized");
-    if(settings.placement!=Placement::Before)return Fail(ErrorKind::Unsupported,"NR Before cannot evaluate an After request");
+    if(settings.placement!=s.placement)return Fail(ErrorKind::Unsupported,"NR native source request differs from latched placement");
     if(input.colorDomain!=s.colorDomain||input.colorExtent!=s.contract.colorExtent||input.guideExtent!=s.contract.guideExtent||
         !input.context||input.context->GetType()!=D3D11_DEVICE_CONTEXT_IMMEDIATE||!D3D11FrameCopy::SameObject(input.context.Get(),s.context.Get())||
         !s.Texture(input.color.Get(),NrColorFormat(s.colorDomain))||!s.Texture(input.depth.Get(),DXGI_FORMAT_R32_FLOAT)||!s.Texture(input.motion.Get(),DXGI_FORMAT_R16G16_FLOAT)||

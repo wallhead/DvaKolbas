@@ -16,6 +16,7 @@ struct Order
     bool EvaluateOptionalPreUpscale(UpscaleFrame&){return true;}
     void RenderReShade(const UpscaleFrame&,bool stage){if(stage==before){++effects;order+='E';}}
     Result<UpscaleOutcome> EvaluateUpscaler(const UpscaleFrame&){++temporal;order+='S';return outcome;}
+    bool EvaluateOptionalPostUpscale(UpscaleFrame&,UpscaleOutcome){return true;}
     void UpscaleSucceeded(){++ack;}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
 };
@@ -32,6 +33,7 @@ struct AdapterOperations
     bool EvaluateOptionalPreUpscale(UpscaleFrame&){return true;}
     void RenderReShade(const UpscaleFrame&,bool){}
     Result<UpscaleOutcome> EvaluateUpscaler(const UpscaleFrame& frame){auto result=adapter.Evaluate(frame);return result && *result==UpscaleOutcome::SkippedInvalidInput?adapter.Spatial(frame):result;}
+    bool EvaluateOptionalPostUpscale(UpscaleFrame&,UpscaleOutcome){return true;}
     void UpscaleSucceeded(){}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
 };

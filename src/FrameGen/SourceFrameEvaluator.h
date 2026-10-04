@@ -33,6 +33,9 @@ namespace TheosRenderPipeline
             // Only accepted temporal work may acknowledge temporal history.
             if (*upscale == UpscaleOutcome::Temporal) { operations.UpscaleSucceeded(); }
             operations.RenderReShade(frame, false);
+            // Completed source effects precede NR; FG/UI must consume its delivered
+            // real image. Recovery reaches this gate only to drain NR history.
+            if (!operations.EvaluateOptionalPostUpscale(frame, *upscale)) { return {}; }
             // A real reconstructed frame is usable even when generation is off
             // or preparation fails. Spatial recovery must never arm generation.
             return {*upscale, *upscale == UpscaleOutcome::Temporal ? operations.PrepareGeneration(frame) :

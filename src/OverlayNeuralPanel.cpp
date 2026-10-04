@@ -344,9 +344,9 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             DrawStatusLabel(host->CommunityNeuralTerminal()?"NR failed":host->CommunityNeuralActive()?"NR active":"NR inactive",
                 host->CommunityNeuralTerminal()?UIHealth::kError:host->CommunityNeuralActive()?UIHealth::kHealthy:UIHealth::kIdle);
             ImGui::TextWrapped("%s",host->CommunityNeuralStatus().c_str());
-            DrawSettingsValue("Placement","Before upscaling and frame generation");
+            DrawSettingsValue("Placement",view.neuralBeforeUpscaling?"Before upscaling and frame generation":"After upscaling, before frame generation");
             DrawSettingsValue("Model","Native SDR, one pass");
-            ImGui::TextDisabled("After FG is awaiting validation.");
+            ImGui::TextDisabled("After upscaling currently requires DLAA or FSR Native AA.");
             ImGui::TextWrapped("RTX 50, RTX 40 and RTX 20/30 use separate runtime files. AMD NR is currently unsupported.");
             NextSettingsColumn(height);
             auto& p=settingsDraft.sourceDLSSG;
@@ -356,6 +356,9 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             ImGui::TextDisabled("Use Apply for this session or Save as default.");
             const char* styles[]{"Style 0","Style 1","Style 2","Style 3","Style 4","Style 5","Style 6","Style 7"};
             ImGui::BeginDisabled(!host->CommunityNeuralAvailable());
+            int placement=p.neuralBeforeUpscaling?0:1;
+            const char* placements[]{"Before upscaling","After upscaling, before FG"};
+            if(ImGui::Combo("Placement",&placement,placements,IM_ARRAYSIZE(placements)))p.neuralBeforeUpscaling=placement==0;
             ImGui::Checkbox("Stable colors",&p.neuralStableColors);
             DrawSettingsHelp("Preserve the original broad colors while retaining fine NR detail. Reduces NR tone and color grading.");
             ImGui::Combo("Style",&p.neuralTuning.style,styles,IM_ARRAYSIZE(styles));
@@ -366,6 +369,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             ImGui::Checkbox("Automatic skin mask",&p.neuralTuning.useAutoSkinMask);
             ImGui::EndDisabled();
             if (const auto error=TheosRenderPipeline::NeuralRendering::NativeBeforeUnavailable(p)) ImGui::TextWrapped("%s",error);
+            if(const auto error=TheosRenderPipeline::NeuralRendering::NativeAfterUnavailable(p,settingsDraft.upscaleType,settingsDraft.fsr.quality,settingsDraft.dynamicResolution))ImGui::TextWrapped("%s",error);
             EndSettingsColumns();
         }
         ImGui::EndTabItem();return;

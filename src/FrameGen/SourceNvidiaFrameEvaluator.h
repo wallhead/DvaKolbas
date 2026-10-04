@@ -38,6 +38,8 @@ namespace TheosRenderPipeline
                 if (operations.EvaluateDLSS(frame)) { return Upscaling::UpscaleOutcome::Temporal; }
                 return std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::DispatchFailure, 0, "DLSS evaluation failed"});
             }
+            bool EvaluateOptionalPostUpscale(Upscaling::UpscaleFrame&, Upscaling::UpscaleOutcome outcome)
+            { return operations.EvaluateNeuralAfterDLSS(frame, outcome); }
             void UpscaleSucceeded() { operations.UpscaleSucceeded(); }
             Upscaling::GenerationPreparationStatus PrepareGeneration(const Upscaling::UpscaleFrame&)
             {

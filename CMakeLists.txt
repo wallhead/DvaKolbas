@@ -505,6 +505,7 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     add_executable(TRPNeuralWorldContractTests tests/NeuralWorldContractTests.cpp)
     add_subdirectory(tests/nr-postfg)
     add_subdirectory(tests/nr-runtime)
+    add_subdirectory(tests/nr-postsr)
     if(TRP_ENABLE_NEURAL_RENDERING AND TRP_ENABLE_FSR_FG AND TRP_NR_RESHADE_RUNTIME AND TRP_NR_TEST_RUNTIME_ROOT)
         find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
         add_test(NAME NrFsrReShadeBefore COMMAND "${Python3_EXECUTABLE}"

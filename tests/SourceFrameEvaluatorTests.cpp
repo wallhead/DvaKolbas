@@ -13,7 +13,7 @@ static void Require(bool ok, const char* why)
 struct Operations
 {
     std::vector<std::string> events;
-    bool optionalOK{true}, upscaleOK{true}, effectsBefore{};
+    bool optionalOK{true}, postOK{true}, upscaleOK{true}, effectsBefore{};
     unsigned effects{};
     UpscaleOutcome outcome{UpscaleOutcome::Temporal};
     GenerationPreparationStatus preparation{GenerationPreparationStatus::NotRequested};
@@ -32,6 +32,7 @@ struct Operations
         if (!upscaleOK) { return std::unexpected(RuntimeError{ErrorKind::DispatchFailure, -1, "test dispatch failed"}); }
         return outcome;
     }
+    bool EvaluateOptionalPostUpscale(UpscaleFrame&, UpscaleOutcome outcome) { events.push_back("post"); Require(outcome==UpscaleOutcome::Temporal || outcome==UpscaleOutcome::SpatialRecovery,"post stage sees producer outcome"); return postOK; }
     void UpscaleSucceeded() { events.push_back("succeeded"); }
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&) { events.push_back("prepare"); return preparation; }
 };
@@ -57,8 +58,8 @@ int main()
         const auto result = SourceFrameEvaluator::Evaluate(context.Get(), frame, ops);
         Require(result.outcome == UpscaleOutcome::Temporal && result.preparation == GenerationPreparationStatus::NotRequested,
             "NoGenerationIsNotFailure: ordinary SR keeps its completed temporal output");
-        Require(ops.events == (before ? std::vector<std::string>{"copy", "optional", "effects-before", "upscale", "succeeded", "prepare"} :
-            std::vector<std::string>{"copy", "optional", "upscale", "succeeded", "effects-after", "prepare"}), "one upscale/effects in source order");
+        Require(ops.events == (before ? std::vector<std::string>{"copy", "optional", "effects-before", "upscale", "succeeded", "post", "prepare"} :
+            std::vector<std::string>{"copy", "optional", "upscale", "succeeded", "effects-after", "post", "prepare"}), "one upscale/effects in source order");
         Require(ops.effects == 1, "one selected ReShade stage");
     }
     Operations external; frame.backend = BackendKind::External;
@@ -80,7 +81,14 @@ int main()
     const auto recovered = SourceFrameEvaluator::Evaluate(context.Get(), frame, recovery);
     Require(recovered.outcome == UpscaleOutcome::SpatialRecovery && recovered.preparation == GenerationPreparationStatus::NotRequested,
         "spatial recovery never claims temporal generation readiness");
-    Require(recovery.events == std::vector<std::string>{"copy", "optional", "upscale", "effects-after"},
+    Require(recovery.events == std::vector<std::string>{"copy", "optional", "upscale", "effects-after", "post"},
         "spatial output completes effects without preparing generation");
+    Operations postFailed; postFailed.postOK=false;
+    const auto unavailable=SourceFrameEvaluator::Evaluate(context.Get(),frame,postFailed);
+    Require(unavailable.outcome==UpscaleOutcome::Fatal && postFailed.events.back()=="post",
+        "post delivery failure stops generation and presentation");
+    Operations fgOff;
+    SourceFrameEvaluator::Evaluate(context.Get(),frame,fgOff);
+    Require(fgOff.events[fgOff.events.size()-2]=="post","post stage runs even with FG off");
     std::puts("PASS: common source-frame ordering, ownership, and independent generation outcomes");
 }

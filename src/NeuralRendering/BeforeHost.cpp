@@ -11,10 +11,16 @@ struct BeforeHost::State {
     AdapterIdentity adapter;ComPtr<IDXGIAdapter1> dxgiAdapter;ComPtr<ID3D11Device> device11;
     StageContract contract;const RuntimeProfile* profile{};
     std::optional<RuntimeFileLease> runtimeLease,coreLease;
-    std::shared_ptr<RuntimeOwner> owner;std::unique_ptr<PreparedBeforeUpscale> prepared;
+    std::shared_ptr<RuntimeOwner> owner;std::unique_ptr<PreparedBeforeUpscale> prepared;std::unique_ptr<PostUpscale> post;Placement placement{Placement::Before};
     bool inspected{},available{},terminal{},uncertain{},active{};
     uint64_t recorded{},resets{};
     std::string status{"NR off"};
+    bool HasPreparation()const{return bool(prepared)||bool(post);}
+    Result<void> RetirePreparation(){auto r=post?post->Retire():prepared?prepared->Retire():Result<void>{};if(r){post.reset();prepared.reset();}return r;}
+    Result<BeforeResult> Run(const BeforeInput& input,const SettingsSnapshot& snapshot,PreparedFsrInput* output,const PostSrSourceContract* metadata){
+        if(post){PostSrInput frame;frame.resources=input;if(metadata)frame.source=*metadata;return post->Evaluate(frame,snapshot);}
+        return prepared->Evaluate(input,settings.sourceEncoding,snapshot,settings.sdrBytesTrial?nullptr:output);
+    }
     void MarkTerminal(const Error& error){status=error.message;active=false;terminal=true;}
 };
 BeforeHost::BeforeHost():state_(std::make_unique<State>()){}
@@ -52,15 +58,29 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& set
     s.available=true;s.status="NR ready for first real-world frame; GPU profile="+std::string(s.profile->id);return {};
 }
 Result<BeforeResult> BeforeHost::Evaluate(const BeforeInput& input,const SettingsSnapshot& settings,PreparedFsrInput* linearOutput){
+    return EvaluateSource(input,settings,linearOutput,nullptr);
+}
+Result<BeforeResult> BeforeHost::EvaluatePost(const PostSrInput& input,const SettingsSnapshot& settings){
+    return EvaluateSource(input.resources,settings,nullptr,&input.source);
+}
+Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const SettingsSnapshot& settings,PreparedFsrInput* linearOutput,const PostSrSourceContract* metadata){
     auto& s=*state_;const bool wasActive=s.active;s.active=false;if(s.terminal)return Fail(ErrorKind::Runtime,s.status.c_str());
-    if(!settings.enabled){if(s.available)s.status="NR off";if(s.prepared){auto result=s.prepared->Evaluate(input,s.settings.sourceEncoding,settings);if(result)result->effectiveReset|=wasActive;return result;}return BeforeResult{false,input.reset};}
+    if(!settings.enabled){if(s.available)s.status="NR off";if(s.HasPreparation()){auto result=s.Run(input,settings,nullptr,metadata);if(result)result->effectiveReset|=wasActive;return result;}return BeforeResult{false,input.reset};}
     if(!s.available)return BeforeResult{false,input.reset};
-    if(settings.placement!=Placement::Before||settings.reconstruction.preset!=0||settings.reconstruction.inputScale!=1||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto||settings.reconstruction.method>ResolveMethod::Ratio||
-        settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation){s.status="Requested NR placement/reconstruction is unavailable in this native Before trial";return BeforeResult{false,wasActive||input.reset};}
+    if(settings.placement!=(metadata?Placement::After:Placement::Before)||settings.reconstruction.preset!=0||settings.reconstruction.inputScale!=1||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto||settings.reconstruction.method>ResolveMethod::Ratio||
+        settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation){s.status="Requested NR stage/reconstruction is unavailable in this native source trial";if(s.HasPreparation()){auto off=settings;off.enabled=false;auto drained=s.Run(input,off,nullptr,metadata);if(!drained){s.MarkTerminal(drained.error());return std::unexpected(drained.error());}}return BeforeResult{false,wasActive||input.reset};}
+    if(metadata){
+        const auto valid=ValidatePostSrSourceContract(*metadata);
+        if(!s.settings.sdrBytesTrial || metadata->colorDomain!=ColorDomain::SdrBytes || metadata->encoding!=s.settings.sourceEncoding || !valid){
+            s.status=!valid?valid.error().message:"Post-upscale NR requires the qualified encoded SDR byte route";
+            if(s.HasPreparation()){auto off=settings;off.enabled=false;auto drained=s.Run(input,off,nullptr,metadata);if(!drained){s.MarkTerminal(drained.error());return std::unexpected(drained.error());}}
+            return BeforeResult{false,wasActive||input.reset};
+        }
+    }
     if(!input.context||!input.color||!input.depth||!input.motion||!input.colorExtent.width||!input.colorExtent.height||input.colorExtent!=input.guideExtent||!input.epoch||!input.sourceId||input.guideSourceId!=input.sourceId||input.guideEpoch!=input.epoch){
-        s.status="NR waiting for matching real-world guides";if(s.prepared){auto off=settings;off.enabled=false;auto reset=s.prepared->Evaluate(input,s.settings.sourceEncoding,off);if(!reset){s.MarkTerminal(reset.error());return std::unexpected(reset.error());}}return BeforeResult{false,wasActive||input.reset};}
-    if(s.prepared&&s.contract.colorExtent!=input.colorExtent){
-        auto retired=s.prepared->Retire();if(!retired){s.MarkTerminal(retired.error());return std::unexpected(retired.error());}s.prepared.reset();
+        s.status="NR waiting for matching real-world guides";if(s.HasPreparation()){auto off=settings;off.enabled=false;auto reset=s.Run(input,off,nullptr,metadata);if(!reset){s.MarkTerminal(reset.error());return std::unexpected(reset.error());}}return BeforeResult{false,wasActive||input.reset};}
+    if(s.HasPreparation()&&(s.contract.colorExtent!=input.colorExtent||s.placement!=settings.placement)){
+        auto retired=s.RetirePreparation();if(!retired){s.MarkTerminal(retired.error());return std::unexpected(retired.error());}s.prepared.reset();s.post.reset();
     }
     if(!s.owner){
         s.contract.adapterLuid=s.adapter.luid;
@@ -72,21 +92,26 @@ Result<BeforeResult> BeforeHost::Evaluate(const BeforeInput& input,const Setting
         auto opened=s.owner->Open(*s.profile,s.contract.device.Get(),s.adapter);
         if(!opened){auto retired=s.owner->Retire();if(!retired){s.MarkTerminal(opened.error());return std::unexpected(opened.error());}s.owner.reset();s.uncertain=false;s.available=false;s.status=opened.error().message;return BeforeResult{false,wasActive||input.reset};}
     }
-    if(!s.prepared){s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.prepared=std::make_unique<PreparedBeforeUpscale>();
-        auto initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,
-            s.settings.sdrBytesTrial?ColorDomain::SdrBytes:ColorDomain::Linear);if(!initialized){s.MarkTerminal(initialized.error());return std::unexpected(initialized.error());}}
+    if(!s.HasPreparation()){
+        s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.placement=settings.placement;
+        Result<void> initialized;
+        if(metadata){s.post=std::make_unique<PostUpscale>();initialized=s.post->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,ColorDomain::SdrBytes);}
+        else{s.prepared=std::make_unique<PreparedBeforeUpscale>();initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,
+            s.settings.sdrBytesTrial?ColorDomain::SdrBytes:ColorDomain::Linear);}
+        if(!initialized){s.MarkTerminal(initialized.error());return std::unexpected(initialized.error());}
+    }
     if(s.settings.sdrBytesTrial&&linearOutput&&linearOutput->Valid())
         return Fail(ErrorKind::InvalidInput,"NR SDR byte trial cannot replace a retained FSR lease");
     // Encoded trial delivery is decoded by the existing FSR source path. Never
     // label encoded RGBA8 as a prepared linear FSR lease.
-    auto result=s.prepared->Evaluate(input,s.settings.sourceEncoding,settings,s.settings.sdrBytesTrial?nullptr:linearOutput);
-    if(!result){if(result.error().kind==ErrorKind::InvalidInput||result.error().kind==ErrorKind::Unsupported){s.status=result.error().message;auto off=settings;off.enabled=false;auto reset=s.prepared->Evaluate(input,s.settings.sourceEncoding,off);if(reset)return BeforeResult{false,wasActive||input.reset};}
+    auto result=s.Run(input,settings,linearOutput,metadata);
+    if(!result){if(result.error().kind==ErrorKind::InvalidInput||result.error().kind==ErrorKind::Unsupported){s.status=result.error().message;auto off=settings;off.enabled=false;auto reset=s.Run(input,off,nullptr,metadata);if(reset)return BeforeResult{false,wasActive||input.reset};}
         s.MarkTerminal(result.error());return std::unexpected(result.error());}
-    s.active=result->evaluated;if(s.active){++s.recorded;s.resets+=result->effectiveReset;s.status="NR active before upscaling; "+std::string(s.profile->id)+
+    s.active=result->evaluated;if(s.active){++s.recorded;s.resets+=result->effectiveReset;s.status=std::string(metadata?"NR active after upscaling, before FG; ":"NR active before upscaling; ")+std::string(s.profile->id)+
         (s.settings.sdrBytesTrial?"; one SDR RGBA8 byte trial pass":"; one native SDR pass");}return *result;
 }
 Result<void> BeforeHost::Retire(){auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,s.status.c_str());
-    if(s.prepared){auto r=s.prepared->Retire();if(!r){s.MarkTerminal(r.error());return r;}s.prepared.reset();}
+    if(s.HasPreparation()){auto r=s.RetirePreparation();if(!r){s.MarkTerminal(r.error());return r;}s.prepared.reset();}
     if(s.owner){auto r=s.owner->Retire();if(!r){s.MarkTerminal(r.error());return r;}s.owner.reset();}
     s.uncertain=false;s.available=false;s.active=false;s.status="NR retired";return {};
 }

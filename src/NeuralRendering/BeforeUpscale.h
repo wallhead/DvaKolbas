@@ -30,8 +30,9 @@ public:
     BeforeUpscale& operator=(const BeforeUpscale&)=delete;
     // Native FP16 linear or explicit SDR RGBA8 world, R32 depth, RG16 motion,
     // same immediate D3D11 context. Caller serializes all calls and unbinds
-    // writable views before Evaluate. No UI/After or game color preparation.
-    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr,PerformanceQueries* queries11=nullptr,ColorDomain domain=ColorDomain::Linear);
+    // writable views before Evaluate. Placement is latched at initialization;
+    // default Before keeps existing callers strict. No UI or game preparation.
+    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr,PerformanceQueries* queries11=nullptr,ColorDomain domain=ColorDomain::Linear,Placement placement=Placement::Before);
     // Success means delivery was queued on the authoritative immediate context.
     // Readback callers explicitly WaitDelivery; later work on that context is ordered.
     Result<BeforeResult> Evaluate(const BeforeInput&,const SettingsSnapshot&);

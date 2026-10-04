@@ -115,6 +115,18 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         }
         return result;
     }
+    bool EvaluateOptionalPostUpscale(UpscaleFrame& frame,UpscaleOutcome outcome){
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        const bool ok=host.EvaluateCommunityNeuralAfter(frame,outcome,NeuralRendering::SourceWorldEligible(!spatial,
+            nativeUIHandoff,host.nativeUI_.Dedicated(),CommunityShaders::Active()));
+#if defined(TRP_ENABLE_FSR_FG)
+        if(host.FsrFgActive())host.fsrGenerationFrame_.reset|=frame.reset;
+#endif
+        return ok;
+#else
+        (void)frame;(void)outcome;return true;
+#endif
+    }
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
 };

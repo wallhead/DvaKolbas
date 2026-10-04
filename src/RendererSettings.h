@@ -167,6 +167,7 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if (capabilities.communityNeural) {
             if (capabilities.externalWorld || !draft.nativeUI) return "Community NR requires TRP world ownership and native UI.";
             if (const auto error=NeuralRendering::NativeBeforeUnavailable(draft.sourceDLSSG)) return error;
+            if (const auto error=NeuralRendering::NativeAfterUnavailable(draft.sourceDLSSG,draft.upscaleType,draft.fsr.quality,draft.dynamicResolution)) return error;
         }
         if (const auto error = NeuralSettingsUnavailable(draft.upscaleType, capabilities)) {
             // Preserve an unchanged startup request when saving unrelated edits.

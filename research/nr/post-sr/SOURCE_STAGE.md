@@ -1,0 +1,49 @@
+# Post-SR source stage checkpoint, 2026-10-04
+
+Owner ordering: `input -> DLSS/DLAA/FSR -> NR -> optional FG -> UI/final`.
+The revised After pass consumes real sources only. Initial qualification is
+native-size DLAA/FSR Native AA; reduced guides remain explicitly unavailable.
+
+Task 1 is bounded qualification: 29 metadata assertions, five independent
+geometry assertions, and 48 GPU preparation sources /116,736 pixels passed.
+Nearest reduced guides fail at thin surfaces (4 mismatches) and unaligned edges
+(8 mismatches); these negative cases are retained rather than promoted to support.
+The initial compiled metadata stub failed 24/29 assertions before implementation.
+
+Task 3 adapter proof: 240 native sources, 239 NR evaluations, one unchanged off
+source, 13,824,000 exact alpha values and first/re-enable history resets. Actual
+NR output changes RGB with full Tone 1 and Stable colors off. The initial adapter
+delegating to the Before-only bridge failed After placement and metadata binding.
+Working Before/prepared FSR regressions passed ten affected checks.
+
+The host switches After -> Before -> After with an extent change and recovers
+from rejected reduced guides. A genuine D3D11 preparation/encoder dependency is
+held by a shared GPU fence, confirmed pending, and released independently after
+300 ms; the next placement switch waits at least 100 ms. That source deliberately
+skips Map, which would otherwise drain the pending work. Both native devices and
+the actual supplied ReShade wrapper pass. External FG reader integration and
+pending-reader resize/minimize/Apply in Skyrim remain open.
+
+Provider wiring runs after completed source effects, before source generation
+preparation, with FG off too. Spatial/recovery paths only drain NR. NVIDIA tags
+the enhanced output; FSR copies it into the cached scene target that Present
+uploads. Legacy NR remains disabled under the community owner.
+
+Actual pinned FSR Native AA -> NR -> FG source upload passed 240 temporal sources,
+239 NR evaluations, 13,824,000 exact alpha values, 13,764,970 changed RGB pixels,
+57,600 unchanged off pixels, and 55,296,000 exact uploaded source bytes. HUD and
+retained SR output were unchanged for all 240 sources; transport/readers/owner
+retired. This does not run combined FG generation/presentation or Skyrim.
+NVIDIA source/tag tests use real D3D11 copies with scripted vendor operations;
+actual NVIDIA SR/NR/FG chaining remains a game/provider gate.
+
+Live settings expose Before/After upscaling (before FG), explicitly rejecting
+scaled After requests. Settings RED caught the missing native-size restriction.
+The independent review found one FSR-off compile guard error, now guarded. That variant also exposed a pre-existing Windows max macro conflict in motion diagnostics; the macro-safe call fixes it, and the NR-enabled/FSR-disabled DLL build passes. The review found
+no other confirmed correctness blocker. Its qualification limits are retained.
+
+The pre-review product suite passed 195/195 checks, excluding exactly the three
+known unavailable Graphics Tools tests. A final clean-source matrix/package
+receipt will supersede that dirty implementation checkpoint. Installed Before
+DLL/INI and MO2 settings are preserved. No Before/After or AIO performance parity
+claim is made.

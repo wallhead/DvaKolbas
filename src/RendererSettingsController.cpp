@@ -229,6 +229,8 @@ RendererSettingsResult RendererSettingsController::SetNeuralRenderingEnabled(boo
             if (CommunityShaders::Active() || !host_.DedicatedUITextureMode() || !upscaler_.mNativeUI)
                 return {"Community NR requires TRP world ownership and native UI.",true};
             if (const auto error=NeuralRendering::NativeBeforeUnavailable(frameGen_.settings.sourceDLSSG)) return {error,true};
+            const auto request=Capture(true,false);
+            if(const auto error=NeuralRendering::NativeAfterUnavailable(frameGen_.settings.sourceDLSSG,request.upscaleType,request.fsr.quality,request.dynamicResolution))return {error,true};
         }
         frameGen_.settings.sourceDLSSG.neuralEnabled=enabled;
         return {enabled?"NR requested for the next world frame.":"NR disabled.",false,true};
