@@ -75,3 +75,10 @@ review findings are fixed; 14 affected regressions pass. Graphics debug queues
 are unavailable, not counted as passing. This extends the older upload-only
 checkpoint: automatic UI appearance, physical cadence, resize and Skyrim FSR
 remain open. Installed dc6a9abe3630 DLL/INI and MO2 settings are unchanged.
+
+First Skyrim FSR trial: owner reports "seems fine". The [running-game
+receipt](skyrim-fsr-after-game-result.json) confirms Native AA After NR,
+successful FSR generation callbacks while After is selected, live placement
+and Style0/2 changes, and generation resumption. No error/critical log entries
+occur. Last sampled NR count is cumulative across placements, not After-only.
+Full toggles/UI/lifecycle acceptance and performance remain pending; count3/8.

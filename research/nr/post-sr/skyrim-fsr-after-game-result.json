@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "First running Skyrim FSR Native AA/NR After/FSR FG trial on RTX 4080 SUPER; bounded log prefix",
+  "ownerReport": "seems fine",
+  "builtSourceRevision": "dc6a9abe3630",
+  "log": {
+    "file": "TheosRenderPipeline.log",
+    "bytes": 28362,
+    "sha256": "2ee56921fa3c29cf82f6fd950d3f54459042eb48d4f90a43541f28d5c4a46594",
+    "lastLineTimestamp": "2026-10-04 18:24:34.472",
+    "prefixOnly": true
+  },
+  "observations": {
+    "afterNrLoggedSamples": 10,
+    "beforeNrLoggedSamples": 2,
+    "lastLoggedCumulativeNrEvaluations": 5400,
+    "successfulFgCallbackSamplesWhileAfterSelected": 8,
+    "errorCriticalLines": 0,
+    "latestNrSettings": "[2026-10-04 18:23:04.552] [thread 41604] [info] [Community NR settings] revision=4 placement=After SR before FG stableColors=false tone=1 structure=1 style=2"
+  },
+  "evidenceLines": [
+    "[2026-10-04 18:19:17.705] [thread 41604] [info] [Renderer build] TRP_BUILD|edition=Standard|source=dc6a9abe3630|FSR=1|FG=1|NR=1",
+    "[2026-10-04 18:19:49.453] [thread 41604] [info] [FSR startup] provider=3.1.5 quality=NativeAA policy=Analytical sourceColorEncoding=Gamma22 render=2560x1440 output=2560x1440 presentation=AMD-D3D12 frameGeneration=context-deferred",
+    "[2026-10-04 18:19:57.012] [thread 27972] [info] [Community NR settings] revision=1 placement=After SR before FG stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 18:22:53.996] [thread 41604] [info] [Community NR settings] revision=2 placement=Before SR stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 18:23:00.382] [thread 41604] [info] [Community NR settings] revision=3 placement=After SR before FG stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 18:23:04.552] [thread 41604] [info] [Community NR settings] revision=4 placement=After SR before FG stableColors=false tone=1 structure=1 style=2",
+    "[2026-10-04 18:22:27.953] [thread 41604] [info] [Community NR frame] source=11258 requested=true evaluated=true profile=rtx40 revision=1 reset=true frames=1 resets=1 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 18:24:30.497] [thread 41604] [info] [Community NR frame] source=16657 requested=true evaluated=true profile=rtx40 revision=4 reset=false frames=5400 resets=7 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 18:22:54.141] [thread 41604] [info] [Community NR frame] source=12431 requested=true evaluated=true profile=rtx40 revision=2 reset=true frames=1174 resets=5 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 18:22:54.701] [thread 41604] [info] [Community NR frame] source=12457 requested=true evaluated=true profile=rtx40 revision=2 reset=false frames=1200 resets=5 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 18:22:30.135] [thread 41604] [info] [FSR FG] source=11347 presentCount=11346 renderedAtCapture=11346 renderedNow=11346 camera=1554044137088 guideCapture=90 temporalGuides=true configuredId=11347 preparedId=11347 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 18:24:34.472] [thread 41604] [info] [FSR FG] source=16824 presentCount=16823 renderedAtCapture=16823 renderedNow=16823 camera=1554044137088 guideCapture=5567 temporalGuides=true configuredId=16824 preparedId=16824 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000"
+  ],
+  "qualifications": [
+    "Actual After NR processing and successful SDK FG callbacks observed; physical cadence and generated-image pixel quality are not measured by logs",
+    "Live After->Before->After placement and Style0->Style2 change observed with history resets and generation resumption",
+    "No NR off/on sample observed in this prefix; full NR/FG toggles and HUD/menu/save/load/fast-travel/alt-tab/minimize acceptance remain pending",
+    "Sparse logged NR counters are cumulative across placements, not After-only evaluations",
+    "Other scenes, GPU families, lifecycle stress and matched performance remain open",
+    "No game/INI/MO2 changes or GPU probes by agent during this capture"
+  ],
+  "settingsChangedByAgent": false,
+  "milestonesComplete": 3,
+  "milestonesTotal": 8
+}
