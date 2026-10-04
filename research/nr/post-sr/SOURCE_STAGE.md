@@ -62,3 +62,16 @@ No error/critical entries occur in the captured prefix. This closes the initial
 NVIDIA execution observation gate on RTX 4080 SUPER, with broader quality,
 lifecycle, physical cadence and performance checks still pending. Latest logged
 placement is Before. This capture changes no game/INI/MO2 files; count stays 3/8.
+
+Next FSR qualification: [combined presentation](fsr-combined-presentation.json)
+passes automatic and observer modes, 240 actual Native AA sources /239 NR
+evaluations each, 197 actual generation callbacks each, and independent
+off/menu/re-enable/suspend-resume checks. Observer mode retains 195 generated
+images (194 changed), 238 real images, 456,960 exact enhanced-real RGB samples
+and 1,108,480 UI blend/alpha samples. The deliberately unenhanced actual
+Presenter source fails the RGB oracle. Portable placement alignment failed
+before copying, then passed with 512-byte row spacing. Three material fixture
+review findings are fixed; 14 affected regressions pass. Graphics debug queues
+are unavailable, not counted as passing. This extends the older upload-only
+checkpoint: automatic UI appearance, physical cadence, resize and Skyrim FSR
+remain open. Installed dc6a9abe3630 DLL/INI and MO2 settings are unchanged.

@@ -37,7 +37,7 @@ namespace FgObservation
     class Capture
     {
     public:
-        Capture(ID3D12Device* device,unsigned capacity,UINT width,UINT height):device_(device),samples_(capacity),width_(width),height_(height)
+        Capture(ID3D12Device* device,unsigned capacity,UINT width,UINT height,bool captureScene=false):device_(device),samples_(capacity),width_(width),height_(height),captureScene_(captureScene)
         {
             constexpr char program[]=R"(
 Texture2D<float4> scene:register(t0);Texture2D<float4> ui:register(t1);
@@ -65,9 +65,11 @@ float4 ps(float4 p:SV_Position):SV_Target{int3 xy=int3(int2(p.xy),0);float4 h=ui
             Check(device_->CreateDescriptorHeap(&heap,IID_PPV_ARGS(&views_)));heap.NumDescriptors=capacity;heap.Type=D3D12_DESCRIPTOR_HEAP_TYPE_RTV;heap.Flags=D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
             Check(device_->CreateDescriptorHeap(&heap,IID_PPV_ARGS(&targets_)));
             viewStride_=device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);targetStride_=device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-            rowPitch_=((width*4+255)/256)*256;
+            // Each stored row is also a separate placed footprint. Satisfy both
+            // the 256-byte pitch and 512-byte placement rules on every device.
+            rowPitch_=((width*4+D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT-1)/D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT)*D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
             D3D12_HEAP_PROPERTIES properties{};properties.Type=D3D12_HEAP_TYPE_READBACK;D3D12_RESOURCE_DESC desc{};desc.Dimension=D3D12_RESOURCE_DIMENSION_BUFFER;
-            desc.Width=rowPitch_*2;desc.Height=1;desc.DepthOrArraySize=desc.MipLevels=1;desc.SampleDesc.Count=1;desc.Layout=D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+            desc.Width=rowPitch_*(captureScene_?4:2);desc.Height=1;desc.DepthOrArraySize=desc.MipLevels=1;desc.SampleDesc.Count=1;desc.Layout=D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
             for(auto& sample:samples_)Check(device_->CreateCommittedResource(&properties,D3D12_HEAP_FLAG_NONE,&desc,D3D12_RESOURCE_STATE_COPY_DEST,nullptr,IID_PPV_ARGS(&sample.readback)));
         }
         static ffxReturnCode_t Present(ffxCallbackDescFrameGenerationPresent* params,void* opaque)noexcept
@@ -106,11 +108,21 @@ float4 ps(float4 p:SV_Position):SV_Target{int3 xy=int3(int2(p.xy),0);float4 h=ui
             destination.PlacedFootprint.Footprint={DXGI_FORMAT_R8G8B8A8_UNORM,width_,1,1,rowPitch_};
             D3D12_BOX row{0,0,0,width_,1,1};list->CopyTextureRegion(&destination,0,0,0,&source,&row);
             destination.PlacedFootprint.Offset=rowPitch_;row.top=height_/2;row.bottom=row.top+1;list->CopyTextureRegion(&destination,0,0,0,&source,&row);
+            if(captureScene_){
+                // Independent raw scene samples let callers validate UI blending
+                // without assuming generated RGB matches a real source.
+                Barrier(list,scene,sceneState,D3D12_RESOURCE_STATE_COPY_SOURCE);
+                source.pResource=scene;destination.PlacedFootprint.Offset=rowPitch_*2;
+                row.top=0;row.bottom=1;list->CopyTextureRegion(&destination,0,0,0,&source,&row);
+                destination.PlacedFootprint.Offset=rowPitch_*3;row.top=height_/2;row.bottom=row.top+1;
+                list->CopyTextureRegion(&destination,0,0,0,&source,&row);
+                Barrier(list,scene,D3D12_RESOURCE_STATE_COPY_SOURCE,sceneState);
+            }
             Barrier(list,output,D3D12_RESOURCE_STATE_COPY_SOURCE,outputState);
             sample.source=params.frameID;sample.generated=params.isGeneratedFrame;sample.recorded=true;return FFX_API_RETURN_OK;
         }
         ComPtr<ID3D12Device> device_;ComPtr<ID3D12RootSignature> root_;ComPtr<ID3D12PipelineState> pipeline_;ComPtr<ID3D12DescriptorHeap> views_,targets_;
-        std::vector<Sample> samples_;UINT width_{},height_{},rowPitch_{},viewStride_{},targetStride_{};std::atomic<unsigned> next_{};std::atomic<bool> failure_{};
+        std::vector<Sample> samples_;UINT width_{},height_{},rowPitch_{},viewStride_{},targetStride_{};bool captureScene_{};std::atomic<unsigned> next_{};std::atomic<bool> failure_{};
     };
     inline Capture* activeCapture{};
     inline PfnFfxConfigure originalConfigure{};

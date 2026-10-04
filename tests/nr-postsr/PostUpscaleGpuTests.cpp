@@ -11,6 +11,16 @@
 #include <DirectXMath.h>
 #include <cstring>
 #endif
+#if defined(TRP_POSTSR_FSR_PRESENT)
+#include "FrameGen/FSRPresentation.h"
+#include "../fsr-fg/PresentationObserver.h"
+#include <unordered_set>
+#include <unordered_map>
+#include <atomic>
+#include <cmath>
+#include <d3d11sdklayers.h>
+#include <d3d12sdklayers.h>
+#endif
 using namespace TheosRenderPipeline;
 using namespace NeuralRendering;
 using Microsoft::WRL::ComPtr;
@@ -18,10 +28,20 @@ namespace {
 int failures{};
 void Check(bool ok,const char* name){std::printf("%s %s\n",ok?"PASS":"FAIL",name);failures+=!ok;}
 void Need(HRESULT result){if(FAILED(result))throw result;}
+#if defined(TRP_POSTSR_FSR_PRESENT)
+template<class T> T Value(Upscaling::Result<T> result){if(!result)throw std::runtime_error(result.error().message);return std::move(*result);}
+void Accepted(Upscaling::Result<void> result){if(!result)throw std::runtime_error(result.error().message);}
+std::atomic<unsigned> sdkMessages{};
+void SdkMessage(uint32_t,const wchar_t* text){++sdkMessages;if(text)std::fwprintf(stderr,L"SDK: %ls\n",text);}
+#endif
 }
 int wmain(int argc,wchar_t** argv){try{
     std::setvbuf(stdout,nullptr,_IONBF,0);
-#if defined(TRP_POSTSR_FSR_SOURCE)
+#if defined(TRP_POSTSR_FSR_PRESENT)
+    if(argc!=5)return 1;
+    const bool observed=std::wstring_view(argv[4])==L"observer";
+    if(!observed && std::wstring_view(argv[4])!=L"automatic")return 1;
+#elif defined(TRP_POSTSR_FSR_SOURCE)
     if(argc!=4)return 1;
 #else
     if(argc!=3)return 1;
@@ -29,6 +49,10 @@ int wmain(int argc,wchar_t** argv){try{
     if(NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: Skyrim running or inventory unavailable");return 1;}
     PostUpscale post;SettingsSnapshot settings;settings.enabled=false;settings.revision=1;settings.placement=Placement::After;settings.stableColors=false;
     Check(bool(post.Evaluate({},settings)),"DisabledPostSourceRequiresNoRuntimeOrDecoder");
+#if defined(TRP_POSTSR_FSR_PRESENT)
+    ComPtr<ID3D12Debug> graphicsDebug;const bool debug12=SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&graphicsDebug)));
+    if(debug12)graphicsDebug->EnableDebugLayer();
+#endif
     ComPtr<IDXGIFactory6> factory;Need(CreateDXGIFactory2(0,IID_PPV_ARGS(&factory)));
     ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 desc{};
     for(UINT i=0;;++i){ComPtr<IDXGIAdapter1> candidate;const auto hr=factory->EnumAdapterByGpuPreference(i,DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&candidate));
@@ -39,7 +63,13 @@ int wmain(int argc,wchar_t** argv){try{
     Need(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&contract.device)));
     D3D12_COMMAND_QUEUE_DESC queue{};Need(contract.device->CreateCommandQueue(&queue,IID_PPV_ARGS(&contract.queue)));
     ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context;
+#if defined(TRP_POSTSR_FSR_PRESENT)
+    auto deviceResult=D3D11CreateDevice(adapter.Get(),D3D_DRIVER_TYPE_UNKNOWN,nullptr,D3D11_CREATE_DEVICE_DEBUG,nullptr,0,D3D11_SDK_VERSION,&device,nullptr,&context);
+    if(deviceResult==DXGI_ERROR_SDK_COMPONENT_MISSING)deviceResult=D3D11CreateDevice(adapter.Get(),D3D_DRIVER_TYPE_UNKNOWN,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&device,nullptr,&context);
+    Need(deviceResult);ComPtr<ID3D11InfoQueue> diagnostics11;device.As(&diagnostics11);
+#else
     Need(D3D11CreateDevice(adapter.Get(),D3D_DRIVER_TYPE_UNKNOWN,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&device,nullptr,&context));
+#endif
 #if defined(TRP_POSTSR_FSR_SOURCE)
     Upscaling::FsrHostResources sr(std::filesystem::absolute(argv[3]));
     Upscaling::BackendConfiguration configuration;configuration.backend=Upscaling::BackendKind::Fsr;
@@ -52,6 +82,49 @@ int wmain(int argc,wchar_t** argv){try{
     Upscaling::FsrFrameAdapter reconstruction(*sr.Upscaler(),sr.Bridge(),sr.Resources(),sr.Color11(),sr.Depth11(),sr.Motion11(),sr.Output11(),sr.HandoffEncoding());
     FsrPresentationTransport foreground;Need(foreground.Initialize(sr.Bridge(),{320,180}));
     std::printf("ACTUAL_FSR provider=%s id=%llu encoding=Gamma22 quality=NativeAA\n",sr.Provider().name.c_str(),(unsigned long long)sr.Provider().id);
+#if defined(TRP_POSTSR_FSR_PRESENT)
+    Accepted(sr.LoadFrameGeneration());auto runtime=sr.Runtime();
+    ComPtr<ID3D12InfoQueue> diagnostics12;contract.device.As(&diagnostics12);
+    std::printf("GRAPHICS_DEBUG d3d11=%u d3d12=%u\n",bool(diagnostics11),bool(diagnostics12));
+    ffxConfigureDescGlobalDebug1 debug{{FFX_API_CONFIGURE_DESC_TYPE_GLOBALDEBUG1,nullptr},SdkMessage,FFX_API_CONFIGURE_GLOBALDEBUG_LEVEL_ERRORS|FFX_API_CONFIGURE_GLOBALDEBUG_LEVEL_WARNINGS};
+    for(auto module:{L"amd_fidelityfx_upscaler_dx12.dll",L"amd_fidelityfx_framegeneration_dx12.dll"}){
+        auto configure=reinterpret_cast<PfnFfxConfigure>(GetProcAddress(GetModuleHandleW(module),"ffxConfigure"));
+        if(!configure || configure(nullptr,&debug.header)!=FFX_API_RETURN_OK)throw std::runtime_error("SDK diagnostics unavailable");
+    }
+    auto fg=Value(Upscaling::SelectFsrEffectProvider(Value(runtime->EnumerateForEffect(contract.device.Get(),Upscaling::FsrEffect::FrameGeneration)),Upscaling::FsrEffect::FrameGeneration));
+    auto sw=Value(Upscaling::SelectFsrEffectProvider(Value(runtime->EnumerateForEffect(contract.device.Get(),Upscaling::FsrEffect::FrameGenerationSwapChain)),Upscaling::FsrEffect::FrameGenerationSwapChain));
+    WNDCLASSW wc{};wc.lpfnWndProc=DefWindowProcW;wc.hInstance=GetModuleHandleW(nullptr);wc.lpszClassName=L"TRPNrFsrPresentationProbe";
+    if(!RegisterClassW(&wc))throw std::runtime_error("fixture window class");
+    struct Window{HWND value{};~Window(){if(value)DestroyWindow(value);}} window;
+    window.value=CreateWindowExW(0,wc.lpszClassName,L"NR FSR probe",WS_OVERLAPPEDWINDOW,0,0,400,300,nullptr,nullptr,wc.hInstance,nullptr);
+    if(!window.value)throw std::runtime_error("fixture HWND");
+    auto& functions=const_cast<Upscaling::FsrFunctions&>(runtime->Functions());FgObservation::originalConfigure=functions.Configure;functions.Configure=FgObservation::Configure;
+    struct Restore{Upscaling::FsrFunctions& functions;~Restore(){functions.Configure=FgObservation::originalConfigure;FgObservation::activeCapture=nullptr;}} restore{functions};
+    std::unique_ptr<FgObservation::Capture> capture;
+    if(observed){capture=std::make_unique<FgObservation::Capture>(contract.device.Get(),488,320,180,true);FgObservation::activeCapture=capture.get();
+        Check(capture->RowPitch()%D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT==0,"AllReadbackRowsHavePortablePlacementAlignment");
+        if(failures)return 1;}
+    FsrPresentation presenter;
+    // On any earlier return/exception, uncertain SDK retirement must retain
+    // the observer user context and GPU descriptors just as the presenter does.
+    struct PresentationLifetime{
+        FsrPresentation& presenter;std::unique_ptr<FgObservation::Capture>& capture;bool retired{};
+        ~PresentationLifetime(){
+            if(!retired){try{if(!presenter.Retire())(void)capture.release();}catch(...){(void)capture.release();}}
+            FgObservation::activeCapture=nullptr;
+        }
+    } presentationLifetime{presenter,capture};
+    DXGI_SWAP_CHAIN_DESC swapDesc{};swapDesc.OutputWindow=window.value;swapDesc.Windowed=TRUE;
+    swapDesc.BufferDesc.Width=320;swapDesc.BufferDesc.Height=180;swapDesc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapDesc.SampleDesc.Count=1;swapDesc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;swapDesc.BufferCount=1;
+    Accepted(presenter.Create(factory.Get(),runtime,sr.Bridge(),swapDesc,sw));
+    Need(presenter.Present({},Upscaling::UpscaleOutcome::SkippedInvalidInput,{},nullptr,Upscaling::ColorEncoding::Unknown,nullptr,nullptr,false,false,false,0,0));
+    Upscaling::FsrGenerationLimits limits;limits.render=limits.display={320,180};limits.debugChecking=true;
+    Accepted(presenter.CompleteStartup(limits,fg));
+    unsigned generatedCallbacks{},suppressed{},reentries{},generatedReadbacks{},renderedReadbacks{},changingGenerated{};
+    uint64_t compositedUiExact{},enhancedRenderedRgbExact{};std::unordered_set<uint64_t> sourceIds,eligibleIds;
+    std::unordered_map<uint64_t,std::vector<unsigned char>> enhancedRows;
+#endif
 #endif
     auto owner=std::make_shared<RuntimeOwner>(RuntimeOwnerPaths{argv[1],argv[2],std::filesystem::absolute("nr-postsr-cache"),true});
     auto opened=owner->Open(RuntimeCatalog()[1],contract.device.Get(),{desc.VendorId,desc.DeviceId,desc.SubSysId,contract.adapterLuid,false});
@@ -85,8 +158,9 @@ int wmain(int argc,wchar_t** argv){try{
     Graphics::SharedTexture fgRead;D3D11_TEXTURE2D_DESC readDesc{};color->GetDesc(&readDesc);Need(sr.Bridge()->CreateSharedTexture(readDesc,fgRead));
     Upscaling::FsrColorConverter referenceEncoder;
     Upscaling::UpscaleFrame real;real.backend=Upscaling::BackendKind::Fsr;real.color=real.input=source.Get();real.output=color.Get();
+    real.depthFormat=DXGI_FORMAT_R32_FLOAT;real.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
     real.depth=depth.Get();real.motion=motion.Get();real.render=real.subrect=real.display={320,180};real.motionConvention={320,180,true,false};real.deltaMilliseconds=1000.f/60;
-    real.camera.identity=1;real.camera.nearDistance=.1f;real.camera.farDistance=100;real.camera.verticalFovRadians=1;
+    real.camera.worldUnitsToMeters=1;real.camera.identity=1;real.camera.nearDistance=.1f;real.camera.farDistance=100;real.camera.verticalFovRadians=1;
     DirectX::XMFLOAT4X4 view,projection;DirectX::XMStoreFloat4x4(&view,DirectX::XMMatrixIdentity());
     DirectX::XMStoreFloat4x4(&projection,DirectX::XMMatrixPerspectiveFovLH(1,320.f/180,.1f,100));
     std::memcpy(real.camera.view.data(),&view,64);std::memcpy(real.camera.projection.data(),&projection,64);
@@ -121,6 +195,10 @@ int wmain(int argc,wchar_t** argv){try{
         native.previousSourceId=metadata.previousSourceId=frame;
         native.presentationTime=metadata.sourceTime=metadata.guideTime=double(frame+1)/60.;
 #if defined(TRP_POSTSR_FSR_SOURCE)
+#if defined(TRP_POSTSR_FSR_PRESENT)
+        Need(presenter.WaitBeforeProducer());
+        if(frame==160){Accepted(presenter.Suspend());Accepted(presenter.Resume());}
+#endif
         Need(foreground.WaitBeforeProducer());context->CopyResource(source.Get(),color.Get());
         real.sourceId=frame+1;real.sourceEpoch=1;real.reset=frame==0 || frame==80 || frame==81;
         auto jitter=sr.Upscaler()->QueryJitter(real.sourceId);if(!jitter)return 1;real.jitterX=(*jitter)[0];real.jitterY=(*jitter)[1];
@@ -144,6 +222,11 @@ int wmain(int argc,wchar_t** argv){try{
         // just the visible D3D11 output. No generated-output claim is made here.
         Need(referenceEncoder.Convert(context.Get(),color.Get(),reference.Get(),Upscaling::ColorEncoding::Gamma22,Upscaling::ColorEncoding::SRGB));
         auto expected=pixels(reference.Get());
+#if defined(TRP_POSTSR_FSR_PRESENT)
+        if(observed){auto& rows=enhancedRows[real.sourceId];rows.resize(320*2*4);
+            std::memcpy(rows.data(),expected.data(),320*4);
+            std::memcpy(rows.data()+320*4,expected.data()+90*320*4,320*4);}
+#endif
         Need(foreground.Upload(color.Get(),Upscaling::ColorEncoding::Gamma22,ui.Get(),nullptr,true,real.sourceId));
         Need(sr.Bridge()->WaitD3D12(Graphics::InteropWork::SwapChain));ID3D12GraphicsCommandList* list{};
         Need(sr.Bridge()->Begin(Graphics::InteropWork::FrameGeneration,&list));
@@ -152,6 +235,22 @@ int wmain(int argc,wchar_t** argv){try{
         auto actual=pixels(fgRead.texture11.Get());
         for(size_t i=0;i<actual.size();++i)fgExact+=actual[i]==expected[i];
         hudExact+=pixels(ui.Get())==hud;srUntouched+=pixels(sr.Output11())==retainedSr;
+#if defined(TRP_POSTSR_FSR_PRESENT)
+        // Production presentation uploads the enhanced source and real SR guides.
+        // FG-off and menu intervals exercise suppression and subsequent reentry.
+        const bool requested=frame<40 || frame>=60,menu=frame>=120 && frame<140;
+        real.reset=real.reset || output->effectiveReset;
+        Need(presenter.Present(real,Upscaling::UpscaleOutcome::Temporal,sr.Resources(),color.Get(),Upscaling::ColorEncoding::Gamma22,ui.Get(),nullptr,true,menu,requested,0,0));
+        const auto status=presenter.Status();
+        Check(status.sourceId==real.sourceId && status.submitted,"ActualFsrSourceSubmitted");
+        Check(status.callback.invocations==(status.decision.generate?1u:0u),"ActualFsrExactlyOneCallbackPerEligibleSource");
+        if(!requested || menu)Check(!status.decision.generate && status.callback.invocations==0,"FgOffAndMenuIndependentlySuppressGeneration");
+        if(frame==60 || frame==82 || frame==140 || frame==160)
+            Check(status.decision.generate && status.decision.reset && status.callback.invocations==1,"EachScheduledReentryActuallyGeneratesWithReset");
+        generatedCallbacks+=status.callback.invocations;suppressed+=!status.decision.generate;
+        reentries+=status.decision.generate && status.decision.reset;
+        sourceIds.insert(real.sourceId);if(status.decision.generate)eligibleIds.insert(real.sourceId);
+#endif
 #endif
     }
     Check(alpha==320ull*180*240,"PostSourcePreservesEveryAlphaByte");
@@ -159,6 +258,53 @@ int wmain(int argc,wchar_t** argv){try{
     Check(bypass==320*180,"DisabledPostSourceLeavesEveryByteUnchanged");
     Check(post.Diagnostics().recorded==239,"PostSourceOnePassPerEnabledRealSource");
     Check(resets==2,"PostSourceHistoryResetsOnFirstAndReenable");
+#if defined(TRP_POSTSR_FSR_PRESENT)
+    auto retired=presenter.Retire();if(!retired){(void)capture.release();Accepted(retired);}
+    presentationLifetime.retired=true;FgObservation::activeCapture=nullptr;
+    if(capture){
+        Check(!capture->Failed(),"CombinedFsrPublicPresentCaptureValid");
+        uint64_t previous{};std::unordered_set<uint64_t> realSeen,generatedSeen;
+        for(unsigned index=0;index<capture->Count();++index){const auto& sample=capture->Samples()[index];
+            Check(sample.recorded && sourceIds.contains(sample.source),"CapturedImageBelongsToSubmittedRealSource");
+            Check((sample.generated?generatedSeen:realSeen).insert(sample.source).second,"OneCapturedImageOfEachKindPerSource");
+            if(sample.generated)Check(eligibleIds.contains(sample.source),"GeneratedImageBelongsToEnabledPreparedSource");
+            D3D12_RANGE range{0,capture->RowPitch()*4};void* mapped{};Need(sample.readback->Map(0,&range,&mapped));
+            const auto* data=static_cast<const unsigned char*>(mapped);uint64_t hash=1469598103934665603ull;
+            for(unsigned row=0;row<2;++row){const auto* composed=data+row*capture->RowPitch();const auto* raw=data+(row+2)*capture->RowPitch();
+                for(unsigned x=0;x<320;++x){
+                    const unsigned a=x<20?255:x<40?128:0;
+                    for(unsigned c=0;c<3;++c){const unsigned h=(x<20 && c==0)?255:(x>=20 && x<40 && c==1)?128:0;
+                        const int expected=int(std::lround(h+raw[x*4+c]*(255-a)/255.));
+                        compositedUiExact+=std::abs(int(composed[x*4+c])-expected)<=1;
+                        if(!sample.generated)enhancedRenderedRgbExact+=raw[x*4+c]==enhancedRows.at(sample.source)[(row*320+x)*4+c];
+                        if(row==1 && x>=40)hash=(hash^raw[x*4+c])*1099511628211ull;
+                    }
+                    compositedUiExact+=composed[x*4+3]==255;
+                }
+            }
+            D3D12_RANGE noWrite{};sample.readback->Unmap(0,&noWrite);
+            if(sample.generated){++generatedReadbacks;if(previous && previous!=hash)++changingGenerated;previous=hash;}else ++renderedReadbacks;
+        }
+        Check(generatedReadbacks>2 && changingGenerated>0 && renderedReadbacks>0,"CombinedFsrNrActualChangingGeneratedAndRealImages");
+        Check(enhancedRenderedRgbExact==uint64_t(renderedReadbacks)*320*2*3,"ActualPresentedRealSourceMatchesEnhancedNrRgb");
+        Check(compositedUiExact==uint64_t(capture->Count())*320*2*4,"OpaqueAndHalfAlphaUiMatchesIndependentRawSceneSamples");
+    }
+    Check(generatedCallbacks>2 && suppressed>=40 && reentries>=3,"CombinedFsrOffMenuAndNrReenableRecoverGeneration");
+    Check(sdkMessages.load()==0,"CombinedFsrNoSdkWarningsOrErrors");
+    unsigned graphicsErrors{};
+    if(diagnostics11)for(UINT64 i=0;i<diagnostics11->GetNumStoredMessagesAllowedByRetrievalFilter();++i){
+        SIZE_T size{};Need(diagnostics11->GetMessage(i,nullptr,&size));std::vector<unsigned char> storage(size);
+        auto* message=reinterpret_cast<D3D11_MESSAGE*>(storage.data());Need(diagnostics11->GetMessage(i,message,&size));
+        if(message->Severity<=D3D11_MESSAGE_SEVERITY_ERROR){++graphicsErrors;std::fprintf(stderr,"D3D11: %s\n",message->pDescription);}}
+    if(diagnostics12)for(UINT64 i=0;i<diagnostics12->GetNumStoredMessagesAllowedByRetrievalFilter();++i){
+        SIZE_T size{};Need(diagnostics12->GetMessage(i,nullptr,&size));std::vector<unsigned char> storage(size);
+        auto* message=reinterpret_cast<D3D12_MESSAGE*>(storage.data());Need(diagnostics12->GetMessage(i,message,&size));
+        if(message->Severity<=D3D12_MESSAGE_SEVERITY_ERROR){++graphicsErrors;std::fprintf(stderr,"D3D12: %s\n",message->pDescription);}}
+    if(diagnostics11 || diagnostics12)Check(graphicsErrors==0,"AvailableGraphicsDebugQueuesHaveNoErrors");
+    else std::puts("SKIPPED: Graphics Tools debug queues unavailable; portable readback alignment independently checked");
+    std::printf("FSR_NR_PRESENT mode=%s sources=240 callbacks=%u suppressed=%u reentries=%u generatedReadbacks=%u renderedReadbacks=%u changingGenerated=%u uiExactChannels=%llu enhancedRealRgbExact=%llu sdkMessages=%u\n",observed?"observer":"automatic",generatedCallbacks,suppressed,reentries,generatedReadbacks,renderedReadbacks,changingGenerated,(unsigned long long)compositedUiExact,(unsigned long long)enhancedRenderedRgbExact,sdkMessages.load());
+    std::puts("SCOPE actual NativeAA/NR/FG presentation; callback-mode UI sampled; automatic UI appearance, physical cadence, pending resize and Skyrim FSR NOT RUN");
+#endif
     Check(bool(post.Retire()) && bool(owner->Retire()),"PostSourceReadersAndRuntimeRetire");
     std::printf("POST_SOURCE frames=240 nrEvaluations=239 alphaExact=%llu changedRgbPixels=%llu bypassExact=%llu resets=%u\n",(unsigned long long)alpha,(unsigned long long)changed,(unsigned long long)bypass,resets);
 #if defined(TRP_POSTSR_FSR_SOURCE)
@@ -166,9 +312,14 @@ int wmain(int argc,wchar_t** argv){try{
     Check(hudExact==240 && srUntouched==240,"NativeHudAndSrRetainedOutputNeverReceiveNrFeedback");
     Check(SUCCEEDED(foreground.Retire()) && bool(sr.Retire()),"ActualFsrSourceTransportAndReadersRetire");
     std::printf("FSR_NR_SOURCE srFrames=%u fgInputBytesExact=%llu unchangedHudFrames=%llu untouchedSrFrames=%llu\n",srFrames,(unsigned long long)fgExact,(unsigned long long)hudExact,(unsigned long long)srUntouched);
+#if !defined(TRP_POSTSR_FSR_PRESENT)
     std::puts("SCOPE actual pinned FSR Native AA -> actual NR -> actual FG source upload; generation/present and Skyrim NOT RUN");
+#endif
 #else
     std::puts("SCOPE source adapter only; actual SR/FG provider handoff NOT RUN");
+#endif
+#if defined(TRP_POSTSR_FSR_PRESENT)
+    Check(generatedCallbacks>0 && (!observed || generatedReadbacks>0),"CombinedFsrNrMustObserveActualGeneratedImagesAndUi");
 #endif
     return failures?1:0;
 }catch(HRESULT error){std::printf("GPU failure 0x%08x\n",unsigned(error));return 1;}catch(const std::exception& error){std::printf("Exception: %s\n",error.what());return 1;}catch(...){std::puts("Unknown fixture exception");return 1;}}

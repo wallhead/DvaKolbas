@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Actual pinned FSR Native AA, RTX40 NR and production FSR FG presentation; sampled callback-mode pixels",
+  "baseRevision": "11ad2ce",
+  "installedProductRevision": "dc6a9abe3630",
+  "installedProductChanged": false,
+  "fixtureSha256": "4f8033d342fcc6cc6d3b25171afd21c50ce8050a97359480314c951ffd60c1e0",
+  "observerSha256": "c8fd00d322a2c49b0df7a12d665e66fa932601ddf40974d282a48cc21e5d656f",
+  "gpu": "RTX 4080 SUPER 10de:2702 LUID 00000000:00010318",
+  "results": [
+    {
+      "mode": "observer",
+      "sources": "240",
+      "callbacks": "197",
+      "suppressed": "43",
+      "reentries": "5",
+      "generatedReadbacks": "195",
+      "renderedReadbacks": "238",
+      "changingGenerated": "194",
+      "uiExactChannels": "1108480",
+      "enhancedRealRgbExact": "456960",
+      "sdkMessages": "0"
+    },
+    {
+      "mode": "automatic",
+      "sources": "240",
+      "callbacks": "197",
+      "suppressed": "43",
+      "reentries": "5",
+      "generatedReadbacks": "0",
+      "renderedReadbacks": "0",
+      "changingGenerated": "0",
+      "uiExactChannels": "0",
+      "enhancedRealRgbExact": "0",
+      "sdkMessages": "0"
+    }
+  ],
+  "perMode": {
+    "realSources": 240,
+    "nrEvaluations": 239,
+    "exactNrAlphaBytes": 13824000,
+    "exactUploadedFgSourceBytes": 55296000,
+    "unchangedHudFrames": 240,
+    "untouchedSrRetainedFrames": 240,
+    "graphicsDebugAvailable": false,
+    "sdkWarningsErrors": 0
+  },
+  "redEvidence": {
+    "unenhancedInputToActualPresenter": "ActualPresentedRealSourceMatchesEnhancedNrRgb failed: 10096 matching vs456960 expected sampled RGB channels",
+    "unaligned320PixelReadback": "Portable placement alignment assertion failed before any callback copies; 512-byte rounding fixed it"
+  },
+  "independentTransitions": {
+    "fgOff": "40-59 suppressed",
+    "fgReenable": "60 generation with reset",
+    "nrReenable": "81 suppress/reset,82 generation with reset",
+    "menu": "120-139 suppressed,140 generation with reset",
+    "suspendResume": "160 generation with reset"
+  },
+  "review": "Three fixture findings fixed and same reviewer confirmed no remaining important blocker: portable footprint placement alignment, independently asserted recovery and retaining observer capture on uncertain retirement",
+  "regression": {
+    "passed": 14,
+    "failed": 0,
+    "gpuTests": 6,
+    "seconds": 47.45,
+    "selection": "NrPost|FsrGeneration(GpuSmoke|Presentation|Lifecycle|Host)",
+    "graphicsDebugQueues": "Unavailable; not a debug-layer pass"
+  },
+  "qualification": [
+    "Callback-mode pixel proof covers two sampled rows per captured image; generated images have no pixel-perfect real-source reference",
+    "Automatic mode proves actual production submissions/generation callbacks, not visual UI appearance",
+    "Physical cadence, pending external readers/resize/minimize, Skyrim FSR and broader scene/performance/hardware acceptance remain open",
+    "No installed DLL/INI/MO2 changes or game launch in this step"
+  ],
+  "nextTrial": {
+    "scope": "Prepared FSR Native AA -> NR After -> FSR FG INI; waiting for MO2 closure",
+    "changedKeys": {
+      "Experimental/FrameGenerationBackend": {
+        "from": "1",
+        "to": "2"
+      },
+      "Settings/UpscaleType": {
+        "from": "3",
+        "to": "4"
+      }
+    },
+    "fullTone": "1.000000",
+    "style": "0"
+  },
+  "milestonesComplete": 3,
+  "milestonesTotal": 8,
+  "callbackPixelOracle": {
+    "rowsPerImage": 2,
+    "enhancedRealRgbToleranceBytes": 0,
+    "uiRgbToleranceUnormBytes": 1,
+    "composedAlpha": 255,
+    "comparedGeneratedFrames": 195,
+    "comparedRealFrames": 238
+  }
+}
