@@ -10,6 +10,15 @@ That reference test is now complete: **AIO Style 0 / Tone 1 has no shifting**, a
 
 The [external effective-control observer](../research/nr/tone-contract/runtime-observer/README.md) now has owned CPU lifecycle checks and a two-model GPU baseline/observed qualification: 64 snapshots, 640 evaluations and identical CSV/RGB captures. It does not inject or patch target instructions. Actual-game attachment and Color/Output/guide formats, views, pixels and active viewport remain unmeasured. This prepares the next capture; it does not fix the drift or advance the **1 of 8** count. Installed DLLs, INIs and MO2 remain unchanged.
 
+The actual AIO19 debugger capture refused before attachment: a target Windows
+attach-entry detour resolves to `S33BUR5CH.asi`; its complete behavior remains
+unqualified. A separate reviewed passive reader captured **15 retained host
+request snapshots**, all Style 0 / Tone 1 with mask groups off and a null sampled
+model callback slot. The [game receipt and next gate](../research/nr/tone-contract/runtime-observer/SKYRIM_CAPTURE.md)
+distinguish requested controls from post-callback dispatch controls. Formats,
+pixels, guides, viewport and the drift root cause remain open. No game or mod
+settings changed; **1 of 8** remains complete.
+
 Performance P0 now has optional bounded CPU/wait/Flush/descriptor observations and real retired D3D11/D3D12 timestamps for the seven prepared Before NR phases. The isolated executable admits the exact AIO19 model through a research-only generated catalog; production runtime pins are unchanged. The [clean baseline](../research/nr/performance/baseline.json) contains 24 synthetic 2560×1440 timing runs (7,200 measured sources). Vendor medians span 6.80–7.15 ms across both models; alternating transaction medians are approximately 10.0–10.2 ms. Both clean correctness runs preserved all 1,843,200 alpha pixels, including a live bypass/re-enable. Standard NR-enabled validation passed 165/165; Standard NR-disabled passed 148 initially plus all seven previously skipped fixture cases on a targeted eight-case rerun; standalone passed 29/29. Three Graphics Tools cases remain excluded. This is evidence to continue the queue/retained-slot plan, not confirmation of a Skyrim FPS gain. [Qualification and build limits](../research/nr/performance/validation.json) distinguish clean probe captures from precommit product builds. FSR stage timings, matched gameplay, the camera-motion tone root cause and true After remain open. Normal game telemetry and installed settings are unchanged. The completion count stays **1 of 8**.
 
 | Task | Status | Evidence or next requirement |

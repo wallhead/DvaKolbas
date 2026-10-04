@@ -4,6 +4,14 @@ This research tool prepares the next actual-game boundary comparison for the
 user-confirmed stable AIO19 Style 0 / Tone 1 reference. It is not a drift fix.
 The shipping DLL, INIs, MO2 launch settings and profile are unchanged.
 
+**Actual-game update:** the debugger route refused before attachment because
+this installation's system attach entry is hooked by `S33BUR5CH.asi`.
+The [passive request checkpoint](SKYRIM_CAPTURE.md) records 15 consistent
+retained AIO request snapshots at Style 0 / Tone 1, groups off, with a null
+model callback slot. These are not post-callback dispatch controls. Use the
+passive procedure for this installation; do not repeat debugger capture while
+the attach hook is unqualified. Source formats and pixels remain unmeasured.
+
 The external Windows x64 debugger observes the exact pinned NR runtime's network
 entry at RVA `0x21BB0`, reading its third argument (`R8`) as the parsed frame.
 That point follows callback/configuration processing. Both admitted disk images

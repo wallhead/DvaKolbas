@@ -53,7 +53,16 @@ The first bounded [runtime-control observer](runtime-observer/README.md) is buil
 and qualified on owned CPU/GPU fixtures. It reads the exact vendor network-entry
 frame using a hardware breakpoint, including effective Style/Tone, masks,
 subrects, resets and the indexed coefficient block. Both model fixtures retain
-identical baseline/observed CSVs and RGB captures. **No Skyrim observation has
-been captured yet**, and this first tool does not measure resource/view formats,
+identical baseline/observed CSVs and RGB captures. **No Skyrim network-entry frame
+has been captured**, and this first tool does not measure resource/view formats,
 pixel values or active viewport dimensions. Those remain subsequent evidence
 requirements. No installed settings or product code changed.
+
+The actual-game debugger attempt subsequently refused before attachment because
+the system attach entry is hooked by `S33BUR5CH.asi`. A separate query/read-only
+reader obtained [15 retained AIO request snapshots](runtime-observer/SKYRIM_CAPTURE.md):
+Style 0, Tone/intensity/structure/skin structure 1, mask groups and auto skin off,
+with a null sampled model callback slot. These are stored requested controls,
+not the final vendor frame or image evidence. Continue passive producer/resolve
+contract tracing; do not weaken attach admission or repeat the generic visual
+test. The color-drift fix remains open; **1 of 8** remains complete.

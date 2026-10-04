@@ -1,0 +1,428 @@
+{
+  "schema": 1,
+  "scope": "Actual Skyrim retained AIO host request only; not post-callback vendor controls or GPU/image evidence",
+  "sourceCommitBeforeTool": "ef138ed",
+  "captureToolSha256": "050ee1c32bf9a096f2bdfebd1f9f93ddd135c706dd49184a09e4c86417d9192b",
+  "decoderToolSha256": "928645d70851861de6e926fca10611a03f4d69ad4bcd67bf60ad9082cc5aa242",
+  "decoderCorrection": "Pass+0x24 is retained as groupCountField, not mapped to the separate INI Customized setting. Existing 15 raw packets were redecoded offline after this label correction; admission/identity checks in the live run used the independently reviewed 050ee1c source. All recorded pass counts were 1. ABI count bound corrected from 8 to 10 for subsequent captures.",
+  "localCapture": "out/research/nr/tone-boundary-game/elevated-capture-20261004/passive-aio-request-final.json",
+  "captureSha256": "6c7816a0950a252de10805c39a402054b2f8e73903cc0f1e2c0dc75baeb15662",
+  "pid": 31828,
+  "startedUtc": "2026-10-04T10:29:59.806487+00:00",
+  "finishedUtc": "2026-10-04T10:30:14.536139+00:00",
+  "pdSha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+  "nrSha256": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+  "mappedWitnessRanges": [
+    [
+      "0x9f700",
+      8
+    ],
+    [
+      "0x1178d0",
+      59
+    ],
+    [
+      "0x110e60",
+      645
+    ],
+    [
+      "0xa5fd0",
+      783
+    ],
+    [
+      "0xa37f1",
+      95
+    ]
+  ],
+  "acceptedSamples": 15,
+  "rejectedSamples": 0,
+  "distinctPacketHashes": 15,
+  "snapshots": [
+    {
+      "index": 0,
+      "utc": "2026-10-04T10:30:00.528158+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "utc": "2026-10-04T10:30:01.528490+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "utc": "2026-10-04T10:30:02.529095+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "utc": "2026-10-04T10:30:03.529487+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "utc": "2026-10-04T10:30:04.530795+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "utc": "2026-10-04T10:30:05.531054+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "utc": "2026-10-04T10:30:06.531394+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "utc": "2026-10-04T10:30:07.531696+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "utc": "2026-10-04T10:30:08.533040+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "utc": "2026-10-04T10:30:09.533652+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "utc": "2026-10-04T10:30:10.534199+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "utc": "2026-10-04T10:30:11.534517+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "utc": "2026-10-04T10:30:12.535212+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "utc": "2026-10-04T10:30:13.535905+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "utc": "2026-10-04T10:30:14.536084+00:00",
+      "repeatEqual": true,
+      "identityEqual": true,
+      "modelCallbackSlot": "0x0",
+      "passCount": 1,
+      "selectedPassField": 0,
+      "passes": [
+        {
+          "index": 0,
+          "id": 1,
+          "enabled": 1,
+          "intensity": 1.0,
+          "structure": 1.0,
+          "tone": 1.0,
+          "skinStructure": 1.0,
+          "style": 0,
+          "autoSkin": 0,
+          "maskGroups": 0,
+          "groupCountField": 4
+        }
+      ]
+    }
+  ],
+  "debuggerCapture": {
+    "normalResult": "OpenProcess Win32=5; no debugger attached",
+    "elevatedResult": "Refused before DebugActiveProcess: target DbgUiRemoteBreakin prefix differs",
+    "hookOwner": {
+      "name": "S33BUR5CH.asi",
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\Stock Game\\S33BUR5CH.asi",
+      "rva": "0x16dc80",
+      "sha256": "3a3b1af60887192cc30fafd2f7a03c5f676f88cdcabba7f7e6ab9562aec4f87c"
+    },
+    "hookRoute": "ntdll DbgUiRemoteBreakin -> private E9/FF25 relay -> S33BUR5CH.asi+16DC80",
+    "hookSemantics": "Not fully reconstructed; no termination or harmlessness assertion",
+    "ntdllDiskSha256": "bd9e91495ecaa2d47828aec08c3dfc405ce7123778f0b85948707a1af03a2fea",
+    "localAuditSha256": "e6710a8cdf614cde69af1b54975e98b3c4419541e935c5b88a4d666b1ec72dd8"
+  },
+  "targetMutations": false,
+  "settingsEdited": false,
+  "review": "Independent read-only review; route admission, all-rejected result, and identity recheck findings fixed; 15 prior packets redecoded and 8 malformed-input mutations rejected",
+  "missing": [
+    "request freshness and actual evaluation cadence",
+    "post-callback controls/configuration/reset history",
+    "Color/Output/view/guide formats and pixels",
+    "active source viewport",
+    "camera color-drift root cause"
+  ],
+  "milestonesCompleted": 1,
+  "milestonesTotal": 8
+}
