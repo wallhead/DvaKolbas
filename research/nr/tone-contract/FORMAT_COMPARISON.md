@@ -32,6 +32,8 @@ The portable checked-in CMake target also clean-built. Its separate 160-source S
 
 ## Next game evidence
 
+Update: the user confirms that AIO19 has no color shifts with its installed INI. [The stable game reference checkpoint](AIO_GAME_REFERENCE.md) records its exact snapshot and the newly installed matched Dva settings. This is qualitative gameplay evidence; active AIO boundary captures remain missing. The conditional discussion below describes the earlier investigation decision, not a request to repeat the already answered AIO stability check.
+
 The remaining useful comparison is AIO19's actual host in the same building/camera scene, with one Before pass, preset 0, Tone 1, FG off and masks off. Use the same style in both implementations: the currently saved Dva style is 0, while AIO's authoritative `[NR PASS 1] Style` is 1. Its legacy global style 0 does not override the chain pass. Also match upscaling and ReShade order before claiming a one-to-one image comparison.
 
 If AIO also drifts, restoring its integration alone cannot meet the requested camera-stable behavior; a style-preserving temporal approach needs separate design and lighting/disocclusion/ghosting acceptance. If AIO stays stable, measure its actual Color/Output formats and pixels, working dimensions, mask, effective controls/configuration and resets before changing Dva's contract. No milestone advances from these negative experiments.

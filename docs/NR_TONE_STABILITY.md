@@ -1,5 +1,7 @@
 # Community NR Before: stable original colors
 
+**Current status, 2026-10-04:** the user rejected this option because it weakens styles too much. `NRStableColors=false` is explicitly retained in the trial; this document describes the earlier implementation, not an accepted camera-drift fix. The user reports stable AIO19 gameplay. See the [current game reference and full-tone comparison](../research/nr/tone-contract/AIO_GAME_REFERENCE.md). The enabled-tone integration defect remains open.
+
 The user selected stable original colors over preserving broad vendor tone/color grading. The implementation applies one SDR resolve after NR and before either upscaler and frame generation. This is a community Before-path option, not qualification of NR After FG, HDR, AMD, or untested NVIDIA hardware.
 
 `[SourceDLSSG] NRStableColors=true` is the default when the key is absent. The community NR tab exposes **Stable colors**; Apply changes it for the current session, Save as default persists it. The host increments the settings revision and resets the vendor history once when it changes. False retains the previous exact NR-output copy. Disabled or paused NR leaves the source unchanged. Existing NR tone/style/intensity choices remain authoritative.

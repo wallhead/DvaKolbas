@@ -46,6 +46,8 @@ Read-only disassembly of 192 embedded DXBC containers from the exact AIO19 host/
 
 ## Updated investigation order
 
+Latest: the user confirms AIO19 is stable with its installed settings. The [game reference checkpoint](AIO_GAME_REFERENCE.md) records this observation and the now-installed FSR Native AA / Style-1 Dva comparison. Do not treat our standalone fixture's drift as evidence that AIO's gameplay must drift. Tone remains 1 and Stable colors remains off.
+
 1. Compare the same Skyrim surface in actual AIO19 and Dva with Tone 1 and Stable colors off. Current renderer differences must be controlled: source transfer, SR/sharpening, exposure and ReShade ordering. The saved Dva style was changed to 0 by gameplay after the earlier Style-1 matching receipt; re-check effective settings before calling a new comparison matched.
 2. Recover/measure the actual AIO19 pre-NR color preparation and post-NR resolve. The supplied pre-NR reference hypothesis is not a substitute for proving that contract. Retain same-surface input and output, with valid motion/depth rejection, so lighting changes do not masquerade as added NR drift.
 3. Use an in-game exposure/Backbuffer A–D build only if a game-specific difference remains after the above controls. The standalone null result lowers their priority; it does not universally rule them out.
