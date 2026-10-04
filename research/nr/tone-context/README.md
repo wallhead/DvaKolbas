@@ -1,5 +1,7 @@
 # NR fixed-surface context regression and stable-color candidate
 
+**2026-10-04 update:** the user rejected Stable colors because it weakens the NR styles. The installed trial has it disabled. This page retains the historical candidate's qualification; its visual acceptance did not complete the requested drift fix. Current investigation and replacement success criteria are in [the tone-contract audit](../tone-contract/README.md).
+
 Source build: `0dc034839179`. The final Standard candidate is installed in the existing V5.4 NO-LORE NR Before trial. Skyrim visual acceptance is **PENDING**; the larger eight-milestone NR plan remains at its existing Before checkpoint.
 
 `ContextProbe.cpp` is a reproducible, bounded, standalone GPU scene using the production BeforeHost path. It refuses to run alongside Skyrim and qualifies only the existing RTX 4080 SUPER/model/core combination. With the existing `tests/nr-runtime` configuration, build `TRPNrToneContextProbe` and run `ctest -C Release -R "NrStableColors|NrToneContext"`. Supply the already qualified local runtime-root and core through the normal CMake cache; proprietary DLLs and PPM screenshots are not in Git.
@@ -14,4 +16,4 @@ The four final timing runs used 120 warmup sources, 2560×1440, local tone0, the
 
 `installation.json` records the rollback folder and exactly three updated files: DLL, INI, manifest. Only `NRStableColors=true` was added to the INI;102 existing settings, including DLAA, FG off and local tone1.018, were preserved.36 unrelated protected files were unchanged, including the MO2/profile files and vendor assets. The installed NVIDIA bundle was validated against its complete manifest. No game was launched by the installer.
 
-Next manual check: use the existing MO2 SKSE entry, load the same building scene, keep FG off initially, and compare Stable colors off/on in the End NR tab using Apply. Rotate the camera slowly and quickly; inspect color/brightness, detail, edges, dark scenes and HUD. Then compare NR off and FG on. A successful test advances the bounded tone-fix checkpoint from2of3 to3of3; it does not complete the remaining NR After-FG milestones.
+The previous candidate's manual acceptance step is superseded. The drift fix remains open under the user's requirement to preserve visible style tone/structure; passing the old Stable colors regression alone cannot complete it or the remaining NR After-FG milestones.

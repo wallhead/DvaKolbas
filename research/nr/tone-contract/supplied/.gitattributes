@@ -1,0 +1,2 @@
+# Preserve the supplied report byte-for-byte, including its Markdown hard breaks.
+*.md -text

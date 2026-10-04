@@ -1,0 +1,1381 @@
+{
+  "schema": 1,
+  "scope": "Standalone unchanged-surface context experiment, not actual AIO19 host or Skyrim acceptance",
+  "sourceBase": "e724528",
+  "sourcesPerRun": 160,
+  "matrixRuns": 21,
+  "modelComparisonRuns": 6,
+  "alpha": "Probe checks every pixel in every source; RGB-only PPMs cannot independently verify alpha",
+  "retirement": "Probe returned success after host.Retire(); not a complete lifecycle regression suite",
+  "settings": {
+    "preset": 0,
+    "intensity": 1,
+    "structure": 1,
+    "skin": 1,
+    "autoSkinMask": false,
+    "stableColors": false,
+    "motionPixels": 0,
+    "depth": 0.5,
+    "nativeExtent": [
+      640,
+      360
+    ],
+    "tone": "1 except named tone0 controls",
+    "styles": [
+      0,
+      1,
+      4
+    ],
+    "roi": [
+      220,
+      120,
+      420,
+      240
+    ]
+  },
+  "definitions": {
+    "linear": "UNORM Gamma22 decode -> linear FP16 NR -> Gamma22 encode",
+    "srgb": "UNORM sRGB decode -> linear FP16 NR -> sRGB encode",
+    "rawgamma": "Encoded UNORM values intentionally labeled Linear; decode/encode bypass; research only",
+    "case0": "0x42, null Backbuffer",
+    "case1": "0x02, null Backbuffer",
+    "case2": "0x42, separately allocated retained pre-NR linear copy as Backbuffer",
+    "case3": "0x02, separately allocated retained pre-NR linear copy as Backbuffer"
+  },
+  "artifactHashes": {
+    "out\\research\\nr\\tone-preserve-investigation\\probe\\ModelContextProbe.cpp": "5c0583b54a8158709b5485339b81a3ed79cb4ef71bf1d3d4785ce3ef97b3d8fc",
+    "out\\research\\nr\\tone-preserve-investigation\\probe\\CMakeLists.txt": "32aa7749529f8e1bf10bda782682a7cac6f519e40ec968a6f8b47b881562e58a",
+    "out\\research\\nr\\tone-preserve-investigation\\AuditToneMatrix.py": "5c6fc23e68a0b5e0670ff582f08f589245f4af28d3d66b3035aafdf0320861ba",
+    "out\\build\\nr-tone-model-investigation\\ResearchStage.cpp": "7396c06c62cbf0c302bbce012929fb99d63040edb3e6f2eb1fee259b8d1042d6",
+    "out\\build\\nr-tone-model-investigation\\ResearchRuntimeParameters.h": "550e7ae5975d4914dcb5d0fdb61e798e9953df15dfeed2b83c9aa185c6466f9b",
+    "out\\build\\nr-tone-model-investigation\\Release\\NrToneModelProbe.exe": "505f4ffc459325520f38faf95b7c21baabcfbbf001cd291a7517c333adc8346b"
+  },
+  "inputReportSha256": "a499436edabfa952dce94bd32adb025b5b1435d9d29a3f7c026613a1d96e2574",
+  "models": {
+    "rtx40": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "aio19": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+  },
+  "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+  "cases": [
+    {
+      "name": "matrix-style0-linear-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        11.008215,
+        7.54802,
+        5.4646545,
+        10.846235
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "37ed369eb155b6ed41992e6d10aacebe5cacd6d27ae8cd06fb24c16ac5708a19",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style0-linear-case1",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        11.008215,
+        7.54802,
+        5.4646545,
+        10.846235
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "eebc3c49d5291463f9783a91f940ba0c376c66b0eda716ab7f78f87366ef3059",
+      "configuration": "CONFIG flags=0x02 backbuffer=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style0-linear-case2",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        11.008215,
+        7.54802,
+        5.4646545,
+        10.846235
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "faab21792b800b4f43979960589efe08982e98c293301ace5ad9033c71319525",
+      "configuration": "CONFIG flags=0x42 backbuffer=2 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style0-linear-case3",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        11.008215,
+        7.54802,
+        5.4646545,
+        10.846235
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "2100ccc176ed0571a2da292eb9a0fce4f08623ac134a9e5e34a08283b90d63fd",
+      "configuration": "CONFIG flags=0x02 backbuffer=2 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style0-srgb-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          99.81388,
+          89.465855,
+          72.427965
+        ],
+        [
+          112.42695,
+          103.73015,
+          91.647345
+        ],
+        [
+          112.69295,
+          103.13585,
+          86.79448
+        ],
+        [
+          99.957715,
+          89.612715,
+          72.58646
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 19.21938,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        7.876104,
+        7.5003645,
+        5.765347,
+        7.726397
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "54c14bdad10658324a3679d85e63f36eb22fab8c780e5d18473beb52944bedff",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=0 tone=1.0 stableColors=0 sourceDomain=srgb",
+      "hashes": {
+        "frames.csv": "7cbf1646bd32b300168ec60e7a74e90bc0581c557304e08567f1eeb5ce1129f5",
+        "nr-120.ppm": "38d05c610de879098a7a52f1a2d72d7efa3492ab4220f010ccbbe665eac7108f",
+        "nr-160.ppm": "9c77ae4d6753f856f9ede3a10e0a99039036bd5394ecb71bcac83627f7ceffb0",
+        "nr-40.ppm": "a2b7292989de57afe67cc43d1a2dbb53ebbeedd8604ad07328d540f88c51d9d1",
+        "nr-80.ppm": "83c4fcf9662b6d6787f2e11826c0bb85f73ffa9fe8f36d1820e82b70cb344c87",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style0-rawgamma-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          103.58455000000001,
+          93.96800999999999,
+          79.68502000000001
+        ],
+        [
+          108.55565,
+          101.01885,
+          88.226155
+        ],
+        [
+          106.84865,
+          96.476345,
+          79.17755
+        ],
+        [
+          103.5528,
+          93.93408,
+          79.65704
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 9.04860500000001,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        2.756738,
+        4.2375869999999995,
+        1.992439,
+        2.786975
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "45c75425e99af3cdbce8eb15d9481e9fd7b73d66d39a2dbc9f14804dfb0bd47a",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=0 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "hashes": {
+        "frames.csv": "11e45a187fb6139fc2140267337bb825e704721d99984ca2b6fb5b43a1bd79e2",
+        "nr-120.ppm": "4724aa5a2e5bbe7fdfd904034d86bb143e73cce2607bb4a5b889712b8df24560",
+        "nr-160.ppm": "06389a181378319ff3edc6a22c799ece8940bff4cd8e9f547fe8826b246bb4dc",
+        "nr-40.ppm": "1ae48c7c3ae9abc24fb4a34df5a4b38a27b4d3865693d3e483bbb2760a155927",
+        "nr-80.ppm": "81f935cd6641e2e08192c09873013ebebaa47917c9dbdc56440cc92b23c3e603",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style0-linear-tone0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          99.63674,
+          90.5683,
+          75.37569500000001
+        ],
+        [
+          109.8061,
+          100.3091,
+          87.11146
+        ],
+        [
+          101.82395,
+          95.31456,
+          86.89111
+        ],
+        [
+          99.518765,
+          90.45084,
+          75.24436
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 11.867099999999994,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        6.5868955,
+        4.088759,
+        4.268324,
+        6.7097035
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "9a4a9711cc1d990524f4de8716757fdcdb6cad9e1ebe23b9203cd5233e28a50f",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=0 tone=0.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "92f5637f63426bca1f08979d8f621906435285f31eddab0907307d5e6980cf8d",
+        "nr-120.ppm": "638e3015661e84eea2f490172bd49c61356525d3e777d8f2e34b7141b7dfca29",
+        "nr-160.ppm": "f5ac50c3376124495c9cb96513a5f03fb1d7c8d90c19496a56a0269551d56318",
+        "nr-40.ppm": "c4e3065ecd03e389ad8de531b092937b9db6c0128571dcefd1658e58498d7576",
+        "nr-80.ppm": "a75560922f5f139546b5f7e07e8cbeb0475fd561c1ffdce69f6e74ad159e91ee",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style1-linear-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        7.2699115,
+        12.120055,
+        5.575393,
+        7.205929
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "2bc4305c58dfcde333321ebfb333b3b85012b7550ba5d7e25a8f024009975130",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style1-linear-case1",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        7.2699115,
+        12.120055,
+        5.575393,
+        7.205929
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "b0fa28cb3ee76ebdc9064cb71057cb8182ca41119599058c01ec1da7ae4ce697",
+      "configuration": "CONFIG flags=0x02 backbuffer=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style1-linear-case2",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        7.2699115,
+        12.120055,
+        5.575393,
+        7.205929
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "dbed80021d7b32332184631ef447ab6fe221d097c3e11fe7d64bc7b5f9941efd",
+      "configuration": "CONFIG flags=0x42 backbuffer=2 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style1-linear-case3",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        7.2699115,
+        12.120055,
+        5.575393,
+        7.205929
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "b0b4a35e1d0e935f1d01fc53f160bd201e86bd05789809a49209cb477dd46856",
+      "configuration": "CONFIG flags=0x02 backbuffer=2 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style1-srgb-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          103.2079,
+          93.828485,
+          78.306105
+        ],
+        [
+          117.43515000000001,
+          109.2979,
+          95.64372
+        ],
+        [
+          112.9976,
+          103.28365,
+          83.692055
+        ],
+        [
+          102.9988,
+          93.60532,
+          78.082085
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 17.561634999999995,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        3.5479965,
+        12.34899,
+        4.960829,
+        3.7088085
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "294202db2f8bc0cc863b67c0b1ec9d3c3d86114d5aa2ac6e883b747216f4a9c2",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=1 tone=1.0 stableColors=0 sourceDomain=srgb",
+      "hashes": {
+        "frames.csv": "96c2ff49fe8df34f297ed8a45fbbe31771533f8d4df89d6be780f45eb772a74c",
+        "nr-120.ppm": "8ea9bcf0dc6dc8cc8a436c1c14900e11ea5d20012e1a14ca7dcba184ac134890",
+        "nr-160.ppm": "cb6ec041b538d670c94fb7e8f20199555aab37975dd6baeda81b4de9ba1eb52f",
+        "nr-40.ppm": "fcd2816c0e7ee3c21c0b743a150be10cf325fcd354ddea78f24fe23ec51ee6aa",
+        "nr-80.ppm": "33d2eb675df6c4ba89d58ab3c6d6cc1024880690bb1e5104e1567ea8c302a76c",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style1-rawgamma-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        5.8796875,
+        3.94249,
+        4.1664,
+        5.8504305
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "b2115d2cf2c5d2589b6a4746a77bc398aefaf0ea82c40b52c88d99ed50caabf4",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style1-linear-tone0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          100.34325,
+          90.87883,
+          75.35007
+        ],
+        [
+          111.34005,
+          101.874,
+          86.87352
+        ],
+        [
+          101.6262,
+          96.170765,
+          83.49631
+        ],
+        [
+          100.3252,
+          90.87271,
+          75.320845
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 11.552674999999994,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        6.2608035,
+        4.93115,
+        2.9142305,
+        6.2786124999999995
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "71ae1b022fa22d7a4c6ab7240d4aa2bfe207c12a8e6368d2c02a37b9efc66b3f",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=1 tone=0.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "885006f8922ddae20d2998a5a2f3f8d35ab64231c53b774934dea745d8f520fb",
+        "nr-120.ppm": "d004ad3ff14feaade445009ab7d084dfb81ee01dedd7603e9d13b71f292f951e",
+        "nr-160.ppm": "3c5e5286d7bc1fe249c047b53368b0ad81e63713244591ed6d32ba01d78ed675",
+        "nr-40.ppm": "f42d90ec33a6c42718ffeeda76eb501bf899b87abbd16718a35c2800c6498e26",
+        "nr-80.ppm": "2fb252900183024d990cad7380dae52a93f4c2f56af0ea08a21733b16b4184c2",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style4-linear-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        15.126885,
+        11.65085,
+        7.197715,
+        15.2131
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "5887c7457d65a096bfdd0bb1352d76c3f878d314c979d5f0d3abf13669451241",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style4-linear-case1",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        15.126885,
+        11.65085,
+        7.197715,
+        15.2131
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "28362172dc2ba5ae790290adc03241bce949be5b0f0e4fc424f0bfc100b47c79",
+      "configuration": "CONFIG flags=0x02 backbuffer=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style4-linear-case2",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        15.126885,
+        11.65085,
+        7.197715,
+        15.2131
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "59bff62cd9e4b3d01e752fe4bf35899736c2928067ef40865bcdf58aacd243dc",
+      "configuration": "CONFIG flags=0x42 backbuffer=2 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style4-linear-case3",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        15.126885,
+        11.65085,
+        7.197715,
+        15.2131
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "be9f2ab8998b6f9bb45706b046b54bba13bc8272bb7e647ad176808bbb774d28",
+      "configuration": "CONFIG flags=0x02 backbuffer=2 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style4-srgb-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          98.41183,
+          89.55074,
+          73.818315
+        ],
+        [
+          114.26855,
+          106.71345,
+          94.89736
+        ],
+        [
+          112.9333,
+          103.2062,
+          88.26389
+        ],
+        [
+          98.43961,
+          89.594745,
+          73.9037
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.079045000000008,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        8.646167,
+        11.281025,
+        7.2745595,
+        8.6001455
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "aab00f7b88cb63c9ad2f19776b5c84f598abcde314c2cc67f4f80900947999d3",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=4 tone=1.0 stableColors=0 sourceDomain=srgb",
+      "hashes": {
+        "frames.csv": "5150b0a5482959f45a4c99631cd7b095a66004aec78bf94fe551eb688d47eed9",
+        "nr-120.ppm": "674b2710a58ab1ca33b3d99e22d1fe4d4a62d71a9f24de3a32946647c1fd89cf",
+        "nr-160.ppm": "75b8803912513af31e5e562c6a358511853d734ea190ac304fc09e8abc89f210",
+        "nr-40.ppm": "02ed1f55e6d912a9ea0ddd911aca2f5f32057d770f11c40b3e3f8e41fc334d06",
+        "nr-80.ppm": "7b57efd7ff42b4ac938c6e759d8a47497d2c894e1432346c74ebd527b07782d3",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style4-rawgamma-case0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          106.24515,
+          99.23755,
+          86.61111
+        ],
+        [
+          109.06960000000001,
+          102.69605,
+          90.577995
+        ],
+        [
+          106.52655,
+          97.73949,
+          83.289275
+        ],
+        [
+          106.27074999999999,
+          99.280075,
+          86.66725
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 7.288719999999998,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        6.9826365,
+        5.798769,
+        3.804355,
+        6.961896
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "619153626d4d0d9b8de96e92123de45763d26ec6a5a944ab964f18dcf53462cb",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=4 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "hashes": {
+        "frames.csv": "f7f7f12fdead86062a638e492278b5070adde62193f9e5dcd343393a505123a7",
+        "nr-120.ppm": "aa579dcb8101f9e71755f869c7adc9ad5cfbf38515a56198b271cdae32e89010",
+        "nr-160.ppm": "5a62750cc3af8c6041a7d08d4d20b2c00d2c8306414aa86a1d6c717e7debc1cc",
+        "nr-40.ppm": "4fe1bc5dcd6a65dba0726f0aba4b7fef1ffd5c9f7f46fd637e3dc7de3d94a558",
+        "nr-80.ppm": "b49d148c98a9acca48d4e501f6b9bc137fd0f1b3c56b6d7f75dd8580d30180f9",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "matrix-style4-linear-tone0",
+      "sources": 160,
+      "resets": 1,
+      "settledRgbMeans": [
+        [
+          101.8811,
+          92.28539,
+          75.445855
+        ],
+        [
+          111.35305,
+          101.99665,
+          87.97357
+        ],
+        [
+          103.65985,
+          98.38857,
+          87.31140500000001
+        ],
+        [
+          101.9867,
+          92.33897,
+          75.49547
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 12.527715,
+      "settledMeanAbsoluteRgbCorrectionCodeValues": [
+        5.9686245,
+        6.9936955,
+        5.879776,
+        5.924845
+      ],
+      "fixedSourceRoiVerified": true,
+      "logSha256": "c40a06dddc139038b9e0c46a6fd8280fcb1c3421ca139c37eb03c8581ae348e6",
+      "configuration": "CONFIG flags=0x42 backbuffer=0 style=4 tone=0.0 stableColors=0 sourceDomain=linear",
+      "hashes": {
+        "frames.csv": "351c7c25a1b692570e48060f5b789d8c141d200e2858e1893121bb009be73ab9",
+        "nr-120.ppm": "b1718a8ec7af7d8726de41a09d5ba98ba59b8f7bcd8af5da70ffc830cc3e3579",
+        "nr-160.ppm": "354610f231c3177dd452c523caf6453a0075f83281cd431681e3d18129a0a581",
+        "nr-40.ppm": "a2308ad621ed25bc0f591cb6605d5d46a4171c046c0bf32146a3dc0e8853d345",
+        "nr-80.ppm": "7da9fd7e3be6b6d8327fc6355a33ca6904504ea1435577c50a0a02f93ed7be1b",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "style": 0,
+      "exposureBackbufferCapturedRgbAndCsvIdentical": true,
+      "originalAioAndPatchedRtx40CapturedRgbAndCsvIdentical": true,
+      "captures": [
+        {
+          "name": "rtx40-style0",
+          "sources": 160,
+          "resets": 1,
+          "settledRgbMeans": [
+            [
+              96.758115,
+              86.378995,
+              69.17432
+            ],
+            [
+              112.42655,
+              103.79765,
+              91.72678499999999
+            ],
+            [
+              112.53615,
+              102.7945,
+              86.39602
+            ],
+            [
+              96.94006,
+              86.530065,
+              69.327185
+            ]
+          ],
+          "maxSettledChannelDriftCodeValues": 22.552464999999998,
+          "settledMeanAbsoluteRgbCorrectionCodeValues": [
+            11.008215,
+            7.54802,
+            5.4646545,
+            10.846235
+          ],
+          "fixedSourceRoiVerified": true,
+          "logSha256": "37ed369eb155b6ed41992e6d10aacebe5cacd6d27ae8cd06fb24c16ac5708a19",
+          "configuration": "CONFIG flags=0x42 backbuffer=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+          "hashes": {
+            "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+            "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+            "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+            "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+            "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+            "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+            "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+          }
+        },
+        {
+          "name": "aio19-rtx40-shim-style0",
+          "sources": 160,
+          "resets": 1,
+          "settledRgbMeans": [
+            [
+              96.758115,
+              86.378995,
+              69.17432
+            ],
+            [
+              112.42655,
+              103.79765,
+              91.72678499999999
+            ],
+            [
+              112.53615,
+              102.7945,
+              86.39602
+            ],
+            [
+              96.94006,
+              86.530065,
+              69.327185
+            ]
+          ],
+          "maxSettledChannelDriftCodeValues": 22.552464999999998,
+          "settledMeanAbsoluteRgbCorrectionCodeValues": [
+            11.008215,
+            7.54802,
+            5.4646545,
+            10.846235
+          ],
+          "fixedSourceRoiVerified": true,
+          "logSha256": "37ed369eb155b6ed41992e6d10aacebe5cacd6d27ae8cd06fb24c16ac5708a19",
+          "configuration": "CONFIG flags=0x42 backbuffer=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+          "hashes": {
+            "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+            "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+            "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+            "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+            "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+            "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+            "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+          }
+        }
+      ]
+    },
+    {
+      "style": 1,
+      "exposureBackbufferCapturedRgbAndCsvIdentical": true,
+      "originalAioAndPatchedRtx40CapturedRgbAndCsvIdentical": true,
+      "captures": [
+        {
+          "name": "rtx40-style1",
+          "sources": 160,
+          "resets": 1,
+          "settledRgbMeans": [
+            [
+              99.76371,
+              90.086035,
+              73.67653
+            ],
+            [
+              117.17495,
+              109.0008,
+              95.51198
+            ],
+            [
+              113.9151,
+              103.93785,
+              83.928015
+            ],
+            [
+              99.79835,
+              90.140675,
+              73.7792
+            ]
+          ],
+          "maxSettledChannelDriftCodeValues": 21.835449999999994,
+          "settledMeanAbsoluteRgbCorrectionCodeValues": [
+            7.2699115,
+            12.120055,
+            5.575393,
+            7.205929
+          ],
+          "fixedSourceRoiVerified": true,
+          "logSha256": "2bc4305c58dfcde333321ebfb333b3b85012b7550ba5d7e25a8f024009975130",
+          "configuration": "CONFIG flags=0x42 backbuffer=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+          "hashes": {
+            "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+            "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+            "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+            "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+            "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+            "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+            "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+          }
+        },
+        {
+          "name": "aio19-rtx40-shim-style1",
+          "sources": 160,
+          "resets": 1,
+          "settledRgbMeans": [
+            [
+              99.76371,
+              90.086035,
+              73.67653
+            ],
+            [
+              117.17495,
+              109.0008,
+              95.51198
+            ],
+            [
+              113.9151,
+              103.93785,
+              83.928015
+            ],
+            [
+              99.79835,
+              90.140675,
+              73.7792
+            ]
+          ],
+          "maxSettledChannelDriftCodeValues": 21.835449999999994,
+          "settledMeanAbsoluteRgbCorrectionCodeValues": [
+            7.2699115,
+            12.120055,
+            5.575393,
+            7.205929
+          ],
+          "fixedSourceRoiVerified": true,
+          "logSha256": "2bc4305c58dfcde333321ebfb333b3b85012b7550ba5d7e25a8f024009975130",
+          "configuration": "CONFIG flags=0x42 backbuffer=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+          "hashes": {
+            "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+            "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+            "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+            "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+            "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+            "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+            "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+          }
+        }
+      ]
+    },
+    {
+      "style": 4,
+      "exposureBackbufferCapturedRgbAndCsvIdentical": true,
+      "originalAioAndPatchedRtx40CapturedRgbAndCsvIdentical": true,
+      "captures": [
+        {
+          "name": "rtx40-style4",
+          "sources": 160,
+          "resets": 1,
+          "settledRgbMeans": [
+            [
+              91.51917,
+              82.566665,
+              65.87084
+            ],
+            [
+              114.63435,
+              107.24375,
+              95.74342
+            ],
+            [
+              113.15125,
+              103.3456,
+              88.44961
+            ],
+            [
+              91.409665,
+              82.471305,
+              65.816585
+            ]
+          ],
+          "maxSettledChannelDriftCodeValues": 29.926834999999997,
+          "settledMeanAbsoluteRgbCorrectionCodeValues": [
+            15.126885,
+            11.65085,
+            7.197715,
+            15.2131
+          ],
+          "fixedSourceRoiVerified": true,
+          "logSha256": "5887c7457d65a096bfdd0bb1352d76c3f878d314c979d5f0d3abf13669451241",
+          "configuration": "CONFIG flags=0x42 backbuffer=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+          "hashes": {
+            "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+            "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+            "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+            "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+            "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+            "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+            "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+          }
+        },
+        {
+          "name": "aio19-rtx40-shim-style4",
+          "sources": 160,
+          "resets": 1,
+          "settledRgbMeans": [
+            [
+              91.51917,
+              82.566665,
+              65.87084
+            ],
+            [
+              114.63435,
+              107.24375,
+              95.74342
+            ],
+            [
+              113.15125,
+              103.3456,
+              88.44961
+            ],
+            [
+              91.409665,
+              82.471305,
+              65.816585
+            ]
+          ],
+          "maxSettledChannelDriftCodeValues": 29.926834999999997,
+          "settledMeanAbsoluteRgbCorrectionCodeValues": [
+            15.126885,
+            11.65085,
+            7.197715,
+            15.2131
+          ],
+          "fixedSourceRoiVerified": true,
+          "logSha256": "5887c7457d65a096bfdd0bb1352d76c3f878d314c979d5f0d3abf13669451241",
+          "configuration": "CONFIG flags=0x42 backbuffer=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+          "hashes": {
+            "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+            "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+            "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+            "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+            "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+            "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+            "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+            "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+          }
+        }
+      ]
+    }
+  ],
+  "conclusion": "None of the tested flags/Backbuffer/transfer alternatives removed context drift. This does not prove those inputs are correct in actual Skyrim/AIO19."
+}
