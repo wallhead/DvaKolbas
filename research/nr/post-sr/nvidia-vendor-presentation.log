@@ -67,3 +67,57 @@ FILE nvidia-vendor-final-cpu.txt
 1/3 Test  #24: InteropRetirement ................   Passed    0.47 sec
 2/3 Test  #42: SourceDLSSGSession ...............   Passed    0.01 sec
 100% tests passed, 0 tests failed out of 3
+
+FILE out/research/nr/post-sr/nvidia-vendor-visible-20261004-205749.log
+SHA256 f2a8abccf61cb4fee4d12b9599949bef73ec02095316440bdc57290acaa97723
+VENDOR_ACTIVATION requested=1 granted=1 foreground=1
+FOREGROUND_REQUIRED click the isolated probe window; keep it foreground through both size epochs
+VENDOR_WINDOW present=0 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=100 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=200 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=300 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=400 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=500 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=600 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=700 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=800 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=900 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=1000 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+NVIDIA_VENDOR actualPresents=1080 warmup=600 sources=480 on=416 off=64 doubles=404 firstOn=202 resumedOn=202 readerFenceSamples=462 realExactBytes=1860157440 expectedRealBytes=1860157440 status=0 failures=0
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=480 dlaa=480 nr=478 tags=480 exactTagBytes=1860157440 expectedTagBytes=1860157440 alphaExact=465039360 expectedPixels=465039360 frozen=480 hud=480 nrWhileFgOff=64 configuredOn=416 configuredOff=665
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+
+FINAL RELATED REGRESSIONS
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+      Start  24: InteropRetirement
+ 1/11 Test  #24: InteropRetirement ...........................   Passed    0.47 sec
+      Start  42: SourceDLSSGSession
+ 2/11 Test  #42: SourceDLSSGSession ..........................   Passed    0.01 sec
+      Start  49: SourceDLSSGInteropFence
+ 3/11 Test  #49: SourceDLSSGInteropFence .....................   Passed    1.02 sec
+      Start 176: NrPostSrHost-live-settings
+ 4/11 Test #176: NrPostSrHost-live-settings ..................   Passed    4.32 sec
+      Start 181: NrReShadePostSr-live-settings
+ 5/11 Test #181: NrReShadePostSr-live-settings ...............   Passed    6.87 sec
+      Start 199: NrProbeLifetime
+ 6/11 Test #199: NrProbeLifetime .............................   Passed    0.01 sec
+      Start 202: NrPostDlssSourceGpu
+ 7/11 Test #202: NrPostDlssSourceGpu .........................   Passed    2.00 sec
+      Start 203: NrPostDlssReaderGpu
+ 8/11 Test #203: NrPostDlssReaderGpu .........................   Passed    4.10 sec
+      Start 204: NrPostDlssReaderGpu-missing-reader-fence
+ 9/11 Test #204: NrPostDlssReaderGpu-missing-reader-fence ....   Passed    4.12 sec
+      Start 205: NrPostDlssReaderGpu-reader-state-error
+10/11 Test #205: NrPostDlssReaderGpu-reader-state-error ......   Passed    4.09 sec
+      Start 206: NrPostDlssReaderGpu-reader-callback-error
+11/11 Test #206: NrPostDlssReaderGpu-reader-callback-error ...   Passed    4.12 sec
+
+100% tests passed, 0 tests failed out of 11
+
+Label Time Summary:
+GPU        =  29.61 sec*proc (7 tests)
+ReShade    =   6.87 sec*proc (1 test)
+
+Total Test time (real) =  31.15 sec

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-10-04",
-  "scope": "actual vendor presentation probe prepared; foreground qualification pending; Task5 remains open",
+  "scope": "native-size SDR DLAA -> one NR source pass -> actual NVIDIA FG qualified; Task5 bounded completion",
   "baseRevision": "85260a5199390087b2d63c79aef7251187e0756b",
   "productionOrInstalledCodeChanged": false,
   "installedAndMo2Hashes": {
@@ -86,7 +86,7 @@
     "shortBurst": "initial 32-source On phase had 26/22 doubles and failed threshold; paced version 26/26 passed",
     "longBurst": "240 sources per extent and UI recomposition still produced zero doubles when foreground=0",
     "activation": "SetForegroundWindow declined, foreground=0 at all11 sampled points; no asynchronous API errors",
-    "conclusion": "missing foreground is the identified test precondition; causal foreground-vs-background comparison and final generated output check await manual focused run"
+    "conclusion": "Final focused native-UI-recomposition run reports404x2 batches/462 public reader-fence samples, versus earlier background0x2/0fence observations. Focus is now an explicit probe prerequisite; no installed behavior changed."
   },
   "verification": {
     "currentBuild": "Release standalone executable rebuilt successfully",
@@ -94,22 +94,29 @@
       "passed": 3,
       "seconds": 0.51
     },
-    "currentVendorCTest": "SKIPPED (exit77) in1.54sec; zero qualified passes",
-    "earlierRelatedSuite": "11 of12 passed42.51sec before final focus guard; real vendor case failed and remains open",
-    "runnerSyntax": "PowerShell parse passed; native stderr logging preserved under Windows PowerShell"
+    "earlierRelatedSuite": "Historical: 11of12 passed42.51s with background vendor run failing, before explicit foreground guard",
+    "runnerSyntax": "PowerShell parse passed; native stderr logging preserved under Windows PowerShell",
+    "backgroundVendorCTest": "SKIPPED (exit77) in1.54sec; zero qualified passes",
+    "finalVendorManualRun": "PASS: 480 actual sources,478NR,1080 real proxy Presents,404x2 output batches,202in each generation phase,1860157440 exact tag bytes and independent real bytes,465039360 exact alpha,0failures/0APIerrors; all11 foreground samples true",
+    "finalRelatedRegressions": {
+      "passed": 11,
+      "failed": 0,
+      "gpuTests": 7,
+      "reshadeTests": 1,
+      "seconds": 31.15
+    }
   },
   "notClaimed": [
     "generated frame pixel readback",
     "display cadence or performance gain",
-    "final foreground vendor pass",
     "actual game End Apply dispatch",
     "broader vendor/provider/failure stress",
     "full SDK/NGX process shutdown",
     "other NVIDIA GPU families",
     "scaled/HDR After support"
   ],
-  "next": "Run tools/nr/Start-Nvidia-NR-FG-Visible.cmd and keep scene foreground; inspect its out/research/nr/post-sr/nvidia-vendor-visible-*.log before marking Task5 complete",
-  "completedMilestones": 4,
+  "next": "Task6: actual End Apply/provider switching and remaining pending vendor-reader/lifecycle stress. Task7 final clean matrix/package/review and Task8 broader acceptance/timing remain open.",
+  "completedMilestones": 5,
   "totalMilestones": 8,
   "observedInputSha256": {
     "tests/nr-postsr/PostDlssSourceGpuTests.cpp": "e4cc25e098a9f13ca7d37e23193a99e854eec0a08d3d298cfad50d1303c0838b",
@@ -124,5 +131,45 @@
     "tools/nr/Run-Nvidia-NR-FG-Visible.ps1": "aa64dcba93c02e151fa9261ac6d0acf0d521d6393c717c445036ee34901dc378",
     "tools/nr/Start-Nvidia-NR-FG-Visible.cmd": "761f8aa5650ce29c8b122b33a13393b51b3c07b6415e9f851ed5270826b05557"
   },
-  "probeExecutableSha256": "5e557d95adc59837185a7d2a15e257bf9d01ccd4cb68f0980515110376205735"
+  "probeExecutableSha256": "5e557d95adc59837185a7d2a15e257bf9d01ccd4cb68f0980515110376205735",
+  "qualificationRevision": "4ecc5c1754961619eff3e1e119c77303d66fcaba",
+  "focusedActualQualification": {
+    "log": "out/research/nr/post-sr/nvidia-vendor-visible-20261004-205749.log",
+    "logEncoding": "utf-16",
+    "logSha256": "f2a8abccf61cb4fee4d12b9599949bef73ec02095316440bdc57290acaa97723",
+    "vendor": {
+      "actualPresents": 1080,
+      "warmup": 600,
+      "sources": 480,
+      "on": 416,
+      "off": 64,
+      "doubles": 404,
+      "firstOn": 202,
+      "resumedOn": 202,
+      "readerFenceSamples": 462,
+      "realExactBytes": 1860157440,
+      "expectedRealBytes": 1860157440,
+      "status": 0,
+      "failures": 0
+    },
+    "source": {
+      "sources": 480,
+      "dlaa": 480,
+      "nr": 478,
+      "tags": 480,
+      "exactTagBytes": 1860157440,
+      "expectedTagBytes": 1860157440,
+      "alphaExact": 465039360,
+      "expectedPixels": 465039360,
+      "frozen": 480,
+      "hud": 480,
+      "nrWhileFgOff": 64,
+      "configuredOn": 416,
+      "configuredOff": 665
+    },
+    "foregroundSamples": 11,
+    "apiErrors": 0,
+    "finalSourceAndExecutableMatchRecordedSha256": true,
+    "protectedHashesUnchanged": true
+  }
 }
