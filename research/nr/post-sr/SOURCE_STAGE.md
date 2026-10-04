@@ -82,3 +82,24 @@ successful FSR generation callbacks while After is selected, live placement
 and Style0/2 changes, and generation resumption. No error/critical log entries
 occur. Last sampled NR count is cumulative across placements, not After-only.
 Full toggles/UI/lifecycle acceptance and performance remain pending; count3/8.
+
+Latest qualification: the owner subsequently passed NR/FG off/on, save/reload,
+inventory/map, alt-tab and minimize/restore for FSR After. The [renderer lifecycle
+receipt](fsr-pending-lifecycle.json) adds genuine pending FG queue/public SDK
+reader retirement and same-chain resize: 192 sources/189 NR evaluations per
+mode at 320x180 -> 384x216 -> 320x180, six delayed boundaries, 18 independently
+checked recovery transitions and no SDK warnings/errors. Observer mode verifies
+all mandatory real/generated source identities, 380,928 enhanced-real RGB
+channels and 909,312 UI blend/alpha channels. All 12,681,216 source alpha values
+are preserved; bypass and retained temporal SR/UI resources are unchanged.
+Only the two deliberately queued boundary images per epoch may be detached
+before their public Present callback. They still require real work retirement;
+the completion marker is not a private AMD worker/generated-image fence.
+Missing real/generated observations were deliberately omitted, causing six
+coverage failures, then restored. Fresh follow-up review reports no remaining
+important blocker. Twenty-four affected regressions passed before the narrow
+coverage fix; both changed lifecycle tests were rebuilt and passed afterward.
+Automatic mode proves execution, not compositor pixels. Graphics debug queues,
+physical cadence, broader hardware/scene and matched performance remain
+unqualified. This completes Task4 for native-size SDR After: **4 of 8**.
+No installed DLL, INI or MO2 settings changed during this test/document step.

@@ -1,0 +1,88 @@
+202: GRAPHICS_DEBUG d3d11=0 d3d12=0
+202: PENDING_BOUNDARY epoch=1 operation=suspend waitMs=307 markerComplete=1 watchdogFallback=0
+202: PENDING_BOUNDARY epoch=1 operation=resize waitMs=316 markerComplete=1 watchdogFallback=0
+202: PENDING_BOUNDARY epoch=2 operation=suspend waitMs=308 markerComplete=1 watchdogFallback=0
+202: PENDING_BOUNDARY epoch=2 operation=resize waitMs=317 markerComplete=1 watchdogFallback=0
+202: PENDING_BOUNDARY epoch=3 operation=suspend waitMs=307 markerComplete=1 watchdogFallback=0
+202: PENDING_BOUNDARY epoch=3 operation=resize waitMs=321 markerComplete=1 watchdogFallback=0
+202: SKIPPED: Graphics Tools debug queues unavailable
+202: FSR_NR_LIFECYCLE mode=observer sources=192 nr=189 callbacks=153 generatedReadbacks=147 changingGenerated=144 realReadbacks=186 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=380928 realRgbExpected=380928 uiVerified=909312 uiExpected=909312 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0
+202: SCOPE genuine pending FG queue + SDK reader retirement, same-chain native-AA resize; callback-row pixels only, no physical cadence/automatic UI/performance claim
+203: GRAPHICS_DEBUG d3d11=0 d3d12=0
+203: PENDING_BOUNDARY epoch=1 operation=suspend waitMs=308 markerComplete=1 watchdogFallback=0
+203: PENDING_BOUNDARY epoch=1 operation=resize waitMs=317 markerComplete=1 watchdogFallback=0
+203: PENDING_BOUNDARY epoch=2 operation=suspend waitMs=307 markerComplete=1 watchdogFallback=0
+203: PENDING_BOUNDARY epoch=2 operation=resize waitMs=316 markerComplete=1 watchdogFallback=0
+203: PENDING_BOUNDARY epoch=3 operation=suspend waitMs=307 markerComplete=1 watchdogFallback=0
+203: PENDING_BOUNDARY epoch=3 operation=resize waitMs=317 markerComplete=1 watchdogFallback=0
+203: SKIPPED: Graphics Tools debug queues unavailable
+203: FSR_NR_LIFECYCLE mode=automatic sources=192 nr=189 callbacks=153 generatedReadbacks=0 changingGenerated=0 realReadbacks=0 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=0 realRgbExpected=0 uiVerified=0 uiExpected=0 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0
+203: SCOPE genuine pending FG queue + SDK reader retirement, same-chain native-AA resize; callback-row pixels only, no physical cadence/automatic UI/performance claim
+
+REGRESSIONS (before narrow capture-coverage fix)
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+      Start  11: FsrGenerationPresentation
+ 1/24 Test  #11: FsrGenerationPresentation ...........   Passed    0.45 sec
+      Start  12: FsrGenerationLifecycle
+ 2/24 Test  #12: FsrGenerationLifecycle ..............   Passed    0.96 sec
+      Start  13: FsrGenerationHost
+ 3/24 Test  #13: FsrGenerationHost ...................   Passed    0.28 sec
+      Start  14: FsrGenerationHostOwner
+ 4/24 Test  #14: FsrGenerationHostOwner ..............   Passed    0.57 sec
+      Start  74: FsrGenerationGpuSmoke
+ 5/24 Test  #74: FsrGenerationGpuSmoke ...............   Passed   32.85 sec
+      Start 139: NrPostFgProbeReport
+ 6/24 Test #139: NrPostFgProbeReport .................   Passed    0.01 sec
+      Start 163: NrBeforeUpscale
+ 7/24 Test #163: NrBeforeUpscale .....................   Passed    1.61 sec
+      Start 164: NrBeforeUpscale-wait-failure
+ 8/24 Test #164: NrBeforeUpscale-wait-failure ........   Passed    0.61 sec
+      Start 171: NrPreparedBefore
+ 9/24 Test #171: NrPreparedBefore ....................   Passed    1.39 sec
+      Start 172: NrPreparedBefore-sdr-bytes
+10/24 Test #172: NrPreparedBefore-sdr-bytes ..........   Passed    1.34 sec
+      Start 173: NrBeforeHostFrames
+11/24 Test #173: NrBeforeHostFrames ..................   Passed    1.57 sec
+      Start 174: NrBeforeHostFrames-sdr-bytes
+12/24 Test #174: NrBeforeHostFrames-sdr-bytes ........   Passed    1.53 sec
+      Start 175: NrPostSrHost-switch
+13/24 Test #175: NrPostSrHost-switch .................   Passed    2.04 sec
+      Start 176: NrBeforeHost
+14/24 Test #176: NrBeforeHost ........................   Passed    0.22 sec
+      Start 179: NrReShadePostSr-switch
+15/24 Test #179: NrReShadePostSr-switch ..............   Passed    4.73 sec
+      Start 195: NrPostSrContract
+16/24 Test #195: NrPostSrContract ....................   Passed    0.01 sec
+      Start 196: NrPostSrGuides
+17/24 Test #196: NrPostSrGuides ......................   Passed    0.01 sec
+      Start 197: NrPostSrNativeGpu
+18/24 Test #197: NrPostSrNativeGpu ...................   Passed    0.16 sec
+      Start 198: NrPostUpscaleGpu
+19/24 Test #198: NrPostUpscaleGpu ....................   Passed    1.39 sec
+      Start 199: NrPostFsrSourceGpu
+20/24 Test #199: NrPostFsrSourceGpu ..................   Passed    1.83 sec
+      Start 200: NrPostFsrPresentationGpu
+21/24 Test #200: NrPostFsrPresentationGpu ............   Passed    3.77 sec
+      Start 201: NrPostFsrAutomaticPresentationGpu
+22/24 Test #201: NrPostFsrAutomaticPresentationGpu ...   Passed    3.48 sec
+      Start 202: NrPostFsrLifecycleGpu
+23/24 Test #202: NrPostFsrLifecycleGpu ...............   Passed    5.29 sec
+      Start 203: NrPostFsrAutomaticLifecycleGpu
+24/24 Test #203: NrPostFsrAutomaticLifecycleGpu ......   Passed    5.17 sec
+
+100% tests passed, 0 tests failed out of 24
+
+Label Time Summary:
+GPU        =  36.11 sec*proc (16 tests)
+ReShade    =   4.73 sec*proc (1 test)
+
+Total Test time (real) =  71.28 sec
+
+NEGATIVE COVERAGE CONTROL
+FAIL EveryNonBoundaryRealSourceIsCaptured
+FAIL EveryNonBoundaryEligibleGeneratedSourceIsCaptured
+FAIL EveryNonBoundaryRealSourceIsCaptured
+FAIL EveryNonBoundaryEligibleGeneratedSourceIsCaptured
+FAIL EveryNonBoundaryRealSourceIsCaptured
+FAIL EveryNonBoundaryEligibleGeneratedSourceIsCaptured

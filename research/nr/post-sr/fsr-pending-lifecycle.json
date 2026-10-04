@@ -1,0 +1,207 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "baseRevision": "8a8a930",
+  "scope": "Actual FSR Native AA -> RTX40 NR -> FSR FG source/presentation across same-chain resize and pending GPU retirement",
+  "installedProductRevision": "dc6a9abe3630",
+  "installedFilesChanged": false,
+  "installedSha256": {
+    "TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "TheosRenderPipeline.ini": "0976c1d197da323adc0fbcbe97d341d8612c16a6aaf278a38ea0cab4de7de96d"
+  },
+  "gpu": "RTX 4080 SUPER 10de:2702",
+  "driver": "32.0.16.1714",
+  "sourceSha256": {
+    "tests/nr-postsr/PostFsrLifecycleGpuTests.cpp": "d0976fa6cee6b3c48fdd39fedfddf8e2650f4da86af186cdb411eff12abd1dbc",
+    "tests/nr-postsr/CMakeLists.txt": "c79d2c0bdd31aab468ca90ec9eb85ad31f0f001fc1cbc6972fe934a84f410b36",
+    "tests/fsr-fg/PresentationObserver.h": "c8fd00d322a2c49b0df7a12d665e66fa932601ddf40974d282a48cc21e5d656f",
+    "src/FrameGen/FSRHostPresentation.cpp": "f983e656677fcce09f6d64a78a32b8e50e2e64b67fd5aa15bc7f21df26616307",
+    "src/FrameGen/FSRPresentation.cpp": "63d3364510b7ccd377214d84301b6400a42161aa2f9f99eb054aeae488b76569",
+    "src/Upscaling/FSRHostResources.cpp": "4ee9ae3d820a3c70fb15adb373b8fc63e96b744e219f5884ee293b98be8d31df",
+    "src/Upscaling/FSRFrameAdapter.cpp": "c46d966c65d85ba803de4ad5cf8b2f97410d6fe9eedf304c0f9425e735097f3f",
+    "src/NeuralRendering/PostUpscale.cpp": "28cda1ee67f8f652382fcd95ed0202d66591ecd4b63d0fc611fa686716c1209d"
+  },
+  "runtimeSha256": {
+    "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+    "amd_fidelityfx_upscaler_dx12.dll": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46",
+    "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+    "nvngx_dlssnr.dll": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "_nvngx.dll": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+  },
+  "extents": [
+    [
+      320,
+      180
+    ],
+    [
+      384,
+      216
+    ],
+    [
+      320,
+      180
+    ]
+  ],
+  "results": [
+    {
+      "mode": "observer",
+      "sources": 192,
+      "nr": 189,
+      "callbacks": 153,
+      "generatedReadbacks": 147,
+      "changingGenerated": 144,
+      "realReadbacks": 186,
+      "alphaExact": 12681216,
+      "pixelExpected": 12681216,
+      "bypassExact": 198144,
+      "realRgbExact": 380928,
+      "realRgbExpected": 380928,
+      "uiVerified": 909312,
+      "uiExpected": 909312,
+      "suspensions": 3,
+      "resizes": 2,
+      "pendingBoundaries": 6,
+      "reentries": 18,
+      "sdkMessages": 0
+    },
+    {
+      "mode": "automatic",
+      "sources": 192,
+      "nr": 189,
+      "callbacks": 153,
+      "generatedReadbacks": 0,
+      "changingGenerated": 0,
+      "realReadbacks": 0,
+      "alphaExact": 12681216,
+      "pixelExpected": 12681216,
+      "bypassExact": 198144,
+      "realRgbExact": 0,
+      "realRgbExpected": 0,
+      "uiVerified": 0,
+      "uiExpected": 0,
+      "suspensions": 3,
+      "resizes": 2,
+      "pendingBoundaries": 6,
+      "reentries": 18,
+      "sdkMessages": 0
+    }
+  ],
+  "pendingBoundaries": [
+    {
+      "epoch": 1,
+      "operation": "suspend",
+      "waitMs": 307,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 1,
+      "operation": "resize",
+      "waitMs": 316,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 2,
+      "operation": "suspend",
+      "waitMs": 308,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 2,
+      "operation": "resize",
+      "waitMs": 317,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 3,
+      "operation": "suspend",
+      "waitMs": 307,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 3,
+      "operation": "resize",
+      "waitMs": 321,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 1,
+      "operation": "suspend",
+      "waitMs": 308,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 1,
+      "operation": "resize",
+      "waitMs": 317,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 2,
+      "operation": "suspend",
+      "waitMs": 307,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 2,
+      "operation": "resize",
+      "waitMs": 316,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 3,
+      "operation": "suspend",
+      "waitMs": 307,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    },
+    {
+      "epoch": 3,
+      "operation": "resize",
+      "waitMs": 317,
+      "markerComplete": 1,
+      "watchdogFallback": 0
+    }
+  ],
+  "negativeEvidence": {
+    "observationBeforeRetirement": "12 failures: six boundaries each reject missing wait and incomplete genuine queue marker; SDK retirement still occurs before freeing/resizing",
+    "missingCaptureCoverage": "Skipping FG-off real source20 and reentry-generated source24 yields six mandatory coverage failures, despite captured-only pixel totals remaining equal",
+    "productionBugClaim": false
+  },
+  "coverage": {
+    "mandatoryRealPerEpoch": 62,
+    "mandatoryGeneratedPerEpoch": 49,
+    "callbackRowsPerImage": 2,
+    "excludedFromMandatoryCallbackObservation": "Local55/63 only: Suspend/BeforeResize may detach the observer before the deliberately pending boundary image is presented; submission, pending work and real retirement still checked",
+    "allRecordedImages": "Must be unique, current-epoch submitted sources; generated images additionally require eligible source membership"
+  },
+  "review": "One important capture-coverage gap fixed; narrow follow-up review confirmed no remaining important blocker",
+  "regression": {
+    "passed": 24,
+    "failed": 0,
+    "gpuTests": 16,
+    "reshadeTests": 1,
+    "seconds": 71.28,
+    "selection": "NrPost|NrReShadePostSr|NrBeforeUpscale|NrPreparedBefore|NrBeforeHost|FsrGeneration(GpuSmoke|Presentation|Lifecycle|Host)",
+    "postReviewFix": "Two directly changed lifecycle GPU tests rebuilt and rerun after capture-coverage fix"
+  },
+  "qualification": [
+    "Queue marker covers actual submitted game-queue FG Prepare/publication, not a private AMD worker or generated-image fence; public SDK WaitForPresents retires opaque SDK readers",
+    "Observer pixel proof samples two rows per image. Automatic mode qualifies submissions/lifecycle, not automatic UI pixel appearance",
+    "Graphics Tools D3D11/D3D12 debug queues unavailable; SDK warning/error callbacks report zero",
+    "Native-size SDR After only. Scaled After remains rejected; Before retains scaled support",
+    "Synthetic changing colors, static depth and zero motion do not qualify broad scene quality, physical cadence or performance",
+    "Owner FSR gameplay checklist is separately accepted; broader NVIDIA-source, Apply/provider-switch stress, hardware, fast-travel and matched timing gates remain open"
+  ],
+  "milestonesComplete": 4,
+  "milestonesTotal": 8
+}
