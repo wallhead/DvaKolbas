@@ -42,7 +42,17 @@ int wmain(int argc,wchar_t** argv){
     auto collected=Collect(prepared);Need(collected&&*collected==0&&prepared.Diagnostics().pendingTickets==1,"PreparedEncodeReaderPreventsSlotReuse");
     ComPtr<ID3D12CommandQueue> otherQueue;Gpu(contract.device->CreateCommandQueue(&queue,IID_PPV_ARGS(&otherQueue)),"other reader queue");ComPtr<ID3D12Fence> otherDone;Gpu(contract.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&otherDone)),"other reader fence");Done(prepared.TrackReader(first->delivery,otherDone.Get(),1),"register unrelated reader");Gpu(otherQueue->Signal(otherDone.Get(),99),"higher other queue signal");event=CreateEventW(nullptr,FALSE,FALSE,nullptr);Need(event!=nullptr,"other event");Gpu(otherDone->SetEventOnCompletion(99,event),"other reader event");Need(WaitForSingleObject(event,500)==WAIT_OBJECT_0,"other queue completed");CloseHandle(event);collected=Collect(prepared);Need(collected&&*collected==0&&prepared.Diagnostics().pendingTickets==1,"HigherOtherQueueSignalCannotRetireReader");
     const bool retire=std::wstring_view(argv[3])==L"retire";
-    if(retire){auto begun=std::chrono::steady_clock::now();Done(prepared.Retire(),"resize/retirement drains pending delivery");Need(Milliseconds(begun)>250,"ResizeRetainsPendingDelivery");}
+    const bool style=std::wstring_view(argv[3])==L"style";
+    if(style){
+        settings.tuning.style=1;++settings.revision;
+        const auto begun=std::chrono::steady_clock::now();
+        auto changed=prepared.Evaluate(images[1].input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,settings);
+        Need(bool(changed),"LiveStyleChangeEvaluatesAfterRetirement");
+        Need(Milliseconds(begun)>250&&encoderGate->GetCompletedValue()==1,"LiveStyleChangeWaitsForActualEncoderReader");
+        Need(changed->effectiveReset,"LiveStyleChangeResetsHistoryWithoutCallerReset");
+        Done(prepared.Retire(),"style transition final retirement");
+    }
+    else if(retire){auto begun=std::chrono::steady_clock::now();Done(prepared.Retire(),"resize/retirement drains pending delivery");Need(Milliseconds(begun)>250,"ResizeRetainsPendingDelivery");}
     else{
         std::array<BeforeResult,4> results;results[0]=*first;
         for(unsigned i=1;i<3;++i){auto result=prepared.Evaluate(images[i].input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,settings);Need(bool(result),"next queued source");results[i]=*result;}

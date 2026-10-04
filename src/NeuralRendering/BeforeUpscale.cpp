@@ -29,6 +29,7 @@ struct BeforeUpscale::State {
     ComPtr<ID3D11Fence> handoff11;
     uint64_t handoffValue{},completionValue{};
     unsigned preset{};
+    std::optional<int> recordedStyle;
     History history;
     bool attempted{},ready{},uncertain{},terminal{};
     Slot* Find(const DeliveryTicket& t){if(!deliveryOwner.Owns(t.owner_)||t.slot_>=slots.size())return nullptr;auto& slot=slots[t.slot_];return slot.id&&slot.id==t.id_&&slot.source==t.source_&&slot.epoch==t.epoch_?&slot:nullptr;}
@@ -121,6 +122,15 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     if(settings.reconstruction.preset!=s.preset||settings.reconstruction.inputScale!=1||settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation||
         settings.reconstruction.method>ResolveMethod::Ratio||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR Before native bridge requires adapter-owned color/reconstruction preparation");
+    const auto style=SanitizeBuild14Tuning(settings.tuning).style;
+    if(s.recordedStyle&&*s.recordedStyle!=style){
+        // A live style switch in the supplied runtime reproduced a device hang
+        // even with Reset set while older evaluations
+        // still in flight. Retire their genuine vendor AND delivery readers
+        // before recording the new style; unchanged styles stay asynchronous.
+        auto drained=s.WaitPending();if(!drained)return std::unexpected(drained.error());
+        s.history.ResetNext();
+    }
     ImagePacket p;p.epoch=input.epoch;p.guideEpoch=input.guideEpoch;p.sourceId=p.batchId=p.imageId=input.sourceId;
     p.guideSourceId=input.guideSourceId;p.previousSourceId=input.previousSourceId;p.presentationTime=input.presentationTime;
     p.kind=ImageKind::Real;p.interpolationFraction=1.;p.colorDomain=input.colorDomain;p.guideOrigin=GuideOrigin::RealSource;
@@ -147,6 +157,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     p.colorState=p.depthState=p.motionState=read;p.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
     p.reset=history->Reset();auto ticket=s.stage.RecordQueued(list,p,settings);
     if(!ticket){s.terminal=true;return std::unexpected(ticket.error());}
+    s.recordedStyle=style;
     slot.ticket=*ticket;
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}
     for(auto* resource:{slot.color.texture12.Get(),slot.depth.texture12.Get(),slot.motion.texture12.Get()})Transition(list,resource,read,D3D12_RESOURCE_STATE_COMMON);

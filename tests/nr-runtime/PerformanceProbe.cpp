@@ -20,7 +20,7 @@ using Microsoft::WRL::ComPtr;
 namespace {
 struct Options {
     std::string profile{"rtx40"};std::filesystem::path dll,core,output,fsrRuntime;
-    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{},preparedFsr{},stableColors{true};
+    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{},preparedFsr{},stableColors{true},styleCycle{};
 } options;
 struct WallSample {uint64_t id{},nanoseconds{};};
 PerformanceMetrics metrics;std::vector<WallSample> wall;
@@ -42,8 +42,12 @@ void Write(){
         <<",\"adapterVendor\":"<<adapterIdentity.vendorId<<",\"adapterDevice\":"<<adapterIdentity.deviceId
         <<",\"adapterLuidLow\":"<<adapterIdentity.luid.low<<",\"adapterLuidHigh\":"<<adapterIdentity.luid.high
         <<",\"width\":"<<options.width<<",\"height\":"<<options.height
-        <<",\"placement\":\"Before\",\"encoding\":\"Gamma22-to-linear-FP16\",\"passes\":1,\"preset\":0,\"style\":0,\"intensity\":1,\"localTone\":0,\"localStructure\":1,\"inputScale\":1,\"resolve\":\"Auto\",\"hdr\":false"
-        <<",\"scene\":\"two static checker/ramp images; constant depth 0.5 and zero motion\",\"resetSchedule\":\"first source; optional correctness-only off/on\""
+        <<",\"placement\":\"Before\",\"encoding\":\"Gamma22-to-linear-FP16\",\"passes\":1,\"preset\":0,\"style\":"<<(options.styleCycle?1:0)
+        <<",\"styleSchedule\":"<<std::quoted(options.styleCycle?"1/0 every 20 sources":"constant")
+        <<",\"intensity\":"<<(options.styleCycle?1.043:1)<<",\"localTone\":"<<(options.styleCycle?1.018:0)
+        <<",\"localStructure\":1,\"inputScale\":1,\"resolve\":\"Auto\",\"hdr\":false"
+        <<",\"scene\":\"two static checker/ramp images; constant depth 0.5 and zero motion\",\"resetSchedule\":"
+        <<std::quoted(options.styleCycle?"first source; each style switch; optional correctness-only off/on":"first source; optional correctness-only off/on")
         <<",\"stableColors\":"<<(options.stableColors?"true":"false")
         <<",\"nrEnabled\":"<<(options.enabled?"true":"false")<<",\"instrumentation\":"<<(options.instrumentation?"true":"false")
         <<",\"fsrEnabled\":"<<(!options.fsrRuntime.empty()?"true":"false")<<",\"fsrVersion\":"<<std::quoted(fsrVersion)<<",\"fsrQuality\":\"NativeAA\",\"fsrEvaluations\":"<<fsrEvaluations
@@ -86,6 +90,7 @@ int wmain(int argc,wchar_t** argv){try{
         else if(key==L"--fsr-runtime")options.fsrRuntime=std::filesystem::absolute(value);
         else if(key==L"--prepared-fsr")options.preparedFsr=Boolean(value);
         else if(key==L"--stable-colors")options.stableColors=Boolean(value);
+        else if(key==L"--style-cycle")options.styleCycle=Boolean(value);
         else if(key==L"--frames")options.frames=Number(value);else if(key==L"--warmup")options.warmup=Number(value);
         else if(key==L"--timer-period-ms")options.timerPeriodMs=Number(value);
         else if(key==L"--width")options.width=Number(value);else if(key==L"--height")options.height=Number(value);
@@ -158,8 +163,12 @@ int wmain(int argc,wchar_t** argv){try{
     std::array<std::vector<unsigned char>,2> pattern;
     for(size_t f=0;f<pattern.size();++f){pattern[f].resize(pixels*4);for(UINT y=0;y<options.height;++y)for(UINT x=0;x<options.width;++x){const auto p=(size_t(y)*options.width+x)*4;pattern[f][p]=((x/8+y/8+f)%2)?48:208;pattern[f][p+1]=(x+f)%256;pattern[f][p+2]=(y+f)%256;pattern[f][p+3]=(x+y+f)%256;}}
     BeforeInput input;input.context=context;input.color=color;input.depth=depth;input.motion=motion;input.colorExtent=input.guideExtent=contract.colorExtent;input.epoch=input.guideEpoch=1;input.motionScaleX=float(options.width);input.motionScaleY=float(options.height);
-    SettingsSnapshot settings;settings.revision=1;settings.tuning.localToneStrength=0;settings.stableColors=options.stableColors;
+    SettingsSnapshot settings;settings.revision=1;settings.tuning.localToneStrength=options.styleCycle?1.018f:0;
+    settings.tuning.intensity=options.styleCycle?1.043f:1;settings.tuning.style=options.styleCycle?1:0;settings.stableColors=options.stableColors;
     for(UINT frame=0;frame<options.frames+options.warmup;++frame){const auto& data=pattern[frame%pattern.size()];context->UpdateSubresource(color.Get(),0,nullptr,data.data(),options.width*4,0);
+        input.reset=options.styleCycle&&frame&&frame%20==0;
+        if(input.reset){settings.tuning.style=1-settings.tuning.style;++settings.revision;
+            std::fprintf(stderr,"STYLE_TRANSITION source=%u style=%d revision=%llu\n",frame+1,settings.tuning.style,static_cast<unsigned long long>(settings.revision));}
         input.sourceId=input.guideSourceId=frame+1;input.previousSourceId=frame;input.presentationTime=double(frame+1)/60.;settings.enabled=options.enabled&&!(options.readback&&frame==10);
         if(options.readback&&(frame==10||frame==11))++settings.revision;
         metrics.BeginFrame(input.sourceId,settings.enabled);PreparedFsrInput linear;const auto begin=PerformanceNow();auto evaluated=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,settings,options.preparedFsr?&linear:nullptr);

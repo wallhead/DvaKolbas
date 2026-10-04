@@ -126,7 +126,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_features(TRPNrDeferredDeliveryTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrDeferredDeliveryTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_link_libraries(TRPNrDeferredDeliveryTests PRIVATE TRPNeuralRuntime)
-    foreach(mode IN ITEMS pressure retire timeout)
+    foreach(mode IN ITEMS pressure retire timeout style)
         add_test(NAME NrDeferredDelivery-${mode} COMMAND TRPNrDeferredDeliveryTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" ${mode})
         set_tests_properties(NrDeferredDelivery-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 90 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
@@ -327,12 +327,27 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     endif()
     endif()
     if(TRP_NR_RTX40_DLL AND TRP_NR_DRIVER_CORE)
+        foreach(stable IN ITEMS on off)
+            add_test(NAME NrLiveStyle-${stable} COMMAND TRPNrPerformanceProbe
+                --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
+                --width 2560 --height 1440 --frames 120 --warmup 3 --readback off
+                --style-cycle on --stable-colors ${stable}
+                --output "${CMAKE_CURRENT_BINARY_DIR}/live-style-${stable}.json")
+            set_tests_properties(NrLiveStyle-${stable} PROPERTIES TIMEOUT 60 RUN_SERIAL TRUE LABELS GPU)
+        endforeach()
         add_test(NAME NrPerformancePrepared COMMAND TRPNrPerformanceProbe
             --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
             --width 320 --height 180 --frames 16 --warmup 3 --readback on
             --output "${CMAKE_CURRENT_BINARY_DIR}/performance-prepared.json")
         set_tests_properties(NrPerformancePrepared PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 90)
         if(TRP_NR_PERF_WITH_FSR AND TRP_NR_PERF_FSR_RUNTIME)
+            add_test(NAME NrLiveStyle-prepared-fsr COMMAND TRPNrPerformanceProbe
+                --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
+                --width 2560 --height 1440 --frames 120 --warmup 3 --readback off
+                --style-cycle on --stable-colors on --prepared-fsr on
+                --fsr-runtime "${TRP_NR_PERF_FSR_RUNTIME}"
+                --output "${CMAKE_CURRENT_BINARY_DIR}/live-style-prepared-fsr.json")
+            set_tests_properties(NrLiveStyle-prepared-fsr PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 60)
             foreach(state IN ITEMS on off)
                 add_test(NAME NrPerformanceFsr-${state} COMMAND TRPNrPerformanceProbe
                     --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
