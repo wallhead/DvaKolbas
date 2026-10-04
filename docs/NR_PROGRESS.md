@@ -2,7 +2,14 @@
 
 **1 of 8 milestones complete:** Task 2, the standalone direct runtime catalog/owner and RTX 40 GPU qualification. Task order differs from completion count: Task 1 true post-FG feasibility remains open.
 
-**Next-feature checkpoint, 2026-10-04:** resumed true After-FG feasibility.
+**Current scope, 2026-10-04:** the owner requests `input -> upscale -> NR -> FG -> final`.
+The [revised plan](superpowers/plans/2026-10-04-nr-post-sr.md) keeps one live
+Before/After-upscaling pass for DLSS/DLAA and FSR/NativeAA. After now enhances
+each real source before FG; generated images inherit enhanced sources without
+a separate NR evaluation. Qualify display-size real guides and actual enhanced
+FG-source handoff next. The working Before trial is unchanged; **1 of 8**.
+
+**Historical post-FG research checkpoint, 2026-10-04:** resumed true After-FG feasibility.
 The [independent source-pair guide experiment](../research/nr/post-fg/GUIDE_RECONSTRUCTION.md)
 passes 26 research assertions, including explicit negative evidence: subpixel
 boundaries and a surface hidden at both endpoints have incorrect intermediate
@@ -57,12 +64,12 @@ Performance P0 now has optional bounded CPU/wait/Flush/descriptor observations a
 
 | Task | Status | Evidence or next requirement |
 | --- | --- | --- |
-| 1. Post-FG output and matching generated guides | In progress | Independent reference renderer/schema tests; FSR color/UI/retirement baseline passes. NVIDIA static output candidates identified; generated guides remain unqualified. |
+| 1. Post-SR real color/guide/source contracts | Revised; not qualified | Reuse independent renderer and retained real-source contracts; qualify display extent, guide scaling and explicit NR/FG color transfer. Earlier generated-guide/output research is deferred. |
 | 2. Catalog, direct owner and compatibility loading | Complete for standalone scope | Exact 65-ID catalog, locked-file hashes, narrow IAT shim; 14/14 NR + legacy contract tests. Reviewed clean-source RTX 40 30-frame RGB readbacks and retired teardown pass. |
 | 3. Shared one-pass stage and Before integration | In progress | Owned packet/history, typed parameters and shared Stage implemented. Native linear FP16 D3D11 bridge passes 240 frames with live off/on, exact alpha and real reader retirement. Explicit SDR color preparation and native Before call sites are connected to DLSS/DLAA and FSR. Skyrim FSR source processing is observed; reduced-model reconstruction and moving-scene quality remain open. |
-| 4. FSR true After | Pending Task 1 guides | Generated color access is proven; matching generated depth/motion/history is required. |
-| 5. DLSS-G true After | Pending Task 1 boundary/guides | Exact installed Streamline 2.13 candidate functions are static research only. |
-| 6. Live controls/lifecycle | Before trial integrated; After batches pending | One authoritative NR setting feeds live Apply/Save/hotkeys. Actual source handoff, camera cuts and checked resize retirement gate the native Before path. |
+| 4. FSR post-SR NR | Pending real-source qualification | One source evaluation after SR; retained FG color must be recaptured/replaced from enhanced output before submission. |
+| 5. DLSS/DLAA post-SR NR | Pending real-source qualification | Feed enhanced real HUD-less output to normal FG tags; suppress duplicate legacy NR and support FG off. |
+| 6. Live controls/lifecycle | Before trial integrated; post-SR switches pending | One authoritative setting; Before/After-upscaling changes require source reader retirement and coherent NR/FG history reset. |
 | 7. Clean matrix/packages/final review | Pending implementation | Current checkpoint review is narrower than the future whole-branch review. |
 | 8. Separate Skyrim acceptance | Processing smoke observed; visual acceptance open | Corrected Before trial loads a save and resumes NR after live toggles. SDR-byte Style-0 camera check reports apparent stability; broader scene/style/provider acceptance remains open. |
 

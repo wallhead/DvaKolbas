@@ -1,5 +1,10 @@
 # Generated guide feasibility checkpoint, 2026-10-04
 
+**Deferred scope:** the owner subsequently requested upscale -> NR -> FG.
+The [post-SR source-stage plan](../../../docs/superpowers/plans/2026-10-04-nr-post-sr.md)
+is now current. The generated-guide findings below remain valid research limits,
+but are not prerequisites for the revised implementation.
+
 True After-FG NR remains unqualified. A research-only CPU candidate now
 compares source-pair depth/motion reconstruction with geometry independently
 rasterized at the requested intermediate time. No product code, installed mod,

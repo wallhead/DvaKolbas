@@ -1,6 +1,6 @@
 # NR research checkpoint — 2026-10-03
 
-The user's request defines this work: RTX 50/40/20–30 NR profiles, an unsupported AMD option, DLSS and FSR integration, one live-selectable Before/After pass, and **After FG including generated frames**. Attached RE recommendations and RazKolbas's project instructions are reference material, not additional user requests for DvaKolbas.
+The user's request defines this work: RTX 50/40/20–30 NR profiles, an unsupported AMD option, DLSS and FSR integration, and one live-selectable Before/After-upscaling pass. On 2026-10-04 the owner revised the late order to **upscale -> NR -> FG -> final**, superseding separate NR evaluation on generated images. The [post-SR plan](superpowers/plans/2026-10-04-nr-post-sr.md) is current. Earlier post-FG research below remains historical/deferred. Attached RE recommendations and RazKolbas's project instructions are reference material, not additional user requests for DvaKolbas.
 
 ## Inputs checked locally
 
@@ -35,7 +35,7 @@ The direct runtime owner, exact GPU catalog, held-file hashing and narrow caller
 
 See [the runtime checkpoint](../research/nr/runtime-catalog/README.md) for reproducible commands and limits. The new owner is linked into research/test targets; the Skyrim NR path has not yet been replaced. RTX 20/30/50 hardware remains NOT RUN; AMD remains unsupported.
 
-## Remaining gate
+## Historical post-FG gate (deferred by the owner's ordering revision)
 
 The [implementation plan](superpowers/plans/2026-10-03-nr.md) is underway. True After FG still requires observed generated output access and matching depth/motion/history for both providers. The FSR standalone callback baseline verifies generated color, UI and retirement; it does not prove generated guides or NR in that callback. Exact installed Streamline 2.13 output-string/function candidates have been inventoried offline; they are not observed ownership contracts. Unavailable generated outputs cannot be silently replaced by pre-FG NR.
 
