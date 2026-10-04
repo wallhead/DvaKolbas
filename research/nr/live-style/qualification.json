@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "readyForGame": true,
+  "installed": false,
+  "gameAcceptance": "PENDING",
+  "sourceRevision": "92955b794d5ff0223ac4432745d16347d1cd1074",
+  "dllSha256": "f829ad80fe92d195c7c707368909f077aae6fbec87b94ac0687be79eb8904058",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "92955b794d5f",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "builds": [
+    {
+      "variant": "fsr-fg-standard",
+      "identity": {
+        "edition": "Standard",
+        "sourceRevision": "92955b794d5f",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": true
+      },
+      "dllSha256": "f829ad80fe92d195c7c707368909f077aae6fbec87b94ac0687be79eb8904058"
+    },
+    {
+      "variant": "fsr-fg-universal",
+      "identity": {
+        "edition": "Universal",
+        "sourceRevision": "92955b794d5f",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": true
+      },
+      "dllSha256": "7da3095320ac5ab40785c28dc324aa746c54ea47e96562935f63f76da00e76ff"
+    },
+    {
+      "variant": "fsr-fg-standard-nr-off",
+      "identity": {
+        "edition": "Standard",
+        "sourceRevision": "92955b794d5f",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": false
+      },
+      "dllSha256": "eb2284e7427c6d2278193079ea651fa4308d06cdae1ba8e01df2a5101b2f21a9"
+    },
+    {
+      "variant": "fsr-fg-universal-nr-off",
+      "identity": {
+        "edition": "Universal",
+        "sourceRevision": "92955b794d5f",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": false
+      },
+      "dllSha256": "25bc5f43942d8c71b9f657214fc3a931cfbdc06b1dab1a6c9d924625eba50d06"
+    }
+  ],
+  "tests": [
+    {
+      "name": "clean-standalone-full",
+      "passed": 58,
+      "failed": 0,
+      "log": {
+        "path": "out/research/nr/tone-freeze-20261004/clean-runtime-test.log",
+        "sha256": "ac3b284379b46db98d8636ea394c065311d5ff516a3d1b6a11e41141e73fcb44"
+      }
+    },
+    {
+      "name": "standard-full-implementation",
+      "total": 188,
+      "passed": 185,
+      "failed": 3,
+      "scope": "semantic implementation before clean identity rebuild; source subsequently validated in clean standalone suite",
+      "log": {
+        "path": "out/research/nr/tone-freeze-20261004/standard-test-full.log",
+        "sha256": "17b304420377de3ae6545a52ab4841de7772cc669b42e33fb68cbfcaa508e881"
+      }
+    }
+  ],
+  "existingDebugDeviceFailures": [
+    "NativeUIComposition",
+    "NativeUIBlendState",
+    "NeuralPeripheralPixels"
+  ],
+  "review": {
+    "approved": true,
+    "scope": "qualified community Before bridge; safety, genuine readers, failure retention, sanitized style and resets"
+  },
+  "reproduction": {
+    "skyrim": {
+      "path": "out/research/nr/tone-freeze-20261004/TheosRenderPipeline.log",
+      "sha256": "76bd579be32e54013b73fbb0a7317408f17c83c31d2a49014c2fe64e096f2aad"
+    },
+    "gpuFailure": "Skyrim D3D12 0x887A0006; tracked pre-fix cycle failed at source21 with D3D12 removed",
+    "beforeFixStyleTest": {
+      "path": "out/research/nr/tone-freeze-20261004/red-test.log",
+      "sha256": "87199268f34be938f2529cb0ef6f2f1c6426af2226fb4c4b355bcedf4c38b0ca"
+    },
+    "beforeFixReaderTest": {
+      "path": "out/research/nr/tone-freeze-20261004/reader-red.log",
+      "sha256": "c94fe2c91b1d91e464329b13aa10dcf38187028f9b7c1c2355e2a02070739984"
+    },
+    "constantStyleControl": {
+      "sources": 150,
+      "passed": true,
+      "receipt": {
+        "path": "out/research/nr/tone-freeze-20261004/style-constant1.json",
+        "sha256": "aa46a7c5d36ac845a328344c5f476e8efaa064b2eff2a4b5442a8d20a930da0c"
+      }
+    },
+    "explicitDrainExperiment": {
+      "sources": 360,
+      "transitions": 17,
+      "passed": true,
+      "receipt": {
+        "path": "out/research/nr/tone-freeze-20261004/style-drain.json",
+        "sha256": "463e75836a0c8acab691df2d342efd474a31fa89a56988ceaebb41ff37a11149"
+      }
+    },
+    "experimentScope": "ignored private derivative probe; control receipts compiled-source map excludes that derivative and are exploratory, not clean qualification"
+  },
+  "fixtureCorrection": {
+    "initialStableCycle": "completed GPU retirement; timing assertion rejected initial4descriptor creations with warmup0",
+    "resolution": "warmup3 excludes first per-slot setup; no production workaround",
+    "log": {
+      "path": "out/research/nr/tone-freeze-20261004/green-test.log",
+      "sha256": "fc37dea1778e7f8cfe8d1c9e57033ca8fb38beafb8fc47dab49f134b7ec12c6c"
+    }
+  },
+  "cleanLiveStyleCases": [
+    {
+      "receipt": {
+        "path": "out/research/nr/tone-freeze-20261004/clean-live-style-on.json",
+        "sha256": "790ea9bf97e4ae82395d3042d096e92a3ce982dff4370570c92ae2236b6284cd"
+      },
+      "sourceRevision": "92955b794d5ff0223ac4432745d16347d1cd1074",
+      "sourceClean": true,
+      "sources": 123,
+      "styleSchedule": "1/0 every 20 sources",
+      "styleTransitions": 6,
+      "readbacks": false,
+      "stableColors": true,
+      "preparedFsrHandoff": false,
+      "retired": true,
+      "timingComplete": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+    },
+    {
+      "receipt": {
+        "path": "out/research/nr/tone-freeze-20261004/clean-live-style-off.json",
+        "sha256": "133cf8f1f704f18d21e0d476a6c89c5068d16bea5a0274001fb91737e4e9b769"
+      },
+      "sourceRevision": "92955b794d5ff0223ac4432745d16347d1cd1074",
+      "sourceClean": true,
+      "sources": 123,
+      "styleSchedule": "1/0 every 20 sources",
+      "styleTransitions": 6,
+      "readbacks": false,
+      "stableColors": false,
+      "preparedFsrHandoff": false,
+      "retired": true,
+      "timingComplete": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+    },
+    {
+      "receipt": {
+        "path": "out/research/nr/tone-freeze-20261004/clean-live-style-prepared-fsr.json",
+        "sha256": "be16d143ef39d29effb9f45a723f7f8db3b11003891f4ed38e2e1d0c16fe1450"
+      },
+      "sourceRevision": "92955b794d5ff0223ac4432745d16347d1cd1074",
+      "sourceClean": true,
+      "sources": 123,
+      "styleSchedule": "1/0 every 20 sources",
+      "styleTransitions": 6,
+      "readbacks": false,
+      "stableColors": true,
+      "preparedFsrHandoff": true,
+      "retired": true,
+      "timingComplete": true,
+      "runtimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "driverCoreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+    }
+  ],
+  "iniSha256": "1eb3c3fbcbd34e5e373ee4fe1cddc16450d16185dbba4448080f08a5780813a7",
+  "updateFiles": [
+    "SKSE/Plugins/TheosRenderPipeline.dll",
+    "nr-trial-manifest.json"
+  ],
+  "toneMilestone": "2 of 3; Skyrim visual and Apply acceptance pending"
+}

@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "installed": true,
+  "rollback": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr\\tone-freeze-20261004\\rollback-20261004-090148-040604ca4be14a2b863235a8f0826bd1",
+  "trial": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "92955b794d5f",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "dllSha256": "f829ad80fe92d195c7c707368909f077aae6fbec87b94ac0687be79eb8904058",
+  "iniSha256": "1eb3c3fbcbd34e5e373ee4fe1cddc16450d16185dbba4448080f08a5780813a7",
+  "changes": [
+    {
+      "relative": "SKSE/Plugins/TheosRenderPipeline.dll",
+      "target": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "source": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\package\\nr-live-style-92955b7\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "sha256": "f829ad80fe92d195c7c707368909f077aae6fbec87b94ac0687be79eb8904058"
+    },
+    {
+      "relative": "nr-trial-manifest.json",
+      "target": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\nr-trial-manifest.json",
+      "source": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\package\\nr-live-style-92955b7\\nr-trial-manifest.json",
+      "sha256": "5f0455a94c92716ac5a8f44879957b241f1b1badd009dc27f6da6733e53400eb"
+    }
+  ],
+  "protectedFilesChecked": 39,
+  "savedSettingsPreserved": true,
+  "mo2AndProfileUnchanged": true,
+  "gameAcceptance": "PENDING"
+}
