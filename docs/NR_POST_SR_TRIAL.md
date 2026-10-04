@@ -36,3 +36,13 @@ existing V5.4 NO-LORE trial. The accepted DLL/INI backup is in
 placement changed; DLAA, NVIDIA FG, Tone 1, Style 0 and Stable colors off remain.
 The [receipt](../research/nr/post-sr/clean-build-install.json) records 196 passing
 checks and three excluded Graphics Tools checks. Game acceptance is pending.
+
+FSR comparison checkpoint, 2026-10-04: after the successful first DLAA game
+trial and combined standalone FSR/NR/FG presentation checks, the FSR Native AA
+After/FSR-FG INI is installed. Only UpscaleType=4 and FrameGenerationBackend=2
+changed; placement stays After, FG stays enabled, Style 0/Tone 1 and Stable
+colors off stay intact. The DLAA INI is backed up; clean dc6a9abe3630 DLL and
+MO2 settings are unchanged. [Install receipt](../research/nr/post-sr/fsr-native-aa-trial-install.json).
+Start through the usual MO2 SKSE entry, load a save, check FSR active / NR active
+after upscaling, and compare NR/FG off/on, camera rotation, HUD/inventory/map,
+save/reload and alt-tab/minimize. Report drift, flicker, damaged UI or freezing.

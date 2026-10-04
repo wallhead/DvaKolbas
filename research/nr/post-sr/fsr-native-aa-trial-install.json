@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Installed FSR Native AA After NR/FSR FG INI only",
+  "installedProductRevision": "dc6a9abe3630",
+  "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-after-fsr-native-aa-20261004-181526",
+  "oldIniSha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+  "newIniSha256": "0976c1d197da323adc0fbcbe97d341d8612c16a6aaf278a38ea0cab4de7de96d",
+  "changedIniKeys": [
+    "Experimental/FrameGenerationBackend",
+    "Settings/UpscaleType"
+  ],
+  "preserved": {
+    "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "27f0cfad3d35c12d7231c2ee42875091f10a7789c13d6ee5c540c17977fec98d",
+    "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "ed4cdab73806a2f65b5c1d549e16de25dc49e0e38c75924e0212656d8d688491"
+  },
+  "mode": 4,
+  "fsrQuality": "NativeAA",
+  "fgBackend": 2,
+  "fgEnabled": "true",
+  "nrBeforeUpscaling": "false",
+  "nrStyle": "0",
+  "nrTone": "1.000000",
+  "stableColors": "false",
+  "gameLaunched": false,
+  "milestonesComplete": 3,
+  "milestonesTotal": 8
+}
