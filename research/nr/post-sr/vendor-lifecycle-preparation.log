@@ -1,0 +1,33 @@
+PREPARATION ONLY; actual lifecycle pending complete foreground runs.
+Control 220627 lost focus at source63/480; exit77.
+Control 220934 reached fixture reentry failure (single initialization); exit1, NOT the intended negative.
+Reused-object isolated negative: exit1. Fresh preparation reentry: two epochs,128DLAA126NR35979264exacttags8994816exactalpha,zero failures.
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+      Start  24: InteropRetirement
+ 1/10 Test  #24: InteropRetirement ...........................   Passed    0.49 sec
+      Start  42: SourceDLSSGSession
+ 2/10 Test  #42: SourceDLSSGSession ..........................   Passed    0.01 sec
+      Start  49: SourceDLSSGInteropFence
+ 3/10 Test  #49: SourceDLSSGInteropFence .....................   Passed    1.03 sec
+      Start 204: NrProbeLifetime
+ 4/10 Test #204: NrProbeLifetime .............................   Passed    0.01 sec
+      Start 207: NrPostDlssSourceGpu
+ 5/10 Test #207: NrPostDlssSourceGpu .........................   Passed    2.13 sec
+      Start 208: NrPostDlssSourceReentryGpu
+ 6/10 Test #208: NrPostDlssSourceReentryGpu ..................   Passed    2.39 sec
+      Start 209: NrPostDlssReaderGpu
+ 7/10 Test #209: NrPostDlssReaderGpu .........................   Passed    4.32 sec
+      Start 210: NrPostDlssReaderGpu-missing-reader-fence
+ 8/10 Test #210: NrPostDlssReaderGpu-missing-reader-fence ....   Passed    4.24 sec
+      Start 211: NrPostDlssReaderGpu-reader-state-error
+ 9/10 Test #211: NrPostDlssReaderGpu-reader-state-error ......   Passed    4.49 sec
+      Start 212: NrPostDlssReaderGpu-reader-callback-error
+10/10 Test #212: NrPostDlssReaderGpu-reader-callback-error ...   Passed    4.19 sec
+
+100% tests passed, 0 tests failed out of 10
+
+Label Time Summary:
+GPU    =  21.76 sec*proc (6 tests)
+
+Total Test time (real) =  23.33 sec

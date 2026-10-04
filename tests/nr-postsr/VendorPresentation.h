@@ -31,7 +31,17 @@ struct VendorPresentation {
             MSG message{};while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}
             if(!IsWindow(window))break;std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
-        if(GetForegroundWindow()!=window)throw ForegroundUnavailable();
+        const auto foreground=GetForegroundWindow();
+        if(foreground!=window){
+            DWORD foregroundPid{};
+            const auto foregroundThread=GetWindowThreadProcessId(foreground,&foregroundPid);
+            char foregroundClass[128]{};
+            if(foreground)GetClassNameA(foreground,foregroundClass,sizeof(foregroundClass));
+            std::printf("VENDOR_FOCUS_LOST present=%u expected=%p foreground=%p foregroundPid=%lu foregroundThread=%lu class=%s iconic=%u active=%u\n",
+                presents,static_cast<void*>(window),static_cast<void*>(foreground),foregroundPid,foregroundThread,
+                foregroundClass,IsIconic(window)!=FALSE,GetActiveWindow()==window);
+            throw ForegroundUnavailable();
+        }
     }
 
     static void Hr(HRESULT hr){if(FAILED(hr))throw hr;}

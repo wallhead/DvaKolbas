@@ -8,6 +8,7 @@
 #include "GpuProbeLifetime.h"
 #include "TaggedSourceReader.h"
 #include "VendorPresentation.h"
+#include "QueuedPresentationGate.h"
 #include "../nr-runtime/GpuProbeGuard.h"
 #include <dxgi1_6.h>
 #include <d3d11sdklayers.h>
@@ -22,6 +23,9 @@ namespace {
 unsigned failures{};
 enum class ReaderFault {None,MissingFence,StateError,Callback};
 bool wrongRealSource{},waitForFocus{};unsigned framesPerExtent=64;std::shared_ptr<VendorPresentation> vendor;
+bool vendorLifecycle{},omitLifecycleGates{};unsigned vendorGates{},vendorPending{},vendorReuse{},vendorReentry{};
+bool scriptedReentry{},reuseRetiredPreparation{};unsigned sourceReentries{};
+bool LifecycleGate(unsigned local){return local==63||local==95||local==127||local==223;}
 bool readerMode{},omitReaderWait{};ReaderFault readerFault{};unsigned readerBoundaries{},readerReuses{},readerDrainedEpochs{},quarantines{};uint64_t readerExact{},readerExpected{};
 void Check(bool ok,const char* why){if(!ok){++failures;std::fprintf(stderr,"FAIL %s\n",why);}}
 void Gpu(HRESULT hr){if(FAILED(hr))throw hr;}
@@ -51,6 +55,9 @@ struct TagSink {
     Graphics::SharedTexture presentInput;
     ComPtr<ID3D12Resource> capture;UINT width{},height{},pitch{};unsigned tags{},clears{},fgOn{},fgOff{};uint64_t exact{},expectedBytes{},realExact{},realBytes{};
     std::shared_ptr<TaggedSourceReader> reader;bool faultArmed{},observedFault{};unsigned tokens{},waitCalls{};
+    std::shared_ptr<QueuedPresentationGate> presentationGate;
+    std::vector<ComPtr<ID3D12Fence>>* retainedVendorFences{};
+    ComPtr<ID3D12Fence> pendingVendorFence;uint64_t pendingVendorValue{};bool vendorGateArmed{},vendorReuseExpected{};
     void Allocate(ID3D12Device* device,UINT w,UINT h){width=w;height=h;pitch=(w*4+255)&~255;
         D3D12_HEAP_PROPERTIES heap{};heap.Type=D3D12_HEAP_TYPE_READBACK;D3D12_RESOURCE_DESC d{};d.Dimension=D3D12_RESOURCE_DIMENSION_BUFFER;
         d.Width=uint64_t(pitch)*h;d.Height=1;d.DepthOrArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Layout=D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
@@ -83,7 +90,17 @@ sl::Result TagsFn(const sl::ViewportHandle& viewport,const sl::ResourceTag* tags
 }
 sl::Result OptionsFn(const sl::ViewportHandle& viewport,const sl::DLSSGOptions& o){if(SL::GenerationEnabled(o.mode))++sink->fgOn;else ++sink->fgOff;if(vendor){auto options=o;options.onErrorCallback=VendorPresentation::ApiError;return vendor->api.setOptions(viewport,options);}return sl::Result::eOk;}
 sl::Result StateFn(const sl::ViewportHandle& viewport,sl::DLSSGState& s,const sl::DLSSGOptions* options){
-    if(vendor)return vendor->api.getState(viewport,s,options);
+    if(vendor){const auto result=vendor->api.getState(viewport,s,options);
+        if(sink->vendorGateArmed){sink->vendorGateArmed=false;
+            const bool valid=(result==sl::Result::eOk||result==sl::Result::eWarnOutOfVRAM)&&s.inputsProcessingCompletionFence&&s.lastPresentInputsProcessingCompletionFenceValue;
+            auto* fence=valid?static_cast<ID3D12Fence*>(s.inputsProcessingCompletionFence):nullptr;
+            const auto complete=fence?fence->GetCompletedValue():0;
+            const bool pending=valid&&complete!=UINT64_MAX&&complete<s.lastPresentInputsProcessingCompletionFenceValue;
+            Check(pending,"ActualVendorInputFenceGenuinelyPendingAtHeldPresent");
+            std::printf("VENDOR_PENDING gate=%u pending=%u complete=%llu value=%llu actual=%u\n",vendorGates,pending,(unsigned long long)complete,(unsigned long long)s.lastPresentInputsProcessingCompletionFenceValue,s.numFramesActuallyPresented);
+            if(pending){++vendorPending;sink->pendingVendorFence=fence;sink->pendingVendorValue=s.lastPresentInputsProcessingCompletionFenceValue;
+                sink->vendorReuseExpected=true;sink->retainedVendorFences->push_back(fence);}
+        }return result;}
     if(sink->faultArmed&&readerFault==ReaderFault::StateError)return sl::Result::eErrorInvalidParameter;
     s={};s.status=sl::DLSSGStatus::eOk;s.numFramesToGenerateMax=1;s.minWidthOrHeight=1;
     if(sink->reader){s.inputsProcessingCompletionFence=sink->faultArmed&&readerFault==ReaderFault::MissingFence?nullptr:sink->reader->Fence();s.lastPresentInputsProcessingCompletionFenceValue=sink->reader->Value();}
@@ -110,9 +127,10 @@ struct SubmittedResources {
     std::shared_ptr<NR::RuntimeOwner> owner;
     std::shared_ptr<VendorPresentation> vendor;
     std::shared_ptr<TaggedSourceReader> reader;std::shared_ptr<int> lifetimeToken;
+    std::shared_ptr<QueuedPresentationGate> presentationGate;std::vector<ComPtr<ID3D12Fence>> vendorFences;
 };
 struct Operations {
-    ID3D11DeviceContext* context;NR::PostUpscale& post;NR::SettingsSnapshot& settings;SL::Interop& bridge;SL::Session& session;TagSink& observer;Stats& stats;
+    ID3D11DeviceContext* context;std::unique_ptr<NR::PostUpscale>& post;NR::SettingsSnapshot& settings;SL::Interop& bridge;SL::Session& session;TagSink& observer;Stats& stats;
     Graphics::SharedTexture colorTag,motionTag,depthTag,uiTag;UINT width,height;uint64_t epoch{},source{};bool fg{};
     std::vector<unsigned char> original,enhanced,frozen,expectedUi;
     void CopyInput(ID3D11DeviceContext* c,const SourceNvidiaFrameInputs& f){c->CopyResource(f.input,f.color);frozen=Read(c,f.input);}
@@ -127,7 +145,7 @@ struct Operations {
         auto& m=input.source;m.backend=Upscaling::BackendKind::Dlaa;m.outcome=outcome;m.epoch=m.guideEpoch=epoch;m.sourceId=m.guideSourceId=source;m.previousSourceId=source-1;
         m.sourceTime=m.guideTime=r.presentationTime;m.render=m.display=m.color=m.guides={width,height};m.colorDomain=NR::ColorDomain::SdrBytes;m.encoding=Upscaling::ColorEncoding::Gamma22;
         m.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;m.guideOrigin=NR::GuideOrigin::RealSource;m.motion={float(width),float(height),true,false};
-        auto result=Neural(post.Evaluate(input,settings));Check(result.evaluated==settings.enabled,"OneNrAfterActualDlaaSource");Neural(post.WaitDelivery(result));f.reset|=result.effectiveReset;
+        auto result=Neural(post->Evaluate(input,settings));Check(result.evaluated==settings.enabled,"OneNrAfterActualDlaaSource");Neural(post->WaitDelivery(result));f.reset|=result.effectiveReset;
         enhanced=Read(context,f.output);stats.nr+=result.evaluated;stats.fgOffNr+=result.evaluated&&!fg;stats.frozen+=Read(context,f.input)==frozen;
         stats.pixels+=original.size()/4;for(size_t i=0;i<original.size()/4;++i){stats.alpha+=original[i*4+3]==enhanced[i*4+3];stats.changed+=std::memcmp(&original[i*4],&enhanced[i*4],3)!=0;}
         if(!settings.enabled){Check(enhanced==original,"NrOffLeavesActualDlaaOutputUnchanged");stats.bypass+=enhanced.size();++stats.bypassFrames;}return true;
@@ -162,6 +180,8 @@ struct Operations {
             Gpu(bridge.SignalD3D11(SL::Work::SwapChain));ID3D12GraphicsCommandList* list{};Gpu(bridge.Begin(SL::Work::SwapChain,&list));
             ComPtr<ID3D12Resource> destination;Gpu(vendor->chain->GetBuffer(vendor->chain->GetCurrentBackBufferIndex(),IID_PPV_ARGS(&destination)));
             Gpu(bridge.RecordCopy(list,wrongRealSource?colorTag.texture12.Get():observer.presentInput.texture12.Get(),destination.Get()));observer.Capture(list,destination.Get());Gpu(bridge.Submit(SL::Work::SwapChain));observer.Verify(true);
+            if(vendorLifecycle&&!omitLifecycleGates&&LifecycleGate(unsigned((source-1)%framesPerExtent))){
+                observer.presentationGate->Arm(bridge.Queue());observer.vendorGateArmed=true;++vendorGates;}
             Gpu(vendor->Present());
         }
         const bool accepted=session.AfterPresent(presented);
@@ -182,10 +202,17 @@ struct Operations {
 }
 int wmain(int argc,wchar_t** argv){try{
     std::setvbuf(stdout,nullptr,_IONBF,0);if(argc<3||argc>5||NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: arguments/game inventory");return 1;}
-    if(argc==5){const std::wstring_view mode=argv[3];if(mode!=L"--vendor"&&mode!=L"--vendor-force-off"&&mode!=L"--vendor-wrong-real-source"&&mode!=L"--vendor-visible")return 1;waitForFocus=mode==L"--vendor-visible";framesPerExtent=240;vendor=std::make_shared<VendorPresentation>();vendor->forceOff=mode==L"--vendor-force-off";wrongRealSource=mode==L"--vendor-wrong-real-source";}
+    if(argc==5){const std::wstring_view mode=argv[3];
+        vendorLifecycle=mode==L"--vendor-lifecycle"||mode==L"--vendor-lifecycle-visible"||mode==L"--vendor-lifecycle-omit-gates"||mode==L"--vendor-lifecycle-omit-gates-visible";
+        if(!vendorLifecycle&&mode!=L"--vendor"&&mode!=L"--vendor-force-off"&&mode!=L"--vendor-wrong-real-source"&&mode!=L"--vendor-visible")return 1;
+        omitLifecycleGates=mode==L"--vendor-lifecycle-omit-gates"||mode==L"--vendor-lifecycle-omit-gates-visible";
+        waitForFocus=mode==L"--vendor-visible"||mode==L"--vendor-lifecycle-visible"||mode==L"--vendor-lifecycle-omit-gates-visible";
+        framesPerExtent=240;vendor=std::make_shared<VendorPresentation>();vendor->forceOff=mode==L"--vendor-force-off";wrongRealSource=mode==L"--vendor-wrong-real-source";}
     if(argc==4){const std::wstring_view mode=argv[3];readerMode=true;
         if(mode==L"--missing-reader-fence")readerFault=ReaderFault::MissingFence;else if(mode==L"--reader-state-error")readerFault=ReaderFault::StateError;
-        else if(mode==L"--reader-callback-error")readerFault=ReaderFault::Callback;else if(mode==L"--omit-reader-wait")omitReaderWait=true;else if(mode!=L"--readers")return 1;}
+        else if(mode==L"--reader-callback-error")readerFault=ReaderFault::Callback;else if(mode==L"--omit-reader-wait")omitReaderWait=true;
+        else if(mode==L"--reentry"||mode==L"--reentry-reuse-retired"){scriptedReentry=true;readerMode=false;reuseRetiredPreparation=mode==L"--reentry-reuse-retired";}
+        else if(mode!=L"--readers")return 1;}
     const NR::RuntimeProfile srPin{"dlss-sr-probe","nvngx_dlss.dll","c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",58956400};
     const auto srPath=PluginPaths::Directory()/L"TheosRenderPipeline"/L"nvngx_dlss.dll";
     auto srLease=Neural(NR::RuntimeFileLease::Open(srPath,srPin));
@@ -223,7 +250,7 @@ int wmain(int argc,wchar_t** argv){try{
         Gpu(bridge.Submit(SL::Work::SwapChain));if(!session.BeforePresent(false))throw std::runtime_error("Warm-up BeforePresent failed");Gpu(vendor->Present());if(!session.AfterPresent(true))throw std::runtime_error("Warm-up AfterPresent failed");Gpu(bridge.Drain());
     }if(!warmLifetime.Retire())throw std::runtime_error("Warm-up resources quarantined");std::puts("VENDOR_WARMUP actualPresents=600 generation=off");}
     for(unsigned cycle=0;cycle<2;++cycle){const UINT width=vendor?(cycle?1344:1280):(cycle?384:320),height=vendor?(cycle?756:720):(cycle?216:180);contract.colorExtent=contract.guideExtent={width,height};
-        NR::PostUpscale post;Neural(post.Initialize(owner,device.Get(),contract));observer.Allocate(contract.device.Get(),width,height);
+        auto post=std::make_unique<NR::PostUpscale>();Neural(post->Initialize(owner,device.Get(),contract));observer.Allocate(contract.device.Get(),width,height);
         if(vendor&&cycle)vendor->Resize(width,height);
         if(readerMode)observer.reader=std::make_shared<TaggedSourceReader>(contract.device.Get(),width,height);
         Surface world(device.Get(),width,height,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE),
@@ -248,22 +275,42 @@ int wmain(int argc,wchar_t** argv){try{
         for(auto* pair:{&ops.colorTag,&ops.uiTag,&ops.depthTag,&ops.motionTag}){resources->textures11.push_back(pair->texture11);resources->textures12.push_back(pair->texture12);}
         resources->textures12.push_back(observer.capture);
         resources->reader=observer.reader;resources->lifetimeToken=std::make_shared<int>(1);std::weak_ptr<int> resourceLifetime=resources->lifetimeToken;unsigned retirementCalls{};
+        if(vendorLifecycle){observer.presentationGate=std::make_shared<QueuedPresentationGate>(contract.device.Get());
+            resources->presentationGate=observer.presentationGate;observer.retainedVendorFences=&resources->vendorFences;}
         // Declared after ops: retire/quarantine all submitted external resources
         // before ops, surfaces or readback storage unwind on any failure.
         GpuProbeLifetime<SubmittedResources> lifetime(std::move(resources),[&]{
             ++retirementCalls;
-            if(!session.Stop())return false;
+            if(session.Snapshot().stage!=SL::SessionStage::Stopped&&!session.Stop())return false;
             (void)bridge.DiscardUnsubmitted(SL::Work::FrameGeneration);
             if(FAILED(bridge.SignalD3D11(SL::Work::FrameGeneration))||FAILED(bridge.Drain()))return false;
             if(observer.reader)observer.reader->Verify();
-            if(!post.Retire())return false;dlss->ReleaseFeature();return true;
+            if(!post->Retire())return false;dlss->ReleaseFeature();return true;
         });
-        for(unsigned local=0;local<framesPerExtent;++local){const auto sourceStart=std::chrono::steady_clock::now();ops.source=++stats.sources;ops.fg=local>=16&&local<framesPerExtent-16;settings.enabled=local!=40;settings.revision=local<40?1:local==40?2:3;
+        for(unsigned local=0;local<framesPerExtent;++local){const auto sourceStart=std::chrono::steady_clock::now();ops.source=++stats.sources;ops.fg=local>=16&&local<framesPerExtent-16;
+            const auto previousSettings=settings;settings.enabled=local!=40&&!(vendorLifecycle&&local==128);
+            if(vendorLifecycle){settings.tuning.localToneStrength=local>=64?.65f:1.f;settings.tuning.style=local>=96?1:0;}
+            const bool settingsChanged=settings.enabled!=previousSettings.enabled||settings.tuning!=previousSettings.tuning;
+            settings.revision+=unsigned(settingsChanged);
+            const bool vendorReuseExpected=vendorLifecycle&&observer.vendorReuseExpected;
+            if(vendorReuseExpected)Check(observer.pendingVendorFence->GetCompletedValue()<observer.pendingVendorValue,"ActualVendorReaderStillPendingBeforeSourceMutationOrTeardown");
+            const bool reentryBoundary=(vendorLifecycle&&local==224)||(scriptedReentry&&local==48);
+            if(reentryBoundary){
+                if(!session.Stop())throw std::runtime_error("Source session stop failed before feature reentry; retirement unconfirmed");
+                Gpu(bridge.SignalD3D11(SL::Work::FrameGeneration));Gpu(bridge.Drain());
+                if(vendorReuseExpected){Check(observer.pendingVendorFence->GetCompletedValue()>=observer.pendingVendorValue&&std::chrono::steady_clock::now()-sourceStart>=std::chrono::milliseconds(100),"ActualVendorInputReaderRetiresBeforeFeatureRelease");++vendorReentry;observer.vendorReuseExpected=false;}
+                Neural(post->Retire());dlss->ReleaseFeature();
+                if(!dlss->InitUpscale(width,height,width,height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,5))throw std::runtime_error("Reentry DLAA creation failed");
+                // Preparation instances initialize once, even after successful retirement.
+                if(!reuseRetiredPreparation)post=std::make_unique<NR::PostUpscale>();
+                Neural(post->Initialize(owner,device.Get(),contract));Check(session.ResumeAfterResize(),"SourceSessionResumesAfterFeatureReentry");++sourceReentries;
+            }
             std::vector<unsigned char> bytes(size_t(width)*height*4);for(size_t i=0;i<bytes.size()/4;++i){bytes[i*4]=((i/8+ops.source)%2)?48:208;bytes[i*4+1]=(i+ops.source)%256;bytes[i*4+2]=(i/width+ops.source)%256;bytes[i*4+3]=255;}
             const bool reuse=readerMode&&local==32;const auto producerStart=std::chrono::steady_clock::now();if(reuse)Check(observer.reader->Pending(),"PriorEnhancedTagReaderPendingBeforeProducerReuse");context->UpdateSubresource(world.texture.Get(),0,nullptr,bytes.data(),width*4,0);
             SourceNvidiaFrameInputs frame;frame.color=world.texture.Get();frame.input=input.texture.Get();frame.output=frame.hudLessColor=output.texture.Get();frame.depth=depth.texture.Get();frame.motion=motion.texture.Get();frame.uiColorAndAlpha=ui.texture.Get();
-            frame.renderWidth=frame.outputWidth=width;frame.renderHeight=frame.outputHeight=height;frame.motionScaleX=float(width);frame.motionScaleY=float(height);frame.reset=local==0||local==40||local==41;frame.jitterEnabled=true;
+            frame.renderWidth=frame.outputWidth=width;frame.renderHeight=frame.outputHeight=height;frame.motionScaleX=float(width);frame.motionScaleY=float(height);frame.reset=local==0||settingsChanged||reentryBoundary;frame.jitterEnabled=true;
             const auto result=SourceNvidiaFrameEvaluator::Evaluate(context.Get(),frame,ops);Check(result.upscaled&&result.cameraValid&&result.prepared,"ActualDlaaSourceFullyPrepared");
+            if(vendorReuseExpected&&local!=224){Check(observer.pendingVendorFence->GetCompletedValue()>=observer.pendingVendorValue&&std::chrono::steady_clock::now()-sourceStart>=std::chrono::milliseconds(100),"NewSourceSettingsWaitForGenuineVendorInputReader");++vendorReuse;observer.vendorReuseExpected=false;}
             if(vendor){const auto& snapshot=session.Snapshot();std::printf("VENDOR_FRAME source=%llu configured=%u actual=%u status=%u fenceValue=%llu reset=%u\n",(unsigned long long)ops.source,SL::GenerationEnabled(snapshot.options.mode),snapshot.state.numFramesActuallyPresented,unsigned(snapshot.state.status),(unsigned long long)snapshot.state.lastPresentInputsProcessingCompletionFenceValue,frame.reset);std::this_thread::sleep_until(sourceStart+std::chrono::milliseconds(33));}
             if(reuse){Check(observer.reader->Completed()&&std::chrono::steady_clock::now()-producerStart>=std::chrono::milliseconds(100),"NextSourceGpuWritesWaitForGenuineEnhancedTagReader");observer.reader->Verify();++readerReuses;}
         }
@@ -279,7 +326,7 @@ int wmain(int argc,wchar_t** argv){try{
             if(readerMode)Check(std::chrono::steady_clock::now()-retirementStart>=std::chrono::milliseconds(100),"ConfirmedRetirementWaitsForGenuineTaggedReader");
         }
         if(readerMode){Check(observer.reader->Completed()&&observer.reader->Captures()==2,"EveryEpochOldEnhancedTagCapturedBeforeResourceRebuild");readerExact+=observer.reader->Exact();readerExpected+=observer.reader->Expected();++readerDrainedEpochs;}
-        if(vendor){observer.presentInput={};Gpu(bridge.Drain());}
+        if(vendor){observer.presentInput={};observer.retainedVendorFences=nullptr;Gpu(bridge.Drain());}
         if(cycle==0)Check(session.ResumeAfterResize(),"SameSessionResumesWithMonotonicTokenIdentity");
     }
     if(!observer.observedFault)Neural(owner->Retire());Gpu(bridge.Drain());
@@ -289,13 +336,19 @@ int wmain(int argc,wchar_t** argv){try{
         Check(vendor->offSamples==64&&vendor->onSamples==framesPerExtent*2-64&&!session.Snapshot().optionsWarnings,"ActualVendorOffOnOffOnSourceSchedule");
         std::printf("NVIDIA_VENDOR actualPresents=%u warmup=600 sources=%u on=%u off=%u doubles=%u firstOn=%u resumedOn=%u readerFenceSamples=%u realExactBytes=%llu expectedRealBytes=%llu status=%u failures=%u\n",vendor->presents,stats.sources,vendor->onSamples,vendor->offSamples,vendor->doubleSamples,vendor->phaseDoubles[1],vendor->phaseDoubles[3],vendor->readerSamples,(unsigned long long)observer.realExact,(unsigned long long)observer.realBytes,unsigned(session.Snapshot().state.status),failures);vendor->Close();}
     if(readerMode){Check(readerBoundaries==4&&readerReuses==2&&readerDrainedEpochs==2,"EveryEnhancedSourceReaderBoundaryIsGenuinelyPending");Check(readerExact==readerExpected&&readerExpected==1124352,"OldEnhancedTaggedBytesSurviveReuseAndRetirement");Check(quarantines==unsigned(readerFault!=ReaderFault::None),"OnlyUnconfirmedRetirementQuarantinesSubmissionOwners");}
-    Check(stats.sources==framesPerExtent*2&&stats.sr==stats.sources&&stats.nr==stats.sources-2&&stats.post==stats.sources&&stats.prepared==stats.sources&&stats.camera==stats.sources,"ActualDlaaNrCountsWithoutDuplicateLegacyPass");
-    Check(stats.alpha==stats.pixels&&stats.changed>57600&&stats.frozen==stats.sources&&stats.hud==stats.sources&&stats.bypassFrames==2,"SourceAlphaFrozenInputUiAndOffBypass");
+    const unsigned expectedBypass=vendorLifecycle?4:2;
+    Check(stats.sources==framesPerExtent*2&&stats.sr==stats.sources&&stats.nr==stats.sources-expectedBypass&&stats.post==stats.sources&&stats.prepared==stats.sources&&stats.camera==stats.sources,"ActualDlaaNrCountsWithoutDuplicateLegacyPass");
+    Check(stats.alpha==stats.pixels&&stats.changed>57600&&stats.frozen==stats.sources&&stats.hud==stats.sources&&stats.bypassFrames==expectedBypass,"SourceAlphaFrozenInputUiAndOffBypass");
     Check(observer.tags==stats.sources&&observer.exact==observer.expectedBytes&&stats.fgOffNr==64,"EveryActualTaggedByteMatchesEnhancedOutputIncludingFgOff");
+    // Stop's Off is identical to the upcoming first Off Present, so production
+    // Session deduplicates that pending option rather than submitting it twice.
     Check(vendor||(observer.fgOn==64&&observer.fgOff==65-unsigned(observer.observedFault)),"ExplicitSessionFgOffOnOffOptionsSchedule");
     if(diagnostics){unsigned errors{};for(UINT64 i=0;i<diagnostics->GetNumStoredMessagesAllowedByRetrievalFilter();++i){SIZE_T bytes{};Gpu(diagnostics->GetMessage(i,nullptr,&bytes));std::vector<unsigned char> storage(bytes);auto* message=reinterpret_cast<D3D11_MESSAGE*>(storage.data());Gpu(diagnostics->GetMessage(i,message,&bytes));if(message->Severity<=D3D11_MESSAGE_SEVERITY_ERROR){++errors;std::fprintf(stderr,"D3D11: %s\n",message->pDescription);}}Check(errors==0,"AvailableD3d11DebugQueueNoErrors");}
     else std::puts("SKIPPED: D3D11 Graphics Tools debug queue unavailable");
     std::printf("NVIDIA_SOURCE sources=%u dlaa=%u nr=%u tags=%u exactTagBytes=%llu expectedTagBytes=%llu alphaExact=%llu expectedPixels=%llu frozen=%u hud=%u nrWhileFgOff=%u configuredOn=%u configuredOff=%u\n",stats.sources,stats.sr,stats.nr,observer.tags,(unsigned long long)observer.exact,(unsigned long long)observer.expectedBytes,(unsigned long long)stats.alpha,(unsigned long long)stats.pixels,stats.frozen,stats.hud,stats.fgOffNr,observer.fgOn,observer.fgOff);
     if(readerMode)std::printf("NVIDIA_READERS boundaries=%u reuse=%u readerDrainedEpochs=%u exactBytes=%llu expectedBytes=%llu fault=%u omittedWait=%u quarantined=%u failures=%u\n",readerBoundaries,readerReuses,readerDrainedEpochs,(unsigned long long)readerExact,(unsigned long long)readerExpected,unsigned(readerFault),omitReaderWait,quarantines,failures);
+    if(vendorLifecycle){Check(vendorGates==8&&vendorPending==8&&vendorReuse==6&&vendorReentry==2,"AllActualVendorPendingSettingsAndFeatureReentryBoundariesObserved");
+        std::printf("NVIDIA_VENDOR_LIFECYCLE gates=%u pending=%u reuse=%u reentry=%u omittedGates=%u failures=%u\n",vendorGates,vendorPending,vendorReuse,vendorReentry,omitLifecycleGates,failures);}
+    if(scriptedReentry||vendorLifecycle){Check(sourceReentries==2,"FeatureReentryCreatesFreshNrPreparationPerEpoch");std::printf("NVIDIA_SOURCE_REENTRY count=%u reusedRetired=%u failures=%u\n",sourceReentries,reuseRetiredPreparation,failures);}
     if(vendor)std::puts("SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim");else std::puts("SCOPE actual production DLAA+NR+Interop+Session tags; scripted public Streamline API sink, independent real GPU readers, no vendor FG output/cadence/UI composition claim");return failures?1:0;
 }catch(const VendorPresentation::ForegroundUnavailable& e){std::printf("NOT_QUALIFIED foreground precondition: %s\n",e.what());return 77;}catch(HRESULT hr){std::printf("GPU failure 0x%08x\n",unsigned(hr));return 1;}catch(const std::exception& e){std::printf("FAIL %s\n",e.what());return 1;}}

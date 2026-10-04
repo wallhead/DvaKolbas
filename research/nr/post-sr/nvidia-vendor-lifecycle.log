@@ -1,0 +1,109 @@
+QUALIFIED actual NVIDIA pending-reader subgate; Task6 partial,5/8.
+Final positive exit0; current-build control exit1 with sole missing coverage failure.
+Owner original focus interruption unqualified; later diagnostics identify Discord twice. Final run follows owner Ready after requested temporary Discord closure.
+Interrupted runs with process-exit fail-fast remain unqualified; interrupted vendor cleanup is an open limitation.
+POSITIVE
+VENDOR_ACTIVATION requested=1 granted=0 foreground=0
+VENDOR_WINDOW present=0 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=100 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=200 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=300 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=400 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=500 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=600 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_PENDING gate=1 pending=1 complete=663 value=664 actual=2
+VENDOR_PENDING gate=2 pending=1 complete=695 value=696 actual=2
+VENDOR_WINDOW present=700 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_PENDING gate=3 pending=1 complete=727 value=728 actual=2
+VENDOR_WINDOW present=800 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_PENDING gate=4 pending=1 complete=823 value=824 actual=2
+VENDOR_WINDOW present=900 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_PENDING gate=5 pending=1 complete=903 value=904 actual=2
+VENDOR_PENDING gate=6 pending=1 complete=935 value=936 actual=2
+VENDOR_PENDING gate=7 pending=1 complete=967 value=968 actual=2
+VENDOR_WINDOW present=1000 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_PENDING gate=8 pending=1 complete=1063 value=1064 actual=2
+NVIDIA_VENDOR actualPresents=1080 warmup=600 sources=480 on=416 off=64 doubles=386 firstOn=192 resumedOn=194 readerFenceSamples=462 realExactBytes=1860157440 expectedRealBytes=1860157440 status=0 failures=0
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=480 dlaa=480 nr=476 tags=480 exactTagBytes=1860157440 expectedTagBytes=1860157440 alphaExact=465039360 expectedPixels=465039360 frozen=480 hud=480 nrWhileFgOff=64 configuredOn=416 configuredOff=665
+NVIDIA_VENDOR_LIFECYCLE gates=8 pending=8 reuse=6 reentry=2 omittedGates=0 failures=0
+NVIDIA_SOURCE_REENTRY count=2 reusedRetired=0 failures=0
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+NEGATIVE
+VENDOR_ACTIVATION requested=1 granted=1 foreground=1
+VENDOR_WINDOW present=0 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=100 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=200 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=300 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=400 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=500 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=600 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=700 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=800 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=900 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=1000 foreground=1 active=1 apiErrors=0 lastError=0x00000000
+NVIDIA_VENDOR actualPresents=1080 warmup=600 sources=480 on=416 off=64 doubles=403 firstOn=201 resumedOn=202 readerFenceSamples=462 realExactBytes=1860157440 expectedRealBytes=1860157440 status=0 failures=0
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=480 dlaa=480 nr=476 tags=480 exactTagBytes=1860157440 expectedTagBytes=1860157440 alphaExact=465039360 expectedPixels=465039360 frozen=480 hud=480 nrWhileFgOff=64 configuredOn=416 configuredOff=665
+FAIL AllActualVendorPendingSettingsAndFeatureReentryBoundariesObserved
+NVIDIA_VENDOR_LIFECYCLE gates=0 pending=0 reuse=0 reentry=0 omittedGates=1 failures=1
+NVIDIA_SOURCE_REENTRY count=2 reusedRetired=0 failures=1
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+REGRESSIONS
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+
+      Start  24: InteropRetirement
+
+ 1/10 Test  #24: InteropRetirement ...........................   Passed    0.48 sec
+
+      Start  42: SourceDLSSGSession
+
+ 2/10 Test  #42: SourceDLSSGSession ..........................   Passed    0.01 sec
+
+      Start  49: SourceDLSSGInteropFence
+
+ 3/10 Test  #49: SourceDLSSGInteropFence .....................   Passed    1.02 sec
+
+      Start 204: NrProbeLifetime
+
+ 4/10 Test #204: NrProbeLifetime .............................   Passed    0.01 sec
+
+      Start 207: NrPostDlssSourceGpu
+
+ 5/10 Test #207: NrPostDlssSourceGpu .........................   Passed    2.02 sec
+
+      Start 208: NrPostDlssSourceReentryGpu
+
+ 6/10 Test #208: NrPostDlssSourceReentryGpu ..................   Passed    2.28 sec
+
+      Start 209: NrPostDlssReaderGpu
+
+ 7/10 Test #209: NrPostDlssReaderGpu .........................   Passed    4.10 sec
+
+      Start 210: NrPostDlssReaderGpu-missing-reader-fence
+
+ 8/10 Test #210: NrPostDlssReaderGpu-missing-reader-fence ....   Passed    4.18 sec
+
+      Start 211: NrPostDlssReaderGpu-reader-state-error
+
+ 9/10 Test #211: NrPostDlssReaderGpu-reader-state-error ......   Passed    4.30 sec
+
+      Start 212: NrPostDlssReaderGpu-reader-callback-error
+
+10/10 Test #212: NrPostDlssReaderGpu-reader-callback-error ...   Passed    4.13 sec
+
+
+
+100% tests passed, 0 tests failed out of 10
+
+
+
+Label Time Summary:
+
+GPU    =  21.01 sec*proc (6 tests)
+
+
+
+Total Test time (real) =  22.55 sec

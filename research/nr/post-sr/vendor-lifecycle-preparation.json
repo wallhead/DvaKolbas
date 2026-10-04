@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "qualification": "PENDING_FOREGROUND_RUN",
+  "sourceBaseRevision": "c556efa0e93e74d8e467b62b6316dca28836a12d",
+  "sourceClean": false,
+  "productChanged": false,
+  "skyrimTested": false,
+  "milestonesComplete": 5,
+  "milestonesTotal": 8,
+  "task6": "partial",
+  "exeSha256": "fc9c04bbbb8cc45c594f17f7b733611bd78838958d84048b0c9bf566aa4e0682",
+  "observedInputsSha256": {
+    "tests/nr-postsr/PostDlssSourceGpuTests.cpp": "f8109da3d25d3b20c2254cf7f5c8f1f79bfa2e21017600be416a28d401d13a1c",
+    "tests/nr-postsr/QueuedPresentationGate.h": "7e50a262715332ea64a931a63951eee0dacd9da3a1f5506e23a89418b4266379",
+    "tests/nr-postsr/TaggedSourceReader.h": "0d25acf0ab1bbfc39e4407ceecd1f8a28ec954b2ad6c80c422a2a8f1b8d9559e",
+    "tests/nr-postsr/GpuProbeLifetime.h": "72787f13c31ed384ba0aaf57193b28e3ae9c7e3fb17f64337a0fee99410c363d",
+    "tests/nr-postsr/VendorPresentation.h": "3b19b77a115a6c38ec67372a27dc67367b820840e901e5271b6154369427a5b5",
+    "tests/nr-postsr/CMakeLists.txt": "a41e9cefc62a504342cba79056afc9e6a28e7408bfa1783ad95f1985237cd7a4",
+    "tests/nr-postsr/dlss/PCH.h": "0281b2692fafaf471b96771fca209e71fdb21f38f0eca2fc4ae3882a22f502da",
+    "tests/nr-postsr/dlss/PerformanceFacade.cpp": "2bd6264ab92ecbbf76e30457f7f3e42921d0680be4d6c6ad69fa9922cb2f5b27",
+    "src/DLSSBackend.cpp": "13b7ccedbb6512afe84435a1e58ee2ed4bc75f5ad69a67864dd392a20e260d9e",
+    "src/DLSSBackend.h": "de9941e8f37e0cc4a78a8d97e3f452a3f668f5a980d9e5c0acf12514ac82a827",
+    "src/FrameGen/SourceNvidiaFrameEvaluator.h": "994f58a60c174c22ec140fd8313751baee3e00a004984d2ca23919ab2f66fc09",
+    "src/FrameGen/SourceDLSSGSession.cpp": "e189c7b84869118f1a6099cf340ea678a9fdc0464a904b2ac000a88a5891fbc4",
+    "src/FrameGen/SourceDLSSGSession.h": "ed31f6607ab71523f1193a5f88c891242da0486be62c983998edfd80319e5c9b",
+    "src/FrameGen/SourceDLSSGInterop.cpp": "9220f5c43aaaa538d4f01b5994c6a1852613e8a51ce14b6c6c41c3ad663a59a2",
+    "src/FrameGen/SourceDLSSGInterop.h": "73ab9c342fdae318a7e0e966ebbeee6f8e4e86c7ed06514c4f582c19b4ac9df8",
+    "src/NeuralRendering/PostUpscale.cpp": "28cda1ee67f8f652382fcd95ed0202d66591ecd4b63d0fc611fa686716c1209d",
+    "src/NeuralRendering/PostUpscale.h": "951342ca9206582b9be0a523594d19265cdaa12bf0e86f6479d762f684c5095a",
+    "src/NeuralRendering/BeforeUpscale.cpp": "3c9a9e1a6f1f18580f7137378171f01489bab0f0c521e3c8cbae6551171f4752",
+    "src/NeuralRendering/BeforeUpscale.h": "3c8649680c6cce356fc7eac43b63e110e54532608be0a11166188b2298500f3e",
+    "src/NeuralRendering/Stage.cpp": "12d9b1ce979ca04fc91415d32246495337f770f8cee44f487ef279030ff8a968",
+    "src/NeuralRendering/RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+    "src/NeuralRendering/RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+    "src/NeuralRendering/RuntimeCatalog.cpp": "6b9fef8480a6023d18b0b4452f311413c08675260a8976eed1336e1456180d7e",
+    "src/Graphics/D3D11D3D12Interop.cpp": "f76013117eac1b4eb8cf0f940cddb5f9d67f4b0575844f0b2f872fbac9590de5",
+    "tools/nr/Run-Nvidia-NR-FG-Visible.ps1": "a92e31b86d1ac87042c4181b9d145985e52813d9de8c73e7d33bc0c0559a9cbb",
+    "tools/nr/Start-Nvidia-NR-FG-Lifecycle.cmd": "fb0b9facb303f4fa68d865b0266baacf2f93e6231449cea8974cbe1191d405d4"
+  },
+  "stagedStreamlineSha256": {
+    "nvngx_dlssg.dll": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b",
+    "sl.common.dll": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d",
+    "sl.dlss_g.dll": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+    "sl.interposer.dll": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570",
+    "sl.pcl.dll": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d",
+    "sl.reflex.dll": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3"
+  },
+  "protectedSha256": {
+    "dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+    "mo2": "78a8bb8a74e888d053331c28ac94d4e7f4d5b942f996b56897fdfe7c0ac0fae1",
+    "modlist": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2"
+  },
+  "requirements": {
+    "genuinelyPendingUnmodifiedVendorFences": 8,
+    "nextSourceSettingsReuse": 6,
+    "featureRetirementReentry": 2,
+    "sources": 480,
+    "dlAA": 480,
+    "nr": 476,
+    "warmupPresents": 600,
+    "totalPresents": 1080,
+    "foreground": "required throughout both cases",
+    "negativeControl": "omitted gate case must exit 1 with exactly one missing boundary failure",
+    "positive": "all pending/readback/count/status/assertion oracles must pass"
+  },
+  "regressions": {
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 23.33,
+    "gpuTests": 6
+  },
+  "launcherParseErrors": 0,
+  "attempts": [
+    {
+      "path": ".superpowers\\sdd\\2026-10-04-nr-post-sr\\vendor-lifecycle-visible.txt",
+      "sha256": "a604cee11671583ae06fc4586289c1ec127ecb7034b29137085c7cd0208d74b9",
+      "exitCode": 77,
+      "qualification": "NOT_QUALIFIED: lost foreground",
+      "lastReportedSource": null,
+      "reportedX2Samples": 0,
+      "completeLifecycle": false
+    },
+    {
+      "path": "out\\research\\nr\\post-sr\\nvidia-vendor-lifecycle-control-20261004-220627.log",
+      "sha256": "4802b4c94d909bace270c0af5f2f08044f84a328a7ea48dc6772c7d890bb5ecc",
+      "exitCode": 77,
+      "qualification": "NOT_QUALIFIED: lost foreground",
+      "lastReportedSource": 63,
+      "reportedX2Samples": 40,
+      "completeLifecycle": false
+    },
+    {
+      "path": "out\\research\\nr\\post-sr\\nvidia-vendor-lifecycle-control-20261004-220934.log",
+      "sha256": "833674fefbdffd350bdf232ef92a899fbd7b6edef014d46d1bf2601c5a699b2a",
+      "exitCode": 1,
+      "qualification": "FIXTURE_FAILURE: reusing single-initialization preparation during reentry",
+      "completeLifecycle": false
+    },
+    {
+      "path": "out\\research\\nr\\post-sr\\nvidia-vendor-lifecycle-control-20261004-221651.log",
+      "sha256": "5f100d592c4824d51f9d7107e6a669ef47011d064db9ac514dfda246e8d0221f",
+      "exitCode": 77,
+      "qualification": "NOT_QUALIFIED: lost foreground",
+      "lastReportedSource": 257,
+      "completeLifecycle": false,
+      "ownerReport": "Scene closed itself; owner did not switch back while it was open"
+    }
+  ],
+  "limits": [
+    "No actual vendor pending-reader pass claimed yet",
+    "No generated pixel readback or cadence qualification",
+    "No complete NvidiaHost/End GUI dispatch",
+    "Only pinned RTX40 environment",
+    "Process-owned modules/NGX cleanup not fully qualified"
+  ],
+  "reentryFixtureFix": {
+    "productionChanged": false,
+    "cause": "preparation instances initialize once; retirement does not clear that guard",
+    "fix": "fresh preparation after successful retirement",
+    "negative": {
+      "mode": "--reentry-reuse-retired",
+      "exitCode": 1,
+      "failures": 1
+    },
+    "positive": {
+      "mode": "--reentry",
+      "count": 2,
+      "sources": 128,
+      "dlaa": 128,
+      "nr": 126,
+      "exactTagBytes": 35979264,
+      "alphaExact": 8994816,
+      "failures": 0
+    },
+    "cleanup": "skip duplicate Stop only when Session is already Stopped; still signal/drain before retirement; faults retain quarantine"
+  },
+  "supersededBy": "nvidia-vendor-lifecycle.json; subsequent diagnostic build passed both complete cases"
+}
