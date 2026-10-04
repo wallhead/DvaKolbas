@@ -1,12 +1,23 @@
 #pragma once
 #include "NvidiaUpscalerConfiguration.h"
 #include "RenderPipeline.h"
+#include <d3d11.h>
 class NvidiaHost {
 public:
     static NvidiaHost* GetSingleton(){static NvidiaHost v;return &v;}
     bool startup{true},dedicatedUI{true},available{true},terminal{},fsr{},fsrFg{};
-    unsigned requests{};
-    TheosRenderPipeline::Upscaler::Configuration configuration;
+    struct RecordedConfiguration: TheosRenderPipeline::Upscaler::Configuration {
+        unsigned requests{};
+        void Request(TheosRenderPipeline::Upscaler::Creation v){++requests;Configuration::Request(v);}
+    } sourceUpscalerSettings_;
+    RecordedConfiguration& configuration{sourceUpscalerSettings_};
+    unsigned& requests{sourceUpscalerSettings_.requests};
+    struct UiPass {bool active{},early{};bool Active()const{return active;}bool HasEarlyEvaluation()const{return early;}} nativeUIPass_;
+    struct Texture {void GetDesc(D3D11_TEXTURE2D_DESC* d){*d={};d->Format=DXGI_FORMAT_R8G8B8A8_UNORM;}} input;
+    struct Targets {Texture* input{};Texture* UpscaleInput(){return input;}} gameTargets_{&input};
+    UINT renderWidth_{320},renderHeight_{180},outputWidth_{320},outputHeight_{180};
+    bool frameGenerationStateKnown_{true},resetNextEvaluation_{};
+    HRESULT failure{S_OK};unsigned lifecycleFailures{};
     NvidiaHost(){configuration.Initialize({DLAA,4,11,false,true});configuration.BeginSubmission();configuration.Completed(true);}
     bool StartupConfigured()const{return startup;}
     bool DedicatedUITextureMode()const{return dedicatedUI;}
@@ -15,11 +26,10 @@ public:
     bool FsrActive()const{return fsr;}
     bool FsrFgActive()const{return fsrFg;}
     const auto& SourceUpscalerSettings()const{return configuration;}
-    // Host boundary facade: preserves the production requested/effective contract.
-    // No GPU retirement or presenter replacement is simulated by this function.
-    void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request){
-        ++requests;configuration.Request(request);const auto& effective=configuration.Effective();
-        auto& p=*RenderPipeline::GetSingleton();p.mUpscaleType=effective.mode;p.mQualityLevel=effective.quality;
-        p.mDLSSPreset=effective.preset;p.mAutoExposure=effective.autoExposure;p.mSharpening=effective.sharpening;p.mFsrSettings=effective.fsr;
-    }
+    HRESULT FailureResult()const{return failure;}
+    void FailLifecycle(HRESULT value,const char*){failure=value;++lifecycleFailures;}
+    // All three implementations are copied unchanged from production.
+    void AdoptEffectiveSourceUpscalerSettings() const;
+    void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request);
+    void ApplySourceUpscalerSettingsAfterPresent();
 };

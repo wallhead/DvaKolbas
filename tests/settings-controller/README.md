@@ -3,8 +3,11 @@
 `RendererSettingsController.cpp` is copied byte for byte to the build directory
 so its quoted owner includes resolve to the explicit facades here. The controller,
 draft validation, source generation requests and requested/effective upscaler
-configuration use production code. Game owners, persistence, weather service and
-the vendor backend are recording facades. No product conditional is introduced.
+configuration use production code. `SourceUpscalerConfiguration.cpp` is also
+copied unchanged: request adoption and deferred host reconfiguration are actual
+production methods. Other game owners, texture descriptors, persistence, weather
+service and vendor operations are recording facades. No product conditional is
+introduced.
 
 `RendererSettingsController` checks session Apply, Save, failed persistence,
 invalid drafts, NR/FG toggles, provider restart staging, rejected scaled After,
@@ -24,8 +27,21 @@ counts retain independent checks.
 the underlying source tests still pass, but the five-Apply coverage check fails.
 The ordinary host executable rejects this flag.
 
-This does **not** exercise mouse dispatch in the End menu, deferred production
-NvidiaHost reconfiguration, opaque vendor FG readers, live presenter replacement,
+`SourceUpscalerDeferred` checks UI/early-source deferral, retire/create/resume
+ordering, coherent effective settings/history, three terminal failure points,
+no retry, restart staging and FSR dispatch-only sharpness updates. Its
+`--omit-deferred` negative fails the actual orchestration oracle.
+
+`SourceUpscalerDeferredGpu` supplies a genuine pending GPU copy to the retirement
+boundary. The unchanged deferred host waits for its completion before feature
+creation checks all 4,096 old-source bytes. UI deferral leaves that copy pending.
+`--omit-wait` deliberately fails the completion/pixel oracle. Submitted resources
+are retained by the existing single-shot probe guard until independent completion
+is confirmed; uncertainty quarantines the entire capsule. This is an independent
+GPU reader, not an opaque NVIDIA worker or actual vendor feature recreation.
+
+This does **not** exercise mouse dispatch in the End menu, complete NvidiaHost
+Present dispatch, opaque vendor FG readers, live presenter replacement,
 generated pixels or Skyrim. The GPU fence covers actual NR preparation/delivery.
 Provider/presenter changes remain restart-staged; live NR toggles and placement
 remain separate requirements.

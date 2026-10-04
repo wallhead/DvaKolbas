@@ -242,6 +242,10 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         tests/settings-controller/facades/FrameGen/NvidiaHost.h tests/settings-controller/facades/FrameGen/SourceDLSSGBackend.h
         tests/settings-controller/facades/PerformanceTuning.h tests/settings-controller/facades/CommunityShaderIntegration.h
         tests/settings-controller/facades/WeatherAppearanceRuntime.h
+        src/FrameGen/SourceUpscalerConfiguration.cpp
+        tests/settings-controller/DeferredUpscalerTests.cpp tests/settings-controller/DeferredUpscalerGpuTests.cpp
+        tests/settings-controller/facades/NvidiaHost.h tests/settings-controller/facades/SourceDLSSGBackend.h
+        tests/settings-controller/facades/DLSSBackend.h
         src/OverlayNeuralPanel.cpp src/OverlayNeuralTab.h src/OverlayFrameView.cpp src/OverlayUI.cpp
         CMakeLists.txt src/HookSafety.h cmake/NeuralRuntime.cmake tests/nr-runtime/CMakeLists.txt)
     if(TRP_NR_PERF_WITH_FSR)

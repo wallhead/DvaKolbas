@@ -1,0 +1,39 @@
+CPU omit-deferred negative: exit 1, FAIL actual deferred host must retire, create and resume in order
+GPU omit-wait negative: exit 1, FAIL actual deferred feature creation follows completion and exact old-source pixels
+DEFERRED_GPU pending=1 exactBytes=4096 creates=1 retired=1 vendorBoundary=facade
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+      Start  24: InteropRetirement
+ 1/13 Test  #24: InteropRetirement ................   Passed    0.49 sec
+      Start  36: RendererSettingsActions
+ 2/13 Test  #36: RendererSettingsActions ..........   Passed    0.01 sec
+      Start  42: SourceDLSSGSession
+ 3/13 Test  #42: SourceDLSSGSession ...............   Passed    0.01 sec
+      Start  49: SourceDLSSGInteropFence
+ 4/13 Test  #49: SourceDLSSGInteropFence ..........   Passed    1.02 sec
+      Start 142: RendererSettingsController
+ 5/13 Test #142: RendererSettingsController .......   Passed    0.02 sec
+      Start 143: SourceUpscalerDeferred
+ 6/13 Test #143: SourceUpscalerDeferred ...........   Passed    0.02 sec
+      Start 144: SourceUpscalerDeferredGpu
+ 7/13 Test #144: SourceUpscalerDeferredGpu ........   Passed    0.69 sec
+      Start 179: NrPostSrHost-live-settings
+ 8/13 Test #179: NrPostSrHost-live-settings .......   Passed    4.67 sec
+      Start 184: NrReShadePostSr-live-settings
+ 9/13 Test #184: NrReShadePostSr-live-settings ....   Passed    6.99 sec
+      Start 190: NrControllerApplyGpu
+10/13 Test #190: NrControllerApplyGpu .............   Passed    4.38 sec
+      Start 191: NrControllerApplyReShadeGpu
+11/13 Test #191: NrControllerApplyReShadeGpu ......   Passed    6.89 sec
+      Start 202: NrPostSrContract
+12/13 Test #202: NrPostSrContract .................   Passed    0.01 sec
+      Start 204: NrProbeLifetime
+13/13 Test #204: NrProbeLifetime ..................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 13
+
+Label Time Summary:
+GPU        =  23.62 sec*proc (5 tests)
+ReShade    =  13.88 sec*proc (2 tests)
+
+Total Test time (real) =  25.25 sec
