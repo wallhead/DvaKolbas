@@ -1,5 +1,6 @@
 #include "NeuralRendering/BeforeHost.h"
 #include "nr-runtime/GpuProbeGuard.h"
+#include "nr-postsr/GpuProbeLifetime.h"
 #include <dxgi1_6.h>
 #include <cstdio>
 #include <vector>
@@ -12,10 +13,12 @@ using namespace TheosRenderPipeline::NeuralRendering;
 using Microsoft::WRL::ComPtr;
 namespace {int failures{};void Check(bool v,const char* name){std::printf("%s %s\n",v?"PASS":"FAIL",name);failures+=!v;}void Need(HRESULT h){if(FAILED(h))throw h;}}
 int wmain(int argc,wchar_t** argv){try{
-    bool wrapped=false,sdr=false,post=false;
-    if(argc<3||argc>7||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
+    bool wrapped=false,sdr=false,post=false,liveSettings=false;
+    if(argc<3||argc>8||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
     for(int i=4;i<argc;++i){if(std::wstring_view(argv[i])==L"--require-wrapped")wrapped=true;
-        else if(std::wstring_view(argv[i])==L"--sdr-bytes")sdr=true;else if(std::wstring_view(argv[i])==L"--post-sr")post=true;else return 1;}
+        else if(std::wstring_view(argv[i])==L"--sdr-bytes")sdr=true;else if(std::wstring_view(argv[i])==L"--post-sr")post=true;
+        else if(std::wstring_view(argv[i])==L"--live-settings")liveSettings=true;else return 1;}
+    if(liveSettings&&(!post||!sdr))return 1;
     if(NrRuntimeResearch::GameRunningOrUnknown())return 1;
     BeforeHost prepared;SettingsSnapshot s;s.enabled=false;s.revision=1;
     Check(bool(prepared.Evaluate({},s)),"DisabledPreparedNrRequiresNoColorDecoder");
@@ -57,7 +60,12 @@ int wmain(int argc,wchar_t** argv){try{
     std::vector<unsigned short> velocities(320*180*2);context->UpdateSubresource(motion.Get(),0,nullptr,velocities.data(),320*4,0);
     BeforeInput input;input.context=context;input.color=color;input.depth=depth;input.motion=motion;input.colorExtent=input.guideExtent={320,180};input.epoch=input.guideEpoch=1;input.sourceId=input.guideSourceId=1;input.presentationTime=1;input.motionScaleX=320;input.motionScaleY=180;
     uint64_t alpha{},changed{},bypassPixels{};std::vector<unsigned char> pixels(320*180*4);
-    uint64_t expectedAlpha{},expectedNr{};
+    struct Sources {ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context;ComPtr<ID3D12Device> presenter;std::vector<ComPtr<ID3D11Texture2D>> textures;};
+    auto sources=std::make_unique<Sources>();sources->device=device;sources->context=context;sources->presenter=c.device;
+    sources->textures={color,depth,motion,readback};auto* retainedSources=sources.get();
+    GpuProbeLifetime<Sources> lifetime(std::move(sources),[&]{return bool(prepared.Retire());});
+    uint64_t expectedAlpha{},expectedNr{},expectedBypass{},gateSerial{};unsigned pendingSettings{};
+    SettingsSnapshot previousSettings=s;
     for(UINT frame=0;frame<240;++frame){
         if(frame==120){
             context->OMSetRenderTargets(0,nullptr,nullptr);width=160;height=90;
@@ -69,9 +77,10 @@ int wmain(int argc,wchar_t** argv){try{
             context->ClearDepthStencilView(dsv.Get(),D3D11_CLEAR_DEPTH,.5f,0);
             velocities.assign(width*height*2,0);context->UpdateSubresource(motion.Get(),0,nullptr,velocities.data(),width*4,0);
             input.color=color;input.depth=depth;input.motion=motion;input.colorExtent=input.guideExtent={width,height};input.motionScaleX=float(width);input.motionScaleY=float(height);
+            for(const auto& value:{color,depth,motion,readback})retainedSources->textures.push_back(value);
             pixels.resize(width*height*4);
         }
-        expectedAlpha+=uint64_t(width)*height;expectedNr+=frame!=80 && !(post&&frame==40);
+        expectedAlpha+=uint64_t(width)*height;
 for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;pixels[p]=((x/8+y/8+frame)%2)?48:208;pixels[p+1]=(x+frame)%256;pixels[p+2]=(y+frame)%256;pixels[p+3]=(x+y+frame)%256;}
         context->UpdateSubresource(color.Get(),0,nullptr,pixels.data(),width*4,0);
         input.sourceId=input.guideSourceId=frame+1;input.previousSourceId=frame;input.presentationTime=double(frame+1)/60.;s.enabled=frame!=80;s.revision=frame<80?1:frame==80?2:3;
@@ -80,6 +89,17 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         PreparedFsrInput lease;
         s.placement=post && (frame<119 || frame>=160)?Placement::After:Placement::Before;
         if(post && frame>=119)s.revision=frame<160?4:5;
+        const bool changedBoundary=liveSettings&&(frame==19||frame==59||frame==99||frame==119||frame==160);
+        if(liveSettings){
+            s.enabled&=frame!=59;s.tuning.localToneStrength=frame>=19?.65f:1.f;s.tuning.style=frame>=99?1:0;
+            const bool changed=s.enabled!=previousSettings.enabled||s.placement!=previousSettings.placement||s.tuning!=previousSettings.tuning;
+            s.revision=previousSettings.revision+unsigned(changed);previousSettings=s;
+            // NvidiaHost observes snapshot changes before SR and passes the
+            // reset into the completed source; revision alone is not a reset.
+            input.reset=changed;
+        }
+        const bool expectedEvaluation=s.enabled&&!(post&&frame==40);
+        expectedNr+=expectedEvaluation;if(!expectedEvaluation)expectedBypass+=uint64_t(width)*height;
         PostSrInput completed;completed.resources=input;completed.resources.colorDomain=ColorDomain::SdrBytes;
         auto& meta=completed.source;meta.backend=TheosRenderPipeline::Upscaling::BackendKind::Fsr;
         meta.outcome=TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal;
@@ -91,32 +111,45 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         if(post && frame==40){meta.render=meta.guides={width/2,height/2};}
         // Hold the real D3D11 preparation/encoder chain after feature creation.
         // The next placement change must wait for that genuine source reader.
-        if(post && frame==118)Need(context4->Wait(encoderGate11.Get(),1));
+        const bool gateSource=post&&(liveSettings?(frame==18||frame==58||frame==98||frame==118||frame==159):frame==118);
+        if(gateSource){
+            ++gateSerial;
+            // Start the release before submission so exceptional unwind cannot
+            // leave a graphics queue waiting for an unstarted CPU helper.
+            releaseEncoder=std::jthread([fence=encoderGate,value=gateSerial]{std::this_thread::sleep_for(std::chrono::milliseconds(500));fence->Signal(value);});
+            Need(context4->Wait(encoderGate11.Get(),gateSerial));
+        }
+        if(changedBoundary)Check(encoderDone->GetCompletedValue()<gateSerial,"LiveSettingsBeginWithActualSourceWorkPending");
         const auto switchStart=std::chrono::steady_clock::now();
         auto result=s.placement==Placement::After?prepared.EvaluatePost(completed,s):prepared.Evaluate(input,s,sdr?&lease:nullptr);
-        if(post && frame==119)Check(std::chrono::steady_clock::now()-switchStart>=std::chrono::milliseconds(100),"PlacementSwitchWaitsForActualPendingEncoderReader");
+        if((post&&frame==119)||(liveSettings&&(frame==59||frame==99||frame==160))){
+            Check(std::chrono::steady_clock::now()-switchStart>=std::chrono::milliseconds(100),"DestructiveSettingsChangeWaitsForActualPendingEncoderReader");
+            Check(encoderDone->GetCompletedValue()>=gateSerial,"OldSourceActuallyCompletedBeforeStyleDisableOrPlacementChange");
+        }
         if(!result){std::printf("frame %u %s\n",frame,result.error().message.c_str());return 1;}
-        Check(result->evaluated==(s.enabled && !(post&&frame==40)),"OneNrEvaluationOnlyWhenEnabled");
+        Check(result->evaluated==expectedEvaluation,"OneNrEvaluationOnlyWhenEnabled");
         if(sdr)Check(!lease.Valid(),"SdrHostReturnsEncodedColorWithoutLinearLease");
-        if(frame==0 || frame==81 || frame==120 || (post&&(frame==41||frame==119||frame==160))) Check(result->effectiveReset,"FirstReenabledAndResizedSourceResetHistory");
+        if(frame==0 || frame==81 || frame==120 || (post&&(frame==41||frame==119||frame==160)) || (liveSettings&&(frame==19||frame==60||frame==99))) Check(result->effectiveReset,"FirstReenabledAndResizedSourceResetHistory");
         ComPtr<ID3D11RenderTargetView> restored;context->OMGetRenderTargets(1,&restored,nullptr);if(restored.Get()!=rtv.Get())return 1;
-        if(post && frame==118){
-            Need(context4->Signal(encoderDone11.Get(),1));context->Flush();
-            Check(encoderDone->GetCompletedValue()<1,"ActualPostEncoderReaderIsStillPendingAtSwitchBoundary");
-            releaseEncoder=std::jthread([fence=encoderGate]{std::this_thread::sleep_for(std::chrono::milliseconds(300));fence->Signal(1);});
+        if(gateSource){
+            Need(context4->Signal(encoderDone11.Get(),gateSerial));context->Flush();
+            Check(encoderDone->GetCompletedValue()<gateSerial,"ActualPostEncoderReaderIsStillPendingAtSwitchBoundary");
             // Reading here would drain the pending source and invalidate this case.
             expectedAlpha-=uint64_t(width)*height;continue;
         }
         context->OMSetRenderTargets(0,nullptr,nullptr);context->CopyResource(readback.Get(),color.Get());D3D11_MAPPED_SUBRESOURCE m{};Need(context->Map(readback.Get(),0,D3D11_MAP_READ,0,&m));
         for(UINT y=0;y<height;++y){const auto* row=static_cast<const unsigned char*>(m.pData)+y*m.RowPitch;for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;alpha+=row[x*4+3]==pixels[p+3];if(row[x*4]!=pixels[p]||row[x*4+1]!=pixels[p+1]||row[x*4+2]!=pixels[p+2]){if(!s.enabled || (post&&frame==40))throw HRESULT(E_FAIL);++changed;}}}
         context->Unmap(readback.Get(),0);
+        if(changedBoundary){Check(encoderDone->GetCompletedValue()>=gateSerial,"ChangedSourceReadbackFollowsActualOldSourceCompletion");++pendingSettings;
+            std::printf("LIVE_SETTINGS boundary=%u revision=%llu enabled=%u style=%u tone=%.2f placement=%s completed=%llu\n",frame,(unsigned long long)s.revision,s.enabled,unsigned(s.tuning.style),s.tuning.localToneStrength,s.placement==Placement::After?"After":"Before",(unsigned long long)encoderDone->GetCompletedValue());}
         if(!s.enabled || (post&&frame==40))bypassPixels+=uint64_t(width)*height;
     }
-    Check(bypassPixels==320ull*180*(post?2:1),"OneSourceBypassedWithoutNr");
+    if(liveSettings)Check(pendingSettings==5,"EveryScheduledLiveSettingsChangeHasGenuinePendingSourceWork");
+    Check(bypassPixels==expectedBypass,"ScheduledSourcesBypassedWithoutNr");
     Check(alpha==expectedAlpha,"AllUnormAlphaValuesSurviveDecodeNrEncode");Check(changed>320*180,"NrModifiedRgbDeliveredToOriginalSdrColor");
     Check(prepared.Resets()>=(post?6u:3u),"PlacementAndUnqualifiedSourceResetHistory");
     Check(prepared.Recorded()==expectedNr,"PreparedNrOffOnUsesOnePassPerEnabledSource");
-    Check(bool(prepared.Retire()) && !prepared.Terminal(),"PreparedReadersAndRuntimeRetire");
+    Check(lifetime.Retire() && !prepared.Terminal(),"PreparedReadersAndRuntimeRetire");
     if(argc>=4){std::ofstream report{std::filesystem::path(argv[3])};
         report << "{\n\"schema\":1,\"scope\":\"synthetic native SDR real-source host; game quality pending\",\n\"result\":\"" << (failures?"FAIL":"PASS")
             << "\",\"sourceRevision\":\"" << NrRuntimeResearch::buildRevision << "\",\"sourceClean\":" << (NrRuntimeResearch::buildClean?"true":"false")
@@ -125,6 +158,7 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             << ",\"frames\":240,\"nrEvaluations\":" << expectedNr << ",\"resizes\":1,\"sourceAlphaPixels\":" << alpha
             << ",\"wrappedDeviceRequired\":" << (wrapped?"true":"false")
             << ",\"sdrBytesTrial\":" << (sdr?"true":"false")
+            << ",\"liveSettings\":" << (liveSettings?"true":"false") << ",\"pendingSettingsBoundaries\":" << pendingSettings
             << ",\"changedRgbPixels\":" << changed << ",\"bypassedSourcePixels\":" << bypassPixels
             << ",\"runtimeSha256\":\"" << RuntimeCatalog()[1].sha256 << "\",\"driverCoreSha256\":\"" << QualifiedProbeDriverCore().sha256
             << "\",\"retired\":true,\n\"compiledSourcesSha256\":" << NrRuntimeResearch::compiledSourcesJson << "\n}\n";

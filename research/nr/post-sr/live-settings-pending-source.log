@@ -1,0 +1,56 @@
+=== live-settings-red.txt ===
+FAIL EveryScheduledLiveSettingsChangeHasGenuinePendingSourceWork
+BEFORE_HOST_NR frames=240 resize=1 alpha=8582400 changed=8467011
+0% tests passed, 1 tests failed out of 1
+Total Test time (real) =   2.16 sec
+=== live-settings-caller-reset-mismatch.txt ===
+FAIL FirstReenabledAndResizedSourceResetHistory
+LIVE_SETTINGS boundary=19 revision=3 enabled=1 style=0 tone=0.65 placement=After completed=1
+LIVE_SETTINGS boundary=59 revision=4 enabled=0 style=0 tone=0.65 placement=After completed=2
+LIVE_SETTINGS boundary=99 revision=8 enabled=1 style=1 tone=0.65 placement=After completed=3
+LIVE_SETTINGS boundary=119 revision=9 enabled=1 style=1 tone=0.65 placement=Before completed=4
+LIVE_SETTINGS boundary=160 revision=10 enabled=1 style=1 tone=0.65 placement=After completed=5
+BEFORE_HOST_NR frames=240 resize=1 alpha=8395200 changed=8222348
+0% tests passed, 1 tests failed out of 1
+Total Test time (real) =   4.44 sec
+=== live-settings-green.txt ===
+176: LIVE_SETTINGS boundary=19 revision=3 enabled=1 style=0 tone=0.65 placement=After completed=1
+176: LIVE_SETTINGS boundary=59 revision=4 enabled=0 style=0 tone=0.65 placement=After completed=2
+176: LIVE_SETTINGS boundary=99 revision=8 enabled=1 style=1 tone=0.65 placement=After completed=3
+176: LIVE_SETTINGS boundary=119 revision=9 enabled=1 style=1 tone=0.65 placement=Before completed=4
+176: LIVE_SETTINGS boundary=160 revision=10 enabled=1 style=1 tone=0.65 placement=After completed=5
+176: BEFORE_HOST_NR frames=240 resize=1 alpha=8395200 changed=8222348
+1/2 Test #176: NrPostSrHost-live-settings .......   Passed    4.34 sec
+181: NR_DEVICE host=0000021CAB6BA030 fenceOwner=0000021CA928AF40 wrapped=1
+181: NR_DEVICE host=0000021B9E4A11F0 fenceOwner=0000021B9C0C5C20 wrapped=1
+181: LIVE_SETTINGS boundary=19 revision=3 enabled=1 style=0 tone=0.65 placement=After completed=1
+181: LIVE_SETTINGS boundary=59 revision=4 enabled=0 style=0 tone=0.65 placement=After completed=2
+181: LIVE_SETTINGS boundary=99 revision=8 enabled=1 style=1 tone=0.65 placement=After completed=3
+181: LIVE_SETTINGS boundary=119 revision=9 enabled=1 style=1 tone=0.65 placement=Before completed=4
+181: LIVE_SETTINGS boundary=160 revision=10 enabled=1 style=1 tone=0.65 placement=After completed=5
+181: BEFORE_HOST_NR frames=240 resize=1 alpha=8395200 changed=8222348
+2/2 Test #181: NrReShadePostSr-live-settings ....   Passed    6.96 sec
+The following tests passed:
+100% tests passed, 0 tests failed out of 2
+Total Test time (real) =  11.33 sec
+=== live-settings-regressions.txt ===
+ 1/18 Test  #33: OverlayNeuralTab .................   Passed    0.01 sec
+ 2/18 Test  #36: RendererSettingsActions ..........   Passed    0.01 sec
+ 3/18 Test #138: NeuralPassSettings ...............   Passed    0.01 sec
+ 4/18 Test #150: NrHistory ........................   Passed    0.01 sec
+ 5/18 Test #151: NrStartupSettings ................   Passed    0.01 sec
+ 6/18 Test #152: NrSourcePolicy ...................   Passed    0.01 sec
+ 7/18 Test #171: NrPreparedBefore .................   Passed    1.40 sec
+ 8/18 Test #172: NrPreparedBefore-sdr-bytes .......   Passed    1.33 sec
+ 9/18 Test #173: NrBeforeHostFrames ...............   Passed    1.60 sec
+10/18 Test #174: NrBeforeHostFrames-sdr-bytes .....   Passed    1.56 sec
+11/18 Test #175: NrPostSrHost-switch ..............   Passed    2.25 sec
+12/18 Test #176: NrPostSrHost-live-settings .......   Passed    4.32 sec
+13/18 Test #177: NrBeforeHost .....................   Passed    0.22 sec
+14/18 Test #178: NrReShadeBefore ..................   Passed    9.22 sec
+15/18 Test #179: NrReShadeSdrBefore ...............   Passed    4.14 sec
+16/18 Test #180: NrReShadePostSr-switch ...........   Passed    4.89 sec
+17/18 Test #181: NrReShadePostSr-live-settings ....   Passed    6.91 sec
+18/18 Test #199: NrProbeLifetime ..................   Passed    0.01 sec
+100% tests passed, 0 tests failed out of 18
+Total Test time (real) =  37.91 sec

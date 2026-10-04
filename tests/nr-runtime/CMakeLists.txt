@@ -154,6 +154,8 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         set_tests_properties(NrBeforeHostFrames-sdr-bytes PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrPostSrHost-switch COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/post-sr-host.json" --sdr-bytes --post-sr)
         set_tests_properties(NrPostSrHost-switch PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+        add_test(NAME NrPostSrHost-live-settings COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/post-sr-live-settings.json" --sdr-bytes --post-sr --live-settings)
+        set_tests_properties(NrPostSrHost-live-settings PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrBeforeHost COMMAND TRPNrBeforeHostTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrBeforeHost PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         if(TRP_NR_RESHADE_RUNTIME)
@@ -178,6 +180,12 @@ if(TRP_NR_NGX_INCLUDE_DIR)
                 --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
                 --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-post-sr" --sdr-bytes --post-sr)
             set_tests_properties(NrReShadePostSr-switch PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
+            add_test(NAME NrReShadePostSr-live-settings COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+                --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>" --host-exe "$<TARGET_FILE:TRPNrBeforeHostFramesTests>"
+                --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+                --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-post-sr-live-settings" --sdr-bytes --post-sr --live-settings)
+            set_tests_properties(NrReShadePostSr-live-settings PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
         endif()
     endif()
     add_executable(TRPNrStageTests ../NrStageTests.cpp)

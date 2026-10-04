@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "baseRevision": "381fc89b79be91a437514df58e948584bdcac54f",
+  "fixtureSourceClean": false,
+  "scope": "Actual retained NR source owner settings changes with genuine pending D3D11 preparation/delivery work; native and actual ReShade wrapper",
+  "productionCodeChanged": false,
+  "installedFilesChanged": false,
+  "installedProductRevision": "dc6a9abe3630",
+  "gameLaunchedByAgent": false,
+  "installedSha256": {
+    "TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d"
+  },
+  "sourceSha256": {
+    "tests/NrBeforeHostFramesTests.cpp": "89161c72e53cd12d86c9c67c8c2c9cb4aa7645c1a05be59b4d2de7c3ea49f96b",
+    "tests/nr-runtime/CMakeLists.txt": "0e1c9e9594611973417f26e09e7b20a426330905353c3c2509cddcad17cd1842",
+    "tests/nr-runtime/run_reshade_before.py": "c0564fe831a5a03fac90782ef19a7f51e7e8b7f6b2b72c814a960bd2f2f38e7a",
+    "tests/nr-postsr/GpuProbeLifetime.h": "72787f13c31ed384ba0aaf57193b28e3ae9c7e3fb17f64337a0fee99410c363d",
+    "src/NeuralRendering/BeforeHost.cpp": "5b7dbb62ba75986a845061b00d2172607bbbc8a17eaba7006d3bbaa90786c17a",
+    "src/NeuralRendering/PreparedBeforeUpscale.cpp": "a4d1f20682ec0dece06f4cf69090f0e92722f1dc15a364a0638d518bb19198cc",
+    "src/NeuralRendering/BeforeUpscale.cpp": "3c9a9e1a6f1f18580f7137378171f01489bab0f0c521e3c8cbae6551171f4752",
+    "src/NeuralRendering/History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+    "src/FrameGen/NvidiaHostNeural.cpp": "fa06903c53a598f0cda94d57bf06a4e8b043e9087b36ee10a76ece577a16191a"
+  },
+  "gpu": "RTX 4080 SUPER 10de:2702",
+  "driver": "32.0.16.1714",
+  "runtimeSha256": {
+    "nvngx_dlssnr.dll": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "_nvngx.dll": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+  },
+  "modes": {
+    "native": {
+      "frames": 240,
+      "nrEvaluations": 237,
+      "resizes": 1,
+      "sourceAlphaPixels": 8395200,
+      "pendingSettingsBoundaries": 5,
+      "changedRgbPixels": 8222348,
+      "bypassedSourcePixels": 172800,
+      "wrappedDeviceRequired": false,
+      "retired": true
+    },
+    "reshade": {
+      "frames": 240,
+      "nrEvaluations": 237,
+      "resizes": 1,
+      "sourceAlphaPixels": 8395200,
+      "pendingSettingsBoundaries": 5,
+      "changedRgbPixels": 8222348,
+      "bypassedSourcePixels": 172800,
+      "wrappedDeviceRequired": true,
+      "retired": true
+    }
+  },
+  "boundaries": [
+    {
+      "frame": 19,
+      "change": "Tone 1 -> 0.65; reset passed by caller; asynchronous tuning allowed"
+    },
+    {
+      "frame": 59,
+      "change": "NR enabled -> disabled; actual source readers must retire"
+    },
+    {
+      "frame": 99,
+      "change": "Style 0 -> 1; actual source readers must retire"
+    },
+    {
+      "frame": 119,
+      "change": "After -> Before; old stage readers must retire"
+    },
+    {
+      "frame": 160,
+      "change": "Before -> After; old stage readers must retire"
+    }
+  ],
+  "oracle": [
+    "Every boundary begins while the queue-signalled completion marker is genuinely incomplete",
+    "Off/style/placement require at least 100ms wait and actual old marker completion",
+    "No readback on five held prior sources; changed-source readback must follow old completion",
+    "Exactly one NR evaluation per eligible source; invalid scaled source and two disabled sources bypass unchanged",
+    "All read-back alpha pixels preserved and caller RTV restored; reset seen after caller setting changes, re-enable and resize",
+    "Same BeforeHost retained across settings and placement transitions; confirmed final retirement"
+  ],
+  "negativeControls": {
+    "priorFixtureMissingSettingsBoundaries": "FAIL EveryScheduledLiveSettingsChangeHasGenuinePendingSourceWork",
+    "callerResetOmitted": "FAIL FirstReenabledAndResizedSourceResetHistory; fixture mismatch corrected to match NvidiaHost, no production defect claimed"
+  },
+  "verification": {
+    "affectedSuitePassed": 18,
+    "affectedSuiteFailed": 0,
+    "seconds": 37.91,
+    "finalNativeAndReShadePass": 2
+  },
+  "limits": [
+    "Synthetic native-size SDR colors, static depth and zero motion; not game-quality proof",
+    "Tests shared owner entrypoints, not actual End UI event dispatch",
+    "Pending reader is NR preparation/delivery; no actual vendor FG reader retirement claim",
+    "SR/provider creation remains restart-scoped; broader provider/failure stress and matched performance remain open",
+    "Task6 incomplete; no new completed milestone"
+  ],
+  "completedMilestones": 4,
+  "totalMilestones": 8
+}

@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Owner-reported DLAA -> NR After -> NVIDIA FG local gameplay checklist",
+  "ownerReport": "All listed checks passed",
+  "ownerChecks": {
+    "NR off/on": "PASS (owner report)",
+    "FG off/on": "PASS (owner report)",
+    "Camera colors": "PASS (owner report)",
+    "HUD": "PASS (owner report)",
+    "Save and reload": "PASS (owner report)",
+    "Fast travel": "PASS (owner report)",
+    "Alt-tab": "PASS (owner report)"
+  },
+  "intendedInstalledRoute": {
+    "UpscaleType": 3,
+    "FrameGenerationBackend": 1,
+    "NRBeforeUpscaling": false,
+    "FGEnabled": true,
+    "Style": 0,
+    "Tone": 1,
+    "StableColors": false
+  },
+  "installedProductRevision": "dc6a9abe3630",
+  "installedIniSha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+  "availableLog": {
+    "filename": "TheosRenderPipeline.log",
+    "sha256": "2ee56921fa3c29cf82f6fd950d3f54459042eb48d4f90a43541f28d5c4a46594",
+    "bytes": 28362,
+    "firstTimestamp": "2026-10-04 18:19:17.705",
+    "lastTimestamp": "2026-10-04 18:24:34.472",
+    "route": "FSR Native AA/backend2; older accepted FSR run",
+    "correlatedWithNvidiaOwnerReport": false
+  },
+  "qualification": [
+    "Listed checks accepted from owner report",
+    "Available log predates NVIDIA INI installation and describes FSR; it is not independent NVIDIA session confirmation",
+    "Do not infer vendor GPU output/cadence or complete milestone from this uncorrelated log",
+    "Dialogue/map/inventory and minimize/restore are not separately claimed in this question",
+    "Other hardware/scenes, vendor pending-reader/failure stress and matched performance remain open"
+  ],
+  "agentChangedInstalledSettings": false,
+  "agentLaunchedGame": false,
+  "milestonesComplete": 4,
+  "milestonesTotal": 8
+}

@@ -127,3 +127,20 @@ provider INI keys to DLAA/backend1, retaining After, FG enabled, full Tone 1,
 Style 0, Stable colors off and native UI. The clean dc6a9abe3630 DLL and MO2
 settings are unchanged; accepted FSR INI is backed up. Fuller NVIDIA Skyrim
 acceptance is next. Task5 stays open and the count remains **4 of 8**.
+
+The owner subsequently [passes the listed NVIDIA checklist](nvidia-after-gameplay-checklist.json).
+Available local logs still describe the prior FSR run; no new NVIDIA runtime
+telemetry is attributed to that report. Accept the listed manual steps separately.
+
+The [pending live-settings source fixture](live-settings-pending-source.json)
+extends shared BeforeHost coverage through five genuine pending boundaries in
+both native and actual ReShade modes. Tone, style, NR off/on and placement changes
+preserve one evaluation per eligible source, alpha, caller RTV and exact bypass;
+style/off/placement wait for actual old source completion. A coverage negative
+fails. A test-harness reset assumption was corrected to match the production
+caller; production code is unchanged. Both modes and all 18 related regressions
+pass. Original and resized source textures are retained on uncertain retirement,
+and the independent gate release starts before GPU submission so exceptions
+cannot leave an unstarted release helper. This does not prove End UI dispatch,
+actual vendor FG reader retirement, provider creation changes or failure stress.
+Task6 stays partial; installed DLL/INI and MO2 settings are unchanged. **4 of 8**.
