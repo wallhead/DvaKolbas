@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "builtSourceRevision": "effbf2c9b0b0aa4ffcb76aabc46fd07263b5f7e1",
+  "identity": {
+    "edition": "Standard",
+    "sourceRevision": "effbf2c9b0b0",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "buildScope": "Clean Git source with retained dependency/build caches",
+  "scope": "Outer Present preparation-failure guard only; End-menu game check pending",
+  "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-present-guard-effbf2c-20261004-231652",
+  "stage": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\nr-present-guard-effbf2c-20261004-231520",
+  "installedMod": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial",
+  "changedFiles": [
+    "SKSE/Plugins/TheosRenderPipeline.dll"
+  ],
+  "iniChangedKeys": [],
+  "gameLaunched": false,
+  "milestonesComplete": 5,
+  "milestonesTotal": 8,
+  "noninteractiveSuite": {
+    "seconds": 230.38,
+    "reshadeTests": 6,
+    "gpuTests": 57,
+    "passed": 215
+  },
+  "unavailableDebugChecks": [
+    "NativeUIComposition",
+    "NativeUIBlendState",
+    "NeuralPeripheralPixels"
+  ],
+  "freshCleanCpu": "GameSwapChainPresentBoundary PASS 0.02s",
+  "protectedBefore": {
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "78a8bb8a74e888d053331c28ac94d4e7f4d5b942f996b56897fdfe7c0ac0fae1",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2"
+  },
+  "protectedAfter": {
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.dll": "dfa5943c416035fbd3078048922e165e27abf7efab7163639323e6fb3c98633f",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "78a8bb8a74e888d053331c28ac94d4e7f4d5b942f996b56897fdfe7c0ac0fae1",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2"
+  },
+  "unrelatedModFilesVerified": 23,
+  "stageManifestSha256": "8b7346d00bffeb4252ac26bde998841d92cd53909cc6878baa12e380a07f67da",
+  "installedDllSha256": "dfa5943c416035fbd3078048922e165e27abf7efab7163639323e6fb3c98633f",
+  "nextGate": "research/nr/post-sr/END_APPLY_CHECK.md",
+  "installReceiptRecovery": "DLL installation and preservation checks completed; serialization of an unrelated-file count initially failed. Read-only recovery reverified backup, stage, installed DLL and all protected files without reinstalling."
+}

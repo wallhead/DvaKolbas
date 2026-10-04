@@ -1,5 +1,15 @@
 # Native AA post-upscale NR trial
 
+Latest update, 2026-10-04: clean-source `effbf2c9b0b0` adds the outer
+Present/Present1 preparation-failure guard. The updated DLL is installed in
+the existing V5.4 NO-LORE trial; its INI, other mod files and MO2 settings are
+unchanged. The working DLL/INI are backed up. The noninteractive suite passes
+215 checks; three debug-device/interface prerequisite checks remain unavailable
+and are not passes. See the [install receipt](../research/nr/post-sr/present-guard-trial-install.json).
+Start with the usual MO2 SKSE entry and run the
+[End-menu Apply checklist](../research/nr/post-sr/END_APPLY_CHECK.md).
+This actual-game gate is pending; Task6 remains partial, **5 of 8** complete.
+
 The order is **DLAA or FSR Native AA -> one NR pass -> optional FG -> native UI**.
 Generated images inherit enhanced real sources. They receive no separate NR pass.
 Scaled DLSS/FSR remain supported with Before NR; their After guides are unavailable.
