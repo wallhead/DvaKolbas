@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "scope": "AIO19 active single-pass NR controls copied; user-approved common Before/preset0; full renderer/model equivalence not established",
+  "installed": true,
+  "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr\\aio19-settings-match\\backup-20261004T061335Z-60f4400758ce4d1a8794c155e18cd03c",
+  "protectedFilesChecked": 65,
+  "mo2ProfileAndLibrariesUnchanged": true,
+  "changes": {
+    "AIO19": [
+      {
+        "section": "DLSS NR",
+        "key": "mDLSSNRBeforeUpscaling",
+        "before": "false",
+        "after": "true"
+      },
+      {
+        "section": "DLSS NR",
+        "key": "mDLSSNRPreset",
+        "before": "1",
+        "after": "0"
+      }
+    ],
+    "DvaKolbas": [
+      {
+        "section": "SourceDLSSG",
+        "key": "NRStableColors",
+        "before": "true",
+        "after": "false"
+      },
+      {
+        "section": "SourceDLSSG",
+        "key": "NRStyle",
+        "before": "0",
+        "after": "1"
+      },
+      {
+        "section": "SourceDLSSG",
+        "key": "NRIntensity",
+        "before": "1.043000",
+        "after": "1.000000"
+      },
+      {
+        "section": "SourceDLSSG",
+        "key": "NRLocalTone",
+        "before": "1.018000",
+        "after": "1.000000"
+      },
+      {
+        "section": "SourceDLSSG",
+        "key": "NRSkinStructure",
+        "before": "0.296000",
+        "after": "1.000000"
+      }
+    ]
+  },
+  "iniHashes": {
+    "AIO19": {
+      "before": "03a28561c1058fbd67acee7552325e0b21a3fc81d4e4dd52ba13e6cf2b383f4f",
+      "after": "b5da0166f4f21c49e042a69544b0ec221cc4b225b0b202e3487c0e7f575f2085"
+    },
+    "DvaKolbas": {
+      "before": "1eb3c3fbcbd34e5e373ee4fe1cddc16450d16185dbba4448080f08a5780813a7",
+      "after": "ad9d65149d11612ae5e8efd41ccfc56de8de64017c197a18326c96c45c74123f"
+    }
+  },
+  "effectiveNr": {
+    "enabled": true,
+    "placement": "Before",
+    "preset": 0,
+    "passes": 1,
+    "style": 1,
+    "intensity": 1.0,
+    "tone": 1.0,
+    "structure": 1.0,
+    "skin": 1.0,
+    "autoSkin": false,
+    "uiCorrection": false,
+    "resolve": 0,
+    "inputScale": 1,
+    "hdr": false,
+    "stableColors": false
+  },
+  "remainingDifferences": {
+    "upscaler": {
+      "AIO19": "FSR3.1 Native",
+      "DvaKolbas": "DLAA"
+    },
+    "sharpening": {
+      "AIO19": "false",
+      "DvaKolbas": "true"
+    },
+    "autoExposure": {
+      "AIO19": "false",
+      "DvaKolbas": "true"
+    },
+    "ReShadeBeforeUpscaling": {
+      "AIO19": "true",
+      "DvaKolbas": "false"
+    },
+    "nrDllSha256": {
+      "AIO19": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+      "DvaKolbas": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a"
+    }
+  },
+  "gameplayAcceptance": "PENDING"
+}
