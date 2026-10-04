@@ -9,16 +9,24 @@
 #include <thread>
 #include <chrono>
 #include "ProbeBuildIdentity.h"
+#if defined(TRP_CONTROLLER_APPLY_PROBE)
+#include "RendererSettingsController.h"
+#include "FrameGen/SourceFrameGeneration.h"
+#endif
 using namespace TheosRenderPipeline::NeuralRendering;
 using Microsoft::WRL::ComPtr;
 namespace {int failures{};void Check(bool v,const char* name){std::printf("%s %s\n",v?"PASS":"FAIL",name);failures+=!v;}void Need(HRESULT h){if(FAILED(h))throw h;}}
 int wmain(int argc,wchar_t** argv){try{
-    bool wrapped=false,sdr=false,post=false,liveSettings=false;
-    if(argc<3||argc>8||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
+    bool wrapped=false,sdr=false,post=false,liveSettings=false,omitController=false;
+    if(argc<3||argc>9||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
     for(int i=4;i<argc;++i){if(std::wstring_view(argv[i])==L"--require-wrapped")wrapped=true;
         else if(std::wstring_view(argv[i])==L"--sdr-bytes")sdr=true;else if(std::wstring_view(argv[i])==L"--post-sr")post=true;
-        else if(std::wstring_view(argv[i])==L"--live-settings")liveSettings=true;else return 1;}
+        else if(std::wstring_view(argv[i])==L"--live-settings")liveSettings=true;
+        else if(std::wstring_view(argv[i])==L"--omit-controller")omitController=true;else return 1;}
     if(liveSettings&&(!post||!sdr))return 1;
+#if !defined(TRP_CONTROLLER_APPLY_PROBE)
+    if(omitController)return 1;
+#endif
     if(NrRuntimeResearch::GameRunningOrUnknown())return 1;
     BeforeHost prepared;SettingsSnapshot s;s.enabled=false;s.revision=1;
     Check(bool(prepared.Evaluate({},s)),"DisabledPreparedNrRequiresNoColorDecoder");
@@ -65,6 +73,11 @@ int wmain(int argc,wchar_t** argv){try{
     sources->textures={color,depth,motion,readback};auto* retainedSources=sources.get();
     GpuProbeLifetime<Sources> lifetime(std::move(sources),[&]{return bool(prepared.Retire());});
     uint64_t expectedAlpha{},expectedNr{},expectedBypass{},gateSerial{};unsigned pendingSettings{};
+#if defined(TRP_CONTROLLER_APPLY_PROBE)
+    auto controller=TheosRenderPipeline::RendererSettingsController::Current();
+    SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community=true;
+    unsigned pendingApplies{};
+#endif
     SettingsSnapshot previousSettings=s;
     for(UINT frame=0;frame<240;++frame){
         if(frame==120){
@@ -120,6 +133,24 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             Need(context4->Wait(encoderGate11.Get(),gateSerial));
         }
         if(changedBoundary)Check(encoderDone->GetCompletedValue()<gateSerial,"LiveSettingsBeginWithActualSourceWorkPending");
+#if defined(TRP_CONTROLLER_APPLY_PROBE)
+        if(!omitController){
+            auto draft=controller.Capture(true,false);
+            draft.sourceDLSSG.neuralEnabled=s.enabled;
+            draft.sourceDLSSG.neuralBeforeUpscaling=s.placement==Placement::Before;
+            draft.sourceDLSSG.neuralTuning=s.tuning;
+            draft.generationEnabled=s.enabled;
+            const auto applied=controller.Apply(draft,false);
+            Check(applied.applied&&!applied.error,"ProductionControllerAppliesSourceSnapshot");
+            const auto actual=controller.Capture(true,false);
+            s.enabled=actual.sourceDLSSG.neuralEnabled;
+            s.placement=actual.sourceDLSSG.neuralBeforeUpscaling?Placement::Before:Placement::After;
+            s.tuning=actual.sourceDLSSG.neuralTuning;
+            Check(actual.generationEnabled==draft.generationEnabled,"ProductionControllerPublishesFgRequest");
+            if(changedBoundary){++pendingApplies;
+                Check(encoderDone->GetCompletedValue()<gateSerial,"MenuApplyDoesNotDrainPendingSourceOnSettingsThread");}
+        }
+#endif
         const auto switchStart=std::chrono::steady_clock::now();
         auto result=s.placement==Placement::After?prepared.EvaluatePost(completed,s):prepared.Evaluate(input,s,sdr?&lease:nullptr);
         if((post&&frame==119)||(liveSettings&&(frame==59||frame==99||frame==160))){
@@ -145,6 +176,10 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         if(!s.enabled || (post&&frame==40))bypassPixels+=uint64_t(width)*height;
     }
     if(liveSettings)Check(pendingSettings==5,"EveryScheduledLiveSettingsChangeHasGenuinePendingSourceWork");
+#if defined(TRP_CONTROLLER_APPLY_PROBE)
+    Check(pendingApplies==5,"ProductionControllerRunsAtAllFivePendingGpuBoundaries");
+    std::printf("CONTROLLER_APPLY pending=%u sources=240 vendorBoundary=facade\n",pendingApplies);
+#endif
     Check(bypassPixels==expectedBypass,"ScheduledSourcesBypassedWithoutNr");
     Check(alpha==expectedAlpha,"AllUnormAlphaValuesSurviveDecodeNrEncode");Check(changed>320*180,"NrModifiedRgbDeliveredToOriginalSdrColor");
     Check(prepared.Resets()>=(post?6u:3u),"PlacementAndUnqualifiedSourceResetHistory");
@@ -159,6 +194,9 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             << ",\"wrappedDeviceRequired\":" << (wrapped?"true":"false")
             << ",\"sdrBytesTrial\":" << (sdr?"true":"false")
             << ",\"liveSettings\":" << (liveSettings?"true":"false") << ",\"pendingSettingsBoundaries\":" << pendingSettings
+#if defined(TRP_CONTROLLER_APPLY_PROBE)
+            << ",\"productionController\":true,\"pendingControllerApplies\":" << pendingApplies << ",\"hostAndVendorBoundary\":\"facade\""
+#endif
             << ",\"changedRgbPixels\":" << changed << ",\"bypassedSourcePixels\":" << bypassPixels
             << ",\"runtimeSha256\":\"" << RuntimeCatalog()[1].sha256 << "\",\"driverCoreSha256\":\"" << QualifiedProbeDriverCore().sha256
             << "\",\"retired\":true,\n\"compiledSourcesSha256\":" << NrRuntimeResearch::compiledSourcesJson << "\n}\n";

@@ -1,0 +1,35 @@
+Disconnected controller negative: exit 1; only five-pending-Apply coverage fails.
+Native and actual ReShade: 240 sources, 237 NR, 5 pending Apply boundaries each; alpha 8395200 exact, bypass 172800 exact.
+Controller source copy SHA256 ead1a612a67a6df1d4c884a09927992fb34cbc8bc7474ac2bbc0eeadf4dcb941 matches production bytes.
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+      Start  24: InteropRetirement
+ 1/11 Test  #24: InteropRetirement ................   Passed    0.47 sec
+      Start  36: RendererSettingsActions
+ 2/11 Test  #36: RendererSettingsActions ..........   Passed    0.01 sec
+      Start  42: SourceDLSSGSession
+ 3/11 Test  #42: SourceDLSSGSession ...............   Passed    0.01 sec
+      Start  49: SourceDLSSGInteropFence
+ 4/11 Test  #49: SourceDLSSGInteropFence ..........   Passed    1.02 sec
+      Start 142: RendererSettingsController
+ 5/11 Test #142: RendererSettingsController .......   Passed    0.02 sec
+      Start 177: NrPostSrHost-live-settings
+ 6/11 Test #177: NrPostSrHost-live-settings .......   Passed    4.34 sec
+      Start 182: NrReShadePostSr-live-settings
+ 7/11 Test #182: NrReShadePostSr-live-settings ....   Passed    6.92 sec
+      Start 188: NrControllerApplyGpu
+ 8/11 Test #188: NrControllerApplyGpu .............   Passed    4.30 sec
+      Start 189: NrControllerApplyReShadeGpu
+ 9/11 Test #189: NrControllerApplyReShadeGpu ......   Passed    6.90 sec
+      Start 200: NrPostSrContract
+10/11 Test #200: NrPostSrContract .................   Passed    0.01 sec
+      Start 202: NrProbeLifetime
+11/11 Test #202: NrProbeLifetime ..................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 11
+
+Label Time Summary:
+GPU        =  22.46 sec*proc (4 tests)
+ReShade    =  13.81 sec*proc (2 tests)
+
+Total Test time (real) =  24.03 sec

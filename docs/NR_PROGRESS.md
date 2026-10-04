@@ -78,7 +78,7 @@ Performance P0 now has optional bounded CPU/wait/Flush/descriptor observations a
 | 3. Shared one-pass stage and Before integration | Complete for bounded source stage | Native/ReShade source switching, pending encoder retirement and existing Before regressions pass. |
 | 4. FSR post-SR NR | Complete for native-size SDR | Actual enhanced FG source upload, combined generation/presentation, pending-reader resize and local FSR gameplay checks pass. |
 | 5. DLSS/DLAA post-SR NR | Complete for native-size SDR source/FG handoff | Actual DLAA/NR enhanced source and composed real readbacks, public vendor fences, x2 proxy output and resize recovery pass; generated pixel capture and broader lifecycle remain unqualified. |
-| 6. Live controls/lifecycle | Partially qualified | Native/ReShade pending source tone/style/off/placement and FSR suspend/resize pass; actual End Apply dispatch, vendor FG readers/provider/failure stress remain open. |
+| 6. Live controls/lifecycle | Partially qualified | Production controller Apply passes native/ReShade pending-source changes; FSR suspend/resize passes. End mouse dispatch, deferred host reconfiguration and vendor FG reader/provider/failure stress remain open. |
 | 7. Clean matrix/packages/final review | Initial clean matrix/package validated | Clean product matrix and installed trial are retained; final whole-plan qualification/review remains open. |
 | 8. Separate Skyrim acceptance | Local FSR and listed NVIDIA checks accepted | FSR checklist and owner-reported NVIDIA NR/FG toggles, colors/HUD, save/reload, fast travel and alt-tab pass; newest NVIDIA log correlation, broader scene/UI coverage and matched performance remain open. |
 

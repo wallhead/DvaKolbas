@@ -236,6 +236,12 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         src/FrameGen/NvidiaHostStartup.cpp src/FrameGen/NvidiaHostLifecycle.cpp src/FrameGen/SourceFsrEvaluation.cpp
         src/FrameGen/SourceNvidiaEvaluation.cpp src/FrameGen/SourceFrameGeneration.h
         src/RendererSettings.h src/RendererSettingsController.cpp src/RendererBackendPolicy.h
+        src/RendererSettingsController.h src/RendererSettingsAction.h src/NvidiaUpscalerConfiguration.h
+        tests/settings-controller/CMakeLists.txt tests/settings-controller/ControllerTests.cpp tests/settings-controller/Services.cpp
+        tests/settings-controller/facades/PCH.h tests/settings-controller/facades/RenderPipeline.h
+        tests/settings-controller/facades/FrameGen/NvidiaHost.h tests/settings-controller/facades/FrameGen/SourceDLSSGBackend.h
+        tests/settings-controller/facades/PerformanceTuning.h tests/settings-controller/facades/CommunityShaderIntegration.h
+        tests/settings-controller/facades/WeatherAppearanceRuntime.h
         src/OverlayNeuralPanel.cpp src/OverlayNeuralTab.h src/OverlayFrameView.cpp src/OverlayUI.cpp
         CMakeLists.txt src/HookSafety.h cmake/NeuralRuntime.cmake tests/nr-runtime/CMakeLists.txt)
     if(TRP_NR_PERF_WITH_FSR)
@@ -285,6 +291,23 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     endif()
     target_include_directories(TRPNrBeforeUpscaleTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
     target_include_directories(TRPNrBeforeHostFramesTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+    if(TARGET TRPSettingsControllerFixture)
+        add_executable(TRPNrControllerApplyGpuTests ../NrBeforeHostFramesTests.cpp)
+        target_compile_definitions(TRPNrControllerApplyGpuTests PRIVATE TRP_CONTROLLER_APPLY_PROBE)
+        target_include_directories(TRPNrControllerApplyGpuTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+        target_link_libraries(TRPNrControllerApplyGpuTests PRIVATE TRPSettingsControllerFixture TRPNeuralRuntime)
+        add_test(NAME NrControllerApplyGpu COMMAND TRPNrControllerApplyGpuTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}"
+            "${CMAKE_CURRENT_BINARY_DIR}/controller-apply.json" --sdr-bytes --post-sr --live-settings)
+        set_tests_properties(NrControllerApplyGpu PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+        if(TRP_NR_RESHADE_RUNTIME AND TRP_NR_TEST_RUNTIME_ROOT AND EXISTS "${TRP_NR_RESHADE_RUNTIME}")
+            add_test(NAME NrControllerApplyReShadeGpu COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+                --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>" --host-exe "$<TARGET_FILE:TRPNrControllerApplyGpuTests>"
+                --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+                --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-controller-apply" --sdr-bytes --post-sr --live-settings)
+            set_tests_properties(NrControllerApplyReShadeGpu PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
+        endif()
+    endif()
     add_executable(TRPNrRuntimeProbe RuntimeProbe.cpp RuntimeProbeReport.cpp)
     target_compile_features(TRPNrRuntimeProbe PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrRuntimeProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
