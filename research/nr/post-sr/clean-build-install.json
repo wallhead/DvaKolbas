@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "builtSourceRevision": "dc6a9abe3630eccfa006930f28c3e4c55735ebb1",
+  "identity": {
+    "edition": "Standard",
+    "sourceRevision": "dc6a9abe3630",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "buildScope": "Clean Git source identity using retained dependency/build caches; not an empty-checkout build",
+  "buildMatrix": [
+    {
+      "directory": "fsr-fg-standard",
+      "nr": true,
+      "fsr": true,
+      "fg": true,
+      "result": "PASS"
+    },
+    {
+      "directory": "fsr-fg-standard-nr-off",
+      "nr": false,
+      "fsr": true,
+      "fg": true,
+      "result": "PASS"
+    },
+    {
+      "directory": "fsr-disabled-standard",
+      "nr": true,
+      "fsr": false,
+      "fg": false,
+      "result": "PASS"
+    }
+  ],
+  "tests": {
+    "passed": 196,
+    "failed": 0,
+    "gpuTests": 42,
+    "reshadeTests": 4,
+    "seconds": 166.09,
+    "excludedUnavailableGraphicsTools": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ]
+  },
+  "install": {
+    "changedIniKeys": [
+      "SourceDLSSG/NRBeforeUpscaling"
+    ],
+    "preservedMo2": {
+      "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "27F0CFAD3D35C12D7231C2EE42875091F10A7789C13D6EE5C540C17977FEC98D",
+      "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "72FCC5D89BDE8C271BEDFA4A72A470B4ED4A4E3181DB0C875BE06A1CCECDC4FC"
+    },
+    "gameLaunched": false,
+    "source": "dc6a9abe3630",
+    "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-post-sr-dc6a9ab-20261004-143234",
+    "installedMod": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial",
+    "schema": 1
+  },
+  "installedFiles": {
+    "SKSE/Plugins/TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "SKSE/Plugins/TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d"
+  },
+  "preservedSettings": {
+    "upscaler": "DLAA",
+    "fgBackend": "NVIDIA",
+    "style": 0,
+    "tone": 1,
+    "stableColors": false
+  },
+  "qualification": {
+    "milestonesComplete": 3,
+    "milestonesTotal": 8,
+    "afterScope": "Native-size DLAA or FSR Native AA; NR on real sources before optional FG",
+    "actualFsrEnhancedSourceUploadBytes": 55296000,
+    "actualNvidiaVendorChain": "NOT RUN",
+    "combinedFsrNrFgGenerationPresentation": "NOT RUN",
+    "skyrimAfterAcceptance": "NOT RUN",
+    "remainingLifecycle": "Delayed external FG readers and pending-reader resize/minimize/Apply in Skyrim",
+    "otherNvidiaFamilies": "NOT RUN",
+    "amdNr": "UNSUPPORTED",
+    "beforeAfterAioPerformanceParity": "NOT RUN"
+  }
+}

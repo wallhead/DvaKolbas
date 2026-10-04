@@ -29,3 +29,10 @@ FG resumption. A visually changed source is not proof that FG is generating.
 
 The stage manifest records the clean DLL identity, protected source hashes and
 all staged file hashes. Staging never activates the mod or launches the game.
+
+Installed checkpoint, 2026-10-04: clean-source dc6a9abe3630 is installed in the
+existing V5.4 NO-LORE trial. The accepted DLL/INI backup is in
+`out/game-test-backups/nr-post-sr-dc6a9ab-20261004-143234`. Only the DLL and
+placement changed; DLAA, NVIDIA FG, Tone 1, Style 0 and Stable colors off remain.
+The [receipt](../research/nr/post-sr/clean-build-install.json) records 196 passing
+checks and three excluded Graphics Tools checks. Game acceptance is pending.

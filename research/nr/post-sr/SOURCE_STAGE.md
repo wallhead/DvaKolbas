@@ -42,8 +42,15 @@ scaled After requests. Settings RED caught the missing native-size restriction.
 The independent review found one FSR-off compile guard error, now guarded. That variant also exposed a pre-existing Windows max macro conflict in motion diagnostics; the macro-safe call fixes it, and the NR-enabled/FSR-disabled DLL build passes. The review found
 no other confirmed correctness blocker. Its qualification limits are retained.
 
-The pre-review product suite passed 195/195 checks, excluding exactly the three
-known unavailable Graphics Tools tests. A final clean-source matrix/package
-receipt will supersede that dirty implementation checkpoint. Installed Before
-DLL/INI and MO2 settings are preserved. No Before/After or AIO performance parity
-claim is made.
+The final clean-source product suite passed **196/196 checks** (42 GPU, four
+ReShade), excluding NativeUIComposition, NativeUIBlendState and
+NeuralPeripheralPixels because Graphics Tools is unavailable. All three DLL
+variants built: NR/FSR/FG on, NR off with FSR/FG on, and NR on with FSR/FG off.
+These builds use retained dependency/build caches and clean Git source dc6a9abe3630;
+they are not empty-checkout builds. See the [build/install receipt](clean-build-install.json).
+
+The After trial is installed in the existing V5.4 NO-LORE Dva mod. Only the DLL
+and NRBeforeUpscaling=false changed. Working files are backed up; DLAA, NVIDIA
+FG, Style 0, Tone 1, Stable colors off, remaining mod files and MO2 settings were
+verified preserved. Skyrim has not been launched for this After trial. No
+Before/After or AIO performance parity claim is made.
