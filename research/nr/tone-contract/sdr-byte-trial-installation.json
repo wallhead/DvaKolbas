@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "installed": true,
+  "stage": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\package\\nr-sdr-bytes-5d9a3b873b72",
+  "sourceMod": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial",
+  "buildIdentity": {
+    "edition": "Standard",
+    "sourceRevision": "5d9a3b873b72",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "dllSha256": "56133fcfe90cae33c3becd6951901557e507f986e89fe210d005f4707370b3cd",
+  "plannedChangedFiles": [
+    "SKSE/Plugins/TheosRenderPipeline.dll",
+    "SKSE/Plugins/TheosRenderPipeline.ini",
+    "nr-trial-manifest.json"
+  ],
+  "plannedProfileChanges": [
+    "RazKolbas disabled",
+    "Dva NR Before trial enabled"
+  ],
+  "otherAssetsPreserved": true,
+  "trialControls": {
+    "stableColors": false,
+    "fg": false,
+    "tone": 1,
+    "SdrBytesTrial": true,
+    "style": 0
+  },
+  "skyrimAcceptance": "PENDING",
+  "rollback": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr\\sdr-byte-trial\\rollback-20261004-145149-4131c4df52ef41eaba01ebbc31be1814",
+  "protectedFilesChecked": 17,
+  "protectedSettingsUnchanged": true,
+  "installedProfileSha256": "27f0cfad3d35c12d7231c2ee42875091f10a7789c13d6ee5c540c17977fec98d",
+  "scope": "Clean committed-source deployment; exact staged/installed manifest and protected launch/profile/AIO/Raz settings verified",
+  "validation": "sdr-byte-trial-validation.json",
+  "nrDisabledCompile": {
+    "passed": true,
+    "sourceRevision": "e6ced0a85c8c-modified",
+    "sourceClean": false,
+    "dllSha256": "de4d5e3a1bd5f29040bc8464c3d7ba773d785627dd11bb48a47169c6895b05fe",
+    "scope": "Compile-only prior precommit configured identity; not a fresh disabled test-suite run"
+  }
+}

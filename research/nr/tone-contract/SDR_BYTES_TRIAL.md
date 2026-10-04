@@ -61,3 +61,15 @@ visible processing, then rotate around the same building. A stable image must
 retain the requested style effect. Test Style 1 as a control and Apply/off/on
 without freezing. Leave FG off for this diagnosis. Report whether the same
 surface changes color; logs alone cannot qualify visual camera stability.
+
+
+## Deployment checkpoint
+
+Clean source `5d9a3b873b72` is built and installed in the existing V5.4 NO-LORE
+Dva trial, with only DLL/INI/manifest updated. The profile switches Raz off and
+Dva on; AIO stays off. Only Style 0 and the new startup trial selector change
+in the Dva INI. Tone 1, Stable colors/FG off, FSR Native AA and launch settings
+are preserved. [The installation receipt](sdr-byte-trial-installation.json)
+records exact hashes, rollback and protected settings. NR-disabled compilation
+also succeeds; its receipt distinguishes the earlier precommit build identity.
+Skyrim camera acceptance is **PENDING**; the completion count stays **1 of 8**.
