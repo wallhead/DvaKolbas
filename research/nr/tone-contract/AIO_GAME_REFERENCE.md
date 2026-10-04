@@ -2,6 +2,12 @@
 
 The user reports **no color shifts in AIO19 with its actual installed INI**. Treat that as a stable gameplay reference. Prior standalone fixtures show context sensitivity in our host; they do not override this observation or prove AIO's game host drifts. The Dva enabled-tone camera defect remains open. Stable colors is rejected as the solution and remains off; Tone remains 1.
 
+## Subsequent matched game check
+
+The user started the matched Dva configuration and reports **“seems only style 0 shifted.”** The captured log confirms FSR 3.1.5 NativeAA/Analytical, FG off, ReShade before upscaling, Tone/Structure 1 and Stable colors off throughout the logged revisions. It records live styles 0/1/2/3/4/5/7, including repeated returns to 0, and 11,400 cumulative evaluated sources by 11:40:40 Moscow time, with no error/critical records. Style 6 is not present in this captured prefix. Sparse progress records during revision 12 (Style 0) show frames 6,000 -> 7,800 with resets fixed at 11, so that interval does not support a repeated-reset explanation. These are processing/control observations; color stability comes from the user's tentative visual report, not pixel measurement. No complete per-style visual qualification is claimed.
+
+The user confirms **AIO Style 0 has not been tested yet**. Its active saved chain is Style 1. The next discriminator is therefore the same active AIO chain pass at Style 0, Tone 1, same scene/placement and FG off. Do not infer that AIO has already demonstrated stable Style 0, or that Style 0's adaptive appearance is intentional vendor behavior. AIO Style-1 stability and the apparent Dva nonzero-style stability narrow the original broad integration hypothesis. [Captured log evidence](style-game-20261004.json) preserves the observed prefix; installed settings/assets and MO2 were untouched during this check.
+
 ## Current controls and installed comparison
 
 Fresh snapshots of both installed INIs found these remaining differences:
