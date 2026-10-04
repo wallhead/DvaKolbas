@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "baseRevision": "3e73764d436560312958328b13989051c69aed20",
+  "fixtureSourceClean": false,
+  "scope": "Actual DLAA/RTX40 NR enhanced tags with independent real GPU readers and production Session/Interop completion-fence handling; scripted Streamline APIs",
+  "productionCodeChanged": false,
+  "installedFilesChanged": false,
+  "gameLaunchedByAgent": false,
+  "installedProductRevision": "dc6a9abe3630",
+  "installedSha256": {
+    "TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d"
+  },
+  "gpu": "RTX 4080 SUPER 10de:2702",
+  "driver": "32.0.16.1714",
+  "sourceSha256": {
+    "tests/nr-postsr/PostDlssSourceGpuTests.cpp": "c358b97107850e100795ab0910fce8fb0715fafd932bd8f998c14a1a2d54ba89",
+    "tests/nr-postsr/TaggedSourceReader.h": "0d25acf0ab1bbfc39e4407ceecd1f8a28ec954b2ad6c80c422a2a8f1b8d9559e",
+    "tests/nr-postsr/GpuProbeLifetime.h": "72787f13c31ed384ba0aaf57193b28e3ae9c7e3fb17f64337a0fee99410c363d",
+    "tests/nr-postsr/CMakeLists.txt": "ffc134bb56d0e43e994a3d3c27ea866fdbeaf11b31a11943590b60f58d720ac2",
+    "src/DLSSBackend.cpp": "13b7ccedbb6512afe84435a1e58ee2ed4bc75f5ad69a67864dd392a20e260d9e",
+    "src/FrameGen/SourceDLSSGSession.cpp": "e189c7b84869118f1a6099cf340ea678a9fdc0464a904b2ac000a88a5891fbc4",
+    "src/FrameGen/SourceDLSSGInterop.cpp": "9220f5c43aaaa538d4f01b5994c6a1852613e8a51ce14b6c6c41c3ad663a59a2",
+    "src/Graphics/D3D11D3D12Interop.cpp": "f76013117eac1b4eb8cf0f940cddb5f9d67f4b0575844f0b2f872fbac9590de5",
+    "src/NeuralRendering/PostUpscale.cpp": "28cda1ee67f8f652382fcd95ed0202d66591ecd4b63d0fc611fa686716c1209d"
+  },
+  "runtimeSha256": {
+    "nvngx_dlss.dll": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",
+    "nvngx_dlssnr.dll": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "_nvngx.dll": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+  },
+  "eachReaderCase": {
+    "nativeExtents": [
+      [
+        320,
+        180
+      ],
+      [
+        384,
+        216
+      ]
+    ],
+    "actualDlaaSources": 128,
+    "actualNrEvaluations": 126,
+    "enhancedTagBytesExact": 35979264,
+    "sourceAlphaPixelsExact": 8994816,
+    "pendingReaderBoundaries": 4,
+    "producerReuseBoundaries": 2,
+    "readerDrainedEpochs": 2,
+    "independentReaderCaptures": 4,
+    "independentReaderBytesExact": 1124352,
+    "independentReaderBytesExpected": 1124352,
+    "frozenSrInputs": 128,
+    "unchangedUiSources": 128
+  },
+  "readerImplementation": "Separate same-device DIRECT queue, gated actual shared HUD-less texture copy into owned readback, queue-only completion signal; CPU releases only independent gate",
+  "healthyContract": [
+    "Completion fence/value returned through scripted public state API to production Session and Interop",
+    "AfterPresent returns while genuine reader is pending",
+    "Next D3D11 producer waits for actual reader completion and preserves old enhanced bytes",
+    "Stop -> bridge Drain -> NR/SR retirement waits for actual last reader before rebuilding at new extent",
+    "Same Session resumes with monotonic tokens at the second native extent"
+  ],
+  "failureCases": {
+    "missing-reader-fence": "Null/nonzero fence rejected as InputRetirement; no next producer token",
+    "reader-state-error": "Public state query error remains Streamline fault; no reader retry",
+    "reader-callback-error": "Owner callback refusal remains InputRetirement fault; no reader retry"
+  },
+  "failureOwnership": "One unconfirmed retirement callback permanently quarantines the submitted-resource capsule and its NR owner/independent reader. Faulted Session rejects Prepare/Present/Resume without API/token reuse. Independent GPU copy is subsequently observed completed for test shutdown; this does not clear the terminal fault or release the quarantined capsule.",
+  "negativeControls": {
+    "missingReaderCoverage": "FAIL EveryEnhancedSourceReaderBoundaryIsGenuinelyPending",
+    "omittedReaderWait": {
+      "failures": 3,
+      "oldImageExactBytes": 747292,
+      "expectedBytes": 1124352,
+      "producerTimingFailures": 2
+    },
+    "prematureHudReadback": "Eight genuine-pending/wait checks failed because the test readback drained the bridge early; moved UI observation before reader submission. No production defect claimed."
+  },
+  "verification": {
+    "affectedSuitePassed": 11,
+    "affectedSuiteFailed": 0,
+    "seconds": 31.19,
+    "newReaderCasesPassed": 4,
+    "debugQueue": "D3D11 Graphics Tools unavailable; not a pass"
+  },
+  "limits": [
+    "Public Streamline APIs are scripted; no actual NVIDIA vendor FG reader/output or swapchain presentation/cadence claim",
+    "Independent reader is genuine GPU work exercising the vendor fence contract, not opaque vendor implementation",
+    "Native DLAA SDR synthetic colors/static depth/zero motion only",
+    "Tests Session/Interop and enhanced source resource ownership; actual End Apply dispatch and broader provider/failure integration remain open",
+    "Failure cases intentionally retain feature/resource ownership for process lifetime; no complete NGX shutdown claim",
+    "Task5/6 vendor qualification and matched performance remain open"
+  ],
+  "milestonesComplete": 4,
+  "milestonesTotal": 8
+}

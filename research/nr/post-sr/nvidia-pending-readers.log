@@ -1,0 +1,51 @@
+=== nvidia-readers-red.txt ===
+FAIL EveryEnhancedSourceReaderBoundaryIsGenuinelyPending
+NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65
+0% tests passed, 1 tests failed out of 1
+Total Test time (real) =   2.07 sec
+=== nvidia-readers-premature-hud-readback.txt ===
+203: FAIL PriorEnhancedTagReaderPendingBeforeProducerReuse
+203: FAIL NextSourceGpuWritesWaitForGenuineEnhancedTagReader
+203: FAIL EnhancedReaderGenuinelyPendingAtRetireBoundary
+203: FAIL ConfirmedRetirementWaitsForGenuineTaggedReader
+203: FAIL PriorEnhancedTagReaderPendingBeforeProducerReuse
+203: FAIL NextSourceGpuWritesWaitForGenuineEnhancedTagReader
+203: FAIL EnhancedReaderGenuinelyPendingAtRetireBoundary
+203: FAIL ConfirmedRetirementWaitsForGenuineTaggedReader
+203: NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65
+203: NVIDIA_READERS boundaries=4 reuse=2 retiredEpochs=2 exactBytes=1124352 expectedBytes=1124352 fault=0 quarantined=0 failures=8
+0% tests passed, 1 tests failed out of 1
+Total Test time (real) =   4.15 sec
+=== nvidia-readers-omitted-wait.txt ===
+FAIL NextSourceGpuWritesWaitForGenuineEnhancedTagReader
+FAIL NextSourceGpuWritesWaitForGenuineEnhancedTagReader
+FAIL OldEnhancedTaggedBytesSurviveReuseAndRetirement
+NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65
+NVIDIA_READERS boundaries=4 reuse=2 readerDrainedEpochs=2 exactBytes=747292 expectedBytes=1124352 fault=0 omittedWait=1 quarantined=0 failures=3
+=== nvidia-readers-regressions.txt ===
+24: PASS: delayed output readers, three in-flight slots, no false completion on stall, reuse after retirement
+ 1/11 Test  #24: InteropRetirement ...........................   Passed    0.49 sec
+42: PASS: DLSS-G options/state budget warnings, recovery, resize and failure boundaries
+ 2/11 Test  #42: SourceDLSSGSession ..........................   Passed    0.01 sec
+49: PASS: same-device input fences, foreign-device rejection, pending GPU wait, retirement, extended waits and diagnostics
+ 3/11 Test  #49: SourceDLSSGInteropFence .....................   Passed    1.02 sec
+ 4/11 Test #176: NrPostSrHost-live-settings ..................   Passed    4.31 sec
+ 5/11 Test #181: NrReShadePostSr-live-settings ...............   Passed    6.91 sec
+ 6/11 Test #199: NrProbeLifetime .............................   Passed    0.01 sec
+202: NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65
+ 7/11 Test #202: NrPostDlssSourceGpu .........................   Passed    2.00 sec
+203: NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65
+203: NVIDIA_READERS boundaries=4 reuse=2 readerDrainedEpochs=2 exactBytes=1124352 expectedBytes=1124352 fault=0 omittedWait=0 quarantined=0 failures=0
+ 8/11 Test #203: NrPostDlssReaderGpu .........................   Passed    4.10 sec
+204: NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=64
+204: NVIDIA_READERS boundaries=4 reuse=2 readerDrainedEpochs=2 exactBytes=1124352 expectedBytes=1124352 fault=1 omittedWait=0 quarantined=1 failures=0
+ 9/11 Test #204: NrPostDlssReaderGpu-missing-reader-fence ....   Passed    4.11 sec
+205: NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=64
+205: NVIDIA_READERS boundaries=4 reuse=2 readerDrainedEpochs=2 exactBytes=1124352 expectedBytes=1124352 fault=2 omittedWait=0 quarantined=1 failures=0
+10/11 Test #205: NrPostDlssReaderGpu-reader-state-error ......   Passed    4.09 sec
+206: NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=64
+206: NVIDIA_READERS boundaries=4 reuse=2 readerDrainedEpochs=2 exactBytes=1124352 expectedBytes=1124352 fault=3 omittedWait=0 quarantined=1 failures=0
+11/11 Test #206: NrPostDlssReaderGpu-reader-callback-error ...   Passed    4.12 sec
+The following tests passed:
+100% tests passed, 0 tests failed out of 11
+Total Test time (real) =  31.19 sec

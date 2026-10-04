@@ -144,3 +144,25 @@ and the independent gate release starts before GPU submission so exceptions
 cannot leave an unstarted release helper. This does not prove End UI dispatch,
 actual vendor FG reader retirement, provider creation changes or failure stress.
 Task6 stays partial; installed DLL/INI and MO2 settings are unchanged. **4 of 8**.
+
+The [NVIDIA public-reader contract probe](nvidia-pending-readers.json) extends
+actual DLAA/NR tagged-source coverage with an independent same-device DIRECT
+queue copying the real enhanced HUD-less texture. Four captures at two native
+extents preserve all 1,124,352 old-image bytes while production Session/Interop
+orders producer reuse and retirement against the returned real completion
+fence. CPU releases only the test gate; reader completion is signalled by GPU
+after the actual texture copy. The explicit omitted-wait control fails two
+producer-wait checks and the old-image oracle (747,292/1,124,352 exact bytes).
+The initial test accidentally drained the reader with a late HUD readback;
+eight pending/wait assertions failed, and the observation was moved before
+submission. No production defect or change is claimed.
+
+Three scripted public API failure cases reject a missing/nonzero-null fence,
+state-query error or owner-retirement refusal before any subsequent producer
+token/API reuse. Failed Stop leaves the submission capsule, independent reader
+and NR owner quarantined without retry. Actual independent copy completion is
+then observed for safe shutdown; it neither clears the fault nor releases the
+capsule. Full vendor/NGX teardown is not claimed. Eleven affected regressions
+pass. Public Streamline responses are scripted and there is no actual vendor
+FG output/presentation/cadence evidence in this fixture. Task5/6 remain partial,
+and installed DLL/INI/MO2 settings are unchanged. **4 of 8**.
