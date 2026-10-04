@@ -28,6 +28,15 @@ keeps conditional static routing separate from actual GPU execution. Actual
 Skyrim texture metadata is the next game gate; production tone handling and
 installed settings remain unchanged. **1 of 8** remains complete.
 
+The owner also reports stable RazKolbas NR. A
+[source-level comparison](../research/nr/tone-contract/RAZKOLBAS_COMPARISON.md)
+finds byte-preserving SDR RGBA8 Color/Output with the same RTX40 model that Dva
+uses, versus Dva's linear FP16 preparation. Saved Raz controls are Style 2 /
+Tone 1, and the owner is unsure whether Style 0 was tested. This prioritizes
+color/capture-stage parity but does not prove a format fix: the prior synthetic
+RGBA8 experiment still drifted. A matched Style-0 gameplay check and actual
+producer evidence remain necessary. **1 of 8** remains complete.
+
 Performance P0 now has optional bounded CPU/wait/Flush/descriptor observations and real retired D3D11/D3D12 timestamps for the seven prepared Before NR phases. The isolated executable admits the exact AIO19 model through a research-only generated catalog; production runtime pins are unchanged. The [clean baseline](../research/nr/performance/baseline.json) contains 24 synthetic 2560×1440 timing runs (7,200 measured sources). Vendor medians span 6.80–7.15 ms across both models; alternating transaction medians are approximately 10.0–10.2 ms. Both clean correctness runs preserved all 1,843,200 alpha pixels, including a live bypass/re-enable. Standard NR-enabled validation passed 165/165; Standard NR-disabled passed 148 initially plus all seven previously skipped fixture cases on a targeted eight-case rerun; standalone passed 29/29. Three Graphics Tools cases remain excluded. This is evidence to continue the queue/retained-slot plan, not confirmation of a Skyrim FPS gain. [Qualification and build limits](../research/nr/performance/validation.json) distinguish clean probe captures from precommit product builds. FSR stage timings, matched gameplay, the camera-motion tone root cause and true After remain open. Normal game telemetry and installed settings are unchanged. The completion count stays **1 of 8**.
 
 | Task | Status | Evidence or next requirement |

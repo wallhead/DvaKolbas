@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Read-only Raz/Dva source and saved-config comparison; no new game or GPU test",
+  "razHead": "c89f7996aa4fc7888bfe3227f812f5e16601a8c2",
+  "dvaHeadBeforeComparison": "2fdf1c134a617864db9fca994c1c4801a5fbe520",
+  "sourceHashes": {
+    "raz": {
+      "src/backends/nr/NrStage.cpp": "355130028ecc09354c85723bd1b86a2548bacbc38a75645dfffbb2fe73748992",
+      "src/skyrim/SrInput.cpp": "85e8f4b29966313bf71cb625fba0e5f2cca910e62dcede1cef929ca40b2e5b14",
+      "src/skyrim/WorldDrawHook.cpp": "46abcb0994c3066907cf006bc0caeff3e4e5aa929f58420f9602db897932034b",
+      "src/backends/dlss/SdrDlssPresenter.cpp": "5850a9666bd22df7347071c9c0ea9e421750570c5504c6fd73bd6928e377e45a",
+      "src/core/NrRuntimeSelection.cpp": "19435a9477d7d2b52a4b43d31581515979e57543a74fa1fdc8cae9f0e441b9be",
+      "src/config/SettingsSchema.cpp": "a7ef26e3bedda310d264f193da0eb40c0804d037cb0eff5e240984bdf3ebe867"
+    },
+    "dva": {
+      "src/NeuralRendering/PreparedBeforeUpscale.cpp": "962eb0a717762a5063fb3e190aa2c8e19553b342eb7ad554514d02b5ee9cc4db",
+      "src/NeuralRendering/BeforeUpscale.cpp": "dc921e080271607143f2b1e013ab859a6062128c79b2582d50447e03a0b5c186",
+      "src/NeuralRendering/Stage.cpp": "fbe929bd87faaedfaba4535790971499391e0d63d80930c3eb82a6cea2fc6fb3",
+      "src/NeuralRendering/RuntimeParameters.h": "9ca9b46c8f2c4b0022138aafac0e9d058e0682c71a864a79213e085585e80cd7",
+      "src/FrameGen/NeuralRenderingRuntimeContract.h": "56e9729223b51f0775d05c6e760013ed1d16d1ac8f241e34e6ac870d567ec5a9",
+      "src/FrameGen/NvidiaHostNeural.cpp": "4d0995f671f35d65154278dd74dfe97ea8ffea07f69e15958a564ddcf84c3795"
+    }
+  },
+  "savedRazConfig": {
+    "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RazKolbas\\SKSE\\Plugins\\RazKolbas.ini",
+    "sha256": "40c17f08b63c764fb5eb457085843be52a2201f9755713e01f7d8c41c29bedbc",
+    "neuralRendering": {
+      "Enabled": "false",
+      "RuntimeProfile": "ada-fastfp16",
+      "AllowExperimentalRuntime": "true",
+      "Position": "BeforeSR",
+      "Preset": "Default",
+      "Style": "2",
+      "Intensity": "0.9800000190734863",
+      "LocalToneStrength": "1",
+      "LocalStructureStrength": "1",
+      "SkinStructureStrength": "Auto",
+      "UseAutoMask": "false",
+      "PassCount": "1",
+      "InputResolutionScale": "0",
+      "InputColorIsHDR": "false",
+      "NativeUICorrection": "false",
+      "Resolve": "Auto"
+    },
+    "scope": "Saved values only; not an active runtime observation"
+  },
+  "installedRazModel": {
+    "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RazKolbas\\SKSE\\Plugins\\RazKolbasRuntime\\NR\\ada-fastfp16\\nvngx_dlssnr.dll",
+    "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "size": 165840496
+  },
+  "ownerEvidence": {
+    "stableRazReported": true,
+    "style0Tone1Confirmed": false,
+    "clarification": "Owner answered I am not sure about Style 0 / Tone 1"
+  },
+  "verifiedSourceDifferences": [
+    "Raz copies SDR RGBA8 color/output without color transfer conversion",
+    "Dva prepares linear FP16 color/output",
+    "Raz uses explicit DepthInverted=0; Dva uses measured camera convention",
+    "NR is before DLSS/DLAA in Raz; Dva is before DLSS/FSR with conditional ReShade delivery"
+  ],
+  "sharedContracts": [
+    "Same installed community RTX40 model hash",
+    "Direct feature 0x12, app 0x0876232c, API 0x15",
+    "Creation flags 0x42, native scaling, quality 2",
+    "Full scalar tone/structure/intensity/skin keys",
+    "RG16 motion with extent scales; R32 depth preparation; native UI correction disabled"
+  ],
+  "existingNegativeEvidence": {
+    "receipt": "format-validation.json",
+    "scope": "Synthetic fixed-surface context test; not Skyrim camera rotation",
+    "style0EncodedRgba8Drift": 8.839,
+    "style0LinearFp16Drift": 22.44,
+    "eliminatedByRgba8": false
+  },
+  "nextGate": "Matched Raz Style 0 / Tone 1 camera rotation with visible NR off/on effect; compare native SDR source contract",
+  "installedSettingsEdited": false,
+  "renderingSourceChanged": false,
+  "driftFixed": false,
+  "milestonesComplete": 1,
+  "milestonesTotal": 8
+}
