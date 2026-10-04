@@ -48,3 +48,12 @@ The retained [host probe](host-probe/TraceAioHost.py) checks the exact host hash
 The qualitative same-scene comparison is now complete for the reported defect: apparently only Dva Style 0 shifts, while AIO Style 0 stays stable and visibly processes NR. Do not ask for the same generic stability/on-off comparison again.
 
 Proceed to bounded actual Color/Output, guide, view/format, effective-control/mask and reset captures. Include active viewport dimensions: AIO logs forcing DynamicResolution on, even though its created NR feature and FSR recommendation are native 2560x1440. Do not infer a complete source-viewport match from creation dimensions. Compare the NR-induced correction on persistent surfaces, not unrelated full-screen mean colors. AIO's stable game result makes integration parity the priority before any new temporal tone architecture. The original and RTX40 model captures match only within the retained fixtures; actual moving-game input parity is unproven. Raw encoded input, output initialization, new mask semantics or reduced tone remain unproven fixes. Completed NR milestone count remains **1 of 8**.
+
+The first bounded [runtime-control observer](runtime-observer/README.md) is built
+and qualified on owned CPU/GPU fixtures. It reads the exact vendor network-entry
+frame using a hardware breakpoint, including effective Style/Tone, masks,
+subrects, resets and the indexed coefficient block. Both model fixtures retain
+identical baseline/observed CSVs and RGB captures. **No Skyrim observation has
+been captured yet**, and this first tool does not measure resource/view formats,
+pixel values or active viewport dimensions. Those remain subsequent evidence
+requirements. No installed settings or product code changed.

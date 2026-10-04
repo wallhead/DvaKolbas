@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-04",
+  "capturedUtc": "2026-10-04T09:49:34.659076+00:00",
+  "suite": "observer-lifecycle",
+  "casesPerRun": 11,
+  "consecutiveSuiteRuns": 10,
+  "result": "passed",
+  "command": "ctest --test-dir out/build/nr-boundary-observer -C Release --output-on-failure --repeat until-fail:10",
+  "fullRepeatLog": "out\\research\\nr\\tone-preserve-investigation\\boundary-cpu-final.log",
+  "fullRepeatLogSha256": "7f35ca56795c4d2b206bc3e160d6d4143eb6238fb7e647cdead067b9b1b0c3fc",
+  "lastRunLog": "out\\build\\nr-boundary-observer\\Testing\\Temporary\\LastTest.log",
+  "lastRunLogSha256": "923389c90703e7022ec04da570e5a03db93e307bc4df1d2eff43a10883506f4a",
+  "sourceSha256": {
+    "Observer.cpp": "bf446241e75d23663ffd0ad76c4d2a4df0f4e9906dfb71be9b0d53a72e50dc71",
+    "Fixture.cpp": "976b1a81e50b7cdf46f55ea4a9768416dc4882fe84e010f5d9c874cd6dd6df8e",
+    "TestObserver.py": "b65fdb19b4f803a4357e0b5c3cbd353eac1551f3c386f3752cd51320095c7313",
+    "CMakeLists.txt": "7ef54affc98b5d7b7c63d9400903af6108648789fee49c0383f494063e8e87ac"
+  },
+  "observerSha256": "9d19905ddbc5767748643475165453762db4d1a7081c222baf52c4d7cb3bdbca",
+  "cases": [
+    "test_limit_detaches_and_captures_effective_values",
+    "test_timeout_detaches_when_nr_never_runs",
+    "test_new_threads_are_observed_and_restored",
+    "test_read_failure_restores_and_keeps_target_running",
+    "test_cancellation_cleans_up",
+    "test_cancel_with_active_workers_drains_pending_faults",
+    "test_process_exit_is_not_reported_as_sample_limit",
+    "test_unknown_image_hash_is_rejected_before_attach",
+    "test_existing_breakpoint_is_preserved_on_partial_arm_failure",
+    "test_target_breakpoint_during_attach_reaches_its_handler",
+    "test_unpinned_fixture_is_rejected_in_game_mode"
+  ],
+  "limits": [
+    "Owned CPU fixture only; no Skyrim attachment qualification",
+    "Only file cancellation is qualified; forced observer termination is not",
+    "Foreign-breakpoint test passed with an old-classifier mutation too; it does not deterministically reproduce the reviewed initial race"
+  ]
+}

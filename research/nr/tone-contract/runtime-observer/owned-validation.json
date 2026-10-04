@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-04",
+  "observerSha256": "9d19905ddbc5767748643475165453762db4d1a7081c222baf52c4d7cb3bdbca",
+  "probeSha256": "fa95e8dc8f13173bdeb00d74bd8e7a3de567cf8cdc5a9f49ab754a4bf79e5cd1",
+  "coreSha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+  "runs": [
+    {
+      "profile": "rtx40",
+      "observations": 32,
+      "moduleSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "observationSha256": "3d917c2498ec830ea2a1ffac3454255eab2f7c5fbaa2d8768b17024228a3c2c0",
+      "baselineAndObservedHashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "evaluationsPerRun": 160,
+      "resetsPerRun": 1,
+      "alphaChecksPerRun": 36864000,
+      "outputIdentical": true,
+      "detached": true,
+      "registersRestored": true
+    },
+    {
+      "profile": "aio19-rtx40-shim",
+      "observations": 32,
+      "moduleSha256": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+      "observationSha256": "2dd5e281344efd716390fbeecb96787b6d5581444e64d068eb7d9a941aaa60f3",
+      "baselineAndObservedHashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "evaluationsPerRun": 160,
+      "resetsPerRun": 1,
+      "alphaChecksPerRun": 36864000,
+      "outputIdentical": true,
+      "detached": true,
+      "registersRestored": true
+    }
+  ],
+  "localOutput": "out\\research\\nr\\tone-preserve-investigation\\boundary-owned-20261004-094705",
+  "limits": [
+    "Owned standalone fixture; no actual Skyrim attachment yet",
+    "No pixels/views/formats captured from AIO game host",
+    "Not a drift fix or a performance measurement"
+  ]
+}
