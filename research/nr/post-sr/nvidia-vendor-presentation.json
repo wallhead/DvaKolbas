@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "actual vendor presentation probe prepared; foreground qualification pending; Task5 remains open",
+  "baseRevision": "85260a5199390087b2d63c79aef7251187e0756b",
+  "productionOrInstalledCodeChanged": false,
+  "installedAndMo2Hashes": {
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "78a8bb8a74e888d053331c28ac94d4e7f4d5b942f996b56897fdfe7c0ac0fae1",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2"
+  },
+  "probe": {
+    "actual": [
+      "unchanged production DLAA backend",
+      "direct pinned RTX40 NR",
+      "production Session and Interop",
+      "pinned public Streamline APIs and DXGI proxy Presents"
+    ],
+    "finalSchedule": {
+      "warmupRealPresents": 600,
+      "sources": 480,
+      "nr": 478,
+      "extents": [
+        [
+          1280,
+          720
+        ],
+        [
+          1344,
+          756
+        ]
+      ],
+      "resizes": 1,
+      "fgOnSources": 416,
+      "fgOffSources": 64,
+      "uiRecompositionRequested": true,
+      "sourcePacingMs": 33
+    },
+    "finalForegroundRule": "Return 77 before source work if not foreground; manual mode waits up to 30 seconds for focus; loss during the run is unqualified, never a pass",
+    "loadedFiles": "six exact leased modules copied to build-local actual-streamline; SL OTA preference disabled, no MFG unlock; process-owned modules/leases retained",
+    "lifetime": "Retirement guard holds original/resize source sets, tagged textures, readback, native buffers, queue/device, NR owner and vendor proxy owner. Warm-up heap/buffers separately guarded. Uncertain retirement quarantines without retry.",
+    "APIErrorObserver": "test-only atomic asynchronous callback; does not change Session options or product code"
+  },
+  "earlierActualObservation": {
+    "status": "bounded source/counter observation, not final qualification",
+    "uiRecompositionRequested": false,
+    "foregroundRecorded": false,
+    "vendor": {
+      "actualPresents": 728,
+      "warmup": 600,
+      "sources": 128,
+      "on": 64,
+      "off": 64,
+      "doubles": 52,
+      "firstOn": 26,
+      "resumedOn": 26,
+      "readerFenceSamples": 110,
+      "realExactBytes": 496041984,
+      "expectedRealBytes": 496041984,
+      "status": 0,
+      "failures": 0
+    },
+    "source": {
+      "sources": 128,
+      "dlaa": 128,
+      "nr": 126,
+      "tags": 128,
+      "exactTagBytes": 496041984,
+      "expectedTagBytes": 496041984,
+      "alphaExact": 124010496,
+      "expectedPixels": 124010496,
+      "frozen": 128,
+      "hud": 128,
+      "nrWhileFgOff": 64,
+      "configuredOn": 64,
+      "configuredOff": 665
+    },
+    "sourceAndRealPixels": "496041984 exact enhanced tag bytes and same exact independently captured real native backbuffer bytes; synthetic premultiplied HUD bar preserved"
+  },
+  "negativeControls": {
+    "forceOff": "earlier 128-source probe exited1 with zero vendor doubles and failed schedule/production assertion",
+    "wrongRealSource": "earlier probe exact HUD-less tags but 490449685/496041984 real bytes; exact real image assertion fails; simultaneous zero generation is not attributed to this negative because focus was not then measured"
+  },
+  "foregroundInvestigation": {
+    "shortBurst": "initial 32-source On phase had 26/22 doubles and failed threshold; paced version 26/26 passed",
+    "longBurst": "240 sources per extent and UI recomposition still produced zero doubles when foreground=0",
+    "activation": "SetForegroundWindow declined, foreground=0 at all11 sampled points; no asynchronous API errors",
+    "conclusion": "missing foreground is the identified test precondition; causal foreground-vs-background comparison and final generated output check await manual focused run"
+  },
+  "verification": {
+    "currentBuild": "Release standalone executable rebuilt successfully",
+    "currentCpuTests": {
+      "passed": 3,
+      "seconds": 0.51
+    },
+    "currentVendorCTest": "SKIPPED (exit77) in1.54sec; zero qualified passes",
+    "earlierRelatedSuite": "11 of12 passed42.51sec before final focus guard; real vendor case failed and remains open",
+    "runnerSyntax": "PowerShell parse passed; native stderr logging preserved under Windows PowerShell"
+  },
+  "notClaimed": [
+    "generated frame pixel readback",
+    "display cadence or performance gain",
+    "final foreground vendor pass",
+    "actual game End Apply dispatch",
+    "broader vendor/provider/failure stress",
+    "full SDK/NGX process shutdown",
+    "other NVIDIA GPU families",
+    "scaled/HDR After support"
+  ],
+  "next": "Run tools/nr/Start-Nvidia-NR-FG-Visible.cmd and keep scene foreground; inspect its out/research/nr/post-sr/nvidia-vendor-visible-*.log before marking Task5 complete",
+  "completedMilestones": 4,
+  "totalMilestones": 8,
+  "observedInputSha256": {
+    "tests/nr-postsr/PostDlssSourceGpuTests.cpp": "e4cc25e098a9f13ca7d37e23193a99e854eec0a08d3d298cfad50d1303c0838b",
+    "tests/nr-postsr/VendorPresentation.h": "3b19b77a115a6c38ec67372a27dc67367b820840e901e5271b6154369427a5b5",
+    "tests/nr-postsr/CMakeLists.txt": "e20fee490b3be91ea8ea828d20b31cc7805072103d3de90561015c8901ba009e",
+    "tests/nr-postsr/GpuProbeLifetime.h": "72787f13c31ed384ba0aaf57193b28e3ae9c7e3fb17f64337a0fee99410c363d",
+    "src/DLSSBackend.cpp": "13b7ccedbb6512afe84435a1e58ee2ed4bc75f5ad69a67864dd392a20e260d9e",
+    "src/FrameGen/SourceNvidiaFrameEvaluator.h": "994f58a60c174c22ec140fd8313751baee3e00a004984d2ca23919ab2f66fc09",
+    "src/FrameGen/SourceDLSSGSession.cpp": "e189c7b84869118f1a6099cf340ea678a9fdc0464a904b2ac000a88a5891fbc4",
+    "src/FrameGen/SourceDLSSGInterop.cpp": "9220f5c43aaaa538d4f01b5994c6a1852613e8a51ce14b6c6c41c3ad663a59a2",
+    "src/NeuralRendering/PostUpscale.cpp": "28cda1ee67f8f652382fcd95ed0202d66591ecd4b63d0fc611fa686716c1209d",
+    "tools/nr/Run-Nvidia-NR-FG-Visible.ps1": "aa64dcba93c02e151fa9261ac6d0acf0d521d6393c717c445036ee34901dc378",
+    "tools/nr/Start-Nvidia-NR-FG-Visible.cmd": "761f8aa5650ce29c8b122b33a13393b51b3c07b6415e9f851ed5270826b05557"
+  },
+  "probeExecutableSha256": "5e557d95adc59837185a7d2a15e257bf9d01ccd4cb68f0980515110376205735"
+}

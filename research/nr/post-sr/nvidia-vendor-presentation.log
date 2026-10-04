@@ -1,0 +1,69 @@
+
+FILE nvidia-vendor-real-source-verbose.txt
+NVIDIA_VENDOR actualPresents=728 warmup=600 sources=128 on=64 off=64 doubles=52 firstOn=26 resumedOn=26 readerFenceSamples=110 realExactBytes=496041984 expectedRealBytes=496041984 status=0 failures=0
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=496041984 expectedTagBytes=496041984 alphaExact=124010496 expectedPixels=124010496 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=665
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+
+FILE nvidia-vendor-force-off.txt
+FAIL ActualVendorPresentsReportGeneratedOutputBeforeAndAfterResize
+FAIL ActualVendorOffOnOffOnSourceSchedule
+NVIDIA_VENDOR actualPresents=728 warmup=600 sources=128 on=0 off=128 doubles=0 firstOn=0 resumedOn=0 readerFenceSamples=0 status=0 failures=2
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=496041984 expectedTagBytes=496041984 alphaExact=124010496 expectedPixels=124010496 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=0 configuredOff=729
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+
+FILE nvidia-vendor-wrong-real.txt
+FAIL ActualVendorPresentsReportGeneratedOutputBeforeAndAfterResize
+FAIL ActualNativeBackbufferMatchesEnhancedRealSourceAndNativeUi
+NVIDIA_VENDOR actualPresents=728 warmup=600 sources=128 on=64 off=64 doubles=0 firstOn=0 resumedOn=0 readerFenceSamples=0 realExactBytes=490449685 expectedRealBytes=496041984 status=0 failures=2
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=496041984 expectedTagBytes=496041984 alphaExact=124010496 expectedPixels=124010496 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=665
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+
+FILE nvidia-vendor-foreground-full.txt
+VENDOR_WINDOW present=0 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=100 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=200 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=300 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=400 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=500 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=600 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=700 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=800 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=900 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=1000 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+FAIL ActualVendorPresentsReportGeneratedOutputBeforeAndAfterResize
+NVIDIA_VENDOR actualPresents=1080 warmup=600 sources=480 on=416 off=64 doubles=0 firstOn=0 resumedOn=0 readerFenceSamples=0 realExactBytes=1860157440 expectedRealBytes=1860157440 status=0 failures=1
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=480 dlaa=480 nr=478 tags=480 exactTagBytes=1860157440 expectedTagBytes=1860157440 alphaExact=465039360 expectedPixels=465039360 frozen=480 hud=480 nrWhileFgOff=64 configuredOn=416 configuredOff=665
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+
+FILE nvidia-vendor-activated-full.txt
+VENDOR_ACTIVATION requested=1 granted=0 foreground=0
+VENDOR_WINDOW present=0 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=100 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=200 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=300 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=400 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=500 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=600 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=700 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=800 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=900 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+VENDOR_WINDOW present=1000 foreground=0 active=1 apiErrors=0 lastError=0x00000000
+FAIL ActualVendorPresentsReportGeneratedOutputBeforeAndAfterResize
+NVIDIA_VENDOR actualPresents=1080 warmup=600 sources=480 on=416 off=64 doubles=0 firstOn=0 resumedOn=0 readerFenceSamples=0 realExactBytes=1860157440 expectedRealBytes=1860157440 status=0 failures=1
+SKIPPED: D3D11 Graphics Tools debug queue unavailable
+NVIDIA_SOURCE sources=480 dlaa=480 nr=478 tags=480 exactTagBytes=1860157440 expectedTagBytes=1860157440 alphaExact=465039360 expectedPixels=465039360 frozen=480 hud=480 nrWhileFgOff=64 configuredOn=416 configuredOff=665
+SCOPE actual DLAA/NR enhanced tags and real public vendor proxy Presents/counters; synthetic native UI composition; no generated pixel readback/cadence/full SDK shutdown claim
+
+FILE nvidia-vendor-final-preflight-full.txt
+VENDOR_ACTIVATION requested=1 granted=0 foreground=0
+FOREGROUND_REQUIRED click the isolated probe window; keep it foreground through both size epochs
+NOT_QUALIFIED foreground precondition: Visible vendor FG probe must stay in the foreground
+
+FILE nvidia-vendor-final-cpu.txt
+1/3 Test  #24: InteropRetirement ................   Passed    0.47 sec
+2/3 Test  #42: SourceDLSSGSession ...............   Passed    0.01 sec
+100% tests passed, 0 tests failed out of 3
