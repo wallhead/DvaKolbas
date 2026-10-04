@@ -1,0 +1,34 @@
+{
+  "installedProductChanged": false,
+  "unrelatedModFilesVerified": 23,
+  "dllSha256": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+  "newIniSha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+  "gameLaunched": false,
+  "oldIniSha256": "0976c1d197da323adc0fbcbe97d341d8612c16a6aaf278a38ea0cab4de7de96d",
+  "date": "2026-10-04",
+  "schema": 1,
+  "protectedMo2": {
+    "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "78a8bb8a74e888d053331c28ac94d4e7f4d5b942f996b56897fdfe7c0ac0fae1"
+  },
+  "changedKeys": {
+    "Settings/UpscaleType": {
+      "from": "4",
+      "to": "3"
+    },
+    "Experimental/FrameGenerationBackend": {
+      "from": "2",
+      "to": "1"
+    }
+  },
+  "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-after-nvidia-pre-game-20261004-194156",
+  "retained": {
+    "NativeUI": "true",
+    "FGEnabled": "true",
+    "NRBeforeUpscaling": "false",
+    "NRStableColors": "false",
+    "NRStyle": "0"
+  },
+  "scope": "DLAA -> NR After -> NVIDIA FG qualification INI installed after owner closure",
+  "installedProductRevision": "dc6a9abe3630"
+}

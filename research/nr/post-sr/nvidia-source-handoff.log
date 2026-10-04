@@ -1,0 +1,104 @@
+=== nvidia-source-red.txt ===
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+    Start 199: NrPostDlssSourceGpu
+1/1 Test #199: NrPostDlssSourceGpu ..............***Failed    2.01 sec
+[DLSSBackend] device set: device=0x2daa4ae9da0 context=0x2daa4aeb4e8
+[DLSSBackend] NVSDK_NGX_D3D11_Init_with_ProjectID result=0x00000001 (Success) searchPath="C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\build\fsr-fg-standard\tests\nr-postsr\Release\Data\SKSE\Plugins\TheosRenderPipeline" dataPath="C:\Users\user\AppData\Local\Temp\TheosRenderPipeline"
+[DLSSBackend] DLSS available=true needsDriverUpdate=false
+[DLSSBackend] NGX_D3D11_CREATE_DLSS_EXT result=0x00000001 (Success) handle=0x2db556b7450 render=320x180 display=320x180 quality=5 flags=0x00000040
+[DLSSBackend] initialized: mode=DLAA renderScale=1.000 isHDR=false preset=0 fixedInput=true
+[DLSSBackend] observed color input format=28
+[DLSSBackend] output texture created: 320x180 format=28
+[DLSSBackend] NGX_D3D11_EVALUATE_DLSS_EXT result=0x00000001 (Success) render=320x180 jitter=(0.0000,0.0000) mvScale=(320.0,180.0) reset=true consecutiveFails=0
+[DLSSBackend] NGX_D3D11_CREATE_DLSS_EXT result=0x00000001 (Success) handle=0x2db2dc760d0 render=384x216 display=384x216 quality=5 flags=0x00000040
+[DLSSBackend] initialized: mode=DLAA renderScale=1.000 isHDR=false preset=0 fixedInput=true
+[DLSSBackend] output texture created: 384x216 format=28
+FAIL EveryActualTaggedByteMatchesEnhancedOutputIncludingFgOff
+NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=11743388 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65
+SCOPE actual production DLAA+NR+Interop+Session tags; scripted public Streamline API sink, no vendor FG output/cadence/UI composition claim
+
+
+0% tests passed, 1 tests failed out of 1
+
+Label Time Summary:
+GPU    =   2.01 sec*proc (1 test)
+
+Total Test time (real) =   2.03 sec
+
+The following tests FAILED:
+	199 - NrPostDlssSourceGpu (Failed)                      GPU
+Errors while running CTest
+
+=== probe-lifetime-red.txt ===
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+    Start 197: NrProbeLifetime
+1/1 Test #197: NrProbeLifetime ..................***Failed    0.02 sec
+FAIL UncertainReadersMustStayOwned
+FAIL OwnershipSurvivesGuardUnwind
+FAIL UncertainReadersMustStayOwned
+FAIL OwnershipSurvivesGuardUnwind
+PROBE_LIFETIME failures=4 confirmed/refused/throwing retirement; no failed retry
+
+
+0% tests passed, 1 tests failed out of 1
+
+Total Test time (real) =   0.04 sec
+
+The following tests FAILED:
+	197 - NrProbeLifetime (Failed)
+Errors while running CTest
+
+=== nvidia-source-green.txt ===
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+UpdateCTestConfiguration  from :C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard/DartConfiguration.tcl
+UpdateCTestConfiguration  from :C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard/DartConfiguration.tcl
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 197
+    Start 197: NrProbeLifetime
+
+197: Test command: C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\build\fsr-fg-standard\tests\nr-postsr\Release\TRPNrProbeLifetimeTests.exe
+197: Working Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard/tests/nr-postsr
+197: Test timeout computed to be: 10000000
+197: PROBE_LIFETIME failures=0 confirmed/refused/throwing retirement; no failed retry
+1/2 Test #197: NrProbeLifetime ..................   Passed    0.02 sec
+test 200
+    Start 200: NrPostDlssSourceGpu
+
+200: Test command: C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\build\fsr-fg-standard\tests\nr-postsr\Release\TRPNrPostDlssSourceGpuTests.exe "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll" "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll"
+200: Working Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard/tests/nr-postsr
+200: Test timeout computed to be: 180
+200: GRAPHICS_DEBUG d3d11=0
+200: [DLSSBackend] device set: device=0x1ba1000fb50 context=0x1ba0e288108
+200: [DLSSBackend] NVSDK_NGX_D3D11_Init_with_ProjectID result=0x00000001 (Success) searchPath="C:\Users\user\.codex\worktrees\fsr-sr\DvaKolbas\out\build\fsr-fg-standard\tests\nr-postsr\Release\Data\SKSE\Plugins\TheosRenderPipeline" dataPath="C:\Users\user\AppData\Local\Temp\TheosRenderPipeline"
+200: [DLSSBackend] DLSS available=true needsDriverUpdate=false
+200: [DLSSBackend] NGX_D3D11_CREATE_DLSS_EXT result=0x00000001 (Success) handle=0x1babf1a5910 render=320x180 display=320x180 quality=5 flags=0x00000040
+200: [DLSSBackend] initialized: mode=DLAA renderScale=1.000 isHDR=false preset=0 fixedInput=true
+200: [DLSSBackend] observed color input format=28
+200: [DLSSBackend] output texture created: 320x180 format=28
+200: [DLSSBackend] NGX_D3D11_EVALUATE_DLSS_EXT result=0x00000001 (Success) render=320x180 jitter=(0.0000,0.0000) mvScale=(320.0,180.0) reset=true consecutiveFails=0
+200: [DLSSBackend] NGX_D3D11_CREATE_DLSS_EXT result=0x00000001 (Success) handle=0x1babf415dd0 render=384x216 display=384x216 quality=5 flags=0x00000040
+200: [DLSSBackend] initialized: mode=DLAA renderScale=1.000 isHDR=false preset=0 fixedInput=true
+200: [DLSSBackend] output texture created: 384x216 format=28
+200: SKIPPED: D3D11 Graphics Tools debug queue unavailable
+200: NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65
+200: SCOPE actual production DLAA+NR+Interop+Session tags; scripted public Streamline API sink, no vendor FG output/cadence/UI composition claim
+2/2 Test #200: NrPostDlssSourceGpu ..............   Passed    2.06 sec
+
+The following tests passed:
+	NrProbeLifetime
+	NrPostDlssSourceGpu
+
+100% tests passed, 0 tests failed out of 2
+
+Label Time Summary:
+GPU    =   2.06 sec*proc (1 test)
+
+Total Test time (real) =   2.09 sec

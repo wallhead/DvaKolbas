@@ -103,3 +103,27 @@ Automatic mode proves execution, not compositor pixels. Graphics debug queues,
 physical cadence, broader hardware/scene and matched performance remain
 unqualified. This completes Task4 for native-size SDR After: **4 of 8**.
 No installed DLL, INI or MO2 settings changed during this test/document step.
+
+NVIDIA follow-up: the [source handoff receipt](nvidia-source-handoff.json) records
+128 actual production DLAA sources and 126 RTX40 NR evaluations, two native
+extents, NR off/on and FG configured off/on/off. Every enhanced HUD-less tag byte
+is read back through the production D3D11/D3D12 interop and Session. All source
+alpha pixels, frozen temporal SR input and independent UI are preserved. A
+deliberately unenhanced tag fails the exact-byte oracle. Public Streamline API
+callbacks are scripted; this does not prove vendor FG output, presentation,
+physical cadence or game UI composition. Synthetic guides have static depth,
+zero motion and zero jitter; moving-scene quality is a separate game check.
+
+The probe's exception lifetime guard was corrected after review. Confirmed
+retirement releases its capsule; refused/throwing retirement permanently retains
+submitted sources/tags/readback/device/queue/runtime owner without retry. The
+CPU negative control fails four assertions, and final CPU/GPU checks pass.
+Process-owned D3D11 NGX subsystem/capabilities are not fully shut down by this
+fixture. The earlier full suite passed 201 checks; only the two affected tests
+were rerun after the fixture fix. Debug queues remain unavailable.
+
+The [installed NVIDIA trial](nvidia-pre-game-install.json) changes only the two
+provider INI keys to DLAA/backend1, retaining After, FG enabled, full Tone 1,
+Style 0, Stable colors off and native UI. The clean dc6a9abe3630 DLL and MO2
+settings are unchanged; accepted FSR INI is backed up. Fuller NVIDIA Skyrim
+acceptance is next. Task5 stays open and the count remains **4 of 8**.

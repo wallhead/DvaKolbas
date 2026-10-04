@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "baseRevision": "6f2ff3b9644dd81f24da543928129d63755c33f9",
+  "scope": "Actual production DLAA -> direct RTX40 NR -> production Interop/Session enhanced tag readbacks; scripted public Streamline sink",
+  "installedProductRevision": "dc6a9abe3630",
+  "productionCodeChanged": false,
+  "gameLaunched": false,
+  "gpu": "RTX 4080 SUPER 10de:2702",
+  "driver": "32.0.16.1714",
+  "sourceSha256": {
+    "tests/nr-postsr/CMakeLists.txt": "c897db593f798eddfadbcadb88f0eae449e18d221122b4feefdd8b17eb2208dd",
+    "tests/nr-postsr/PostDlssSourceGpuTests.cpp": "d5992d8b82b5d68279dadc55744d4d65f30c03503e8f3b02d020507498173f0e",
+    "tests/nr-postsr/GpuProbeLifetime.h": "72787f13c31ed384ba0aaf57193b28e3ae9c7e3fb17f64337a0fee99410c363d",
+    "tests/nr-postsr/GpuProbeLifetimeTests.cpp": "a5986e3b0e0a1e5302874861ed53519c835954b222e57f529ed99559ba043b7c",
+    "tests/nr-postsr/dlss/PCH.h": "0281b2692fafaf471b96771fca209e71fdb21f38f0eca2fc4ae3882a22f502da",
+    "tests/nr-postsr/dlss/PerformanceFacade.cpp": "2bd6264ab92ecbbf76e30457f7f3e42921d0680be4d6c6ad69fa9922cb2f5b27",
+    "src/DLSSBackend.cpp": "13b7ccedbb6512afe84435a1e58ee2ed4bc75f5ad69a67864dd392a20e260d9e",
+    "src/FrameGen/SourceDLSSGInterop.cpp": "9220f5c43aaaa538d4f01b5994c6a1852613e8a51ce14b6c6c41c3ad663a59a2",
+    "src/FrameGen/SourceDLSSGSession.cpp": "e189c7b84869118f1a6099cf340ea678a9fdc0464a904b2ac000a88a5891fbc4",
+    "src/FrameGen/SourceNvidiaFrameEvaluator.h": "994f58a60c174c22ec140fd8313751baee3e00a004984d2ca23919ab2f66fc09",
+    "src/NeuralRendering/PostUpscale.cpp": "28cda1ee67f8f652382fcd95ed0202d66591ecd4b63d0fc611fa686716c1209d"
+  },
+  "runtimeSha256": {
+    "nvngx_dlss.dll": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",
+    "nvngx_dlssnr.dll": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "_nvngx.dll": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+  },
+  "sourceResult": {
+    "nativeExtents": [
+      [
+        320,
+        180
+      ],
+      [
+        384,
+        216
+      ]
+    ],
+    "sources": 128,
+    "actualDlaaEvaluations": 128,
+    "actualNrEvaluations": 126,
+    "nrOffBypasses": 2,
+    "tagsReadBack": 128,
+    "exactEnhancedTagBytes": 35979264,
+    "expectedEnhancedTagBytes": 35979264,
+    "exactSourceAlphaPixels": 8994816,
+    "expectedSourcePixels": 8994816,
+    "frozenSrInputs": 128,
+    "unchangedUiSources": 128,
+    "nrEvaluationsWhileFgConfiguredOff": 64,
+    "fgOnOptionsCalls": 64,
+    "fgOffOptionsCallsIncludingInitialDisable": 65
+  },
+  "negativeControls": {
+    "unenhancedTag": {
+      "failedOracle": "EveryActualTaggedByteMatchesEnhancedOutputIncludingFgOff",
+      "exactBytes": 11743388,
+      "expectedBytes": 35979264
+    },
+    "releasedUncertainCapsule": {
+      "failedAssertions": 4
+    }
+  },
+  "review": {
+    "finding": "Fixture exception unwind could release external tagged resources before confirmed retirement",
+    "fix": "Guard retains sources, shared tags, readback, device/queue and runtime owner; refused/throwing retirement quarantines without retry; feature release only after confirmed retirement",
+    "followup": "No remaining important blocker in reviewed fixture scope"
+  },
+  "verification": {
+    "fullRunnableSuiteBeforeFixtureGuardFix": {
+      "passed": 201,
+      "failed": 0,
+      "seconds": 184.21,
+      "gpuTests": 47,
+      "reshadeTests": 4
+    },
+    "finalAffectedTests": {
+      "names": [
+        "NrProbeLifetime",
+        "NrPostDlssSourceGpu"
+      ],
+      "passed": 2,
+      "failed": 0,
+      "seconds": 2.09
+    },
+    "excludedUnavailableGraphicsTools": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "d3d11DebugQueue": "UNAVAILABLE"
+  },
+  "limits": [
+    "No actual vendor FG execution/output/presentation/cadence in this fixture",
+    "No game UI composition pixel claim",
+    "Native DLAA only; scaled After remains rejected",
+    "Synthetic changing colors, static depth, zero motion and zero jitter",
+    "D3D11 NGX subsystem/capabilities remain process-owned; no complete NGX shutdown claim",
+    "Other NVIDIA families and AMD NR not qualified",
+    "Task5 vendor reader/lifecycle and fuller NVIDIA Skyrim acceptance remain open"
+  ],
+  "completedMilestones": 4,
+  "totalMilestones": 8
+}

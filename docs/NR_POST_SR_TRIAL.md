@@ -14,11 +14,15 @@ tuning and placement are live; mode/provider changes retain their existing
 restart requirements. `[` disables NR and `]` enables it. After currently needs
 DLAA or FSR Native AA. Menus/loading or invalid world guides bypass NR.
 
-The standalone tests prove actual RTX 40 NR output, exact alpha, stage switches
-with a pending encoder, resize, ReShade device ownership, and actual FSR Native
-AA enhanced-source upload. They do not establish the actual NVIDIA vendor chain,
-combined FSR generated-output quality or Skyrim acceptance of After placement.
-Those checks remain open. Other NVIDIA families are NOT RUN; AMD NR unsupported.
+The standalone tests prove actual RTX 40 NR output, exact alpha, pending source
+switches, resize, ReShade device ownership, actual FSR Native AA enhanced-source
+upload and combined FSR presentation/retirement. Local FSR gameplay checks pass.
+The actual production DLAA backend also passes NR source/tag readbacks at two
+native extents. Its Streamline API sink is scripted: it does not prove vendor FG
+output or native game UI composition. The first DLAA game run already observes
+NR and NVIDIA x2 output; the fuller NVIDIA gameplay/lifecycle check is next.
+Other NVIDIA families are NOT RUN; AMD NR unsupported. Scaled After and matched
+performance remain separate qualification gates.
 
 Install only when Skyrim and MO2 are closed, keeping the accepted Before mod for
 rollback. Start manually using the existing MO2 SKSE entry. Compare the same scene
@@ -46,3 +50,16 @@ MO2 settings are unchanged. [Install receipt](../research/nr/post-sr/fsr-native-
 Start through the usual MO2 SKSE entry, load a save, check FSR active / NR active
 after upscaling, and compare NR/FG off/on, camera rotation, HUD/inventory/map,
 save/reload and alt-tab/minimize. Report drift, flicker, damaged UI or freezing.
+
+NVIDIA pre-game checkpoint, 2026-10-04: the matched DLAA After/NVIDIA-FG INI
+is prepared. Only UpscaleType=3 and FrameGenerationBackend=1 differ from the
+accepted FSR INI. The working clean dc6a9abe3630 DLL is reused because its
+production source is unchanged. Full Tone 1, Style 0, Stable colors off, native
+UI and normal logging are preserved. After confirmed MO2/Skyrim closure, the
+INI alone can be installed with an FSR INI backup. Start through the existing
+MO2 SKSE entry; use the same save for NR/FG off/on, camera/color/UI, dialogue,
+save/reload, fast travel and alt-tab/minimize. This qualifies the NVIDIA route;
+the accepted FSR checks do not need repeating. The INI is now installed after
+confirmed closure, with an FSR rollback and protected DLL/MO2 hashes verified.
+See the [source proof](../research/nr/post-sr/nvidia-source-handoff.json) and
+[installation receipt](../research/nr/post-sr/nvidia-pre-game-install.json).
