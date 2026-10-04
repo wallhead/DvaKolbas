@@ -2,8 +2,17 @@
 
 **1 of 8 milestones complete:** Task 2, the standalone direct runtime catalog/owner and RTX 40 GPU qualification. Task order differs from completion count: Task 1 true post-FG feasibility remains open.
 
+**Next-feature checkpoint, 2026-10-04:** resumed true After-FG feasibility.
+The [independent source-pair guide experiment](../research/nr/post-fg/GUIDE_RECONSTRUCTION.md)
+passes 26 research assertions, including explicit negative evidence: subpixel
+boundaries and a surface hidden at both endpoints have incorrect intermediate
+guides. Full coverage is insufficient. Official pinned FSR source contains
+intermediate depth and packed motion candidates, but their exact-runtime access,
+alias lifetime and correspondence to generated color remain unqualified.
+No product/INI/MO2 changes or GPU execution occurred. Task 1 stays open; **1 of 8**.
+
 **Latest tone checkpoint, 2026-10-04:** the owner reports the SDR-byte camera
-fix looks stable, followed by ìseems fineî after the style/FG check. The
+fix looks stable, followed by ‚Äúseems fine‚Äù after the style/FG check. The
 [follow-up running-game receipt](../research/nr/tone-contract/sdr-byte-trial-fg-game-result.json)
 confirms clean `5d9a3b873b72`, full Tone 1, Stable colors off, live styles 0/1,
 NR off/on and successful FSR FG generation/resumption. The owner also reports

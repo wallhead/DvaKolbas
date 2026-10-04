@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "CPU orthographic source-pair guide experiment; not GPU or generated-image qualification",
+  "baseCommit": "8acaec5aca1b435a25f2269bdab671db8b05e779",
+  "workingTreeHasResearchChanges": true,
+  "inputs": [
+    {
+      "path": "tests/nr-postfg/PairGuideReconstruction.h",
+      "sha256": "37ab4196e16ddc9889f3c5444121c83ce2ea9eab7efe7b80eed18f5d62e2c2f8"
+    },
+    {
+      "path": "tests/nr-postfg/PairGuideReconstructionTests.cpp",
+      "sha256": "f5c61bffa4307cfb7b7fe7f779b8b462c801ab39af6e2f00d7f00ab89c5db212"
+    },
+    {
+      "path": "tests/nr-postfg/SyntheticScene.h",
+      "sha256": "184f339baa5209e230e9b494b03707eaf4a11687482c2e04e511d3d01b4ab8fb"
+    },
+    {
+      "path": "tests/nr-postfg/SyntheticSceneTests.cpp",
+      "sha256": "9c43f3f86c2de6ea2dd33304f77649bafe37954ef14c6c7281a95595a09a309f"
+    },
+    {
+      "path": "tests/nr-postfg/PostFgProbeData.h",
+      "sha256": "6362be6321e96301f287cac9d393a93d2d067dc533fb7088587570d5bc82fb85"
+    },
+    {
+      "path": "tests/nr-postfg/PostFgProbeData.cpp",
+      "sha256": "0d75d0a827ef52693177466d77a45c9b00264fd43e3891e340e0feeaf9d8c9bd"
+    },
+    {
+      "path": "tests/nr-postfg/ProbeReportTests.cpp",
+      "sha256": "ff75595e599a0655498ea4b92146c255772c4636b804da0d643b2d2adb9d7217"
+    },
+    {
+      "path": "tests/nr-postfg/CMakeLists.txt",
+      "sha256": "398d5cba7e4b2276b272cacc761a696296fc8cce01636d6839a71fedacbfd53e"
+    }
+  ],
+  "candidateBinarySha256": "c77a54bf8714bee1eeb47eccc4cea5e022f1d4af86a46d6748b4268ec202d41d",
+  "red": {
+    "baseline": "Borrow current real guides; no reconstruction/admission",
+    "assertions": 25,
+    "failed": 17,
+    "exitCode": 1
+  },
+  "green": {
+    "assertions": 26,
+    "failed": 0,
+    "exitCode": 0
+  },
+  "observations": {
+    "hiddenSurfaceCoveredGuideMismatches": 4,
+    "subpixelCoveredGuideMismatches": 4,
+    "hiddenSurfaceEndpointGuidesIdentical": true,
+    "fullCoverageDoesNotProveCorrectGuides": true
+  },
+  "gpuExecuted": false,
+  "installedFilesChanged": false,
+  "guideRecipeQualified": false,
+  "limits": [
+    "constant-velocity orthographic geometry",
+    "constant surface depth",
+    "native equal guide extents",
+    "nearest pixel-centre splats",
+    "covered pixels can be wrong",
+    "no provider-generated color or guide readbacks"
+  ],
+  "commands": [
+    "cmake -S tests/nr-postfg -B out/build/nr-postfg -A x64",
+    "cmake --build out/build/nr-postfg --config Release --parallel 2",
+    "ctest --test-dir out/build/nr-postfg -C Release --output-on-failure"
+  ],
+  "candidatePassingAssertions": [
+    "ReconstructionUsesIntermediateTimestamp",
+    "VisibleMovingBoxCoverage",
+    "MovingSurfaceAndDisocclusionMatchIndependentGeometry",
+    "BorrowingCurrentRealGuidesIsIncorrect",
+    "MotionUsesOutputHistoryInterval",
+    "NearestVisibleSurfaceWinsSplatCollision",
+    "CameraPanAndObjectMotionCancellation",
+    "CameraMatchedObjectHasZeroMotion",
+    "VerticalPanGuidesMatchWhereCovered",
+    "OffscreenEndpointGapsRemainExplicitlyUncovered",
+    "PointSplatsDoNotQualifySubpixelSurfaceBoundaries",
+    "HiddenSurfaceScenesHaveIdenticalEndpointGuides",
+    "IndependentIntermediateGeometryDistinguishesHiddenSurface",
+    "HiddenSurfaceCannotBeRecoveredFromEndpointGuides",
+    "FullSplatCoverageDoesNotQualifyRecipe",
+    "SameEndpointInputsCannotSelectDifferentIntermediateSurfaces",
+    "RejectStaleSourcePair",
+    "RejectMixedEpochs",
+    "RejectExtentMismatch",
+    "RejectIncompleteGuides",
+    "RejectUnknownFraction",
+    "RejectFutureOutputHistory",
+    "RejectZeroSourceHistoryInterval",
+    "RejectUnorderedSourceTimes",
+    "RejectInvalidDepth",
+    "RejectNonfiniteMotion"
+  ],
+  "completion": {
+    "task1": false,
+    "milestones": 1,
+    "total": 8
+  },
+  "ctest": {
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "exclusions": 0,
+    "names": [
+      "NrPostFgProbeReport",
+      "NrSyntheticScene",
+      "NrPairGuideReconstruction"
+    ]
+  }
+}
