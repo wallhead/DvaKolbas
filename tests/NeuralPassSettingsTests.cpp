@@ -16,6 +16,8 @@ int main()
 	CSimpleIniA ini;
 	Require(ini.LoadData("[SourceDLSSG]\nNRPasses=2\nNRInputScale=0.75\nNRPreset=1\nNRIntensity=0.4\n") >= 0, "old INI");
 	auto old = LoadPreferences(ini);
+	Require(old.neuralStableColors, "missing NRStableColors defaults to stable original colors");
+	old.neuralStableColors = false;
 	Require(!old.neuralCombat.Enabled() && old.neuralCombat.recoverySeconds == 5, "old INI keeps combat policy off");
 	old.neuralCombat = {true, true, 7.5f};
 	Require(old.neuralSecondPass.linked && old.neuralSecondPass.inputScale == .75f && old.neuralSecondPass.preset == 1 &&
@@ -26,6 +28,7 @@ int main()
 	old.neuralSecondPass.tuning = { 7, .25f, 1.5f, .3f, -1, true, true };
 	StorePreferences(ini, old);
 	Require(LoadPreferences(ini) == old, "all pass 2 settings round trip independently");
+	Require(!LoadPreferences(ini).neuralStableColors, "explicit vendor colors survive save and reload");
 	old.neuralSecondPass.linked = true;
 	StorePreferences(ini, old);
 	auto linked = LoadPreferences(ini);

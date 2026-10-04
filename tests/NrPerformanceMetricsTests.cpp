@@ -53,6 +53,7 @@ int main() {
     right.placement="After";check(!EquivalentWorkload(left,right),"DifferentPlacementIsUnmatched");right=left;
     right.passes=2;check(!EquivalentWorkload(left,right),"DifferentPassCountIsUnmatched");right=left;
     right.localTone=1;check(!EquivalentWorkload(left,right),"DifferentToneIsUnmatched");right=left;
+    right.stableColors=false;check(!EquivalentWorkload(left,right),"DifferentColorResolveIsUnmatched");right=left;
     right.runtimeHash="8270";check(!EquivalentWorkload(left,right),"DifferentRuntimeIsConfounded");
     metrics.BeginFrame(3,true);metrics.BeginFrame(4,true);metrics.BeginFrame(5,true);
     check(metrics.Snapshot().droppedFrames==1,"BoundedCapacityReportsDroppedSamples");

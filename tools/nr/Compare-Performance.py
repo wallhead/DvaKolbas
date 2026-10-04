@@ -16,6 +16,8 @@ FSR_IDENTITIES=('fsrVersion','fsrQuality','fsrRuntimeSha256')
 
 
 def match_kind(a,b):
+    # Historical receipts predate this resolve and used the raw vendor output.
+    a={'stableColors':False,**a};b={'stableColors':False,**b}
     if bool(a.get('fsrEnabled'))!=bool(b.get('fsrEnabled')):return 'unmatched'
     if a.get('fsrEnabled') and any(not r.get(k) for r in (a,b) for k in FSR_IDENTITIES):return 'unmatched'
     if a.get('fsrEnabled') and any(a[k]!=b[k] for k in FSR_IDENTITIES):return 'unmatched'
@@ -26,16 +28,19 @@ def match_kind(a,b):
     if bool(a.get('preparedFsrHandoff'))!=bool(b.get('preparedFsrHandoff')) and not source:return 'unmatched'
     instrumentation=a.get('instrumentation')!=b.get('instrumentation')
     enabled=a.get('nrEnabled')!=b.get('nrEnabled')
-    if sum((runtime,source,instrumentation,enabled))>1:return 'unmatched'
+    colors=a['stableColors']!=b['stableColors']
+    if sum((runtime,source,instrumentation,enabled,colors))>1:return 'unmatched'
     if runtime:return 'same-host-runtime-ab'
     if source:return 'same-model-host-change'
     if instrumentation:return 'instrumentation-ab'
     if enabled:return 'nr-on-off'
+    if colors:return 'color-resolve-ab'
     return 'same-workload'
 
 
 def issues(receipt):
     problems=[]
+    if 'stableColors' in receipt and not isinstance(receipt['stableColors'],bool):problems.append('invalid stable-color mode')
     if receipt.get('schema')!=1:problems.append('unknown schema')
     if any(k not in receipt or receipt[k] is None for k in (*CONTROLS,*IDENTITIES)):problems.append('missing control or identity')
     if receipt.get('rawInit')!=1:problems.append('initialization unconfirmed')

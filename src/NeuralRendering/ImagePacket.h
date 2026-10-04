@@ -18,6 +18,7 @@ struct ImageExtent {
 struct SettingsSnapshot {
     uint64_t revision{};
     bool enabled{};
+    bool stableColors{true};
     Placement placement{Placement::Before};
     Tuning tuning;
     Reconstruction reconstruction;

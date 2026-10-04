@@ -33,7 +33,7 @@ class Validity(unittest.TestCase):
                     sourceRevision='abc',compiledSourceSha256={'stage':'def'},runtimeSha256='modelA',
                     driverCoreSha256='core',adapterVendor=0x10de,adapterDevice=0x2702,
                     adapterLuidLow=1,adapterLuidHigh=0,width=2560,height=1440,placement='Before',
-                    passes=1,preset=0,style=0,intensity=1,localTone=0,localStructure=1,
+                    passes=1,preset=0,style=0,intensity=1,localTone=0,localStructure=1,stableColors=False,
                     inputScale=1,resolve='Auto',hdr=False,encoding='Gamma22-to-linear-FP16',
                     scene='static',resetSchedule='first',debugLayer=False,timerPeriodMs=1,warmup=120,
                     readbacks=False,instrumentation=True,nrEnabled=True,retired=True,rawInit=1,
@@ -51,6 +51,16 @@ class Validity(unittest.TestCase):
         b['width']=1920;self.assertEqual(comparison.match_kind(a,b),'unmatched')
         b=self.receipt();b['placement']='After';self.assertEqual(comparison.match_kind(a,b),'unmatched')
         b=self.receipt();b['localTone']=1;self.assertEqual(comparison.match_kind(a,b),'unmatched')
+
+    def test_color_resolve_ab_requires_same_host_and_model(self):
+        a=self.receipt();b=self.receipt();b['stableColors']=True
+        self.assertEqual(comparison.match_kind(a,b),'color-resolve-ab')
+        b['runtimeSha256']='other'
+        self.assertEqual(comparison.match_kind(a,b),'unmatched')
+        b=self.receipt();del b['stableColors']
+        self.assertEqual(comparison.match_kind(a,b),'same-workload')
+        a['stableColors']=True
+        self.assertEqual(comparison.match_kind(a,b),'color-resolve-ab')
 
     def test_correctness_capture_cannot_be_timing_baseline(self):
         a=self.receipt();a['readbacks']=True

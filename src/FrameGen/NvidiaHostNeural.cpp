@@ -124,12 +124,15 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     const auto& p=SourceFrameGeneration::GetSingleton()->settings.sourceDLSSG;
     NR::SettingsSnapshot snapshot;
     snapshot.enabled=p.neuralEnabled;snapshot.placement=p.neuralBeforeUpscaling?NR::Placement::Before:NR::Placement::After;
+    snapshot.stableColors=p.neuralStableColors;
     snapshot.tuning=p.neuralTuning;snapshot.reconstruction=p.neuralReconstruction;
     const bool changed=!communitySnapshotValid_ || snapshot.enabled!=communitySnapshot_.enabled ||
-        snapshot.placement!=communitySnapshot_.placement || snapshot.tuning!=communitySnapshot_.tuning ||
+        snapshot.placement!=communitySnapshot_.placement || snapshot.stableColors!=communitySnapshot_.stableColors || snapshot.tuning!=communitySnapshot_.tuning ||
         snapshot.reconstruction!=communitySnapshot_.reconstruction;
     snapshot.revision=communitySnapshot_.revision+(changed?1:0);
     communitySnapshot_=snapshot;communitySnapshotValid_=true;
+    if(changed)logger::info("[Community NR settings] revision={} stableColors={} tone={} structure={} style={}",
+        snapshot.revision,snapshot.stableColors,snapshot.tuning.localToneStrength,snapshot.tuning.localStructureStrength,snapshot.tuning.style);
     NR::BeforeInput input;input.context=context_;input.color=color;input.depth=depth;input.motion=motion;
     input.epoch=communityEpoch_;input.sourceId=input.guideSourceId=sourceId;
     input.guideEpoch=input.epoch;input.previousSourceId=sourceId?sourceId-1:0;

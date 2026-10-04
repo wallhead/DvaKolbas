@@ -1,6 +1,7 @@
 #include "BeforeUpscale.h"
 #include "PerformanceQueries.h"
 #include "History.h"
+#include "StableColorResolve.h"
 #include "Graphics/D3D11D3D12Interop.h"
 #include <cmath>
 #include <chrono>
@@ -16,11 +17,12 @@ void Transition(ID3D12GraphicsCommandList* list,ID3D12Resource* resource,D3D12_R
 struct BeforeUpscale::State {
     PerformanceMetrics* metrics{};PerformanceQueries* queries11{};std::unique_ptr<PerformanceQueries> ownTiming11;
     Stage stage;
+    StableColorResolve stableColor;
     Graphics::D3D11D3D12Interop interop;
     StageContract contract;
     ComPtr<ID3D11Device> device11;
     ComPtr<ID3D11DeviceContext> context;
-    struct Slot {Graphics::SharedTexture color,depth,motion,output;BeforeInput heldInput;std::optional<EvaluationTicket> ticket;uint64_t id{},source{},epoch{};};
+    struct Slot {Graphics::SharedTexture color,depth,motion,output;StableColorResolve::Views stableViews;BeforeInput heldInput;std::optional<EvaluationTicket> ticket;uint64_t id{},source{},epoch{};};
     std::array<Slot,3> slots;size_t nextSlot{};
     Detail::TicketOwnership deliveryOwner;uint64_t deliverySerial{};
     ComPtr<ID3D12Fence> handoffFence,completionFence;
@@ -72,6 +74,7 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
         contract.colorExtent!=contract.guideExtent||preset>1)return Fail(ErrorKind::InvalidInput,"NR Before native device/extent contract incomplete");
     auto r=s.Gpu(s.interop.Initialize(device,contract.device.Get(),contract.queue.Get()),"NR Before same-adapter bridge initialization failed");if(!r)return r;
     s.device11=device;s.contract=contract;s.preset=preset;device->GetImmediateContext(&s.context);
+    r=s.Gpu(s.stableColor.Initialize(device),"NR stable color shader initialization failed");if(!r)return r;
     if(metrics&&metrics->Enabled()){
         s.metrics=metrics;s.queries11=queries11;
         if(!queries11){s.ownTiming11=std::make_unique<PerformanceQueries>(metrics);s.ownTiming11->Initialize11(device);s.queries11=s.ownTiming11.get();}
@@ -113,6 +116,8 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
         input.color.Get()==input.depth.Get()||input.color.Get()==input.motion.Get()||input.depth.Get()==input.motion.Get()||
         input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||!std::isfinite(input.motionScaleX)||!std::isfinite(input.motionScaleY)||!input.motionScaleX||!input.motionScaleY)
         return Fail(ErrorKind::InvalidInput,"NR Before input ownership/encoding/native guides invalid");
+    if(settings.stableColors){D3D11_TEXTURE2D_DESC d{};input.color->GetDesc(&d);
+        if(!(d.BindFlags&D3D11_BIND_RENDER_TARGET))return Fail(ErrorKind::InvalidInput,"NR stable colors require a render-target destination");}
     if(settings.reconstruction.preset!=s.preset||settings.reconstruction.inputScale!=1||settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation||
         settings.reconstruction.method>ResolveMethod::Ratio||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR Before native bridge requires adapter-owned color/reconstruction preparation");
@@ -125,6 +130,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     auto index=s.Acquire();if(!index)return std::unexpected(index.error());auto& slot=s.slots[*index];slot.heldInput=input;
     if(s.deliverySerial==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR Before delivery sequence exhausted");}slot.id=++s.deliverySerial;slot.source=input.sourceId;slot.epoch=input.epoch;
     auto gpu=[&](HRESULT hr,const char* text)->Result<void>{return s.Gpu(hr,text);};
+    if(settings.stableColors){auto prepared=gpu(s.stableColor.Prepare(slot.stableViews,slot.color.texture11.Get(),slot.output.texture11.Get(),input.color.Get(),s.metrics),"NR stable color views rejected");if(!prepared)return std::unexpected(prepared.error());}
     if(s.ownTiming11)s.queries11->Begin11(input.context.Get(),input.sourceId);
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::InputCopy,true);
     auto r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.color.Get(),slot.color);}),"NR Before color copy rejected");if(!r)return std::unexpected(r.error());
@@ -150,10 +156,12 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     r=s.stage.MarkSubmitted(*ticket,s.completionFence.Get(),++s.completionValue);if(!r){s.terminal=true;return std::unexpected(r.error());}
     r=gpu(s.interop.WaitConsumer(),"NR Before D3D11 consumer wait failed");if(!r)return std::unexpected(r.error());
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::Delivery,true);
-    r=gpu(MeasurePerformance(s.metrics,CpuPhase::Delivery,[&]{return D3D11FrameCopy::Color(input.context.Get(),slot.output.texture11.Get(),input.color.Get(),{input.colorExtent.width,input.colorExtent.height});}),"NR Before copy back failed");if(!r)return std::unexpected(r.error());
+    r=gpu(MeasurePerformance(s.metrics,CpuPhase::Delivery,[&]{return settings.stableColors?
+        s.stableColor.Draw(input.context.Get(),slot.stableViews):
+        D3D11FrameCopy::Color(input.context.Get(),slot.output.texture11.Get(),input.color.Get(),{input.colorExtent.width,input.colorExtent.height});}),"NR Before color delivery failed");if(!r)return std::unexpected(r.error());
     if(s.queries11){s.queries11->Stamp11(input.context.Get(),GpuPhase::Delivery,false);if(s.ownTiming11)s.queries11->End11(input.context.Get());}
-    // Queue a real D3D11 signal after the copy reading the shared NR output.
-    // Stage retains the source and output through that signal's completion.
+    // Cover both shared source and NR output reads, including the stable-color
+    // draw. Stage retains them through this signal's genuine completion.
     if(s.handoffValue==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR Before consumer sequence exhausted");}
     r=gpu(s.interop.Context11()->Signal(s.handoff11.Get(),++s.handoffValue),"NR Before output reader signal failed");if(!r)return std::unexpected(r.error());
     r=s.stage.TrackReader(*ticket,s.handoffFence.Get(),s.handoffValue);if(!r){s.terminal=true;return std::unexpected(r.error());}

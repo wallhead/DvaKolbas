@@ -20,7 +20,7 @@ using Microsoft::WRL::ComPtr;
 namespace {
 struct Options {
     std::string profile{"rtx40"};std::filesystem::path dll,core,output,fsrRuntime;
-    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{},preparedFsr{};
+    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{},preparedFsr{},stableColors{true};
 } options;
 struct WallSample {uint64_t id{},nanoseconds{};};
 PerformanceMetrics metrics;std::vector<WallSample> wall;
@@ -44,6 +44,7 @@ void Write(){
         <<",\"width\":"<<options.width<<",\"height\":"<<options.height
         <<",\"placement\":\"Before\",\"encoding\":\"Gamma22-to-linear-FP16\",\"passes\":1,\"preset\":0,\"style\":0,\"intensity\":1,\"localTone\":0,\"localStructure\":1,\"inputScale\":1,\"resolve\":\"Auto\",\"hdr\":false"
         <<",\"scene\":\"two static checker/ramp images; constant depth 0.5 and zero motion\",\"resetSchedule\":\"first source; optional correctness-only off/on\""
+        <<",\"stableColors\":"<<(options.stableColors?"true":"false")
         <<",\"nrEnabled\":"<<(options.enabled?"true":"false")<<",\"instrumentation\":"<<(options.instrumentation?"true":"false")
         <<",\"fsrEnabled\":"<<(!options.fsrRuntime.empty()?"true":"false")<<",\"fsrVersion\":"<<std::quoted(fsrVersion)<<",\"fsrQuality\":\"NativeAA\",\"fsrEvaluations\":"<<fsrEvaluations
         <<",\"preparedFsrHandoff\":"<<(options.preparedFsr?"true":"false")<<",\"preparedFsrEvaluations\":"<<preparedFsrEvaluations
@@ -84,6 +85,7 @@ int wmain(int argc,wchar_t** argv){try{
         else if(key==L"--core")options.core=value;else if(key==L"--output")options.output=std::filesystem::absolute(value);
         else if(key==L"--fsr-runtime")options.fsrRuntime=std::filesystem::absolute(value);
         else if(key==L"--prepared-fsr")options.preparedFsr=Boolean(value);
+        else if(key==L"--stable-colors")options.stableColors=Boolean(value);
         else if(key==L"--frames")options.frames=Number(value);else if(key==L"--warmup")options.warmup=Number(value);
         else if(key==L"--timer-period-ms")options.timerPeriodMs=Number(value);
         else if(key==L"--width")options.width=Number(value);else if(key==L"--height")options.height=Number(value);
@@ -156,7 +158,7 @@ int wmain(int argc,wchar_t** argv){try{
     std::array<std::vector<unsigned char>,2> pattern;
     for(size_t f=0;f<pattern.size();++f){pattern[f].resize(pixels*4);for(UINT y=0;y<options.height;++y)for(UINT x=0;x<options.width;++x){const auto p=(size_t(y)*options.width+x)*4;pattern[f][p]=((x/8+y/8+f)%2)?48:208;pattern[f][p+1]=(x+f)%256;pattern[f][p+2]=(y+f)%256;pattern[f][p+3]=(x+y+f)%256;}}
     BeforeInput input;input.context=context;input.color=color;input.depth=depth;input.motion=motion;input.colorExtent=input.guideExtent=contract.colorExtent;input.epoch=input.guideEpoch=1;input.motionScaleX=float(options.width);input.motionScaleY=float(options.height);
-    SettingsSnapshot settings;settings.revision=1;settings.tuning.localToneStrength=0;
+    SettingsSnapshot settings;settings.revision=1;settings.tuning.localToneStrength=0;settings.stableColors=options.stableColors;
     for(UINT frame=0;frame<options.frames+options.warmup;++frame){const auto& data=pattern[frame%pattern.size()];context->UpdateSubresource(color.Get(),0,nullptr,data.data(),options.width*4,0);
         input.sourceId=input.guideSourceId=frame+1;input.previousSourceId=frame;input.presentationTime=double(frame+1)/60.;settings.enabled=options.enabled&&!(options.readback&&frame==10);
         if(options.readback&&(frame==10||frame==11))++settings.revision;

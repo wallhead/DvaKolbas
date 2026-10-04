@@ -21,6 +21,7 @@ struct PerformanceWorkload {
     std::string placement,runtimeHash;
     uint32_t passes{1};
     float localTone{};
+    bool stableColors{true};
 };
 bool EquivalentWorkload(const PerformanceWorkload&,const PerformanceWorkload&) noexcept;
 struct CpuInterval {uint64_t begin{},end{};};

@@ -90,6 +90,21 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     add_test(NAME NrPerformanceQueries COMMAND TRPNrPerformanceQueriesTests)
     set_tests_properties(NrPerformanceQueries PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 30)
     trp_nr_enable_source_stage("${TRP_NR_NGX_INCLUDE_DIR}")
+    add_executable(TRPNrStableColorTests ../NrStableColorTests.cpp)
+    target_compile_features(TRPNrStableColorTests PRIVATE cxx_std_23)
+    target_compile_definitions(TRPNrStableColorTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_link_libraries(TRPNrStableColorTests PRIVATE TRPNeuralRuntime)
+    add_test(NAME NrStableColors COMMAND TRPNrStableColorTests)
+    set_tests_properties(NrStableColors PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 30)
+    add_executable(TRPNrToneContextProbe ../../research/nr/tone-context/ContextProbe.cpp)
+    target_compile_features(TRPNrToneContextProbe PRIVATE cxx_std_23)
+    target_compile_definitions(TRPNrToneContextProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_include_directories(TRPNrToneContextProbe PRIVATE "${nrRoot}/tests")
+    target_link_libraries(TRPNrToneContextProbe PRIVATE TRPNeuralRuntime)
+    foreach(mode IN ITEMS stable vendor toggle off)
+        add_test(NAME NrToneContext-${mode} COMMAND TRPNrToneContextProbe "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/tone-context/${mode}" ${mode})
+        set_tests_properties(NrToneContext-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 60 RUN_SERIAL TRUE LABELS GPU)
+    endforeach()
     add_executable(TRPNrBeforeUpscaleTests ../NrBeforeUpscaleTests.cpp)
     target_compile_features(TRPNrBeforeUpscaleTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrBeforeUpscaleTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
@@ -166,7 +181,9 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     endforeach()
     set(nrProbeSources tests/nr-runtime/RuntimeProbe.cpp tests/nr-runtime/RuntimeProbeReport.cpp
         tests/nr-runtime/ObservedQueue.h tests/NrStageTests.cpp tests/NrFrameSlotTests.cpp tests/NrDeferredDeliveryTests.cpp
-        tests/nr-runtime/PerformanceProbe.cpp
+        tests/nr-runtime/PerformanceProbe.cpp tests/NrStableColorTests.cpp
+        src/NeuralRendering/StableColorResolve.h src/NeuralRendering/StableColorResolve.cpp
+        research/nr/tone-context/ContextProbe.cpp tools/nr/Test-NrToneStability.py
         src/NeuralRendering/PerformanceMetrics.h src/NeuralRendering/PerformanceMetrics.cpp
         src/NeuralRendering/PerformanceQueries.h src/NeuralRendering/PerformanceQueries.cpp
         tests/nr-runtime/RuntimeProbeReport.h tests/nr-runtime/GpuProbeGuard.h tests/nr-runtime/run_reshade_before.py tests/NrImagePacketTests.cpp src/NeuralRendering/RuntimeCatalog.cpp src/NeuralRendering/RuntimeCatalog.h
@@ -312,14 +329,14 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     if(TRP_NR_RTX40_DLL AND TRP_NR_DRIVER_CORE)
         add_test(NAME NrPerformancePrepared COMMAND TRPNrPerformanceProbe
             --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
-            --width 320 --height 180 --frames 16 --warmup 2 --readback on
+            --width 320 --height 180 --frames 16 --warmup 3 --readback on
             --output "${CMAKE_CURRENT_BINARY_DIR}/performance-prepared.json")
         set_tests_properties(NrPerformancePrepared PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 90)
         if(TRP_NR_PERF_WITH_FSR AND TRP_NR_PERF_FSR_RUNTIME)
             foreach(state IN ITEMS on off)
                 add_test(NAME NrPerformanceFsr-${state} COMMAND TRPNrPerformanceProbe
                     --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
-                    --width 320 --height 180 --frames 16 --warmup 2 --readback on --enabled ${state}
+                    --width 320 --height 180 --frames 16 --warmup 3 --readback on --enabled ${state}
                     --fsr-runtime "${TRP_NR_PERF_FSR_RUNTIME}" --output "${CMAKE_CURRENT_BINARY_DIR}/performance-fsr-${state}.json")
                 set_tests_properties(NrPerformanceFsr-${state} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 90)
             endforeach()

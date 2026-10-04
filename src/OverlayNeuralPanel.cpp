@@ -356,6 +356,8 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             ImGui::TextDisabled("Use Apply for this session or Save as default.");
             const char* styles[]{"Style 0","Style 1","Style 2","Style 3","Style 4","Style 5","Style 6","Style 7"};
             ImGui::BeginDisabled(!host->CommunityNeuralAvailable());
+            ImGui::Checkbox("Stable colors",&p.neuralStableColors);
+            DrawSettingsHelp("Preserve the original broad colors while retaining fine NR detail. Reduces NR tone and color grading.");
             ImGui::Combo("Style",&p.neuralTuning.style,styles,IM_ARRAYSIZE(styles));
             ImGui::SliderFloat("Intensity",&p.neuralTuning.intensity,0,2);
             ImGui::SliderFloat("Local tone",&p.neuralTuning.localToneStrength,0,2);

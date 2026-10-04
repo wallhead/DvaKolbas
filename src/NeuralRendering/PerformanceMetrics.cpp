@@ -47,7 +47,7 @@ PerformanceSnapshot PerformanceMetrics::Snapshot()const{
 }
 bool EquivalentWorkload(const PerformanceWorkload& a,const PerformanceWorkload& b)noexcept{
     return a.width==b.width&&a.height==b.height&&a.placement==b.placement&&a.runtimeHash==b.runtimeHash&&
-        a.passes==b.passes&&std::isfinite(a.localTone)&&std::isfinite(b.localTone)&&a.localTone==b.localTone;
+        a.passes==b.passes&&a.stableColors==b.stableColors&&std::isfinite(a.localTone)&&std::isfinite(b.localTone)&&a.localTone==b.localTone;
 }
 uint64_t PerformanceNow()noexcept{return uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());}
 PerformanceScope::PerformanceScope(PerformanceMetrics* metrics,CpuPhase phase)noexcept:

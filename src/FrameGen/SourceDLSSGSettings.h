@@ -18,6 +18,8 @@ namespace TheosRenderPipeline::SourceDLSSG
 		GenerationRequest generation{};
 		bool neuralEnabled{ false };
 		bool neuralBeforeUpscaling{ true };
+		// Community NR Before only: preserve original broad SDR colors.
+		bool neuralStableColors{ true };
 		int neuralPasses{ 1 };
 		NeuralRendering::CombatSettings neuralCombat{};
 		NeuralRendering::Tuning neuralTuning{};
@@ -56,6 +58,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		value.uiRecomposition = ini.GetBoolValue(section, "UIRecomposition", true);
 		value.neuralEnabled = ini.GetBoolValue(section, "NeuralRenderingEnabled", false);
 		value.neuralBeforeUpscaling = ini.GetBoolValue(section, "NRBeforeUpscaling", value.neuralBeforeUpscaling);
+		value.neuralStableColors = ini.GetBoolValue(section, "NRStableColors", true);
 		value.neuralPasses = static_cast<int>(ini.GetLongValue(section, "NRPasses", 1));
 		value.neuralCombat.inCombat = ini.GetBoolValue(section, "NROnePassInCombat", false);
 		value.neuralCombat.weaponsDrawn = ini.GetBoolValue(section, "NROnePassWeaponsDrawn", false);
@@ -87,6 +90,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		ini.SetBoolValue(section, "UIRecomposition", value.uiRecomposition);
 		ini.SetBoolValue(section, "NeuralRenderingEnabled", value.neuralEnabled);
 		ini.SetBoolValue(section, "NRBeforeUpscaling", value.neuralBeforeUpscaling);
+		ini.SetBoolValue(section, "NRStableColors", value.neuralStableColors);
 		ini.SetLongValue(section, "NRPasses", value.neuralPasses);
 		ini.SetBoolValue(section, "NROnePassInCombat", value.neuralCombat.inCombat);
 		ini.SetBoolValue(section, "NROnePassWeaponsDrawn", value.neuralCombat.weaponsDrawn);

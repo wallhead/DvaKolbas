@@ -30,7 +30,7 @@ ComPtr<ID3D11Texture2D> Texture(ID3D11Device* d,DXGI_FORMAT format,bool readback
     desc.MipLevels=desc.ArraySize=desc.SampleDesc.Count=1;
     desc.Usage=readback?D3D11_USAGE_STAGING:D3D11_USAGE_DEFAULT;
     desc.CPUAccessFlags=readback?D3D11_CPU_ACCESS_READ:0;
-    desc.BindFlags=readback?0:D3D11_BIND_SHADER_RESOURCE;
+    desc.BindFlags=readback?0:D3D11_BIND_SHADER_RESOURCE|(format==DXGI_FORMAT_R16G16B16A16_FLOAT?D3D11_BIND_RENDER_TARGET:0);
     ComPtr<ID3D11Texture2D> t;Need(d->CreateTexture2D(&desc,nullptr,&t));return t;
 }
 }
@@ -74,6 +74,11 @@ int wmain(int argc,wchar_t** argv){try{
     Check(!bridge.Evaluate(unknown,settings)&&bridge.Diagnostics().evaluate==0,"UnknownSourceEncodingRejectedBeforeVendorWork");
     auto stale=input;stale.guideSourceId=2;
     Check(!bridge.Evaluate(stale,settings)&&bridge.Diagnostics().evaluate==0,"StaleGuidesRejectedBeforeVendorWork");
+    D3D11_TEXTURE2D_DESC noTargetDesc{};color->GetDesc(&noTargetDesc);noTargetDesc.BindFlags=D3D11_BIND_SHADER_RESOURCE;
+    auto noTarget=input;Need(device11->CreateTexture2D(&noTargetDesc,nullptr,&noTarget.color));
+    const auto rejected=bridge.Evaluate(noTarget,settings);
+    Check(!rejected&&rejected.error().kind==ErrorKind::InvalidInput&&bridge.Diagnostics().evaluate==0,
+        "StableColorsRejectMissingRenderTargetBeforeVendorWork");
     auto late=settings;late.placement=Placement::After;
     Check(!bridge.Evaluate(input,late)&&bridge.Diagnostics().evaluate==0,"AfterCannotSilentlyRunBefore");
     auto ratio=settings;ratio.reconstruction.method=ResolveMethod::Ratio;
