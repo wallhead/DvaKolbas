@@ -29,6 +29,7 @@ struct BeforeUpscale::State {
     ComPtr<ID3D11Fence> handoff11;
     uint64_t handoffValue{},completionValue{};
     unsigned preset{};
+    ColorDomain colorDomain{ColorDomain::Linear};
     std::optional<int> recordedStyle;
     History history;
     bool attempted{},ready{},uncertain{},terminal{};
@@ -69,12 +70,12 @@ struct BeforeUpscale::State {
 };
 BeforeUpscale::BeforeUpscale():state_(std::make_unique<State>()){}
 BeforeUpscale::~BeforeUpscale(){if(state_->uncertain)state_.release();}
-Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,PerformanceQueries* queries11){
+Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,PerformanceQueries* queries11,ColorDomain domain){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR Before initialization already attempted");s.attempted=true;
     if(!device||!owner||!contract.device||!contract.queue||!contract.colorExtent.width||!contract.colorExtent.height||
-        contract.colorExtent!=contract.guideExtent||preset>1)return Fail(ErrorKind::InvalidInput,"NR Before native device/extent contract incomplete");
+        contract.colorExtent!=contract.guideExtent||preset>1||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN)return Fail(ErrorKind::InvalidInput,"NR Before native device/extent/color contract incomplete");
     auto r=s.Gpu(s.interop.Initialize(device,contract.device.Get(),contract.queue.Get()),"NR Before same-adapter bridge initialization failed");if(!r)return r;
-    s.device11=device;s.contract=contract;s.preset=preset;device->GetImmediateContext(&s.context);
+    s.device11=device;s.contract=contract;s.preset=preset;s.colorDomain=domain;device->GetImmediateContext(&s.context);
     r=s.Gpu(s.stableColor.Initialize(device),"NR stable color shader initialization failed");if(!r)return r;
     if(metrics&&metrics->Enabled()){
         s.metrics=metrics;s.queries11=queries11;
@@ -96,9 +97,9 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
         const auto created=s.interop.CreateSharedTexture(d,texture);
         if(FAILED(created)) {s.terminal=true;return Result<void>{std::unexpected(Error{ErrorKind::Runtime,created,"NR Before shared texture creation failed, DXGI format="+std::to_string(unsigned(format))+" bind="+std::to_string(d.BindFlags)})};}
         return Result<void>{};};
-    for(auto& slot:s.slots)for(auto [format,texture,uav]:{std::tuple{DXGI_FORMAT_R16G16B16A16_FLOAT,&slot.color,false},
+    for(auto& slot:s.slots)for(auto [format,texture,uav]:{std::tuple{NrColorFormat(domain),&slot.color,false},
         std::tuple{DXGI_FORMAT_R32_FLOAT,&slot.depth,false},std::tuple{DXGI_FORMAT_R16G16_FLOAT,&slot.motion,false},
-        std::tuple{DXGI_FORMAT_R16G16B16A16_FLOAT,&slot.output,true}}){r=make(format,*texture,uav);if(!r)return r;}
+        std::tuple{NrColorFormat(domain),&slot.output,true}}){r=make(format,*texture,uav);if(!r)return r;}
     // Stage initialization can submit feature creation; never destroy this
     // bridge's retained devices/queue after an uncertain result.
     s.uncertain=true;r=s.stage.Initialize(std::move(owner),contract,preset,s.metrics);if(!r){s.terminal=true;return r;}
@@ -111,12 +112,13 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     if(!settings.enabled){auto drained=s.WaitPending();if(!drained)return std::unexpected(drained.error());s.history.ResetNext();return BeforeResult{false,input.reset};}
     if(!s.ready)return Fail(ErrorKind::InvalidInput,"NR Before runtime/bridge not initialized");
     if(settings.placement!=Placement::Before)return Fail(ErrorKind::Unsupported,"NR Before cannot evaluate an After request");
-    if(input.colorDomain!=ColorDomain::Linear||input.colorExtent!=s.contract.colorExtent||input.guideExtent!=s.contract.guideExtent||
+    if(input.colorDomain!=s.colorDomain||input.colorExtent!=s.contract.colorExtent||input.guideExtent!=s.contract.guideExtent||
         !input.context||input.context->GetType()!=D3D11_DEVICE_CONTEXT_IMMEDIATE||!D3D11FrameCopy::SameObject(input.context.Get(),s.context.Get())||
-        !s.Texture(input.color.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT)||!s.Texture(input.depth.Get(),DXGI_FORMAT_R32_FLOAT)||!s.Texture(input.motion.Get(),DXGI_FORMAT_R16G16_FLOAT)||
+        !s.Texture(input.color.Get(),NrColorFormat(s.colorDomain))||!s.Texture(input.depth.Get(),DXGI_FORMAT_R32_FLOAT)||!s.Texture(input.motion.Get(),DXGI_FORMAT_R16G16_FLOAT)||
         input.color.Get()==input.depth.Get()||input.color.Get()==input.motion.Get()||input.depth.Get()==input.motion.Get()||
         input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||!std::isfinite(input.motionScaleX)||!std::isfinite(input.motionScaleY)||!input.motionScaleX||!input.motionScaleY)
         return Fail(ErrorKind::InvalidInput,"NR Before input ownership/encoding/native guides invalid");
+    if(settings.stableColors&&s.colorDomain==ColorDomain::SdrBytes)return Fail(ErrorKind::Unsupported,"NR SDR byte trial requires Stable colors off");
     if(settings.stableColors){D3D11_TEXTURE2D_DESC d{};input.color->GetDesc(&d);
         if(!(d.BindFlags&D3D11_BIND_RENDER_TARGET))return Fail(ErrorKind::InvalidInput,"NR stable colors require a render-target destination");}
     if(settings.reconstruction.preset!=s.preset||settings.reconstruction.inputScale!=1||settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation||

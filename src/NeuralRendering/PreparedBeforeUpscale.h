@@ -11,7 +11,7 @@ public:
     PreparedBeforeUpscale();~PreparedBeforeUpscale();
     PreparedBeforeUpscale(const PreparedBeforeUpscale&)=delete;
     PreparedBeforeUpscale& operator=(const PreparedBeforeUpscale&)=delete;
-    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);
+    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,ID3D11Device*,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr,ColorDomain domain=ColorDomain::Linear);
     Result<BeforeResult> Evaluate(const BeforeInput&,Upscaling::ColorEncoding,const SettingsSnapshot&,PreparedFsrInput* linearOutput=nullptr);
     Result<uint32_t> CollectCompleted();
     Result<void> WaitDelivery(const BeforeResult&);

@@ -17,6 +17,7 @@ for name in ("packet_exe", "host_exe", "runtime", "runtime_root", "driver_core",
 parser.add_argument("--deferred-exe", type=Path)
 parser.add_argument("--prepared-fsr-exe", type=Path)
 parser.add_argument("--fsr-runtime", type=Path)
+parser.add_argument("--sdr-bytes", action="store_true")
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 result_file = args.output / "results.json"
@@ -31,7 +32,8 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
     cases = (
         ("packet", args.packet_exe, ["--require-wrapped"]),
         ("host", args.host_exe, [str(args.runtime_root.resolve()), str(args.driver_core.resolve()),
-                                str((args.output / "host.json").resolve()), "--require-wrapped"]),
+                                str((args.output / "host.json").resolve()), "--require-wrapped",
+                                *(["--sdr-bytes"] if args.sdr_bytes else [])]),
     )
     if args.deferred_exe:
         cases += tuple(("deferred-" + mode, args.deferred_exe,
@@ -43,7 +45,7 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
         cases += tuple(("prepared-fsr-" + mode, args.prepared_fsr_exe,
                         [str((args.runtime_root / "NR" / "rtx40" / "nvngx_dlssnr.dll").resolve()),
                          str(args.driver_core.resolve()), str(args.fsr_runtime.resolve()), mode, "--require-wrapped"])
-                       for mode in ("native", "quality", "gated", "abandon"))
+                       for mode in (("sdr-bytes",) if args.sdr_bytes else ("native", "quality", "gated", "abandon")))
     for name, exe, extra in cases:
         result = subprocess.run([str(root / exe.name), *extra], cwd=root,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)
@@ -55,5 +57,5 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
                         "exeSha256": hashlib.sha256(exe.read_bytes()).hexdigest()})
 result_file.write_text(json.dumps({
     "runtimeSha256": hashlib.sha256(args.runtime.read_bytes()).hexdigest(),
-    "skyrimTested": False, "wrappedDeviceRequired": True, "cases": records,
+    "skyrimTested": False, "wrappedDeviceRequired": True, "sdrBytesTrial": args.sdr_bytes, "cases": records,
 }, indent=2) + "\n")

@@ -61,7 +61,8 @@ static Result<void> ValidatePacket(ID3D12GraphicsCommandList* list,const ImagePa
     if(p.kind!=ImageKind::Real || p.guideOrigin!=GuideOrigin::RealSource ||
         !p.interpolationFraction || *p.interpolationFraction!=1)
         return Invalid("NR real-source guide provenance/time is invalid");
-    if(p.colorDomain!=ColorDomain::Linear)return Invalid("NR color domain is unknown/unconverted");
+    const auto colorFormat=NrColorFormat(p.colorDomain);
+    if(colorFormat==DXGI_FORMAT_UNKNOWN)return Invalid("NR color domain is unknown/unqualified");
     if(p.colorExtent!=c.colorExtent || p.guideExtent!=c.guideExtent)
         return Invalid("NR packet extent differs from retained stage contract");
     const std::array resources{p.color.Get(),p.output.Get(),p.depth.Get(),p.motion.Get()};
@@ -71,8 +72,8 @@ static Result<void> ValidatePacket(ID3D12GraphicsCommandList* list,const ImagePa
         if(p.ui && SameObject(resources[i],p.ui.Get()))return Invalid("NR world/guide resource aliases dedicated UI");
     }
     if(p.ui && !OnDevice(p.ui.Get(),c.device.Get()))return Invalid("NR dedicated UI belongs to another device");
-    if(!Texture(p.color.Get(),p.colorExtent,DXGI_FORMAT_R16G16B16A16_FLOAT) ||
-        !Texture(p.output.Get(),p.colorExtent,DXGI_FORMAT_R16G16B16A16_FLOAT,true) ||
+    if(!Texture(p.color.Get(),p.colorExtent,colorFormat) ||
+        !Texture(p.output.Get(),p.colorExtent,colorFormat,true) ||
         !Texture(p.depth.Get(),p.guideExtent,DXGI_FORMAT_R32_FLOAT) ||
         !Texture(p.motion.Get(),p.guideExtent,DXGI_FORMAT_R16G16_FLOAT))return Invalid("NR texture format/shape/flags invalid");
     if(!std::isfinite(p.motionScaleX) || !std::isfinite(p.motionScaleY) || !p.motionScaleX || !p.motionScaleY)

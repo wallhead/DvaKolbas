@@ -40,6 +40,16 @@ int main(int argc,char** argv){try{
     p.interpolationFraction=1;p.presentationTime=2;p.colorExtent=p.guideExtent={64,32};p.colorDomain=ColorDomain::Linear;p.guideOrigin=GuideOrigin::RealSource;
     p.motionScaleX=p.motionScaleY=1;p.colorState=p.depthState=p.motionState=D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;p.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
     Check(bool(ValidateImagePacket(list.Get(),p,c)),"OwnedRealPacketAccepted_ShapeNotTemporalQualification");
+    // Explicit SDR-byte packets keep their encoded UNORM values. They must
+    // never be admitted as linear FP16 or with a mixed-format output.
+    auto sdr=p;sdr.colorDomain=ColorDomain::SdrBytes;
+    sdr.color=Texture(c.device.Get(),DXGI_FORMAT_R8G8B8A8_UNORM);
+    sdr.output=Texture(c.device.Get(),DXGI_FORMAT_R8G8B8A8_UNORM,true);
+    Check(bool(ValidateImagePacket(list.Get(),sdr,c)),"ExplicitSdrBytesPacketAccepted");
+    auto mixed=sdr;mixed.colorDomain=ColorDomain::Linear;
+    Check(!ValidateImagePacket(list.Get(),mixed,c),"SdrBytesCannotMasqueradeAsLinear");
+    mixed=sdr;mixed.output=p.output;
+    Check(!ValidateImagePacket(list.Get(),mixed,c),"SdrBytesRejectMixedOutputFormat");
     auto bad=p;bad.guideSourceId=6;Check(!ValidateImagePacket(list.Get(),bad,c),"StaleGuideSourceRejected");
     bad=p;bad.guideEpoch=2;Check(!ValidateImagePacket(list.Get(),bad,c),"StaleGuideEpochRejected");
     bad=p;bad.output=bad.color;Check(!ValidateImagePacket(list.Get(),bad,c),"ColorOutputAliasRejected");

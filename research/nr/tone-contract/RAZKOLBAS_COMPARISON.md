@@ -1,10 +1,11 @@
 # RazKolbas NR comparison — 2026-10-04
 
-The owner reports stable NR in RazKolbas. Read-only inspection confirms a
-different color contract from Dva; it does not yet establish a Style-0 fix.
-The owner is unsure whether Raz's stable check used Style 0 / Tone 1. Its
-currently saved V5.4 INI has NR off, **Style 2 / Tone 1**, intensity about 0.98,
-Default preset and the experimental `ada-fastfp16` profile.
+The owner now confirms **Raz Style 0 / Tone 1 has no drift** after the matched
+camera check. [The new gameplay receipt](razkolbas-style0-game-result.json)
+records this qualitative result and its post-session Style-0 INI snapshot.
+The earlier [comparison snapshot](razkolbas-comparison.json) remains immutable:
+at that time the saved style was 2 and the owner was unsure about Style 0.
+No measured Skyrim texture/pixel capture is implied by the user report.
 
 Reference checkout: `C:/Users/user/Documents/ChatGPT/RazKolbas`, HEAD
 `c89f799`. Its existing untracked `docs/NEXT_SESSION_PROMPT.md` was preserved.
@@ -47,10 +48,10 @@ values with encoded RGBA8 versus 22.440 with decoded FP16 in its synthetic
 context scene. RGBA8 reduced that response but did not eliminate it. That
 fixture is not a matched Skyrim camera rotation.
 
-The next gameplay comparison must enable **Raz NR Style 0 / Tone 1**, verify a
-visible NR off/on effect, and inspect the same building/camera movement, with
-FG/sharpening off and matched native resolution. A stable result would support
-an isolated Dva trial of Raz's color contract; a shifting result would explain
-why Style 2 looked stable without establishing integration parity. Actual AIO
-texture capture remains ready and useful. Retain full Tone 1 and distinct
-styles; no drift-fix claim or milestone advance follows this source comparison.
+The user-confirmed stable Style-0 result supports an isolated Dva SDR-byte
+trial. The opt-in trial retains one full Tone-1 pass, typed RGBA8 admission,
+source alpha and existing guide/ownership/retirement checks. FSR receives the
+encoded result through its ordinary decode path; no prepared linear lease is
+exported by this route. See [trial scope](SDR_BYTES_TRIAL.md). Actual AIO texture
+capture remains useful. No drift-fix claim or milestone advance follows the
+Raz result or standalone trial.

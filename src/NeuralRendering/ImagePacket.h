@@ -9,7 +9,11 @@
 namespace TheosRenderPipeline::NeuralRendering {
 enum class Placement { Before, After };
 enum class ImageKind { Real, Generated };
-enum class ColorDomain { Unknown, Linear };
+enum class ColorDomain { Unknown, Linear, SdrBytes };
+constexpr DXGI_FORMAT NrColorFormat(ColorDomain domain){
+    return domain==ColorDomain::Linear?DXGI_FORMAT_R16G16B16A16_FLOAT:
+        domain==ColorDomain::SdrBytes?DXGI_FORMAT_R8G8B8A8_UNORM:DXGI_FORMAT_UNKNOWN;
+}
 enum class GuideOrigin { Unknown, RealSource, GeneratedProvider, ReconstructedPair };
 struct ImageExtent {
     uint32_t width{},height{};

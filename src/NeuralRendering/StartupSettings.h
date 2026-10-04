@@ -4,6 +4,8 @@
 namespace TheosRenderPipeline::NeuralRendering {
 struct StartupSettings {
     bool community{};
+    // Opt-in comparison with the user-confirmed stable Raz SDR byte contract.
+    bool sdrBytesTrial{};
     std::string profile{"Auto"};
     std::filesystem::path runtimeRoot,driverCore;
     Upscaling::ColorEncoding sourceEncoding{Upscaling::ColorEncoding::Unknown};
@@ -15,6 +17,7 @@ struct StartupSettings {
 };
 template<class Ini> StartupSettings LoadStartupSettings(const Ini& ini){
     StartupSettings result;result.community=ini.GetBoolValue("NeuralRendering","CommunityRuntime",false);
+    result.sdrBytesTrial=ini.GetBoolValue("NeuralRendering","SdrBytesTrial",false);
     result.profile=ini.GetValue("NeuralRendering","Profile","Auto");
     result.runtimeRoot=ini.GetValue("NeuralRendering","RuntimeRoot","");result.driverCore=ini.GetValue("NeuralRendering","DriverCore","");
     const std::string_view encoding=ini.GetValue("NeuralRendering","SourceColorEncoding","Unknown");

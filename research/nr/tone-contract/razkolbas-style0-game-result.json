@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "User-reported Raz Style 0 / Tone 1 Skyrim camera comparison; no new automatic gameplay capture",
+  "previousSnapshot": "razkolbas-comparison.json",
+  "ownerReport": "checked, no drift",
+  "style0Tone1Confirmed": true,
+  "savedConfigSha256": "9af70ddc890fdf8ff03dd0ffeb430b95734c55ad084fe8f61ee66c6618946ff0",
+  "savedConfigAfterTest": {
+    "Enabled": false,
+    "Style": 0,
+    "LocalToneStrength": 1,
+    "Intensity": 0.9900000095367432,
+    "RuntimeProfile": "ada-fastfp16",
+    "AllowExperimentalRuntime": true
+  },
+  "sameRtx40ModelSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+  "limits": [
+    "Qualitative user observation; no new image/texture metadata capture",
+    "Earlier synthetic RGBA8 fixture still drifted; stable Raz gameplay does not prove a Dva format fix"
+  ],
+  "dvaDriftFixed": false,
+  "milestonesComplete": 1,
+  "milestonesTotal": 8
+}

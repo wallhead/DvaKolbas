@@ -25,6 +25,8 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& set
     if(!settings.community||!device||!settings.runtimeRoot.is_absolute()||!settings.driverCore.is_absolute()||!cache.is_absolute())
         return stop(ErrorKind::InvalidInput,"Community NR requires controlled absolute runtime/core/cache paths");
     if(!Upscaling::IsKnownColorEncoding(settings.sourceEncoding))return stop(ErrorKind::Unsupported,"Community NR source color encoding is unknown");
+    if(settings.sdrBytesTrial&&settings.sourceEncoding==Upscaling::ColorEncoding::Linear)
+        return stop(ErrorKind::Unsupported,"NR SDR byte trial requires Gamma22 or SRGB source encoding");
     s.settings=settings;s.cache=cache;s.device11=device;ComPtr<IDXGIDevice> dxgi;ComPtr<IDXGIAdapter> adapter;DXGI_ADAPTER_DESC1 d{};
     auto hr=device->QueryInterface(IID_PPV_ARGS(&dxgi));if(FAILED(hr))return stop(ErrorKind::IdentityMismatch,"NR cannot inspect renderer DXGI device",hr);
     if(FAILED(hr=dxgi->GetAdapter(&adapter))||FAILED(hr=adapter.As(&s.dxgiAdapter))||FAILED(hr=s.dxgiAdapter->GetDesc1(&d)))return stop(ErrorKind::IdentityMismatch,"NR renderer adapter unavailable",hr);
@@ -71,11 +73,17 @@ Result<BeforeResult> BeforeHost::Evaluate(const BeforeInput& input,const Setting
         if(!opened){auto retired=s.owner->Retire();if(!retired){s.MarkTerminal(opened.error());return std::unexpected(opened.error());}s.owner.reset();s.uncertain=false;s.available=false;s.status=opened.error().message;return BeforeResult{false,wasActive||input.reset};}
     }
     if(!s.prepared){s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.prepared=std::make_unique<PreparedBeforeUpscale>();
-        auto initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract);if(!initialized){s.MarkTerminal(initialized.error());return std::unexpected(initialized.error());}}
-    auto result=s.prepared->Evaluate(input,s.settings.sourceEncoding,settings,linearOutput);
+        auto initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,
+            s.settings.sdrBytesTrial?ColorDomain::SdrBytes:ColorDomain::Linear);if(!initialized){s.MarkTerminal(initialized.error());return std::unexpected(initialized.error());}}
+    if(s.settings.sdrBytesTrial&&linearOutput&&linearOutput->Valid())
+        return Fail(ErrorKind::InvalidInput,"NR SDR byte trial cannot replace a retained FSR lease");
+    // Encoded trial delivery is decoded by the existing FSR source path. Never
+    // label encoded RGBA8 as a prepared linear FSR lease.
+    auto result=s.prepared->Evaluate(input,s.settings.sourceEncoding,settings,s.settings.sdrBytesTrial?nullptr:linearOutput);
     if(!result){if(result.error().kind==ErrorKind::InvalidInput||result.error().kind==ErrorKind::Unsupported){s.status=result.error().message;auto off=settings;off.enabled=false;auto reset=s.prepared->Evaluate(input,s.settings.sourceEncoding,off);if(reset)return BeforeResult{false,wasActive||input.reset};}
         s.MarkTerminal(result.error());return std::unexpected(result.error());}
-    s.active=result->evaluated;if(s.active){++s.recorded;s.resets+=result->effectiveReset;s.status="NR active before upscaling; "+std::string(s.profile->id)+"; one native SDR pass";}return *result;
+    s.active=result->evaluated;if(s.active){++s.recorded;s.resets+=result->effectiveReset;s.status="NR active before upscaling; "+std::string(s.profile->id)+
+        (s.settings.sdrBytesTrial?"; one SDR RGBA8 byte trial pass":"; one native SDR pass");}return *result;
 }
 Result<void> BeforeHost::Retire(){auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,s.status.c_str());
     if(s.prepared){auto r=s.prepared->Retire();if(!r){s.MarkTerminal(r.error());return r;}s.prepared.reset();}

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "scope": "New typed production SdrBytes probe smoke; original format receipts unchanged",
+  "sources": 160,
+  "alphaPixels": 36864000,
+  "style": 0,
+  "tone": 1,
+  "mode": "unorm8",
+  "maxSettledRgbChannelDrift": 8.83886,
+  "retirement": "complete",
+  "historicalCapturedFilesByteIdentical": {
+    "frames.csv": true,
+    "nr-40.ppm": true,
+    "nr-80.ppm": true,
+    "nr-120.ppm": true,
+    "nr-160.ppm": true,
+    "output-40.bin": true,
+    "output-80.bin": true,
+    "output-120.bin": true,
+    "output-160.bin": true
+  },
+  "executableSha256": "9ca477fcac30118ff2334d445678b9363b9c936a6eaee10963a1064c334ba8d7",
+  "skyrimDriftFixed": false
+}

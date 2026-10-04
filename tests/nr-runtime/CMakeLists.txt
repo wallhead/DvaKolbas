@@ -135,6 +135,8 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_link_libraries(TRPNrPreparedBeforeTests PRIVATE TRPNeuralRuntime)
     add_test(NAME NrPreparedBefore COMMAND TRPNrPreparedBeforeTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}")
     set_tests_properties(NrPreparedBefore PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+    add_test(NAME NrPreparedBefore-sdr-bytes COMMAND TRPNrPreparedBeforeTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" --sdr-bytes)
+    set_tests_properties(NrPreparedBefore-sdr-bytes PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
     add_executable(TRPNrBeforeHostTests ../NrBeforeHostTests.cpp)
     target_compile_features(TRPNrBeforeHostTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrBeforeHostTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
@@ -148,6 +150,8 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     if(TRP_NR_TEST_RUNTIME_ROOT)
         add_test(NAME NrBeforeHostFrames COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrBeforeHostFrames PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+        add_test(NAME NrBeforeHostFrames-sdr-bytes COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/sdr-host.json" --sdr-bytes)
+        set_tests_properties(NrBeforeHostFrames-sdr-bytes PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrBeforeHost COMMAND TRPNrBeforeHostTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrBeforeHost PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         if(TRP_NR_RESHADE_RUNTIME)
@@ -160,6 +164,12 @@ if(TRP_NR_NGX_INCLUDE_DIR)
                 --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
                 --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-before")
             set_tests_properties(NrReShadeBefore PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
+            add_test(NAME NrReShadeSdrBefore COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+                --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>" --host-exe "$<TARGET_FILE:TRPNrBeforeHostFramesTests>"
+                --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+                --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-sdr-before" --sdr-bytes)
+            set_tests_properties(NrReShadeSdrBefore PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
         endif()
     endif()
     add_executable(TRPNrStageTests ../NrStageTests.cpp)
@@ -303,7 +313,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_features(TRPNrPreparedFsrTests PRIVATE cxx_std_23)
     target_link_libraries(TRPNrPreparedFsrTests PRIVATE TRPNrPerformanceRuntime TRPNrPerformanceFsr)
     target_include_directories(TRPNrPreparedFsrTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-    foreach(mode IN ITEMS native quality gated abandon)
+    foreach(mode IN ITEMS native quality gated abandon sdr-bytes)
         add_test(NAME NrPreparedFsr-${mode} COMMAND TRPNrPreparedFsrTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" "${TRP_NR_PERF_FSR_RUNTIME}" ${mode})
         set_tests_properties(NrPreparedFsr-${mode} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 90 SKIP_RETURN_CODE 77)
     endforeach()
@@ -324,6 +334,12 @@ if(TRP_NR_NGX_INCLUDE_DIR)
             --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
             --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-prepared-fsr")
         set_tests_properties(NrReShadePreparedFsr PROPERTIES RUN_SERIAL TRUE TIMEOUT 240 LABELS "GPU;ReShade")
+        add_test(NAME NrReShadeSdrFsr COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+            --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>" --host-exe "$<TARGET_FILE:TRPNrBeforeHostFramesTests>"
+            --prepared-fsr-exe "$<TARGET_FILE:TRPNrPreparedFsrTests>" --fsr-runtime "${TRP_NR_PERF_FSR_RUNTIME}"
+            --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+            --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-sdr-fsr" --sdr-bytes)
+        set_tests_properties(NrReShadeSdrFsr PROPERTIES RUN_SERIAL TRUE TIMEOUT 240 LABELS "GPU;ReShade")
     endif()
     endif()
     if(TRP_NR_RTX40_DLL AND TRP_NR_DRIVER_CORE)

@@ -54,7 +54,7 @@ struct Stage::State {
     AllocationContext allocation;
     NVSDK_NGX_Parameter* parameters{};
     void* feature{};
-    bool attempted{},ready{},client{},terminal{};
+    bool attempted{},ready{},client{},terminal{},sdrViewsQualified{};
     unsigned preset{};
     uint64_t serial{},recorded{},submissionValue{1};
     uint32_t create{},evaluate{},release{},destroy{};
@@ -151,7 +151,15 @@ Result<EvaluationTicket> Stage::RecordInternal(ID3D12GraphicsCommandList* list,c
         settings.reconstruction.method>ResolveMethod::Ratio || EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR shared native stage requires adapter-owned reconstruction before/after it");
     auto validated=queued?QueuedImageAdmission::Validate(list,packet,s.contract,s.fences):ValidateImagePacket(list,packet,s.contract,&s.fences);
-    if(!validated)return std::unexpected(validated.error());auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
+    if(!validated)return std::unexpected(validated.error());
+    if(packet.colorDomain==ColorDomain::SdrBytes&&!s.sdrViewsQualified){
+        D3D12_FEATURE_DATA_FORMAT_SUPPORT format{DXGI_FORMAT_R8G8B8A8_UNORM};
+        const auto code=s.contract.device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT,&format,sizeof(format));
+        constexpr auto needed=D3D12_FORMAT_SUPPORT2_UAV_TYPED_LOAD|D3D12_FORMAT_SUPPORT2_UAV_TYPED_STORE;
+        if(FAILED(code)||(format.Support2&needed)!=needed)return Fail(ErrorKind::Unsupported,"NR SDR alpha preservation lacks typed UAV support",code);
+        s.sdrViewsQualified=true;
+    }
+    auto history=s.history.Check(packet,settings);if(!history)return std::unexpected(history.error());
     for(const auto& slot:s.slots)if(slot.pending){
         const auto& held=slot.pending->packet;
         for(auto* incoming:{packet.color.Get(),packet.output.Get(),packet.depth.Get(),packet.motion.Get()})
@@ -178,7 +186,7 @@ Result<EvaluationTicket> Stage::RecordInternal(ID3D12GraphicsCommandList* list,c
     if(!slot.parameters){r=s.Native(s.owner->Exports().allocate(&slot.parameters),"NR retained slot parameter allocation failed");if(!r)return std::unexpected(r.error());if(!slot.parameters){s.terminal=true;return Fail(ErrorKind::Runtime,"NR slot allocator returned null parameters");}
         r=WriteDirectCreationParameters(*slot.parameters,{s.owner->ProfileId(),s.contract.colorExtent,s.contract.guideExtent,s.preset});if(!r){s.terminal=true;return std::unexpected(r.error());}
         slot.parameters->Set("ResourceAllocCallback",reinterpret_cast<void*>(&Allocate));slot.parameters->Set("ResourceReleaseCallback",reinterpret_cast<void*>(&ReleaseResource));slot.parameters->Set("DLSSNRComputeScalingRatioCallback",reinterpret_cast<void*>(&Scaling));}
-    auto cpu=slot.views->GetCPUDescriptorHandleForHeapStart();D3D12_SHADER_RESOURCE_VIEW_DESC srv{};srv.Format=DXGI_FORMAT_R16G16B16A16_FLOAT;srv.ViewDimension=D3D12_SRV_DIMENSION_TEXTURE2D;srv.Shader4ComponentMapping=D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;srv.Texture2D.MipLevels=1;
+    auto cpu=slot.views->GetCPUDescriptorHandleForHeapStart();D3D12_SHADER_RESOURCE_VIEW_DESC srv{};srv.Format=NrColorFormat(packet.colorDomain);srv.ViewDimension=D3D12_SRV_DIMENSION_TEXTURE2D;srv.Shader4ComponentMapping=D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;srv.Texture2D.MipLevels=1;
     s.contract.device->CreateShaderResourceView(packet.color.Get(),&srv,cpu);cpu.ptr+=s.contract.device->GetDescriptorHandleIncrementSize(heap.Type);
     D3D12_UNORDERED_ACCESS_VIEW_DESC uav{};uav.Format=srv.Format;uav.ViewDimension=D3D12_UAV_DIMENSION_TEXTURE2D;s.contract.device->CreateUnorderedAccessView(packet.output.Get(),nullptr,&uav,cpu);
     auto& p=*slot.parameters;p.Set("DLSSNR.Color",packet.color.Get());p.Set("DLSSNR.MVec",packet.motion.Get());p.Set("DLSSNR.Depth",packet.depth.Get());p.Set("DLSSNR.Output",packet.output.Get());

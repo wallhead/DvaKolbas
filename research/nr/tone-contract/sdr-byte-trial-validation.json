@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Opt-in encoded RGBA8 NR trial; no Skyrim camera acceptance",
+  "baseRevision": "e6ced0a",
+  "buildQualification": "Precommit product/standalone builds from the recorded working source; clean deployment build recorded separately",
+  "standalone": {
+    "passed": 63,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 110.23,
+    "lastTestLogSha256": "31d25dd5aebbecc2d8d8cbd65b1491ba5fe2cb05c8ab0824de50d162cb65053b"
+  },
+  "product": {
+    "passed": 188,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 156.58,
+    "lastTestLogSha256": "46e861a237c19d7c47dfe2baf5c733d12bc60fa360604e1a51becb5e15b37d55",
+    "explicitlyExcluded": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "exclusionReason": "Windows Graphics Tools layers absent; prior explicit exclusions retained"
+  },
+  "redGreen": {
+    "test": "ExplicitSdrBytesPacketAccepted",
+    "before": "FAIL before SdrBytes domain admission",
+    "after": "PASS with production typed-domain implementation"
+  },
+  "wrappedSdrFsr": {
+    "runtimeSha256": "b2945c29e7095491a901746b400e58db9b1592ab092bacf2a888ce37f02d08da",
+    "skyrimTested": false,
+    "wrappedDeviceRequired": true,
+    "sdrBytesTrial": true,
+    "cases": [
+      {
+        "case": "packet",
+        "result": "PASS",
+        "exeSha256": "4850ddd7f0e664f65beb1d1ccc1f8fa84f30e0ea5ba861bdf27157e3ff19b23f"
+      },
+      {
+        "case": "host",
+        "result": "PASS",
+        "exeSha256": "3ceebe671b1441c7145fcdd4d62b10d32a5297266525dc7a2b4e7177f1194871"
+      },
+      {
+        "case": "prepared-fsr-sdr-bytes",
+        "result": "PASS",
+        "exeSha256": "68dc5dd4ced4317f568fff83dfe2c05ee314f4061f5a0ae83a7b660a559a773c"
+      }
+    ]
+  },
+  "review": {
+    "functionalBlockers": 0,
+    "method": "Independent read-only final-delta review; GPU checks run by primary agent",
+    "whitespace": "Legacy format probe normalized to LF; git diff --check passes"
+  },
+  "formatSmoke": "sdr-format-smoke.json",
+  "installed": false,
+  "skyrimDriftFixed": false,
+  "milestonesComplete": 1,
+  "milestonesTotal": 8,
+  "testedSourceSha256": {
+    "src/FrameGen/NvidiaHostNeural.cpp": "b5bc841932e62ac0ce353666964e62bfe1860b99e9b51c7b3597ef96cde5d536",
+    "src/NeuralRendering/BeforeHost.cpp": "fe8ac26fc653dfc0bb0c45b5c40e22120452a4dfcd0dba0bf86c8a2b5fb635a1",
+    "src/NeuralRendering/BeforeUpscale.cpp": "430480a32138055c6399d86fe56109b5b2df8fcb89e3cb45cb6a61cb3f34e148",
+    "src/NeuralRendering/PreparedBeforeUpscale.cpp": "4e7a92086c5f5dc4051315a652d47ca04ffeb789ef359748608488446d9a66b8",
+    "src/NeuralRendering/Stage.cpp": "12d9b1ce979ca04fc91415d32246495337f770f8cee44f487ef279030ff8a968",
+    "src/NeuralRendering/ImagePacket.cpp": "9af029c55ce3f6025c77580ad1e2739c69997839847eadf370ea9b329fa6a1ec",
+    "src/NeuralRendering/ImagePacket.h": "ef59180688e7f80dad563ea4c8f2a97b4c74eb2877bdefe3535823d2994d6980",
+    "src/NeuralRendering/StartupSettings.h": "6dc3f205cf5600beea449925c2cb174fa330b2a01c8f5863c15429e00d63b0a9",
+    "tests/NrPreparedFsrTests.cpp": "dd3f699d1993a10308ccf448a14c2c45f6663dec6e5c3710c891bc10c30f5c61",
+    "tests/nr-runtime/run_reshade_before.py": "114fc06d7c02c9bae7e1f7f1c1cb94aa64917d8b10b53662a249d31ef3808072",
+    "research/nr/tone-contract/format-probe/FormatContextProbe.cpp": "220f54057a2a9fa735f447daaaaee77d135d1268d1691817697d3cec7ab57ad4"
+  }
+}

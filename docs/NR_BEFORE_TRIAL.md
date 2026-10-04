@@ -13,3 +13,10 @@ RTX 40 output was tested on RTX 4080 SUPER. RTX 50 and RTX 20/30 use separate ex
 The source image must come from a confirmed native UI handoff. Menu/loading and fallback frames without a clean world boundary bypass NR. Resets cover camera discontinuities, off/on, source gaps and resize. A failure with unknown GPU ownership stops rendering and requires restart; the log preserves its reason.
 
 Keep previous TRP and AIO mods for rollback. Installation has a separate mod folder and a backup of the exact profile mod list; do not run two upscaler mods together. Logs contain `[Community NR startup]` and `[Community NR frame]` with requested/effective state, selected profile, source ID, revision and reset/evaluation counts. Runtime files stay local; Git contains implementation and evidence only.
+
+
+The later [opt-in SDR-byte comparison](../research/nr/tone-contract/SDR_BYTES_TRIAL.md)
+requires `[NeuralRendering] SdrBytesTrial=true` at startup and Stable colors
+off. It keeps encoded RGBA8 through NR and lets FSR decode afterward. Full tone
+and live style/off/on controls remain available. This is an isolated comparison
+against user-confirmed stable Raz gameplay; default FP16 behavior is retained.

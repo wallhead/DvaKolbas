@@ -111,8 +111,8 @@ void NvidiaHost::InspectCommunityNeural()
     const auto inspected=presenter?communityNeural_->Inspect(device_.Get(),startup,cache,presenter):
         NR::Result<void>{std::unexpected(NR::Error{NR::ErrorKind::Unsupported,0,"NR waiting for presenter D3D12 device"})};
     communityLastStatus_=inspected?communityNeural_->Status():inspected.error().message;
-    logger::info("[Community NR startup] available={} profile={} encoding={} root={} core={} presenterDevice={} status={}",
-        bool(inspected),communityNeural_->ProfileId(),Upscaling::ColorEncodingName(startup.sourceEncoding),
+    logger::info("[Community NR startup] available={} profile={} encoding={} sdrBytesTrial={} root={} core={} presenterDevice={} status={}",
+        bool(inspected),communityNeural_->ProfileId(),Upscaling::ColorEncodingName(startup.sourceEncoding),startup.sdrBytesTrial,
         startup.runtimeRoot.string(),startup.driverCore.string(),fmt::ptr(presenter),communityLastStatus_);
 }
 bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Texture2D* depth,

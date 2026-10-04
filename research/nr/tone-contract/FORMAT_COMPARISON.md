@@ -39,3 +39,13 @@ The remaining useful comparison is AIO19's actual host in the same building/came
 If AIO also drifts, restoring its integration alone cannot meet the requested camera-stable behavior; a style-preserving temporal approach needs separate design and lighting/disocclusion/ghosting acceptance. If AIO stays stable, measure its actual Color/Output formats and pixels, working dimensions, mask, effective controls/configuration and resets before changing Dva's contract. No milestone advances from these negative experiments.
 
 [Format validation receipt](format-validation.json) records the qualifying snapshot under ignored `out/research/nr/tone-preserve-investigation/native-route/format-captures/experiment`. [Probe source](format-probe/FormatContextProbe.cpp) and [private CMake target](format-probe/CMakeLists.txt) retain the research fixture without changing the production runtime target. Proprietary binaries remain local.
+
+## Later explicit SDR trial
+
+The immutable results above describe the original private format experiment.
+The current portable CMake target now uses production `ColorDomain::SdrBytes`
+admission for `unorm8` and no longer substitutes Stage/ImagePacket sources.
+`encoded16` remains a research-only declared-Linear contract violation.
+Any new probe runs have separate receipts and do not relabel the original
+12 qualifying processes or their captured source hashes. See
+[the opt-in trial](SDR_BYTES_TRIAL.md).

@@ -10,8 +10,10 @@ using namespace TheosRenderPipeline::NeuralRendering;
 using Microsoft::WRL::ComPtr;
 namespace {int failures{};void Check(bool v,const char* name){std::printf("%s %s\n",v?"PASS":"FAIL",name);failures+=!v;}void Need(HRESULT h){if(FAILED(h))throw h;}}
 int wmain(int argc,wchar_t** argv){try{
-    const bool wrapped=argc==5&&std::wstring_view(argv[4])==L"--require-wrapped";
-    if((argc!=3&&argc!=4&&!wrapped)||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
+    bool wrapped=false,sdr=false;
+    if(argc<3||argc>6||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
+    for(int i=4;i<argc;++i){if(std::wstring_view(argv[i])==L"--require-wrapped")wrapped=true;
+        else if(std::wstring_view(argv[i])==L"--sdr-bytes")sdr=true;else return 1;}
     if(NrRuntimeResearch::GameRunningOrUnknown())return 1;
     BeforeHost prepared;SettingsSnapshot s;s.enabled=false;s.revision=1;
     Check(bool(prepared.Evaluate({},s)),"DisabledPreparedNrRequiresNoColorDecoder");
@@ -26,7 +28,8 @@ int wmain(int argc,wchar_t** argv){try{
         std::printf("NR_DEVICE host=%p fenceOwner=%p wrapped=%u\n",hostIdentity.Get(),nativeIdentity.Get(),hostIdentity!=nativeIdentity);
         Check(hostIdentity!=nativeIdentity,"WrappedHostRegressionUsesActualReShadeFenceIdentity");if(failures)return 1;
     }
-    StartupSettings startup;startup.community=true;startup.runtimeRoot=std::filesystem::absolute(argv[1]);startup.driverCore=argv[2];startup.sourceEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
+    StartupSettings startup;startup.community=true;startup.sdrBytesTrial=sdr;startup.runtimeRoot=std::filesystem::absolute(argv[1]);startup.driverCore=argv[2];startup.sourceEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
+    if(sdr)s.stableColors=false;
     auto inspected=prepared.Inspect(device.Get(),startup,std::filesystem::absolute("nr-host-frames-cache"));
     if(!inspected){std::puts(inspected.error().message.c_str());return 1;}
     Check(prepared.Available() && prepared.Recorded()==0 && !GetModuleHandleW(L"nvngx_dlssnr.dll"),"InspectedHostDoesNotInitializeVendorBeforeSource");
@@ -61,9 +64,11 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         input.sourceId=input.guideSourceId=frame+1;input.previousSourceId=frame;input.presentationTime=double(frame+1)/60.;s.enabled=frame!=80;s.revision=frame<80?1:frame==80?2:3;
         // Keep caller RTV bound: preparation must isolate and restore it.
         auto* target=rtv.Get();context->OMSetRenderTargets(1,&target,nullptr);
-        auto result=prepared.Evaluate(input,s);
+        PreparedFsrInput lease;
+        auto result=prepared.Evaluate(input,s,sdr?&lease:nullptr);
         if(!result){std::printf("frame %u %s\n",frame,result.error().message.c_str());return 1;}
         Check(result->evaluated==s.enabled,"OneNrEvaluationOnlyWhenEnabled");
+        if(sdr)Check(!lease.Valid(),"SdrHostReturnsEncodedColorWithoutLinearLease");
         if(frame==0 || frame==81 || frame==120) Check(result->effectiveReset,"FirstReenabledAndResizedSourceResetHistory");
         ComPtr<ID3D11RenderTargetView> restored;context->OMGetRenderTargets(1,&restored,nullptr);if(restored.Get()!=rtv.Get())return 1;
         context->OMSetRenderTargets(0,nullptr,nullptr);context->CopyResource(readback.Get(),color.Get());D3D11_MAPPED_SUBRESOURCE m{};Need(context->Map(readback.Get(),0,D3D11_MAP_READ,0,&m));
@@ -82,6 +87,7 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             << ",\"adapterLuidLow\":" << d.AdapterLuid.LowPart << ",\"adapterLuidHigh\":" << d.AdapterLuid.HighPart
             << ",\"frames\":240,\"nrEvaluations\":" << expectedNr << ",\"resizes\":1,\"sourceAlphaPixels\":" << alpha
             << ",\"wrappedDeviceRequired\":" << (wrapped?"true":"false")
+            << ",\"sdrBytesTrial\":" << (sdr?"true":"false")
             << ",\"changedRgbPixels\":" << changed << ",\"bypassedSourcePixels\":" << bypassPixels
             << ",\"runtimeSha256\":\"" << RuntimeCatalog()[1].sha256 << "\",\"driverCoreSha256\":\"" << QualifiedProbeDriverCore().sha256
             << "\",\"retired\":true,\n\"compiledSourcesSha256\":" << NrRuntimeResearch::compiledSourcesJson << "\n}\n";
