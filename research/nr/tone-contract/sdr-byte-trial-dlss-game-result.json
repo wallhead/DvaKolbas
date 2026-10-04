@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "User-reported DLAA/DLSS success, captured NR processing and NVIDIA FG state on RTX4080SUPER",
+  "ownerReport": "DLAA DLSS works (Russian keyboard layout decoded)",
+  "sourceRevision": "5d9a3b873b72",
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER",
+  "runs": [
+    {
+      "log": "TheosRenderPipeline.1.log",
+      "bytes": 176232,
+      "sha256": "23dc6061fb9bc6762f5a8acedc14ff31ffd61b2159cc7a84f633a6b8253b68a2",
+      "mode": 3,
+      "modeName": "DLAA",
+      "lastLoggedNrEvaluations": 4200,
+      "x2Observed": true,
+      "errorCriticalLines": 0,
+      "evidenceLines": [
+        "[2026-10-04 15:10:26.792] [thread 34660] [info] [Renderer build] TRP_BUILD|edition=Standard|source=5d9a3b873b72|FSR=1|FG=1|NR=1",
+        "[2026-10-04 15:10:27.606] [thread 34660] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:10:54.471] [thread 34660] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:10:54.507] [thread 34660] [info] [SourceDLSSG] rendering adapter=NVIDIA GeForce RTX 4080 SUPER vendor=0x10DE device=0x2702 LUID=00000000:00010318",
+        "[2026-10-04 15:11:00.515] [thread 34660] [info] [Community NR startup] available=true profile=rtx40 encoding=Gamma22 sdrBytesTrial=true root=D:\\TESV54BETA\\BETA_TRUEAE_V54\\Stock Game\\Data\\SKSE\\Plugins\\TheosRenderPipeline core=C:\\Windows\\System32\\DriverStore\\FileRepository\\nv_dispi.inf_amd64_da865124972e1f80\\_nvngx.dll presenterDevice=0x2b99bc77f40 status=NR ready for first real-world frame; GPU profile=rtx40",
+        "[2026-10-04 15:11:00.516] [thread 34660] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:11:07.846] [thread 18020] [info] [Community NR settings] revision=1 stableColors=false tone=1 structure=1 style=0",
+        "[2026-10-04 15:12:57.108] [thread 34512] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:15:59.093] [thread 34660] [info] [Community NR settings] revision=2 stableColors=false tone=1 structure=1 style=0",
+        "[2026-10-04 15:16:01.504] [thread 34660] [info] [Community NR settings] revision=3 stableColors=false tone=1 structure=1 style=0",
+        "[2026-10-04 15:16:09.800] [thread 34660] [info] [Community NR frame] source=27249 requested=true evaluated=true profile=rtx40 revision=3 reset=false frames=3600 resets=27 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+        "[2026-10-04 15:16:19.379] [thread 34660] [info] [Community NR frame] source=27849 requested=true evaluated=true profile=rtx40 revision=3 reset=false frames=4200 resets=27 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+        "[2026-10-04 15:16:04.576] [thread 34660] [info] [NvidiaHost] runtime DLSS-G state source=source-session observation=27000 status=0 actuallyPresented=2 maxGenerated=1 minDimension=100",
+        "[2026-10-04 15:16:16.354] [thread 34660] [info] [NvidiaHost] runtime DLSS-G state source=source-session observation=27600 status=0 actuallyPresented=2 maxGenerated=1 minDimension=100"
+      ]
+    },
+    {
+      "log": "TheosRenderPipeline.log",
+      "bytes": 213210,
+      "sha256": "04806178131a942880c5fc7237f7ecddad05ac8831b82c194ec4d03582d4c5d5",
+      "mode": 3,
+      "modeName": "DLAA",
+      "lastLoggedNrEvaluations": 5400,
+      "x2Observed": true,
+      "errorCriticalLines": 0,
+      "evidenceLines": [
+        "[2026-10-04 15:17:10.282] [thread 38580] [info] [Renderer build] TRP_BUILD|edition=Standard|source=5d9a3b873b72|FSR=1|FG=1|NR=1",
+        "[2026-10-04 15:17:11.114] [thread 38580] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:17:38.211] [thread 38580] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:17:38.247] [thread 38580] [info] [SourceDLSSG] rendering adapter=NVIDIA GeForce RTX 4080 SUPER vendor=0x10DE device=0x2702 LUID=00000000:00010318",
+        "[2026-10-04 15:17:44.201] [thread 38580] [info] [Community NR startup] available=true profile=rtx40 encoding=Gamma22 sdrBytesTrial=true root=D:\\TESV54BETA\\BETA_TRUEAE_V54\\Stock Game\\Data\\SKSE\\Plugins\\TheosRenderPipeline core=C:\\Windows\\System32\\DriverStore\\FileRepository\\nv_dispi.inf_amd64_da865124972e1f80\\_nvngx.dll presenterDevice=0x2501c7eb5a0 status=NR ready for first real-world frame; GPU profile=rtx40",
+        "[2026-10-04 15:17:44.201] [thread 38580] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:17:51.500] [thread 14204] [info] [Community NR settings] revision=1 stableColors=false tone=1 structure=1 style=0",
+        "[2026-10-04 15:19:41.082] [thread 38696] [info] Settings: UpscaleType=3 QualityLevel=2 Sharpening=false Sharpness=0.67 EnableJitter=true",
+        "[2026-10-04 15:25:20.877] [thread 38580] [info] [Community NR frame] source=49218 requested=true evaluated=true profile=rtx40 revision=1 reset=false frames=4800 resets=26 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+        "[2026-10-04 15:25:33.611] [thread 38580] [info] [Community NR frame] source=49818 requested=true evaluated=true profile=rtx40 revision=1 reset=false frames=5400 resets=26 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+        "[2026-10-04 15:25:27.959] [thread 38580] [info] [NvidiaHost] runtime DLSS-G state source=source-session observation=49547 status=0 actuallyPresented=2 maxGenerated=1 minDimension=100",
+        "[2026-10-04 15:25:33.217] [thread 38580] [info] [NvidiaHost] runtime DLSS-G state source=source-session observation=49800 status=0 actuallyPresented=2 maxGenerated=1 minDimension=100"
+      ]
+    }
+  ],
+  "qualifications": [
+    "Full Style0/Tone1, Stable colors off and encoded SDR NR processing observed",
+    "NVIDIA runtime reports x2 outputs; physical display cadence not measured",
+    "Other GPUs, all-scene visual stability and true After-FG NR remain unqualified"
+  ],
+  "settingsChangedByAgent": false,
+  "milestonesComplete": 1,
+  "milestonesTotal": 8
+}

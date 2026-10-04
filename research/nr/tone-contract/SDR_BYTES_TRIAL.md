@@ -93,3 +93,11 @@ callbacks/submissions and resumed generation after Style-1 Apply reset, with
 no error/critical lines. This extends the reported scene acceptance to NR Before
 with FSR FG; it does not implement NR after generated frames. DLSS/DLAA gameplay
 and broader acceptance remain open. No installed settings changed for this check.
+
+
+The owner also reports **DLAA and DLSS work**. The [NVIDIA-route receipt](sdr-byte-trial-dlss-game-result.json)
+retains available consecutive run prefixes with active full-tone SDR NR and
+NVIDIA x2 output observations on RTX 4080 SUPER. This is gameplay processing
+acceptance on the local GPU; it does not establish RTX20/30 output or physical
+cadence. No installed settings changed during verification. True After-FG and
+broader NR milestones remain incomplete.
