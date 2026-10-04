@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Owner-reported FSR Native AA After NR/FSR FG gameplay checklist on local RTX4080SUPER",
+  "ownerReport": "Next: NR/FG off/on, save/reload, inventory/map and alt-tab/minimize checks , its all working",
+  "ownerChecks": {
+    "NR off/on": "PASS",
+    "FG off/on": "PASS",
+    "Save and reload": "PASS",
+    "Inventory and map": "PASS",
+    "Alt-tab": "PASS",
+    "Minimize and restore": "PASS"
+  },
+  "builtSourceRevision": "dc6a9abe3630",
+  "log": {
+    "filename": "TheosRenderPipeline.log",
+    "bytes": 28362,
+    "sha256": "2ee56921fa3c29cf82f6fd950d3f54459042eb48d4f90a43541f28d5c4a46594",
+    "lastTimestamp": "2026-10-04 18:24:34.472"
+  },
+  "logObservations": {
+    "errorCriticalLines": 0,
+    "successfulFgCallbackSamples": 9,
+    "nrOffLoggedSamples": 0,
+    "explicitResizeSuspendResumeLogEvents": 0
+  },
+  "evidenceLines": [
+    "[2026-10-04 18:19:17.705] [thread 41604] [info] [Renderer build] TRP_BUILD|edition=Standard|source=dc6a9abe3630|FSR=1|FG=1|NR=1",
+    "[2026-10-04 18:24:01.250] [thread 41604] [info] [FSR FG] source=15394 presentCount=15393 renderedAtCapture=15393 renderedNow=15393 camera=1554044137088 guideCapture=4137 temporalGuides=true configuredId=15394 preparedId=15394 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 18:24:34.472] [thread 41604] [info] [FSR FG] source=16824 presentCount=16823 renderedAtCapture=16823 renderedNow=16823 camera=1554044137088 guideCapture=5567 temporalGuides=true configuredId=16824 preparedId=16824 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000"
+  ],
+  "qualification": [
+    "Listed gameplay checks are accepted from the owner report; sparse normal logs do not independently identify each manual action",
+    "FG suppression/reset and subsequent successful callbacks are logged; do not attribute an individual event to a particular manual action without capture evidence",
+    "No NR-off sample or explicit resize/minimize events occurs in this log prefix; absence is not rejection of the owner report",
+    "This is local FSR After acceptance for the listed steps, not an exhaustive GPU/scene matrix or physical-cadence/performance measurement",
+    "Pending renderer-level delayed-reader/resize proof, wider provider/settings matrix, fast travel and matched performance remain separate gates"
+  ],
+  "gameRunningAtInspection": false,
+  "settingsChangedByAgent": false,
+  "milestonesComplete": 3,
+  "milestonesTotal": 8
+}
