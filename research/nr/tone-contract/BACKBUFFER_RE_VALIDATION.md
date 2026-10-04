@@ -56,6 +56,8 @@ This establishes the report's case C **for our fixture**: stable requested/effec
 
 ## Revised next step
 
+Follow-up: [native format comparison](FORMAT_COMPARISON.md) traced the conditional native preparation passthrough and tested encoded UNORM8 against encoded/linear FP16. Twelve standalone runs completed, but UNORM8 still drifts; both models match captured UNORM8 output. A format swap is not a demonstrated fix. Actual AIO host scene evidence remains the next discriminator.
+
 Stop repeating generic flag and isolated Backbuffer/initialization experiments without new game-specific evidence. Do not ship a speculative initialization copy, clear coefficients, reduce Tone, or restore the rejected broad-delta subtraction.
 
 The next comparison must establish actual AIO19 vs Dva producer/evaluation boundaries: Color/Output resource and view formats, source transfer and pixel values, working dimensions, active mask/resolve branch, effective Tone/configuration/reset, and same-surface input→NR correction. AIO19's output-format preservation is now a concrete difference to trace against Dva's forced linear FP16 preparation. A format or transfer experiment remains research until it matches the actual branch. Controls must be matched by effective dispatch values, not only INI text.

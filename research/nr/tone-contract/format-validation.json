@@ -1,0 +1,813 @@
+{
+  "schema": 1,
+  "sourceCommit": "0881417984e7a3fb29c621e8bc28bad154415e32",
+  "scope": "Standalone research format experiment; private validator/alpha-view changes; no Skyrim/AIO host execution and no shipping format qualification",
+  "artifactPins": {
+    "rtx40": {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline\\NR\\rtx40\\nvngx_dlssnr.dll",
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a"
+    },
+    "aio19-rtx40-shim": {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\SkyrimUpscalerAIOBuild19-Hotfix1\\UpscalerBasePlugin\\nvngx_dlssnr.dll",
+      "sha256": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206"
+    },
+    "core": {
+      "path": "C:\\Windows\\System32\\DriverStore\\FileRepository\\nv_dispi.inf_amd64_da865124972e1f80\\_nvngx.dll",
+      "sha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+    }
+  },
+  "sourceModes": {
+    "linear16": "CPU Gamma22 decode, FP16 NR, CPU Gamma22 encode",
+    "encoded16": "encoded code/255 in FP16, no transfer conversion; research-only declared-Linear contract violation",
+    "unorm8": "encoded RGBA8_UNORM Color and Output, research-only format admission and declared-Linear contract violation"
+  },
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "frames": 160,
+    "preset": 0,
+    "intensity": 1,
+    "tone": 1,
+    "structure": 1,
+    "skin": 1,
+    "autoSkin": false,
+    "uiCorrection": false,
+    "motion": 0,
+    "motionScale": [
+      640,
+      360
+    ],
+    "depth": 0.5,
+    "reset": "source1 only",
+    "flags": 66,
+    "backbuffer": null,
+    "preseed": false,
+    "stableColors": false
+  },
+  "experimentSha256": {
+    "BuildFormatProbe.py": "68410feef9c683340c3d3d05cf491cb9092d428e0441d7d09a94a614ed863196",
+    "CMakeLists.txt": "793e327d2bdccced1ac2fc9cecb28e9bcf4c96b482d09a8204fa79ec4885529b",
+    "FormatContextProbe.cpp": "ce68b07f38cf1469a0e4b9e14d817f94a2dbc4ef3f295630e253b993d100a1ad",
+    "NrFormatContextProbe.exe": "61ddffdbf5b9c778b14bcb52a30d67fd998736834633c85dc4d3d5e8b7be903e",
+    "ResearchFormatPacket.cpp": "a0fa01f766b39a07cbb3dbb54337d995318f318ff34f85c04181a50c448b130c",
+    "ResearchFormatStage.cpp": "ad4286039a3373f37ebdd6b0da3255ee79dd254c15155315adb190815a7bc8b3",
+    "RunFormats.ps1": "0ab3f98899c7c0d73b8fdb0900171a58d3b3fdc1d708e4c09c87e2b40071c47a"
+  },
+  "actualRuntimeTranslationUnitsSha256": {
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\PerformanceMetrics.cpp": "b9eac9c95165f6bd7e28f21fb17fc603c04ddfa3f8a204d3b8ed26a6a3f8bd9a",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\RuntimeFileLease.cpp": "556482965456ef71b68a49a194e1db69075c3b1925be5046deb422c6c1ba2a4d",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\CallerIdentityShim.cpp": "5d7727c53a516ce52bd6da5836dfed5096e743a33628b8f6c9c34bfb1f312153",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\RuntimeOwner.cpp": "48cf2e7c90d640a5a562edcf1e6f083fce6b6b314b3ba596137da1fdadeac380",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\History.cpp": "d8b9516d94be9e68907b09b9be966a675cc4cf76084f5b4adfb983b80bc3e9a1",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\PerformanceQueries.cpp": "959585cc1bdd0d91af3f45cd38e6b10eb0738ec7f0e4d46ece792156ee462662",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\BeforeUpscale.cpp": "dc921e080271607143f2b1e013ab859a6062128c79b2582d50447e03a0b5c186",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\StableColorResolve.cpp": "e5dcfb093e974f23a078afbbb7fb9a4abdc72dbc9206b817eab56ef257afc461",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\PreparedBeforeUpscale.cpp": "962eb0a717762a5063fb3e190aa2c8e19553b342eb7ad554514d02b5ee9cc4db",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\NeuralRendering\\BeforeHost.cpp": "c6b8d6cbb724889b191b984f69e2d83e95fb1a396c16ac6019c8aea9c938b2c2",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\Graphics\\D3D11D3D12Interop.cpp": "f76013117eac1b4eb8cf0f940cddb5f9d67f4b0575844f0b2f872fbac9590de5",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\src\\Upscaling\\FSRColorConversion.cpp": "649d03e4a8102a3e4005ed9b17187f506db3d8350c861e7c6523bc803be9964c",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\build\\nr-format-investigation\\nr-runtime\\PerformanceRuntimeCatalog.cpp": "4b7620d1f47a0ece56d8d004a489d93a4e095a0e30c0cc92393626f46bea1381",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr\\tone-preserve-investigation\\native-route\\ResearchFormatStage.cpp": "ad4286039a3373f37ebdd6b0da3255ee79dd254c15155315adb190815a7bc8b3",
+    "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr\\tone-preserve-investigation\\native-route\\ResearchFormatPacket.cpp": "a0fa01f766b39a07cbb3dbb54337d995318f318ff34f85c04181a50c448b130c"
+  },
+  "runs": [
+    {
+      "capture": "aio19-rtx40-shim-unorm8-style0",
+      "profile": "aio19-rtx40-shim",
+      "mode": "unorm8",
+      "style": 0,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          103.48620000000001,
+          93.864175,
+          79.572425
+        ],
+        [
+          108.43289999999999,
+          100.8369,
+          87.989975
+        ],
+        [
+          106.74845,
+          96.41625,
+          79.15111
+        ],
+        [
+          103.4442,
+          93.84756999999999,
+          79.58932999999999
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 8.838864999999998,
+      "filesSha256": {
+        "frames.csv": "b01294bb4571830056332a8145fe414e72d44d42c9ef8dd9f1d724d42d049745",
+        "nr-120.ppm": "f4c4e9ceef47091bbdb835d884adba4405feab6b114b9baa425ddb9a3a08a4ce",
+        "nr-160.ppm": "7c0cdaf3f24a10eb41bbe5b6ea5e8af74e77dfe55431291a0b009cd14b74e954",
+        "nr-40.ppm": "ae3c96b0f011297fe2a6b60ac9fe78f87ae3c2ae6ae5edb36a1910ea6b60595a",
+        "nr-80.ppm": "fde07bd0a65230935dd1a39198304f827151bfdee3ae0c9f7402d7c426a8356b",
+        "output-120.bin": "5ab5ca07cd6dd6005d88da6a852e9e4cd407fca438c7fb06edeb9485f57192ec",
+        "output-160.bin": "3ca75b7e1cb90d7861a9d08782c2ca9acf98734437cd608c3662653022f0dbb5",
+        "output-40.bin": "7cb0987288d7b5ea67d594dfc7473a73598ddfb11389898be4522acfde971c0e",
+        "output-80.bin": "36541c559f66ff5af6313678436b4d244e5fcd4df0ddf6a064e1811b9d212b20",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "2b10b06e7283361d523a753a43c9fbe33c9c8804f59d221a453eb761a1d32306"
+    },
+    {
+      "capture": "aio19-rtx40-shim-unorm8-style1",
+      "profile": "aio19-rtx40-shim",
+      "mode": "unorm8",
+      "style": 1,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          97.467645,
+          91.556735,
+          80.95246999999999
+        ],
+        [
+          103.43955000000001,
+          97.74677,
+          86.85575
+        ],
+        [
+          101.0928,
+          93.340305,
+          79.806445
+        ],
+        [
+          97.39372499999999,
+          91.49555000000001,
+          80.89703
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 7.049305000000004,
+      "filesSha256": {
+        "frames.csv": "10aea0805d681bd2209abbc65db1111b9b8622aa95840a9627a5a3d8a39f969d",
+        "nr-120.ppm": "1df109f27017ecb4ebc423878e0b8543051fa4815e9f3ef1f45160b7d056ab37",
+        "nr-160.ppm": "e228bd8e66b399f2ef148d8e44790ca2998d336cbdc42dd6afa0746aab7096e1",
+        "nr-40.ppm": "9b5cf040b3dd786a6568bbc7d1d77a6968d1c1d0679b3c0be39bbd216e8827a1",
+        "nr-80.ppm": "7b95af80e58b480e0725ae51841e418242740df5dc7762aeca39adb9d0f06152",
+        "output-120.bin": "cc8e023a6b8bc1541a33c8aa508a60bf0174da35da19728fe65c46c56e30ceba",
+        "output-160.bin": "05ded3d4ba5df53bef42e3befa82a3460004a03c4fd678757e3af632abc6c40a",
+        "output-40.bin": "9fbd74f45ff4884c971c87cc4fbcc981fcbaec624b9ca4600ea46194cf049c48",
+        "output-80.bin": "53f00017e8d85d759d9ba6648eac5bf17fe9b073eeae808f07ba5791fa05fa94",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "5a34518b0aabb5678e1fc9fc2da66a7f93a29ca346de80a1fefdf042a74ca0c2"
+    },
+    {
+      "capture": "aio19-rtx40-shim-unorm8-style4",
+      "profile": "aio19-rtx40-shim",
+      "mode": "unorm8",
+      "style": 4,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          106.31625,
+          99.30969999999999,
+          86.674225
+        ],
+        [
+          108.9086,
+          102.53599999999999,
+          90.48506499999999
+        ],
+        [
+          107.0454,
+          98.25345,
+          83.896835
+        ],
+        [
+          106.26025,
+          99.272695,
+          86.64
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 6.588229999999996,
+      "filesSha256": {
+        "frames.csv": "a7d3031682d4f889cb5628e49e0f3023a870e535a15772313c885c2a94c0154a",
+        "nr-120.ppm": "b11a40e77f776cc5f390e4aa94f20096f7a94f038f5129680d909f404953c7c0",
+        "nr-160.ppm": "fa59fc414fa9f4a886da4970be959c8f41f6fd857da161957c0b3259806a89c6",
+        "nr-40.ppm": "79ee38823bf602f64f1844c974e8d54bde1ec5145ce2e9a1bf2ebd718e10fbf7",
+        "nr-80.ppm": "51d412cadbeb264d5aaf2687047bcd822375921beca255a033f204717ee7d731",
+        "output-120.bin": "f2eae7a86d3123087a94cd83520b760f2a0e9fc3741cc8fee1efc14512c4673d",
+        "output-160.bin": "cc3a93d55e9d926e64dfe56accf3f02b5a53cc7da2f357cbcb8b86d2b70e60dd",
+        "output-40.bin": "ac693c75dfe0a2493131eb5bc6db1fcb9da3f0c089ab79003fdcffb4554e5783",
+        "output-80.bin": "ff0fc2d7949ae8a1becda40766c63a5e1e581abffa84e404ed45df23f74bb384",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "36a3c13a1f889d0ec1700ca7fd8d23c4620af86bf8d2995ba6e17be6c807341e"
+    },
+    {
+      "capture": "rtx40-encoded16-style0",
+      "profile": "rtx40",
+      "mode": "encoded16",
+      "style": 0,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          103.53625,
+          93.92323999999999,
+          79.673495
+        ],
+        [
+          108.54469999999999,
+          100.97345,
+          88.13168499999999
+        ],
+        [
+          106.85695000000001,
+          96.46969,
+          79.109955
+        ],
+        [
+          103.67190000000001,
+          94.045085,
+          79.777255
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 9.021729999999991,
+      "filesSha256": {
+        "frames.csv": "a9d53d507b676300d26bd8c494c4f8772db363012c961ee9cfbd538a0439fad3",
+        "nr-120.ppm": "30edf1e27cb3f504508c72be439157317494a4ce4204a796218f55ec7bd73d97",
+        "nr-160.ppm": "07726b2ad99e6f6f51ef2de6261b32345ed7aa48785cf019fdc35ea186ac7c6b",
+        "nr-40.ppm": "c81cce0e8424ec9c857b84873b31ed7bb093f6f9fcc0779176a14d01eeb7c848",
+        "nr-80.ppm": "1422b0dc280691a74fcc7b40180fce2b7ec3b72a277174221339018a8f568de4",
+        "output-120.bin": "8a83683d6e957f039817186ac2861798a7f23d3a55ebf9193ad4abce32672394",
+        "output-160.bin": "c8d93ccf05cdd17834ee2d397fc326cbf0ac5d8aeeeb4306aeeebc9fe9fd0187",
+        "output-40.bin": "0165617da9a741fa367874080c7ccc7f2d0ff81685ece6a3343c3bd9099eb3b6",
+        "output-80.bin": "caf0e000ae4e56715cc9a5324d4d772dcf73e8966e3b1c3bc75ff41b753e5577",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "b615e3c90e3c51e1e06c56a916a8696a49a58511788aef2f2d7fbcb72fa9e297"
+    },
+    {
+      "capture": "rtx40-encoded16-style1",
+      "profile": "rtx40",
+      "mode": "encoded16",
+      "style": 1,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          97.451515,
+          91.56035,
+          80.950805
+        ],
+        [
+          103.5026,
+          97.75549,
+          86.826265
+        ],
+        [
+          101.10225,
+          93.358115,
+          79.88532000000001
+        ],
+        [
+          97.41821999999999,
+          91.52603500000001,
+          80.92586
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 6.940944999999999,
+      "filesSha256": {
+        "frames.csv": "bd88e583b93e0101674b362b25919183c22f8479302dffa0ca93fd17e8c216a5",
+        "nr-120.ppm": "b0d9755d07c8df154ea84b0d89af546d62c0ef62fe1107b7954ae4594f5cce72",
+        "nr-160.ppm": "bc27133b3ed5fac350e88e5980cb1fca328926e77930bd284ca581c98f0086f3",
+        "nr-40.ppm": "d71f989f1f0642fb549f781c3e98c89ad331471b61f97a0309d714e1cde86578",
+        "nr-80.ppm": "667b6ccb0ef4a24d5beb6661cd58734bd3c527bbf3968ed970f674e76d483a08",
+        "output-120.bin": "77d9bb50e0788f033de75e9b5cd18743eb506a250c4820268cd184d0c24a4044",
+        "output-160.bin": "3333a4d13058aff6ad332d2d340f0e273081a02c6809607c81014f5194644f3f",
+        "output-40.bin": "c48cbc4459e92d37993e81e0337e225e13fb298bfb01c6b3d54760588df1170b",
+        "output-80.bin": "b22c657a06ef253da98320386f94d728c6a63fcbdcd9d8fc6693d1c24613eff7",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "fa68256fac2640e5b75ec0216561aa249821ee08412dfb196e7439b6206e5780"
+    },
+    {
+      "capture": "rtx40-encoded16-style4",
+      "profile": "rtx40",
+      "mode": "encoded16",
+      "style": 4,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          106.2683,
+          99.299835,
+          86.68776
+        ],
+        [
+          109.3504,
+          103.054,
+          91.33739
+        ],
+        [
+          106.7977,
+          98.0549,
+          83.72137000000001
+        ],
+        [
+          106.25915,
+          99.27525,
+          86.66396
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 7.616019999999992,
+      "filesSha256": {
+        "frames.csv": "5d0adea55d6f012c279452accef0ba9a9166cb9f74ac914fd15b7200a63634b4",
+        "nr-120.ppm": "25b65ddef6e70419291897c62d9c06dbf30293e43935d76130cb5f84687eb372",
+        "nr-160.ppm": "13bb083e2c27a6626f0250da7860fbd021035372dbb2c6f1b6726474f015af71",
+        "nr-40.ppm": "cb6f5271ce6d7721bdcfa22ed89657e0053052f08d32771e50541312355304dc",
+        "nr-80.ppm": "2c0ea7f094dbf0cdff57257fa596ce8b19d7475aa4e879782792545fa2a54326",
+        "output-120.bin": "e6f8d9dd1565924f8955345590cf2b03343959ada687c62b909e4e6a2f0815a6",
+        "output-160.bin": "0d9119523a0302a0a3972ca74a6cf6aa8791738a696afdd595c711781f362969",
+        "output-40.bin": "89f081fec2505a985aa4710d8cb6f482b48e997ea1a95600b8086f043c59bb4f",
+        "output-80.bin": "cec60b8d6ff3d99791f7bc72774706f9b542708c2c0aacdab591c37f827ed16c",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "8f8ef65e81e29a77ea484e76baeaf200213c379e4ea19ccc5264f0ef1028bfd7"
+    },
+    {
+      "capture": "rtx40-linear16-style0",
+      "profile": "rtx40",
+      "mode": "linear16",
+      "style": 0,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          97.12935,
+          86.691085,
+          69.45351
+        ],
+        [
+          112.51575,
+          103.86125,
+          91.70585
+        ],
+        [
+          112.45689999999999,
+          102.73015000000001,
+          86.329195
+        ],
+        [
+          96.94966,
+          86.49824,
+          69.265465
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 22.440384999999992,
+      "filesSha256": {
+        "frames.csv": "75fe6b383854fa622dd39e8c41479dc1170f7a1e0559ad6c872d1a9515ab3e05",
+        "nr-120.ppm": "16a1797919bd740deb352a634593d8fd57f4177472c575d73324341c74a3b234",
+        "nr-160.ppm": "316b3033bec3d8c24885e3100bb1a1b5a06744c7ed358dafbf5d6b28b5456271",
+        "nr-40.ppm": "5351a80253d8903cdf775b7458ab4fcf5e514ea07ccdc7fd25ed3f26293e3d04",
+        "nr-80.ppm": "af2a1fde599bf84f11889abc83c24f82efd4d6278afa80ec36ebcc678adb74cf",
+        "output-120.bin": "7aebd67ab87b1ae81cb9e8f50e9b31346a78431fb171faf7512724953bc4f519",
+        "output-160.bin": "4113af00d9393ceb19719bbc6eec757a9660c03225fe3c4dcdf9db102045bba4",
+        "output-40.bin": "b868a12c72a9bd50be6b53138299b1a7e58398cc46b132cc78523d96d12fb9d9",
+        "output-80.bin": "7a96b33e74a66a68959eefa40e06b51e5cefd265e9245723c9c8fddc34a64f0b",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "a24c8abc48bd5074992c430f44c31580cb5b11a81cc139caacc60e5357266379"
+    },
+    {
+      "capture": "rtx40-linear16-style1",
+      "profile": "rtx40",
+      "mode": "linear16",
+      "style": 1,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          99.89973499999999,
+          90.193695,
+          73.788605
+        ],
+        [
+          117.10074999999999,
+          108.97560000000001,
+          95.53561499999999
+        ],
+        [
+          113.99955,
+          104.018,
+          83.99197000000001
+        ],
+        [
+          100.124185,
+          90.43179,
+          74.06267
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 21.74700999999999,
+      "filesSha256": {
+        "frames.csv": "5e57779fd23af24720c91386f1925b7cb63caa31a856bbd95a61e8a155269cdf",
+        "nr-120.ppm": "a4756c8b05c5923708643158507c71ea0a848e46dbe42ffd1595e8ca4dcf7f2c",
+        "nr-160.ppm": "e3b65e6c2465ca6ad1927a8eba3d35638dd8ee3c61720ec03893154aa50cd426",
+        "nr-40.ppm": "fb94c9b62c06d79d85c66b0db601359feb062421b03c83dd8fd8c5f67c081bc5",
+        "nr-80.ppm": "13b4afc45100411b2f1e9eeaf23a6cf8cbf0a83a3829203148caa6dda433bcd9",
+        "output-120.bin": "5434d750fd0702363a09ca7b33e518c738f84a6868490a4aab9505a290143546",
+        "output-160.bin": "618060e19795807901d8fe00d951c0ecc2860b2222cdf3ea482113db5175e6a1",
+        "output-40.bin": "98ba8f332e4c74906b33d4982e5248c876183a473ba53fc56e020998b080af02",
+        "output-80.bin": "5fae259712f0e9cb9426a679eee1cd861d6b4681d5d492e81009b448a08923c5",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "2c07c8d999dd70eb77e676ef7cb8411487767459456fe049ca7c8baaf13fba7a"
+    },
+    {
+      "capture": "rtx40-linear16-style4",
+      "profile": "rtx40",
+      "mode": "linear16",
+      "style": 4,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          91.56562,
+          82.60757,
+          65.92164
+        ],
+        [
+          114.66975,
+          107.2434,
+          95.724675
+        ],
+        [
+          113.09725,
+          103.29124999999999,
+          88.329765
+        ],
+        [
+          91.341535,
+          82.413005,
+          65.75738
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 29.967295000000007,
+      "filesSha256": {
+        "frames.csv": "a026f6c42814576865e8fbb22e4940d8608b8103b6f38717634bd16d866fed2f",
+        "nr-120.ppm": "ee09c4db6c895db9f743a9b40dddda8d6e4e8629caffa9064abf3caa9618eefa",
+        "nr-160.ppm": "e2e5516e026dc77675d4afd8f1575cb94098ee1a07ad660ca14ac05a302d499e",
+        "nr-40.ppm": "53a98a8713ade5d8b314190d10ebf7bcde1faba258c1055cbd2079b349a13428",
+        "nr-80.ppm": "44018a3d4bc7b156421ae9d32e9d1b05b5d3ed62cea2ff3a6d8b12f995a86029",
+        "output-120.bin": "530064a8a00ecff42fcaa0fe905a37f319006f2970f471e91299197f954a1c41",
+        "output-160.bin": "312624456247f7557a73b4d9ee3f356920403233e638b60dbab2ce4645f3d398",
+        "output-40.bin": "bb4f8a5dd534a112b3e1abf6b5f28311159002c45fb17ed1d522c922baf66642",
+        "output-80.bin": "1efdc297dabfa626857474bf79573d2487cd44db9e94be9b20fa9e897d3878a5",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "192e011dde219536e0f10a3f597c71df5546390b23a80617b3ec9653a39903d0"
+    },
+    {
+      "capture": "rtx40-unorm8-style0",
+      "profile": "rtx40",
+      "mode": "unorm8",
+      "style": 0,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          103.48620000000001,
+          93.864175,
+          79.572425
+        ],
+        [
+          108.43289999999999,
+          100.8369,
+          87.989975
+        ],
+        [
+          106.74845,
+          96.41625,
+          79.15111
+        ],
+        [
+          103.4442,
+          93.84756999999999,
+          79.58932999999999
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 8.838864999999998,
+      "filesSha256": {
+        "frames.csv": "b01294bb4571830056332a8145fe414e72d44d42c9ef8dd9f1d724d42d049745",
+        "nr-120.ppm": "f4c4e9ceef47091bbdb835d884adba4405feab6b114b9baa425ddb9a3a08a4ce",
+        "nr-160.ppm": "7c0cdaf3f24a10eb41bbe5b6ea5e8af74e77dfe55431291a0b009cd14b74e954",
+        "nr-40.ppm": "ae3c96b0f011297fe2a6b60ac9fe78f87ae3c2ae6ae5edb36a1910ea6b60595a",
+        "nr-80.ppm": "fde07bd0a65230935dd1a39198304f827151bfdee3ae0c9f7402d7c426a8356b",
+        "output-120.bin": "5ab5ca07cd6dd6005d88da6a852e9e4cd407fca438c7fb06edeb9485f57192ec",
+        "output-160.bin": "3ca75b7e1cb90d7861a9d08782c2ca9acf98734437cd608c3662653022f0dbb5",
+        "output-40.bin": "7cb0987288d7b5ea67d594dfc7473a73598ddfb11389898be4522acfde971c0e",
+        "output-80.bin": "36541c559f66ff5af6313678436b4d244e5fcd4df0ddf6a064e1811b9d212b20",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "2b10b06e7283361d523a753a43c9fbe33c9c8804f59d221a453eb761a1d32306"
+    },
+    {
+      "capture": "rtx40-unorm8-style1",
+      "profile": "rtx40",
+      "mode": "unorm8",
+      "style": 1,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          97.467645,
+          91.556735,
+          80.95246999999999
+        ],
+        [
+          103.43955000000001,
+          97.74677,
+          86.85575
+        ],
+        [
+          101.0928,
+          93.340305,
+          79.806445
+        ],
+        [
+          97.39372499999999,
+          91.49555000000001,
+          80.89703
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 7.049305000000004,
+      "filesSha256": {
+        "frames.csv": "10aea0805d681bd2209abbc65db1111b9b8622aa95840a9627a5a3d8a39f969d",
+        "nr-120.ppm": "1df109f27017ecb4ebc423878e0b8543051fa4815e9f3ef1f45160b7d056ab37",
+        "nr-160.ppm": "e228bd8e66b399f2ef148d8e44790ca2998d336cbdc42dd6afa0746aab7096e1",
+        "nr-40.ppm": "9b5cf040b3dd786a6568bbc7d1d77a6968d1c1d0679b3c0be39bbd216e8827a1",
+        "nr-80.ppm": "7b95af80e58b480e0725ae51841e418242740df5dc7762aeca39adb9d0f06152",
+        "output-120.bin": "cc8e023a6b8bc1541a33c8aa508a60bf0174da35da19728fe65c46c56e30ceba",
+        "output-160.bin": "05ded3d4ba5df53bef42e3befa82a3460004a03c4fd678757e3af632abc6c40a",
+        "output-40.bin": "9fbd74f45ff4884c971c87cc4fbcc981fcbaec624b9ca4600ea46194cf049c48",
+        "output-80.bin": "53f00017e8d85d759d9ba6648eac5bf17fe9b073eeae808f07ba5791fa05fa94",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "5a34518b0aabb5678e1fc9fc2da66a7f93a29ca346de80a1fefdf042a74ca0c2"
+    },
+    {
+      "capture": "rtx40-unorm8-style4",
+      "profile": "rtx40",
+      "mode": "unorm8",
+      "style": 4,
+      "sources": 160,
+      "alphaPixelsCheckedByProbe": 36864000,
+      "savedRawAlphaPixelsIndependentlyChecked": 921600,
+      "settledRoiPhaseMeans": [
+        [
+          106.31625,
+          99.30969999999999,
+          86.674225
+        ],
+        [
+          108.9086,
+          102.53599999999999,
+          90.48506499999999
+        ],
+        [
+          107.0454,
+          98.25345,
+          83.896835
+        ],
+        [
+          106.26025,
+          99.272695,
+          86.64
+        ]
+      ],
+      "maxSettledRgbChannelDrift": 6.588229999999996,
+      "filesSha256": {
+        "frames.csv": "a7d3031682d4f889cb5628e49e0f3023a870e535a15772313c885c2a94c0154a",
+        "nr-120.ppm": "b11a40e77f776cc5f390e4aa94f20096f7a94f038f5129680d909f404953c7c0",
+        "nr-160.ppm": "fa59fc414fa9f4a886da4970be959c8f41f6fd857da161957c0b3259806a89c6",
+        "nr-40.ppm": "79ee38823bf602f64f1844c974e8d54bde1ec5145ce2e9a1bf2ebd718e10fbf7",
+        "nr-80.ppm": "51d412cadbeb264d5aaf2687047bcd822375921beca255a033f204717ee7d731",
+        "output-120.bin": "f2eae7a86d3123087a94cd83520b760f2a0e9fc3741cc8fee1efc14512c4673d",
+        "output-160.bin": "cc3a93d55e9d926e64dfe56accf3f02b5a53cc7da2f357cbcb8b86d2b70e60dd",
+        "output-40.bin": "ac693c75dfe0a2493131eb5bc6db1fcb9da3f0c089ab79003fdcffb4554e5783",
+        "output-80.bin": "ff0fc2d7949ae8a1becda40766c63a5e1e581abffa84e404ed45df23f74bb384",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      },
+      "logSha256": "36a3c13a1f889d0ec1700ca7fd8d23c4620af86bf8d2995ba6e17be6c807341e"
+    }
+  ],
+  "modelParity": [
+    {
+      "style": 0,
+      "identicalFiles": [
+        "frames.csv",
+        "nr-40.ppm",
+        "output-40.bin",
+        "nr-80.ppm",
+        "output-80.bin",
+        "nr-120.ppm",
+        "output-120.bin",
+        "nr-160.ppm",
+        "output-160.bin"
+      ]
+    },
+    {
+      "style": 1,
+      "identicalFiles": [
+        "frames.csv",
+        "nr-40.ppm",
+        "output-40.bin",
+        "nr-80.ppm",
+        "output-80.bin",
+        "nr-120.ppm",
+        "output-120.bin",
+        "nr-160.ppm",
+        "output-160.bin"
+      ]
+    },
+    {
+      "style": 4,
+      "identicalFiles": [
+        "frames.csv",
+        "nr-40.ppm",
+        "output-40.bin",
+        "nr-80.ppm",
+        "output-80.bin",
+        "nr-120.ppm",
+        "output-120.bin",
+        "nr-160.ppm",
+        "output-160.bin"
+      ]
+    }
+  ],
+  "static": {
+    "binarySha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+    "fullLocalWitnessSha256": "47aaba68e846484a29dd0a0b86c5d85741b9bca29408ac7b11550b82342207f9",
+    "inspectorSha256": "e85aaced4b1808a9ce32c52b9754f108fd384e945b591ffeab30e9ef8b90ce96",
+    "functionCount": 12,
+    "instructionCount": 3155,
+    "selectedInstructions": [
+      {
+        "rva": "0xa075c",
+        "bytes": "8b442450",
+        "text": "mov eax, dword ptr [rsp + 0x50]"
+      },
+      {
+        "rva": "0xa0777",
+        "bytes": "e8e451fdff",
+        "text": "call 0x180075960"
+      },
+      {
+        "rva": "0xa334a",
+        "bytes": "e8b1eaffff",
+        "text": "call 0x1800a1e00"
+      },
+      {
+        "rva": "0xa435f",
+        "bytes": "488bd6",
+        "text": "mov rdx, rsi"
+      },
+      {
+        "rva": "0xa43a5",
+        "bytes": "e856e7ffff",
+        "text": "call 0x1800a2b00"
+      },
+      {
+        "rva": "0xa1edc",
+        "bytes": "e88febffff",
+        "text": "call 0x1800a0a70"
+      },
+      {
+        "rva": "0xa1f35",
+        "bytes": "e866ebffff",
+        "text": "call 0x1800a0aa0"
+      },
+      {
+        "rva": "0xa1f7d",
+        "bytes": "488933",
+        "text": "mov qword ptr [rbx], rsi"
+      },
+      {
+        "rva": "0xa1f80",
+        "bytes": "48897310",
+        "text": "mov qword ptr [rbx + 0x10], rsi"
+      },
+      {
+        "rva": "0xa1f84",
+        "bytes": "48897318",
+        "text": "mov qword ptr [rbx + 0x18], rsi"
+      },
+      {
+        "rva": "0xa1f9d",
+        "bytes": "85c9",
+        "text": "test ecx, ecx"
+      },
+      {
+        "rva": "0xa1f9f",
+        "bytes": "745d",
+        "text": "je 0x1800a1ffe"
+      },
+      {
+        "rva": "0xa1ffe",
+        "bytes": "0f28b424d0010000",
+        "text": "movaps xmm6, xmmword ptr [rsp + 0x1d0]"
+      },
+      {
+        "rva": "0x751e9",
+        "bytes": "ff9088000000",
+        "text": "call qword ptr [rax + 0x88]"
+      },
+      {
+        "rva": "0x75236",
+        "bytes": "ff9088000000",
+        "text": "call qword ptr [rax + 0x88]"
+      },
+      {
+        "rva": "0x753f6",
+        "bytes": "ff9088000000",
+        "text": "call qword ptr [rax + 0x88]"
+      }
+    ]
+  },
+  "limitations": [
+    "No actual AIO19 host resource/view/pixel capture",
+    "CPU conversion/rounding differs from the prior prepared GPU converter; compare formats within this probe",
+    "Zero motion/constant depth synthetic context change is not a temporal gameplay scene",
+    "Identical saved samples and CSV do not prove all unsaved pixels match",
+    "Format reductions leave drift above1 code value; no fix accepted"
+  ],
+  "trackedBuildSmoke": {
+    "sources": 160,
+    "profile": "rtx40",
+    "style": 1,
+    "mode": "unorm8",
+    "capturedFilesMatchQualifyingRun": [
+      "frames.csv",
+      "nr-40.ppm",
+      "output-40.bin",
+      "nr-80.ppm",
+      "output-80.bin",
+      "nr-120.ppm",
+      "output-120.bin",
+      "nr-160.ppm",
+      "output-160.bin"
+    ],
+    "sourceSha256": "ce68b07f38cf1469a0e4b9e14d817f94a2dbc4ef3f295630e253b993d100a1ad",
+    "cmakeSha256": "ca653c459574fec3b6acd12f24aec3fd618ba9d8c40737fafa3c61d2939388b3",
+    "executableSha256": "1f3aa620c61d35ef5819fbca87842c15c015047615c85d483d5432d861139bcb",
+    "logSha256": "5a34518b0aabb5678e1fc9fc2da66a7f93a29ca346de80a1fefdf042a74ca0c2",
+    "scope": "Portability smoke separate from the immutable 12-run qualifying experiment"
+  }
+}
