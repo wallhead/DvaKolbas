@@ -85,3 +85,11 @@ provisional qualitative camera acceptance in the reported scene. The old
 synthetic context fixture still drifts; other scenes/styles, FG and DLSS/DLAA
 remain unqualified. No settings changed during this log check, and **1 of 8**
 remains complete.
+
+
+The follow-up owner result is **“seems fine”**. Its [new log prefix](sdr-byte-trial-fg-game-result.json)
+shows full-tone styles 0 and 1, live FG disable/re-enable, successful generated
+callbacks/submissions and resumed generation after Style-1 Apply reset, with
+no error/critical lines. This extends the reported scene acceptance to NR Before
+with FSR FG; it does not implement NR after generated frames. DLSS/DLAA gameplay
+and broader acceptance remain open. No installed settings changed for this check.

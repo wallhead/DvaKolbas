@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "scope": "Follow-up user-reported stable scene with live styles 0/1 and FSR FG off/on observed",
+  "ownerReport": "seems fine",
+  "sourceRevision": "5d9a3b873b72",
+  "previousReceipt": "sdr-byte-trial-game-result.json",
+  "logSnapshot": {
+    "bytes": 37960,
+    "sha256": "1339bc2c4512f9c133b2a256b75a18a1510a1d9e41cc8b2ffc8d077b2965c74b",
+    "lastLine": "[2026-10-04 15:08:35.804] [thread 30740] [info] [InventoryPreview] PS depth binding start=2 count=1 replaced=1 background=0x1e7c784c3f0"
+  },
+  "stylesObserved": [
+    0,
+    1
+  ],
+  "fullTone": 1,
+  "stableColors": false,
+  "lastLoggedNrEvaluations": 17323,
+  "fgSuccessfulGenerationSnapshots": 4,
+  "fgDisableObserved": true,
+  "fgResumeAfterStyleApply": true,
+  "errorCriticalLines": 0,
+  "evidenceLines": [
+    "[2026-10-04 14:56:22.180] [thread 30740] [info] [Community NR settings] revision=1 stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 15:03:12.725] [thread 1212] [info] [Community NR settings] revision=2 stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 15:03:15.879] [thread 1212] [info] [Community NR settings] revision=3 stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 15:03:34.315] [thread 1212] [info] [Community NR settings] revision=4 stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 15:03:36.691] [thread 1212] [info] [Community NR settings] revision=5 stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 15:05:58.507] [thread 1212] [info] [Community NR settings] revision=6 stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 15:06:59.397] [thread 1212] [info] [Community NR settings] revision=7 stableColors=false tone=1 structure=1 style=1",
+    "[2026-10-04 15:07:52.801] [thread 1212] [info] [Community NR settings] revision=8 stableColors=false tone=1 structure=1 style=0",
+    "[2026-10-04 14:56:22.587] [thread 30740] [info] [FSR FG] source=2 presentCount=1 renderedAtCapture=1 renderedNow=1 camera=0 guideCapture=0 temporalGuides=false configuredId=0 preparedId=0 requested=false prepare=false generate=false reason=Generation not requested callbackCount=0 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 14:56:22.599] [thread 30740] [info] [FSR FG] source=3 presentCount=2 renderedAtCapture=2 renderedNow=2 camera=0 guideCapture=0 temporalGuides=false configuredId=0 preparedId=0 requested=false prepare=false generate=false reason=Generation not requested callbackCount=0 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:04:20.247] [thread 1212] [info] [FSR FG] source=52419 presentCount=52418 renderedAtCapture=52418 renderedNow=52418 camera=2094706765440 guideCapture=5921 temporalGuides=true configuredId=52419 preparedId=52419 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:04:32.993] [thread 1212] [info] [FSR FG] source=52972 presentCount=52971 renderedAtCapture=52971 renderedNow=52971 camera=2094706765440 guideCapture=6474 temporalGuides=true configuredId=52972 preparedId=0 requested=false prepare=false generate=false reason=Generation not requested callbackCount=0 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:06:19.747] [thread 1212] [info] [FSR FG] source=58348 presentCount=58347 renderedAtCapture=58347 renderedNow=58347 camera=2094706765440 guideCapture=11850 temporalGuides=true configuredId=58348 preparedId=58348 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:06:59.419] [thread 1212] [info] [FSR FG] source=60070 presentCount=60069 renderedAtCapture=60069 renderedNow=60069 camera=2094706765440 guideCapture=13572 temporalGuides=true configuredId=60070 preparedId=0 requested=true prepare=false generate=false reason=Camera or extent reset callbackCount=0 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:06:59.440] [thread 1212] [info] [FSR FG] source=60071 presentCount=60070 renderedAtCapture=60070 renderedNow=60070 camera=2094706765440 guideCapture=13573 temporalGuides=true configuredId=60071 preparedId=60071 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:07:52.823] [thread 1212] [info] [FSR FG] source=62376 presentCount=62375 renderedAtCapture=62375 renderedNow=62375 camera=2094706765440 guideCapture=15878 temporalGuides=true configuredId=62376 preparedId=0 requested=true prepare=false generate=false reason=Camera or extent reset callbackCount=0 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:07:52.847] [thread 1212] [info] [FSR FG] source=62377 presentCount=62376 renderedAtCapture=62376 renderedNow=62376 camera=2094706765440 guideCapture=15879 temporalGuides=true configuredId=62377 preparedId=62377 requested=true prepare=true generate=true reason= callbackCount=1 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:08:33.352] [thread 1212] [info] [FSR FG] source=64161 presentCount=64160 renderedAtCapture=64160 renderedNow=64160 camera=2094706765440 guideCapture=17663 temporalGuides=true configuredId=64161 preparedId=0 requested=true prepare=false generate=false reason=Menu or loading callbackCount=0 callbackResult=0 submitted=true apiResult=0x00000000",
+    "[2026-10-04 15:07:54.803] [thread 1212] [info] [Community NR frame] source=62462 requested=true evaluated=true profile=rtx40 revision=8 reset=false frames=15600 resets=17 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 15:08:08.876] [thread 1212] [info] [Community NR frame] source=63062 requested=true evaluated=true profile=rtx40 revision=8 reset=false frames=16200 resets=17 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 15:08:22.481] [thread 1212] [info] [Community NR frame] source=63662 requested=true evaluated=true profile=rtx40 revision=8 reset=false frames=16800 resets=17 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass",
+    "[2026-10-04 15:08:35.803] [thread 30740] [info] [Community NR frame] source=64309 requested=true evaluated=true profile=rtx40 revision=8 reset=true frames=17323 resets=18 status=NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass"
+  ],
+  "acceptance": "Qualitative scene acceptance supported by active processing and successful generation; no all-scene/all-style guarantee",
+  "remaining": [
+    "DLSS/DLAA gameplay route",
+    "Broader scene/style checks",
+    "True After-FG NR and other unfinished milestones"
+  ],
+  "settingsChangedByAgent": false,
+  "milestonesComplete": 1,
+  "milestonesTotal": 8
+}

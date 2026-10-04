@@ -2,12 +2,13 @@
 
 **1 of 8 milestones complete:** Task 2, the standalone direct runtime catalog/owner and RTX 40 GPU qualification. Task order differs from completion count: Task 1 true post-FG feasibility remains open.
 
-**Latest tone checkpoint, 2026-10-04:** the owner reports “seems drifting fixed”
-with the installed opt-in SDR-byte route. The running-game log confirms clean
-`5d9a3b873b72`, full Style 0 / Tone 1, Stable colors and FG off, active RGBA8 NR
-processing and successful live off/on. [The bounded gameplay receipt](../research/nr/tone-contract/sdr-byte-trial-game-result.json)
-distinguishes this provisional visual success from broader acceptance. Other
-styles/scenes, FG and DLSS/DLAA gameplay remain to check; **1 of 8** remains complete.
+**Latest tone checkpoint, 2026-10-04:** the owner reports the SDR-byte camera
+fix looks stable, followed by “seems fine” after the style/FG check. The
+[follow-up running-game receipt](../research/nr/tone-contract/sdr-byte-trial-fg-game-result.json)
+confirms clean `5d9a3b873b72`, full Tone 1, Stable colors off, live styles 0/1,
+NR off/on and successful FSR FG generation/resumption. This supports scene
+acceptance of NR Before with FSR FG. DLSS/DLAA and broader acceptance remain
+open; true After-FG NR is still incomplete. **1 of 8** remains complete.
 
 The earlier Dva game check reports that apparently only Style 0 shifts. A captured prefix confirms 11,400 NR evaluations, successful live style changes, full tone and no error/critical logs; a longer Style-0 interval has unchanged sparse reset counts. At that checkpoint AIO's active Style 0 had not yet been tested. Nonzero styles are not yet fully qualified, and the count remains **1 of 8**.
 
