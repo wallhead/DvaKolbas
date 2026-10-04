@@ -23,6 +23,7 @@ struct VendorPresentation {
     unsigned presents{},onSamples{},offSamples{},doubleSamples{},readerSamples{},recoveries{};
     unsigned phaseDoubles[4]{};
     bool forceOff{};
+    bool injectForegroundLoss{};
     static inline std::atomic<unsigned> apiErrors{},lastApiError{};
     static void ApiError(const sl::APIError& error){lastApiError.store(unsigned(error.hres));++apiErrors;}
     void RequireForeground(bool wait){
@@ -40,6 +41,10 @@ struct VendorPresentation {
             std::printf("VENDOR_FOCUS_LOST present=%u expected=%p foreground=%p foregroundPid=%lu foregroundThread=%lu class=%s iconic=%u active=%u\n",
                 presents,static_cast<void*>(window),static_cast<void*>(foreground),foregroundPid,foregroundThread,
                 foregroundClass,IsIconic(window)!=FALSE,GetActiveWindow()==window);
+            throw ForegroundUnavailable();
+        }
+        if(injectForegroundLoss&&presents==631){
+            std::puts("VENDOR_INTERRUPT_INJECTED present=631");
             throw ForegroundUnavailable();
         }
     }

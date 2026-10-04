@@ -118,6 +118,9 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::Present(UINT a_syncInterval, UINT a_fla
         return inner_?inner_->Present(a_syncInterval, a_flags):E_UNEXPECTED;
     }
     BeforeGameSwapChainPresent(this);
+    // Preparation can latch a terminal source/host failure. Do not submit an
+    // incomplete frame or report a completion for a Present we never issued.
+    if (host_ && FAILED(host_->FailureResult())) { return host_->FailureResult(); }
     const auto result = MeasureSourcePresent([&] { return inner_?inner_->Present(a_syncInterval, a_flags):E_UNEXPECTED; });
     if (host_)
     {
@@ -206,6 +209,7 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::Present1(UINT a_syncInterval, UINT a_fl
         return inner1_->Present1(a_syncInterval, a_flags, a_parameters);
     }
     BeforeGameSwapChainPresent(this);
+    if (host_ && FAILED(host_->FailureResult())) { return host_->FailureResult(); }
     const auto result = MeasureSourcePresent([&] { return inner1_->Present1(a_syncInterval, a_flags, a_parameters); });
     if (host_)
     {

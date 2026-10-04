@@ -71,6 +71,12 @@ if(TRP_NR_NGX_INCLUDE_DIR AND EXISTS "${TRP_NR_NGX_INCLUDE_DIR}/nvsdk_ngx.h")
             set_tests_properties(NrPostDlssVendorPresentationGpu PROPERTIES RUN_SERIAL TRUE LABELS "GPU;Interactive" TIMEOUT 240 SKIP_RETURN_CODE 77)
             add_test(NAME NrPostDlssVendorLifecycleGpu COMMAND TRPNrPostDlssSourceGpuTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" --vendor-lifecycle "${CMAKE_CURRENT_BINARY_DIR}/actual-streamline")
             set_tests_properties(NrPostDlssVendorLifecycleGpu PROPERTIES RUN_SERIAL TRUE LABELS "GPU;Interactive" TIMEOUT 240 SKIP_RETURN_CODE 77)
+            add_test(NAME NrPostDlssVendorInterruptionGpu COMMAND "${CMAKE_COMMAND}"
+                "-DEXE=$<TARGET_FILE:TRPNrPostDlssSourceGpuTests>" "-DNR_DLL=${TRP_NR_RTX40_DLL}"
+                "-DNGX_CORE=${TRP_NR_DRIVER_CORE}" "-DRUNTIME=${CMAKE_CURRENT_BINARY_DIR}/actual-streamline"
+                "-DLOG=${CMAKE_CURRENT_BINARY_DIR}/vendor-interruption.log"
+                -P "${CMAKE_CURRENT_LIST_DIR}/CheckVendorInterruption.cmake")
+            set_tests_properties(NrPostDlssVendorInterruptionGpu PROPERTIES RUN_SERIAL TRUE LABELS "GPU;Interactive" TIMEOUT 190)
         endif()
     endif()
     if(TARGET TRPFsrRuntime AND TRP_ENABLE_FSR_FG)

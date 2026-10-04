@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "sourceBaseRevision": "a1a153cb8690160b50114cce286bc83630af3f32",
+  "sourceClean": false,
+  "milestonesComplete": 5,
+  "milestonesTotal": 8,
+  "task6": "partial: actual outer dispatch fault guard and controlled active-FG interrupted cleanup pass; full End mouse/game dispatch pending",
+  "productChange": "Present and Present1 recheck terminal host failure after preparation, before native submission/completion",
+  "observedInputSha256": {
+    "src/FrameGen/GameSwapChain.cpp": "d83817d1cbea525392796f8a0e6bee8f88c6b99b1ac992a209240208ae4a5f69",
+    "src/FrameGen/GameSwapChain.h": "04da5068e743f9ae12112d062c4d47bf08a19719ab9eb37305f82f7f8edab9d1",
+    "tests/game-swapchain/CMakeLists.txt": "7377e3e26f220b1d9d9733c44bd3d6d3aa1d30a3c7690cc40eb36d46539321af",
+    "tests/game-swapchain/GameSwapChainTests.cpp": "af906fbf4dd09668607692b5d46d77d385d901a77527a7ed1bb7f184dbaee178",
+    "tests/game-swapchain/NativeSwapChain.h": "c550b2a6ea688b258704250305144cb474f73530d8c59669840b8176f9eab2e8",
+    "tests/game-swapchain/facades/NvidiaHost.h": "a7d1cf2e0eabb96798ea5ddc4ba5a048b0ce2355c0c87bc1f727f17e3c80a0fa",
+    "tests/game-swapchain/facades/PerformanceTuning.h": "d13dbbb3bd8f9ba85a8fa7e7376ef8c6957725d67969b139a7056a52e893d8b0",
+    "tests/game-swapchain/facades/UpscalerHooks.h": "8645b45a3a2f31a709315bd9c811091133b7977d726565c5c58f9a84c82af234",
+    "tests/nr-postsr/PostDlssSourceGpuTests.cpp": "814f5c16e90c190e724378c1bb72d5a4e3f07d9076296c1e8fa40b868a15c352",
+    "tests/nr-postsr/VendorPresentation.h": "5d47f8283ac9d25c567cbf39119d22ad785d1348430216568215e0d3570d1a91",
+    "tests/nr-postsr/CheckVendorInterruption.cmake": "3d7d06d851d3877bd2ab5075cda215434acf16c030b81ae0d210982fefad4fcc"
+  },
+  "executables": {
+    "out/build/fsr-fg-standard/tests/game-swapchain/Release/TRPGameSwapChainTests.exe": "b5972137872703522bdab3ed061a846e2b99cd397a0444f946e599050b2ea922",
+    "out/build/fsr-fg-standard/tests/nr-postsr/Release/TRPNrPostDlssSourceGpuTests.exe": "ef83018b0a015bf61a5652932ff6bcbcecaa4d0b9cd6519209198af636080b65"
+  },
+  "evidenceLog": "present-failure-cleanup.log",
+  "evidenceLogSha256": "6a6ce616deffe89dcd857ddc458eea4636030fba51dfc8a3c368f871a82766d9",
+  "outerPresent": {
+    "productionCopiedUnchanged": true,
+    "nativeAndHost": "explicit recording facades; unexercised resize/device methods refuse",
+    "redFailures": 4,
+    "greenFailures": 0,
+    "coverage": [
+      "Present/Present1 prepare failure with no submit/completion",
+      "normal prepare-submit-complete ordering and caller argument forwarding",
+      "preexisting terminal failure",
+      "native failed HRESULT completed exactly once",
+      "TEST no source production/completion",
+      "missing inner/interface",
+      "FSR partial update and suspension rejection"
+    ]
+  },
+  "vendorInterruption": {
+    "injectedAtActualPresents": 631,
+    "priorActualX2Batches": 13,
+    "nativeExitCode": 77,
+    "ctestDriverExitCode": 0,
+    "retired": true,
+    "proxyClosedBeforeOuterDeviceOwners": true,
+    "apiErrors": 0,
+    "classification": "cleanup pass; cancelled FG qualification remains NOT QUALIFIED",
+    "red": "actual controlled interruption followed by native 0xc0000409 exit; CMake driver failed",
+    "dumpSha256": "616ea2c7b8f22e45cfa30169b66112cc321972625bf1ff0e4eebd0acab0752d6",
+    "dumpInterpretation": "export-symbol stack observes D3D12 ReleaseFeature through sl.dlss_g DllMain; private vendor function identity is not established"
+  },
+  "relatedCleanupRegressions": {
+    "passed": 13,
+    "gpuTests": 7,
+    "seconds": 23.07
+  },
+  "protectedInstalledAndMo2Hashes": {
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.dll": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/ModOrganizer.ini": "78a8bb8a74e888d053331c28ac94d4e7f4d5b942f996b56897fdfe7c0ac0fae1",
+    "D:/TESV54BETA/BETA_TRUEAE_V54/profiles/V5.4 NO-LORE/modlist.txt": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2"
+  },
+  "limits": [
+    "No actual Skyrim End click/Apply dispatch in this receipt",
+    "No new full 480-source vendor lifecycle qualification for the revised interruption binary",
+    "Tiny foreground-loss race after preflight can still reach PresentPending; uncertain retirement stays quarantined and is not qualified",
+    "No forced Session recovery, fabricated AfterPresent success or vendor patches",
+    "No generated-pixel/display-cadence or full NGX teardown qualification"
+  ],
+  "fullNoninteractiveSuite": {
+    "passed": 215,
+    "failed": 0,
+    "seconds": 230.38,
+    "gpuTests": 57,
+    "reshadeTests": 6,
+    "interactiveTestsExcluded": [
+      "NrPostDlssVendorPresentationGpu",
+      "NrPostDlssVendorLifecycleGpu",
+      "NrPostDlssVendorInterruptionGpu"
+    ],
+    "unavailableDebugChecks": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "debugChecksFreshResult": "3 fail at debug device/interface prerequisites; 0x887A002D observed. Not passing checks."
+  }
+}

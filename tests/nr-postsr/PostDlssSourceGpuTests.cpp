@@ -169,6 +169,9 @@ struct Operations {
         Check(session.Prepare(Constants(width,height,f.reset),guides,list),"ProductionSessionAcceptsCompletedSourceTags");Gpu(bridge.Submit(SL::Work::FrameGeneration));observer.Verify();return true;
     }
     void PublishGeneration(bool ready){
+        // Reject an unavailable visible test before the Session enters
+        // PresentPending; a qualification prerequisite is not a failed Present.
+        if(vendor)vendor->RequireForeground(false);
         Check(ready&&session.CompleteInputWrites()&&session.BeforePresent(fg&&!(vendor&&vendor->forceOff)),"ProductionSessionPrePresentLifecycle");
         const bool armed=readerMode&&(source%64==32||source%64==0);
         if(armed){
@@ -204,10 +207,10 @@ int wmain(int argc,wchar_t** argv){try{
     std::setvbuf(stdout,nullptr,_IONBF,0);if(argc<3||argc>5||NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: arguments/game inventory");return 1;}
     if(argc==5){const std::wstring_view mode=argv[3];
         vendorLifecycle=mode==L"--vendor-lifecycle"||mode==L"--vendor-lifecycle-visible"||mode==L"--vendor-lifecycle-omit-gates"||mode==L"--vendor-lifecycle-omit-gates-visible";
-        if(!vendorLifecycle&&mode!=L"--vendor"&&mode!=L"--vendor-force-off"&&mode!=L"--vendor-wrong-real-source"&&mode!=L"--vendor-visible")return 1;
+        if(!vendorLifecycle&&mode!=L"--vendor"&&mode!=L"--vendor-force-off"&&mode!=L"--vendor-wrong-real-source"&&mode!=L"--vendor-visible"&&mode!=L"--vendor-interrupt-visible")return 1;
         omitLifecycleGates=mode==L"--vendor-lifecycle-omit-gates"||mode==L"--vendor-lifecycle-omit-gates-visible";
-        waitForFocus=mode==L"--vendor-visible"||mode==L"--vendor-lifecycle-visible"||mode==L"--vendor-lifecycle-omit-gates-visible";
-        framesPerExtent=240;vendor=std::make_shared<VendorPresentation>();vendor->forceOff=mode==L"--vendor-force-off";wrongRealSource=mode==L"--vendor-wrong-real-source";}
+        waitForFocus=mode==L"--vendor-visible"||mode==L"--vendor-lifecycle-visible"||mode==L"--vendor-lifecycle-omit-gates-visible"||mode==L"--vendor-interrupt-visible";
+        framesPerExtent=240;vendor=std::make_shared<VendorPresentation>();vendor->forceOff=mode==L"--vendor-force-off";vendor->injectForegroundLoss=mode==L"--vendor-interrupt-visible";wrongRealSource=mode==L"--vendor-wrong-real-source";}
     if(argc==4){const std::wstring_view mode=argv[3];readerMode=true;
         if(mode==L"--missing-reader-fence")readerFault=ReaderFault::MissingFence;else if(mode==L"--reader-state-error")readerFault=ReaderFault::StateError;
         else if(mode==L"--reader-callback-error")readerFault=ReaderFault::Callback;else if(mode==L"--omit-reader-wait")omitReaderWait=true;
@@ -232,6 +235,8 @@ int wmain(int argc,wchar_t** argv){try{
     api.setReflexOptions=ReflexFn;api.reflexSleep=SleepFn;api.marker=MarkerFn;api.setOptions=OptionsFn;api.getState=StateFn;api.waitForInputReaders=WaitFn;api.context=&observer;if(vendor){api.getReflexState=vendor->api.getReflexState;vendor->Create(factory.Get(),contract.queue.Get(),1280,720);}
     if(vendor){try{std::puts("FOREGROUND_REQUIRED click the isolated probe window; keep it foreground through both size epochs");vendor->RequireForeground(waitForFocus);}catch(const VendorPresentation::ForegroundUnavailable&){vendor->Close();throw;}session.RequestUIRecomposition(true);}
     Check(session.Start(api,vendor?1:0),"SessionStartsWithActualInteropReaderBridge");auto* dlss=DLSSBackend::GetSingleton();dlss->SetupDevice(device.Get(),context.Get());Stats stats;
+    bool externalRetirementConfirmed{true};
+    try {
     if(vendor){auto warmResources=std::make_unique<SubmittedResources>();warmResources->device=contract.device;warmResources->queue=contract.queue;warmResources->vendor=vendor;
         ComPtr<ID3D12DescriptorHeap> heap;D3D12_DESCRIPTOR_HEAP_DESC hd{};hd.Type=D3D12_DESCRIPTOR_HEAP_TYPE_RTV;hd.NumDescriptors=2;Gpu(contract.device->CreateDescriptorHeap(&hd,IID_PPV_ARGS(&heap)));
         const auto stride=contract.device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -239,7 +244,7 @@ int wmain(int argc,wchar_t** argv){try{
         // Descriptor heap must survive uncertain queued ClearRenderTargetView.
         struct WarmCapsule{std::unique_ptr<SubmittedResources> sources;ComPtr<ID3D12DescriptorHeap> heap;};
         auto capsule=std::make_unique<WarmCapsule>();capsule->sources=std::move(warmResources);capsule->heap=heap;
-        GpuProbeLifetime<WarmCapsule> warmLifetime(std::move(capsule),[&]{return SUCCEEDED(bridge.Drain());});
+        GpuProbeLifetime<WarmCapsule> warmLifetime(std::move(capsule),[&]{externalRetirementConfirmed=SUCCEEDED(bridge.Drain());return externalRetirementConfirmed;});
         for(unsigned warmup=0;warmup<600;++warmup){
         // Real generation-off Presents, matching the production host warm-up.
         ID3D12GraphicsCommandList* list{};Gpu(bridge.Begin(SL::Work::SwapChain,&list));
@@ -247,7 +252,7 @@ int wmain(int argc,wchar_t** argv){try{
         auto handle=heap->GetCPUDescriptorHandleForHeapStart();handle.ptr+=vendor->chain->GetCurrentBackBufferIndex()*stride;
         D3D12_RESOURCE_BARRIER b{};b.Type=D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;b.Transition={back.Get(),D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};list->ResourceBarrier(1,&b);
         const float clear[]{.1f,.1f,.1f,1};list->ClearRenderTargetView(handle,clear,0,nullptr);std::swap(b.Transition.StateBefore,b.Transition.StateAfter);list->ResourceBarrier(1,&b);
-        Gpu(bridge.Submit(SL::Work::SwapChain));if(!session.BeforePresent(false))throw std::runtime_error("Warm-up BeforePresent failed");Gpu(vendor->Present());if(!session.AfterPresent(true))throw std::runtime_error("Warm-up AfterPresent failed");Gpu(bridge.Drain());
+        Gpu(bridge.Submit(SL::Work::SwapChain));vendor->RequireForeground(false);if(!session.BeforePresent(false))throw std::runtime_error("Warm-up BeforePresent failed");Gpu(vendor->Present());if(!session.AfterPresent(true))throw std::runtime_error("Warm-up AfterPresent failed");Gpu(bridge.Drain());
     }if(!warmLifetime.Retire())throw std::runtime_error("Warm-up resources quarantined");std::puts("VENDOR_WARMUP actualPresents=600 generation=off");}
     for(unsigned cycle=0;cycle<2;++cycle){const UINT width=vendor?(cycle?1344:1280):(cycle?384:320),height=vendor?(cycle?756:720):(cycle?216:180);contract.colorExtent=contract.guideExtent={width,height};
         auto post=std::make_unique<NR::PostUpscale>();Neural(post->Initialize(owner,device.Get(),contract));observer.Allocate(contract.device.Get(),width,height);
@@ -281,11 +286,12 @@ int wmain(int argc,wchar_t** argv){try{
         // before ops, surfaces or readback storage unwind on any failure.
         GpuProbeLifetime<SubmittedResources> lifetime(std::move(resources),[&]{
             ++retirementCalls;
+            externalRetirementConfirmed=false;
             if(session.Snapshot().stage!=SL::SessionStage::Stopped&&!session.Stop())return false;
             (void)bridge.DiscardUnsubmitted(SL::Work::FrameGeneration);
             if(FAILED(bridge.SignalD3D11(SL::Work::FrameGeneration))||FAILED(bridge.Drain()))return false;
             if(observer.reader)observer.reader->Verify();
-            if(!post->Retire())return false;dlss->ReleaseFeature();return true;
+            if(!post->Retire())return false;dlss->ReleaseFeature();externalRetirementConfirmed=true;return true;
         });
         for(unsigned local=0;local<framesPerExtent;++local){const auto sourceStart=std::chrono::steady_clock::now();ops.source=++stats.sources;ops.fg=local>=16&&local<framesPerExtent-16;
             const auto previousSettings=settings;settings.enabled=local!=40&&!(vendorLifecycle&&local==128);
@@ -335,6 +341,25 @@ int wmain(int argc,wchar_t** argv){try{
         Check(observer.realExact==observer.realBytes&&observer.realBytes==observer.expectedBytes,"ActualNativeBackbufferMatchesEnhancedRealSourceAndNativeUi");
         Check(vendor->offSamples==64&&vendor->onSamples==framesPerExtent*2-64&&!session.Snapshot().optionsWarnings,"ActualVendorOffOnOffOnSourceSchedule");
         std::printf("NVIDIA_VENDOR actualPresents=%u warmup=600 sources=%u on=%u off=%u doubles=%u firstOn=%u resumedOn=%u readerFenceSamples=%u realExactBytes=%llu expectedRealBytes=%llu status=%u failures=%u\n",vendor->presents,stats.sources,vendor->onSamples,vendor->offSamples,vendor->doubleSamples,vendor->phaseDoubles[1],vendor->phaseDoubles[3],vendor->readerSamples,(unsigned long long)observer.realExact,(unsigned long long)observer.realBytes,unsigned(session.Snapshot().state.status),failures);vendor->Close();}
+    } catch(const VendorPresentation::ForegroundUnavailable&) {
+        // Source/warm-up guards have already retired or quarantined their
+        // capsules. Close the proxy while device, NGX and Session owners are
+        // still alive, rather than leaving live FG features for DLL detach.
+        bool retired=externalRetirementConfirmed;
+        if(retired&&session.Snapshot().stage!=SL::SessionStage::Stopped){
+            const auto stage=session.Snapshot().stage;
+            retired=(stage==SL::SessionStage::Simulation||stage==SL::SessionStage::Rendering)&&session.Stop();
+        }
+        if(retired){
+            (void)bridge.DiscardUnsubmitted(SL::Work::FrameGeneration);
+            (void)bridge.DiscardUnsubmitted(SL::Work::SwapChain);
+            retired=SUCCEEDED(bridge.SignalD3D11(SL::Work::FrameGeneration))&&SUCCEEDED(bridge.Drain());
+        }
+        bool closed{};
+        if(retired){vendor->Close();closed=true;}
+        std::printf("VENDOR_INTERRUPT_CLEANUP retired=%u closed=%u priorDoubles=%u apiErrors=%u\n",retired,closed,vendor->doubleSamples,VendorPresentation::apiErrors.load());
+        throw;
+    }
     if(readerMode){Check(readerBoundaries==4&&readerReuses==2&&readerDrainedEpochs==2,"EveryEnhancedSourceReaderBoundaryIsGenuinelyPending");Check(readerExact==readerExpected&&readerExpected==1124352,"OldEnhancedTaggedBytesSurviveReuseAndRetirement");Check(quarantines==unsigned(readerFault!=ReaderFault::None),"OnlyUnconfirmedRetirementQuarantinesSubmissionOwners");}
     const unsigned expectedBypass=vendorLifecycle?4:2;
     Check(stats.sources==framesPerExtent*2&&stats.sr==stats.sources&&stats.nr==stats.sources-expectedBypass&&stats.post==stats.sources&&stats.prepared==stats.sources&&stats.camera==stats.sources,"ActualDlaaNrCountsWithoutDuplicateLegacyPass");
