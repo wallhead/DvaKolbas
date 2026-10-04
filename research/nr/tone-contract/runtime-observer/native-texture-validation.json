@@ -1,0 +1,268 @@
+{
+  "scope": "Owned hardware textures only; no target COM calls or image capture",
+  "cases": [
+    {
+      "case": 0,
+      "expected": {
+        "width": 32,
+        "height": 24,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 28,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 32,
+        "height": 24,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 28,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 1,
+      "expected": {
+        "width": 48,
+        "height": 32,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 10,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 48,
+        "height": 32,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 10,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 2,
+      "expected": {
+        "width": 64,
+        "height": 40,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 41,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 64,
+        "height": 40,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 41,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 3,
+      "expected": {
+        "width": 80,
+        "height": 48,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 34,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 80,
+        "height": 48,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 34,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 4,
+      "expected": {
+        "width": 96,
+        "height": 56,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 27,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 96,
+        "height": 56,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 27,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 5,
+      "expected": {
+        "width": 112,
+        "height": 64,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 19,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 112,
+        "height": 64,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 19,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 6,
+      "expected": {
+        "width": 128,
+        "height": 72,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 44,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 128,
+        "height": 72,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 44,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 7,
+      "expected": {
+        "width": 144,
+        "height": 80,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 39,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 144,
+        "height": 80,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 39,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 8,
+      "expected": {
+        "width": 160,
+        "height": 88,
+        "mipLevels": 2,
+        "arraySize": 3,
+        "format": 28,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 160,
+        "height": 88,
+        "mipLevels": 2,
+        "arraySize": 3,
+        "format": 28,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 9,
+      "expected": {
+        "width": 176,
+        "height": 96,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 28,
+        "sampleCount": 4,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 176,
+        "height": 96,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 28,
+        "sampleCount": 4,
+        "sampleQuality": 0
+      }
+    },
+    {
+      "case": 10,
+      "expected": {
+        "width": 192,
+        "height": 104,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 28,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      },
+      "passive": {
+        "status": "captured",
+        "getterRva": "0x36da0",
+        "width": 192,
+        "height": 104,
+        "mipLevels": 1,
+        "arraySize": 1,
+        "format": 28,
+        "sampleCount": 1,
+        "sampleQuality": 0
+      }
+    }
+  ],
+  "refusedCases": [
+    "unknown-module",
+    "unknown-getter",
+    "changed-code",
+    "changed-identity",
+    "changing-fields"
+  ],
+  "fixtureSha256": "64d921dcf6db86e301b8132255a8ab70b0ee420f977fc21d740bcde83da366d5",
+  "readerSha256": "1410a563acc37901affecb9fdf5e53b97f8fa8641b22c4e635f48dd51327af5f",
+  "d3d11Sha256": "722871e4ac32972617483197709fe0d924ced5ed894b18fd13e0813d0b25950f"
+}

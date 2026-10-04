@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "sourceParent": "e7b87cf138d59ca1e3174f07e707e51a5ff4e62a",
+  "scope": "Static exact-AIO19 routing and owned metadata qualification; not actual Skyrim texture formats or a drift fix",
+  "ghidra": {
+    "version": "12.1.3",
+    "binarySha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+    "localProject": "C:/Users/user/Documents/ChatGPT/RE_Projects/DvaKolbas_NR_AIO19/AioNR19PD.gpr",
+    "requestedTargetCount": 10,
+    "headlessExitCode": 0,
+    "outputs": [
+      {
+        "localFile": "out/research/nr/tone-preserve-investigation/aio19-ghidra-routing/pd-decompiled.txt",
+        "sha256": "a225b56418e0856884cb9205a4554b0cd8561011e4676cb8031b8d8105e539a7"
+      },
+      {
+        "localFile": "out/research/nr/tone-preserve-investigation/aio19-ghidra-routing/pd-targets.txt",
+        "sha256": "9b362926db3c397a130a390de2ae10723eabf488264229f9706edf66dc0e8b23"
+      },
+      {
+        "localFile": "out/research/nr/tone-preserve-investigation/aio19-ghidra-routing/analysis.log",
+        "sha256": "6bfd9df744465d84a29053290fa4a2d2dd6d20367d5c6ab5f2cd9aa6a410f8a3"
+      },
+      {
+        "localFile": "out/research/nr/tone-preserve-investigation/aio19-ghidra-routing/console.log",
+        "sha256": "7c4512b2a267320cef64dbcc1ace85d368cedc8bc09ee4c83c4cf68d08af9e92"
+      },
+      {
+        "localFile": "out/research/nr/tone-preserve-investigation/aio19-ghidra-routing/capstone-preparation.json",
+        "sha256": "63ad413399ef955134de6ee22f12a99c97cb83c98d6985eb56730534570653a4"
+      }
+    ],
+    "launcherSha256": "6584ff90e464bf76b61d59b4f08a90a8f7c3a2f5c074de99165a1a3ffc43f7ce",
+    "reporterSha256": "3cf9d9e8ec1648edd17a6d1911fe70fa30b3385de97b3aa15d8fae36b7d76a65"
+  },
+  "offlineRouting": {
+    "decoderSha256": "9307eb1b6529c9ae5bd461e99e6ed95e28a9a58805c9be6774b471a6265fe81a",
+    "captures": [
+      {
+        "localCapture": "out/research/nr/tone-boundary-game/elevated-capture-20261004/passive-aio-request-final.json",
+        "sha256": "6c7816a0950a252de10805c39a402054b2f8e73903cc0f1e2c0dc75baeb15662",
+        "samples": 15,
+        "route": {
+          "requestedResolveMethod": 0,
+          "requestedInputScale": 0.0,
+          "canonicalInputScale": 1.0,
+          "preparationMethodCandidate": 0,
+          "alternateColorRequested": false,
+          "colorOutputAlias": true,
+          "motionScaleRequested": [
+            2560.0,
+            1440.0
+          ],
+          "scope": "Retained request plus static selector; not observed shader execution or final vendor frame"
+        }
+      },
+      {
+        "localCapture": "out/research/nr/tone-boundary-game/20261004-103819-AIO19-repeat-e803a5f4/runtime.json",
+        "sha256": "175b37595b0f3b9e0d80aa8b5a7974f7e9594b9b9ef9f0e29aaa058697cc05fa",
+        "samples": 15,
+        "route": {
+          "requestedResolveMethod": 0,
+          "requestedInputScale": 0.0,
+          "canonicalInputScale": 1.0,
+          "preparationMethodCandidate": 0,
+          "alternateColorRequested": false,
+          "colorOutputAlias": true,
+          "motionScaleRequested": [
+            2560.0,
+            1440.0
+          ],
+          "scope": "Retained request plus static selector; not observed shader execution or final vendor frame"
+        }
+      }
+    ],
+    "totalRequests": 30
+  },
+  "ownedMetadata": {
+    "receipt": "native-texture-validation.json",
+    "receiptSha256": "f8d7980ac92927e972ba8b34572fc8968e24f7fa5e11bd7cb5eeccd13edad5ea",
+    "matchingDescriptions": 11,
+    "refusedCases": 5
+  },
+  "wrapperValidation": {
+    "realProfileRefused": true,
+    "reason": "Real profile currently selects Dva and disables AIO",
+    "controlledProfilePreflightPassed": true,
+    "fixtureRoot": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr\\tone-preserve-investigation\\aio19-ghidra-routing\\wrapper-fixture-629c55b5",
+    "realIniSha256": "c7c18f8100b8712096cc673e887e54dcb5cb6cdd39928e99cfa59692a9c5e5be",
+    "realProfileSha256": "27f0cfad3d35c12d7231c2ee42875091f10a7789c13d6ee5c540c17977fec98d"
+  },
+  "sourceHashes": {
+    "ReadAioRequest.py": "9307eb1b6529c9ae5bd461e99e6ed95e28a9a58805c9be6774b471a6265fe81a",
+    "NativeTextureMetadata.py": "1410a563acc37901affecb9fdf5e53b97f8fa8641b22c4e635f48dd51327af5f",
+    "TestNativeTextureMetadata.py": "64d921dcf6db86e301b8132255a8ab70b0ee420f977fc21d740bcde83da366d5",
+    "Capture-AioRequest.ps1": "8628dec5218ba19e7ae78556042658976bd4b6443359daff6b90b0edfbfe1294",
+    "TraceAioPreparation.py": "9e875c7a49f4c3c2cf4f59a039f5b8781cd03bd863f454d328f3cde069e3d6ef"
+  },
+  "missing": [
+    "Actual Skyrim texture descriptors",
+    "Resource views and transfer function",
+    "Image/guide pixels and active viewport",
+    "Final post-callback vendor controls",
+    "Causal tone-drift fix"
+  ],
+  "productionChanges": false,
+  "installedSettingsEdited": false,
+  "nrMilestonesComplete": 1,
+  "nrMilestonesTotal": 8
+}

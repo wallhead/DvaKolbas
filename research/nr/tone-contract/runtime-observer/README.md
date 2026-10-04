@@ -10,7 +10,9 @@ The [passive request checkpoint](SKYRIM_CAPTURE.md) records 15 consistent
 retained AIO request snapshots at Style 0 / Tone 1, groups off, with a null
 model callback slot. These are not post-callback dispatch controls. Use the
 passive procedure for this installation; do not repeat debugger capture while
-the attach hook is unqualified. Source formats and pixels remain unmeasured.
+the attach hook is unqualified. The new passive native texture reader is
+[qualified on owned textures](NATIVE_METADATA.md); actual Skyrim formats and
+pixels remain unmeasured.
 
 The external Windows x64 debugger observes the exact pinned NR runtime's network
 entry at RVA `0x21BB0`, reading its third argument (`R8`) as the parsed frame.
@@ -86,15 +88,19 @@ local `out/` directory; the earlier fixture source/receipts were preserved.
 1. Use V5.4 NO-LORE with AIO19 selected and Dva disabled. Start Skyrim normally,
    load the building scene, enable NR and select Style 0 / Tone 1; leave FG off.
    The last AIO toggle comparison saved NR **off**, so enable it in the game.
-2. Open `Capture-AIO19-NR.cmd` in this worktree. Rotate the camera around the
+2. Run `Capture-AIO19-NR.cmd` as administrator in this worktree. It now uses
+   `Capture-AioRequest.ps1`, not the blocked debugger route. Rotate the camera around the
    same building for roughly 10–15 seconds. Wait for `FINISHED`.
 3. The capture and selected before/after settings are written under
    `out/research/nr/tone-boundary-game/`. Authentication sections are omitted.
    The script verifies host/model hashes and reads the existing profile; it
    does not change any mod settings or launch the game.
-4. A later Dva capture uses `Capture-Dva-NR.cmd` after selecting only Dva and
-   matching the same scene/Style 0/Tone 1/FG-off controls. Compare effective
-   controls first before adding new format/pixel instrumentation.
+4. Inspect texture statuses separately from accepted request counts. Native
+   descriptor fields are captured only for the pinned Windows getter; unknown
+   wrappers are reported unsupported. No target COM method is called.
+5. `Capture-Dva-NR.cmd` still uses the debugger observer and is **not qualified
+   for this hooked Skyrim installation**. The passive reader is AIO-specific.
+   A separate Dva capture route is required before comparing actual inputs.
 
 Win32 lifecycle references: [attach behavior](https://learn.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-debugactiveprocess),
 [kill-on-exit policy](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-debugsetprocesskillonexit),

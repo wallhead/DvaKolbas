@@ -25,3 +25,13 @@ C:/Python314/python.exe research/nr/tone-contract/runtime-observer/ReadAioReques
 ```
 
 Run at the same privilege level as Skyrim if Windows denies query/read access. The caller creates the output directory. The reader permits 1–30 samples, intervals 100–1000 ms, and defaults to 15 samples at one-second intervals. A capture with no usable packet is inconclusive and returns failure. Read failures preserve available diagnostic output. This tool is AIO-specific; it does not admit Dva's different runtime image.
+
+## Native texture capture prepared
+
+The [Ghidra/Capstone preparation checkpoint](NATIVE_METADATA.md) now extends the
+passive reader to qualified native texture dimensions and resource formats.
+Eleven owned descriptors match `GetDesc`; five unqualified/inconsistent cases
+are refused. The root AIO launcher now uses the passive wrapper. The prior
+captures above contain no native texture metadata; their offline route decode
+must not be relabeled as a new format capture. Actual Skyrim formats, views,
+transfer and pixels remain open.
