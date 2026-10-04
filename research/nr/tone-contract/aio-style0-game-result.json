@@ -1,0 +1,124 @@
+{
+  "date": "2026-10-04",
+  "capturedUtc": "2026-10-04T08:59:27.033300+00:00",
+  "userObservations": [
+    "AIO Style 0: no shifting",
+    "NR off/on visibly changes the image while camera rotation stays stable"
+  ],
+  "scope": "User-confirmed positive NR visual control; pinned prepared startup pass and initialized native feature corroborated; post-session NR request is off; effective per-frame controls/pixels not instrumented",
+  "preparedStartupSettings": {
+    "Settings": {
+      "mUpscaleType": "3",
+      "mQualityLevel": "5",
+      "mAutoExposure": "false",
+      "mSharpening": "false",
+      "mRenderReShadeBeforeUpscaling": "true"
+    },
+    "Frame Generation": {
+      "mEnableFrameGeneration": "false"
+    },
+    "DLSS NR": {
+      "mEnableDLSSNR": "true",
+      "mDLSSNRBeforeUpscaling": "true",
+      "mDLSSNRPreset": "0",
+      "mDLSSNRInputResolutionScale": "0.000000",
+      "mDLSSNRResolveMethod": "0",
+      "ChainVersion": "1",
+      "PassCount": "1"
+    },
+    "NR PASS 1": {
+      "Enabled": "true",
+      "Style": "0",
+      "Intensity": "1.000000",
+      "Tone": "1.000000",
+      "Structure": "1.000000",
+      "SkinStructure": "1.000000",
+      "AutoSkin": "false",
+      "MaskGroups": "false"
+    }
+  },
+  "preparedStartupIniSha256": "162a078469d3631ae1173626646faf143cbad44c0329019e74ef9c5b81240ec2",
+  "postSessionChanges": [
+    {
+      "section": "DLSS NR",
+      "key": "mEnableDLSSNR",
+      "before": "true",
+      "after": "false"
+    }
+  ],
+  "iniSha256": "2b783918f22c2b17bb368ac80510effdf4f31a549a021abdd0b8edd52e38b388",
+  "iniBytes": 15234,
+  "logSha256": "63359ebd34ae454f2bba0b9d5d94b99a39ff5f8cc025ee178b1d4a1bf3bfbdfa",
+  "logBytes": 18353,
+  "logLastWriteUtc": "2026-10-04T08:49:58.762150+00:00",
+  "selectedLogLines": [
+    "[11:46:21.105] [31868] [I] Loaded plugin nvngx_dlssnr.dll 0x7ffb73770000",
+    "[11:46:21.141] [31868] [I] Loaded plugin PDPerfPlugin.dll 0x7ffb6ff60000",
+    "[11:46:50.620] [31868] [I] DXGISwapChainDX11Wrapper: game GetBuffer is isolated D3D11 SHARED (not opened on D3D12) fmt=28 bind=0x28 misc=0x2 2560x1440",
+    "[11:46:51.340] [31868] [I] Creating UpscaleMethod_FSR3_DX11",
+    "[11:46:51.340] [31868] [I] Creating UpscaleMethod_FSR3_DX11",
+    "[11:46:51.343] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeX = 2560",
+    "[11:46:51.343] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeY = 1440",
+    "[11:46:51.463] [31868] [I] NGXNRHook snippet NVSDK_NGX_D3D12_Init = 0x00000001, info: NVSDK_NGX_Result_Success",
+    "[11:46:51.660] [31868] [I] DLSSNR feature id=0 created (2560 x 1440) ratio=1.0000",
+    "[11:47:06.048] [22732] [I] Depth format: 44   Size: 2560x1440  BindFlag: 0x00000048  MiscFlag: 0x00000000",
+    "[11:48:52.684] [24180] [I] Forcing DynamicResolution on.",
+    "[11:48:54.888] [31868] [E] ReShade final submission callback missing; no completed source for this Present",
+    "[11:49:55.002] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeX = 2560",
+    "[11:49:55.002] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeY = 1440",
+    "[11:49:55.019] [31868] [I] DLSSNR feature id=0 released.",
+    "[11:49:55.132] [31868] [I] DLSSNR feature id=0 created (2560 x 1440) ratio=1.0000",
+    "[11:49:56.344] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeX = 2560",
+    "[11:49:56.344] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeY = 1440",
+    "[11:49:56.350] [31868] [I] DLSSNR feature id=0 released.",
+    "[11:49:56.434] [31868] [I] DLSSNR feature id=0 created (2560 x 1440) ratio=1.0000",
+    "[11:49:57.054] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeX = 2560",
+    "[11:49:57.054] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeY = 1440",
+    "[11:49:57.081] [31868] [I] DLSSNR feature id=0 released.",
+    "[11:49:57.197] [31868] [I] DLSSNR feature id=0 created (2560 x 1440) ratio=1.0000",
+    "[11:49:57.860] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeX = 2560",
+    "[11:49:57.860] [31868] [I] m_RecommendedSettingsMap[0].OptimalRenderSizeY = 1440",
+    "[11:49:57.865] [31868] [I] DLSSNR feature id=0 released.",
+    "[11:49:57.950] [31868] [I] DLSSNR feature id=0 created (2560 x 1440) ratio=1.0000"
+  ],
+  "installedBinaryPins": [
+    {
+      "relativePath": "SKSE/Plugins/SkyrimUpscaler.dll",
+      "sha256": "ac699b5883d4deeafdfff81ab041c3f191b1970e68c3408ffdb18068a6f5482a",
+      "bytes": 15975424
+    },
+    {
+      "relativePath": "UpscalerBasePlugin/PDPerfPlugin.dll",
+      "sha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+      "bytes": 20332032
+    },
+    {
+      "relativePath": "UpscalerBasePlugin/nvngx_dlssnr.dll",
+      "sha256": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+      "bytes": 165840496
+    }
+  ],
+  "profile": {
+    "name": "V5.4 NO-LORE",
+    "modlistSha256": "451ff0799ff4950fd9de4f9c816c562afe125a26312bd163aba406c188c36d7b",
+    "aio19Enabled": true,
+    "dvaTrialEnabled": false
+  },
+  "localSnapshot": "out\\research\\nr\\tone-preserve-investigation\\aio-style0-result-20261004-085926",
+  "revisedPriority": "Measure actual AIO/Dva NR boundary input/output color and guides, formats/views, effective controls/mask and resets; preserve full tone/style differences",
+  "notEstablished": [
+    "That linear-FP16 conversion is the root cause",
+    "That native UNORM8 or raw encoded input fixes the actual game",
+    "Every-frame AIO evaluation/settings/reset count",
+    "A complete one-to-one SR/provider or dynamic-resolution match",
+    "Temporal compensation is required"
+  ],
+  "notChanged": [
+    "Product source",
+    "Installed INIs",
+    "Installed DLLs/runtime assets",
+    "MO2/profile settings"
+  ],
+  "milestonesComplete": 1,
+  "milestonesTotal": 8
+}
