@@ -1,0 +1,1356 @@
+{
+  "schema": 1,
+  "scope": "Standalone native NR context probe; not AIO19 actual host/gameplay parity",
+  "sourceBase": "2f7ea31",
+  "runs": 32,
+  "nrEvaluations": 5120,
+  "sourcesPerRun": 160,
+  "requestedTone": 1,
+  "stableColors": false,
+  "motion": 0,
+  "depth": 0.5,
+  "nativeExtent": [
+    640,
+    360
+  ],
+  "cases": {
+    "0": "No initialization, Backbuffer null",
+    "1": "Initialize Output from Color, Backbuffer null",
+    "2": "Initialize Output from Color, Backbuffer=Output",
+    "3": "No initialization, Backbuffer=Output"
+  },
+  "synchronization": "Initialization follows queued producer dependency; input shader-read/output UAV -> COPY_SOURCE/COPY_DEST -> original states. Output is already ticket-retained; no new CPU wait.",
+  "alpha": "Probe checked all pixels each source; PPMs retain RGB only",
+  "retirement": "All probes returned after successful host.Retire()",
+  "snapshotHashes": {
+    "out\\research\\nr\\tone-preserve-investigation\\backbuffer-report\\experiment\\CMakeLists.txt": "38c9023f9a8bd8078f995a1578968c5d6ca249a18d7621e9305c0fa2cc5ad850",
+    "out\\research\\nr\\tone-preserve-investigation\\backbuffer-report\\experiment\\ModelContextProbe.cpp": "77cf1ebddc6f8809c77576c7fd500691003f5328a8ab6c692c1e4fcab2d752b4",
+    "out\\research\\nr\\tone-preserve-investigation\\backbuffer-report\\experiment\\NrToneModelProbe.exe": "a97a3bf573fb0e85c94241eed17882e65e9f7fc2c8289695cc0aff55ef6fea1c",
+    "out\\research\\nr\\tone-preserve-investigation\\backbuffer-report\\experiment\\ResearchRuntimeParameters.h": "550e7ae5975d4914dcb5d0fdb61e798e9953df15dfeed2b83c9aa185c6466f9b",
+    "out\\research\\nr\\tone-preserve-investigation\\backbuffer-report\\experiment\\ResearchStage.cpp": "5ded8a2a7e8c68dbb85c88d17402c7907f5f6bda4fe587252bd13fa25ee5ffc6"
+  },
+  "runnerSha256": "e603a64fc5f832f773f932f90ef3d5fc970ddecffa13cb15bebb709be485c148",
+  "auditorSha256": "8dcef22b8664c447117fa8810fb986f8fce3f00a5c3b1901ce1ad2d469db4b32",
+  "groups": [
+    {
+      "profile": "rtx40",
+      "style": 0,
+      "domain": "linear",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "baselineMatchesPreviousCapture": true
+    },
+    {
+      "profile": "rtx40",
+      "style": 1,
+      "domain": "linear",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "baselineMatchesPreviousCapture": true
+    },
+    {
+      "profile": "rtx40",
+      "style": 1,
+      "domain": "rawgamma",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "baselineMatchesPreviousCapture": true
+    },
+    {
+      "profile": "rtx40",
+      "style": 4,
+      "domain": "linear",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "baselineMatchesPreviousCapture": true
+    },
+    {
+      "profile": "aio19-rtx40-shim",
+      "style": 0,
+      "domain": "linear",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "baselineMatchesPreviousCapture": true
+    },
+    {
+      "profile": "aio19-rtx40-shim",
+      "style": 1,
+      "domain": "linear",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "baselineMatchesPreviousCapture": true
+    },
+    {
+      "profile": "aio19-rtx40-shim",
+      "style": 1,
+      "domain": "rawgamma",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "baselineMatchesPreviousCapture": true
+    },
+    {
+      "profile": "aio19-rtx40-shim",
+      "style": 4,
+      "domain": "linear",
+      "allFourCapturedRgbAndCsvIdentical": true,
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "baselineMatchesPreviousCapture": true
+    }
+  ],
+  "captures": [
+    {
+      "name": "rtx40-style0-linear-case0",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "d414c7bb9e4cda9c8d465fe46ab9f8478ea4c4eaca69b51efba849aa33793e79",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style0-linear-case1",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "933ca6a68eaaa02e8ccdfb1e0c2a272e467b198f7380e52fc061a0ba3ebb4306",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style0-linear-case2",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "57a5bd102604e1c1feb97ae59ca97384e25066b2e7abd8139f796f881d62430e",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style0-linear-case3",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "aafcdb6d7202ec42473143ac6f9c2ad4510ea2214dc5637ec2b0f016e950a116",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-linear-case0",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "2d73eb69b6b430d2c38a6ef920461318050ad99ac8353e5598d48e87d371fa00",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-linear-case1",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "21974c25c1acf2a465c03182e0230e5462428ab53afbf22aaf23b27f58b06b27",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-linear-case2",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "e46799dea332444c6940bf9f9fec9ce960eba23d22300005f6bd24ca75e0271e",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-linear-case3",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "3b91d14dcaa21c7b6ee1281bff7e9aaad5c754ab6e4188cd9b833f5264e76a07",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-rawgamma-case0",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "d76782150619b2f958a3f35597fe74289026ed470bf732f4ea47a44ee02411d2",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-rawgamma-case1",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "95839866924a1ac4ae11ca4e05ea23b1706af8ba1f74cc0e2fd1d4fd7d8d6931",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-rawgamma-case2",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "9ff53f85b19d8bd520b194ce32f8ee18aaec7d971d018f2b7457725cc9855a78",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style1-rawgamma-case3",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "89d861d534978b4df902c52eb990dad54e2fd08d95380233078b31803c7b444c",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style4-linear-case0",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "34e1a3376a16f45c193e5736034327219015939b884284463cdbdd14ab1b8a1e",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style4-linear-case1",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "3cb507d90d318dee9b70dc94be064b1bddf54a23a7cf1a7e256402c3cb5f0ce0",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style4-linear-case2",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "d27019ebb526d5c1844e5f18fb2fcdc477b59cdadc10d2272a1997dd162cc748",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "rtx40-style4-linear-case3",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "94f33f984d051ee593e4bf8b1ccfda92dcfc2eb9881abb298e9358f50070e5a4",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style0-linear-case0",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "d414c7bb9e4cda9c8d465fe46ab9f8478ea4c4eaca69b51efba849aa33793e79",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style0-linear-case1",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "933ca6a68eaaa02e8ccdfb1e0c2a272e467b198f7380e52fc061a0ba3ebb4306",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style0-linear-case2",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "57a5bd102604e1c1feb97ae59ca97384e25066b2e7abd8139f796f881d62430e",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style0-linear-case3",
+      "settledRgbMeans": [
+        [
+          96.758115,
+          86.378995,
+          69.17432
+        ],
+        [
+          112.42655,
+          103.79765,
+          91.72678499999999
+        ],
+        [
+          112.53615,
+          102.7945,
+          86.39602
+        ],
+        [
+          96.94006,
+          86.530065,
+          69.327185
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 22.552464999999998,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=0 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "aafcdb6d7202ec42473143ac6f9c2ad4510ea2214dc5637ec2b0f016e950a116",
+      "hashes": {
+        "frames.csv": "5a6b00ff16a0d29e8ee95b9340ec5aa83cee51a160bf3d2d6dd95b3f99af79dd",
+        "nr-120.ppm": "3526c9fe9f2100f9635a6cba8248ec4994678f87d0dcd0d048b27f68c8f86516",
+        "nr-160.ppm": "d63c5cb0b4d6430d1d5331297b4a179b78921ae5c020c6b00633dca7c4ff6817",
+        "nr-40.ppm": "20c32f64ee88a000defa0b2f833f504f2c9e9bcf5ca26809a38eab43b1759079",
+        "nr-80.ppm": "b43f22c9b72c217e584c2bef6b18ed712b3957be8ca18e7467d92ae2dd8c7c55",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-linear-case0",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "2d73eb69b6b430d2c38a6ef920461318050ad99ac8353e5598d48e87d371fa00",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-linear-case1",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "21974c25c1acf2a465c03182e0230e5462428ab53afbf22aaf23b27f58b06b27",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-linear-case2",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "e46799dea332444c6940bf9f9fec9ce960eba23d22300005f6bd24ca75e0271e",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-linear-case3",
+      "settledRgbMeans": [
+        [
+          99.76371,
+          90.086035,
+          73.67653
+        ],
+        [
+          117.17495,
+          109.0008,
+          95.51198
+        ],
+        [
+          113.9151,
+          103.93785,
+          83.928015
+        ],
+        [
+          99.79835,
+          90.140675,
+          73.7792
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 21.835449999999994,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "3b91d14dcaa21c7b6ee1281bff7e9aaad5c754ab6e4188cd9b833f5264e76a07",
+      "hashes": {
+        "frames.csv": "3fabe01a02e15abfbca81c0e3180bec8a9e531ddd4ccdd9cf819f8f54cc05590",
+        "nr-120.ppm": "a1213482796a34a4832ebd98236c103469f9267579971bd2500c79c9ddd2353e",
+        "nr-160.ppm": "961e7d146eeba1af8f012dbd55a5e447a8f0b00b1e9c3a3c23d3a49d998d90fe",
+        "nr-40.ppm": "07bba778b97ca0b7cf7f71cc30552ff3f83ac507ef532dc19f5b6daab26fee9b",
+        "nr-80.ppm": "335a647f263b9c20a9f9a1835035df70ffa1a86573596b6a088c55170236fe49",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-rawgamma-case0",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "d76782150619b2f958a3f35597fe74289026ed470bf732f4ea47a44ee02411d2",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-rawgamma-case1",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "95839866924a1ac4ae11ca4e05ea23b1706af8ba1f74cc0e2fd1d4fd7d8d6931",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-rawgamma-case2",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "9ff53f85b19d8bd520b194ce32f8ee18aaec7d971d018f2b7457725cc9855a78",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style1-rawgamma-case3",
+      "settledRgbMeans": [
+        [
+          97.33732,
+          91.43468,
+          80.81213
+        ],
+        [
+          103.4865,
+          97.72415,
+          86.749605
+        ],
+        [
+          101.07475,
+          93.326545,
+          79.83447
+        ],
+        [
+          97.355155,
+          91.46937,
+          80.868325
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 6.9151350000000065,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=1 tone=1.0 stableColors=0 sourceDomain=rawgamma",
+      "logSha256": "89d861d534978b4df902c52eb990dad54e2fd08d95380233078b31803c7b444c",
+      "hashes": {
+        "frames.csv": "bd1935b4bb411117bd3f5118959c5feb9a8196f71624186d2dad1266a49a36b9",
+        "nr-120.ppm": "e5d47dd60238d5766e4f565ee8d6e83464940d7134fb7fc3cc2038dde70e1038",
+        "nr-160.ppm": "efedf7ec24812d8cc5c275d9c59a183054b06a4950d36d000d70724dae296af2",
+        "nr-40.ppm": "f4af593479c4e0f7770ea1d954c914e078aed4526bdee05dbd3d1607209a4a24",
+        "nr-80.ppm": "0210df396511373b1fec794d6be8754819efff6f0ca555138bc779cbb034bfae",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style4-linear-case0",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "34e1a3376a16f45c193e5736034327219015939b884284463cdbdd14ab1b8a1e",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style4-linear-case1",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=0 preseedOutput=1 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "3cb507d90d318dee9b70dc94be064b1bddf54a23a7cf1a7e256402c3cb5f0ce0",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style4-linear-case2",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=1 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "d27019ebb526d5c1844e5f18fb2fcdc477b59cdadc10d2272a1997dd162cc748",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    },
+    {
+      "name": "aio19-rtx40-shim-style4-linear-case3",
+      "settledRgbMeans": [
+        [
+          91.51917,
+          82.566665,
+          65.87084
+        ],
+        [
+          114.63435,
+          107.24375,
+          95.74342
+        ],
+        [
+          113.15125,
+          103.3456,
+          88.44961
+        ],
+        [
+          91.409665,
+          82.471305,
+          65.816585
+        ]
+      ],
+      "maxSettledChannelDriftCodeValues": 29.926834999999997,
+      "configuration": "CONFIG flags=0x42 backbuffer=1 preseedOutput=0 style=4 tone=1.0 stableColors=0 sourceDomain=linear",
+      "logSha256": "94f33f984d051ee593e4bf8b1ccfda92dcfc2eb9881abb298e9358f50070e5a4",
+      "hashes": {
+        "frames.csv": "95d61c301756ad98514e7ba4af5ae24532c6492fd727e50836ce35c64c53a821",
+        "nr-120.ppm": "19fccc50f753b9d8d25ae527f0b8b42b6005ce5f7a21e1d68ee7fe33d8eeb97b",
+        "nr-160.ppm": "7c8cc1dc2dc2c49a9fbd718a55f7462f7bc1058ea246ca0cd87612806c8d7b13",
+        "nr-40.ppm": "b190e75133dbcc640d867afaff409311da3911ac7a1d747083d88c275190e39b",
+        "nr-80.ppm": "d8042c511ce9c4fc8c13ad524ebb31adb756c0db963683d8032864494329f1f6",
+        "source-120.ppm": "2762d1dcdaeddfb70ae48245208073e6b1d1427b95ea15e1609f2f21f18c9bad",
+        "source-160.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-40.ppm": "84d452aea541a25e53d377ae6fa63d61abe458cf7f00438134a1edd9dc4b72d7",
+        "source-80.ppm": "919644ad039e45f4286c6d97a93b021d32421ee8f2fc520f298d161354164cd6"
+      }
+    }
+  ],
+  "runtimePins": {
+    "rtx40": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "aio19": "8270b350cd82de5ce89806872cdd6b6a9249b80836b91bbeb3573470744cc206",
+    "driverCore": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+  },
+  "conclusion": "Neither output initialization nor Backbuffer=Output, alone or together, changed captured output or removed drift in the tested fixture."
+}

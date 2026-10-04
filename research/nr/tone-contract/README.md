@@ -4,6 +4,8 @@ The supplied report correctly identifies a change introduced in the NR path befo
 
 The user's latest requirement supersedes the earlier color-preservation policy: keep the styles' visible NR effect while stabilizing stationary materials during camera movement. **Stable colors is rejected as the solution** because it removes broad tone and medium structure. It remains disabled in the inspected trial INI. No deterministic replacement tone shader or temporal correction subsystem has been implemented or approved.
 
+The later [targeted Backbuffer/runtime RE audit](BACKBUFFER_RE_VALIDATION.md) adds the previously missing output-initialization combination and direct effective-control observations. Its 32 initialization/Backbuffer runs and eight debugged runs also reproduce drift; use that update for the current next step.
+
 ## Report claims checked
 
 | Claim | Finding |
