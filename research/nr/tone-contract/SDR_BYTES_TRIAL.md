@@ -73,3 +73,15 @@ are preserved. [The installation receipt](sdr-byte-trial-installation.json)
 records exact hashes, rollback and protected settings. NR-disabled compilation
 also succeeds; its receipt distinguishes the earlier precommit build identity.
 Skyrim camera acceptance is **PENDING**; the completion count stays **1 of 8**.
+
+
+## First gameplay result
+
+The owner reports **“seems drifting fixed”** in the installed SDR-byte trial.
+The [running-game receipt](sdr-byte-trial-game-result.json) confirms active
+Style 0 / Tone 1 processing, Stable colors/FG off and a successful live NR
+off/on cycle. No error/critical line appears in its captured prefix. This is
+provisional qualitative camera acceptance in the reported scene. The old
+synthetic context fixture still drifts; other scenes/styles, FG and DLSS/DLAA
+remain unqualified. No settings changed during this log check, and **1 of 8**
+remains complete.

@@ -2,7 +2,12 @@
 
 **1 of 8 milestones complete:** Task 2, the standalone direct runtime catalog/owner and RTX 40 GPU qualification. Task order differs from completion count: Task 1 true post-FG feasibility remains open.
 
-**Latest tone checkpoint, 2026-10-04:** AIO19 has no shifts with its current installed INI according to the user. Dva is now configured for the supported FSR Native AA / Style-1 comparison with Tone 1, sharpening/FG/Stable colors off and ReShade before upscaling. Only five Dva INI keys changed after confirmed closure; its DLL/assets, AIO configuration and MO2/profile settings are preserved. [Exact scope and next gameplay gate](../research/nr/tone-contract/AIO_GAME_REFERENCE.md). This does not claim the tone defect fixed or advance the completion count.
+**Latest tone checkpoint, 2026-10-04:** the owner reports “seems drifting fixed”
+with the installed opt-in SDR-byte route. The running-game log confirms clean
+`5d9a3b873b72`, full Style 0 / Tone 1, Stable colors and FG off, active RGBA8 NR
+processing and successful live off/on. [The bounded gameplay receipt](../research/nr/tone-contract/sdr-byte-trial-game-result.json)
+distinguishes this provisional visual success from broader acceptance. Other
+styles/scenes, FG and DLSS/DLAA gameplay remain to check; **1 of 8** remains complete.
 
 The earlier Dva game check reports that apparently only Style 0 shifts. A captured prefix confirms 11,400 NR evaluations, successful live style changes, full tone and no error/critical logs; a longer Style-0 interval has unchanged sparse reset counts. At that checkpoint AIO's active Style 0 had not yet been tested. Nonzero styles are not yet fully qualified, and the count remains **1 of 8**.
 
@@ -34,8 +39,8 @@ finds SDR RGBA8 Color/Output with the same RTX40 model versus Dva's linear FP16.
 An opt-in [SDR-byte trial](../research/nr/tone-contract/SDR_BYTES_TRIAL.md)
 preserves the original encoded color through NR, full tone/styles, alpha and
 retained ownership. FSR uses its ordinary color decode; the default FP16 path
-is unchanged. The older synthetic RGBA8 fixture still drifted. Skyrim camera
-acceptance remains required; **1 of 8** remains complete.
+is unchanged. The older synthetic RGBA8 fixture still drifted. The first Skyrim camera check now reports apparent stability with active NR;
+broader acceptance remains required. **1 of 8** remains complete.
 
 Performance P0 now has optional bounded CPU/wait/Flush/descriptor observations and real retired D3D11/D3D12 timestamps for the seven prepared Before NR phases. The isolated executable admits the exact AIO19 model through a research-only generated catalog; production runtime pins are unchanged. The [clean baseline](../research/nr/performance/baseline.json) contains 24 synthetic 2560Ã—1440 timing runs (7,200 measured sources). Vendor medians span 6.80â€“7.15 ms across both models; alternating transaction medians are approximately 10.0â€“10.2 ms. Both clean correctness runs preserved all 1,843,200 alpha pixels, including a live bypass/re-enable. Standard NR-enabled validation passed 165/165; Standard NR-disabled passed 148 initially plus all seven previously skipped fixture cases on a targeted eight-case rerun; standalone passed 29/29. Three Graphics Tools cases remain excluded. This is evidence to continue the queue/retained-slot plan, not confirmation of a Skyrim FPS gain. [Qualification and build limits](../research/nr/performance/validation.json) distinguish clean probe captures from precommit product builds. FSR stage timings, matched gameplay, the camera-motion tone root cause and true After remain open. Normal game telemetry and installed settings are unchanged. The completion count stays **1 of 8**.
 
@@ -48,7 +53,7 @@ Performance P0 now has optional bounded CPU/wait/Flush/descriptor observations a
 | 5. DLSS-G true After | Pending Task 1 boundary/guides | Exact installed Streamline 2.13 candidate functions are static research only. |
 | 6. Live controls/lifecycle | Before trial integrated; After batches pending | One authoritative NR setting feeds live Apply/Save/hotkeys. Actual source handoff, camera cuts and checked resize retirement gate the native Before path. |
 | 7. Clean matrix/packages/final review | Pending implementation | Current checkpoint review is narrower than the future whole-branch review. |
-| 8. Separate Skyrim acceptance | Processing smoke observed; visual acceptance open | Corrected Before trial loads a save and resumes NR after live toggles. Camera-motion image changes remain unresolved. |
+| 8. Separate Skyrim acceptance | Processing smoke observed; visual acceptance open | Corrected Before trial loads a save and resumes NR after live toggles. SDR-byte Style-0 camera check reports apparent stability; broader scene/style/provider acceptance remains open. |
 
 RTX 20/30/50 hardware is NOT RUN. AMD is explicitly unsupported. Current qualified driver core is pinned; other cores are unqualified. A successful catalog selection is not a claim of GPU output. Details and bounded receipts: [runtime checkpoint](../research/nr/runtime-catalog/README.md).
 
