@@ -18,8 +18,9 @@ Mode, render scale and presenter changes retain their existing restart notices.
 This change does not introduce renderer or swapchain hot replacement.
 
 The installed trial INI, runtime payloads and MO2 launch/profile settings are
-preserved. Only the plugin DLL and its validation manifest are updated after
-Skyrim and MO2 close; the working DLL/INI are backed up first.
+preserved. Only the plugin DLL and its validation manifest are updated while
+Skyrim is closed; the working DLL/INI are backed up first. MO2 can stay open
+for this DLL-only update because its profile files and INI are not edited.
 
 ## Validation
 
