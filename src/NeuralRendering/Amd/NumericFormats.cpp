@@ -38,9 +38,25 @@ std::uint16_t DecodeE4m3ToHalf(std::uint8_t bits) noexcept {
     const auto highest=31u-std::countl_zero(std::uint32_t(mantissa));
     return std::uint16_t(sign|((highest+6)<<10)|((mantissa<<(10-highest))&1023));
 }
+std::uint8_t EncodeFloatToE4m3Rne(float value) noexcept {
+    const auto bits=std::bit_cast<std::uint32_t>(value);
+    const auto sign=(bits>>24)&128, magnitude=bits&0x7fffffff;
+    if(magnitude>0x7f800000) return 0x7f;
+    if(magnitude>=0x43e00000) return std::uint8_t(sign|0x7e);
+    // The midpoint between zero and the smallest subnormal is 2^-10.
+    // Guarding it first also bounds every subsequent shift to [20,24].
+    if(magnitude<=0x3a800000) return std::uint8_t(sign);
+    const auto exponent=magnitude>>23, significand=(magnitude&0x7fffff)|0x800000;
+    const unsigned shift=exponent<121?141-exponent:20;
+    auto rounded=significand>>shift;
+    const auto remainder=significand&((1u<<shift)-1), midpoint=1u<<(shift-1);
+    rounded+=(remainder>midpoint || (remainder==midpoint && (rounded&1)));
+    const auto code=(exponent<121?0:((exponent-120)<<3)-8)+rounded;
+    return std::uint8_t(sign|code);
+}
 std::expected<void, FormatError> ConvertFormatWords(FormatOperation operation,
     std::span<const std::uint32_t> input, std::span<std::uint32_t> output) noexcept {
-    if(operation!=FormatOperation::Float32ToHalf && operation!=FormatOperation::HalfToFloat32 && operation!=FormatOperation::E4m3ToHalf)
+    if(operation!=FormatOperation::Float32ToHalf && operation!=FormatOperation::HalfToFloat32 && operation!=FormatOperation::E4m3ToHalf && operation!=FormatOperation::Float32ToE4m3)
         return std::unexpected(FormatError::InvalidOperation);
     if(input.size()!=output.size()) return std::unexpected(FormatError::CountMismatch);
     for(std::size_t i=0;i<input.size();++i) {
@@ -48,6 +64,7 @@ std::expected<void, FormatError> ConvertFormatWords(FormatOperation operation,
         case FormatOperation::Float32ToHalf: output[i]=FloatToHalfRne(std::bit_cast<float>(input[i]));break;
         case FormatOperation::HalfToFloat32: output[i]=std::bit_cast<std::uint32_t>(HalfToFloat(std::uint16_t(input[i])));break;
         case FormatOperation::E4m3ToHalf: output[i]=DecodeE4m3ToHalf(std::uint8_t(input[i]));break;
+        case FormatOperation::Float32ToE4m3: output[i]=EncodeFloatToE4m3Rne(std::bit_cast<float>(input[i]));break;
         }
     }
     return {};

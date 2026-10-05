@@ -24,7 +24,54 @@ def read_output(path):
     except OSError as error:
         raise ValueError('output missing/unreadable') from error
 
+def encode_e4m3_distance(words):
+    """Mathematical nearest-distance oracle, independent of integer quantization."""
+    words=np.asarray(words,dtype=np.uint32)
+    codes=np.arange(127,dtype=np.uint32);e=(codes>>3)&15;m=codes&7
+    finite=np.where(e==0,m.astype(np.float64)/512,np.ldexp(1+m.astype(np.float64)/8,e.astype(np.int32)-7))
+    with np.errstate(all='ignore'):
+        magnitude=(words&0x7fffffff).view(np.float32).astype(np.float64)
+    safe=np.minimum(np.where(np.isnan(magnitude),0,magnitude),448)
+    output=np.empty(len(words),dtype=np.uint32)
+    for start in range(0,len(words),4096):
+        distances=np.abs(safe[start:start+4096,None]-finite[None,:])
+        chosen=distances.argmin(axis=1).astype(np.uint32)
+        higher=np.minimum(chosen+1,126)
+        rows=np.arange(len(chosen))
+        tied=distances[rows,chosen]==distances[rows,higher]
+        chosen+=((chosen&1)!=0)&tied
+        output[start:start+len(chosen)]=chosen
+    output|=(words>>24)&128
+    output[(words&0x7fffffff)>0x7f800000]=0x7f
+    return output
+
+def e4m3_encode_fixtures():
+    with np.errstate(all='ignore'):
+        half=np.arange(65536,dtype=np.uint16).view(np.float16).astype(np.float32).view(np.uint32)
+    neighbors=[]
+    for c in range(126):
+        def finite(code):
+            e,m=code>>3,code&7
+            return m/512 if e==0 else np.ldexp(1+m/8,e-7)
+        a,b=np.float32(finite(c)),np.float32(finite(c+1));mid=np.float32((a+b)*0.5)
+        for sign in [np.float32(1),np.float32(-1)]:
+            neighbors.extend(np.float32(v*sign).view(np.uint32) for v in [np.nextafter(mid,a),mid,np.nextafter(mid,b)])
+    edges=np.array([0,0x80000000,1,0x80000001,0x007fffff,0x807fffff,0x00800000,0x80800000,
+                    0x1a996262,0x9a996262,0x3a800000,0xba800000,0x3a800001,0xba800001,
+                    0x43e00000,0xc3e00000,0x7f800000,0xff800000,0x7f800001,0xff800001,0x7fc12345,0xffc12345],dtype=np.uint32)
+    random=np.random.default_rng(20261005).integers(0,2**32,100000,dtype=np.uint32)
+    words=np.concatenate([half,np.array(neighbors,dtype=np.uint32),edges,random])
+    return words,encode_e4m3_distance(words)
+
 class ComparisonTests(unittest.TestCase):
+    def test_e4m3_literal_anchors(self):
+        words=np.array([0,0x80000000,0x3f880000,0x3f980000,0x3a800000,0x3a800001,
+                        0x43d80000,0x7f800000,0xff800000,0x7f800001,0xff800001],dtype=np.uint32)
+        np.testing.assert_array_equal(encode_e4m3_distance(words),[0,0x80,0x38,0x3a,0,1,0x7e,0x7e,0xfe,0x7f,0x7f])
+    def test_e4m3_deep_underflow(self):
+        words=np.array([1,0x007fffff,0x00800000,0x1a996262],dtype=np.uint32)
+        np.testing.assert_array_equal(encode_e4m3_distance(words),[0,0,0,0])
+        np.testing.assert_array_equal(encode_e4m3_distance(words|0x80000000),[0x80]*4)
     def test_complete(self):
         compare_words(b'\x00\x00\x00\x00',b'\x00\x00\x00\x00')
         compare_words(b'',b'')

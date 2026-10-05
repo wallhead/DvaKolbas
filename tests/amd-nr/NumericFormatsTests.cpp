@@ -13,7 +13,54 @@ static float MathematicalHalf(unsigned code) {
     if(e==31) value=m?std::numeric_limits<double>::quiet_NaN():std::numeric_limits<double>::infinity();
     return std::copysign(float(value),(code&0x8000)?-1.0f:1.0f);
 }
+static float MathematicalE4m3(unsigned code) {
+    unsigned e=(code>>3)&15,m=code&7;
+    return float(e?std::ldexp(1.0+double(m)/8,int(e)-7):double(m)/512);
+}
+static void E4m3SpecialValues() {
+    const std::pair<unsigned,unsigned> cases[]{{0,0},{0x80000000,0x80},
+        {0x43e00000,0x7e},{0xc3e00000,0xfe},{0x7f7fffff,0x7e},{0xff7fffff,0xfe},
+        {0x7f800000,0x7e},{0xff800000,0xfe}};
+    for(auto [bits,want]:cases) Require(EncodeFloatToE4m3Rne(std::bit_cast<float>(bits))==want,"E4M3 special value");
+    for(unsigned sign:{0u,0x80000000u})
+        for(unsigned payload:{1u,0x200000u,0x400000u,0x412345u,0x7fffffu})
+            Require(EncodeFloatToE4m3Rne(std::bit_cast<float>(sign|0x7f800000u|payload))==0x7f,"E4M3 canonical NaN regardless of sign/payload");
+}
+static void E4m3DeepUnderflow() {
+    for(unsigned sign:{0u,0x80000000u})
+        for(unsigned bits:{1u,0x007fffffu,0x00800000u,0x1a996262u,0x3a800000u})
+            Require(EncodeFloatToE4m3Rne(std::bit_cast<float>(sign|bits))==(sign>>24),"E4M3 deep underflow to signed zero");
+}
+static void E4m3Midpoints() {
+    for(unsigned c=0;c<126;++c) {
+        float a=MathematicalE4m3(c),b=MathematicalE4m3(c+1),mid=(a+b)*0.5f;
+        for(unsigned sign:{0u,128u}) {
+            float s=sign?-1.0f:1.0f;
+            Require(EncodeFloatToE4m3Rne(mid*s)==(sign|(c+(c&1))),"E4M3 midpoint tie to even");
+            Require(EncodeFloatToE4m3Rne(std::nextafter(mid,a)*s)==(sign|c),"E4M3 below midpoint");
+            Require(EncodeFloatToE4m3Rne(std::nextafter(mid,b)*s)==(sign|(c+1)),"E4M3 above midpoint");
+        }
+    }
+    Require(EncodeFloatToE4m3Rne(1.0625f)==0x38 && EncodeFloatToE4m3Rne(1.1875f)==0x3a,"E4M3 literal tie anchors");
+    Require(EncodeFloatToE4m3Rne(432.0f)==0x7e,"E4M3 final finite tie");
+}
+static void E4m3Roundtrip() {
+    for(unsigned c=0;c<256;++c)
+        Require(EncodeFloatToE4m3Rne(HalfToFloat(DecodeE4m3ToHalf(std::uint8_t(c))))==((c&127)==127?0x7f:c),"E4M3 code roundtrip with canonical NaN");
+}
+static void E4m3Batch() {
+    static_assert(unsigned(FormatOperation::Float32ToHalf)==0 && unsigned(FormatOperation::HalfToFloat32)==1
+        && unsigned(FormatOperation::E4m3ToHalf)==2 && unsigned(FormatOperation::Float32ToE4m3)==3);
+    std::array<std::uint32_t,4> in{0x3f800000,0x80000000,0xff800001,0x9a996262},out{0xffffffff,0xffffffff,0xffffffff,0xffffffff};
+    Require(bool(ConvertFormatWords(FormatOperation::Float32ToE4m3,in,out)) && out==std::array<std::uint32_t,4>{0x38,0x80,0x7f,0x80},"E4M3 batch zero extension");
+    Require(bool(ConvertFormatWords(FormatOperation::Float32ToE4m3,in,in)) && in==out,"E4M3 in-place batch");
+    out={9,9,9,9};
+    auto mismatch=ConvertFormatWords(FormatOperation::Float32ToE4m3,in,std::span(out).first(3));
+    Require(!mismatch && mismatch.error()==FormatError::CountMismatch && out==std::array<std::uint32_t,4>{9,9,9,9},"E4M3 unequal spans make no writes");
+    Require(bool(ConvertFormatWords(FormatOperation::Float32ToE4m3,{},{})),"E4M3 empty spans valid");
+}
 int main() {
+    E4m3SpecialValues();E4m3DeepUnderflow();E4m3Midpoints();E4m3Roundtrip();E4m3Batch();
     const std::pair<unsigned,unsigned> anchors[]{{0,0},{1,0x1800},{7,0x2300},{8,0x2400},{0x38,0x3c00},{0x7e,0x5f00},{0x7f,0x7e00},{0x80,0x8000},{0xb8,0xbc00},{0xfe,0xdf00},{0xff,0x7e00}};
     for(auto [a,b]:anchors) Require(DecodeE4m3ToHalf(std::uint8_t(a))==b,"E4M3 anchor");
     for(unsigned c=0;c<256;++c) {
