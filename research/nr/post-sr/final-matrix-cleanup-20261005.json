@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-05",
+  "status": "BlockedByAutomaticApprovalReview",
+  "reasonReturned": "blocked by policy",
+  "deletedPaths": [],
+  "temporaryPaths": [
+    "out/build/fsr-fg-standard-nr-off",
+    "out/build/fsr-fg-standard/package-tests",
+    "out/build/fsr-fg-standard/validation/fg-package"
+  ],
+  "estimatedBytes": 3397999945,
+  "compactEvidence": "out/review/nr-final-matrix-b802844-20261005",
+  "workingTrialUntouched": true
+}

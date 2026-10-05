@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "AMD-FidelityFX-license.md",
+      "sha256": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963",
+      "bytes": 60891
+    },
+    {
+      "path": "FSR-API-MIT-NOTICE.txt",
+      "sha256": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5",
+      "bytes": 1136
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d",
+      "bytes": 37453
+    },
+    {
+      "path": "nr-trial-manifest.json",
+      "sha256": "e0da84468c977397d8d9f7f21b037bb6b9335cd8e1aaea84aba6f00021ee3e0d",
+      "bytes": 6299
+    },
+    {
+      "path": "NVIDIA-Streamline-license.txt",
+      "sha256": "7b6f23e7d6f3ad6292f9308d2b42cdc3d82ae4e9b2abb55f230279d83bedd43d",
+      "bytes": 1591
+    },
+    {
+      "path": "POST_SR_TRIAL.md",
+      "sha256": "10a5fa44ccdd25b9579e108e556d12c072d3b555e04ba779bc8a9cd8a50cd58e",
+      "bytes": 6919
+    },
+    {
+      "path": "README.md",
+      "sha256": "a131d92eb7055b563fd52625c5495dff5e70f6a6bf05eac52af46e985cf33b6d",
+      "bytes": 2416
+    },
+    {
+      "path": "THIRD_PARTY_FSR.md",
+      "sha256": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11",
+      "bytes": 2668
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline.dll",
+      "sha256": "10b4e722237893ec1292716ff8f2d1e48cf02e7ce32eb5d3a34aa84b6b968854",
+      "bytes": 3038208
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline.ini",
+      "sha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+      "bytes": 6186
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipelineImGui.ini",
+      "sha256": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
+      "bytes": 915
+    },
+    {
+      "path": "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll",
+      "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+      "bytes": 40085776
+    },
+    {
+      "path": "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll",
+      "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+      "bytes": 26376
+    },
+    {
+      "path": "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll",
+      "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46",
+      "bytes": 28761864
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/nvngx_dlss.dll",
+      "sha256": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",
+      "bytes": 58956400
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl",
+      "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a",
+      "bytes": 5670
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NR/rtx20-30/nvngx_dlssnr.dll",
+      "sha256": "6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8",
+      "bytes": 309671536
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NR/rtx40/nvngx_dlssnr.dll",
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+      "bytes": 165840496
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NR/rtx50/nvngx_dlssnr.dll",
+      "sha256": "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",
+      "bytes": 165840496
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/nvngx_dlssg.dll",
+      "sha256": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b",
+      "bytes": 7453808
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.common.dll",
+      "sha256": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d",
+      "bytes": 830592
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.dlss_g.dll",
+      "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+      "bytes": 625792
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.interposer.dll",
+      "sha256": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570",
+      "bytes": 651392
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.pcl.dll",
+      "sha256": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d",
+      "bytes": 360064
+    },
+    {
+      "path": "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.reflex.dll",
+      "sha256": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3",
+      "bytes": 382080
+    }
+  ],
+  "scope": "Local Native-AA post-SR trial; not installed or game-tested",
+  "sourceMod": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial",
+  "identity": {
+    "edition": "Standard",
+    "sourceRevision": "b8028445dc89",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "sourceFiles": {
+    "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+    "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.dlss_g.dll": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02",
+    "FSR-API-MIT-NOTICE.txt": "5c813072b64c6a84d50339660b205c8497a104231deab93e88ee963538387df5",
+    "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.interposer.dll": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570",
+    "AMD-FidelityFX-license.md": "6757f2fec461238da6f84f83536ec195e8c036b1773a06f6f34301b9ed8c0963",
+    "SKSE/Plugins/TheosRenderPipeline/NR/rtx50/nvngx_dlssnr.dll": "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",
+    "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.common.dll": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d",
+    "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.pcl.dll": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d",
+    "NVIDIA-Streamline-license.txt": "7b6f23e7d6f3ad6292f9308d2b42cdc3d82ae4e9b2abb55f230279d83bedd43d",
+    "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46",
+    "nr-trial-manifest.json": "e0da84468c977397d8d9f7f21b037bb6b9335cd8e1aaea84aba6f00021ee3e0d",
+    "README.md": "a131d92eb7055b563fd52625c5495dff5e70f6a6bf05eac52af46e985cf33b6d",
+    "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/nvngx_dlssg.dll": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b",
+    "LICENSE": "84a393de2fb90b3b0bceb12f3d874eb23a6dd0044b1a87cc21f223be96712c1d",
+    "SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/sl.reflex.dll": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3",
+    "SKSE/Plugins/TheosRenderPipelineImGui.ini": "fdaa58a7da6cfcb569d3639936a6873f67d8bf95c43f81666cfdb6d1c4c7e616",
+    "SKSE/Plugins/TheosRenderPipeline/NR/rtx40/nvngx_dlssnr.dll": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+    "SKSE/Plugins/TheosRenderPipeline/NR/rtx20-30/nvngx_dlssnr.dll": "6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8",
+    "SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a",
+    "THIRD_PARTY_FSR.md": "259a9ae81c60c8b5e6a6078f37d32f0afc84d64653a8c53d72b8a0c5f55aea11",
+    "SKSE/Plugins/TheosRenderPipeline/nvngx_dlss.dll": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",
+    "SKSE/Plugins/TheosRenderPipeline.dll": "dfa5943c416035fbd3078048922e165e27abf7efab7163639323e6fb3c98633f",
+    "SKSE/Plugins/TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+    "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+  },
+  "iniChangedKeys": [
+    "SourceDLSSG/NRBeforeUpscaling"
+  ]
+}

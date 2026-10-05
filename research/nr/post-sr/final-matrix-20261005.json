@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8,
+  "sourceRevision": "b8028445dc89ec72daf1d88370c3e4c4cc24a890",
+  "buildScope": "Clean Git source; NR-on retains dependency/build caches, NR-off fresh build directory",
+  "suites": [
+    {
+      "variant": "fsr-fg-standard",
+      "identity": {
+        "edition": "Standard",
+        "sourceRevision": "b8028445dc89",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": true
+      },
+      "dllSha256": "10b4e722237893ec1292716ff8f2d1e48cf02e7ce32eb5d3a34aa84b6b968854",
+      "buildExitCode": 0,
+      "configureExitCode": 0,
+      "config": {
+        "TRP_ENABLE_FSR": "ON\r",
+        "TRP_ENABLE_FSR_FG": "ON\r",
+        "TRP_ENABLE_NEURAL_RENDERING": "ON\r",
+        "TRP_ENABLE_OPTIONAL_FEATURES": "OFF\r"
+      },
+      "selected": 215,
+      "ctestPassed": 215,
+      "ctestSkipped": [],
+      "supplementalPassed": [],
+      "failures": 0,
+      "seconds": 222.71
+    },
+    {
+      "variant": "fsr-fg-standard-nr-off",
+      "identity": {
+        "edition": "Standard",
+        "sourceRevision": "b8028445dc89",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": false
+      },
+      "dllSha256": "c02b13aa58c722bd4dc76fb6c58ecc0ccb61dd208da9f2cd21889e2089902bb9",
+      "buildExitCode": 0,
+      "configureExitCode": 0,
+      "config": {
+        "TRP_ENABLE_FSR": "ON\r",
+        "TRP_ENABLE_FSR_FG": "ON\r",
+        "TRP_ENABLE_NEURAL_RENDERING": "OFF\r",
+        "TRP_ENABLE_OPTIONAL_FEATURES": "OFF\r"
+      },
+      "selected": 166,
+      "ctestPassed": 159,
+      "ctestSkipped": [
+        "NrCallerIdentityShim-normal",
+        "NrCallerIdentityShim-conflict",
+        "NrRuntimeOwner-normal",
+        "NrRuntimeOwner-foreign-device",
+        "NrRuntimeOwner-resident-conflict",
+        "NrRuntimeOwner-shutdown-failure",
+        "NrRuntimeOwner-changed-shim"
+      ],
+      "supplementalPassed": [
+        {
+          "name": "NrCallerIdentityShim-normal",
+          "exitCode": 0,
+          "arguments": [
+            "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+            "normal"
+          ]
+        },
+        {
+          "name": "NrCallerIdentityShim-conflict",
+          "exitCode": 0,
+          "arguments": [
+            "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+            "conflict"
+          ]
+        },
+        {
+          "name": "NrRuntimeOwner-normal",
+          "exitCode": 0,
+          "arguments": [
+            "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+            "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll",
+            "normal"
+          ]
+        },
+        {
+          "name": "NrRuntimeOwner-foreign-device",
+          "exitCode": 0,
+          "arguments": [
+            "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+            "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll",
+            "foreign-device"
+          ]
+        },
+        {
+          "name": "NrRuntimeOwner-resident-conflict",
+          "exitCode": 0,
+          "arguments": [
+            "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+            "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll",
+            "resident-conflict"
+          ]
+        },
+        {
+          "name": "NrRuntimeOwner-shutdown-failure",
+          "exitCode": 0,
+          "arguments": [
+            "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+            "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll",
+            "shutdown-failure"
+          ]
+        },
+        {
+          "name": "NrRuntimeOwner-changed-shim",
+          "exitCode": 0,
+          "arguments": [
+            "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+            "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll",
+            "changed-shim"
+          ]
+        }
+      ],
+      "failures": 0,
+      "seconds": 68.9
+    }
+  ],
+  "command": "ctest --test-dir <variant> -C Release --output-on-failure -LE Interactive -E ^(NativeUIComposition|NativeUIBlendState|NeuralPeripheralPixels)$",
+  "exclusions": {
+    "unavailableGraphicsTools": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "graphicsEvidence": "present-guard-trial-install.json; prior same-implementation prerequisite failures retained, not rerun or counted as passes",
+    "interactive": [
+      "NrPostDlssVendorPresentationGpu",
+      "NrPostDlssVendorLifecycleGpu",
+      "NrPostDlssVendorInterruptionGpu"
+    ],
+    "interactiveEvidence": "Separate prior controlled vendor/lifecycle and owner gameplay receipts; not counted in these suites"
+  },
+  "runtimeIdentities": [
+    {
+      "cacheKey": "TRP_NR_DLSS_SR_DLL",
+      "path": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/TRP NR Before - DvaKolbas trial/SKSE/Plugins/TheosRenderPipeline/nvngx_dlss.dll",
+      "bytes": 58956400,
+      "sha256": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e"
+    },
+    {
+      "cacheKey": "TRP_NR_DRIVER_CORE",
+      "path": "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll",
+      "bytes": 1428200,
+      "sha256": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b"
+    },
+    {
+      "cacheKey": "TRP_NR_RESHADE_RUNTIME",
+      "path": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/Reshade TRUE AE V5.4/root/dxgi.dll",
+      "bytes": 5255448,
+      "sha256": "b2945c29e7095491a901746b400e58db9b1592ab092bacf2a888ce37f02d08da"
+    },
+    {
+      "cacheKey": "TRP_NR_RTX40_DLL",
+      "path": "C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll",
+      "bytes": 165840496,
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a"
+    },
+    {
+      "cacheKey": "TRP_RESHADE_INTEGRATION_RUNTIME",
+      "path": "C:/Users/user/Downloads/Reshade BASE/dxgi.dll",
+      "bytes": 5157144,
+      "sha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc"
+    }
+  ],
+  "sourceInputHashes": "final-matrix-source-inputs-20261005.json",
+  "package": {
+    "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\nr-final-b802844-20261005",
+    "files": 25,
+    "bytes": 782657024.0,
+    "manifest": "final-package-manifest-20261005.json",
+    "allHashesVerified": true,
+    "selectedNvidiaAssetsValidated": true,
+    "stagedOnly": true,
+    "installed": false,
+    "identity": {
+      "edition": "Standard",
+      "sourceRevision": "b8028445dc89",
+      "sourceClean": true,
+      "fsrCompiled": true,
+      "frameGenerationCompiled": true,
+      "neuralRenderingCompiled": true
+    }
+  },
+  "protectedInstalledFiles": [
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "bytes": 3040256,
+      "sha256": "dfa5943c416035fbd3078048922e165e27abf7efab7163639323e6fb3c98633f"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "bytes": 6186,
+      "sha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\ModOrganizer.ini",
+      "bytes": 24462,
+      "sha256": "78a8bb8a74e888d053331c28ac94d4e7f4d5b942f996b56897fdfe7c0ac0fae1"
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\modlist.txt",
+      "bytes": 120939,
+      "sha256": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2"
+    }
+  ],
+  "protectedFilesUnchanged": true,
+  "rollbackFiles": [
+    {
+      "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-present-guard-effbf2c-20261004-231652\\TheosRenderPipeline.dll",
+      "bytes": 3040256,
+      "sha256": "0781fedf58bc8a66af2ab088c08601715c3eff6fac18d1ee3573a8f759db9a74"
+    },
+    {
+      "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-present-guard-effbf2c-20261004-231652\\TheosRenderPipeline.ini",
+      "bytes": 6186,
+      "sha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d"
+    }
+  ],
+  "vendorImportsAbsentInBothProducts": true,
+  "review": "whole-branch-review-20261005.json",
+  "implementationMatchesReviewedRange": true,
+  "limits": [
+    "Native-size SDR After; scaled Before supported, scaled/HDR After rejected",
+    "One NR pass; generated frames inherit enhanced source, no separate post-FG NR pass",
+    "Actual hardware qualification RTX4080SUPER only; other NVIDIA families NOT RUN, AMD unsupported",
+    "Task8 display timing, broader scenes and matched performance acceptance remain open"
+  ],
+  "supplementalTestBinaryIdentities": [
+    {
+      "name": "TRPNrCallerIdentityShimTests.exe",
+      "sha256": "a9f9b0f90b24e5397f49adc8132d56dede7e1781c2bc3e8b10b25187884693ee",
+      "bytes": 57344
+    },
+    {
+      "name": "TRPNrRuntimeOwnerTests.exe",
+      "sha256": "e55882bbf4f0c3e1c556ef182d3806f6d65306b2886c9ebedaa175262b56cc71",
+      "bytes": 81408
+    }
+  ],
+  "temporaryOutputCleanup": "final-matrix-cleanup-20261005.json"
+}

@@ -1,6 +1,34 @@
 # Native AA post-upscale NR trial
 
-Latest update, 2026-10-04: clean-source `effbf2c9b0b0` adds the outer
+Latest qualification, 2026-10-05: **7 of 8 milestones complete**. Clean Standard
+NR-on/off Release builds identify source `b8028445dc89` and the expected
+capabilities. NR-on passes 215 checks; NR-off passes 159 in CTest plus seven
+initially skipped runtime checks rerun successfully with pinned arguments.
+Three unavailable Graphics Tools prerequisites remain excluded. The separate
+`out/packages/nr-final-b802844-20261005` package is hash/pin validated;
+the installed trial and MO2 files remain unchanged. The fresh whole-change
+review found no Critical/Important findings. See the
+[matrix receipt](../research/nr/post-sr/final-matrix-20261005.json).
+Task8 display timing and broader performance acceptance remain open.
+
+Next timing check uses the working installed trial. Start Skyrim through the
+usual MO2 SKSE entry and load a save; leave NR enabled with identical controls
+for both phases. Run `out/research/skyrim-presentation/Start-Skyrim-FG-Capture.cmd`
+as administrator (ETW needs elevation on this setup). Follow the FG Off and
+On prompts, close the overlay and keep the same scene foreground for 30 seconds
+each. Do not Save as default. Leave FG on and close Skyrim normally afterward.
+The helper changes no files or MO2 settings. Raw capture still requires
+swapchain/display-interval and game-log validation; phase labels are not proof
+of generated-frame cadence. Matched AIO performance remains a separate check.
+
+Live-control acceptance, 2026-10-05: the owner confirms
+stable camera colors and HUD during live style changes. Fifteen successful End
+Apply actions, continuing NR and resumed NVIDIA x2 output close Task6 together
+with the separate pending-reader and retirement proofs. See the
+[completion receipt](../research/nr/post-sr/task6-completion-20261005.json).
+Task6 acceptance does not establish physical display cadence.
+
+Installed build, 2026-10-04: clean-source `effbf2c9b0b0` adds the outer
 Present/Present1 preparation-failure guard. The updated DLL is installed in
 the existing V5.4 NO-LORE trial; its INI, other mod files and MO2 settings are
 unchanged. The working DLL/INI are backed up. The noninteractive suite passes
@@ -8,7 +36,7 @@ unchanged. The working DLL/INI are backed up. The noninteractive suite passes
 and are not passes. See the [install receipt](../research/nr/post-sr/present-guard-trial-install.json).
 Start with the usual MO2 SKSE entry and run the
 [End-menu Apply checklist](../research/nr/post-sr/END_APPLY_CHECK.md).
-This actual-game gate is pending; Task6 remains partial, **5 of 8** complete.
+The End Apply gate is now accepted within the native-size SDR scope above.
 
 The order is **DLAA or FSR Native AA -> one NR pass -> optional FG -> native UI**.
 Generated images inherit enhanced real sources. They receive no separate NR pass.
@@ -29,8 +57,9 @@ switches, resize, ReShade device ownership, actual FSR Native AA enhanced-source
 upload and combined FSR presentation/retirement. Local FSR gameplay checks pass.
 The actual production DLAA backend also passes NR source/tag readbacks at two
 native extents. Its Streamline API sink is scripted: it does not prove vendor FG
-output or native game UI composition. The first DLAA game run already observes
-NR and NVIDIA x2 output; the fuller NVIDIA gameplay/lifecycle check is next.
+output or native game UI composition. Later actual NVIDIA lifecycle probes
+qualify pending readers and controlled retirement separately; owner gameplay
+checks accept the listed local DLAA/FSR controls and image stability.
 Other NVIDIA families are NOT RUN; AMD NR unsupported. Scaled After and matched
 performance remain separate qualification gates.
 

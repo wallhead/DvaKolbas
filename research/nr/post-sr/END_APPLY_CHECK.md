@@ -1,4 +1,11 @@
-# Next Skyrim gate: actual End-menu Apply
+# Accepted Skyrim gate: actual End-menu Apply
+
+Final acceptance, 2026-10-05: the owner confirms camera colors and HUD stayed
+stable during the style test. Fifteen successful Apply actions and continued
+NR/NVIDIA x2 output close the actual-game control gate. Together with the
+separate pending-reader/retirement proofs, Task6 is complete: **6 of 8**.
+See the [completion receipt](task6-completion-20261005.json). The checkpoints
+below are historical; their pending statements are superseded.
 
 Style follow-up: two Style 1 -> 0 cycles and Styles 4/6 now reach effective
 settings, bringing session Apply actions to 15. NR and NVIDIA x2 continue

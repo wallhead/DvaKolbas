@@ -1,0 +1,350 @@
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard-nr-off
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-standard-nr-off
+        Start   1: BackendSelection
+  1/166 Test   #1: BackendSelection .................................   Passed    0.02 sec
+        Start   2: NrFsrRouteDiagnostics
+  2/166 Test   #2: NrFsrRouteDiagnostics ............................   Passed    0.01 sec
+        Start   3: SourceFrameEvaluation
+  3/166 Test   #3: SourceFrameEvaluation ............................   Passed    0.02 sec
+        Start   4: FsrRuntime
+  4/166 Test   #4: FsrRuntime .......................................   Passed    0.07 sec
+        Start   5: FsrGenerationRuntime
+  5/166 Test   #5: FsrGenerationRuntime .............................   Passed    0.05 sec
+        Start   6: FsrGenerationPolicy
+  6/166 Test   #6: FsrGenerationPolicy ..............................   Passed    0.02 sec
+        Start   7: FsrGenerationParameters
+  7/166 Test   #7: FsrGenerationParameters ..........................   Passed    0.23 sec
+        Start   8: FsrGenerationContext
+  8/166 Test   #8: FsrGenerationContext .............................   Passed    0.36 sec
+        Start   9: FsrGenerationTransport
+  9/166 Test   #9: FsrGenerationTransport ...........................   Passed    0.43 sec
+        Start  10: FsrGenerationColor
+ 10/166 Test  #10: FsrGenerationColor ...............................   Passed    0.04 sec
+        Start  11: FsrGenerationPresentation
+ 11/166 Test  #11: FsrGenerationPresentation ........................   Passed    0.42 sec
+        Start  12: FsrGenerationLifecycle
+ 12/166 Test  #12: FsrGenerationLifecycle ...........................   Passed    0.97 sec
+        Start  13: FsrGenerationHost
+ 13/166 Test  #13: FsrGenerationHost ................................   Passed    0.28 sec
+        Start  14: FsrGenerationHostOwner
+ 14/166 Test  #14: FsrGenerationHostOwner ...........................   Passed    0.57 sec
+        Start  15: FsrGenerationPackage
+ 15/166 Test  #15: FsrGenerationPackage .............................   Passed    6.22 sec
+        Start  16: FsrParameters
+ 16/166 Test  #16: FsrParameters ....................................   Passed    0.55 sec
+        Start  17: FsrStartup
+ 17/166 Test  #17: FsrStartup .......................................   Passed    0.28 sec
+        Start  18: FsrLifecycle
+ 18/166 Test  #18: FsrLifecycle .....................................   Passed    0.58 sec
+        Start  19: FsrHistory
+ 19/166 Test  #19: FsrHistory .......................................   Passed    0.02 sec
+        Start  20: FsrColorContract
+ 20/166 Test  #20: FsrColorContract .................................   Passed    0.24 sec
+        Start  21: FsrFrameIntegration
+ 21/166 Test  #21: FsrFrameIntegration ..............................   Passed    0.41 sec
+        Start  22: OrdinaryMacroEnvironment
+ 22/166 Test  #22: OrdinaryMacroEnvironment .........................   Passed    0.02 sec
+        Start  23: D3D11D3D12Interop
+ 23/166 Test  #23: D3D11D3D12Interop ................................   Passed    0.27 sec
+        Start  24: InteropRetirement
+ 24/166 Test  #24: InteropRetirement ................................   Passed    0.48 sec
+        Start  25: WeatherAppearance
+ 25/166 Test  #25: WeatherAppearance ................................   Passed    0.05 sec
+        Start  26: RCASParameters
+ 26/166 Test  #26: RCASParameters ...................................   Passed    0.06 sec
+        Start  27: PerformanceScopesCPU
+ 27/166 Test  #27: PerformanceScopesCPU .............................   Passed    0.02 sec
+        Start  28: PerformanceScopesWARP
+ 28/166 Test  #28: PerformanceScopesWARP ............................   Passed    0.55 sec
+        Start  29: PerformancePublicationWARP
+ 29/166 Test  #29: PerformancePublicationWARP .......................   Passed    0.27 sec
+        Start  30: OverlayHotkeys
+ 30/166 Test  #30: OverlayHotkeys ...................................   Passed    0.02 sec
+        Start  31: OverlayLayout
+ 31/166 Test  #31: OverlayLayout ....................................   Passed    0.02 sec
+        Start  32: OverlayTextInput
+ 32/166 Test  #32: OverlayTextInput .................................   Passed    0.02 sec
+        Start  33: OverlayNeuralTab
+ 33/166 Test  #33: OverlayNeuralTab .................................   Passed    0.02 sec
+        Start  34: OverlayFsrGenerationTab
+ 34/166 Test  #34: OverlayFsrGenerationTab ..........................   Passed    0.02 sec
+        Start  35: StartupPreferences
+ 35/166 Test  #35: StartupPreferences ...............................   Passed    0.02 sec
+        Start  36: RendererSettingsActions
+ 36/166 Test  #36: RendererSettingsActions ..........................   Passed    0.02 sec
+        Start  37: FsrSettings
+ 37/166 Test  #37: FsrSettings ......................................   Passed    0.02 sec
+        Start  38: RuntimeModuleDiagnostics
+ 38/166 Test  #38: RuntimeModuleDiagnostics .........................   Passed    0.02 sec
+        Start  39: GameFacingTargets
+ 39/166 Test  #39: GameFacingTargets ................................   Passed    0.02 sec
+        Start  40: NativeUICopyRoute
+ 40/166 Test  #40: NativeUICopyRoute ................................   Passed    0.02 sec
+        Start  41: D3D11ContextSlots
+ 41/166 Test  #41: D3D11ContextSlots ................................   Passed    0.01 sec
+        Start  42: SourceDLSSGSession
+ 42/166 Test  #42: SourceDLSSGSession ...............................   Passed    0.02 sec
+        Start  43: SourceDLSSGCamera
+ 43/166 Test  #43: SourceDLSSGCamera ................................   Passed    0.01 sec
+        Start  44: MenuRenderState
+ 44/166 Test  #44: MenuRenderState ..................................   Passed    0.01 sec
+        Start  45: DLSSQuality
+ 45/166 Test  #45: DLSSQuality ......................................   Passed    0.01 sec
+        Start  46: ReShadeUnresolvedOwnership
+ 46/166 Test  #46: ReShadeUnresolvedOwnership .......................   Passed    0.16 sec
+        Start  47: ReShadeAbsent
+ 47/166 Test  #47: ReShadeAbsent ....................................   Passed    0.17 sec
+        Start  48: ReShadePresentationRuntime
+ 48/166 Test  #48: ReShadePresentationRuntime .......................   Passed    9.99 sec
+        Start  49: SourceDLSSGInteropFence
+ 49/166 Test  #49: SourceDLSSGInteropFence ..........................   Passed    1.03 sec
+        Start  50: FinalFrameCapture
+ 50/166 Test  #50: FinalFrameCapture ................................   Passed    0.30 sec
+        Start  51: PluginPaths-a-first
+ 51/166 Test  #51: PluginPaths-a-first ..............................   Passed    0.02 sec
+        Start  52: PluginPaths-virtual-a-first
+ 52/166 Test  #52: PluginPaths-virtual-a-first ......................   Passed    0.02 sec
+        Start  53: PluginPaths-b-first
+ 53/166 Test  #53: PluginPaths-b-first ..............................   Passed    0.01 sec
+        Start  54: PluginPaths-virtual-b-first
+ 54/166 Test  #54: PluginPaths-virtual-b-first ......................   Passed    0.02 sec
+        Start  55: D3D11FrameCopy
+ 55/166 Test  #55: D3D11FrameCopy ...................................   Passed    0.03 sec
+        Start  56: NeuralRatioColor
+ 56/166 Test  #56: NeuralRatioColor .................................   Passed    0.14 sec
+        Start  57: CommunityShaderFrame
+ 57/166 Test  #57: CommunityShaderFrame .............................   Passed    0.03 sec
+        Start  58: LoadingFade
+ 58/166 Test  #58: LoadingFade ......................................   Passed    0.02 sec
+        Start  59: CommunityShaderHDR
+ 59/166 Test  #59: CommunityShaderHDR ...............................   Passed    0.08 sec
+        Start  60: HDROutput
+ 60/166 Test  #60: HDROutput ........................................   Passed    0.02 sec
+        Start  61: HDROutputPass
+ 61/166 Test  #61: HDROutputPass ....................................   Passed    0.09 sec
+        Start  62: D3D11EntryObserver
+ 62/166 Test  #62: D3D11EntryObserver ...............................   Passed    0.07 sec
+        Start  63: NeuralWorldContract
+ 63/166 Test  #63: NeuralWorldContract ..............................   Passed    0.02 sec
+        Start  64: SourceCameraSelection
+ 64/166 Test  #64: SourceCameraSelection ............................   Passed    0.02 sec
+        Start  65: SourceNvidiaFrameEvaluation
+ 65/166 Test  #65: SourceNvidiaFrameEvaluation ......................   Passed    4.05 sec
+        Start  66: HookSafety
+ 66/166 Test  #66: HookSafety .......................................   Passed    0.02 sec
+        Start  67: HookChains
+ 67/166 Test  #67: HookChains .......................................   Passed    0.02 sec
+        Start  68: RuntimeProfiles
+ 68/166 Test  #68: RuntimeProfiles ..................................   Passed    0.01 sec
+        Start  69: RuntimeLayout-1.5.97
+ 69/166 Test  #69: RuntimeLayout-1.5.97 .............................   Passed    0.02 sec
+        Start  70: RuntimeLayout-1.6.640
+ 70/166 Test  #70: RuntimeLayout-1.6.640 ............................   Passed    0.01 sec
+        Start  71: RuntimeLayout-1.6.1170
+ 71/166 Test  #71: RuntimeLayout-1.6.1170 ...........................   Passed    0.01 sec
+        Start  72: RuntimeLayout-1.7.104
+ 72/166 Test  #72: RuntimeLayout-1.7.104 ............................   Passed    0.01 sec
+        Start  73: FsrGenerationGpuSmoke
+ 73/166 Test  #73: FsrGenerationGpuSmoke ............................   Passed   29.64 sec
+        Start  74: FsrGpuSmoke
+ 74/166 Test  #74: FsrGpuSmoke ......................................   Passed    1.62 sec
+        Start  75: FsrNvidiaFreeStartup
+ 75/166 Test  #75: FsrNvidiaFreeStartup .............................   Passed    0.44 sec
+        Start  76: FsrPackage
+ 76/166 Test  #76: FsrPackage .......................................   Passed    3.58 sec
+        Start  77: AmpereRuntime-policies
+ 77/166 Test  #77: AmpereRuntime-policies ...........................   Passed    0.02 sec
+        Start  78: TuringRuntime-policies
+ 78/166 Test  #78: TuringRuntime-policies ...........................   Passed    0.00 sec
+        Start  79: AmpereRuntime-requirements
+ 79/166 Test  #79: AmpereRuntime-requirements .......................   Passed    0.00 sec
+        Start  80: TuringRuntime-requirements
+ 80/166 Test  #80: TuringRuntime-requirements .......................   Passed    0.00 sec
+        Start  81: AmpereRuntime-capabilities
+ 81/166 Test  #81: AmpereRuntime-capabilities .......................   Passed    0.00 sec
+        Start  82: TuringRuntime-capabilities
+ 82/166 Test  #82: TuringRuntime-capabilities .......................   Passed    0.00 sec
+        Start  83: AmpereRuntime-capabilities-reject-availability
+ 83/166 Test  #83: AmpereRuntime-capabilities-reject-availability ...   Passed    0.00 sec
+        Start  84: TuringRuntime-capabilities-reject-availability
+ 84/166 Test  #84: TuringRuntime-capabilities-reject-availability ...   Passed    0.00 sec
+        Start  85: AmpereRuntime-capabilities-reject-capacity
+ 85/166 Test  #85: AmpereRuntime-capabilities-reject-capacity .......   Passed    0.00 sec
+        Start  86: TuringRuntime-capabilities-reject-capacity
+ 86/166 Test  #86: TuringRuntime-capabilities-reject-capacity .......   Passed    0.00 sec
+        Start  87: AmpereRuntime-create-ready
+ 87/166 Test  #87: AmpereRuntime-create-ready .......................   Passed    0.00 sec
+        Start  88: TuringRuntime-create-ready
+ 88/166 Test  #88: TuringRuntime-create-ready .......................   Passed    0.00 sec
+        Start  89: AmpereRuntime-create-unprepared
+ 89/166 Test  #89: AmpereRuntime-create-unprepared ..................   Passed    0.00 sec
+        Start  90: TuringRuntime-create-unprepared
+ 90/166 Test  #90: TuringRuntime-create-unprepared ..................   Passed    0.00 sec
+        Start  91: AmpereRuntime-create-bridge-missing
+ 91/166 Test  #91: AmpereRuntime-create-bridge-missing ..............   Passed    0.00 sec
+        Start  92: TuringRuntime-create-bridge-missing
+ 92/166 Test  #92: TuringRuntime-create-bridge-missing ..............   Passed    0.00 sec
+        Start  93: AmpereRuntime-create-failed-owner
+ 93/166 Test  #93: AmpereRuntime-create-failed-owner ................   Passed    0.00 sec
+        Start  94: TuringRuntime-create-failed-owner
+ 94/166 Test  #94: TuringRuntime-create-failed-owner ................   Passed    0.00 sec
+        Start  95: AmpereRuntime-create-descriptor-changed
+ 95/166 Test  #95: AmpereRuntime-create-descriptor-changed ..........   Passed    0.00 sec
+        Start  96: TuringRuntime-create-descriptor-changed
+ 96/166 Test  #96: TuringRuntime-create-descriptor-changed ..........   Passed    0.00 sec
+        Start  97: AmpereRuntime-create-arch-changed
+ 97/166 Test  #97: AmpereRuntime-create-arch-changed ................   Passed    0.00 sec
+        Start  98: TuringRuntime-create-arch-changed
+ 98/166 Test  #98: TuringRuntime-create-arch-changed ................   Passed    0.00 sec
+        Start  99: AmpereRuntime-create-import-changed
+ 99/166 Test  #99: AmpereRuntime-create-import-changed ..............   Passed    0.00 sec
+        Start 100: TuringRuntime-create-import-changed
+100/166 Test #100: TuringRuntime-create-import-changed ..............   Passed    0.00 sec
+        Start 101: AmpereRuntime-resolvers
+101/166 Test #101: AmpereRuntime-resolvers ..........................   Passed    0.00 sec
+        Start 102: TuringRuntime-resolvers
+102/166 Test #102: TuringRuntime-resolvers ..........................   Passed    0.00 sec
+        Start 103: AmpereRuntime-startup-reentry
+103/166 Test #103: AmpereRuntime-startup-reentry ....................   Passed    0.00 sec
+        Start 104: TuringRuntime-startup-reentry
+104/166 Test #104: TuringRuntime-startup-reentry ....................   Passed    0.00 sec
+        Start 105: AmpereRuntime-repeated-create
+105/166 Test #105: AmpereRuntime-repeated-create ....................   Passed    0.00 sec
+        Start 106: TuringRuntime-repeated-create
+106/166 Test #106: TuringRuntime-repeated-create ....................   Passed    0.00 sec
+        Start 107: AmpereRuntime-false-success
+107/166 Test #107: AmpereRuntime-false-success ......................   Passed    0.00 sec
+        Start 108: TuringRuntime-false-success
+108/166 Test #108: TuringRuntime-false-success ......................   Passed    0.00 sec
+        Start 109: TuringRuntime-module-success
+109/166 Test #109: TuringRuntime-module-success .....................   Passed    0.00 sec
+        Start 110: TuringRuntime-module-failure
+110/166 Test #110: TuringRuntime-module-failure .....................   Passed    0.00 sec
+        Start 111: TuringRuntime-module-null-success
+111/166 Test #111: TuringRuntime-module-null-success ................   Passed    0.00 sec
+        Start 112: TuringRuntime-module-elf-failure
+112/166 Test #112: TuringRuntime-module-elf-failure .................   Passed    0.00 sec
+        Start 113: TuringRuntime-module-fatbin-failure
+113/166 Test #113: TuringRuntime-module-fatbin-failure ..............   Passed    0.00 sec
+        Start 114: TuringRuntime-create-network-changed
+114/166 Test #114: TuringRuntime-create-network-changed .............   Passed    0.00 sec
+        Start 115: TuringPlanner
+115/166 Test #115: TuringPlanner ....................................   Passed    0.12 sec
+        Start 116: AmpereLoader-AliasSetup
+116/166 Test #116: AmpereLoader-AliasSetup ..........................   Passed    0.44 sec
+        Start 117: AmpereLoader-direct
+117/166 Test #117: AmpereLoader-direct ..............................   Passed    0.02 sec
+        Start 118: AmpereLoader-alias
+118/166 Test #118: AmpereLoader-alias ...............................   Passed    0.01 sec
+        Start 119: AmpereLoader-foreign
+119/166 Test #119: AmpereLoader-foreign .............................   Passed    0.01 sec
+        Start 120: AmpereLoader-missing
+120/166 Test #120: AmpereLoader-missing .............................   Passed    0.01 sec
+        Start 121: AmpereLoader-invalid-image
+121/166 Test #121: AmpereLoader-invalid-image .......................   Passed    0.01 sec
+        Start 122: AmpereLoader-query-failed
+122/166 Test #122: AmpereLoader-query-failed ........................   Passed    0.00 sec
+        Start 123: AmpereLoader-query-truncated
+123/166 Test #123: AmpereLoader-query-truncated .....................   Passed    0.01 sec
+        Start 124: AmpereLoader-already-owned
+124/166 Test #124: AmpereLoader-already-owned .......................   Passed    0.01 sec
+        Start 125: AmpereLoader-relative
+125/166 Test #125: AmpereLoader-relative ............................   Passed    0.00 sec
+        Start 126: AmpereLoader-cs-peer-first
+126/166 Test #126: AmpereLoader-cs-peer-first .......................   Passed    0.01 sec
+        Start 127: AmpereLoader-cs-trp-first
+127/166 Test #127: AmpereLoader-cs-trp-first ........................   Passed    0.01 sec
+        Start 128: AmpereLoader-cs-owned
+128/166 Test #128: AmpereLoader-cs-owned ............................   Passed    0.01 sec
+        Start 129: AmpereLoader-cs-owned-alias
+129/166 Test #129: AmpereLoader-cs-owned-alias ......................   Passed    0.01 sec
+        Start 130: AmpereLoader-cs-missing
+130/166 Test #130: AmpereLoader-cs-missing ..........................   Passed    0.01 sec
+        Start 131: AmpereLoader-cs-mismatch
+131/166 Test #131: AmpereLoader-cs-mismatch .........................   Passed    0.01 sec
+        Start 132: NeuralCombatPolicy
+132/166 Test #132: NeuralCombatPolicy ...............................   Passed    0.02 sec
+        Start 133: NeuralShaderBytecode
+133/166 Test #133: NeuralShaderBytecode .............................   Passed    0.46 sec
+        Start 134: NeuralPassSettings
+134/166 Test #134: NeuralPassSettings ...............................   Passed    0.02 sec
+        Start 135: NrPostFgProbeReport
+135/166 Test #135: NrPostFgProbeReport ..............................   Passed    0.02 sec
+        Start 136: NrSyntheticScene
+136/166 Test #136: NrSyntheticScene .................................   Passed    0.01 sec
+        Start 137: NrPairGuideReconstruction
+137/166 Test #137: NrPairGuideReconstruction ........................   Passed    0.01 sec
+        Start 138: RendererSettingsController
+138/166 Test #138: RendererSettingsController .......................   Passed    0.02 sec
+        Start 139: SourceUpscalerDeferred
+139/166 Test #139: SourceUpscalerDeferred ...........................   Passed    0.02 sec
+        Start 140: SourceUpscalerDeferredGpu
+140/166 Test #140: SourceUpscalerDeferredGpu ........................   Passed    0.68 sec
+        Start 141: GameSwapChainPresentBoundary
+141/166 Test #141: GameSwapChainPresentBoundary .....................   Passed    0.02 sec
+        Start 142: NrPerformanceComparison
+142/166 Test #142: NrPerformanceComparison ..........................   Passed    0.09 sec
+        Start 143: NrPresentMonComparison
+143/166 Test #143: NrPresentMonComparison ...........................   Passed    0.59 sec
+        Start 144: NrPerformanceMetrics
+144/166 Test #144: NrPerformanceMetrics .............................   Passed    0.02 sec
+        Start 145: NrRuntimeCatalog
+145/166 Test #145: NrRuntimeCatalog .................................   Passed    0.01 sec
+        Start 146: NrRuntimeFileLease
+146/166 Test #146: NrRuntimeFileLease ...............................   Passed    0.02 sec
+        Start 147: NrCallerIdentityShim-normal
+147/166 Test #147: NrCallerIdentityShim-normal ......................***Skipped   0.02 sec
+        Start 148: NrCallerIdentityShim-conflict
+148/166 Test #148: NrCallerIdentityShim-conflict ....................***Skipped   0.00 sec
+        Start 149: NrImagePacket
+149/166 Test #149: NrImagePacket ....................................   Passed    0.19 sec
+        Start 150: NrHistory
+150/166 Test #150: NrHistory ........................................   Passed    0.02 sec
+        Start 151: NrStartupSettings
+151/166 Test #151: NrStartupSettings ................................   Passed    0.01 sec
+        Start 152: NrSourcePolicy
+152/166 Test #152: NrSourcePolicy ...................................   Passed    0.01 sec
+        Start 153: NrTicketOwnership
+153/166 Test #153: NrTicketOwnership ................................   Passed    0.01 sec
+        Start 154: NrRuntimeParameters
+154/166 Test #154: NrRuntimeParameters ..............................   Passed    0.02 sec
+        Start 155: NrMotionDiagnostic
+155/166 Test #155: NrMotionDiagnostic ...............................   Passed    0.01 sec
+        Start 156: NrRuntimeProbeReport
+156/166 Test #156: NrRuntimeProbeReport .............................   Passed    0.01 sec
+        Start 157: NrRuntimeOwner-missing-export
+157/166 Test #157: NrRuntimeOwner-missing-export ....................   Passed    0.02 sec
+        Start 158: NrRuntimeOwner-normal
+158/166 Test #158: NrRuntimeOwner-normal ............................***Skipped   0.01 sec
+        Start 159: NrRuntimeOwner-foreign-device
+159/166 Test #159: NrRuntimeOwner-foreign-device ....................***Skipped   0.00 sec
+        Start 160: NrRuntimeOwner-resident-conflict
+160/166 Test #160: NrRuntimeOwner-resident-conflict .................***Skipped   0.00 sec
+        Start 161: NrRuntimeOwner-shutdown-failure
+161/166 Test #161: NrRuntimeOwner-shutdown-failure ..................***Skipped   0.01 sec
+        Start 162: NrRuntimeOwner-changed-shim
+162/166 Test #162: NrRuntimeOwner-changed-shim ......................***Skipped   0.01 sec
+        Start 163: NrPostSrContract
+163/166 Test #163: NrPostSrContract .................................   Passed    0.01 sec
+        Start 164: NrPostSrGuides
+164/166 Test #164: NrPostSrGuides ...................................   Passed    0.01 sec
+        Start 165: NrProbeLifetime
+165/166 Test #165: NrProbeLifetime ..................................   Passed    0.01 sec
+        Start 166: NrPostSrNativeGpu
+166/166 Test #166: NrPostSrNativeGpu ................................   Passed    0.14 sec
+
+100% tests passed, 0 tests failed out of 166
+
+Label Time Summary:
+GPU    =   1.03 sec*proc (8 tests)
+
+Total Test time (real) =  68.90 sec
+
+The following tests did not run:
+	147 - NrCallerIdentityShim-normal (Skipped)
+	148 - NrCallerIdentityShim-conflict (Skipped)
+	158 - NrRuntimeOwner-normal (Skipped)
+	159 - NrRuntimeOwner-foreign-device (Skipped)
+	160 - NrRuntimeOwner-resident-conflict (Skipped)
+	161 - NrRuntimeOwner-shutdown-failure (Skipped)
+	162 - NrRuntimeOwner-changed-shim (Skipped)
