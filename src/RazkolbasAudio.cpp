@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <fstream>
 #include <memory>
 #include <vector>
@@ -13,7 +14,8 @@
 
 namespace TheosRenderPipeline {
 AudioPlayer::AudioPlayer(std::filesystem::path track, double volume)
-    : track_(std::move(track)), volume_(std::clamp(volume, 0.0, 1.0)) {}
+    : track_(std::move(track)),
+      volume_(std::isfinite(volume) ? std::clamp(volume, 0.0, 1.0) : 0.3) {}
 
 AudioPlayer::~AudioPlayer() {
   {
@@ -27,9 +29,21 @@ AudioPlayer::~AudioPlayer() {
 void AudioPlayer::Play() noexcept { Submit(true); }
 void AudioPlayer::Stop() noexcept { Submit(false); }
 
+void AudioPlayer::SetVolume(double volume) {
+  std::scoped_lock lock(mutex_);
+  const auto value = std::isfinite(volume) ? std::clamp(volume, 0.0, 1.0) : 0.3;
+  if (volume_ == value)
+    return;
+  volume_ = value;
+  ++volumeRequest_;
+  condition_.notify_one();
+}
+
 AudioSnapshot AudioPlayer::Snapshot() const {
   std::scoped_lock lock(mutex_);
-  return status_;
+  auto value = status_;
+  value.volume = volume_;
+  return value;
 }
 
 void AudioPlayer::Submit(bool play) noexcept {
@@ -99,13 +113,17 @@ void AudioPlayer::Run(std::stop_token stop) noexcept {
     events.reset();
   };
   std::uint64_t handled{};
+  std::uint64_t handledVolume{};
   while (!stop.stop_requested()) {
     bool play{};
     std::uint64_t request{};
+    double volume{};
+    bool volumeChanged{};
     {
       std::unique_lock lock(mutex_);
       const auto ready = [&] {
-        return stop.stop_requested() || request_ != handled;
+        return stop.stop_requested() || request_ != handled ||
+               volumeRequest_ != handledVolume;
       };
       if (player)
         condition_.wait_for(lock, std::chrono::milliseconds(50), ready);
@@ -115,6 +133,9 @@ void AudioPlayer::Run(std::stop_token stop) noexcept {
         break;
       request = request_;
       play = play_;
+      volume = volume_;
+      volumeChanged = handledVolume != volumeRequest_;
+      handledVolume = volumeRequest_;
     }
     try {
       if (request != handled) {
@@ -164,7 +185,7 @@ void AudioPlayer::Run(std::stop_token stop) noexcept {
               signals->ended = true;
             });
         player.AutoPlay(false);
-        player.Volume(volume_);
+        player.Volume(volume);
         player.Source(source);
         bool superseded{};
         {
@@ -178,6 +199,9 @@ void AudioPlayer::Run(std::stop_token stop) noexcept {
         player.Play();
       }
       if (player && events) {
+        // Gain changes stay on the media worker and never restart the track.
+        if (volumeChanged)
+          player.Volume(volume);
         if (const auto error = events->error.load(); error < 0) {
           close();
           Publish(handled, {AudioState::Error, error});

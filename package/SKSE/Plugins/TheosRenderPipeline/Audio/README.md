@@ -1,6 +1,8 @@
 The optional `razkolbas` tab plays `razkolbas.mp3` only when Play is clicked.
 Stop resets playback. Closing the End menu also stops and resets the track.
 Selecting another tab while the menu stays open leaves playback running.
+Volume defaults to 30% and the slider changes it live. The chosen volume is
+retained for this game session; a new launch starts at 30%.
 
 The recording was supplied by the project owner as
 `mc-vspyskin-nikiforovna-kolbasnyi-cex-hitmonet_gaPKiMbz.mp3` and copied unchanged.

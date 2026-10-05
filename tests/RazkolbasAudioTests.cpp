@@ -25,6 +25,10 @@ bool Wait(AudioPlayer &player, AudioState state,
 int main(int argc, char **argv) {
   try {
     Require(argc == 2, "supply the packaged MP3");
+    AudioPlayer defaults{std::filesystem::path(argv[1])};
+    Require(defaults.Snapshot().volume == 0.3 &&
+                defaults.Snapshot().state == AudioState::Stopped,
+            "default gain is 30 percent without starting playback");
     AudioPlayer missing(
         std::filesystem::path(argv[1]).parent_path() / "absent.mp3", 0);
     Require(missing.Snapshot().state == AudioState::Stopped, "never autoplay");
@@ -69,6 +73,15 @@ int main(int argc, char **argv) {
     player.Play();
     Require(Wait(player, AudioState::Playing),
             "actual MP3 must decode and play");
+    // Exercise live gain updates below audibility without changing system
+    // volume.
+    player.SetVolume(1e-9);
+    Require(player.Snapshot().state == AudioState::Playing,
+            "gain update must not restart the track");
+    std::this_thread::sleep_for(100ms);
+    Require(player.Snapshot().state == AudioState::Playing,
+            "worker applies live gain without losing playback");
+    player.SetVolume(0);
     player.Stop();
     Require(Wait(player, AudioState::Stopped),
             "Stop must stop and reset playback");

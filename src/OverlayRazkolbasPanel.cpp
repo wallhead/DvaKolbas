@@ -12,9 +12,9 @@ void OverlayUI::DrawRazkolbasPanel() {
     // loader lock. A standalone owner's destructor still stops/joins.
     if (!razkolbasPlayer)
       razkolbasPlayer = new TheosRenderPipeline::AudioPlayer(
-          TheosRenderPipeline::PluginPaths::Directory() / L"TheosRenderPipeline" /
-          L"Audio" / L"razkolbas.mp3");
-    auto* player = razkolbasPlayer;
+          TheosRenderPipeline::PluginPaths::Directory() /
+          L"TheosRenderPipeline" / L"Audio" / L"razkolbas.mp3");
+    auto *player = razkolbasPlayer;
     ImGui::TextWrapped("MC Vspishkin & Nikiforovna - Kolbasny tsekh");
     ImGui::Spacing();
     if (ImGui::Button("Play", ImVec2(90, 0)))
@@ -23,6 +23,12 @@ void OverlayUI::DrawRazkolbasPanel() {
     if (ImGui::Button("Stop", ImVec2(90, 0)))
       player->Stop();
     const auto status = player->Snapshot();
+    float volume = static_cast<float>(status.volume * 100.0);
+    ImGui::SetNextItemWidth(-ImGui::CalcTextSize("Volume").x -
+                            ImGui::GetStyle().ItemInnerSpacing.x);
+    if (ImGui::SliderFloat("Volume", &volume, 0, 100, "%.0f%%",
+                           ImGuiSliderFlags_AlwaysClamp))
+      player->SetVolume(volume / 100.0);
     using TheosRenderPipeline::AudioState;
     switch (status.state) {
     case AudioState::Stopped:

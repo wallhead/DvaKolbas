@@ -6,6 +6,8 @@ There is no autoplay. Play starts at the beginning; Stop resets playback.
 Closing the End menu stops and resets playback. Selecting another tab while
 the menu stays open leaves playback running. Reopening the menu stays silent
 until Play is clicked again.
+Volume defaults to 30%. The 0-100% slider updates gain on the audio worker
+without restarting the track. Changes last for the current game session.
 The existing frame graph and renderer controls are retained.
 
 The MP3 is packaged as
