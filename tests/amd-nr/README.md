@@ -94,7 +94,8 @@ Geometry uses checked 64-bit arithmetic before narrowing to positive signed
 The Windows debug layer is unavailable on this host, so GPU resource/state
 validation remains outstanding. Numerical-format success does not establish
 model output correctness, accumulation accuracy, quality, speed, or AMD
-compatibility. All internal views for 153 records and all operations for 71
+compatibility. The C512 codec below supplies canonical storage views for 32
+projection records. Remaining internal views and all operations for 71
 blocks still need recovery and validation, including FP8 encode policy,
 window/skip layouts, noise, input color/exposure, history, and output codecs.
 Only after those contracts have evidence can a precise network implementation
@@ -116,3 +117,28 @@ against an independent forward load oracle, with four address-bit patterns,
 a non-symmetric channel permutation, all FP8 codes, special FP16 payloads,
 exact-length rejection and ownership after input/previous owner destruction.
 The recovered contract is in [the projection report](../../docs/amd-nr-c512-projection.md).
+
+`ReadKnownC512Projection` accepts only the exact known archive identity and
+blocks 23–30 or 40–47, layers 1 or 3. Record selection uses exact names, with
+checked archive spans. An unknown archive with a correct-looking record name
+and length is rejected. CTest `AmdNrC512ProjectionArchive` and `AmdNrInspector`
+cover these selection, identity and argument-validation boundaries.
+
+```powershell
+& out/amd-nr-foundations/Release/TRPAmdNrInspect.exe `
+  --weights local/amd-nr-re/input/dlssnr_on_amd_weights.bin `
+  --width 1920 --height 1080 --projection-block 23 --projection-layer 1
+```
+
+On 2026-10-05 all 32 known selections returned the exact record name,
+`projection_basis=native-fragment`, `projection_matrix_codes=262144`,
+`projection_residual_halves=512`, and the known SHA-256
+`6bf8dc931ef3ccffe18c82de26ab374156e7f19539ffcf8eabaa25dca5cf15ab`.
+They retain `KnownArchiveIncompleteSchema` and `inference=unavailable`.
+This private-input manual check prints metadata only; trained parameters are
+not embedded in the repository or public test fixtures.
+
+The expanded standalone suite has 13 tests: 12 passed and `AmdNrGpuFormats`
+was skipped because the Windows debug layer is unavailable. Storage indexing
+success does not establish WMMA dot accuracy, spatial channel conventions,
+residual application, FP8 output encoding or a complete C512 block.
