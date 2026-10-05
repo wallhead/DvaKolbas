@@ -1,4 +1,9 @@
-# Theo's Render Pipeline
+# RaZkolbaS
+
+Formerly DvaKolbas; based on [Theo's Render Pipeline](https://github.com/theosw/theosrenderpipeline).
+The menu and package use the RaZkolbaS name. Existing installations keep
+`TheosRenderPipeline.dll`, `TheosRenderPipeline.ini`, `TheosRenderPipeline.log`
+and the `TheosRenderPipeline/` resource directory for compatibility.
 
 NVIDIA rendering integration for Skyrim: DLSS/DLAA, frame generation, optional
 Neural Rendering (NR), and native-resolution menus and HUD. Current version:

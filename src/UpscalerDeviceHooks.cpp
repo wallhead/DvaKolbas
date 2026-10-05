@@ -165,7 +165,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIV
 {
     static TheosRenderPipeline::HookSafety::DeviceAdmission gameDevice;
     if (!gameDevice.Begin()) {
-        util::report_and_fail("Theo's Render Pipeline already owns a game-device creation request. A second or reentrant request cannot replace the active NVIDIA host. Restart Skyrim and check TheosRenderPipeline.log.");
+        util::report_and_fail("RaZkolbaS already owns a game-device creation request. A second or reentrant request cannot replace the active NVIDIA host. Restart Skyrim and check TheosRenderPipeline.log.");
     }
     logger::info("Calling original D3D11CreateDeviceAndSwapChain");
     TheosRenderPipeline::CommunityShaders::InstallEngineHooks();
@@ -174,11 +174,11 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIV
     // sessions that start with interpolation off. Install before device creation.
     if (!pSwapChainDesc || !ppSwapChain || !ppDevice || !ppImmediateContext)
     {
-        util::report_and_fail("Theo's Render Pipeline requires a game device and swapchain creation request.");
+        util::report_and_fail("RaZkolbaS requires a game device and swapchain creation request.");
     }
     if (!pSwapChainDesc->Windowed)
     {
-        util::report_and_fail("Theo's Render Pipeline requires windowed or borderless mode. Disable exclusive fullscreen and restart Skyrim.");
+        util::report_and_fail("RaZkolbaS requires windowed or borderless mode. Disable exclusive fullscreen and restart Skyrim.");
     }
     auto frameGen = SourceFrameGeneration::GetSingleton();
     frameGen->refreshRate = SourceFrameGeneration::GetRefreshRate(pSwapChainDesc->OutputWindow);
@@ -202,13 +202,13 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIV
             TheosRenderPipeline::InstallVTableHook(factory.Get(), 10, &hk_IDXGIFactory_CreateSwapChain, ptrFactoryCreateSwapChain);
             if (!ptrFactoryCreateSwapChain)
             {
-                util::report_and_fail("Theo's Render Pipeline could not install its required NVIDIA swapchain hook.");
+                util::report_and_fail("RaZkolbaS could not install its required NVIDIA swapchain hook.");
             }
             logger::info("[FrameGen] IDXGIFactory::CreateSwapChain detoured for proxying");
         }
         else
         {
-            util::report_and_fail("Theo's Render Pipeline could not obtain the DXGI factory required for NVIDIA presentation.");
+            util::report_and_fail("RaZkolbaS could not obtain the DXGI factory required for NVIDIA presentation.");
         }
     }
 
@@ -239,7 +239,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIV
     {
         // The completion boundary has cleared failed outputs. Show the actual
         // startup error once, instead of leaving the game to fail without context.
-        util::report_and_fail(std::format("Theo's Render Pipeline could not start rendering.\n\n{}\nHRESULT: 0x{:08X}\n\n"
+        util::report_and_fail(std::format("RaZkolbaS could not start rendering.\n\n{}\nHRESULT: 0x{:08X}\n\n"
                                           "See TheosRenderPipeline.log for details. Skyrim will close after this message.",
                                           nvidiaHost->Status(), (uint32_t)hr));
     }
@@ -277,7 +277,7 @@ void InstallUpscalerDeviceHooks(std::uintptr_t moduleBase)
         &hk_D3D11CreateDeviceAndSwapChain, ptrD3D11CreateDeviceAndSwapChain);
     if (!ptrD3D11CreateDeviceAndSwapChain)
     {
-        util::report_and_fail("Theo's Render Pipeline could not hook D3D11 device creation for its required NVIDIA host.");
+        util::report_and_fail("RaZkolbaS could not hook D3D11 device creation for its required NVIDIA host.");
     }
 }
 } // namespace TheosRenderPipeline

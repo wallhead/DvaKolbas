@@ -15,9 +15,10 @@ namespace Plugin
 		// clang-format on
 	};
 
-	inline constexpr auto NAME = "@PROJECT_NAME@"sv;
+	// Retained SKSE identity also controls log filenames and existing tooling.
+	inline constexpr auto NAME = "@TRP_PLUGIN_TARGET@"sv;
 	inline constexpr auto VERSION_STRING = "@PROJECT_VERSION@"sv;
-	inline constexpr auto DISPLAY_NAME = "Theo's Render Pipeline"sv;
+	inline constexpr auto DISPLAY_NAME = "@TRP_DISPLAY_NAME@"sv;
 	inline constexpr auto RELEASE_VERSION = "@ARP_RELEASE_LABEL@"sv;
 	inline constexpr auto EDITION = "@TRP_EDITION@"sv;
 	inline constexpr auto SOURCE_REVISION = "@TRP_SOURCE_REVISION@"sv;

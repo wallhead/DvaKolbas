@@ -171,10 +171,10 @@ extern "C" DLLEXPORT const SolFGLateOverlayAPI::BridgeV1* __cdecl SolFG_GetLateO
 extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
 	if (a_skse->IsEditor() || !TheosRenderPipeline::SkyrimRuntime::Find(a_skse->RuntimeVersion())) {
-		util::report_and_fail("Theo's Render Pipeline requires Steam Skyrim 1.5.97, 1.6.640, 1.6.1170 or 1.7.104.");
+		util::report_and_fail("RaZkolbaS requires Steam Skyrim 1.5.97, 1.6.640, 1.6.1170 or 1.7.104.");
 	}
 	InitializeLog();
-	logger::info("{} v{} loading", Plugin::NAME, Plugin::VERSION_STRING);
+	logger::info("{} v{} loading", Plugin::DISPLAY_NAME, Plugin::VERSION_STRING);
 	HMODULE renderer{};
 	::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
 		reinterpret_cast<LPCWSTR>(&InitializeLog), &renderer);
@@ -189,7 +189,7 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	CSimpleIniA baselineIni;
 	baselineIni.SetUnicode();
 	if (baselineIni.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") < 0) {
-		util::report_and_fail("Theo's Render Pipeline: SKSE/Plugins/TheosRenderPipeline.ini is missing or unreadable. Install the packaged TheosRenderPipeline.ini and restart Skyrim.");
+		util::report_and_fail("RaZkolbaS: SKSE/Plugins/TheosRenderPipeline.ini is missing or unreadable. Install the packaged TheosRenderPipeline.ini and restart Skyrim.");
 	}
 	// Provider validation runs at device creation, after identifying the actual
 	// renderer adapter and normalizing saved NVIDIA choices for AMD.
@@ -215,7 +215,7 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     SKSE::AllocTrampoline(1024);
 	// Select hook ownership at kPostLoad, after all SKSE plugins are loaded.
 
-	logger::info("{} loaded", Plugin::NAME);
+	logger::info("{} loaded", Plugin::DISPLAY_NAME);
 	return true;
 }
 

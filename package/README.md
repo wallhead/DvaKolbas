@@ -1,6 +1,6 @@
-# Theo's Render Pipeline — Universal, 0.3.5
+# RaZkolbaS — Universal, 0.3.5
 
-FSR SR development builds use a separate, validated FSR-only package and `[FSR]` settings; the default package below retains its NVIDIA selection. See [the FSR gameplay checklist](https://github.com/wallhead/DvaKolbas/blob/codex/fsr-sr/docs/FSR_TEST_CHECKLIST.md) and `THIRD_PARTY_FSR.md`. FSR frame generation is unavailable. Standalone GPU/plugin-load checks do not establish Skyrim acceptance. Do not install the staged test package over a running game or edit MO2 while it is open.
+FSR SR development builds use a separate, validated FSR-only package and `[FSR]` settings; the default package below retains its NVIDIA selection. See [the FSR gameplay checklist](https://github.com/wallhead/RaZkolbaS/blob/codex/fsr-sr/docs/FSR_TEST_CHECKLIST.md) and `THIRD_PARTY_FSR.md`. FSR frame generation is unavailable. Standalone GPU/plugin-load checks do not establish Skyrim acceptance. Do not install the staged test package over a running game or edit MO2 while it is open.
 
 Version 0.3.5 enables DLSS-G UI recomposition by default to reduce HUD
 ghosting; toggle it live under Frame generation. GPU retirement waits now
@@ -35,7 +35,7 @@ Ultra Quality fix is retained. Universal includes the RTX 40 MFG unlock.
 
 DLSS/DLAA, frame generation, Neural Rendering and native-resolution UI for Skyrim.
 This package includes the full renderer, configuration and sharpening shader.
-It requires no other Theo's Render Pipeline package. NVIDIA DLLs are supplied
+It requires no other RaZkolbaS package. NVIDIA DLLs are supplied
 separately: download the SR/FG files below, and the NR runtime if you want NR.
 Alternatively, install Standard first and Universal after it in MO2; Standard
 0.3.5 supplies the runtime bundle (0.2.5 retains the same DLLs). The NR-enabled
@@ -50,7 +50,7 @@ skip the runtime downloads below.
 2. Download the **SDK ZIP** under **Assets** on the
    [NVIDIA Streamline 2.14.1 page](https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.1).
    Extract it and open its `bin/x64` folder.
-3. In MO2, right-click **Theo's Render Pipeline → Open in Explorer**.
+3. In MO2, right-click **RaZkolbaS → Open in Explorer**.
    Copy the seven DLLs into the existing folders shown below.
 
 | Files from `bin/x64` | Folder inside this mod |

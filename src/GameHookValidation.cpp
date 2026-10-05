@@ -32,7 +32,7 @@ namespace TheosRenderPipeline
                 logger::error("[Hooks] rejected {} RVA=0x{:X} bytes={} slot=0x{:X} target=0x{:X} owner={}",
                     name, site - base, readable ? observed : "unreadable", slot, target,
                     path[0] ? std::filesystem::path(path.data()).string() : "unknown/private memory");
-                util::report_and_fail(std::format("Theo's Render Pipeline: {} does not match the verified Skyrim {} hook contract (RVA 0x{:X}). "
+                util::report_and_fail(std::format("RaZkolbaS: {} does not match the verified Skyrim {} hook contract (RVA 0x{:X}). "
                     "No renderer game-code patches were installed. Check conflicting mods and see TheosRenderPipeline.log.",
                     name, profile->version.string(), site - base));
             }

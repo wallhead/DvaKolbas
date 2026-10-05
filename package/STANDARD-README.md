@@ -1,4 +1,4 @@
-# Theo's Render Pipeline — Standard, 0.3.5
+# RaZkolbaS — Standard, 0.3.5
 
 Version 0.3.5 enables DLSS-G UI recomposition by default to reduce HUD
 ghosting; toggle it live under Frame generation. GPU retirement waits now

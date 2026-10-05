@@ -35,7 +35,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 				"Set SourceDLSSGMFGUnlock=false in SKSE/Plugins/TheosRenderPipeline.ini to use the unmodified NVIDIA runtime.\n",
 				state_.temporalFailure, state_.attempts);
 		util::report_and_fail(std::format(
-			"Theo's Render Pipeline: MFG startup or patch verification failed.\n\n"
+			"RaZkolbaS: MFG startup or patch verification failed.\n\n"
 			"{}\n\n{}"
 			"See TheosRenderPipeline.log for details. Skyrim will close after this message.", reason, guidance));
 	}
@@ -68,7 +68,7 @@ namespace TheosRenderPipeline::SourceDLSSG
                 [](const char* reason) {
                     spdlog::critical("[SourceDLSSG Turing] {}", reason);
                     spdlog::default_logger()->flush();
-                    util::report_and_fail(std::format("Theo's Render Pipeline: RTX20 test stopped.\n\n{}\n\n"
+                    util::report_and_fail(std::format("RaZkolbaS: RTX20 test stopped.\n\n{}\n\n"
                         "Send TheosRenderPipeline.log to the developer. Skyrim will close after this message.",reason));
                 })) {
 				const auto snapshot = trp::ampere::Snapshot();

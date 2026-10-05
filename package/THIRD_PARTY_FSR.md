@@ -1,6 +1,6 @@
 # FSR SR test package notices
 
-Theo's Render Pipeline source and its inherited components retain the notices and modding exceptions in `LICENSE`. Corresponding source is available at [wallhead/DvaKolbas, codex/fsr-sr](https://github.com/wallhead/DvaKolbas/tree/codex/fsr-sr). This is a local development test package, whose manifest identifies the selected SR-only or FG route; gameplay acceptance is recorded separately.
+Theo's Render Pipeline source and its inherited components retain the notices and modding exceptions in `LICENSE`. Corresponding source is available at [wallhead/RaZkolbaS, codex/fsr-sr](https://github.com/wallhead/RaZkolbaS/tree/codex/fsr-sr). This is a local development test package, whose manifest identifies the selected SR-only or FG route; gameplay acceptance is recorded separately.
 
 The two dynamically loaded AMD x64 binaries are redistributed unchanged from FidelityFX SDK **v2.3.0**, source revision `60f4ea81909200d8542eca14dccb2628b763a9a3`. `AMD-FidelityFX-license.md` reproduces the complete SDK license, including the binary redistribution conditions, disclaimers, third-party notices and exceptions. The binary license forbids reverse engineering; integration uses the public C API and source documentation. The separate AIO research does not modify these AMD binaries.
 

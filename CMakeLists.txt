@@ -1,22 +1,26 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(
-	TheosRenderPipeline
+	RaZkolbaS
 	VERSION 0.3.5
 	LANGUAGES C CXX
 )
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
+# Preserve SKSE/plugin filenames and tooling while the public project is RaZkolbaS.
+set(TRP_PLUGIN_TARGET TheosRenderPipeline)
+set(TRP_DISPLAY_NAME "RaZkolbaS")
+
 add_compile_definitions(SKYRIM)
 
 # IPO variables initialize target properties at creation, including the plugin.
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
-add_library("${PROJECT_NAME}" SHARED)
+add_library("${TRP_PLUGIN_TARGET}" SHARED)
 include(cmake/ReleaseMetadata.cmake)
 
-target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_23)
+target_compile_features("${TRP_PLUGIN_TARGET}" PRIVATE cxx_std_23)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(BUILD_TESTS OFF)
@@ -48,7 +52,7 @@ target_include_directories(TRPRazkolbasAudio PUBLIC src)
 target_link_libraries(TRPRazkolbasAudio PRIVATE windowsapp)
 target_link_libraries(TheosRenderPipeline PRIVATE TRPRazkolbasAudio)
 include(cmake/BaselineSources.cmake)
-target_sources(${PROJECT_NAME} PRIVATE ${ARP_BASELINE_SOURCES})
+target_sources(${TRP_PLUGIN_TARGET} PRIVATE ${ARP_BASELINE_SOURCES})
 include(cmake/FSR.cmake)
 
 option(TRP_ENABLE_NEURAL_RENDERING "Include Neural Rendering integration and controls" ON)
@@ -110,13 +114,13 @@ configure_file(
 )
 
 target_sources(
-	"${PROJECT_NAME}"
+	"${TRP_PLUGIN_TARGET}"
 	PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}/cmake/Plugin.h
 	${CMAKE_CURRENT_BINARY_DIR}/cmake/Version.rc
 )
 
-target_precompile_headers("${PROJECT_NAME}" PRIVATE include/PCH.h)
+target_precompile_headers("${TRP_PLUGIN_TARGET}" PRIVATE include/PCH.h)
 
 # Keep the adapter's Windows macro environment independent of the renderer PCH.
 set_source_files_properties(compatibility/ImGuiCompat/ImGuiIntegration.cpp PROPERTIES
@@ -125,10 +129,10 @@ set_source_files_properties(compatibility/ImGuiCompat/ImGuiIntegration.cpp PROPE
 
 if(MSVC)
 	add_compile_definitions(_UNICODE)
-	target_compile_definitions(${PROJECT_NAME} PRIVATE "$<$<CONFIG:DEBUG>:DEBUG>")
+	target_compile_definitions(${TRP_PLUGIN_TARGET} PRIVATE "$<$<CONFIG:DEBUG>:DEBUG>")
 
-	arp_configure_plugin_target("${PROJECT_NAME}")
-	target_compile_options("${PROJECT_NAME}" PRIVATE /arch:AVX)
+	arp_configure_plugin_target("${TRP_PLUGIN_TARGET}")
+	target_compile_options("${TRP_PLUGIN_TARGET}" PRIVATE /arch:AVX)
 
 endif()
 
@@ -214,11 +218,11 @@ if(NOT EXISTS "${TRP_STREAMLINE_INCLUDE_DIR}/sl_core_api.h")
 	message(FATAL_ERROR "Set TRP_STREAMLINE_INCLUDE_DIR to the Streamline 2.11.1 include directory")
 endif()
 
-target_include_directories(${PROJECT_NAME} PRIVATE "${TRP_STREAMLINE_INCLUDE_DIR}")
+target_include_directories(${TRP_PLUGIN_TARGET} PRIVATE "${TRP_STREAMLINE_INCLUDE_DIR}")
 find_path(TRP_SIMPLEINI_INCLUDE_DIR SimpleIni.h REQUIRED)
 
 target_include_directories(
-	${PROJECT_NAME}
+	${TRP_PLUGIN_TARGET}
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include
 	PRIVATE
@@ -229,7 +233,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-	${PROJECT_NAME}
+	${TRP_PLUGIN_TARGET}
 	PUBLIC
 	CommonLibSSE::CommonLibSSE
 	PRIVATE

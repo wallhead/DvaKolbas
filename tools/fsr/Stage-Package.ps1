@@ -34,7 +34,7 @@ foreach($pair in @(@('LICENSE','LICENSE'),@('package/THIRD_PARTY_FSR.md','THIRD_
 $description=if($FrameGeneration){'This package enables analytical FSR Super Resolution and AMD frame generation on presenter backend 2. One generated frame is requested per eligible temporal source. Native UI is dedicated; menus, loading, slow sources and FG off retain real frames. Neural Rendering, HDR and dynamic resolution are unavailable. Changing presenter needs restart; FG on/off is live. Automatic-compositor appearance and physical cadence require controlled visible acceptance before a Skyrim trial.'}else{'This package enables FSR Super Resolution with ordinary presentation. Frame generation, Neural Rendering, HDR and dynamic resolution are unavailable in this configuration.'}
 $moduleCount=if($FrameGeneration){'three'}else{'two'}
 @"
-# Theo's Render Pipeline — $Edition FSR $kind test build
+# RaZkolbaS — $Edition FSR $kind test build
 
 $description
 
@@ -44,7 +44,7 @@ Install as a separate mod only after authorization, with Skyrim and MO2 closed. 
 
 See [FSR_TEST_CHECKLIST.md](FSR_TEST_CHECKLIST.md) for launch and image/lifecycle checks, and [THIRD_PARTY_FSR.md](THIRD_PARTY_FSR.md) for binary/license identities. manifest.json records every file hash. The $moduleCount AMD runtimes are in SKSE/Plugins/FSR. No NVIDIA runtime DLL is included or required by the FSR route; Microsoft C++ runtime and a compatible D3D11.4/D3D12/SM6 graphics driver are required.
 
-Corresponding source: https://github.com/wallhead/DvaKolbas/tree/codex/fsr-sr
+Corresponding source: https://github.com/wallhead/RaZkolbaS/tree/codex/fsr-sr
 "@ | Set-Content -LiteralPath (Join-Path $destination 'README.md') -Encoding utf8
 Copy-Item -LiteralPath (Join-Path $sdkRoot 'Kits/FidelityFX/docs/license.md') -Destination (Join-Path $destination 'AMD-FidelityFX-license.md')
 $files=@(Get-ChildItem -LiteralPath $destination -Recurse -File | Sort-Object FullName | ForEach-Object {[ordered]@{path=[IO.Path]::GetRelativePath($destination,$_.FullName).Replace('\','/');bytes=$_.Length;sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}})

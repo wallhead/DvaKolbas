@@ -216,7 +216,7 @@ namespace TheosRenderPipeline::CommunityShaders
     void SelectRenderer()
     {
         active = GetModuleHandleW(L"CommunityShaders.dll") != nullptr;
-        logger::info("[Renderer] world/upscaling owner={}", active ? "Community Shaders" : "Theo's Render Pipeline");
+        logger::info("[Renderer] world/upscaling owner={}", active ? "Community Shaders" : "RaZkolbaS");
     }
     void InstallEngineHooks()
     {

@@ -17,11 +17,11 @@ BEGIN
 	BEGIN
 		BLOCK "040904b0"
 		BEGIN
-			VALUE "FileDescription", "Theo's Render Pipeline"
+			VALUE "FileDescription", "@TRP_DISPLAY_NAME@"
 			VALUE "FileVersion", "@ARP_RELEASE_VERSION@.0"
-			VALUE "InternalName", "@PROJECT_NAME@"
+			VALUE "InternalName", "@TRP_PLUGIN_TARGET@"
 			VALUE "LegalCopyright", "GPL-3.0 with modding exceptions"
-			VALUE "ProductName", "Theo's Render Pipeline"
+			VALUE "ProductName", "@TRP_DISPLAY_NAME@"
 			VALUE "ProductVersion", "@ARP_RELEASE_LABEL@"
 		END
 	END
