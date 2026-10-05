@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8,
+  "ownerInstruction": "we dont need performance comparison",
+  "matchedAio19Comparison": "ExcludedByOwner_NotPassed",
+  "comparisonSettingsApplied": false,
+  "comparisonHelperModified": false,
+  "comparisonLaunched": false,
+  "laterClosedReply": "Operational closure only; cancellation remains in force",
+  "protectedFiles": [
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "sha256": "dfa5943c416035fbd3078048922e165e27abf7efab7163639323e6fb3c98633f",
+      "matchesBeforeComparisonPreparation": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "sha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+      "matchesBeforeComparisonPreparation": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\ModOrganizer.ini",
+      "sha256": "952f146a66876da70a29adf8646fae74ad85f8aa572454e7dc065369919f9326",
+      "matchesBeforeComparisonPreparation": false
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\modlist.txt",
+      "sha256": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2",
+      "matchesBeforeComparisonPreparation": true
+    }
+  ],
+  "remainingManualRecords": [
+    "DLAA/NR After/NVIDIA FG: inventory/map/dialogue and minimize/restore",
+    "FSR Native AA/NR After/FSR FG: fast travel"
+  ],
+  "noParityClaim": true
+}

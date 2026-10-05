@@ -1,6 +1,17 @@
 # Native AA post-upscale NR trial
 
-Latest qualification, 2026-10-05: **7 of 8 milestones complete**. Clean Standard
+Final functional acceptance, 2026-10-05: **8 of 8 milestones complete for the
+tested native SDR setup**. The owner confirms NVIDIA inventory/map/dialogue
+and minimize/restore, plus FSR Native AA After fast travel, completing the
+previously accepted provider controls, color/HUD and lifecycle checks. NVIDIA
+ETW display updates measure 46.52 Hz FG off -> 88.96 Hz on (1.912x), with sampled
+NR active and no logged errors in the captured windows. See the
+[final acceptance](../research/nr/post-sr/task8-functional-acceptance-20261005.json).
+AIO19 performance comparison is excluded by owner, not passed. No parity claim.
+Other GPUs, HDR/scaled After and optical scanout remain unqualified; AMD NR
+remains unsupported. Existing working trial settings are retained.
+
+Matrix qualification, 2026-10-05: clean Standard
 NR-on/off Release builds identify source `b8028445dc89` and the expected
 capabilities. NR-on passes 215 checks; NR-off passes 159 in CTest plus seven
 initially skipped runtime checks rerun successfully with pinned arguments.
@@ -9,17 +20,20 @@ Three unavailable Graphics Tools prerequisites remain excluded. The separate
 the installed trial and MO2 files remain unchanged. The fresh whole-change
 review found no Critical/Important findings. See the
 [matrix receipt](../research/nr/post-sr/final-matrix-20261005.json).
-Task8 display timing and broader performance acceptance remain open.
+The staged package remains the exact validated Task7 artifact; later functional
+acceptance is recorded separately. Its product implementation matches the
+installed accepted DLL; their embedded source-revision markers differ.
 
-Next timing check uses the working installed trial. Start Skyrim through the
+Optional timing repeat uses the working installed trial. Start Skyrim through the
 usual MO2 SKSE entry and load a save; leave NR enabled with identical controls
 for both phases. Run `out/research/skyrim-presentation/Start-Skyrim-FG-Capture.cmd`
 as administrator (ETW needs elevation on this setup). Follow the FG Off and
 On prompts, close the overlay and keep the same scene foreground for 30 seconds
 each. Do not Save as default. Leave FG on and close Skyrim normally afterward.
-The helper changes no files or MO2 settings. Raw capture still requires
+The helper changes no files or MO2 settings. Any new raw capture requires
 swapchain/display-interval and game-log validation; phase labels are not proof
-of generated-frame cadence. Matched AIO performance remains a separate check.
+of generated-frame cadence. The existing NVIDIA capture is accepted within
+ETW display-update scope; no further AIO comparison is requested.
 
 Live-control acceptance, 2026-10-05: the owner confirms
 stable camera colors and HUD during live style changes. Fifteen successful End

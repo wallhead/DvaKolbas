@@ -70,6 +70,12 @@ deferred research rather than prerequisites for this source-stage design.
 
 ## Validation and rollout
 
+Owner direction, 2026-10-05: matched AIO19 performance comparison is excluded
+by “we dont need performance comparison”. Retain the measured source/display
+timing and standalone stage timings; make no AIO parity or performance-improvement
+claim. Functional acceptance, guide/color restrictions and lifecycle requirements
+remain required and are recorded separately.
+
 Runtime RED/GREEN tests cover stage order, off bypass, exactly one source pass,
 FG-off support, stale-guide rejection and history transitions. GPU readbacks must
 prove distinct SR/NR output and the enhanced FG source, exact alpha/native UI and

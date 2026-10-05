@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "qualification": "TASK8_COMPLETE_LOCAL_NATIVE_SDR_FUNCTIONAL_ACCEPTANCE",
+  "milestonesComplete": 8,
+  "milestonesTotal": 8,
+  "scope": "One live Before or After-upscaling NR source pass; native-size SDR After, DLAA and FSR Native AA with their qualified FG routes, local RTX4080SUPER V5.4 NO-LORE borderless trial",
+  "ownerFinalChecks": [
+    {
+      "route": "DLAA -> NR After -> NVIDIA FG",
+      "checks": [
+        "Inventory",
+        "Map",
+        "Dialogue",
+        "Minimize and restore"
+      ],
+      "answer": "All passed",
+      "evidence": "Fresh direct owner response to the scoped acceptance question"
+    },
+    {
+      "route": "FSR Native AA -> NR After -> FSR FG",
+      "checks": [
+        "Fast travel"
+      ],
+      "answer": "All passed",
+      "evidence": "Fresh direct owner response to the scoped acceptance question"
+    }
+  ],
+  "priorOwnerChecks": [
+    "NR/FG live off/on",
+    "Before/After source placement",
+    "End Apply tone/structure/style changes",
+    "Camera colors and HUD stable",
+    "Save/reload",
+    "Provider-specific accepted inventory/map/fast-travel/alt-tab/minimize steps"
+  ],
+  "proofFiles": {
+    "fsr-after-gameplay-checklist.json": {
+      "bytes": 2606,
+      "sha256": "f4be17bc9ef548e64bfabcc4b4773ee28734d326b1d4e6143dce1ef5c8efcb9b"
+    },
+    "nvidia-after-gameplay-checklist.json": {
+      "bytes": 1805,
+      "sha256": "148c648397cccb08a6673b6dc3921d9897f0f1ab20c639d03f5b4f0d34ea4247"
+    },
+    "task6-completion-20261005.json": {
+      "bytes": 3957,
+      "sha256": "f8390045d72497cf9f351ec17721ba365d583596c3f5d2e54aedd0687c9db7e0"
+    },
+    "final-matrix-20261005.json": {
+      "bytes": 9798,
+      "sha256": "09d79d5c3e065bb4c769515e3c33a80c20a084b494a83778c0a056eea1e7556a"
+    },
+    "whole-branch-review-20261005.json": {
+      "bytes": 1523,
+      "sha256": "e37804e855b5a8fe490b579def8f4886748b2bab237aa6dc999c8dd759b05686"
+    },
+    "skyrim-nvidia-timing-20261005.json": {
+      "bytes": 10644,
+      "sha256": "744957a32959a61b59c6d5797041699c58af2a72810a33ecb4641310ec25b43f"
+    },
+    "fsr-combined-presentation.json": {
+      "bytes": 3657,
+      "sha256": "6d384c4fe22256270b66d4c9df974a65f8f15674b4ae399223103508eac24c32"
+    },
+    "fsr-pending-lifecycle.json": {
+      "bytes": 7162,
+      "sha256": "1e341d6ab2c0ceda393d5fff1257364d56cab2d7dea016cfc6bf784c82981341"
+    },
+    "nvidia-vendor-lifecycle.json": {
+      "bytes": 11151,
+      "sha256": "0bc98190fca22627468f98aa8805142fa1b7fcaa9631b55782964adcabfdd1ad"
+    },
+    "present-failure-cleanup.json": {
+      "bytes": 5384,
+      "sha256": "416b99f7115c7a432f6e631eb03a297b921935afc8ec54bbc5937055fbb2dd1c"
+    }
+  },
+  "matrixReused": "Current tracked implementation unchanged; existing full suites were not needlessly rerun for documentation and owner-response updates. Matrix products/package/raw capture freshly rehashed.",
+  "installedBuild": "effbf2c9b0b0",
+  "finalMatrixBuild": "b8028445dc89",
+  "implementationEquivalent": true,
+  "lastMeasuredNvidiaDisplayUpdateHz": {
+    "off": 46.515906710212285,
+    "on": 88.95547547969683,
+    "ratio": 1.9123667960269426
+  },
+  "diagnostics": {
+    "LogFrameDiagnostics": false,
+    "LogPerformanceMetrics": false,
+    "LogMenuMetrics": false,
+    "EnableFrameTrace": false,
+    "status": "Read-only INI verification confirms normal logging already retained; no restoration write needed"
+  },
+  "package": {
+    "path": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\nr-final-b802844-20261005",
+    "manifest": "final-package-manifest-20261005.json",
+    "filesVerified": 25,
+    "note": "Exact validated Task7 package kept immutable; this later acceptance is a separate receipt"
+  },
+  "currentProtectedFiles": [
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.dll",
+      "sha256": "dfa5943c416035fbd3078048922e165e27abf7efab7163639323e6fb3c98633f",
+      "matchesTask7Snapshot": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial\\SKSE\\Plugins\\TheosRenderPipeline.ini",
+      "sha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+      "matchesTask7Snapshot": true
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\ModOrganizer.ini",
+      "sha256": "952f146a66876da70a29adf8646fae74ad85f8aa572454e7dc065369919f9326",
+      "matchesTask7Snapshot": false
+    },
+    {
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\profiles\\V5.4 NO-LORE\\modlist.txt",
+      "sha256": "7eead3cb73ac023d139070b7ec52a004acf833d65b745a9be34769c8bbc782c2",
+      "matchesTask7Snapshot": true
+    }
+  ],
+  "agentModifiedGameFiles": false,
+  "agentModifiedMo2Files": false,
+  "agentLaunchedGame": false,
+  "mo2IniObservation": "Hash differs between prior open-MO2 and current closed-MO2 snapshots. No agent write; no exact whole-file preservation claim for the owner app exit. Installed DLL, INI and profile modlist remain exact.",
+  "exclusions": {
+    "matchedAio19Performance": {
+      "status": "ExcludedByOwner_NotPassed",
+      "instruction": "we dont need performance comparison",
+      "settingsApplied": false,
+      "parityClaim": false
+    },
+    "graphicsTools": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ]
+  },
+  "limits": [
+    "Native-size SDR After only; reduced-resolution DLSS/FSR After remains rejected pending independent guide qualification; scaled Before remains supported",
+    "Actual local hardware qualification RTX4080SUPER; RTX20/30/50 models/catalog retained but their GPU output remains NOT RUN; AMD NR unsupported",
+    "Generated frames inherit enhanced real sources and receive no separate NR pass",
+    "ETW display updates are not optical scanout or input-to-photon latency proof; no individual generated FrameType/dropped-frame certification",
+    "Combined earlier owner reports, newer actual game captures and controlled standalone lifecycle proofs; not one exhaustive gameplay capture of every event or GPU fence",
+    "Uncertain retirement remains quarantined; arbitrary vendor teardown/focus races remain unqualified",
+    "Temporary-output cleanup remains blocked by automatic approval review; not a runtime acceptance failure"
+  ],
+  "completionBasis": "Fresh missing functional confirmations plus retained implementation/game/lifecycle/source/timing evidence; not completion solely from removal of the AIO comparison gate",
+  "branchDecision": "Preserve codex/nr worktree and push documented acceptance to the already-authorized wallhead repository; no merge or PR requested"
+}
