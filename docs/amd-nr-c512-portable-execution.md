@@ -87,3 +87,18 @@ Next gates: GPU pooling, WMMA-order comparison, remaining operator variants/full
 graph, temporal/noise/input contracts, renderer integration, performance/image
 quality and Radeon hardware. Model status remains `KnownArchiveIncompleteSchema`,
 `inference=unavailable`.
+
+## Native branch review
+
+The fresh whole-branch review of `246d152..92faa9a` found no Critical or Important
+issues. The reviewer independently ran all twenty standalone entries (18 passes,
+two missing-debug-layer skips), the physical RTX lifecycle tests and all five
+physical oracle fixtures, with zero mismatches. One new Minor remains deferred:
+the bytecode compiler's optional symbol validation accepts C++ keywords such as
+`class` and publishes an unusable header. Current CMake uses fixed valid names.
+The earlier historical encoder-status wording also remains deferred.
+
+The review covers source-owned foundations and declared portable execution. It
+does not re-establish private disassembly evidence, original WMMA/non-finite
+behavior, GPU pooling/other variants, full-network image quality, renderer/game
+integration, RDNA2/3/4 acceptance or production scheduling/performance.

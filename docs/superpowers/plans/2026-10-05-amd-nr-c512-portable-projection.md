@@ -65,7 +65,7 @@ Task 2 consumes Task 1 validation/types and produces `class C512ProjectionProbe`
 - [x] Share conversion helpers, compile both shaders with unchanged strict flags, implement projection payload/wrapper and private generic transport path. Keep four public format operations/limits and root parameter ABI unchanged. Validate all potentially allocating work before queue submission; separate input/output byte counts and work-item count.
 - [x] Build/run full standalone suite: expect all enabled tests passing, debug validation skipped explicitly if absent. Run independent CPU/WARP oracles and physical adapter oracle when available; no bit mismatches. No Radeon acceptance claim.
 - [x] Record actual counts, limits, dot-order distinction and test-only driver scope; commit Task 2.
-- [ ] Request fresh Native whole-branch review from branch merge-base. Address Critical/Important with red-green tests; ledger deferred Minors and every declined scope. Preserve local branch.
+- [x] Request fresh Native whole-branch review from branch merge-base. Address Critical/Important with red-green tests; ledger deferred Minors and every declined scope. Preserve local branch.
 
 ## Self-review
 
