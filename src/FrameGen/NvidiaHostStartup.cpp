@@ -168,7 +168,13 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     EndNativeUIPass();
     gameTargets_.ResetGameFacingAfterRetirement();
     nativeUIPass_.ResetEvaluation();
-    if (!FsrFgActive()) { ReleaseSourceUpscaler(); }
+    if (!FsrFgActive()) {
+        bool retainFsrDevice{};
+#if defined(TRP_ENABLE_FSR)
+        retainFsrDevice=fsrSizingRetainedForResize_;
+#endif
+        ReleaseSourceUpscaler(retainFsrDevice);
+    }
     sourceUpscalerInitializationPending_ = false;
     presentation_.ResetAfterRetirement();
     if (!a_swapChain || !device_ || !context_)
@@ -213,7 +219,9 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
         config.quality=sourceUpscalerSettings_.Startup().fsr.quality;config.providerPolicy=sourceUpscalerSettings_.Startup().fsr.providerPolicy;
         config.sharpness=sourceUpscalerSettings_.Startup().fsr.sharpness;
         const auto encoding=sourceUpscalerSettings_.Startup().fsr.sourceColorEncoding;
-        auto render=fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_},outputDesc.Format,encoding);
+        auto render=fsrSizingRetainedForResize_ ?
+            fsrResources_->ResizeSizingAfterRetirement({outputWidth_,outputHeight_},outputDesc.Format) :
+            fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_},outputDesc.Format,encoding);
         if(!render){status_=render.error().message;logger::error("[FSR] {}",status_);return false;}
         logger::info("[FSR startup] source/output format={} sourceColorEncoding={} SDR-only contract; installed producer calibration required",
             static_cast<unsigned>(outputDesc.Format),TheosRenderPipeline::Upscaling::ColorEncodingName(encoding));
@@ -323,6 +331,9 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
     logger::info("[NvidiaHost] source upscaler initialized after D3D11 startup Present");
 #if !defined(TRP_NO_NEURAL_RENDERING)
     InspectCommunityNeural();
+#endif
+#if defined(TRP_ENABLE_FSR)
+    fsrSizingRetainedForResize_=false;
 #endif
     return true;
 }

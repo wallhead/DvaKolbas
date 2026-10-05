@@ -31,6 +31,11 @@ int main()
     ini.SetLongValue("Experimental", "FrameGenerationBackend", 0);
     ini.SetBoolValue("Experimental", "SourceDLSSGBackend", false);
     Require(!validate(), "ordinary FSR needs no NVIDIA owner");
+    ini.Delete("FrameGeneration", "Enabled");
+    Require(!validate(), "missing interpolation preference defaults off for ordinary FSR");
+    ini.SetBoolValue("FrameGeneration", "Enabled", true);
+    Require(validate(), "explicit interpolation on remains invalid for ordinary FSR");
+    ini.SetBoolValue("FrameGeneration", "Enabled", false);
     Require(validate(false), "unfinished/disabled FSR cannot become active");
     ini.SetBoolValue("Experimental", "SourceDLSSGBackend", true);
     Require(!validate(), "unused NVIDIA selector cannot force FSR ownership");

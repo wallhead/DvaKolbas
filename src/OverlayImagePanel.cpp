@@ -186,13 +186,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             ImGui::SetNextItemWidth(-1);
             if (ImGui::Combo("##mode", &mode, modes, modeCount))
             {
-                settingsDraft.upscaleType = mode==2?FSR:mode==1?DLAA:DLSS;
-                settingsDraft.generationBackend = mode==2?0:1;
-                if(mode==2) {
-                    settingsDraft.generationEnabled=false;
-                    settingsDraft.sourceDLSSG.neuralEnabled=false;
-                    settingsDraft.sourceDLSSG.hdrOutput.enabled=false;
-                }
+                TheosRenderPipeline::SetRendererUpscaleMode(settingsDraft, mode==2?FSR:mode==1?DLAA:DLSS);
             }
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Render scale");
@@ -247,7 +241,9 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         }
         if(view.fsrActive || settingsDraft.upscaleType==FSR) {
             ImGui::TextWrapped("%s",view.fsrStatus.text.c_str());
-            DrawSettingsHelp("FSR (SR only) sets generation off, ordinary backend 0, NR off and HDR off. Save and restart to change mode, quality, provider or source color encoding. Sharpness applies after Present.");
+            DrawSettingsHelp("Choosing FSR first stages ordinary presentation with FG, NR, HDR and dynamic resolution off. "
+                             "Apply changes NR for this session; the current presenter keeps its live FG request until restart. "
+                             "Save and restart to change mode, quality, provider or source color encoding. Sharpness applies after Present.");
         }
         if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"Analytical (3.1.5)","Compatible (runtime selected)"};
@@ -258,6 +254,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             if(ImGui::Combo("Source color encoding##fsr",&encoding,encodings,4))settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);
             DrawSettingsHelp("Choose the actual Skyrim/ENB source encoding. Texture format does not determine it. Unknown prevents FSR startup; changing encoding requires Save and restart.");
             ImGui::SliderFloat("Sharpness##fsr",&settingsDraft.fsr.sharpness,0,1,"%.2f");
+            DrawSettingsHelp("FSR uses this sharpness value. DLSS/DLAA sharpening settings do not affect FSR.");
             ImGui::TextWrapped("Reactive and transparency masks are unavailable. Auto exposure is enabled. Camera jitter uses the selected provider.");
         } else {
         ImGui::Separator();

@@ -18,7 +18,7 @@ class SourceFrameGeneration
     }
     struct Settings
     {
-        bool enabled{true}; // Initial interpolation request; the NVIDIA host is always required.
+        bool enabled{true}; // Next-launch preference; the live presenter request can differ while a restart is staged.
         long generationBackend{1};
         bool sourceDLSSGMFGUnlock{true}; // Matches the packaged default; explicit false is preserved.
         bool sourceDLSSGMFGUnlockPresent{};
@@ -38,8 +38,8 @@ class SourceFrameGeneration
     {
         const TheosRenderPipeline::IniLayout::ReadView ini(source);
         settings.neuralStartup = settings.configuredNeuralStartup = TheosRenderPipeline::NeuralRendering::LoadStartupSettings(ini);
-        settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", true);
         settings.generationBackend = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
+        settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", settings.generationBackend != 0);
         RequestRuntimeInterpolation(settings.enabled);
         settings.sourceDLSSGMFGUnlockPresent = ini.GetValue("Experimental", "SourceDLSSGMFGUnlock", nullptr) != nullptr;
         settings.sourceDLSSGMFGUnlock = ini.GetBoolValue("Experimental", "SourceDLSSGMFGUnlock", true);
@@ -78,9 +78,9 @@ class SourceFrameGeneration
         ini.Delete("Experimental", "PureDarkHUDFixMethod");
     }
     static double GetRefreshRate(HWND window);
-    void RequestRuntimeInterpolation(bool enabled) { requested_.store(enabled, std::memory_order_release); }
+    void RequestRuntimeInterpolation(bool enabled) { settings.enabled=enabled; requested_.store(enabled, std::memory_order_release); }
     template<class Ini> void StoreInterpolationPreference(Ini& ini) const
-    { ini.SetBoolValue("FrameGeneration", "Enabled", RuntimeInterpolationRequested()); }
+    { ini.SetBoolValue("FrameGeneration", "Enabled", settings.enabled); }
     bool RuntimeInterpolationRequested() const { return requested_.load(std::memory_order_acquire); }
     double refreshRate{};
 

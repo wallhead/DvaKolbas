@@ -41,11 +41,17 @@ struct RuntimeOwner::State {
     HMODULE nr{},core{};
     CallerIdentityShim shim;
     std::atomic<Phase> phase{Phase::Unopened};
-    bool attempted{},initAttempted{};
+    bool attempted{},initAttempted{},initRejected{};
     uint32_t clients{};
     std::atomic_uint lastInit{},lastShutdown{};
     uint64_t shimRva{};
     std::string_view profileId;
+    Result<void> InitializeRuntime(){
+        initAttempted=true;
+        lastInit=exports.init(kDirectNrAppId,paths.dataDirectory.c_str(),device.Get(),kDirectNrApiVersion,nullptr);
+        if(lastInit!=1){initRejected=true;phase=Phase::Quarantined;return Fail(ErrorKind::Runtime,"NR Init_Ext rejected; partial runtime/device ownership retained",lastInit);}
+        phase=Phase::Ready;return {};
+    }
     ~State(){ if(nr)FreeLibrary(nr);if(core)FreeLibrary(core); }
 };
 RuntimeOwner::RuntimeOwner(RuntimeOwnerPaths paths):state_(std::make_unique<State>()){state_->paths=std::move(paths);}
@@ -88,19 +94,30 @@ Result<void> RuntimeOwner::Open(const RuntimeProfile& requested,ID3D12Device* de
     if(!s.nr)return Fail(ErrorKind::Io,"Cannot load NR profile",GetLastError());
     if(!Matches(s.nr,*s.runtimeLease))return Fail(ErrorKind::IdentityMismatch,"Loaded NR does not match held profile file");
     auto resolved=ResolveRuntimeExports(s.nr,s.core);if(!resolved)return std::unexpected(resolved.error());
-    s.exports=*resolved;auto& e=s.exports;
+    s.exports=*resolved;
     if(s.paths.callerIdentityShim){
         auto installed=s.shim.Install(s.nr,CallerModule(),*s.runtimeLease);
         if(!installed){if(s.shim.Active())s.phase=Phase::Quarantined;return installed;}
         s.shimRva=s.shim.SlotRva();
     }
-    s.device=device;s.profileId=profile->id;processProfile=profile->id;activeOwner=&s;s.initAttempted=true;
-    s.lastInit=e.init(kDirectNrAppId,s.paths.dataDirectory.c_str(),device,kDirectNrApiVersion,nullptr);
-    if(s.lastInit!=1){s.phase=Phase::Quarantined;return Fail(ErrorKind::Runtime,"NR Init_Ext rejected; partial runtime/device ownership retained",s.lastInit);}
-    s.phase=Phase::Ready;return {};
+    s.device=device;s.profileId=profile->id;processProfile=profile->id;activeOwner=&s;
+    return s.InitializeRuntime();
 }
 const RuntimeExports& RuntimeOwner::Exports() const {return state_->exports;}
 bool RuntimeOwner::Ready() const noexcept{return state_->phase==Phase::Ready;}
+RuntimeOpenDisposition RuntimeOwner::OpenDisposition() const noexcept{
+    const auto& s=*state_;if(s.phase==Phase::Ready)return RuntimeOpenDisposition::Ready;
+    if(s.phase==Phase::Quarantined)return s.initRejected?RuntimeOpenDisposition::InitializationQuarantined:RuntimeOpenDisposition::TerminalQuarantined;
+    return RuntimeOpenDisposition::Unavailable;
+}
+Result<void> RuntimeOwner::CheckInitializationFallbackSafety(){
+    std::scoped_lock lock(processMutex);auto& s=*state_;
+    if(s.phase!=Phase::Quarantined || !s.initRejected || s.clients || !s.device)
+        return Fail(ErrorKind::Retirement,"NR quarantine cannot admit initialization fallback");
+    const auto hr=s.device->GetDeviceRemovedReason();
+    if(FAILED(hr))return Fail(ErrorKind::Runtime,"NR initialization fallback device is removed",hr);
+    return s.shim.CheckOwnership();
+}
 std::string_view RuntimeOwner::ProfileId()const noexcept{return state_->profileId;}
 Result<void> RuntimeOwner::CheckClientDevice(ID3D12Device* device)const{
     std::scoped_lock lock(processMutex);const auto& s=*state_;

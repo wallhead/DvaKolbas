@@ -37,7 +37,37 @@ struct RendererSettingsDraft
     Appearance::Settings appearance;
     bool textureProviderConnected{false};
     TextureProviderBridge::Settings textureProviderSettings{};
+    // Menu-only memory: mode changes are reversible until Apply/Discard.
+    struct ModePreferences {
+        bool captured{}, generationEnabled{}, neuralEnabled{}, hdrEnabled{}, dynamicResolution{};
+        long generationBackend{};
+    } nvidiaMode, fsrMode;
 };
+
+inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
+{
+    if (mode == draft.upscaleType) return;
+    auto& previous = draft.upscaleType == FSR ? draft.fsrMode : draft.nvidiaMode;
+    previous = {true, draft.generationEnabled, draft.sourceDLSSG.neuralEnabled,
+                draft.sourceDLSSG.hdrOutput.enabled, draft.dynamicResolution, draft.generationBackend};
+    draft.upscaleType = mode;
+    const auto& next = mode == FSR ? draft.fsrMode : draft.nvidiaMode;
+    if (next.captured) {
+        draft.generationBackend = next.generationBackend;
+        draft.generationEnabled = next.generationEnabled;
+        draft.sourceDLSSG.neuralEnabled = next.neuralEnabled;
+        draft.sourceDLSSG.hdrOutput.enabled = next.hdrEnabled;
+        draft.dynamicResolution = next.dynamicResolution;
+    } else if (mode == FSR) {
+        draft.generationBackend = 0;
+        draft.generationEnabled = false;
+        draft.sourceDLSSG.neuralEnabled = false;
+        draft.sourceDLSSG.hdrOutput.enabled = false;
+        draft.dynamicResolution = false;
+    } else {
+        draft.generationBackend = 1;
+    }
+}
 
 inline int CountRendererSettingsChanges(const RendererSettingsDraft& draft, const RendererSettingsDraft& current)
 {
@@ -91,16 +121,23 @@ struct RendererSettingsCapabilities
 };
 
 template<class Generation>
-inline void SetLiveGenerationRequest(RendererSettingsDraft& draft, Generation& generation, bool enabled)
+inline void SetLiveGenerationRequest(RendererSettingsDraft& draft, Generation& generation, bool enabled, long actualBackend)
 {
-    draft.generationEnabled=enabled;
+    // A live checkbox addresses the current owner; an ordinary next-launch
+    // presenter must still retain a valid off preference.
+    draft.generationEnabled=enabled && draft.generationBackend!=0;
+    if(actualBackend==1 && draft.nvidiaMode.captured) draft.nvidiaMode.generationEnabled=enabled;
+    if(actualBackend==2 && draft.fsrMode.captured && draft.fsrMode.generationBackend==2)
+        draft.fsrMode.generationEnabled=enabled;
     generation.RequestRuntimeInterpolation(enabled);
+    if(generation.settings.generationBackend==0) generation.settings.enabled=false;
 }
 template<class Generation>
-inline void ApplyRendererGeneration(const RendererSettingsDraft& draft, Generation& generation)
+inline void ApplyRendererGeneration(const RendererSettingsDraft& draft, Generation& generation, long actualBackend)
 {
     generation.settings.generationBackend=draft.generationBackend;
-    generation.RequestRuntimeInterpolation(draft.generationEnabled);
+    generation.settings.enabled=draft.generationEnabled;
+    if(draft.generationBackend==actualBackend) generation.RequestRuntimeInterpolation(draft.generationEnabled);
 }
 
 inline bool CanEditNeuralEnabled(bool enabled, bool available) { return enabled || available; }

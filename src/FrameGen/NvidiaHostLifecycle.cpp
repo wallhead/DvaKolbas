@@ -15,6 +15,7 @@ struct NvidiaHost::LifecycleOperations
 {
     NvidiaHost& host;
     IDXGISwapChain* swapChain{};
+    bool resizing{};
     bool RebuildGameFacing() { return host.CreateGameFacingResources(swapChain); }
     bool RebuildUpscaler() { return host.CompleteStartupAfterDeviceCreation(); }
     void RequestHistoryReset() { host.resetNextEvaluation_ = true; }
@@ -37,8 +38,9 @@ struct NvidiaHost::LifecycleOperations
         if (FAILED(result)) { host.FailLifecycle(result, "FSR presentation retirement"); return false; }
 #if defined(TRP_ENABLE_FSR)
         if (host.fsrResources_) {
-            const auto retired = host.fsrResources_->Retire();
+            const auto retired = resizing ? host.fsrResources_->ReleaseSizedAfterRetirement() : host.fsrResources_->Retire();
             if (!retired) { host.status_ = retired.error().message; host.FailLifecycle(E_FAIL, "FSR resource retirement"); return false; }
+            if (resizing) { host.fsrSizingRetainedForResize_ = true; }
         }
 #endif
         return true;
@@ -50,7 +52,7 @@ struct NvidiaHost::LifecycleOperations
         host.context_->Flush();
     }
     void ReleaseGameFacing() { host.gameTargets_.ResetGameFacingAfterRetirement(); }
-    void ReleaseUpscaler() { host.ReleaseSourceUpscaler(); }
+    void ReleaseUpscaler() { host.ReleaseSourceUpscaler(resizing && host.FsrActive()); }
     void ReleasePresentation() { host.presentation_.ResetAfterRetirement(); }
     void UnpublishInput() { TheosRenderPipeline::NativeInput::Publish(0, 0); }
     void DetachFailedHost()
@@ -99,7 +101,7 @@ HRESULT NvidiaHost::BeforeResizeBuffers(IDXGISwapChain* a_swapChain)
     {
         return S_OK;
     }
-    LifecycleOperations operations{*this};
+    LifecycleOperations operations{*this, nullptr, true};
     if (!TheosRenderPipeline::SourceHostLifecycle::BeforeResize(operations)) { return DXGI_ERROR_WAS_STILL_DRAWING; }
     return FsrActive() && !FsrFgActive() ? ordinaryPresentation_.BeforeResize() : S_OK;
 }
@@ -135,6 +137,7 @@ void NvidiaHost::ResetSessionAfterRetirement()
 #endif
     fsrFrame_.reset();
     fsrResources_.reset();
+    fsrSizingRetainedForResize_=false;
     lastFsrTemporal_=false;
 #endif
     ordinaryPresentation_.ResetAfterRetirement();

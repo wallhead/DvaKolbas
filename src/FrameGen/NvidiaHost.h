@@ -191,6 +191,9 @@ class NvidiaHost
     std::shared_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;
     std::unique_ptr<TheosRenderPipeline::Upscaling::FsrFrameAdapter> fsrFrame_;
     bool lastFsrTemporal_{};
+    // Set only after ordinary resize has retired the sized resources. Keep it
+    // through reconstruction failures until complete startup or full teardown.
+    bool fsrSizingRetainedForResize_{};
     unsigned fsrTransitionLogs_{};
 #endif
 #if defined(TRP_ENABLE_FSR_FG)

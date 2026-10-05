@@ -32,8 +32,14 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 false;
 #endif
             bool requested=frameGen->RuntimeInterpolationRequested();
-            if(DrawFsrGenerationControls(built,nvidiaHost->FsrFgActive(),settingsDraft.generationBackend,requested)) {
-                TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,requested);
+            const auto previousBackend=settingsDraft.generationBackend;
+            const bool liveChanged=DrawFsrGenerationControls(built,nvidiaHost->FsrFgActive(),settingsDraft.generationBackend,requested);
+            if(settingsDraft.generationBackend!=previousBackend) {
+                // A presenter choice stages startup defaults; only the checkbox sends a live request.
+                settingsDraft.generationEnabled=settingsDraft.generationBackend==2 && requested;
+            }
+            if(liveChanged) {
+                TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,requested,nvidiaHost->FsrFgActive()?2:0);
             }
             if(showDeveloperControls)ImGui::TextWrapped("%s",nvidiaHost->Status().c_str());
             ImGui::EndTabItem();return;
@@ -109,7 +115,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         bool runtimeInterpolationRequested = frameGen->RuntimeInterpolationRequested();
         if (ImGui::Checkbox("Frame generation##runtime", &runtimeInterpolationRequested))
         {
-            TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,runtimeInterpolationRequested);
+            TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,runtimeInterpolationRequested,1);
         }
         DrawSettingsHelp("Takes effect immediately. Save as default to keep this choice for the next launch.");
         if (runtimeInterpolationRequested != nvidiaHost->FrameGenerationEnabled())

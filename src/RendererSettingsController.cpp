@@ -22,7 +22,7 @@ RendererSettingsDraft RendererSettingsController::Capture([[maybe_unused]] bool 
     settingsDraft.valid = true;
     settingsDraft.upscaleType = upscaler_.mUpscaleType;
     settingsDraft.fsr = upscaler_.mFsrSettings;
-    settingsDraft.generationEnabled = frameGen_.RuntimeInterpolationRequested();
+    settingsDraft.generationEnabled = frameGen_.settings.enabled;
     settingsDraft.generationBackend = frameGen_.settings.generationBackend;
     settingsDraft.dynamicResolution = upscaler_.mDynamicResolutionRequested;
     settingsDraft.qualityLevel = upscaler_.mQualityLevel;
@@ -123,7 +123,8 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     }
     upscaler_.mUpscaleType = settingsDraft.upscaleType;
     upscaler_.mFsrSettings = settingsDraft.fsr;
-    ApplyRendererGeneration(settingsDraft,frameGen_);
+    const long actualBackend=host_.FsrActive() ? (host_.FsrFgActive()?2:0) : 1;
+    ApplyRendererGeneration(settingsDraft,frameGen_,actualBackend);
     upscaler_.mQualityLevel = std::clamp(settingsDraft.qualityLevel, 0, 4);
     upscaler_.mDLSSPreset = settingsDraft.dlssPreset;
     upscaler_.mAutoExposure = settingsDraft.autoExposure;

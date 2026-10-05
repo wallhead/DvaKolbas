@@ -1,4 +1,5 @@
 #include "OverlayUI.h"
+#include "OverlayCommunityNeuralControls.h"
 #include "OverlayUIStyle.h"
 #include "OverlaySettingRows.h"
 #include "OverlayFrameView.h"
@@ -347,7 +348,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             DrawSettingsValue("Placement",view.neuralBeforeUpscaling?"Before upscaling and frame generation":"After upscaling, before frame generation");
             DrawSettingsValue("Model","Native SDR, one pass");
             ImGui::TextDisabled("After upscaling currently requires DLAA or FSR Native AA.");
-            ImGui::TextWrapped("RTX 50, RTX 40 and RTX 20/30 use separate runtime files. AMD NR is currently unsupported.");
+            ImGui::TextWrapped("RTX 40/50 share a runtime path; RTX 20/30 use a separate compatibility runtime. AMD NR is currently unsupported.");
             NextSettingsColumn(height);
             auto& p=settingsDraft.sourceDLSSG;
             ImGui::BeginDisabled(!TheosRenderPipeline::CanEditNeuralEnabled(p.neuralEnabled,host->CommunityNeuralAvailable()));
@@ -368,8 +369,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             ImGui::SliderFloat("Skin structure",&p.neuralTuning.skinStructureStrength,-1,2);
             ImGui::Checkbox("Automatic skin mask",&p.neuralTuning.useAutoSkinMask);
             ImGui::EndDisabled();
-            if (const auto error=TheosRenderPipeline::NeuralRendering::NativeBeforeUnavailable(p)) ImGui::TextWrapped("%s",error);
-            if(const auto error=TheosRenderPipeline::NeuralRendering::NativeAfterUnavailable(p,settingsDraft.upscaleType,settingsDraft.fsr.quality,settingsDraft.dynamicResolution))ImGui::TextWrapped("%s",error);
+            DrawCommunityNeuralCompatibility(p,settingsDraft.upscaleType,settingsDraft.fsr.quality,settingsDraft.dynamicResolution);
             EndSettingsColumns();
         }
         ImGui::EndTabItem();return;

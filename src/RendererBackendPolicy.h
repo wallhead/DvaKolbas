@@ -45,7 +45,7 @@ namespace TheosRenderPipeline
         if (ini.GetBoolValue("Experimental", "PureDarkFullDelegation", false)) { return "Full renderer delegation is unavailable."; }
         const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
         if (presenter == 0) {
-            if (ini.GetBoolValue("FrameGeneration", "Enabled", true)) { return "Ordinary FSR requires frame generation off."; }
+            if (ini.GetBoolValue("FrameGeneration", "Enabled", false)) { return "Ordinary FSR requires frame generation off."; }
         } else if (presenter == 2) {
             if (!fsrFgBuilt) { return "FSR frame generation support is unavailable in this build."; }
             if (std::string_view(ini.GetValue("FSR", "ProviderPolicy", "Analytical")) != "Analytical") {

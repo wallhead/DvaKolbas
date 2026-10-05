@@ -11,6 +11,14 @@
 
 namespace TheosRenderPipeline::NeuralRendering {
 
+struct DiagnosticRegion { std::uint32_t x{},y{},width{},height{}; };
+inline std::optional<DiagnosticRegion> DiagnosticReadbackRegion(std::uint32_t width,std::uint32_t height)
+{
+    if(!width || !height || width>16384 || height>16384)return std::nullopt;
+    const auto w=(std::min)(width,512u),h=(std::min)(height,512u);
+    return DiagnosticRegion{(width-w)/2,(height-h)/2,w,h};
+}
+
 // Read-only summaries of D3D11 staging rows. RGB is measured in source 8-bit
 // code values, so a sign change is visible without guessing a transfer curve.
 struct ColorPairStats {

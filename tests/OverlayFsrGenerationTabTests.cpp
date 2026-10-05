@@ -4,9 +4,54 @@
 #include <stdexcept>
 #include "OverlayFsrGenerationControls.h"
 static void Require(bool value,const char* reason){if(!value)throw std::runtime_error(reason);}
+static void OrdinarySelectionKeepsLiveRequest()
+{
+    ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
+    unsigned char* pixels;int width,height;io.Fonts->GetTexDataAsRGBA32(&pixels,&width,&height);
+    long backend=2;bool requested=true,changed=false;ImVec2 combo{};
+    auto frame=[&] {
+        ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
+        ImGui::Begin("Presenter interaction");
+        combo=ImGui::GetCursorScreenPos();combo.x+=100;combo.y+=ImGui::GetTextLineHeightWithSpacing()+ImGui::GetFrameHeight()/2;
+        changed=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,true,backend,requested);
+        ImGui::End();ImGui::Render();
+    };
+    frame();frame();io.AddMousePosEvent(combo.x,combo.y);io.AddMouseButtonEvent(0,true);frame();
+    io.AddMouseButtonEvent(0,false);frame();frame();
+    auto& context=*ImGui::GetCurrentContext();
+    Require(context.OpenPopupStack.Size>0,"presenter dropdown opened from input");
+    auto* popup=context.OpenPopupStack.back().Window;
+    Require(popup!=nullptr,"presenter popup rendered");
+    const ImVec2 ordinary{popup->Pos.x+40,popup->Pos.y+ImGui::GetStyle().WindowPadding.y+ImGui::GetTextLineHeight()/2};
+    io.AddMousePosEvent(ordinary.x,ordinary.y);io.AddMouseButtonEvent(0,true);frame();
+    io.AddMouseButtonEvent(0,false);frame();
+    Require(backend==0,"ordinary presenter selection staged");
+    Require(requested&&!changed,"ordinary dropdown cannot emit a live FG disable");
+    ImGui::DestroyContext();
+}
+static void PendingOrdinaryKeepsCurrentCheckboxLive()
+{
+    ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
+    unsigned char* pixels;int width,height;io.Fonts->GetTexDataAsRGBA32(&pixels,&width,&height);
+    long backend=0;bool requested=false,changed=false;ImVec2 checkbox{};
+    auto frame=[&]{
+        ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
+        ImGui::Begin("Live AMD with ordinary pending");
+        checkbox=ImGui::GetCursorScreenPos();checkbox.x+=8;
+        checkbox.y+=2*ImGui::GetTextLineHeightWithSpacing()+ImGui::GetFrameHeightWithSpacing()+ImGui::GetFrameHeight()/2;
+        changed|=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,true,backend,requested);
+        ImGui::End();ImGui::Render();
+    };
+    frame();frame();io.AddMousePosEvent(checkbox.x,checkbox.y);io.AddMouseButtonEvent(0,true);frame();
+    io.AddMouseButtonEvent(0,false);frame();
+    Require(requested&&changed&&backend==0,"pending ordinary presenter keeps actual AMD FG checkbox live");
+    ImGui::DestroyContext();
+}
 int main()
 {
  try {
+    OrdinarySelectionKeepsLiveRequest();
+    PendingOrdinaryKeepsCurrentCheckboxLive();
     for(bool built:{false,true})for(bool owned:{false,true}) {
         ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;
         unsigned char* pixels;int width,height;io.Fonts->GetTexDataAsRGBA32(&pixels,&width,&height);

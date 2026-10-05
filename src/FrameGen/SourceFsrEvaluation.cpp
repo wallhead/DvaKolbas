@@ -172,7 +172,6 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     // no UNORM decode or vendor constant conversion is introduced here.
     frame.motionConvention={float(renderWidth_),float(renderHeight_),true,false};
     frame.reset=resetNextEvaluation_ || pipeline.mPendingHistoryResets>0 || loadingScreenRoute_.NeedsTemporalReset();
-    frame.sharpness=pipeline.mSharpening?std::clamp(pipeline.mSharpness,0.0f,1.0f):0.0f;
     const bool frameDetails=PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails;
     const auto logHandoff=[&] {
         auto* bridgeContext=fsrResources_->Bridge()->Context11();

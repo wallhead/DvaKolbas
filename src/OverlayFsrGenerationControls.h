@@ -15,7 +15,6 @@ namespace TheosRenderPipeline::Overlay
         if(ImGui::BeginCombo("##presenter",selected?"AMD FSR FG":"Ordinary (SR only)")) {
             if(ImGui::Selectable("Ordinary (SR only)",selected==0)) {
                 backend=0;
-                if(requested){requested=false;changed=true;}
             }
             ImGui::BeginDisabled(!built);
             if(ImGui::Selectable("AMD FSR FG",selected==1))backend=2;
@@ -23,9 +22,10 @@ namespace TheosRenderPipeline::Overlay
         }
         if(!built)ImGui::TextWrapped("FSR frame generation is unavailable in this build.");
         else if((backend==2)!=owned)ImGui::TextWrapped("Save the presenter choice and restart to activate it.");
-        ImGui::BeginDisabled(!built || !owned || backend!=2);
+        ImGui::BeginDisabled(!built || !owned);
         changed |= ImGui::Checkbox("FSR frame generation",&requested);
         ImGui::EndDisabled();
+        if(owned && backend!=2) ImGui::TextWrapped("The current AMD FG presenter remains active. Ordinary presentation is pending until restart.");
         ImGui::TextWrapped("On/off takes effect on the current AMD presenter. Save as default to keep it for the next launch.");
         ImGui::TextWrapped("Generation uses completed native UI and valid temporal guides. Menus, loading, invalid guides and source stalls use real frames.");
         ImGui::PopID();return changed;

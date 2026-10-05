@@ -9,6 +9,10 @@ int main(){int failures{};auto check=[&](bool v,const char* n){std::printf("%s %
     check(SourceResetAfterNr(false,true,false,true),"EvaluatedNrDiscontinuityReachesSr");
     check(SourceResetAfterNr(false,false,true,true),"LeavingActiveNrResetsSrOnce");
     check(SourceResetAfterNr(true,false,false,false),"CallerResetSurvivesNrBypass");
+    check(!SourceResetForNrSettings(false,true,false,false),"AfterToneChangeDoesNotResetSr");
+    check(SourceResetForNrSettings(false,true,true,false),"BeforeToneChangeResetsSr");
+    check(SourceResetForNrSettings(false,true,false,true),"LeavingBeforePlacementResetsSr");
+    check(SourceResetForNrSettings(true,false,false,false),"AfterSettingsKeepCallerReset");
     int nr{},present{};
     const auto blocked=RetireBeforeSourceResize([&]{++nr;return E_FAIL;},[&]{++present;return S_OK;});
     check(FAILED(blocked)&&nr==1&&present==0,"FailedNrRetirementCannotTouchPresenterOrBuffers");

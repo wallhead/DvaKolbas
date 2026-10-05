@@ -12,7 +12,7 @@ struct BeforeHost::State {
     StageContract contract;const RuntimeProfile* profile{};
     std::optional<RuntimeFileLease> runtimeLease,coreLease;
     std::shared_ptr<RuntimeOwner> owner;std::unique_ptr<PreparedBeforeUpscale> prepared;std::unique_ptr<PostUpscale> post;Placement placement{Placement::Before};
-    bool inspected{},available{},terminal{},uncertain{},active{};
+    bool inspected{},available{},terminal{},uncertain{},active{},initializationBypassed{};
     uint64_t recorded{},resets{};
     std::string status{"NR off"};
     bool HasPreparation()const{return bool(prepared)||bool(post);}
@@ -22,6 +22,24 @@ struct BeforeHost::State {
         return prepared->Evaluate(input,settings.sourceEncoding,snapshot,settings.sdrBytesTrial?nullptr:output);
     }
     void MarkTerminal(const Error& error){status=error.message;active=false;terminal=true;}
+    Result<void> DisableAfterOpenFailure(const Error& error){
+        // This boundary precedes preparation, feature creation and NR frames.
+        // A partial Init_Ext owner remains untouched for the process lifetime.
+        if(HasPreparation()||recorded||active){MarkTerminal(error);return std::unexpected(error);}
+        const auto hr=contract.device->GetDeviceRemovedReason();
+        if(FAILED(hr)){Error removed{ErrorKind::Runtime,hr,"NR device removed during initialization"};MarkTerminal(removed);return std::unexpected(removed);}
+        const auto disposition=owner->OpenDisposition();
+        if(disposition==RuntimeOpenDisposition::InitializationQuarantined){
+            auto safe=owner->CheckInitializationFallbackSafety();
+            if(!safe){MarkTerminal(safe.error());return safe;}
+            initializationBypassed=true;
+        }else if(disposition==RuntimeOpenDisposition::Unavailable){
+            auto retired=owner->Retire();
+            if(!retired){MarkTerminal(error);return std::unexpected(error);}
+            owner.reset();uncertain=false;
+        }else{MarkTerminal(error);return std::unexpected(error);}
+        available=false;active=false;status=error.message+"; NR unavailable for this session; source upscaling continues";return {};
+    }
 };
 BeforeHost::BeforeHost():state_(std::make_unique<State>()){}
 BeforeHost::~BeforeHost(){if(state_->uncertain)state_.release();}
@@ -65,6 +83,7 @@ Result<BeforeResult> BeforeHost::EvaluatePost(const PostSrInput& input,const Set
 }
 Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const SettingsSnapshot& settings,PreparedFsrInput* linearOutput,const PostSrSourceContract* metadata){
     auto& s=*state_;const bool wasActive=s.active;s.active=false;if(s.terminal)return Fail(ErrorKind::Runtime,s.status.c_str());
+    if(s.initializationBypassed){auto safe=s.owner->CheckInitializationFallbackSafety();if(!safe){s.MarkTerminal(safe.error());return std::unexpected(safe.error());}}
     if(!settings.enabled){if(s.available)s.status="NR off";if(s.HasPreparation()){auto result=s.Run(input,settings,nullptr,metadata);if(result)result->effectiveReset|=wasActive;return result;}return BeforeResult{false,input.reset};}
     if(!s.available)return BeforeResult{false,input.reset};
     if(settings.placement!=(metadata?Placement::After:Placement::Before)||settings.reconstruction.preset!=0||settings.reconstruction.inputScale!=1||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto||settings.reconstruction.method>ResolveMethod::Ratio||
@@ -90,7 +109,7 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
         D3D12_COMMAND_QUEUE_DESC q{};hr=s.contract.device->CreateCommandQueue(&q,IID_PPV_ARGS(&s.contract.queue));if(FAILED(hr)){s.status="NR DIRECT queue unavailable; source upscaling continues";s.available=false;return BeforeResult{false,wasActive||input.reset};}
         s.owner=std::make_shared<RuntimeOwner>(RuntimeOwnerPaths{s.nrFile,s.settings.driverCore,s.cache,s.profile->compatibility==CompatibilityPolicy::CallerIdentityProbeRequired});s.uncertain=true;
         auto opened=s.owner->Open(*s.profile,s.contract.device.Get(),s.adapter);
-        if(!opened){auto retired=s.owner->Retire();if(!retired){s.MarkTerminal(opened.error());return std::unexpected(opened.error());}s.owner.reset();s.uncertain=false;s.available=false;s.status=opened.error().message;return BeforeResult{false,wasActive||input.reset};}
+        if(!opened){auto disabled=s.DisableAfterOpenFailure(opened.error());if(!disabled)return std::unexpected(disabled.error());return BeforeResult{false,wasActive||input.reset};}
     }
     if(!s.HasPreparation()){
         s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.placement=settings.placement;
@@ -111,6 +130,10 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
         (s.settings.sdrBytesTrial?"; one SDR RGBA8 byte trial pass":"; one native SDR pass");}return *result;
 }
 Result<void> BeforeHost::Retire(){auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,s.status.c_str());
+    if(s.initializationBypassed){
+        auto safe=s.owner->CheckInitializationFallbackSafety();if(!safe){s.MarkTerminal(safe.error());return safe;}
+        s.available=false;s.active=false;return {};
+    }
     if(s.HasPreparation()){auto r=s.RetirePreparation();if(!r){s.MarkTerminal(r.error());return r;}s.prepared.reset();}
     if(s.owner){auto r=s.owner->Retire();if(!r){s.MarkTerminal(r.error());return r;}s.owner.reset();}
     s.uncertain=false;s.available=false;s.active=false;s.status="NR retired";return {};

@@ -1,0 +1,20 @@
+# Compile the production lifecycle adapter against CPU ownership facades. The
+# fixture cannot execute GPU work or load a vendor runtime.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/src/FrameGen/NvidiaHostLifecycle.cpp")
+file(READ "${PROJECT_SOURCE_DIR}/src/FrameGen/NvidiaHostLifecycle.cpp" lifecycleSource)
+string(FIND "${lifecycleSource}" "struct NvidiaHost::LifecycleOperations" adapterBegin)
+string(FIND "${lifecycleSource}" "HRESULT NvidiaHost::FailLifecycle" adapterEnd)
+math(EXPR adapterLength "${adapterEnd}-${adapterBegin}")
+string(SUBSTRING "${lifecycleSource}" ${adapterBegin} ${adapterLength} lifecycleAdapter)
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/LifecycleAdapter.inc" "${lifecycleAdapter}")
+string(FIND "${lifecycleSource}" "HRESULT NvidiaHost::BeforeResizeBuffers" resizeBegin)
+string(FIND "${lifecycleSource}" "HRESULT NvidiaHost::AfterResizeBuffers" resizeEnd)
+math(EXPR resizeLength "${resizeEnd}-${resizeBegin}")
+string(SUBSTRING "${lifecycleSource}" ${resizeBegin} ${resizeLength} beforeResize)
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/BeforeResize.inc" "${beforeResize}")
+add_executable(TRPFsrHostResizeTests FsrHostResizeTests.cpp)
+target_compile_features(TRPFsrHostResizeTests PRIVATE cxx_std_23)
+target_compile_definitions(TRPFsrHostResizeTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN TRP_ENABLE_FSR)
+target_include_directories(TRPFsrHostResizeTests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src")
+add_test(NAME FsrHostResizeOwnership COMMAND TRPFsrHostResizeTests)

@@ -24,6 +24,9 @@ struct RuntimeOwnerPaths {
 const RuntimeProfile& QualifiedProbeDriverCore() noexcept;
 // Resolves only; the owner must already have verified/retained these modules.
 Result<RuntimeExports> ResolveRuntimeExports(HMODULE nr,HMODULE core);
+// An Init_Ext rejection can disable NR for this session while retaining every
+// partial runtime owner. Other quarantine reasons never permit source fallback.
+enum class RuntimeOpenDisposition { Unavailable, Ready, InitializationQuarantined, TerminalQuarantined };
 class RuntimeOwner {
 public:
     explicit RuntimeOwner(RuntimeOwnerPaths);
@@ -33,6 +36,8 @@ public:
     Result<void> Open(const RuntimeProfile&,ID3D12Device*,AdapterIdentity renderer);
     const RuntimeExports& Exports() const;
     bool Ready() const noexcept;
+    RuntimeOpenDisposition OpenDisposition() const noexcept;
+    Result<void> CheckInitializationFallbackSafety();
     std::string_view ProfileId()const noexcept;
     Result<void> CheckClientDevice(ID3D12Device*)const;
     // A client covers parameters, feature, every recording and every reader.

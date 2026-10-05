@@ -23,8 +23,8 @@ public:
     bool DedicatedUITextureMode()const{return dedicatedUI;}
     bool CommunityNeuralAvailable()const{return available;}
     bool CommunityNeuralTerminal()const{return terminal;}
-    bool FsrActive()const{return fsr;}
-    bool FsrFgActive()const{return fsrFg;}
+    bool FsrActive()const{return StartupConfigured()&&configuration.Startup().mode==FSR;}
+    bool FsrFgActive()const{return FsrActive()&&fsrFg;}
     const auto& SourceUpscalerSettings()const{return configuration;}
     HRESULT FailureResult()const{return failure;}
     void FailLifecycle(HRESULT value,const char*){failure=value;++lifecycleFailures;}

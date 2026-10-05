@@ -62,6 +62,17 @@ int main(int argc,char** argv)
     Require(bool(fsr.EnsureInputPolicy({true,true,false,true})) && fsr.Upscaler()->Limits().input.depthInfinite && fsr.Resources().color==fixedColor,
         "infinite depth recreates context after retirement without replacing fixed textures");
     Require(spy.nvidiaCalls==0,"FsrDoesNotRequireNvidia: no NVIDIA creation/readiness/NR/Reflex path");
+    const auto retainedRuntime=fsr.Runtime();const auto retainedBridge=fsr.Bridge();
+    const auto retainedDevice=retainedBridge->Device12();
+    for(const Extent extent : {Extent{641,361},Extent{1279,719},Extent{1921,1081}}){
+        Require(bool(fsr.ReleaseSizedAfterRetirement()),"actual shared readers retire before resized allocations");
+        const auto resized=fsr.ResizeSizingAfterRetirement(extent,DXGI_FORMAT_R8G8B8A8_UNORM);
+        Require(resized && fsr.Runtime()==retainedRuntime && fsr.Bridge()==retainedBridge &&
+                fsr.Bridge()->Device12()==retainedDevice,"resizing preserves loaded runtime and actual device/bridge identity");
+        Require(bool(fsr.CompleteStartup()) && fsr.FeatureReady(),"retained runtime recreates ready context at resized extent");
+        D3D11_TEXTURE2D_DESC output{};fsr.Output11()->GetDesc(&output);
+        Require(output.Width==extent.width && output.Height==extent.height,"resized shared output has requested extent");
+    }
     Require(bool(fsr.Retire()),"retire feature");Check(RetirePresentation(backend,spy),"retire ordinary presenter");
     Require(spy.nvidiaCalls==0 && !fsr.FeatureReady(),"retirement does not call NVIDIA");
     Check(ordinary.BeforeResize(),"retire before ordinary resize");

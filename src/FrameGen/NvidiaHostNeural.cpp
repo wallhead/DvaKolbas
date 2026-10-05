@@ -28,16 +28,19 @@ struct NrMotionDiagnostic {
         disabled=true;
     }
     bool CopyToStaging(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* source,
-        DXGI_FORMAT expected,ComPtr<ID3D11Texture2D>& staging) {
+        DXGI_FORMAT expected,const NR::DiagnosticRegion& region,ComPtr<ID3D11Texture2D>& staging) {
         if(!device||!context||!source){Failure("missing readback resource",E_INVALIDARG);return false;}
         D3D11_TEXTURE2D_DESC desc{};source->GetDesc(&desc);
-        if(desc.Format!=expected || desc.SampleDesc.Count!=1 || desc.MipLevels!=1 || desc.ArraySize!=1){
+        if(desc.Format!=expected || desc.SampleDesc.Count!=1 || desc.MipLevels!=1 || desc.ArraySize!=1 ||
+           region.x+region.width>desc.Width || region.y+region.height>desc.Height){
             Failure("unexpected texture format/shape",E_INVALIDARG);return false;
         }
         desc.Usage=D3D11_USAGE_STAGING;desc.BindFlags=0;desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ;desc.MiscFlags=0;
+        desc.Width=region.width;desc.Height=region.height;
         const auto hr=device->CreateTexture2D(&desc,nullptr,&staging);
         if(FAILED(hr)){Failure("create staging",hr);return false;}
-        context->CopyResource(staging.Get(),source);
+        const D3D11_BOX box{region.x,region.y,0,region.x+region.width,region.y+region.height,1};
+        context->CopySubresourceRegion(staging.Get(),0,0,0,0,source,0,&box);
         return true;
     }
     bool ReadRows(ID3D11DeviceContext* context,ID3D11Texture2D* staging,
@@ -58,20 +61,23 @@ struct NrMotionDiagnostic {
         std::vector<std::uint8_t> color;
         std::optional<NR::MotionStats> motion;
         DXGI_FORMAT depthFormat{};
+        NR::DiagnosticRegion region;
         bool ready{};
     };
     Capture Before(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* color,
         ID3D11Texture2D* depth,ID3D11Texture2D* motion,UINT width,UINT height) {
         Capture capture;
-        if(!depth||width>4096||height>4096||!width||!height){Failure("invalid diagnostic extent/depth",E_INVALIDARG);return capture;}
+        const auto region=NR::DiagnosticReadbackRegion(width,height);
+        if(!depth||!region){Failure("invalid diagnostic extent/depth",E_INVALIDARG);return capture;}
+        capture.region=*region;
         D3D11_TEXTURE2D_DESC depthDesc{};depth->GetDesc(&depthDesc);capture.depthFormat=depthDesc.Format;
         ComPtr<ID3D11Texture2D> colorCopy,motionCopy;
-        if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,colorCopy) ||
-           !CopyToStaging(device,context,motion,DXGI_FORMAT_R16G16_FLOAT,motionCopy))return capture;
+        if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,*region,colorCopy) ||
+           !CopyToStaging(device,context,motion,DXGI_FORMAT_R16G16_FLOAT,*region,motionCopy))return capture;
         std::vector<std::uint8_t> rawMotion;
-        if(!ReadRows(context,colorCopy.Get(),width,height,4,capture.color) ||
-           !ReadRows(context,motionCopy.Get(),width,height,4,rawMotion))return capture;
-        capture.motion=NR::SummarizeMotionRg16(rawMotion.data(),std::size_t(width)*4,width,height,width,height);
+        if(!ReadRows(context,colorCopy.Get(),region->width,region->height,4,capture.color) ||
+           !ReadRows(context,motionCopy.Get(),region->width,region->height,4,rawMotion))return capture;
+        capture.motion=NR::SummarizeMotionRg16(rawMotion.data(),std::size_t(region->width)*4,region->width,region->height,width,height);
         capture.ready=bool(capture.motion);
         return capture;
     }
@@ -79,12 +85,15 @@ struct NrMotionDiagnostic {
         UINT width,UINT height,uint64_t sourceId,uint64_t revision,bool reset,const Capture& before) {
         if(!before.ready)return;
         ComPtr<ID3D11Texture2D> colorCopy;
-        if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,colorCopy))return;
+        const auto& region=before.region;
+        if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,region,colorCopy))return;
         std::vector<std::uint8_t> after;
-        if(!ReadRows(context,colorCopy.Get(),width,height,4,after))return;
-        const auto rgb=NR::CompareRgba8(before.color.data(),after.data(),std::size_t(width)*4,std::size_t(width)*4,width,height);
+        if(!ReadRows(context,colorCopy.Get(),region.width,region.height,4,after))return;
+        const auto rgb=NR::CompareRgba8(before.color.data(),after.data(),std::size_t(region.width)*4,std::size_t(region.width)*4,region.width,region.height);
         if(!rgb){Failure("color summary",E_INVALIDARG);return;}
         ++samples;
+        logger::info("[NR color probe region] source={} sourceExtent={}x{} origin=({}, {}) sampled={}x{}",
+            sourceId,width,height,region.x,region.y,region.width,region.height);
         logger::info("[NR color probe] sample={}/16 source={} revision={} reset={} extent={}x{} depthFormat={} rgbIn=({:.2f},{:.2f},{:.2f}) rgbOut=({:.2f},{:.2f},{:.2f}) rgbSigned=({:+.2f},{:+.2f},{:+.2f}) rgbAbs=({:.2f},{:.2f},{:.2f}) motionPxMean=({:+.2f},{:+.2f}) motionPxAbs={:.2f} motionSamples={} motionZero={} motionInvalid={} motionOutsideUv={}",
             samples,sourceId,revision,reset,width,height,static_cast<unsigned>(before.depthFormat),
             rgb->before[0],rgb->before[1],rgb->before[2],rgb->after[0],rgb->after[1],rgb->after[2],
@@ -127,6 +136,7 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     snapshot.enabled=p.neuralEnabled;snapshot.placement=p.neuralBeforeUpscaling?NR::Placement::Before:NR::Placement::After;
     snapshot.stableColors=p.neuralStableColors;
     snapshot.tuning=p.neuralTuning;snapshot.reconstruction=p.neuralReconstruction;
+    const bool placementChanged=communitySnapshotValid_ && snapshot.placement!=communitySnapshot_.placement;
     const bool changed=!communitySnapshotValid_ || snapshot.enabled!=communitySnapshot_.enabled ||
         snapshot.placement!=communitySnapshot_.placement || snapshot.stableColors!=communitySnapshot_.stableColors || snapshot.tuning!=communitySnapshot_.tuning ||
         snapshot.reconstruction!=communitySnapshot_.reconstruction;
@@ -136,7 +146,7 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         snapshot.revision,p.neuralBeforeUpscaling?"Before SR":"After SR before FG",snapshot.stableColors,snapshot.tuning.localToneStrength,snapshot.tuning.localStructureStrength,snapshot.tuning.style);
     // Snapshot/reset changes are seen before SR. After owns NR evaluation only
     // at the completed source boundary, so one request cannot run two passes.
-    if(!post && !p.neuralBeforeUpscaling){reset|=changed;return true;}
+    if(!post && !p.neuralBeforeUpscaling){reset=NR::SourceResetForNrSettings(reset,changed,false,placementChanged);return true;}
     NR::BeforeInput input;input.context=context_;input.color=color;input.depth=depth;input.motion=motion;
     input.epoch=communityEpoch_;input.sourceId=input.guideSourceId=sourceId;
     input.guideEpoch=input.epoch;input.previousSourceId=sourceId?sourceId-1:0;

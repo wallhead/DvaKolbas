@@ -123,13 +123,13 @@ void LiveGenerationActions()
         draft.fsr.sourceColorEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
         CSimpleIniA defaults; defaults.SetBoolValue("FrameGeneration","Enabled",initial);
         const bool selected=!initial;
-        SetLiveGenerationRequest(draft,generation,selected);
+        SetLiveGenerationRequest(draft,generation,selected,fsr?2:1);
         Require(generation.RuntimeInterpolationRequested()==selected,"checkbox takes effect immediately");
         // An unrelated edit followed by Apply/Save must preserve the checkbox.
         draft.autoExposure=false;
         RendererSettingsCapabilities caps{true,false,true,false};caps.fsrBuilt=true;caps.fsrFgBuilt=true;
         Require(!ValidateRendererSettings(draft,caps),"NVIDIA/AMD draft remains valid");
-        ApplyRendererGeneration(draft,generation);
+        ApplyRendererGeneration(draft,generation,fsr?2:1);
         if (save) generation.StoreInterpolationPreference(defaults);
         Require(generation.RuntimeInterpolationRequested()==selected,"Apply/Save cannot reverse live FG toggle");
         Require(defaults.GetBoolValue("FrameGeneration","Enabled")== (save?selected:initial),
@@ -138,6 +138,95 @@ void LiveGenerationActions()
             generation.LoadStartupPreferences(defaults);
             Require(generation.RuntimeInterpolationRequested()==selected,"saved toggle survives next startup");
         }
+    }
+}
+void DraftModeRoundTrip()
+{
+    for(int mode:{DLSS,DLAA}) for(bool requested:{false,true}) {
+        RendererSettingsDraft draft;draft.valid=true;draft.upscaleType=mode;
+        draft.generationEnabled=requested;draft.sourceDLSSG.neuralEnabled=requested;
+        draft.sourceDLSSG.hdrOutput.enabled=requested;
+        draft.dynamicResolution=requested;
+        SetRendererUpscaleMode(draft,FSR);
+        Require(!draft.generationEnabled&&!draft.sourceDLSSG.neuralEnabled&&!draft.sourceDLSSG.hdrOutput.enabled&&!draft.dynamicResolution,
+            "FSR mode stages compatible ordinary defaults");
+        SetRendererUpscaleMode(draft,mode);
+        Require(draft.generationEnabled==requested&&draft.sourceDLSSG.neuralEnabled==requested&&draft.sourceDLSSG.hdrOutput.enabled==requested&&draft.dynamicResolution==requested,
+            "returning to NVIDIA draft restores FG NR and HDR choices");
+    }
+    RendererSettingsDraft fsr;fsr.upscaleType=FSR;fsr.generationBackend=2;fsr.generationEnabled=true;
+    fsr.sourceDLSSG.neuralEnabled=true;
+    SetRendererUpscaleMode(fsr,DLAA);SetRendererUpscaleMode(fsr,FSR);
+    Require(fsr.generationBackend==2&&fsr.generationEnabled&&fsr.sourceDLSSG.neuralEnabled,
+        "FSR draft round trip retains explicitly selected FG presenter and community NR");
+}
+void StagedGenerationDefaults()
+{
+    auto& generation=*SourceFrameGeneration::GetSingleton();
+    generation.RequestRuntimeInterpolation(true);
+    generation.settings.enabled=false;
+    CSimpleIniA defaults;generation.StoreInterpolationPreference(defaults);
+    Require(!defaults.GetBoolValue("FrameGeneration","Enabled",true),
+        "saving a staged ordinary presenter writes its off default, not the live owner request");
+    Require(generation.RuntimeInterpolationRequested(),"saving defaults cannot toggle the current presenter");
+    generation.RequestRuntimeInterpolation(false);generation.RequestRuntimeInterpolation(true);
+    generation.StoreInterpolationPreference(defaults);
+    Require(defaults.GetBoolValue("FrameGeneration","Enabled",false),"explicit live toggles update the default preference");
+    for(long backend:{0L,1L,2L}) {
+        CSimpleIniA missing;missing.SetLongValue("Experimental","FrameGenerationBackend",backend);
+        generation.LoadStartupPreferences(missing);
+        Require(generation.RuntimeInterpolationRequested()==(backend!=0),"missing Enabled defaults off only for ordinary presenter");
+        missing.SetBoolValue("FrameGeneration","Enabled",true);generation.LoadStartupPreferences(missing);
+        Require(generation.RuntimeInterpolationRequested(),"explicit startup interpolation request remains authoritative");
+    }
+}
+void LiveGenerationWithOrdinaryDraft()
+{
+    auto& generation=*SourceFrameGeneration::GetSingleton();generation.RequestRuntimeInterpolation(false);
+    generation.settings.generationBackend=0;
+    RendererSettingsDraft draft;draft.valid=true;draft.upscaleType=FSR;draft.generationBackend=0;draft.generationEnabled=false;
+    draft.fsr.sourceColorEncoding=Upscaling::ColorEncoding::Gamma22;
+    SetLiveGenerationRequest(draft,generation,true,1);
+    Require(generation.RuntimeInterpolationRequested(),"explicit checkbox still enables the current FG owner with ordinary staged");
+    Require(!draft.generationEnabled&&!generation.settings.enabled,
+        "live checkbox must retain staged ordinary startup off preference");
+    RendererSettingsCapabilities caps{true,false,true,false};caps.fsrBuilt=true;
+    Require(!ValidateRendererSettings(draft,caps),"live checkbox cannot make a staged ordinary draft invalid");
+    CSimpleIniA defaults;generation.StoreInterpolationPreference(defaults);
+    Require(!defaults.GetBoolValue("FrameGeneration","Enabled",true),"save after live checkbox keeps ordinary startup valid");
+    // A menu draft that has not been applied cannot overwrite the current owner's default.
+    generation.settings.generationBackend=1;generation.RequestRuntimeInterpolation(false);
+    SetLiveGenerationRequest(draft,generation,true,1);
+    Require(generation.RuntimeInterpolationRequested()&&generation.settings.enabled&&!draft.generationEnabled,
+        "unapplied ordinary draft leaves explicit live action in the current NVIDIA default");
+    generation.StoreInterpolationPreference(defaults);
+    Require(defaults.GetBoolValue("FrameGeneration","Enabled",false),"save outside draft Apply persists explicit current-owner toggle");
+    RendererSettingsDraft roundtrip;roundtrip.valid=true;roundtrip.generationEnabled=true;
+    SetRendererUpscaleMode(roundtrip,FSR);SetLiveGenerationRequest(roundtrip,generation,false,1);
+    SetRendererUpscaleMode(roundtrip,DLSS);
+    Require(!roundtrip.generationEnabled,"provider round trip cannot undo an intentional live FG checkbox action");
+}
+void ActualPresenterGenerationGate()
+{
+    struct Case {long active,pending;bool initial,requested,expected;};
+    const Case cases[]{
+        {1,0,true,false,true},{1,2,true,false,true},{1,1,true,false,false},
+        {1,1,false,true,true},{2,0,true,false,true},{2,1,true,false,true},
+        {2,2,true,false,false},{2,2,false,true,true},{0,2,false,true,false},
+        {0,1,false,true,false},{0,0,false,false,false}};
+    auto& generation=*SourceFrameGeneration::GetSingleton();
+    for(const auto& c:cases) {
+        generation.RequestRuntimeInterpolation(c.initial);generation.settings.generationBackend=c.active;
+        RendererSettingsDraft draft;draft.generationBackend=c.pending;draft.generationEnabled=c.requested;
+        for(int apply=0;apply<2;++apply) {
+            ApplyRendererGeneration(draft,generation,c.active);
+            Require(generation.RuntimeInterpolationRequested()==c.expected,
+                "Apply uses actual NVIDIA/AMD/ordinary owner even after pending backend has been stored");
+            Require(generation.settings.enabled==c.requested,"Apply preserves requested next-launch default separately");
+        }
+        CSimpleIniA defaults;generation.StoreInterpolationPreference(defaults);
+        Require(defaults.GetBoolValue("FrameGeneration","Enabled",!c.requested)==c.requested,
+            "actual presenter gate saves pending interpolation preference");
     }
 }
 void EffectivePresenterUi()
@@ -159,6 +248,6 @@ void EffectivePresenterUi()
 }
 int main()
 {
-    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
+    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); DraftModeRoundTrip(); StagedGenerationDefaults(); ActualPresenterGenerationGate(); LiveGenerationWithOrdinaryDraft(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

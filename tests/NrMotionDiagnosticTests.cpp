@@ -13,6 +13,14 @@ void Check(bool good,const char* name){std::printf("%s %s\n",good?"PASS":"FAIL",
 bool Near(double actual,double expected){return std::abs(actual-expected)<1e-6;}
 }
 int main(){
+    const auto ultrawide=DiagnosticReadbackRegion(5120,1440);
+    Check(ultrawide && ultrawide->width==512 && ultrawide->height==512 &&
+          ultrawide->x==2304 && ultrawide->y==464,"UltrawideProbeHasBoundedCenteredReadback");
+    const auto small=DiagnosticReadbackRegion(65,37);
+    Check(small && small->x==0 && small->y==0 && small->width==65 && small->height==37,
+          "SmallProbeRetainsCompleteSource");
+    Check(!DiagnosticReadbackRegion(0,37) && !DiagnosticReadbackRegion(65,16385),
+          "ProbeRejectsEmptyAndImpossibleExtent");
     const std::array<std::uint8_t,16> before{64,128,192,255, 192,64,32,255, 9,9,9,9, 9,9,9,9};
     const std::array<std::uint8_t,16> after {128,128,192,255, 128,64,32,255, 9,9,9,9, 9,9,9,9};
     const auto rgb=CompareRgba8(before.data(),after.data(),16,16,2,1,1);

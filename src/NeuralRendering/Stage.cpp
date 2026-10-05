@@ -79,6 +79,27 @@ struct Stage::State {
     }
     Result<void> Gpu(HRESULT code,const char* text){if(FAILED(code)){terminal=true;return Fail(ErrorKind::Runtime,text,code);}return {};}
     Result<void> Native(uint32_t code,const char* text){if(code!=1 || allocation.failed){terminal=true;return Fail(ErrorKind::Runtime,text,code);}return {};}
+    Result<void> FailBeforeFeatureCreate(Result<void> failure){
+        // Called only before entering vendor CreateFeature. No feature or
+        // command recording can own these parameters/allocator callbacks yet.
+        // Failed cleanup still retains the client and process allocator claim.
+        {std::scoped_lock lock(allocationMutex);
+            if(activeAllocation!=&allocation || !allocation.resources.empty() || allocation.failed){terminal=true;return Fail(ErrorKind::Retirement,"NR early initialization allocator ownership is uncertain");}}
+        if(parameters){
+            destroy=owner->Exports().destroy(parameters);
+            auto destroyed=Native(destroy,"NR early initialization parameter destruction failed; ownership retained");
+            if(!destroyed)return destroyed;parameters=nullptr;
+        }
+        {std::scoped_lock lock(allocationMutex);
+            if(activeAllocation!=&allocation || !allocation.resources.empty() || allocation.failed){terminal=true;return Fail(ErrorKind::Retirement,"NR early initialization callback cleanup is uncertain");}
+            auto released=owner->ReleaseClientAfterRetirement();if(!released){terminal=true;return released;}
+            client=false;activeAllocation=nullptr;
+        }
+        creationFence.Reset();creationList.Reset();creationAllocator.Reset();
+        alphaPipeline.Reset();alphaRoot.Reset();allocation.device.Reset();
+        contract={};timing.reset();owner.reset();
+        return failure;
+    }
     Result<void> BuildAlpha(){
         D3D12_FEATURE_DATA_FORMAT_SUPPORT format{DXGI_FORMAT_R16G16B16A16_FLOAT};
         auto r=Gpu(contract.device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT,&format,sizeof(format)),"NR alpha format query failed");if(!r)return r;
@@ -115,15 +136,15 @@ Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageCo
     if(metrics&&metrics->Enabled()){s.timing=std::make_unique<PerformanceQueries>(metrics);s.timing->Initialize12(c.device.Get(),c.queue.Get());}
     r=owner->AcquireClient();if(!r)return r;s.client=true;s.owner=std::move(owner);s.contract=c;s.preset=preset;s.allocation.device=c.device;
     {std::scoped_lock lock(allocationMutex);if(activeAllocation){r=s.owner->ReleaseClientAfterRetirement();if(!r){s.terminal=true;return r;}s.client=false;return Fail(ErrorKind::Conflict,"Another NR shared stage owns allocator callbacks");}activeAllocation=&s.allocation;}
-    r=s.BuildAlpha();if(!r)return r;const auto& e=s.owner->Exports();r=s.Native(e.allocate(&s.parameters),"NR shared parameters allocation failed");if(!r)return r;
-    if(!s.parameters){s.terminal=true;return Fail(ErrorKind::Runtime,"NR allocator returned no parameters");}
-    auto& p=*s.parameters;r=WriteDirectCreationParameters(p,{s.owner->ProfileId(),c.colorExtent,c.guideExtent,preset});if(!r){s.terminal=true;return r;}
-    int roundtrip=-1;r=s.Native(static_cast<uint32_t>(p.Get("DLSSNR.Upscaling",&roundtrip)),"NR direct signed parameter ABI read failed");if(!r)return r;
-    if(roundtrip!=0){s.terminal=true;return Fail(ErrorKind::Runtime,"NR direct signed parameter ABI differs");}
+    r=s.BuildAlpha();if(!r)return s.FailBeforeFeatureCreate(r);const auto& e=s.owner->Exports();r=s.Native(e.allocate(&s.parameters),"NR shared parameters allocation failed");if(!r)return s.FailBeforeFeatureCreate(r);
+    if(!s.parameters){s.terminal=true;return s.FailBeforeFeatureCreate(Fail(ErrorKind::Runtime,"NR allocator returned no parameters"));}
+    auto& p=*s.parameters;r=WriteDirectCreationParameters(p,{s.owner->ProfileId(),c.colorExtent,c.guideExtent,preset});if(!r){s.terminal=true;return s.FailBeforeFeatureCreate(r);}
+    int roundtrip=-1;r=s.Native(static_cast<uint32_t>(p.Get("DLSSNR.Upscaling",&roundtrip)),"NR direct signed parameter ABI read failed");if(!r)return s.FailBeforeFeatureCreate(r);
+    if(roundtrip!=0){s.terminal=true;return s.FailBeforeFeatureCreate(Fail(ErrorKind::Runtime,"NR direct signed parameter ABI differs"));}
     p.Set("ResourceAllocCallback",reinterpret_cast<void*>(&Allocate));p.Set("ResourceReleaseCallback",reinterpret_cast<void*>(&ReleaseResource));p.Set("DLSSNRComputeScalingRatioCallback",reinterpret_cast<void*>(&Scaling));
-    r=s.Gpu(c.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&s.creationAllocator)),"NR creation allocator failed");if(!r)return r;
-    r=s.Gpu(c.device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,s.creationAllocator.Get(),nullptr,IID_PPV_ARGS(&s.creationList)),"NR creation list failed");if(!r)return r;
-    r=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&s.creationFence)),"NR creation fence failed");if(!r)return r;
+    r=s.Gpu(c.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&s.creationAllocator)),"NR creation allocator failed");if(!r)return s.FailBeforeFeatureCreate(r);
+    r=s.Gpu(c.device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,s.creationAllocator.Get(),nullptr,IID_PPV_ARGS(&s.creationList)),"NR creation list failed");if(!r)return s.FailBeforeFeatureCreate(r);
+    r=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&s.creationFence)),"NR creation fence failed");if(!r)return s.FailBeforeFeatureCreate(r);
     s.create=e.create(s.creationList.Get(),kDirectNrFeatureId,s.parameters,&s.feature);r=s.Native(s.create,"NR shared feature creation failed");if(!r)return r;
     if(!s.feature){s.terminal=true;return Fail(ErrorKind::Runtime,"NR create returned no feature");}
     r=s.Gpu(s.creationList->Close(),"NR creation list close failed");if(!r)return r;
