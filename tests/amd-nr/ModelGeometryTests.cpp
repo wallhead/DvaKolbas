@@ -11,6 +11,23 @@ int main() {
         Require(g->input==e.in && g->processing==e.processing && g->levels[5].extent==e.deep,"reference geometry fields");
         for(unsigned i=0;i<6;++i) Require(g->levels[i].channels==(32u<<i),"channel sequence");
     }
+    const std::array<Extent,6> referenceLevels[]{
+        {{{640,416},{320,208},{160,104},{80,52},{40,28},{20,16}}},
+        {{{800,480},{400,240},{200,120},{100,60},{52,32},{28,16}}},
+        {{{960,544},{480,272},{240,136},{120,68},{60,36},{32,20}}},
+        {{{1280,736},{640,368},{320,184},{160,92},{80,48},{40,24}}},
+        {{{1920,1088},{960,544},{480,272},{240,136},{120,68},{60,36}}}
+    };
+    for(unsigned n=0;n<std::size(examples);++n) {
+        auto g=MakeGeometry(examples[n].in).value();
+        for(unsigned i=0;i<6;++i) Require(g.levels[i].extent==referenceLevels[n][i],"all reference level fields");
+    }
+    const std::array<Extent,6> smallLevels{{{160,160},{80,80},{40,40},{20,20},{12,12},{8,8}}};
+    const std::array<Extent,6> squareLevels{{{512,544},{256,272},{128,136},{64,68},{32,36},{16,20}}};
+    for(unsigned i=0;i<6;++i) {
+        Require(MakeGeometry({256,256})->levels[i].extent==smallLevels[i],"all small reference levels");
+        Require(MakeGeometry({1024,1024})->levels[i].extent==squareLevels[i],"all square reference levels");
+    }
     Require(MakeGeometry({1024,1024})->processing==Extent{1024,1088},"extra height");
     Require(MakeGeometry({1024,1024},ExtentMode::Default,true)->processing==Extent{1024,1024},"disable extra height");
     Require(MakeGeometry({1,7})->processing==Extent{320,320},"minimum extent");

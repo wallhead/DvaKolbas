@@ -9,7 +9,7 @@
 | `winmm.dll` | 56,677,888 | `195c4a891b6eac4c1cb7671e10ff62bbbe2b17f1dfae1344dc5a6714e4775721` |
 | `dlssnr_on_amd_weights.bin` | 147,689,451 | `6bf8dc931ef3ccffe18c82de26ab374156e7f19539ffcf8eabaa25dca5cf15ab` |
 
-Both remain in the user-supplied `D:\TESV54BETA\BETA_TRUEAE_V54\Stock Game` directory. The DLL identifies AMDNR v0.6.0 and embeds HIP code objects; it is a WinMM proxy with 857 exports, not an NGX feature DLL.
+The initial paths were in `Stock Game`. During implementation both files were found in `D:\TESV54BETA\BETA_TRUEAE_V54\overwrite\Root`; their hashes match the original analysis. The DLL identifies AMDNR v0.6.0 and embeds HIP code objects; it is a WinMM proxy with 857 exports, not an NGX feature DLL.
 
 ## Recovered model structure
 
@@ -77,3 +77,20 @@ The local Ghidra project, 25 selected host decompilations, archive directory, ke
 Remaining work: close internal schemas and all numerical operations, implement the independent CPU/GPU graph, build the AMD host/session route, compare intermediate and final results, and run actual tests on RDNA2, RDNA3, and RDNA4. The local workstation currently has an RTX 4080 SUPER and AMD integrated graphics; physical acceptance on those three Radeon generations remains outstanding.
 
 See [the source-owned engine design](superpowers/specs/2026-10-05-amd-nr-engine-design.md) for the proposed implementation boundary and validation gates.
+
+## Source-owned foundations implemented
+
+The separate `codex/amd-nr-engine` branch now contains a checked archive snapshot,
+exact known-archive identification, processing geometry, integer CPU storage
+conversions, model inspector, and build-time-compiled D3D12 format probe.
+The known model status is `KnownArchiveIncompleteSchema`; it never enables
+inference. These targets are built independently of the plugin.
+
+An independent NumPy oracle matched 51,950 FP32 words, all 65,536 half encodings,
+and all 256 E4M3 encodings on CPU, WARP, and the RTX 4080 SUPER with zero storage-bit
+mismatches. Timeout and failed-retirement fixtures verify retained GPU ownership.
+Windows Graphics Tools is missing: debug validation is explicitly skipped.
+The integrated AMD adapter is reported by WMI but absent from DXGI enumeration,
+and discrete RDNA2/3/4 acceptance is outstanding. These are format results,
+not model inference or quality results. See [reproduction commands and stage
+limits](../tests/amd-nr/README.md).
