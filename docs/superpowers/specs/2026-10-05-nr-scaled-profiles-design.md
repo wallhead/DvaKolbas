@@ -1,6 +1,8 @@
 # Common post-upscale NR, scaled sources and GPU qualification
 
 Status: written spec approved by the owner's "go" on 2026-10-05.
+Packaging amendment requested on 2026-10-05: share the RTX40 compatibility
+DLL with RTX50; include this change in the pending implementation-plan review.
 Date: 2026-10-05. Baseline: `509733894da7fd231e0b6db36fdac62cd28e7091`.
 
 ## Owner intent and scope
@@ -38,7 +40,7 @@ unsupported. There is no new AIO performance comparison requirement.
 Recommended approach: qualify display-sized color with the original render-sized
 depth/motion textures through the vendor NR interface. The older NVIDIA adapter
 already describes separate color and guide subrectangles, but that is evidence
-for an experiment, not proof that the current three supplied models accept them.
+for an experiment, not proof that the selected supplied runtimes accept them.
 
 Nearest-neighbour enlargement is not the production approach: the independent
 scene fixture demonstrates lost thin surfaces and mismatched depth edges.
@@ -102,14 +104,40 @@ release or resource reuse; retain the established terminal handling.
 
 ## GPU profiles and driver qualification
 
-Keep the supplied exact model catalog: `rtx20-30` for RTX 20/30, `rtx40` for RTX
-40 and `rtx50` for RTX 50. Select using the actual renderer adapter ID and LUID.
+Keep the logical profile IDs `rtx20-30`, `rtx40` and `rtx50`, but package only two
+physical model DLLs. RTX20/30 use the existing FP16 runtime at
+`NR/rtx20-30/nvngx_dlssnr.dll`, SHA-256
+`6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8`
+(309671536 bytes). Both RTX40 and RTX50 profiles point to
+`NR/rtx40/nvngx_dlssnr.dll`, SHA-256
+`e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a`
+(165840496 bytes). Existing profile IDs remain valid; package validation counts
+unique physical paths and does not copy the shared DLL twice. Preserve each
+logical profile's adapter eligibility and separate hardware receipts.
+Select using the actual renderer adapter ID and LUID.
 Do not spoof the local RTX 4080 SUPER as a different family. Cross-running a
 model on this card does not establish compatibility with its intended hardware.
 
 Retain the existing narrowly scoped caller-identity compatibility policy for
-the patched RTX 20/30/40 models. RTX 50 retains its SignedDirect policy. No
+both patched physical runtimes. RTX50 now also uses
+`CallerIdentityProbeRequired`; sharing a patched file cannot retain the original
+signed DLL's `SignedDirect` policy. No
 general signature bypass or unrelated DLL modification is introduced.
+
+The [OptiShade runtime documentation](https://github.com/GamingWithGravy/OptiShade/blob/main/optiscaler/INSTALL-DLSSNR.md),
+inspected on 2026-10-05, identifies the exact `e67dee...` hash as the ShortFuse
+cross-generation runtime and states that it leaves the RTX50 path unchanged.
+Offline inspection also found identical RTX40/50 weight resources. This supports
+the shared-payload design, not an independently measured RTX50 output/parity
+claim. Actual RTX50 Create/Evaluate, image, compatibility and lifecycle runs
+remain required. Keep the RTX20/30 FP16 runtime in this extension despite the
+documentation's broader compatibility claim; replacing it is separate work.
+
+Remove the original signed RTX50 payload (`e16bcf...`) from the new package and
+active catalog only. Preserve the source download and accepted rollback packages.
+Physical NR payload falls from 641352528 to 475512032 bytes, saving 165840496
+bytes (158.16 MiB, about 25.9%). No archive reconstruction or new backend is
+needed for this change.
 
 The current driver core is pinned to the tested local binary. Other machines
 must not load an arbitrary core merely because its filename matches, nor receive
