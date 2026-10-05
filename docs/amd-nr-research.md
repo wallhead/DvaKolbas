@@ -335,3 +335,13 @@ This implements CPU numerical-reference primitives, not a complete C512 block.
 GPU projection/reduction, general WMMA comparison, the remaining model graph,
 input/output conventions, TRP integration and RDNA2/3/4 acceptance remain open.
 Model/inference status is unchanged.
+
+The Native whole-branch review of `246d152..f73dee0` found no Critical or Important
+issue and no new Minor. The reviewer independently ran all fifteen CTest entries:
+fourteen passed, the missing-debug-layer entry skipped, and none failed. The
+earlier deferred historical encoder-status wording remains superseded by current
+implementation/results sections. This review covers standalone foundations and
+the new primitives, not full AMD NR. Static original-runtime equivalence,
+persistent padding contents, unsupported tensor domains, game/GPU/full-graph
+execution, Radeon hardware performance and missing debug validation remain
+explicit limits.

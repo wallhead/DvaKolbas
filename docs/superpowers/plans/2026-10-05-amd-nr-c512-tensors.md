@@ -12,6 +12,8 @@
 
 Branch: `codex/amd-nr-engine`. Execution: Native, preserving the user's earlier selection and instruction to implement what is needed for AMD NR. This bounded follow-on stays within the approved numerical-reference component.
 
+Status: implemented and independently reviewed on 2026-10-05. Whole-branch review through `f73dee0`: no Critical/Important findings or new Minors. Full standalone suite: 14 passes, one missing-debug-layer skip, zero failures; independent reduction oracle: 131,072 exact encoded outputs. Scope limitations and the previously deferred historical status wording remain explicit.
+
 ## Global Constraints
 
 - "The product consists of source-owned C++, HLSL, logical schemas, and tests."
@@ -64,7 +66,7 @@ Canonical byte/half index is `(x*height+y)*512+channel`. Packed and Blocked16 of
 - [x] Build before implementing reduction: expected missing header/API failure. Retain red output.
 - [x] Implement reduction with the existing explicit half conversions and E4M3 encoder; verify counts and any byte overlap before touching output. Preserve padding.
 - [x] Build/run full suite and independent oracle: expected 14 passes, one missing-debug-layer skip, zero failures and zero bit mismatches. Update actual results and allocator initialization limits; commit Task 2 changes.
-- [ ] Run the Native whole-branch fresh review against branch merge-base, resolve Critical/Important findings with red/green tests, ledger deferred Minors and scope rulings. Keep branch local.
+- [x] Run the Native whole-branch fresh review against branch merge-base, resolve Critical/Important findings with red/green tests, ledger deferred Minors and scope rulings. Keep branch local.
 
 ## Self-review
 
