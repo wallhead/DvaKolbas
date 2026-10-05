@@ -1,4 +1,5 @@
 #include "FSRHostResources.h"
+#include "AmdNrBridge.h"
 #include "FSRProviderPolicy.h"
 #include "FSRColorContract.h"
 #include "FSRPreparedResources.h"
@@ -45,6 +46,9 @@ namespace TheosRenderPipeline::Upscaling
         auto fail=[&](HRESULT hr,const char* text)->Result<Extent>{return Failure(ErrorKind::UnsupportedDevice,hr,text);};
         ComPtr<IDXGIDevice> dxgi;ComPtr<IDXGIAdapter> adapter;HRESULT hr=device11->QueryInterface(IID_PPV_ARGS(&dxgi));
         if(FAILED(hr) || FAILED(hr=dxgi->GetAdapter(&adapter)))return fail(hr,"FSR actual adapter query failed");
+        // Optional, process-wide and non-fatal: the user-installed DLSS-NR-on-AMD
+        // module must be resident before the FSR runtime creates its context.
+        AmdNr::EnsureLoaded(adapter.Get());
         hr=deviceCreator_?deviceCreator_(adapter.Get(),D3D_FEATURE_LEVEL_12_0,state_->device.ReleaseAndGetAddressOf()):
             D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&state_->device));
         if(FAILED(hr) || !state_->device)return fail(FAILED(hr)?hr:E_NOINTERFACE,"FSR same-adapter native D3D12 ownership unavailable");

@@ -14,6 +14,9 @@
 #include "FSRSwapChainPolicy.h"
 #include "PluginPaths.h"
 #include "NeuralRendering/SourcePolicy.h"
+#if defined(TRP_ENABLE_FSR)
+#include "Upscaling/AmdNrBridge.h"
+#endif
 #include <PCH.h>
 
 HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_device, DXGI_SWAP_CHAIN_DESC* a_desc, IDXGISwapChain** a_swapChain,
@@ -223,6 +226,7 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
             fsrResources_->ResizeSizingAfterRetirement({outputWidth_,outputHeight_},outputDesc.Format) :
             fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_},outputDesc.Format,encoding);
         if(!render){status_=render.error().message;logger::error("[FSR] {}",status_);return false;}
+        logger::info("[AMD NR] {}",TheosRenderPipeline::Upscaling::AmdNr::Status());
         logger::info("[FSR startup] source/output format={} sourceColorEncoding={} SDR-only contract; installed producer calibration required",
             static_cast<unsigned>(outputDesc.Format),TheosRenderPipeline::Upscaling::ColorEncodingName(encoding));
         queriedRenderWidth=render->width;queriedRenderHeight=render->height;sized=true;
@@ -455,6 +459,7 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
             static_cast<std::uint32_t>(extent.error().nativeResult),status_);
         return E_FAIL;
     }
+    logger::info("[AMD NR] {}",Upscaling::AmdNr::Status());
     fsrFactory_=factory;fsrDescriptor_=descriptor;
     fsrDescriptor_.BufferCount=2;
     renderWidth_=extent->width;renderHeight_=extent->height;

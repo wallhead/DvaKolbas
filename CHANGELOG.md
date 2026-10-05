@@ -1,3 +1,11 @@
+# Unreleased
+
+- Added an experimental, opt-in bridge for the separately installed DLSS-NR-on-AMD
+  mod: with FSR upscaling, `[NeuralRendering] AmdBridge` loads the user's copy
+  (`[Runtime] AmdNRModule`) before the FidelityFX runtime, or adopts one already
+  loaded as a game-folder proxy. TRP does not ship that mod. Off by default; no
+  change for NVIDIA or FSR users who leave it off. Untested on AMD hardware.
+
 # 0.3.5
 
 - Reduce HUD ghosting in generated frames: DLSS-G now interpolates the HUD-less

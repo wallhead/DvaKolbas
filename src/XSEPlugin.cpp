@@ -22,6 +22,9 @@
 #include <SolFGStartupOverlayAPI.h>
 #include "FrameGen/NvidiaHost.h"
 #include <SimpleIni.h>
+#if defined(TRP_ENABLE_FSR)
+#include "Upscaling/AmdNrBridge.h"
+#endif
 #include <process.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
@@ -213,6 +216,16 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
         if(!TheosRenderPipeline::Upscaling::IsKnownColorEncoding(settings->sourceColorEncoding))
             util::report_and_fail("Theo's Render Pipeline FSR configuration error: set [FSR] SourceColorEncoding to Linear, Gamma22 or SRGB after checking the Skyrim/ENB source producer. Missing/Unknown encoding is not guessed.");
     }
+#if defined(TRP_ENABLE_FSR)
+    {
+        // Optional user-installed DLSS-NR-on-AMD module; it only acts on the FSR path.
+        const auto amdNr=TheosRenderPipeline::Upscaling::AmdNr::ReadSettings(baselineIni);
+        if(!amdNr)util::report_and_fail(std::format("Theo's Render Pipeline AMD NR configuration error: {}",amdNr.error().message));
+        if(amdNr->mode!=TheosRenderPipeline::Upscaling::AmdNr::Mode::Off && baselineIni.GetLongValue("Settings", "UpscaleType", 0)!=FSR)
+            logger::warn("[AMD NR] AmdBridge={} has no effect: it requires FSR upscaling",TheosRenderPipeline::Upscaling::AmdNr::ModeName(amdNr->mode));
+        TheosRenderPipeline::Upscaling::AmdNr::Configure(*amdNr,GetPluginDirectory());
+    }
+#endif
 
 	// Capture the engine callee before post-load renderer hooks replace its call.
 	TheosRenderPipeline::CommunityShaders::RememberEngineBoundary();
