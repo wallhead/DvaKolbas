@@ -5,6 +5,7 @@
 #include "OverlayUIStyle.h"
 #include "OverlayRenderTarget.h"
 #include "WeatherAppearanceRuntime.h"
+#include "RazkolbasAudio.h"
 
 #include <imgui_internal.h>
 #include <SimpleIni.h>
@@ -137,6 +138,8 @@ void OverlayUI::SetTextInputCapture(bool a_capture)
 void OverlayUI::SetVisible(bool a_visible)
 {
     if (!a_visible) {
+        if (razkolbasPlayer && razkolbasPlayer->Snapshot().state != TheosRenderPipeline::AudioState::Stopped)
+            razkolbasPlayer->Stop();
         settingsEdits.Commit(settingsDraft,[this](const auto& before,const auto& after){ApplyLiveSettingsEdits(before,after);});
     }
 	visible = a_visible;

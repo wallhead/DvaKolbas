@@ -1,5 +1,6 @@
 The optional `razkolbas` tab plays `razkolbas.mp3` only when Play is clicked.
-Stop resets playback. The track can continue while the menu is closed.
+Stop resets playback. Closing the End menu also stops and resets the track.
+Selecting another tab while the menu stays open leaves playback running.
 
 The recording was supplied by the project owner as
 `mc-vspyskin-nikiforovna-kolbasnyi-cex-hitmonet_gaPKiMbz.mp3` and copied unchanged.

@@ -3,7 +3,9 @@
 The fourth standard ImGui tab is named `razkolbas`. It contains the supplied
 Kolbasny tsekh recording, Play and Stop buttons, and playback/error status.
 There is no autoplay. Play starts at the beginning; Stop resets playback.
-Closing the menu or selecting another tab leaves playback running.
+Closing the End menu stops and resets playback. Selecting another tab while
+the menu stays open leaves playback running. Reopening the menu stays silent
+until Play is clicked again.
 The existing frame graph and renderer controls are retained.
 
 The MP3 is packaged as

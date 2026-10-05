@@ -16,6 +16,7 @@
 #include "OverlayLayout.h"
 
 namespace TheosRenderPipeline::SourceDLSSG { struct NeuralSnapshot; }
+namespace TheosRenderPipeline { class AudioPlayer; }
 
 // In-game ImGui overlay: upscaler stats (rendered vs presented FPS, NGX eval
 // results) and live controls. Toggled with the ToggleOverlay hotkey (default
@@ -54,6 +55,8 @@ private:
     void DrawAdvancedPanel(float tabCardHeight, const FrameView& view);
     void DrawFrameGenerationAdvanced(const FrameView& view);
     void DrawRazkolbasPanel();
+    // The optional audio worker is process-resident; never join under DllMain.
+    TheosRenderPipeline::AudioPlayer* razkolbasPlayer{};
     bool BeginSettingsColumns(const char* id, float height, const FrameView& view);
     void NextSettingsColumn(float height);
     void EndSettingsColumns();

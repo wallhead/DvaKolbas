@@ -10,9 +10,11 @@ void OverlayUI::DrawRazkolbasPanel() {
     // SKSE keeps the plugin resident for the game process. Retain this
     // optional worker until process exit: never join it under DllMain's
     // loader lock. A standalone owner's destructor still stops/joins.
-    static auto *player = new TheosRenderPipeline::AudioPlayer(
-        TheosRenderPipeline::PluginPaths::Directory() / L"TheosRenderPipeline" /
-        L"Audio" / L"razkolbas.mp3");
+    if (!razkolbasPlayer)
+      razkolbasPlayer = new TheosRenderPipeline::AudioPlayer(
+          TheosRenderPipeline::PluginPaths::Directory() / L"TheosRenderPipeline" /
+          L"Audio" / L"razkolbas.mp3");
+    auto* player = razkolbasPlayer;
     ImGui::TextWrapped("MC Vspishkin & Nikiforovna - Kolbasny tsekh");
     ImGui::Spacing();
     if (ImGui::Button("Play", ImVec2(90, 0)))
