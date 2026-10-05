@@ -4,6 +4,7 @@ add_library(TRPAmdNrCore STATIC "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/Weig
 target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/NumericFormats.cpp")
 target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/ModelGeometry.cpp")
 target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/ModelIdentity.cpp")
+target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/C512Projection.cpp")
 target_link_libraries(TRPAmdNrCore PUBLIC bcrypt)
 target_compile_definitions(TRPAmdNrCore PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN)
 add_executable(TRPAmdNrInspect "${TRP_AMD_NR_ROOT}/tools/AmdNrInspect.cpp")

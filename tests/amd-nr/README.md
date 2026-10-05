@@ -102,3 +102,17 @@ plan be written. Full inference, resident allocation, and TRP session/UI/reset
 integration remain necessary for the original AMD NR request.
 
 The probe follows the Windows SDK's [resource barrier contract](https://learn.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-resourcebarrier).
+
+## C512 projection storage codec
+
+`DecodeC512Projection` accepts exactly 263,168 bytes and produces an owned
+512×512 FP8 code matrix and 512 raw FP16 coefficient words in canonical native
+fragment order. It preserves codes and payload bits without numeric conversion.
+Both result views remain valid through owner moves; rvalue getters are disabled.
+This primitive does not identify a model or execute projection arithmetic.
+
+CTest `AmdNrC512Projection` uses generated data to check all 262,144 addresses
+against an independent forward load oracle, with four address-bit patterns,
+a non-symmetric channel permutation, all FP8 codes, special FP16 payloads,
+exact-length rejection and ownership after input/previous owner destruction.
+The recovered contract is in [the projection report](../../docs/amd-nr-c512-projection.md).
