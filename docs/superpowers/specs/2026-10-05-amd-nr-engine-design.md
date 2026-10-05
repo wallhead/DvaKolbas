@@ -1,7 +1,7 @@
 # TRP source-owned AMD neural rendering engine
 
 Date: 2026-10-05. Branch: `codex/amd-nr-engine`.
-Status: approved by the user on 2026-10-05; standalone foundations implemented and reviewed. Full inference and TRP integration remain pending.
+Status: approved by the user on 2026-10-05; standalone foundations implemented and reviewed; canonical C512 projection storage codec implemented. Full inference and TRP integration remain pending.
 
 ## Intent and scope
 

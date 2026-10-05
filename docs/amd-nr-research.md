@@ -190,3 +190,33 @@ These fixtures do not establish bit-exact WMMA dot accumulation or a complete
 C512 block. Channel numbers are native fragment coordinates; spatial/HWC
 compatibility remains open. Exact evidence, limitations and reproduction are in
 [the projection report](amd-nr-c512-projection.md). Full inference stays unavailable.
+
+## C512 storage codec implementation
+
+The canonical projection storage contract is now implemented in our C++23 core.
+`C512Projection.h/.cpp` decodes exactly 263,168 record bytes into an owned
+512×512 FP8 code matrix and 512 raw FP16 coefficient words. It preserves
+all encoded bits and uses no supplied executable code. Both result views survive
+owner moves; getters on temporaries are disabled. Heap-owned coefficient storage
+is necessary to honor the same move-lifetime contract as the matrix bank.
+
+`C512ProjectionArchive.h/.cpp` validates the selection and exact known archive
+identity before reading a checked span by record name. The inspector accepts
+paired `--projection-block` and `--projection-layer` options and prints only
+record, basis and dimension metadata. Unknown archives retain their unsupported
+status, including synthetic archives with the right record name and length.
+
+All four address-pattern passes cover all 262,144 matrix coordinates against
+an independent forward load oracle. Other generated tests cover the asymmetric
+channel permutation, all FP8 codes, special FP16 payloads, truncated/extended
+records, ownership, the 32 selection pairs, and CLI validation. The standalone
+suite passed 12 tests with no failures; one debug-layer GPU test was skipped.
+All 32 supported records of the ignored original archive also passed manual
+CLI checks with the exact known digest, names and dimensions.
+
+This completes the [storage codec plan](superpowers/plans/2026-10-05-amd-nr-c512-projection-codec.md).
+Projection arithmetic and complete C512 block execution are not implemented.
+The model remains `KnownArchiveIncompleteSchema`, `inference=unavailable`;
+spatial channel conventions, WMMA dot order, residual application, FP8 output,
+other model records, the full network, TRP integration and Radeon acceptance
+remain required.
