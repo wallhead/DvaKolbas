@@ -13,7 +13,7 @@ namespace TheosRenderPipeline
         using namespace Upscaling;
         BackendDecision decision{config.backend, PresentationKind::Nvidia, false, config.generationEnabled, {}};
         if (IsAmdRenderer(config.adapterVendorId) &&
-            !AmdRendererSelectionAllowed(config.backend == BackendKind::Fsr ? FSR : DLSS,
+            !AmdRendererSelectionAllowed(config.backend == BackendKind::Fsr ? ::FSR : ::DLSS,
                 config.generationBackend, config.neuralRendering)) {
             decision.diagnostic = "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
         }

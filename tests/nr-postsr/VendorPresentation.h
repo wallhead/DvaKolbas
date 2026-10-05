@@ -2,6 +2,7 @@
 #include "FrameGen/SourceDLSSGSession.h"
 #include "NeuralRendering/RuntimeFileLease.h"
 #include "PluginPaths.h"
+#include "NvidiaAppSettings.h"
 #include <dxgi1_6.h>
 #include <cstdio>
 #include <thread>
@@ -77,6 +78,8 @@ struct VendorPresentation {
             if(!held)throw std::runtime_error(held.error().message);
             leases->push_back(std::move(*held));
         }
+        if(!TheosRenderPipeline::NvidiaAppSettings::PrepareStreamline(root))
+            throw std::runtime_error("Cannot establish application-controlled vendor runtime selection");
         interposer=LoadLibraryExW((root/L"sl.interposer.dll").c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
         if(!interposer)throw HRESULT_FROM_WIN32(GetLastError());
         PFun_slInit* init{};PFun_slSetFeatureLoaded* loadFeature{};PFun_slSetD3DDevice* setDevice{};

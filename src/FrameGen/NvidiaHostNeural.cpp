@@ -120,9 +120,10 @@ void NvidiaHost::InspectCommunityNeural()
     const auto inspected=presenter?communityNeural_->Inspect(device_.Get(),startup,cache,presenter):
         NR::Result<void>{std::unexpected(NR::Error{NR::ErrorKind::Unsupported,0,"NR waiting for presenter D3D12 device"})};
     communityLastStatus_=inspected?communityNeural_->Status():inspected.error().message;
-    logger::info("[Community NR startup] available={} profile={} encoding={} sdrBytesTrial={} root={} core={} presenterDevice={} status={}",
+    logger::info("[Community NR startup] available={} profile={} encoding={} sdrBytesTrial={} root={} core={} coreOrigin={} presenterDevice={} native={} status={}",
         bool(inspected),communityNeural_->ProfileId(),Upscaling::ColorEncodingName(startup.sourceEncoding),startup.sdrBytesTrial,
-        startup.runtimeRoot.string(),startup.driverCore.string(),fmt::ptr(presenter),communityLastStatus_);
+        startup.runtimeRoot.string(),communityNeural_->DriverCorePath().string(),startup.driverCore.empty()?"active-render-driver":"INI",
+        fmt::ptr(presenter),inspected?0:inspected.error().nativeCode,communityLastStatus_);
 }
 bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Texture2D* depth,
     ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible,NR::PreparedFsrInput* linearOutput,const Upscaling::UpscaleFrame* post,Upscaling::UpscaleOutcome outcome)

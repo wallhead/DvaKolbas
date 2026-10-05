@@ -1,5 +1,6 @@
 #pragma once
 #include "IniLayout.h"
+#include "Error.h"
 #include "Upscaling/FSRColorContract.h"
 #include <filesystem>
 namespace TheosRenderPipeline::NeuralRendering {
@@ -10,6 +11,8 @@ struct StartupSettings {
     std::string profile{"Auto"};
     std::filesystem::path runtimeRoot,driverCore;
     Upscaling::ColorEncoding sourceEncoding{Upscaling::ColorEncoding::Unknown};
+    // Called after rendering-device creation. Never scan installed driver versions.
+    Result<std::filesystem::path> ResolveDriverCore() const;
     StartupSettings Resolve(const std::filesystem::path& pluginRoot)const{
         auto result=*this;result.runtimeRoot=runtimeRoot.empty()?pluginRoot:runtimeRoot.is_absolute()?runtimeRoot:pluginRoot/runtimeRoot;
         if(!result.driverCore.empty()&&!result.driverCore.is_absolute())result.driverCore=pluginRoot/result.driverCore;

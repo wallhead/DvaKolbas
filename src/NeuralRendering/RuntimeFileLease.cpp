@@ -54,26 +54,30 @@ RuntimeFileLease& RuntimeFileLease::operator=(RuntimeFileLease&& other) noexcept
     return *this;
 }
 Result<RuntimeFileLease> RuntimeFileLease::Open(const std::filesystem::path& path, const RuntimeProfile& profile) {
+    const auto fileFailure=[&](ErrorKind kind,std::string_view message,int64_t native=0) {
+        return std::unexpected(Error{kind,native,"NR artifact ["+std::string(profile.id)+"] path="+path.string()+": "+
+            std::string(message)+"; native="+std::to_string(native)});
+    };
     if(!path.is_absolute() || profile.sha256.size()!=64 ||
         !std::ranges::all_of(profile.sha256,[](char c){return (c>='0'&&c<='9')||(c>='a'&&c<='f');}))
-        return Fail(ErrorKind::InvalidInput,"NR file path/hash is invalid");
+        return fileFailure(ErrorKind::InvalidInput,"NR file path/hash is invalid");
     RuntimeFileLease lease;
     lease.file_=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr);
-    if(!lease.Valid()) return Fail(ErrorKind::Io,"Cannot lock NR file against write/delete",GetLastError());
+    if(!lease.Valid()) return fileFailure(ErrorKind::Io,"Cannot open/lock file against write/delete",GetLastError());
     FILE_ATTRIBUTE_TAG_INFO attributes{};
     if(!GetFileInformationByHandleEx(lease.file_,FileAttributeTagInfo,&attributes,sizeof(attributes)))
-        return Fail(ErrorKind::Io,"Cannot inspect held NR file",GetLastError());
+        return fileFailure(ErrorKind::Io,"Cannot inspect held file",GetLastError());
     if(attributes.FileAttributes&(FILE_ATTRIBUTE_REPARSE_POINT|FILE_ATTRIBUTE_DIRECTORY))
-        return Fail(ErrorKind::InvalidInput,"NR artifact is a reparse point or directory");
+        return fileFailure(ErrorKind::InvalidInput,"Artifact is a reparse point or directory");
     LARGE_INTEGER bytes{};
-    if(!GetFileSizeEx(lease.file_,&bytes)) return Fail(ErrorKind::Io,"Cannot read held NR size",GetLastError());
+    if(!GetFileSizeEx(lease.file_,&bytes)) return fileFailure(ErrorKind::Io,"Cannot read held size",GetLastError());
     if(bytes.QuadPart<0 || static_cast<uint64_t>(bytes.QuadPart)!=profile.bytes)
-        return Fail(ErrorKind::IdentityMismatch,"Locked NR size differs from profile");
+        return fileFailure(ErrorKind::IdentityMismatch,"Held size differs from qualified profile; observed="+std::to_string(bytes.QuadPart)+" expected="+std::to_string(profile.bytes));
     lease.bytes_=static_cast<uint64_t>(bytes.QuadPart);
     auto digest=HashHandle(lease.file_);
-    if(!digest) return std::unexpected(digest.error());
-    if(*digest!=profile.sha256) return Fail(ErrorKind::IdentityMismatch,"Locked NR hash differs from profile");
+    if(!digest) return fileFailure(digest.error().kind,digest.error().message,digest.error().nativeCode);
+    if(*digest!=profile.sha256) return fileFailure(ErrorKind::IdentityMismatch,"Held SHA256 differs from qualified profile; observed="+*digest+" expected="+std::string(profile.sha256));
     lease.sha256_=std::move(*digest);
     // Keep the absolute path used for LoadLibraryEx. Mapping identity is checked
     // again from the loaded module path against this held handle, not by strings.

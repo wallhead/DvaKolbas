@@ -56,10 +56,11 @@ struct BeforeHost::State {
 };
 BeforeHost::BeforeHost():state_(std::make_unique<State>()){}
 BeforeHost::~BeforeHost(){if(state_->uncertain)state_.release();}
-Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& settings,const std::filesystem::path& cache,ID3D12Device* presenter){
+Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& requestedSettings,const std::filesystem::path& cache,ID3D12Device* presenter){
+    auto settings=requestedSettings;
     auto& s=*state_;if(s.inspected)return s.available?Result<void>{}:Fail(ErrorKind::Unsupported,s.status.c_str());s.inspected=true;
     auto stop=[&](ErrorKind kind,const char* why,int64_t native=0)->Result<void>{s.status=why;return Fail(kind,why,native);};
-    if(!settings.community||!device||!settings.runtimeRoot.is_absolute()||!settings.driverCore.is_absolute()||!cache.is_absolute())
+    if(!settings.community||!device||!settings.runtimeRoot.is_absolute()||(!settings.driverCore.empty()&&!settings.driverCore.is_absolute())||!cache.is_absolute())
         return stop(ErrorKind::InvalidInput,"Community NR requires controlled absolute runtime/core/cache paths");
     if(!Upscaling::IsKnownColorEncoding(settings.sourceEncoding))return stop(ErrorKind::Unsupported,"Community NR source color encoding is unknown");
     if(settings.sdrBytesTrial&&settings.sourceEncoding==Upscaling::ColorEncoding::Linear)
@@ -81,6 +82,9 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& set
     if(!s.profile)return stop(ErrorKind::Unsupported,"NR GPU/profile is absent from the reviewed catalog");
     // Validate family before leasing/loading the requested model.
     if(s.profile->primaryFamily!=family&&!(s.profile->includeRtx30&&family==GpuFamily::Rtx30))return stop(ErrorKind::Unsupported,"NR profile does not match the actual renderer GPU family");
+    auto discovered=settings.ResolveDriverCore();
+    if(!discovered){s.status=discovered.error().message;return std::unexpected(discovered.error());}
+    settings.driverCore=*discovered;s.settings.driverCore=*discovered;
     auto path=RuntimePath(settings.runtimeRoot,*s.profile);if(!path){s.status=path.error().message;return std::unexpected(path.error());}s.nrFile=*path;
     auto lease=RuntimeFileLease::Open(s.nrFile,*s.profile);if(!lease){s.status=lease.error().message;return std::unexpected(lease.error());}s.runtimeLease=std::move(*lease);
     auto core=RuntimeFileLease::Open(settings.driverCore,QualifiedProbeDriverCore());if(!core){s.status=core.error().message;return std::unexpected(core.error());}s.coreLease=std::move(*core);
@@ -156,6 +160,7 @@ bool BeforeHost::Terminal()const{return state_->terminal;}
 bool BeforeHost::Active()const{return state_->active;}
 std::string_view BeforeHost::ProfileId()const{return state_->profile?state_->profile->id:std::string_view{};}
 const std::string& BeforeHost::Status()const{return state_->status;}
+const std::filesystem::path& BeforeHost::DriverCorePath()const{return state_->settings.driverCore;}
 uint64_t BeforeHost::Recorded()const{return state_->recorded;}
 uint64_t BeforeHost::Resets()const{return state_->resets;}
 }

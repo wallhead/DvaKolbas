@@ -15,6 +15,7 @@ public:
     Result<void> Retire();
     bool Available()const;bool Terminal()const;bool Active()const;
     std::string_view ProfileId()const;const std::string& Status()const;
+    const std::filesystem::path& DriverCorePath()const;
     uint64_t Recorded()const;uint64_t Resets()const;
 private:
     Result<BeforeResult> EvaluateSource(const BeforeInput&,const SettingsSnapshot&,PreparedFsrInput*,const PostSrSourceContract*);

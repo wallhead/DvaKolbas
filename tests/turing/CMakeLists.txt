@@ -8,7 +8,7 @@ add_executable(TRPTuringProviderAudit ProviderAudit.cpp
 target_compile_features(TRPTuringProviderAudit PRIVATE cxx_std_23)
 target_compile_definitions(TRPTuringProviderAudit PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 target_include_directories(TRPTuringProviderAudit PRIVATE "${TRP_NGX_SDK_DIR}/include")
-target_link_libraries(TRPTuringProviderAudit PRIVATE d3d12 dxgi bcrypt version)
+target_link_libraries(TRPTuringProviderAudit PRIVATE d3d12 dxgi bcrypt version TRPNvidiaAppSettings)
 # Explicit manual invocation only; this initializes a graphics device.
 add_executable(TRPCuModuleProbe CuModuleProbe.cpp)
 target_compile_features(TRPCuModuleProbe PRIVATE cxx_std_23)
@@ -19,4 +19,4 @@ add_executable(TRPProviderGuardProbe ProviderGuardProbe.cpp
 target_compile_features(TRPProviderGuardProbe PRIVATE cxx_std_23)
 target_compile_definitions(TRPProviderGuardProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 target_include_directories(TRPProviderGuardProbe PRIVATE "${TRP_NGX_SDK_DIR}/include")
-target_link_libraries(TRPProviderGuardProbe PRIVATE d3d12 dxgi bcrypt version)
+target_link_libraries(TRPProviderGuardProbe PRIVATE d3d12 dxgi bcrypt version TRPNvidiaAppSettings)

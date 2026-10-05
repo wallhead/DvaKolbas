@@ -6,6 +6,7 @@ if(NOT TARGET TRPNeuralRuntime)
     add_library(TRPNeuralRuntime STATIC
         "${trpNrRoot}/src/NeuralRendering/PerformanceMetrics.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeCatalog.cpp"
+        "${trpNrRoot}/src/NeuralRendering/DriverCoreDiscovery.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeFileLease.cpp"
         "${trpNrRoot}/src/NeuralRendering/CallerIdentityShim.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeOwner.cpp"

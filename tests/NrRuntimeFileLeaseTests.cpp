@@ -36,7 +36,15 @@ int main() {
     result=RuntimeFileLease::Open(file,wrong);
     Check(!result && result.error().kind==ErrorKind::IdentityMismatch,"WrongHashRejected");
     Check(!RuntimeFileLease::Open("relative/nvngx_dlssnr.dll",fixture),"RelativeFileRejected");
-    Check(!RuntimeFileLease::Open(root/"missing.dll",fixture),"MissingFileRejected");
+    const auto missing=root/"missing.dll";
+    auto absent=RuntimeFileLease::Open(missing,fixture);
+    Check(!absent&&absent.error().nativeCode==ERROR_FILE_NOT_FOUND&&absent.error().message.find(missing.string())!=std::string::npos,
+        "MissingArtifactErrorIdentifiesExactFileAndNativeCode");
+    HANDLE writer=CreateFileW(file.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+    auto blocked=RuntimeFileLease::Open(file,fixture);
+    Check(writer!=INVALID_HANDLE_VALUE&&!blocked&&blocked.error().nativeCode==ERROR_SHARING_VIOLATION&&blocked.error().message.find(file.string())!=std::string::npos,
+        "BusyArtifactErrorIdentifiesExactFileAndNativeCode");
+    if(writer!=INVALID_HANDLE_VALUE)CloseHandle(writer);
     Check(MoveFileExW(file.c_str(),moved.c_str(),MOVEFILE_REPLACE_EXISTING)!=FALSE,"LeaseReleasedAfterScope");
     std::filesystem::remove(moved); std::filesystem::remove(other); std::filesystem::remove(file); std::filesystem::remove(root);
     return failed?1:0;

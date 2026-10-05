@@ -58,6 +58,15 @@ the next-launch FSR NR preference remains disabled.
 
 ## Existing files
 
+For portable NR installs, leave `[Runtime] NRDriverCore` empty. After device
+creation, NR selects `_nvngx.dll` beside the game's loaded NVIDIA rendering
+driver (`nvwgf2umx.dll`). It does not search other installed driver versions.
+An explicit path overrides discovery and is retained when saving settings.
+The startup log records the selected path and its origin; file failures name
+the exact artifact and Windows error code. The existing driver-core size/hash
+qualification still applies: automatic path discovery is not qualification of
+a different driver binary.
+
 Old `[Settings] QualityLevel/DLSSPreset`, `[SourceDLSSG]`, `[Experimental]` runtime
 selectors and `[Overlay]` geometry remain accepted. Canonical new keys take
 precedence individually, including explicit zero, false and empty path values.
