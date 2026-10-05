@@ -1,7 +1,7 @@
 # TRP source-owned AMD neural rendering engine
 
 Date: 2026-10-05. Branch: `codex/amd-nr-engine`.
-Status: approved by the user on 2026-10-05; standalone foundations implemented and reviewed; canonical C512 projection storage codec implemented. Full inference and TRP integration remain pending.
+Status: approved by the user on 2026-10-05; standalone foundations implemented and reviewed; canonical C512 projection storage codec implemented; C512 residual/output boundaries recovered statically. Full inference and TRP integration remain pending.
 
 ## Intent and scope
 
@@ -33,7 +33,17 @@ Default extent policy rounds both axes up to 64, with a minimum of 320. If both 
 
 Registered noise generators accept an FP16 destination, two dimensions, and a seed. Their integer hash, transcendental approximations, output arrangement, and callers require explicit recovery before their contribution can be reproduced. The host contains history and exposure controls. Their exact formulas and guide-resource use must be established through data flow, not guessed from packet field names.
 
-The incomplete contracts are internal tensor shapes/offsets, FP8 encoding and saturation, accumulation order, window/index permutations, pooling and skip mappings, input/output transforms, exposure, history, and noise. The implementation plan must begin with closing these contracts using static evidence and controlled reference checkpoints. It must not invent operations to fill gaps.
+At initial design review, incomplete contracts included internal tensor shapes/offsets, FP8 encoding and saturation, accumulation order, window/index permutations, pooling and skip mappings, input/output transforms, exposure, history, and noise. Each implementation stage must close its contracts using static evidence and controlled reference checkpoints. It must not invent operations to fill gaps.
+
+Subsequent C512 recovery closes the projection record indexing and the numerical
+policy around its residual initialization and output storage. The owned storage
+codec is implemented; residual math and the encoder are not yet product
+operations. The [residual/output contract](../../amd-nr-c512-residual-output.md)
+specifies nearest-even E4M3 encoding, signed zero, saturation to finite ±448,
+and canonical positive NaN `0x7f`. Software conversion must cover every FP32 bit
+pattern without out-of-width shifts. The portable baseline uses our own integer
+encoder without a HIP/native FP8 dependency. This closes the C512 output policy,
+not all network output transforms or general matrix reduction equivalence.
 
 ## Components and boundaries
 

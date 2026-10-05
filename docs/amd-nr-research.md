@@ -220,3 +220,30 @@ The model remains `KnownArchiveIncompleteSchema`, `inference=unavailable`;
 spatial channel conventions, WMMA dot order, residual application, FP8 output,
 other model records, the full network, TRP integration and Radeon acceptance
 remain required.
+
+## C512 residual and output numerical boundaries
+
+The next static audit establishes that a decoded residual FP8 value times its
+FP16 coefficient initializes the half accumulator with additive +0 and an early
+half rounding. It precedes the sixteen projection reduction chunks. Output half
+values are promoted, clamped to [-448,+448], converted to nearest-even E4M3,
+and explicitly canonicalized to `0x7f` for NaNs. An optional output uses three
+half adds and a half quarter multiply on four pre-quantization samples.
+
+Four projection variants have matching conversion/clamp/NaN-override counts and
+byte-identical corresponding gfx1200/1201 bodies. All eight descriptors have
+nearest-even rounding and input/output denormals enabled. Our encoder matches
+an independent distance oracle on 166,306 generated FP32 words with zero
+mismatches. All 16,125,952 finite FP8/half residual pairs also match an independent
+FP64-product route at the half boundary. This does not establish WMMA dot order.
+
+AMD's public host FP8 helper agrees on all 126,098 sampled words within the
+promoted-half output range. It disagrees on 1,950 deeper-underflow random FP32
+inputs; its out-of-width shifts make it unsuitable as an unrestricted oracle.
+Our independent encoder/oracle agree on those inputs as well. Exact evidence,
+fixtures and limitations are in [the residual/output report](amd-nr-c512-residual-output.md).
+
+No supplied executable was run and no product arithmetic was enabled. A portable
+source-owned E4M3 encoder is the next bounded implementation. Spatial mappings,
+WMMA accumulation, complete blocks/network, integration and Radeon acceptance
+remain outstanding; inference is still unavailable.

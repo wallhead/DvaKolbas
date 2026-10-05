@@ -144,9 +144,11 @@ sites and gfx1200/1201 body equality. It writes the ignored report
 kernels are not executed. Only our probe and AMD's reviewed public coordinate
 calculator run.
 
-The recovered codec can now become an owned, bounded C++ logical view, tested
-with generated data. Remaining gates include projection input/output channel
-and spatial mappings, residual application, WMMA dot order, FP8 output encoding,
-attention/FFN math, other record families, whole graph, TRP integration, and real
-RDNA2/3/4 validation. `KnownArchiveIncompleteSchema` and `inference=unavailable`
-remain the correct product status.
+The recovered codec is now an owned, bounded C++ logical view, tested with
+generated data. The subsequent [residual and output audit](amd-nr-c512-residual-output.md)
+closes residual initialization, E4M3 encoding policy and an optional half average
+as static numerical contracts; those operations are not implemented in the
+product yet. Remaining gates include projection input/output channel and
+spatial mappings, WMMA dot order, attention/FFN math, other record families,
+whole graph, TRP integration, and real RDNA2/3/4 validation.
+`KnownArchiveIncompleteSchema` and `inference=unavailable` remain correct.

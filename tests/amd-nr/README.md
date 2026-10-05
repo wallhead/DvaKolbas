@@ -96,8 +96,10 @@ validation remains outstanding. Numerical-format success does not establish
 model output correctness, accumulation accuracy, quality, speed, or AMD
 compatibility. The C512 codec below supplies canonical storage views for 32
 projection records. Remaining internal views and all operations for 71
-blocks still need recovery and validation, including FP8 encode policy,
-window/skip layouts, noise, input color/exposure, history, and output codecs.
+blocks still need recovery and validation, including window/skip layouts, noise,
+input color/exposure, history, and network output transforms. The C512 E4M3
+encode policy has since been recovered statically; its product implementation
+and GPU comparison remain pending.
 Only after those contracts have evidence can a precise network implementation
 plan be written. Full inference, resident allocation, and TRP session/UI/reset
 integration remain necessary for the original AMD NR request.
@@ -141,4 +143,8 @@ not embedded in the repository or public test fixtures.
 The expanded standalone suite has 13 tests: 12 passed and `AmdNrGpuFormats`
 was skipped because the Windows debug layer is unavailable. Storage indexing
 success does not establish WMMA dot accuracy, spatial channel conventions,
-residual application, FP8 output encoding or a complete C512 block.
+residual execution, FP8 output execution or a complete C512 block. A subsequent
+[residual/output audit](../../docs/amd-nr-c512-residual-output.md) closes those
+two surrounding numerical boundaries with private static and generated probes.
+It does not add arithmetic to the product; its numerical totals are separate
+from the standalone CTest results above.
