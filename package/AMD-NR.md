@@ -76,8 +76,8 @@ The mod writes its own log next to its DLL (`*_dlssnr_on_amd.log`). Look for:
 - `device … (from the first presented swapchain)` and `staging ready`: it found
   TRP's D3D12 device and inputs.
 - `this game renders with D3D11: unsupported` is a compatibility warning.
-  The inspected binary logs it after a device query; that diagnostic alone
-  does not prove an unconditional rejection whenever a D3D11 device is present.
+  That diagnostic alone does not prove an unconditional rejection whenever a
+  D3D11 device is present.
   Check the subsequent initialization, interception and execution results.
 - `dummy swapchain failed` or `ignoring a swapchain that is not on our device`
   identifies a failed setup step or a skipped swapchain. Inspect the complete
