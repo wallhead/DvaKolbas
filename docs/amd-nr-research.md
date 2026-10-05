@@ -173,3 +173,20 @@ registration mappings, nine ELF entry audits, eight byte-identical gfx1200/1201
 variant bodies, 64 closing physical partitions, and exhaustive coefficient
 address coverage. Logical schemas and operation math remain incomplete;
 `KnownArchiveIncompleteSchema` and unavailable inference remain correct.
+
+## Canonical C512 projection indexing
+
+The next audit recovered an exact canonical matrix and residual-coefficient
+indexing contract for the 32 split-C512 projection records (layers 1 and 3 of
+blocks 23–30 and 40–47). All 262,144 matrix coordinates agree between independently
+constructed kernel load addresses and a bit-deposit map. AMD's pinned public
+matrix calculator checks the underlying wave32 B/D register coordinates.
+Every selected record round-trips byte exactly through the canonical view.
+
+An own CPU research prototype passes all 512 non-symmetric basis fixtures with
+zero FP16 bit mismatches. A boundary fixture confirms that rounding after each
+32 reduction channels gives a different result from one final half conversion.
+These fixtures do not establish bit-exact WMMA dot accumulation or a complete
+C512 block. Channel numbers are native fragment coordinates; spatial/HWC
+compatibility remains open. Exact evidence, limitations and reproduction are in
+[the projection report](amd-nr-c512-projection.md). Full inference stays unavailable.

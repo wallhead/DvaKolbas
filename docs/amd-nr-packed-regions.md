@@ -168,8 +168,11 @@ These commands passed against the stable copies. The inspector reports 153
 records, the expected identity and geometry, `KnownArchiveIncompleteSchema`, and
 `inference=unavailable`.
 
-The next numerical gate is to recover the logical matrix and accumulator/store
-permutations, document the C512 operation order and rounding/activation rules,
-then implement and compare a source-owned CPU block on synthetic fixtures.
+The subsequent [projection audit](amd-nr-c512-projection.md) closes canonical
+matrix and residual-coefficient indexing for layers 1 and 3, and verifies the
+per-32-channel FP16 storage boundary on synthetic fixtures. It does not establish
+the spatial/HWC convention, WMMA internal dot order, final FP8 encoding or a full
+C512 CPU block. The rest of the C512 operation order and activation rules still
+require recovery before a complete block can be implemented and compared.
 The remaining record families, whole graph, temporal/input/output contracts,
 GPU execution, TRP integration, and real RDNA2/3/4 acceptance remain unfinished.
