@@ -1,7 +1,7 @@
 # TRP source-owned AMD neural rendering engine
 
 Date: 2026-10-05. Branch: `codex/amd-nr-engine`.
-Status: written design for user review; product implementation has not started.
+Status: approved by the user on 2026-10-05; product implementation has not started.
 
 ## Intent and scope
 

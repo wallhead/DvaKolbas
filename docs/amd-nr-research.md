@@ -44,6 +44,8 @@ The FP8 decode table uses E4M3, bias 7. For exponent zero, magnitude is `mantiss
 
 The host float-to-half integer branches implement round-to-nearest, ties-to-even, including subnormal boundaries, signed zero, overflow, and quieting NaNs. A research translation passed **51,230** comparisons against NumPy's independent conversion, normalizing NumPy's signalling-NaN results to the binary's explicit quieting policy. All **256** FP8 decode entries were generated, with explicit anchor and sign-symmetry checks.
 
+Further planning-stage analysis recovered half-to-float expansion at RVA `0x4f4c0`. It moves NaN sign/payload bits directly and **preserves signalling status** rather than quieting it. An independent-library comparison covered all **65,536** half encodings and matched NumPy exactly, including NaNs. This asymmetry must be retained in CPU and shader storage conversions.
+
 Default extents round up to 64 with a 320 minimum. If both rounded axes are divisible by 256, add 64 to **height**, unless the disabling environment variable is present. Modes 1 and 2 instead round to 8 and 128. Deeper default grids halve with ceiling and round to four; the first grid is half the processing extent.
 
 | Input | Default processing | Deepest grid |
