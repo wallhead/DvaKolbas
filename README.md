@@ -18,7 +18,8 @@ Neural Rendering (NR), and native-resolution menus and HUD. Current version:
 - Native UI composition, inventory/spell previews, loading artwork and external
   ImGui integration, with live GPU measurements beside the settings.
 
-**End** opens settings. Live settings apply automatically when changed.
+**End** opens settings. Toggles apply immediately; numeric fields and sliders
+apply when editing ends (Enter, focus loss or drag release).
 **Save as default** persists settings and window layout. Select **100% | Native**
 in DLSS Render scale for native anti-aliasing. Mode and render scale require restart. NR keyboard
 shortcuts are opt-in. HDR is experimental, through Community Shaders or TRP's own

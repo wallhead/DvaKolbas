@@ -11,6 +11,7 @@
 #include "OverlayNumericInput.h"
 #include "OverlayHotkeys.h"
 #include "RendererSettings.h"
+#include "RendererSettingsEdits.h"
 #include "OverlayPipeline.h"
 #include "OverlayLayout.h"
 
@@ -76,6 +77,8 @@ private:
     void RefreshNeuralRuntimeAvailability();
 	int CountStagedChanges() const;
 	void ApplySettingsDraft(bool a_saveAsDefault);
+    void ApplyLiveSettingsEdits(const TheosRenderPipeline::RendererSettingsDraft& before,
+                                const TheosRenderPipeline::RendererSettingsDraft& after);
 	void ApplyNeuralRenderingStateForSession(int a_state);
 	void DrawNeuralRenderingPanel(float tabCardHeight, const FrameView& view);
 	void DrawFrameGenerationPanel(float tabCardHeight, const FrameView& view);
@@ -91,6 +94,7 @@ private:
     std::vector<TheosRenderPipeline::Appearance::Record> presetPickerSelection;
     TheosRenderPipeline::Overlay::SettingsPage requestedPage{TheosRenderPipeline::Overlay::SettingsPage::None};
 	TheosRenderPipeline::RendererSettingsDraft settingsDraft{};
+    TheosRenderPipeline::RendererSettingsEditTransaction settingsEdits;
     bool nrRuntimePresent{false};
     TheosRenderPipeline::Overlay::Layout layout;
     bool layoutPending{true};

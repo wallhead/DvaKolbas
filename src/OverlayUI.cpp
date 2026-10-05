@@ -136,6 +136,9 @@ void OverlayUI::SetTextInputCapture(bool a_capture)
 
 void OverlayUI::SetVisible(bool a_visible)
 {
+    if (!a_visible) {
+        settingsEdits.Commit(settingsDraft,[this](const auto& before,const auto& after){ApplyLiveSettingsEdits(before,after);});
+    }
 	visible = a_visible;
     if (visible && settingsDraft.valid) {
         RefreshNeuralRuntimeAvailability();
@@ -313,8 +316,10 @@ void OverlayUI::ApplySettingsDraft(bool save)
     {
         return;
     }
+    const auto request=save?TheosRenderPipeline::PrepareRendererStartupDraft(settingsDraft,
+        SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community):settingsDraft;
     auto result = TheosRenderPipeline::RendererSettingsController::Current().Apply(
-        settingsDraft, save, save ? &layout : nullptr);
+        request, save, save ? &layout : nullptr);
     actionMessage = std::move(result.message);
     actionMessageIsError = result.error;
     if (result.applied)
@@ -322,6 +327,17 @@ void OverlayUI::ApplySettingsDraft(bool save)
         RefreshNeuralRuntimeAvailability();
         TheosRenderPipeline::RefreshAppliedRendererSettingsDraft(settingsDraft,
             TheosRenderPipeline::RendererSettingsController::Current().Capture(nrRuntimePresent));
+    }
+}
+
+void OverlayUI::ApplyLiveSettingsEdits(const TheosRenderPipeline::RendererSettingsDraft& before,
+                                      const TheosRenderPipeline::RendererSettingsDraft& after)
+{
+    auto result=TheosRenderPipeline::RendererSettingsController::Current().ApplyLiveEdits(before,after);
+    actionMessage=std::move(result.message);actionMessageIsError=result.error;
+    if(result.applied){
+        const auto accepted=TheosRenderPipeline::RendererSettingsController::Current().Capture(nrRuntimePresent);
+        settingsDraft=TheosRenderPipeline::ProjectRendererLiveEdits(before,after,settingsDraft,&accepted);
     }
 }
 
@@ -381,8 +397,8 @@ void OverlayUI::BuildUI()
         ImGui::EndTabBar();
     }
 
-    TheosRenderPipeline::ApplyRendererSettingsEdits(beforeEdits, settingsDraft,
-        [this] { ApplySettingsDraft(false); });
+    settingsEdits.Observe(beforeEdits,settingsDraft,ImGui::GetActiveID(),
+        [this](const auto& before,const auto& after){ApplyLiveSettingsEdits(before,after);});
     requestedPage = SettingsPage::None;
     DrawSettingsActions();
 
@@ -484,7 +500,7 @@ void OverlayUI::DrawSettingsActions()
     const int stagedChanges = CountStagedChanges();
     const auto status = TheosRenderPipeline::SettingsStatus(stagedChanges, actionMessage, actionMessageIsError);
     ImGui::TextWrapped("%s", status.text.c_str());
-    ImGui::TextDisabled("Live settings apply automatically. Save as default to keep your choices.");
+    ImGui::TextDisabled("Toggles apply immediately; values apply when editing ends. Save as default to keep choices.");
     if (ImGui::Button("Save as default"))
         ApplySettingsDraft(true);
     DrawSettingsHelp("Save choices and window layout. Mode, render scale and presenter changes require restart.");

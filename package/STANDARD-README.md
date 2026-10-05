@@ -56,7 +56,8 @@ input scaling and tuning remain available. NR and frame generation are independe
 Both NR placements now work with native DLAA. At 100% NR input scale, both
 process the native resolution, so placement alone does not reduce inference cost.
 
-Live changes apply automatically. Save as default saves settings and window
+Toggles apply immediately; numeric fields and sliders apply when editing ends
+(Enter, focus loss or drag release). Save as default saves settings and window
 layout. Select 100% | Native under DLSS Render scale for native anti-aliasing.
 Mode, render scale and presenter changes need a restart.
 If the NR DLL is removed, its controls become unavailable until it is restored

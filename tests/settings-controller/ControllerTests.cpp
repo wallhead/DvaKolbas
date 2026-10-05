@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "RendererSettingsController.h"
+#include "RendererSettingsEdits.h"
 #include "FrameGen/NvidiaHost.h"
 #include "FrameGen/SourceFrameGeneration.h"
 #include "PerformanceTuning.h"
@@ -24,6 +25,43 @@ int main(){try{
         fg.settings.sourceDLSSG.neuralThirdPass.tuning.intensity==.7f,
         "Apply publishes all three requested passes with independent tuning");
     Require(!SourceDLSSG::Backend::Get().NeuralConfiguration().enabled,"community owner cannot also enable the legacy NR pass");
+    {
+        auto staged=controller.Capture(true,false);
+        const auto before=staged;StageRendererUpscaleProvider(staged,true);
+        staged.fsr.sourceColorEncoding=Upscaling::ColorEncoding::Gamma22;
+        const auto oldRequests=host.requests;
+        const auto result=controller.ApplyLiveEdits(before,staged);
+        Require(!result.error&&host.requests==oldRequests&&fg.settings.sourceDLSSG.neuralEnabled&&
+            fg.RuntimeInterpolationRequested(),"browsing FSR stages startup choices without disabling live NR/FG");
+        const auto beforeTone=staged;staged.sourceDLSSG.neuralTuning.localToneStrength=.8f;
+        Require(controller.ApplyLiveEdits(beforeTone,staged).applied&&fg.settings.sourceDLSSG.neuralEnabled&&
+            pipeline.mUpscaleType==DLAA&&fg.settings.generationBackend==1&&
+            fg.settings.sourceDLSSG.neuralTuning.localToneStrength==.8f,
+            "live NR tuning works on the actual owner while FSR remains staged");
+        auto invalid=staged;invalid.sourceDLSSG.generation.dynamic=true;invalid.sourceDLSSG.generation.dynamicTargetFPS=12;
+        Require(controller.ApplyLiveEdits(staged,invalid).error,"invalid completed numeric edit is rejected");
+        auto multiplier=invalid;multiplier.sourceDLSSG.generation.generatedFrames=2;
+        Require(controller.ApplyLiveEdits(invalid,multiplier).applied&&
+            fg.settings.sourceDLSSG.generation.generatedFrames==2&&
+            fg.settings.sourceDLSSG.generation.dynamicTargetFPS!=12,
+            "unchanged rejected target cannot block an independent multiplier selection");
+        auto unrelated=invalid;unrelated.sourceDLSSG.neuralEnabled=false;
+        Require(controller.ApplyLiveEdits(invalid,unrelated).applied&&!fg.settings.sourceDLSSG.neuralEnabled,
+            "unchanged rejected values cannot block an unrelated NR checkbox");
+        auto on=unrelated;on.sourceDLSSG.neuralEnabled=true;
+        Require(controller.ApplyLiveEdits(unrelated,on).applied,"restore NR after isolated checkbox check");
+        auto beforeSanitize=controller.Capture(true,false);auto raw=beforeSanitize;
+        StageRendererUpscaleProvider(raw,true);raw.fsr.quality=Upscaling::Quality::NativeAA;
+        raw.sourceDLSSG.neuralReconstruction.whitePoint=0;raw.sourceDLSSG.neuralTuning.intensity=3;
+        Require(controller.ApplyLiveEdits(beforeSanitize,raw).applied,"out-of-range editable NR values are sanitized");
+        const auto accepted=controller.Capture(true,false);auto menu=raw;
+        menu.sourceDLSSG.neuralTuning.localToneStrength=.75f;
+        menu=ProjectRendererLiveEdits(beforeSanitize,raw,menu,&accepted);
+        Require(menu.sourceDLSSG.neuralReconstruction.whitePoint==1&&menu.sourceDLSSG.neuralTuning.intensity==2&&
+            menu.upscaleType==FSR&&menu.fsr.quality==Upscaling::Quality::NativeAA&&
+            menu.sourceDLSSG.neuralTuning.localToneStrength==.75f,
+            "accepted values merge into the editor without losing pending startup choices or a newly edited field");
+    }
     for(bool enabled:{false,true,false,true}){
         draft=controller.Capture(true,false);const auto beforeEdits=draft;
         draft.sourceDLSSG.neuralEnabled=enabled;draft.generationEnabled=enabled;
@@ -44,11 +82,22 @@ int main(){try{
     Require(controller.Apply(draft,true).applied&&pipeline.saves==1,"Save reaches writer exactly once");
     draft=controller.Capture(true,false);draft.upscaleType=FSR;draft.generationBackend=0;
     draft.generationEnabled=false;draft.fsr.sourceColorEncoding=Upscaling::ColorEncoding::Gamma22;
+    draft.fsr.sharpness=.7f;
     applied=controller.Apply(draft,false);
     Require(applied.applied&&!applied.error&&fg.RuntimeInterpolationRequested(),
         "staging ordinary FSR must preserve current NVIDIA interpolation");
     Require(!fg.settings.enabled&&!controller.Capture(true,false).generationEnabled,
         "staged ordinary FSR retains its disabled next-launch preference");
+    {
+        const auto savedRequest=host.configuration.Requested();
+        const auto before=controller.Capture(true,false);auto after=before;
+        after.sourceDLSSG.neuralTuning.localToneStrength=.6f;
+        Require(controller.ApplyLiveEdits(before,after).applied&&host.configuration.Requested().mode==savedRequest.mode&&
+            host.configuration.Requested().fsr.sourceColorEncoding==savedRequest.fsr.sourceColorEncoding&&
+            host.configuration.Requested().fsr.sharpness==savedRequest.fsr.sharpness&&
+            fg.settings.generationBackend==0&&!fg.settings.enabled&&fg.RuntimeInterpolationRequested(),
+            "live edits preserve an already pending startup allocation and presenter default");
+    }
     // Applying again must use the actual owner, even though backend 0 is already staged.
     Require(controller.Apply(controller.Capture(true,false),true).applied&&fg.RuntimeInterpolationRequested(),
         "Save of an already staged presenter cannot disable the current owner");

@@ -21,9 +21,12 @@ class RendererSettingsController
     RendererSettingsDraft Capture(bool nrRuntimePresent, bool readTextures = true) const;
     int CountChanges(const RendererSettingsDraft& draft, bool nrRuntimePresent) const;
     RendererSettingsResult Apply(const RendererSettingsDraft& draft, bool save, const Overlay::Layout* layout = nullptr);
+    RendererSettingsResult ApplyLiveEdits(const RendererSettingsDraft& before, const RendererSettingsDraft& after);
     RendererSettingsResult SetNeuralRenderingEnabled(bool enabled);
 
   private:
+    RendererSettingsResult ApplyImpl(const RendererSettingsDraft& draft, bool save,
+                                    const Overlay::Layout* layout, bool liveOnly);
     RendererSettingsController(RenderPipeline& upscaler, SourceFrameGeneration& frameGen, NvidiaHost& host,
                                PerformanceTuning& performance, TextureProviderBridge& textures)
         : upscaler_(upscaler), frameGen_(frameGen), host_(host), performance_(performance), textures_(textures)

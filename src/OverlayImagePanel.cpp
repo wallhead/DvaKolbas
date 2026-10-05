@@ -187,7 +187,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             ImGui::SetNextItemWidth(-1);
             if (ImGui::Combo("##mode", &mode, modes, modeCount))
             {
-                TheosRenderPipeline::SetRendererUpscaleProvider(settingsDraft, mode == 1);
+                TheosRenderPipeline::StageRendererUpscaleProvider(settingsDraft, mode == 1);
             }
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Render scale");
@@ -242,9 +242,10 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         }
         if(view.fsrActive || settingsDraft.upscaleType==FSR) {
             ImGui::TextWrapped("%s",view.fsrStatus.text.c_str());
-            DrawSettingsHelp("Choosing FSR first stages ordinary presentation with FG, NR, HDR and dynamic resolution off. "
-                             "NR changes apply automatically; the current presenter keeps its live FG request until restart. "
-                             "Save and restart to change mode, quality, provider or source color encoding. Sharpness applies after Present.");
+            DrawSettingsHelp("Choosing FSR stages the next launch; current NR and FG stay active. "
+                             "Save and restart to change mode, quality, provider or source color encoding. "
+                             "Ordinary presentation saves FG off; FSR saves HDR and dynamic resolution off. "
+                             "After NR requires Native scale. Sharpness applies after editing ends.");
         }
         if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"Analytical (3.1.5)","Compatible (runtime selected)"};

@@ -1,5 +1,6 @@
 #include <PCH.h>
 #include "RendererSettingsController.h"
+#include "RendererSettingsEdits.h"
 #include "RenderPipeline.h"
 #include "FrameGen/SourceFrameGeneration.h"
 #include "FrameGen/NvidiaHost.h"
@@ -82,6 +83,37 @@ int RendererSettingsController::CountChanges(const RendererSettingsDraft& draft,
 RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsDraft& settingsDraft,
                                                          bool a_saveAsDefault, const Overlay::Layout* layout)
 {
+    return ApplyImpl(settingsDraft,a_saveAsDefault,layout,false);
+}
+
+RendererSettingsResult RendererSettingsController::ApplyLiveEdits(const RendererSettingsDraft& before,
+                                                                 const RendererSettingsDraft& after)
+{
+    if(!before.valid || !after.valid)
+        return RejectSettingsAction(false,"Settings draft is unavailable; reopen the menu.",
+            [](const std::string& message){logger::error("{}",message);});
+    auto current=Capture(true,after.textureProviderConnected);
+    if(host_.StartupConfigured()){
+        const auto requestedSharpness=current.fsr.sharpness;
+        const auto& effective=host_.SourceUpscalerSettings().Effective();
+        current.upscaleType=effective.mode;current.qualityLevel=effective.quality;current.fsr=effective.fsr;
+        // FSR sharpness remains a requested preference on a NVIDIA session.
+        // Use effective allocation fields without losing that pending live value.
+        current.fsr.sharpness=requestedSharpness;
+    }
+    current.generationBackend=host_.FsrActive()?(host_.FsrFgActive()?2:0):1;
+    current.generationEnabled=frameGen_.RuntimeInterpolationRequested();
+    const auto live=ProjectRendererLiveEdits(before,after,current);
+    if(CountRendererSettingsChanges(live,current)==0 && live.sharpness==current.sharpness)
+        return {"Startup choices pending; Save as default and restart to activate them.",false,false};
+    auto result=ApplyImpl(live,false,nullptr,true);
+    if(result.applied&&!result.error)result.message="Live edit applied; startup selections require Save and restart.";
+    return result;
+}
+
+RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSettingsDraft& settingsDraft,
+    bool a_saveAsDefault,const Overlay::Layout* layout,bool liveOnly)
+{
     if (!settingsDraft.valid)
     {
         return RejectSettingsAction(a_saveAsDefault, "Settings draft is unavailable; reopen the menu.",
@@ -124,7 +156,13 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     upscaler_.mUpscaleType = settingsDraft.upscaleType;
     upscaler_.mFsrSettings = settingsDraft.fsr;
     const long actualBackend=host_.FsrActive() ? (host_.FsrFgActive()?2:0) : 1;
-    ApplyRendererGeneration(settingsDraft,frameGen_,actualBackend);
+    if(!liveOnly)ApplyRendererGeneration(settingsDraft,frameGen_,actualBackend);
+    else if(actualBackend!=0 && settingsDraft.generationEnabled!=frameGen_.RuntimeInterpolationRequested()){
+        const auto pendingBackend=frameGen_.settings.generationBackend;
+        const bool pendingEnabled=frameGen_.settings.enabled;
+        frameGen_.RequestRuntimeInterpolation(settingsDraft.generationEnabled);
+        if(pendingBackend!=actualBackend)frameGen_.settings.enabled=pendingEnabled;
+    }
     upscaler_.mQualityLevel = std::clamp(settingsDraft.qualityLevel, 0, 4);
     upscaler_.mDLSSPreset = settingsDraft.dlssPreset;
     upscaler_.mAutoExposure = settingsDraft.autoExposure;
@@ -136,9 +174,15 @@ RendererSettingsResult RendererSettingsController::Apply(const RendererSettingsD
     upscaler_.mRequestLoadingArtwork.store(settingsDraft.requestLoadingArtwork, std::memory_order_relaxed);
     upscaler_.mWheelerLateOverlayBridge = settingsDraft.lateOverlayBridge;
     // The host stages allocation changes and applies live changes after a completed Present.
-    host_.RequestSourceUpscalerSettings({settingsDraft.upscaleType, settingsDraft.qualityLevel,
-                                         settingsDraft.dlssPreset, settingsDraft.sharpening,
-                                         settingsDraft.autoExposure,settingsDraft.fsr});
+    auto sourceRequest=TheosRenderPipeline::Upscaler::Creation{settingsDraft.upscaleType,settingsDraft.qualityLevel,
+        settingsDraft.dlssPreset,settingsDraft.sharpening,settingsDraft.autoExposure,settingsDraft.fsr};
+    if(liveOnly && host_.StartupConfigured()){
+        const auto& pending=host_.SourceUpscalerSettings().Requested();
+        sourceRequest.mode=pending.mode;sourceRequest.quality=pending.quality;
+        sourceRequest.fsr.quality=pending.fsr.quality;sourceRequest.fsr.providerPolicy=pending.fsr.providerPolicy;
+        sourceRequest.fsr.sourceColorEncoding=pending.fsr.sourceColorEncoding;
+    }
+    host_.RequestSourceUpscalerSettings(sourceRequest);
     auto performanceSettings = performance_.settings;
     performanceSettings.enableGPUTimings = settingsDraft.enableGPUTimings;
     performanceSettings.enableFrameTrace = settingsDraft.enableFrameTrace;

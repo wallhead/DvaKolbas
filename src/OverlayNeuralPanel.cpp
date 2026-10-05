@@ -413,13 +413,16 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
         }
         DrawPresetList();
         NextSettingsColumn(height);
+        const auto* host = NvidiaHost::GetSingleton();
+        const int liveMode = host->StartupConfigured() ? host->SourceUpscalerSettings().Effective().mode
+                                                       : RenderPipeline::GetSingleton()->mUpscaleType;
         if (PresetEditorSelected()) {
-            const bool unavailable = NeuralUnavailableReason(settingsDraft.upscaleType, nrRuntimePresent) != nullptr;
+            const bool unavailable = NeuralUnavailableReason(liveMode, nrRuntimePresent) != nullptr;
             DrawPresetEditor([&](TheosRenderPipeline::SourceDLSSG::Preferences& draft, bool& sharpening, float& sharpness) {
                 DrawNeuralSettings(draft, sharpening, sharpness, unavailable);
             });
         }
-        else { DrawSourceNeuralControls(settingsDraft.sourceDLSSG, settingsDraft.sharpening, settingsDraft.sharpness, settingsDraft.upscaleType, nrRuntimePresent); }
+        else { DrawSourceNeuralControls(settingsDraft.sourceDLSSG, settingsDraft.sharpening, settingsDraft.sharpness, liveMode, nrRuntimePresent); }
         EndSettingsColumns();
     }
     ImGui::EndTabItem();

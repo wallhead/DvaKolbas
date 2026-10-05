@@ -87,7 +87,8 @@ Newer runtimes use the same filenames and folders; compatibility may vary.
 
 ## Controls
 
-**End** opens settings. Live changes apply automatically. **Save as default**
+**End** opens settings. Toggles apply immediately; numeric fields and sliders
+apply when editing ends (Enter, focus loss or drag release). **Save as default**
 saves settings and window layout. Select **100% | Native** under DLSS Render scale
 for native anti-aliasing. Mode, render scale and presenter changes require restart.
 
