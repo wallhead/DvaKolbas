@@ -28,7 +28,7 @@ int main()
         Require(diagnostics.Snapshot().Count(RuntimeDiagnosticEvent::SynchronizationFailure) == 400, "existing counters remain intact");
         const auto overrideMessage = RuntimeModuleFailureMessage("nvngx_dlssg.dll", diagnostics.FrameGenerationOverrideObserved());
         Require(overrideMessage.find("NVIDIA reported") != std::string::npos &&
-            overrideMessage.find("Use the 3D application setting") != std::string::npos, "provide specific app-profile remedy");
+            overrideMessage.find("application-setting filtering") != std::string::npos, "identify unresolved process-local filtering and request runtime evidence");
         Require(RuntimeModuleFailureMessage("sl.reflex.dll", true).find("NVIDIA reported") == std::string::npos,
             "FG override observation cannot mislabel another missing module");
         std::cout << "PASS: evidence-based FG override diagnosis and concurrent vendor-log capture\n"; return 0;

@@ -5,6 +5,7 @@
 #include "SourceDLSSGSwapChain.h"
 #include "SourceRuntimeModuleDiagnostic.h"
 #include "../PluginPaths.h"
+#include "../NvidiaAppSettings.h"
 #include "../ScreenshotFile.h"
 #include <d3dcompiler.h>
 #include <chrono>
@@ -103,6 +104,12 @@ namespace TheosRenderPipeline::SourceDLSSG
 			}
 		}
 		mfgUnlock_.BeforeStreamline(device12_.Get(), directory_);
+		NvidiaAppSettings::SetLog([](const char* message){ logger::info("[NVIDIA App Settings] {}",message); });
+		const auto resolverOwner=mfgUnlock_.Snapshot().UsesProviderBackport() ?
+			NvidiaAppSettings::StreamlineResolverOwner::Compatibility : NvidiaAppSettings::StreamlineResolverOwner::Host;
+		if (!NvidiaAppSettings::PrepareStreamline(directory_,resolverOwner)) {
+			return Check(E_FAIL,"prepare application-controlled NVIDIA runtime settings");
+		}
 		logger::info("[SourceDLSSG] startup stage=load-interposer");
 		interposer_ = ::LoadLibraryExW((directory_ / L"sl.interposer.dll").c_str(), nullptr,
 			LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);

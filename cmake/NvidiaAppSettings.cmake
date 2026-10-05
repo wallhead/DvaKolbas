@@ -1,0 +1,7 @@
+if(NOT TARGET TRPNvidiaAppSettings)
+    get_filename_component(trpSettingsRoot "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+    add_library(TRPNvidiaAppSettings STATIC "${trpSettingsRoot}/src/NvidiaAppSettings.cpp")
+    target_compile_features(TRPNvidiaAppSettings PUBLIC cxx_std_20)
+    target_compile_definitions(TRPNvidiaAppSettings PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_include_directories(TRPNvidiaAppSettings PUBLIC "${trpSettingsRoot}/src")
+endif()

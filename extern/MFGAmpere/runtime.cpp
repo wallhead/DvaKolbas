@@ -6,6 +6,7 @@
 #include "../RTX40MFG/midpoint_fix.h"
 #include "../RTX40MFG/dlssg_provider_policy.h"
 #include "../../src/FrameGen/SourceDLSSGMFGPatch.h"
+#include "../../src/NvidiaAppSettings.h"
 #include <nvsdk_ngx.h>
 #include <dxgi.h>
 #include <array>
@@ -100,7 +101,7 @@ int __cdecl Architecture(void* gpu, ArchInfo* info) {
 void* __cdecl QueryInterface(std::uint32_t id) {
     auto& s = State(); auto* result = s.query(id);
     if (id == 0xd8265d24 && result == reinterpret_cast<void*>(s.arch)) return reinterpret_cast<void*>(Architecture);
-    return result;
+    return TheosRenderPipeline::NvidiaAppSettings::FilterNvapiFunction(id,result);
 }
 bool BlobFingerprint(const void* blob,std::uint32_t size,std::uint64_t& hash) noexcept {
     if(size>fatbin::kMaxFatbinBytes)return false;
@@ -155,7 +156,7 @@ int __cdecl CreateCuModule(ID3D12Device* device, const void* blob, std::uint32_t
 }
 void* __cdecl ProviderQueryInterface(std::uint32_t id) {
     auto& s=State();auto* result=s.query(id);
-    if(id!=0xad1a677d || !result)return result;
+    if(id!=0xad1a677d || !result)return TheosRenderPipeline::NvidiaAppSettings::FilterNvapiFunction(id,result);
     auto typed=reinterpret_cast<CreateModule>(result);CreateModule empty{};
     if(!s.createModule.compare_exchange_strong(empty,typed) && empty!=typed) {
         Fail("provider CuModule export changed identity; restart required");

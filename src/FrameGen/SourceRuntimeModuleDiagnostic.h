@@ -9,9 +9,8 @@ inline std::string RuntimeModuleFailureMessage(std::string_view name, bool frame
 {
     auto message = std::format("{} was not loaded from the configured Streamline directory", name);
     if (name == "nvngx_dlssg.dll" && frameGenerationOverrideObserved) {
-        message += ". NVIDIA reported a DLSS Frame Generation override. In NVIDIA App's Skyrim profile, set "
-            "DLSS Override - Model Presets (Frame Generation) and DLSS Override - Frame Generation to "
-            "Use the 3D application setting, then restart Skyrim. See RaZkolbaS.log for paths";
+        message += ". NVIDIA reported a DLSS Frame Generation override despite application-setting filtering. "
+            "Restart Skyrim and include RaZkolbaS.log when reporting this failure; it records the selected runtime paths";
     }
     return message;
 }

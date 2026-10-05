@@ -2,6 +2,7 @@
 #include "RuntimeFileLease.h"
 #include "CallerIdentityShim.h"
 #include "RuntimeParameters.h"
+#include "../NvidiaAppSettings.h"
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 #include <array>
@@ -90,6 +91,7 @@ Result<void> RuntimeOwner::Open(const RuntimeProfile& requested,ID3D12Device* de
     s.core=LoadLibraryExW(s.paths.coreFile.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);
     if(!s.core)return Fail(ErrorKind::Io,"Cannot load pinned driver core",GetLastError());
     if(!Matches(s.core,*s.coreLease))return Fail(ErrorKind::IdentityMismatch,"Loaded core does not match held driver file");
+    if(!NvidiaAppSettings::ProtectModule(s.core))return Fail(ErrorKind::Runtime,"Cannot establish application-controlled NGX settings");
     s.nr=LoadLibraryExW(s.paths.nrFile.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);
     if(!s.nr)return Fail(ErrorKind::Io,"Cannot load NR profile",GetLastError());
     if(!Matches(s.nr,*s.runtimeLease))return Fail(ErrorKind::IdentityMismatch,"Loaded NR does not match held profile file");

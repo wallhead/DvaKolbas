@@ -4,6 +4,7 @@
 
 #include <PCH.h>
 #include "PluginPaths.h"
+#include "NvidiaAppSettings.h"
 
 #include "PerformanceTuning.h"
 
@@ -135,6 +136,11 @@ bool DLSSBackend::EnsureNGXInitialized()
 	}
 
 	const auto dataPath = GetNGXDataPath();
+	TheosRenderPipeline::NvidiaAppSettings::SetLog([](const char* message){ logger::info("[NVIDIA App Settings] {}",message); });
+	if (!TheosRenderPipeline::NvidiaAppSettings::PrepareCore()) {
+		logger::error("[DLSSBackend] cannot establish application-controlled NGX settings");
+		return false;
+	}
 	// nvngx_dlss.dll ships in Data/SKSE/Plugins/RaZkolbaS next to the plugin DLL.
 	const auto modulePath = GetPluginDirectory() / L"RaZkolbaS";
 	const auto modulePathString = modulePath.wstring();

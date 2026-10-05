@@ -1,6 +1,7 @@
 // Exercise the production wrappers with vendor doubles; no GPU dispatch.
 #include "../../extern/MFGAmpere/runtime.cpp"
 #include "../../src/FrameGen/SourceDLSSGMFG.h"
+#include "../../src/NvidiaAppSettingsPolicy.h"
 #include <thread>
 #include <iostream>
 #include <map>
@@ -350,6 +351,20 @@ void FalseSuccess() {
     Require(vendorCalls==1 && Snapshot().failed && !Saw("feature created"),"false success is not logged as readiness");
 }
 
+int __cdecl MockDrs(void*,void*,unsigned id,TheosRenderPipeline::NvidiaAppSettings::DrsSetting* setting){setting->id=id;setting->current=1;return 0;}
+void* __cdecl MockSettingsQuery(unsigned id){return id==0x73bf8338?reinterpret_cast<void*>(&MockDrs):reinterpret_cast<void*>(&RealArch);}
+void SettingsCalls(){
+    auto& s=State();s.query=&MockSettingsQuery;s.arch=&RealArch;
+    using Setting=TheosRenderPipeline::NvidiaAppSettings::DrsSetting;
+    using Read=int(__cdecl*)(void*,void*,unsigned,Setting*);
+    for(auto queryFunction:{&QueryInterface,&ProviderQueryInterface}){
+        Setting setting{};setting.version=sizeof(setting)|0x10000;
+        auto reader=reinterpret_cast<Read>(queryFunction(0x73bf8338));
+        Require(reader && reader(nullptr,nullptr,0x10e41e03,&setting)==0 && setting.current==0,"checked compatibility resolver suppresses FG override");
+    }
+    Require(QueryInterface(0xd8265d24)==reinterpret_cast<void*>(&Architecture),"wrapper still exposes compatibility architecture");
+    Require(ProviderQueryInterface(0xd8265d24)==reinterpret_cast<void*>(&RealArch),"provider still exposes physical architecture");
+}
 int main(int argc,char** argv) {try {
     Require(argc==2,"runtime_tests <case>");std::string mode=argv[1];
     if(mode.starts_with("turing-")) { mode.erase(0,7);State().nativeArchitecture=kTuring;State().targetSm=75; }
@@ -363,7 +378,8 @@ int main(int argc,char** argv) {try {
     Require(midpoint_fix::ClassifyCUDAAdapter(8,0)==midpoint_fix::AdapterKind::Other &&
             midpoint_fix::ClassifyCUDAAdapter(7,0)==midpoint_fix::AdapterKind::Other &&
             midpoint_fix::ClassifyCUDAAdapter(12,0)==midpoint_fix::AdapterKind::Other,"other GPUs keep native admission");
-    if(mode=="policies"){Transactions();Policies();}
+    if(mode=="nvapi-settings")SettingsCalls();
+    else if(mode=="policies"){Transactions();Policies();}
     else if(mode=="requirements")RequirementCalls();
     else if(mode.starts_with("capabilities"))ParameterCalls(mode);
     else if(mode.starts_with("create-"))CreationCalls(mode);
