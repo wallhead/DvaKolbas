@@ -158,7 +158,7 @@ int wmain(int argc,wchar_t** argv){try{
         DirectX::XMFLOAT4X4 view,projection;DirectX::XMStoreFloat4x4(&view,DirectX::XMMatrixIdentity());
         DirectX::XMStoreFloat4x4(&projection,DirectX::XMMatrixPerspectiveFovLH(1,float(extent.width)/extent.height,.1f,100));
         std::memcpy(real.camera.view.data(),&view,64);std::memcpy(real.camera.projection.data(),&projection,64);
-        NR::SettingsSnapshot tuning;tuning.placement=NR::Placement::After;tuning.stableColors=false;tuning.revision=1;
+        NR::SettingsSnapshot tuning;tuning.placement=NR::Placement::After;tuning.revision=1;
         std::unique_ptr<PendingWork> pending;
         const auto retirePending=[&](bool suspend){
             Check(pending&&pending->Pending(),"ActualFgWorkPendingAtLifecycleBoundary");if(pending)pending->Release();

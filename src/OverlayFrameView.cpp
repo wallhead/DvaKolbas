@@ -60,6 +60,8 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
         view.sourceNeural.failed=nvidiaHost->CommunityNeuralTerminal();
         view.sourceNeural.evaluations=nvidiaHost->CommunityNeuralRecorded();
         view.sourceNeural.status=nvidiaHost->CommunityNeuralStatus();
+        view.sourceNeural.effectivePasses=view.sourceNeural.active?
+            SourceFrameGeneration::GetSingleton()->settings.sourceDLSSG.neuralPasses:0;
     }
 #endif
     view.nativeWidth = view.nvidiaHostActive && nvidiaHost->OutputWidth() > 0
@@ -130,7 +132,7 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
 #if !defined(TRP_NO_NEURAL_RENDERING)
     if (communityNR) {
         const auto& prefs=SourceFrameGeneration::GetSingleton()->settings.sourceDLSSG;
-        neural.enabled=prefs.neuralEnabled;neural.beforeUpscaling=prefs.neuralBeforeUpscaling;neural.passes=1;
+        neural.enabled=prefs.neuralEnabled;neural.beforeUpscaling=prefs.neuralBeforeUpscaling;neural.passes=prefs.neuralPasses;
     }
 #endif
     view.neuralEnabled = neural.enabled;
@@ -189,20 +191,20 @@ void OverlayUI::DrawPipelineSummary(const FrameView& view)
     const auto neuralTooltip = view.sourceNeural.status + "\nClick to open Neural Rendering settings.";
 #endif
     PipelineDiagram diagram{
-        {{{"World", view.renderDetail, "Game-rendered scene.\nClick to open Image settings.",
+        {{{"World", view.renderDetail, "Game-rendered scene.\nClick to open DLSS settings.",
            SettingsPage::Image},
 #if !defined(TRP_NO_NEURAL_RENDERING)
           {"Neural Rendering", view.neuralDetail, neuralTooltip.c_str(), SettingsPage::NeuralRendering,
            !view.neuralEnabled},
 #endif
           {view.upscaleTitle, view.upscaleDetail,
-           TheosRenderPipeline::CommunityShaders::Active() ? "Upscaling is controlled in the Community Shaders menu.\nClick to open Image status." :
-           "DLSS reconstruction or native-resolution DLAA.\nClick to open Image settings.", SettingsPage::Image},
+           TheosRenderPipeline::CommunityShaders::Active() ? "Upscaling is controlled in the Community Shaders menu.\nClick to open DLSS status." :
+           "DLSS/DLAA or FSR reconstruction.\nClick to open DLSS settings.", SettingsPage::Image},
           {"Frame generation", view.generationTitle,
            "Adds generated frames between game-rendered frames.\nClick to open Frame generation settings.",
            SettingsPage::FrameGeneration, !view.frameGenerationRuntimeActive},
-          {"Output", view.nativeDetail,
-           "Final output resolution.\nClick to open Image settings.", SettingsPage::Image}}},
+          {"UI / Output", view.nativeDetail,
+           "Native UI composition and final output resolution.\nClick to open DLSS settings.", SettingsPage::Image}}},
         view.nativeDetail,
         view.nativeUIHealth == UIHealth::kHealthy,
         view.pipelineLabel,

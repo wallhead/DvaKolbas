@@ -91,6 +91,6 @@ inline float GraphHeight(float columnHeight)
     return std::clamp(columnHeight * 0.22f, 90.0f, 240.0f);
 }
 
-// Draws the divider without advancing the cursor; both children use the returned widths.
+// Legacy entry point: returns the full settings width without drawing a divider.
 ColumnSizes DrawColumnSplitter(float width, float height, float& leftFraction);
 } // namespace TheosRenderPipeline::Overlay

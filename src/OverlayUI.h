@@ -51,6 +51,7 @@ private:
     void DrawHDROutputSettings();
     void DrawTextureMemoryPanel(const FrameView& view);
     void DrawAdvancedPanel(float tabCardHeight, const FrameView& view);
+    void DrawFrameGenerationAdvanced(const FrameView& view);
     bool BeginSettingsColumns(const char* id, float height, const FrameView& view);
     void NextSettingsColumn(float height);
     void EndSettingsColumns();

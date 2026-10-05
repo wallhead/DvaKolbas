@@ -14,6 +14,7 @@ struct BeforeHost::State {
     std::shared_ptr<RuntimeOwner> owner;std::unique_ptr<PreparedBeforeUpscale> prepared;std::unique_ptr<PostUpscale> post;Placement placement{Placement::Before};
     bool inspected{},available{},terminal{},uncertain{},active{},initializationBypassed{};
     uint64_t recorded{},resets{};
+    int passes{1};
     std::string status{"NR off"};
     bool HasPreparation()const{return bool(prepared)||bool(post);}
     Result<void> RetirePreparation(){auto r=post?post->Retire():prepared?prepared->Retire():Result<void>{};if(r){post.reset();prepared.reset();}return r;}
@@ -86,7 +87,7 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
     if(s.initializationBypassed){auto safe=s.owner->CheckInitializationFallbackSafety();if(!safe){s.MarkTerminal(safe.error());return std::unexpected(safe.error());}}
     if(!settings.enabled){if(s.available)s.status="NR off";if(s.HasPreparation()){auto result=s.Run(input,settings,nullptr,metadata);if(result)result->effectiveReset|=wasActive;return result;}return BeforeResult{false,input.reset};}
     if(!s.available)return BeforeResult{false,input.reset};
-    if(settings.placement!=(metadata?Placement::After:Placement::Before)||settings.reconstruction.preset!=0||settings.reconstruction.inputScale!=1||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto||settings.reconstruction.method>ResolveMethod::Ratio||
+    if(settings.passes<1||settings.passes>3||settings.placement!=(metadata?Placement::After:Placement::Before)||settings.reconstruction.preset!=0||settings.reconstruction.inputScale!=1||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto||settings.reconstruction.method>ResolveMethod::Ratio||
         settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation){s.status="Requested NR stage/reconstruction is unavailable in this native source trial";if(s.HasPreparation()){auto off=settings;off.enabled=false;auto drained=s.Run(input,off,nullptr,metadata);if(!drained){s.MarkTerminal(drained.error());return std::unexpected(drained.error());}}return BeforeResult{false,wasActive||input.reset};}
     if(metadata){
         const auto valid=ValidatePostSrSourceContract(*metadata);
@@ -98,7 +99,7 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
     }
     if(!input.context||!input.color||!input.depth||!input.motion||!input.colorExtent.width||!input.colorExtent.height||input.colorExtent!=input.guideExtent||!input.epoch||!input.sourceId||input.guideSourceId!=input.sourceId||input.guideEpoch!=input.epoch){
         s.status="NR waiting for matching real-world guides";if(s.HasPreparation()){auto off=settings;off.enabled=false;auto reset=s.Run(input,off,nullptr,metadata);if(!reset){s.MarkTerminal(reset.error());return std::unexpected(reset.error());}}return BeforeResult{false,wasActive||input.reset};}
-    if(s.HasPreparation()&&(s.contract.colorExtent!=input.colorExtent||s.placement!=settings.placement)){
+    if(s.HasPreparation()&&(s.contract.colorExtent!=input.colorExtent||s.placement!=settings.placement||s.passes!=settings.passes)){
         auto retired=s.RetirePreparation();if(!retired){s.MarkTerminal(retired.error());return std::unexpected(retired.error());}s.prepared.reset();s.post.reset();
     }
     if(!s.owner){
@@ -112,11 +113,11 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
         if(!opened){auto disabled=s.DisableAfterOpenFailure(opened.error());if(!disabled)return std::unexpected(disabled.error());return BeforeResult{false,wasActive||input.reset};}
     }
     if(!s.HasPreparation()){
-        s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.placement=settings.placement;
+        s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.placement=settings.placement;s.passes=settings.passes;
         Result<void> initialized;
-        if(metadata){s.post=std::make_unique<PostUpscale>();initialized=s.post->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,ColorDomain::SdrBytes);}
+        if(metadata){s.post=std::make_unique<PostUpscale>();initialized=s.post->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,ColorDomain::SdrBytes,unsigned(s.passes));}
         else{s.prepared=std::make_unique<PreparedBeforeUpscale>();initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,
-            s.settings.sdrBytesTrial?ColorDomain::SdrBytes:ColorDomain::Linear);}
+            s.settings.sdrBytesTrial?ColorDomain::SdrBytes:ColorDomain::Linear,Placement::Before,unsigned(s.passes));}
         if(!initialized){s.MarkTerminal(initialized.error());return std::unexpected(initialized.error());}
     }
     if(s.settings.sdrBytesTrial&&linearOutput&&linearOutput->Valid())
@@ -127,7 +128,7 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
     if(!result){if(result.error().kind==ErrorKind::InvalidInput||result.error().kind==ErrorKind::Unsupported){s.status=result.error().message;auto off=settings;off.enabled=false;auto reset=s.Run(input,off,nullptr,metadata);if(reset)return BeforeResult{false,wasActive||input.reset};}
         s.MarkTerminal(result.error());return std::unexpected(result.error());}
     s.active=result->evaluated;if(s.active){++s.recorded;s.resets+=result->effectiveReset;s.status=std::string(metadata?"NR active after upscaling, before FG; ":"NR active before upscaling; ")+std::string(s.profile->id)+
-        (s.settings.sdrBytesTrial?"; one SDR RGBA8 byte trial pass":"; one native SDR pass");}return *result;
+        "; "+std::to_string(s.passes)+(s.settings.sdrBytesTrial?" SDR RGBA8 byte trial ":" native SDR ")+(s.passes==1?"pass":"passes");}return *result;
 }
 Result<void> BeforeHost::Retire(){auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,s.status.c_str());
     if(s.initializationBypassed){

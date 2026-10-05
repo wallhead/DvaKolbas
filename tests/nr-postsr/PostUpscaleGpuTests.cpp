@@ -47,7 +47,7 @@ int wmain(int argc,wchar_t** argv){try{
     if(argc!=3)return 1;
 #endif
     if(NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: Skyrim running or inventory unavailable");return 1;}
-    PostUpscale post;SettingsSnapshot settings;settings.enabled=false;settings.revision=1;settings.placement=Placement::After;settings.stableColors=false;
+    PostUpscale post;SettingsSnapshot settings;settings.enabled=false;settings.revision=1;settings.placement=Placement::After;
     Check(bool(post.Evaluate({},settings)),"DisabledPostSourceRequiresNoRuntimeOrDecoder");
 #if defined(TRP_POSTSR_FSR_PRESENT)
     ComPtr<ID3D12Debug> graphicsDebug;const bool debug12=SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&graphicsDebug)));

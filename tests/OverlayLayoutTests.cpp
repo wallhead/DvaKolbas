@@ -1,4 +1,7 @@
 #include "OverlayLayout.h"
+#include "OverlayPipeline.h"
+#include "OverlayUIStyle.h"
+#include <imgui_internal.h>
 #include <SimpleIni.h>
 #include <imgui.h>
 
@@ -91,11 +94,6 @@ FrameResult Frame(float& fraction, ImVec2 mouse, bool down, const char* tab = "I
     ImGui::BeginChild("left", ImVec2(columns.left, 400));
     ImGui::TextUnformatted("measurements");
     ImGui::EndChild();
-    ImGui::SameLine(0, ColumnGap);
-    ImGui::BeginChild("right", ImVec2(0, 400));
-    ImGui::TextUnformatted("controls");
-    Require(ImGui::GetWindowSize().x <= columns.right + 1, "right child fits remaining width");
-    ImGui::EndChild();
     ImGui::PopID();
     ImGui::End();
     ImGui::Render();
@@ -118,8 +116,8 @@ void Dragging()
     Frame(fraction, first.divider, true);
     auto moved = Frame(fraction, ImVec2(first.divider.x + 100, first.divider.y), true);
     Frame(fraction, ImVec2(first.divider.x + 100, first.divider.y), false);
-    Require(fraction > 0.55f && moved.columns.left > first.columns.left + 90,
-            "actual ImGui mouse drag moves the divider");
+    Require(Near(fraction, 0.5f) && Near(moved.columns.left, first.width) && moved.columns.right == 0,
+            "settings must occupy the full width; mouse drag must not create a split pane");
     const float selected = fraction;
     const auto switched = Frame(fraction, ImVec2(-100, -100), false, "NR");
     Require(fraction == selected && Near(switched.columns.left, moved.columns.left),
@@ -135,6 +133,100 @@ void Dragging()
     Require(Near(fraction, selected), "double click does not reset the divider");
     ImGui::DestroyContext();
 }
+
+void PipelineNavigation()
+{
+    ImGui::CreateContext();
+    auto& io = ImGui::GetIO();
+    io.IniFilename = nullptr;
+    io.DisplaySize = ImVec2(1920, 1080);
+    io.DeltaTime = 1.0f / 60;
+    unsigned char* pixels;
+    int width, height;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+    PipelineDiagram diagram{};
+    const SettingsPage expected[]{SettingsPage::Image,
+#if !defined(TRP_NO_NEURAL_RENDERING)
+                                 SettingsPage::NeuralRendering,
+#endif
+                                 SettingsPage::Image, SettingsPage::FrameGeneration, SettingsPage::Image};
+    for (std::size_t i = 0; i < diagram.stages.size(); ++i)
+        diagram.stages[i] = {"Stage", "Applied", "Open controls", expected[i]};
+    diagram.nativeDetail = "1920 x 1080";
+    diagram.nativeUI = true;
+    diagram.status = "Healthy";
+    std::array<ImVec2, PipelineDiagram::StageCount> centers;
+    auto frame = [&](ImVec2 mouse, bool down, float windowWidth) {
+        io.AddMousePosEvent(mouse.x, mouse.y);
+        io.AddMouseButtonEvent(ImGuiMouseButton_Left, down);
+        ImGui::NewFrame();
+        ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(windowWidth, 600), ImGuiCond_Always);
+        ImGui::Begin("Pipeline navigation");
+        auto* parent = ImGui::GetCurrentWindow();
+        const auto ids = parent->IDStack.Size;
+        const auto origin = ImGui::GetCursorScreenPos();
+        const float gap = ImGui::GetTextLineHeight() * 2;
+        const float count = static_cast<float>(diagram.stages.size());
+        const float nodeWidth = (ImGui::GetContentRegionAvail().x - gap * (count - 1)) / count;
+        for (std::size_t i = 0; i < centers.size(); ++i)
+            centers[i] = ImVec2(origin.x + i * (nodeWidth + gap) + nodeWidth * 0.5f,
+                origin.y + ImGui::GetTextLineHeight() * 2 + ImGui::GetStyle().ItemSpacing.y + 15);
+        const auto requested = DrawPipelineDiagram(diagram);
+        Require(ImGui::GetCurrentWindow() == parent && parent->IDStack.Size == ids,
+                "clickable pipeline must leave the ImGui window and ID stacks balanced");
+        ImGui::End();
+        ImGui::Render();
+        return requested;
+    };
+    for (const float windowWidth : {780.0f, 1400.0f})
+    {
+        frame(ImVec2(-100, -100), false, windowWidth);
+        for (std::size_t i = 0; i < diagram.stages.size(); ++i)
+        {
+            const auto center = centers[i];
+            frame(center, false, windowWidth);
+            frame(center, true, windowWidth);
+            Require(frame(center, false, windowWidth) == expected[i],
+                    "pipeline click must open the matching settings page at narrow and wide sizes");
+        }
+        // A runtime update during a click must not cancel navigation.
+        const auto center = centers[PipelineDiagram::GenerationStage];
+        frame(center, false, windowWidth);
+        frame(center, true, windowWidth);
+        diagram.stages[PipelineDiagram::GenerationStage].detail = "Updated";
+        Require(frame(center, false, windowWidth) == SettingsPage::FrameGeneration,
+                "changing applied status during a mouse press must preserve the stage's click target");
+        diagram.stages[PipelineDiagram::GenerationStage].detail = "Applied";
+    }
+    ImGui::DestroyContext();
+}
+
+void StockStyle()
+{
+    ImGui::CreateContext();
+    ImGuiStyle baseline;
+    ImGui::StyleColorsDark(&baseline);
+    auto& style = ImGui::GetStyle();
+    style.WindowPadding = ImVec2(32, 32);
+    style.FramePadding = ImVec2(20, 20);
+    style.WindowRounding = style.FrameRounding = 12;
+    style.Colors[ImGuiCol_Button] = ImVec4(1, 0.5f, 0, 1);
+    ApplyRendererStyle();
+    Require(style.WindowPadding.x == baseline.WindowPadding.x && style.WindowPadding.y == baseline.WindowPadding.y &&
+                style.FramePadding.x == baseline.FramePadding.x && style.FramePadding.y == baseline.FramePadding.y &&
+                style.CellPadding.x == baseline.CellPadding.x && style.CellPadding.y == baseline.CellPadding.y &&
+                style.ItemSpacing.x == baseline.ItemSpacing.x && style.ItemSpacing.y == baseline.ItemSpacing.y &&
+                style.ItemInnerSpacing.x == baseline.ItemInnerSpacing.x && style.ItemInnerSpacing.y == baseline.ItemInnerSpacing.y &&
+                style.WindowRounding == baseline.WindowRounding && style.FrameRounding == baseline.FrameRounding &&
+                style.ChildRounding == baseline.ChildRounding && style.FrameBorderSize == baseline.FrameBorderSize,
+            "overlay style must restore stock ImGui padding, spacing and geometry");
+    for (int i = 0; i < ImGuiCol_COUNT; ++i)
+        Require(style.Colors[i].x == baseline.Colors[i].x && style.Colors[i].y == baseline.Colors[i].y &&
+                    style.Colors[i].z == baseline.Colors[i].z && style.Colors[i].w == baseline.Colors[i].w,
+                "overlay palette must match stock StyleColorsDark for every widget");
+    ImGui::DestroyContext();
+}
 } // namespace
 
 int main()
@@ -143,7 +235,9 @@ int main()
     {
         Settings();
         Dragging();
-        std::cout << "Layout persistence, display fitting and ImGui divider interaction passed\n";
+        PipelineNavigation();
+        StockStyle();
+        std::cout << "Layout persistence, display fitting and full-width ImGui settings passed\n";
         return 0;
     }
     catch (const std::exception& error)

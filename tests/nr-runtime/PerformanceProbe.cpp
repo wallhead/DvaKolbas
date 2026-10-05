@@ -20,7 +20,7 @@ using Microsoft::WRL::ComPtr;
 namespace {
 struct Options {
     std::string profile{"rtx40"};std::filesystem::path dll,core,output,fsrRuntime;
-    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{},preparedFsr{},stableColors{true},styleCycle{};
+    unsigned width{2560},height{1440},frames{300},warmup{120},timerPeriodMs{1};bool enabled{true},instrumentation{true},readback{},preparedFsr{},stableColors{false},styleCycle{};
 } options;
 struct WallSample {uint64_t id{},nanoseconds{};};
 PerformanceMetrics metrics;std::vector<WallSample> wall;
@@ -89,7 +89,7 @@ int wmain(int argc,wchar_t** argv){try{
         else if(key==L"--core")options.core=value;else if(key==L"--output")options.output=std::filesystem::absolute(value);
         else if(key==L"--fsr-runtime")options.fsrRuntime=std::filesystem::absolute(value);
         else if(key==L"--prepared-fsr")options.preparedFsr=Boolean(value);
-        else if(key==L"--stable-colors")options.stableColors=Boolean(value);
+        else if(key==L"--stable-colors")Need(!Boolean(value),"Stable colors processing was removed; only legacy off is accepted");
         else if(key==L"--style-cycle")options.styleCycle=Boolean(value);
         else if(key==L"--frames")options.frames=Number(value);else if(key==L"--warmup")options.warmup=Number(value);
         else if(key==L"--timer-period-ms")options.timerPeriodMs=Number(value);
@@ -164,7 +164,7 @@ int wmain(int argc,wchar_t** argv){try{
     for(size_t f=0;f<pattern.size();++f){pattern[f].resize(pixels*4);for(UINT y=0;y<options.height;++y)for(UINT x=0;x<options.width;++x){const auto p=(size_t(y)*options.width+x)*4;pattern[f][p]=((x/8+y/8+f)%2)?48:208;pattern[f][p+1]=(x+f)%256;pattern[f][p+2]=(y+f)%256;pattern[f][p+3]=(x+y+f)%256;}}
     BeforeInput input;input.context=context;input.color=color;input.depth=depth;input.motion=motion;input.colorExtent=input.guideExtent=contract.colorExtent;input.epoch=input.guideEpoch=1;input.motionScaleX=float(options.width);input.motionScaleY=float(options.height);
     SettingsSnapshot settings;settings.revision=1;settings.tuning.localToneStrength=options.styleCycle?1.018f:0;
-    settings.tuning.intensity=options.styleCycle?1.043f:1;settings.tuning.style=options.styleCycle?1:0;settings.stableColors=options.stableColors;
+    settings.tuning.intensity=options.styleCycle?1.043f:1;settings.tuning.style=options.styleCycle?1:0;
     for(UINT frame=0;frame<options.frames+options.warmup;++frame){const auto& data=pattern[frame%pattern.size()];context->UpdateSubresource(color.Get(),0,nullptr,data.data(),options.width*4,0);
         input.reset=options.styleCycle&&frame&&frame%20==0;
         if(input.reset){settings.tuning.style=1-settings.tuning.style;++settings.revision;

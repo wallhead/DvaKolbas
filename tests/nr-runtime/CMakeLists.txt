@@ -99,7 +99,8 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     add_test(NAME NrPerformanceQueries COMMAND TRPNrPerformanceQueriesTests)
     set_tests_properties(NrPerformanceQueries PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 30)
     trp_nr_enable_source_stage("${TRP_NR_NGX_INCLUDE_DIR}")
-    add_executable(TRPNrStableColorTests ../NrStableColorTests.cpp)
+    # Historical shader utility coverage; the product no longer links this resolve.
+    add_executable(TRPNrStableColorTests ../NrStableColorTests.cpp ../../src/NeuralRendering/StableColorResolve.cpp)
     target_compile_features(TRPNrStableColorTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrStableColorTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_link_libraries(TRPNrStableColorTests PRIVATE TRPNeuralRuntime)
@@ -110,7 +111,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_definitions(TRPNrToneContextProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNrToneContextProbe PRIVATE "${nrRoot}/tests")
     target_link_libraries(TRPNrToneContextProbe PRIVATE TRPNeuralRuntime)
-    foreach(mode IN ITEMS stable vendor toggle off)
+    foreach(mode IN ITEMS vendor off)
         add_test(NAME NrToneContext-${mode} COMMAND TRPNrToneContextProbe "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/tone-context/${mode}" ${mode})
         set_tests_properties(NrToneContext-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 60 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
@@ -122,6 +123,10 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     set_tests_properties(NrBeforeUpscale PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
     add_test(NAME NrBeforeUpscale-wait-failure COMMAND TRPNrBeforeUpscaleTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" wait-failure)
     set_tests_properties(NrBeforeUpscale-wait-failure PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 30 RUN_SERIAL TRUE LABELS GPU)
+    foreach(mode IN ITEMS copy-without-rt chain-two chain-three)
+        add_test(NAME NrBeforeUpscale-${mode} COMMAND TRPNrBeforeUpscaleTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" ${mode})
+        set_tests_properties(NrBeforeUpscale-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+    endforeach()
     add_executable(TRPNrPreparedBeforeTests ../NrPreparedBeforeTests.cpp)
     add_executable(TRPNrDeferredDeliveryTests ../NrDeferredDeliveryTests.cpp)
     add_executable(TRPNrCapacityProgressTests ../NrCapacityProgressTests.cpp)
@@ -165,6 +170,8 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         set_tests_properties(NrPostSrHost-switch PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrPostSrHost-live-settings COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/post-sr-live-settings.json" --sdr-bytes --post-sr --live-settings)
         set_tests_properties(NrPostSrHost-live-settings PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+        add_test(NAME NrPostSrHost-pass-cycle COMMAND TRPNrBeforeHostFramesTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" "${CMAKE_CURRENT_BINARY_DIR}/post-sr-pass-cycle.json" --sdr-bytes --post-sr --pass-cycle)
+        set_tests_properties(NrPostSrHost-pass-cycle PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         add_test(NAME NrBeforeHost COMMAND TRPNrBeforeHostTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrBeforeHost PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         if(TRP_NR_RESHADE_RUNTIME)
@@ -209,8 +216,9 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     endforeach()
     target_compile_features(TRPNrStageTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrStageTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_include_directories(TRPNrStageTests PRIVATE "${TRP_NR_NGX_INCLUDE_DIR}")
     target_link_libraries(TRPNrStageTests PRIVATE TRPNeuralRuntime)
-    foreach(mode IN ITEMS unsubmitted record-failure queued-admission)
+    foreach(mode IN ITEMS unsubmitted record-failure queued-admission chain-two chain-three chain-failure)
         add_test(NAME NrStage-${mode} COMMAND TRPNrStageTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" ${mode})
         set_tests_properties(NrStage-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 30 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
@@ -312,6 +320,9 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         add_test(NAME NrControllerApplyGpu COMMAND TRPNrControllerApplyGpuTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}"
             "${CMAKE_CURRENT_BINARY_DIR}/controller-apply.json" --sdr-bytes --post-sr --live-settings)
         set_tests_properties(NrControllerApplyGpu PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
+        add_test(NAME NrControllerApplyGpu-pass-cycle COMMAND TRPNrControllerApplyGpuTests "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}"
+            "${CMAKE_CURRENT_BINARY_DIR}/controller-apply-pass-cycle.json" --sdr-bytes --post-sr --pass-cycle)
+        set_tests_properties(NrControllerApplyGpu-pass-cycle PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 180 RUN_SERIAL TRUE LABELS GPU)
         if(TRP_NR_RESHADE_RUNTIME AND TRP_NR_TEST_RUNTIME_ROOT AND EXISTS "${TRP_NR_RESHADE_RUNTIME}")
             add_test(NAME NrControllerApplyReShadeGpu COMMAND "${Python3_EXECUTABLE}"
                 "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
@@ -319,6 +330,12 @@ if(TRP_NR_NGX_INCLUDE_DIR)
                 --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
                 --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-controller-apply" --sdr-bytes --post-sr --live-settings)
             set_tests_properties(NrControllerApplyReShadeGpu PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
+            add_test(NAME NrControllerApplyReShadeGpu-pass-cycle COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_LIST_DIR}/run_reshade_before.py"
+                --packet-exe "$<TARGET_FILE:TRPNrImagePacketTests>" --host-exe "$<TARGET_FILE:TRPNrControllerApplyGpuTests>"
+                --runtime "${TRP_NR_RESHADE_RUNTIME}" --runtime-root "${TRP_NR_TEST_RUNTIME_ROOT}"
+                --driver-core "${TRP_NR_DRIVER_CORE}" --output "${CMAKE_CURRENT_BINARY_DIR}/reshade-controller-apply-pass-cycle" --sdr-bytes --post-sr --pass-cycle)
+            set_tests_properties(NrControllerApplyReShadeGpu-pass-cycle PROPERTIES TIMEOUT 240 RUN_SERIAL TRUE LABELS "GPU;ReShade")
         endif()
     endif()
     add_executable(TRPNrRuntimeProbe RuntimeProbe.cpp RuntimeProbeReport.cpp)
@@ -399,7 +416,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     endif()
     endif()
     if(TRP_NR_RTX40_DLL AND TRP_NR_DRIVER_CORE)
-        foreach(stable IN ITEMS on off)
+        foreach(stable IN ITEMS off)
             add_test(NAME NrLiveStyle-${stable} COMMAND TRPNrPerformanceProbe
                 --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
                 --width 2560 --height 1440 --frames 120 --warmup 3 --readback off
@@ -416,7 +433,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
             add_test(NAME NrLiveStyle-prepared-fsr COMMAND TRPNrPerformanceProbe
                 --profile rtx40 --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
                 --width 2560 --height 1440 --frames 120 --warmup 3 --readback off
-                --style-cycle on --stable-colors on --prepared-fsr on
+                --style-cycle on --stable-colors off --prepared-fsr on
                 --fsr-runtime "${TRP_NR_PERF_FSR_RUNTIME}"
                 --output "${CMAKE_CURRENT_BINARY_DIR}/live-style-prepared-fsr.json")
             set_tests_properties(NrLiveStyle-prepared-fsr PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 60)

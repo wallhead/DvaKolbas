@@ -23,7 +23,7 @@ using namespace TheosRenderPipeline::NeuralRendering;
 namespace {
 int failures{},allocates{},destroys{},creates{},shutdowns{};
 void Check(bool ok,const char* message){std::printf("%s %s\n",ok?"PASS":"FAIL",message);failures+=!ok;}
-enum class Fault { Alpha, Allocate, AllocatePartial, Abi, Allocator, List, Fence, VendorCreate, Destroy };
+enum class Fault { Alpha, Allocate, AllocatePartial, Abi, Allocator, List, Fence, VendorCreate, SecondVendorCreate, Destroy };
 Fault fault;
 struct Parameters final : NVSDK_NGX_Parameter {
 #define PARAM(T) void Set(const char*,T)override{} NVSDK_NGX_Result Get(const char*,T* out)const override{*out={};return NVSDK_NGX_Result_Success;}
@@ -36,7 +36,7 @@ struct Parameters final : NVSDK_NGX_Parameter {
 } parameters;
 uint32_t __cdecl AllocateParameters(NVSDK_NGX_Parameter** out){++allocates;if(fault==Fault::Allocate){*out=nullptr;return 0xbad00002;}*out=&parameters;return fault==Fault::AllocatePartial?0xbad00002:1;}
 uint32_t __cdecl DestroyParameters(NVSDK_NGX_Parameter*){++destroys;return fault==Fault::Destroy?0xbad00002:1;}
-uint32_t __cdecl CreateFeature(ID3D12GraphicsCommandList*,uint32_t,NVSDK_NGX_Parameter*,void**){++creates;return 0xbad00002;}
+uint32_t __cdecl CreateFeature(ID3D12GraphicsCommandList*,uint32_t,NVSDK_NGX_Parameter*,void** out){++creates;if(fault==Fault::SecondVendorCreate&&creates==1){*out=reinterpret_cast<void*>(0x123);return 1;}return 0xbad00002;}
 uint32_t __cdecl Shutdown(ID3D12Device*){++shutdowns;return 1;}
 int inits{};
 uint32_t __cdecl RejectInit(uint64_t,const wchar_t*,ID3D12Device*,uint32_t,const void*){++inits;return 0xbad00002;}
@@ -99,6 +99,14 @@ int main(){
     Check(owner->state_->clients==1&&activeAllocation,"Create call retains uncertain runtime client and callback owner");
     Check(!owner->Retire()&&queue->executions==0,"Unsubmitted vendor creation remains quarantined");
     {Stage competitor;auto conflict=competitor.Initialize(owner,c);Check(!conflict&&conflict.error().kind==ErrorKind::Conflict&&owner->state_->clients==1,"Uncertain vendor create blocks a second stage without leaking its extra client");}
+    activeAllocation=nullptr;
+    fault=Fault::SecondVendorCreate;creates=allocates=destroys=0;
+    auto chainedOwner=Owner(device.Get());
+    {Stage chain;auto failed=chain.Initialize(chainedOwner,c,0,nullptr,3);
+        Check(!failed&&creates==2&&allocates==3&&destroys==0,"Second pass creation failure retains every feature creation parameter");
+        Check(chain.state_->features[0].handle==reinterpret_cast<void*>(0x123)&&chain.Diagnostics().terminal,"Partial chain retains earlier vendor feature handle");
+        Check(!chain.Retire(),"Partial chain failure never releases uncertain vendor recordings");}
+    Check(chainedOwner->state_->clients==1&&activeAllocation&&!chainedOwner->Retire()&&queue->executions==0,"Partial chain destructor retains client and global allocator ownership without submission");
     activeAllocation=nullptr;
     auto partial=Owner(device.Get());partial->state_->exports.init=RejectInit;partial->state_->attempted=true;
     auto rejected=partial->state_->InitializeRuntime();

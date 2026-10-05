@@ -129,9 +129,7 @@ void OverlayUI::DrawMemoryMeasurements(const FrameView& view)
     DrawSettingsHelp("Current usage / Windows GPU memory budget. The budget can be lower than physical VRAM.");
     char label[32]{};
     std::snprintf(label, sizeof(label), "%.1f%% of budget", pressure * 100);
-    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, HealthColor(health));
     ImGui::ProgressBar(std::clamp(pressure, 0.0f, 1.0f), ImVec2(-1, 0), label);
-    ImGui::PopStyleColor();
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
@@ -144,12 +142,9 @@ void OverlayUI::DrawMemoryMeasurements(const FrameView& view)
         DrawStatusLabel(pressure >= 0.92f ? "GPU memory budget critical" : "GPU memory budget pressure", health);
 }
 
-void OverlayUI::DrawAdvancedPanel(float height, const FrameView& view)
+void OverlayUI::DrawAdvancedPanel(float, const FrameView& view)
 {
-    if (!ImGui::BeginTabItem("Advanced", nullptr,
-                             requestedPage == SettingsPage::Advanced ? ImGuiTabItemFlags_SetSelected : 0))
-        return;
-    if (BeginSettingsColumns("advanced", height, view))
+    if (ImGui::CollapsingHeader("Advanced settings"))
     {
         auto* pipeline = RenderPipeline::GetSingleton();
         const bool cs = TheosRenderPipeline::CommunityShaders::Active();
@@ -157,10 +152,8 @@ void OverlayUI::DrawAdvancedPanel(float height, const FrameView& view)
         DrawSettingsValue("ReShade request",
                           pipeline->mReShadeBeforeUpscaling ? "Before upscaling" : "After upscaling");
         ImGui::TextWrapped("%s", TheosRenderPipeline::ReShadeIntegration::Get().Status().c_str());
-        DrawUIStatusPanel();
-        DrawStageMeasurements(SettingsPage::Advanced);
         DrawReportingDetails(view);
-        NextSettingsColumn(height);
+        ImGui::Separator();
         int placement = settingsDraft.reShadeBeforeUpscaling ? 0 : 1;
         const char* placements[]{"Before upscaling", "After upscaling"};
         if (ImGui::Combo("ReShade", &placement, placements, 2))
@@ -172,12 +165,6 @@ void OverlayUI::DrawAdvancedPanel(float height, const FrameView& view)
         ImGui::Checkbox("Lab mode", &showDeveloperControls);
         DrawSettingsHelp("Show runtime details and experimental controls. This changes menu visibility only.");
         DrawMeasurementControls();
-        if (showDeveloperControls && !cs && ImGui::CollapsingHeader("UI integration (Lab)"))
-        {
-            ImGui::TextDisabled("Save and restart");
-            ImGui::Checkbox("Native-resolution Skyrim UI", &settingsDraft.nativeUI);
-            ImGui::Checkbox("Startup overlays at native resolution", &settingsDraft.lateOverlayBridge);
-        }
         ImGui::Separator();
         const auto key = pipeline->mToggleOverlayHotkey;
         char name[64]{};
@@ -188,14 +175,14 @@ void OverlayUI::DrawAdvancedPanel(float height, const FrameView& view)
         else
             ImGui::Text("Settings key: 0x%02X", key);
         DrawSettingsHelp("Configured in the INI. Use separate keys for TRP, Community Shaders and KreatE.");
-        ImGui::TextUnformatted("HDR unsupported");
+
         if (cs)
             ImGui::TextWrapped("Keep CS HDR, frame generation and Reflex off.");
         if (showDeveloperControls && !cs && ImGui::CollapsingHeader("Menu diagnostics (Lab)"))
         {
             auto* upscaler = pipeline;
             ImGui::Spacing();
-            ImGui::TextColored(kRust, "These controls deliberately break or instrument the normal render path.");
+            ImGui::TextWrapped("These controls deliberately break or instrument the normal render path.");
             if (ImGui::Checkbox("Log menu/Console metrics (debug)", &upscaler->mLogMenuMetrics))
             {
                 upscaler->mConsoleDiagnosticsActive.store(upscaler->mLogMenuMetrics &&
@@ -219,9 +206,9 @@ void OverlayUI::DrawAdvancedPanel(float height, const FrameView& view)
                                 upscaler->mInventory3DLastObservedDraws.load(std::memory_order_relaxed),
                                 upscaler->mInventory3DLastSkippedDraws.load(std::memory_order_relaxed));
         }
-        EndSettingsColumns();
+
     }
-    ImGui::EndTabItem();
+
 }
 
 void OverlayUI::DrawUIStatusPanel()

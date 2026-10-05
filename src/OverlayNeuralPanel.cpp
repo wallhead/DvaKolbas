@@ -78,11 +78,11 @@ const char* NeuralUnavailableReason(int upscaleType, bool nrRuntimePresent)
     }
     if (backend.NeuralState().failed)
     {
-        return "NR failed. See the error in the left column.";
+        return "NR failed. See Status and measurements for the error.";
     }
     if (!TheosRenderPipeline::SupportsNeuralRenderingMode(upscaleType, TheosRenderPipeline::CommunityShaders::Active()))
     {
-        return "NR requires DLSS or DLAA mode. Select either in Image and restart Skyrim.";
+        return "NR requires DLSS or DLAA mode. Select either in the DLSS tab and restart Skyrim.";
     }
     if (!TheosRenderPipeline::CommunityShaders::Active() && !NvidiaHost::GetSingleton()->DedicatedUITextureMode())
     {
@@ -345,29 +345,23 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             DrawStatusLabel(host->CommunityNeuralTerminal()?"NR failed":host->CommunityNeuralActive()?"NR active":"NR inactive",
                 host->CommunityNeuralTerminal()?UIHealth::kError:host->CommunityNeuralActive()?UIHealth::kHealthy:UIHealth::kIdle);
             ImGui::TextWrapped("%s",host->CommunityNeuralStatus().c_str());
+            if(ImGui::CollapsingHeader("Status and measurements")) {
             DrawSettingsValue("Placement",view.neuralBeforeUpscaling?"Before upscaling and frame generation":"After upscaling, before frame generation");
-            DrawSettingsValue("Model","Native SDR, one pass");
+            DrawSettingsValue("Model","Native SDR, up to three passes");
             ImGui::TextDisabled("After upscaling currently requires DLAA or FSR Native AA.");
             ImGui::TextWrapped("RTX 40/50 share a runtime path; RTX 20/30 use a separate compatibility runtime. AMD NR is currently unsupported.");
+            }
             NextSettingsColumn(height);
             auto& p=settingsDraft.sourceDLSSG;
             ImGui::BeginDisabled(!TheosRenderPipeline::CanEditNeuralEnabled(p.neuralEnabled,host->CommunityNeuralAvailable()));
             ImGui::Checkbox("Neural Rendering",&p.neuralEnabled);
             ImGui::EndDisabled();
             ImGui::TextDisabled("Use Apply for this session or Save as default.");
-            const char* styles[]{"Style 0","Style 1","Style 2","Style 3","Style 4","Style 5","Style 6","Style 7"};
             ImGui::BeginDisabled(!host->CommunityNeuralAvailable());
             int placement=p.neuralBeforeUpscaling?0:1;
             const char* placements[]{"Before upscaling","After upscaling, before FG"};
             if(ImGui::Combo("Placement",&placement,placements,IM_ARRAYSIZE(placements)))p.neuralBeforeUpscaling=placement==0;
-            ImGui::Checkbox("Stable colors",&p.neuralStableColors);
-            DrawSettingsHelp("Preserve the original broad colors while retaining fine NR detail. Reduces NR tone and color grading.");
-            ImGui::Combo("Style",&p.neuralTuning.style,styles,IM_ARRAYSIZE(styles));
-            ImGui::SliderFloat("Intensity",&p.neuralTuning.intensity,0,2);
-            ImGui::SliderFloat("Local tone",&p.neuralTuning.localToneStrength,0,2);
-            ImGui::SliderFloat("Local structure",&p.neuralTuning.localStructureStrength,0,2);
-            ImGui::SliderFloat("Skin structure",&p.neuralTuning.skinStructureStrength,-1,2);
-            ImGui::Checkbox("Automatic skin mask",&p.neuralTuning.useAutoSkinMask);
+            DrawCommunityNeuralPassControls(p);
             ImGui::EndDisabled();
             DrawCommunityNeuralCompatibility(p,settingsDraft.upscaleType,settingsDraft.fsr.quality,settingsDraft.dynamicResolution);
             EndSettingsColumns();

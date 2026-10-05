@@ -23,7 +23,7 @@ void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents,
     const auto ids = parent->IDStack.Size;
     if (ImGui::BeginTabBar("Settings"))
     {
-        if (ImGui::BeginTabItem("Image", nullptr, selectNeural ? 0 : ImGuiTabItemFlags_SetSelected))
+        if (ImGui::BeginTabItem("DLSS", nullptr, selectNeural ? 0 : ImGuiTabItemFlags_SetSelected))
         {
             ++imageContents;
             ImGui::TextUnformatted("Image controls");
@@ -43,6 +43,15 @@ void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents,
             ImGui::PopID();
             ImGui::EndTabItem();
         }
+        if (ImGui::BeginTabItem("Frame generation"))
+        {
+            ImGui::TextUnformatted("Frame generation controls");
+            ImGui::EndTabItem();
+        }
+        auto* tabs = ImGui::GetCurrentTabBar();
+        Require(tabs->Tabs.Size == 3, "settings navigation must keep all three pages available");
+        Require(std::string(ImGui::TabBarGetTabName(tabs, &tabs->Tabs[1])) == "NR",
+                "NR navigation must use the requested compact tab label");
         ImGui::EndTabBar();
     }
     Require(context.CurrentWindow == parent && context.CurrentWindowStack.Size == windows,

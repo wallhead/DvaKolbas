@@ -20,6 +20,7 @@ parser.add_argument("--fsr-runtime", type=Path)
 parser.add_argument("--sdr-bytes", action="store_true")
 parser.add_argument("--post-sr", action="store_true")
 parser.add_argument("--live-settings", action="store_true")
+parser.add_argument("--pass-cycle", action="store_true")
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 result_file = args.output / "results.json"
@@ -35,7 +36,7 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
         ("packet", args.packet_exe, ["--require-wrapped"]),
         ("host", args.host_exe, [str(args.runtime_root.resolve()), str(args.driver_core.resolve()),
                                 str((args.output / "host.json").resolve()), "--require-wrapped",
-                                *(["--sdr-bytes"] if args.sdr_bytes else []), *(["--post-sr"] if args.post_sr else []), *(["--live-settings"] if args.live_settings else [])]),
+                                *(["--sdr-bytes"] if args.sdr_bytes else []), *(["--post-sr"] if args.post_sr else []), *(["--live-settings"] if args.live_settings else []), *(["--pass-cycle"] if args.pass_cycle else [])]),
     )
     if args.deferred_exe:
         cases += tuple(("deferred-" + mode, args.deferred_exe,
@@ -59,5 +60,5 @@ with tempfile.TemporaryDirectory(prefix="nr-reshade-", dir=args.output.resolve()
                         "exeSha256": hashlib.sha256(exe.read_bytes()).hexdigest()})
 result_file.write_text(json.dumps({
     "runtimeSha256": hashlib.sha256(args.runtime.read_bytes()).hexdigest(),
-    "skyrimTested": False, "wrappedDeviceRequired": True, "sdrBytesTrial": args.sdr_bytes, "postSrSwitch": args.post_sr, "liveSettings": args.live_settings, "cases": records,
+    "skyrimTested": False, "wrappedDeviceRequired": True, "sdrBytesTrial": args.sdr_bytes, "postSrSwitch": args.post_sr, "liveSettings": args.live_settings, "passCycle": args.pass_cycle, "cases": records,
 }, indent=2) + "\n")

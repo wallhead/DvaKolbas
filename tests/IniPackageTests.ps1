@@ -20,11 +20,13 @@ Keep=unchanged
 [SourceDLSSG]
 NeuralRenderingEnabled=true
 NRBeforeUpscaling=false
-NRStableColors=false
+NRStableColors=true
 NRLocalTone=0
 NRPasses=1
 NRPass2UseSameSettings=false
 NRPass2Style=2
+NRPass3UseSameSettings=false
+NRPass3Style=4
 [NeuralRendering]
 DriverCore=C:/driver/_nvngx.dll
 RuntimeRoot=
@@ -32,6 +34,12 @@ RuntimeRoot=
 $hash=(Get-FileHash -LiteralPath $source).Hash
 & (Join-Path $Repository 'tools/ini/Reorganize-Ini.ps1') -SourceIni $source -OutputIni $converted
 $raw=Read-PackageIni $converted -Raw
+if($raw.ContainsKey('NeuralRendering/StableColors') -or $raw.ContainsKey('SourceDLSSG/NRStableColors')){
+    throw 'Retired stable-color setting must not survive conversion'
+}
+if($raw['NR PASS 3/Style'] -ne '4' -or $raw['NR PASS 3/UseSameSettings'] -ne 'false'){
+    throw 'Independent third-pass settings must survive conversion'
+}
 if($raw['NR PASS 1/Tone'] -ne '0' -or $raw['NR PASS 2/UseSameSettings'] -ne 'false' -or
     $raw['FrameGeneration/Enabled'] -ne 'false' -or $raw['Runtime/NRRuntimeRoot'] -ne '' -or
     $raw.ContainsKey('NR PASS 2/Tone') -or $raw.ContainsKey('SourceDLSSG/NRLocalTone')){

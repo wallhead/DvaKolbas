@@ -99,7 +99,7 @@ int wmain(int argc,wchar_t** argv){try{
  auto cu=MakeTransfer(device.Get(),color.Get(),D3D12_HEAP_TYPE_UPLOAD),mu=MakeTransfer(device.Get(),motion.Get(),D3D12_HEAP_TYPE_UPLOAD),du=MakeTransfer(device.Get(),depth.Get(),D3D12_HEAP_TYPE_UPLOAD),ou=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_UPLOAD),rb=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_READBACK);
  std::vector<unsigned char> source(width*height*4),result(source.size()),previous,packed(source.size()*(unorm?1:2)),read(packed.size()),zero(packed.size());
  std::vector<uint16_t> mv(width*height*2);std::vector<float> depths(width*height,.5f);
- SettingsSnapshot settings;settings.enabled=true;settings.revision=1;settings.tuning.style=std::stoi(argv[5]);settings.stableColors=false;
+ SettingsSnapshot settings;settings.enabled=true;settings.revision=1;settings.tuning.style=std::stoi(argv[5]);
  std::ofstream csv(dir/"frames.csv");csv<<"source,meanR,meanG,meanB,sourceR,sourceG,sourceB,meanRgbCorrection,warpedMeanRgbDifference\n";
  double settled[4][3]{};uint64_t alphaCount{};
  for(UINT f=0;f<frames;++f){

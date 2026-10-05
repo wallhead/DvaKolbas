@@ -17,13 +17,14 @@ using namespace TheosRenderPipeline::NeuralRendering;
 using Microsoft::WRL::ComPtr;
 namespace {int failures{};void Check(bool v,const char* name){std::printf("%s %s\n",v?"PASS":"FAIL",name);failures+=!v;}void Need(HRESULT h){if(FAILED(h))throw h;}}
 int wmain(int argc,wchar_t** argv){try{
-    bool wrapped=false,sdr=false,post=false,liveSettings=false,omitController=false;
+    bool wrapped=false,sdr=false,post=false,liveSettings=false,passCycle=false,omitController=false;
     if(argc<3||argc>9||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
     for(int i=4;i<argc;++i){if(std::wstring_view(argv[i])==L"--require-wrapped")wrapped=true;
         else if(std::wstring_view(argv[i])==L"--sdr-bytes")sdr=true;else if(std::wstring_view(argv[i])==L"--post-sr")post=true;
         else if(std::wstring_view(argv[i])==L"--live-settings")liveSettings=true;
+        else if(std::wstring_view(argv[i])==L"--pass-cycle")passCycle=true;
         else if(std::wstring_view(argv[i])==L"--omit-controller")omitController=true;else return 1;}
-    if(liveSettings&&(!post||!sdr))return 1;
+    if((liveSettings||passCycle)&&(!post||!sdr))return 1;
 #if !defined(TRP_CONTROLLER_APPLY_PROBE)
     if(omitController)return 1;
 #endif
@@ -42,7 +43,7 @@ int wmain(int argc,wchar_t** argv){try{
         Check(hostIdentity!=nativeIdentity,"WrappedHostRegressionUsesActualReShadeFenceIdentity");if(failures)return 1;
     }
     StartupSettings startup;startup.community=true;startup.sdrBytesTrial=sdr;startup.runtimeRoot=std::filesystem::absolute(argv[1]);startup.driverCore=argv[2];startup.sourceEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
-    if(sdr)s.stableColors=false;
+
     ComPtr<ID3D12Fence> encoderGate,encoderDone;ComPtr<ID3D11Fence> encoderGate11,encoderDone11;
     ComPtr<ID3D11DeviceContext4> context4;std::jthread releaseEncoder;
     if(post){
@@ -102,7 +103,14 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         PreparedFsrInput lease;
         s.placement=post && (frame<119 || frame>=160)?Placement::After:Placement::Before;
         if(post && frame>=119)s.revision=frame<160?4:5;
-        const bool changedBoundary=liveSettings&&(frame==19||frame==59||frame==99||frame==119||frame==160);
+        const bool changedBoundary=(liveSettings||passCycle)&&(frame==19||frame==59||frame==99||frame==119||frame==160);
+        if(passCycle){
+            s.passes=frame<19?1:frame<59?3:frame<99?2:1;
+            s.additionalTuning[0]={1,.75f,.5f,1.25f,-1.f,true,false};
+            s.additionalTuning[1]={2,1.25f,1.5f,.75f,.5f,false,false};
+            const bool changed=s.enabled!=previousSettings.enabled||s.placement!=previousSettings.placement||s.passes!=previousSettings.passes;
+            s.revision=previousSettings.revision+unsigned(changed);previousSettings=s;input.reset=changed;
+        }
         if(liveSettings){
             s.enabled&=frame!=59;s.tuning.localToneStrength=frame>=19?.65f:1.f;s.tuning.style=frame>=99?1:0;
             const bool changed=s.enabled!=previousSettings.enabled||s.placement!=previousSettings.placement||s.tuning!=previousSettings.tuning;
@@ -124,7 +132,7 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         if(post && frame==40){meta.render=meta.guides={width/2,height/2};}
         // Hold the real D3D11 preparation/encoder chain after feature creation.
         // The next placement change must wait for that genuine source reader.
-        const bool gateSource=post&&(liveSettings?(frame==18||frame==58||frame==98||frame==118||frame==159):frame==118);
+        const bool gateSource=post&&((liveSettings||passCycle)?(frame==18||frame==58||frame==98||frame==118||frame==159):frame==118);
         if(gateSource){
             ++gateSerial;
             // Start the release before submission so exceptional unwind cannot
@@ -139,6 +147,9 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             draft.sourceDLSSG.neuralEnabled=s.enabled;
             draft.sourceDLSSG.neuralBeforeUpscaling=s.placement==Placement::Before;
             draft.sourceDLSSG.neuralTuning=s.tuning;
+            draft.sourceDLSSG.neuralPasses=s.passes;
+            if(passCycle){draft.sourceDLSSG.neuralSecondPass.linked=false;draft.sourceDLSSG.neuralSecondPass.tuning=s.additionalTuning[0];
+                draft.sourceDLSSG.neuralThirdPass.linked=false;draft.sourceDLSSG.neuralThirdPass.tuning=s.additionalTuning[1];}
             draft.generationEnabled=s.enabled;
             const auto applied=controller.Apply(draft,false);
             Check(applied.applied&&!applied.error,"ProductionControllerAppliesSourceSnapshot");
@@ -146,6 +157,10 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             s.enabled=actual.sourceDLSSG.neuralEnabled;
             s.placement=actual.sourceDLSSG.neuralBeforeUpscaling?Placement::Before:Placement::After;
             s.tuning=actual.sourceDLSSG.neuralTuning;
+            s.passes=actual.sourceDLSSG.neuralPasses;
+            s.additionalTuning[0]=EffectiveSecondPass(actual.sourceDLSSG.neuralSecondPass,actual.sourceDLSSG.neuralReconstruction,s.tuning).tuning;
+            s.additionalTuning[1]=EffectiveSecondPass(actual.sourceDLSSG.neuralThirdPass,actual.sourceDLSSG.neuralReconstruction,s.tuning).tuning;
+            Check(s.passes==draft.sourceDLSSG.neuralPasses,"ProductionControllerPublishesRequestedNrPassCount");
             Check(actual.generationEnabled==draft.generationEnabled,"ProductionControllerPublishesFgRequest");
             if(changedBoundary){++pendingApplies;
                 Check(encoderDone->GetCompletedValue()<gateSerial,"MenuApplyDoesNotDrainPendingSourceOnSettingsThread");}
@@ -153,14 +168,15 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
 #endif
         const auto switchStart=std::chrono::steady_clock::now();
         auto result=s.placement==Placement::After?prepared.EvaluatePost(completed,s):prepared.Evaluate(input,s,sdr?&lease:nullptr);
-        if((post&&frame==119)||(liveSettings&&(frame==59||frame==99||frame==160))){
+        if((post&&frame==119)||(liveSettings&&(frame==59||frame==99||frame==160))||(passCycle&&changedBoundary)){
             Check(std::chrono::steady_clock::now()-switchStart>=std::chrono::milliseconds(100),"DestructiveSettingsChangeWaitsForActualPendingEncoderReader");
             Check(encoderDone->GetCompletedValue()>=gateSerial,"OldSourceActuallyCompletedBeforeStyleDisableOrPlacementChange");
         }
         if(!result){std::printf("frame %u %s\n",frame,result.error().message.c_str());return 1;}
         Check(result->evaluated==expectedEvaluation,"OneNrEvaluationOnlyWhenEnabled");
         if(sdr)Check(!lease.Valid(),"SdrHostReturnsEncodedColorWithoutLinearLease");
-        if(frame==0 || frame==81 || frame==120 || (post&&(frame==41||frame==119||frame==160)) || (liveSettings&&(frame==19||frame==60||frame==99))) Check(result->effectiveReset,"FirstReenabledAndResizedSourceResetHistory");
+        if(frame==0 || frame==81 || frame==120 || (post&&(frame==41||frame==119||frame==160)) || (liveSettings&&(frame==19||frame==60||frame==99)) || (passCycle&&changedBoundary)) Check(result->effectiveReset,"FirstReenabledAndResizedSourceResetHistory");
+        if(passCycle&&result->evaluated)Check(prepared.Status().find("; "+std::to_string(s.passes)+" SDR")!=std::string::npos,"HostReportsAllRequestedSequentialPasses");
         ComPtr<ID3D11RenderTargetView> restored;context->OMGetRenderTargets(1,&restored,nullptr);if(restored.Get()!=rtv.Get())return 1;
         if(gateSource){
             Need(context4->Signal(encoderDone11.Get(),gateSerial));context->Flush();
@@ -175,7 +191,7 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             std::printf("LIVE_SETTINGS boundary=%u revision=%llu enabled=%u style=%u tone=%.2f placement=%s completed=%llu\n",frame,(unsigned long long)s.revision,s.enabled,unsigned(s.tuning.style),s.tuning.localToneStrength,s.placement==Placement::After?"After":"Before",(unsigned long long)encoderDone->GetCompletedValue());}
         if(!s.enabled || (post&&frame==40))bypassPixels+=uint64_t(width)*height;
     }
-    if(liveSettings)Check(pendingSettings==5,"EveryScheduledLiveSettingsChangeHasGenuinePendingSourceWork");
+    if(liveSettings||passCycle)Check(pendingSettings==5,"EveryScheduledLiveSettingsChangeHasGenuinePendingSourceWork");
 #if defined(TRP_CONTROLLER_APPLY_PROBE)
     Check(pendingApplies==5,"ProductionControllerRunsAtAllFivePendingGpuBoundaries");
     std::printf("CONTROLLER_APPLY pending=%u sources=240 vendorBoundary=facade\n",pendingApplies);

@@ -2,6 +2,7 @@
 #include "OverlayUIStyle.h"
 #include "OverlayFrameView.h"
 #include "OverlayFsrGenerationControls.h"
+#include "CommunityShaderIntegration.h"
 
 #include "FrameGen/NvidiaHost.h"
 #include "FrameGen/SourceDLSSGBackend.h"
@@ -23,6 +24,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                                                                            : ImGuiTabItemFlags_None))
     {
         if(view.fsrActive) {
+            BeginSettingsColumns("generation", tabCardHeight, view);
             auto status=nvidiaHost->FsrFgStatus();
             ImGui::TextWrapped("%s",status.text.c_str());
             constexpr bool built=
@@ -42,6 +44,8 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,requested,nvidiaHost->FsrFgActive()?2:0);
             }
             if(showDeveloperControls)ImGui::TextWrapped("%s",nvidiaHost->Status().c_str());
+            DrawFrameGenerationAdvanced(view);
+            EndSettingsColumns();
             ImGui::EndTabItem();return;
         }
         auto& sourceBackend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
@@ -58,6 +62,8 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             ImGui::EndTabItem();
             return;
         }
+        if (ImGui::CollapsingHeader("Status and measurements"))
+        {
         DrawStatusLabel(frameGenerationRuntimeActive ? "DLSS-G active" : "Frame generation inactive",
                         frameGenerationRuntimeActive ? UIHealth::kHealthy : UIHealth::kIdle);
         DrawSettingsValue("Multiplier", std::format("x{}", activeDisplayMultiplier).c_str());
@@ -78,7 +84,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         if (unlock.UsesCompatibilityUnlock() && !unlock.Ready())
             ImGui::TextWrapped("%s", unlock.status);
         if (sourceState.stateQueryResult == sl::Result::eWarnOutOfVRAM)
-            ImGui::TextColored(kOchre, "NVIDIA VRAM budget warning");
+            ImGui::TextWrapped("NVIDIA VRAM budget warning");
         if (nvidiaHost->WarmupPresentsRemaining() > 0)
             ImGui::Text("Warmup: %d frames", nvidiaHost->WarmupPresentsRemaining());
         if (showDeveloperControls && ImGui::CollapsingHeader("Runtime details"))
@@ -111,6 +117,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             ImGui::Text("Dynamic multiplier: %s", supportsDynamic ? "supported" : "unavailable");
         }
         DrawStageMeasurements(SettingsPage::FrameGeneration);
+        }
         NextSettingsColumn(tabCardHeight);
         bool runtimeInterpolationRequested = frameGen->RuntimeInterpolationRequested();
         if (ImGui::Checkbox("Frame generation##runtime", &runtimeInterpolationRequested))
@@ -152,7 +159,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             }
             else if (request.dynamic)
             {
-                ImGui::TextColored(kOchre, "A saved dynamic request is unsupported by this NVIDIA runtime.");
+                ImGui::TextWrapped("A saved dynamic request is unsupported by this NVIDIA runtime.");
                 if (ImGui::Button("Use fixed multiplier##sourceMFG"))
                 {
                     request.dynamic = false;
@@ -172,7 +179,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             }
             if (request.generatedFrames > sourceState.state.numFramesToGenerateMax || sourceState.generationLimited)
             {
-                ImGui::TextColored(kOchre, "NVIDIA runtime maximum: x%u", sourceState.state.numFramesToGenerateMax + 1);
+                ImGui::TextWrapped("NVIDIA runtime maximum: x%u", sourceState.state.numFramesToGenerateMax + 1);
             }
             if (sourceState.generationLimited)
             {
@@ -187,7 +194,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 if (sourceState.options.enableUserInterfaceRecomposition == sl::eTrue)
                     ImGui::TextDisabled("Submitted to DLSS-G");
                 else
-                    ImGui::TextColored(kOchre, "Waiting for HUD-less and UI layers");
+                    ImGui::TextWrapped("Waiting for HUD-less and UI layers");
             }
             ImGui::Separator();
             ImGui::TextUnformatted("NVIDIA Reflex");
@@ -213,7 +220,26 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             DrawSettingsHelp("The cap includes generated frames. Avoid stacking it with another limiter.");
         }
 
+        DrawFrameGenerationAdvanced(view);
         EndSettingsColumns();
         ImGui::EndTabItem();
+    }
+}
+
+void OverlayUI::DrawFrameGenerationAdvanced(const FrameView&)
+{
+    if (ImGui::CollapsingHeader("Advanced settings"))
+    {
+        DrawUIStatusPanel();
+        DrawStageMeasurements(SettingsPage::Advanced);
+        ImGui::Checkbox("Lab mode", &showDeveloperControls);
+        DrawSettingsHelp("Show runtime details and experimental controls. This changes menu visibility only.");
+        if (showDeveloperControls && !TheosRenderPipeline::CommunityShaders::Active() &&
+            ImGui::CollapsingHeader("UI integration (Lab)"))
+        {
+            ImGui::TextDisabled("Save and restart");
+            ImGui::Checkbox("Native-resolution Skyrim UI", &settingsDraft.nativeUI);
+            ImGui::Checkbox("Startup overlays at native resolution", &settingsDraft.lateOverlayBridge);
+        }
     }
 }

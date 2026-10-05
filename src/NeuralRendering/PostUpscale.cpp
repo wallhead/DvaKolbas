@@ -1,9 +1,9 @@
 #include "PostUpscale.h"
 namespace TheosRenderPipeline::NeuralRendering {
 Result<void> PostUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,
-    const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,ColorDomain domain){
+    const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,ColorDomain domain,unsigned passes){
     domain_=domain;
-    return bridge_.Initialize(std::move(owner),device,contract,preset,metrics,domain,Placement::After);
+    return bridge_.Initialize(std::move(owner),device,contract,preset,metrics,domain,Placement::After,passes);
 }
 Result<BeforeResult> PostUpscale::Evaluate(const PostSrInput& input,const SettingsSnapshot& settings){
     if(settings.enabled){

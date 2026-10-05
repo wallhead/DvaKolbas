@@ -22,17 +22,20 @@ struct StageDiagnostics {
     bool gpuTiming11Available{},gpuTiming12Available{};
     uint64_t gpuTimingDropped{};
     uint32_t slotCount{},descriptorOwners{},parameterOwners{},pendingTickets{},bridgeSlots{},preparedSlots{};
+    uint32_t activePasses{};
+    uint64_t evaluatedPasses{};
 };
 class Stage {
 public:
     // All calls, including diagnostics, are serialized by the stage's owner.
-    // One serialized real-image history; three retained submitted image slots.
+    // Independent vendor histories for up to three sequential passes, one
+    // command list/ticket per real image; three retained submitted image slots.
     // NGX allocator callbacks have no per-client context: only one initialized
     // Stage may own them process-wide. A second owner fails with Conflict until
     // the first has retired features, callback allocations and GPU readers.
     Stage();~Stage();
     Stage(const Stage&)=delete;Stage& operator=(const Stage&)=delete;
-    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);
+    Result<void> Initialize(std::shared_ptr<RuntimeOwner>,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr,unsigned passes=1);
     Result<EvaluationTicket> Record(ID3D12GraphicsCommandList*,const ImagePacket&,const SettingsSnapshot&);
     // Orders this exact producer on the retained queue before recording. This
     // returns a pending ticket, never a claim of CPU/GPU completion.

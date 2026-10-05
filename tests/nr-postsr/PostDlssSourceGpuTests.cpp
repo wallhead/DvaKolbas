@@ -268,7 +268,7 @@ int wmain(int argc,wchar_t** argv){try{
         std::vector<unsigned char> hud(size_t(width)*height*4);for(size_t i=0;i<hud.size()/4;++i){hud[i*4]=(i%width)<20?255:0;hud[i*4+3]=(i%width)<20?255:0;}context->UpdateSubresource(ui.texture.Get(),0,nullptr,hud.data(),width*4,0);
         if(!dlss->InitUpscale(width,height,width,height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,5))throw std::runtime_error("Actual production DLAA creation failed");
         Check(srLease.Matches(PluginPaths::ModulePath(GetModuleHandleW(L"nvngx_dlss.dll"))),"LoadedDlaaRuntimeMatchesHeldQualifiedFile");
-        NR::SettingsSnapshot settings;settings.placement=NR::Placement::After;settings.stableColors=false;
+        NR::SettingsSnapshot settings;settings.placement=NR::Placement::After;
         Operations ops{context.Get(),post,settings,bridge,session,observer,stats,{},{},{},{},width,height,cycle+1};
         ops.expectedUi=hud;
         for(auto* pair:{&ops.colorTag,&ops.uiTag,&ops.depthTag,&ops.motionTag}){D3D11_TEXTURE2D_DESC d{};d.Width=width;d.Height=height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=pair==&ops.motionTag?DXGI_FORMAT_R16G16_FLOAT:pair==&ops.depthTag?DXGI_FORMAT_R32_FLOAT:DXGI_FORMAT_R8G8B8A8_UNORM;d.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;if(pair==&ops.depthTag)d.BindFlags|=D3D11_BIND_UNORDERED_ACCESS;const auto hr=bridge.CreateSharedTexture(d,*pair);if(FAILED(hr))std::printf("SHARED_ALLOCATION format=%u bind=%u result=0x%08x\n",unsigned(d.Format),d.BindFlags,unsigned(hr));Gpu(hr);}

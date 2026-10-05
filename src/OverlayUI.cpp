@@ -353,15 +353,13 @@ void OverlayUI::BuildUI()
     layout.width = windowSize.x;
     layout.height = windowSize.y;
     DrawPipelineSummary(view);
+    DrawFrameMeasurements(view, 410.0f);
     const auto& layoutStyle = ImGui::GetStyle();
-    float reservedActionHeight = ImGui::GetFrameHeightWithSpacing() + ImGui::GetFrameHeight() +
-                                       ImGui::GetTextLineHeightWithSpacing() +
-                                       layoutStyle.CellPadding.y * 2.0f + layoutStyle.ItemSpacing.y * 2.0f + 1.0f;
-    if (actionMessageIsError && !actionMessage.empty()) {
-        const float statusWidth = (std::max)(1.0f, ImGui::GetContentRegionAvail().x - 450.0f - layoutStyle.CellPadding.x * 4.0f);
-        reservedActionHeight += (std::max)(0.0f, ImGui::CalcTextSize(actionMessage.c_str(), nullptr, false, statusWidth).y - ImGui::GetFrameHeight());
-    }
-    const float tabCardHeight = (std::max)(220.0f, ImGui::GetContentRegionAvail().y - reservedActionHeight);
+    const auto status = TheosRenderPipeline::SettingsStatus(CountStagedChanges(), actionMessage, actionMessageIsError);
+    const float statusWidth = (std::max)(1.0f, ImGui::GetContentRegionAvail().x);
+    const float reservedActionHeight = ImGui::GetFrameHeightWithSpacing() * 2.0f +
+        ImGui::CalcTextSize(status.text.c_str(), nullptr, false, statusWidth).y + layoutStyle.ItemSpacing.y * 2.0f;
+    const float tabCardHeight = (std::max)(1.0f, ImGui::GetContentRegionAvail().y - reservedActionHeight);
 
     if (ImGui::BeginTabBar("##theosrenderpipelineTabs", ImGuiTabBarFlags_None))
     {
@@ -369,10 +367,15 @@ void OverlayUI::BuildUI()
 
 #if !defined(TRP_NO_NEURAL_RENDERING)
         DrawNeuralRenderingPanel(tabCardHeight, view);
+#else
+        if (ImGui::BeginTabItem("NR"))
+        {
+            ImGui::TextDisabled("Neural Rendering is not included in this build.");
+            ImGui::EndTabItem();
+        }
 #endif
 
         DrawFrameGenerationPanel(tabCardHeight, view);
-        DrawAdvancedPanel(tabCardHeight, view);
         ImGui::EndTabBar();
     }
 
@@ -475,57 +478,25 @@ void OverlayUI::DrawSettingsActions()
 {
     ImGui::Separator();
     const int stagedChanges = CountStagedChanges();
-    if (ImGui::BeginTable("##actionBar", 2, ImGuiTableFlags_SizingStretchProp))
+    const auto status = TheosRenderPipeline::SettingsStatus(stagedChanges, actionMessage, actionMessageIsError);
+    ImGui::TextWrapped("%s", status.text.c_str());
+    ImGui::BeginDisabled(stagedChanges == 0);
+    if (ImGui::Button("Apply"))
+        ApplySettingsDraft(false);
+    DrawSettingsHelp("Apply live settings for this session. Mode and render scale require Save and restart.");
+    ImGui::EndDisabled();
+    ImGui::SameLine();
+    if (ImGui::Button("Save as default"))
+        ApplySettingsDraft(true);
+    DrawSettingsHelp("Apply live settings and save choices and window layout. Mode and render scale require restart.");
+    ImGui::SameLine();
+    ImGui::BeginDisabled(stagedChanges == 0);
+    if (ImGui::Button("Discard"))
     {
-        ImGui::TableSetupColumn("##actionStatus", ImGuiTableColumnFlags_WidthStretch, 1.0f);
-        ImGui::TableSetupColumn("##actions", ImGuiTableColumnFlags_WidthFixed, 450.0f);
-        ImGui::TableNextColumn();
-        const auto status = TheosRenderPipeline::SettingsStatus(stagedChanges, actionMessage, actionMessageIsError);
-        using StatusKind = TheosRenderPipeline::SettingsStatusKind;
-        ImGui::PushTextWrapPos(0);
-        if (status.kind == StatusKind::Neutral) { ImGui::TextDisabled("%s", status.text.c_str()); }
-        else { ImGui::TextColored(status.kind == StatusKind::Error ? kRust :
-            status.kind == StatusKind::Pending ? kAmber : kSage, "%s", status.text.c_str()); }
-        ImGui::PopTextWrapPos();
-        ImGui::TableNextColumn();
-        ImGui::BeginDisabled(stagedChanges == 0);
-        if (ImGui::Button("Discard", ImVec2(110.0f, 0.0f)))
-        {
-            CaptureSettingsDraft();
-            actionMessage = "Unapplied edits discarded.";
-            actionMessageIsError = false;
-        }
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-        {
-            ImGui::SetTooltip(
-                "Discard edits you have not applied. Applied settings and saved defaults stay as they are.");
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Apply", ImVec2(100.0f, 0.0f)))
-        {
-            ApplySettingsDraft(false);
-        }
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-        {
-            ImGui::SetTooltip("Apply live settings for this session. Saved defaults stay unchanged.\nMode and render "
-                              "scale changes require Save and restart.");
-        }
-        ImGui::EndDisabled();
-        ImGui::SameLine();
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.08f, 0.07f, 0.04f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_Button, kAmber);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kOchre);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, kAmberDim);
-        if (ImGui::Button("Save as default", ImVec2(200.0f, 0.0f)))
-        {
-            ApplySettingsDraft(true);
-        }
-        ImGui::PopStyleColor(4);
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-        {
-            ImGui::SetTooltip("Apply live settings and save your choices, window layout and divider for future launches.\n"
-                              "Mode and render scale changes take effect after restarting.");
-        }
-        ImGui::EndTable();
+        CaptureSettingsDraft();
+        actionMessage = "Unapplied edits discarded.";
+        actionMessageIsError = false;
     }
+    DrawSettingsHelp("Discard unapplied edits. Applied settings and saved defaults stay as they are.");
+    ImGui::EndDisabled();
 }

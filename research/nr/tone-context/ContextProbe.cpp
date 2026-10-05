@@ -44,7 +44,7 @@ int wmain(int argc,wchar_t** argv){try{
         std::puts("BLOCKED Skyrim is running or process enumeration failed");return 1;
     }
     const std::wstring mode=argv[4];
-    if(mode!=L"stable"&&mode!=L"vendor"&&mode!=L"toggle"&&mode!=L"off")return 2;
+    if(mode!=L"vendor"&&mode!=L"off"){std::puts("Stable colors processing was removed; supported modes: vendor, off");return 2;}
     const auto output=std::filesystem::absolute(argv[3]);std::filesystem::create_directories(output);
     ComPtr<IDXGIFactory6> factory;Need(CreateDXGIFactory2(0,IID_PPV_ARGS(&factory)));
     ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 desc{};
@@ -74,7 +74,7 @@ int wmain(int argc,wchar_t** argv){try{
     BeforeHost host;auto inspected=host.Inspect(device.Get(),startup,output/"cache");
     if(!inspected){std::puts(inspected.error().message.c_str());return 1;}
     SettingsSnapshot settings;settings.enabled=mode!=L"off";settings.revision=1;
-    settings.stableColors=mode==L"stable"||mode==L"toggle";settings.tuning.localToneStrength=1;
+    settings.tuning.localToneStrength=1;
     BeforeInput input;input.context=context;input.color=color;input.depth=depth;input.motion=motion;
     input.colorExtent=input.guideExtent={width,height};input.epoch=input.guideEpoch=1;
     input.motionScaleX=float(width);input.motionScaleY=float(height);
@@ -84,7 +84,6 @@ int wmain(int argc,wchar_t** argv){try{
     unsigned evaluationCount{},resetCount{};double settled[4][3]{};
     for(unsigned frame=0;frame<frames;++frame){
         input.reset=false;
-        if(mode==L"toggle"&&frame&&frame%40==0){settings.stableColors=!settings.stableColors;++settings.revision;input.reset=true;}
         Source(source,frame/40);context->UpdateSubresource(color.Get(),0,nullptr,source.data(),width*4,0);
         const float guide=0.f;
         const auto half=DirectX::PackedVector::XMConvertFloatToHalf(guide/width);
@@ -126,14 +125,7 @@ int wmain(int argc,wchar_t** argv){try{
         maxDrift=std::max(maxDrift,high-low);
     }
     bool ok=mode==L"vendor"?maxDrift>5.:maxDrift<=1.;
-    if(mode==L"toggle"){
-        double stableDrift{},vendorDifference{};
-        for(unsigned c=0;c<3;++c){stableDrift=std::max(stableDrift,std::abs(settled[0][c]-settled[2][c]));
-            vendorDifference=std::max(vendorDifference,std::abs(settled[1][c]-settled[0][c]));}
-        ok=stableDrift<=1.&&vendorDifference>5.&&resetCount==4;
-        std::printf("TOGGLE stable drift=%.6f vendor difference=%.6f resets=%u\n",stableDrift,vendorDifference,resetCount);
-    }
-    std::printf("%s fixed-surface context drift %.6f code values; threshold stable<=1 / vendor>5\n",ok?"PASS":"FAIL",maxDrift);
+    std::printf("%s fixed-surface context drift %.6f code values; threshold off<=1 / vendor>5\n",ok?"PASS":"FAIL",maxDrift);
     return ok?0:1;
 }catch(HRESULT hr){std::printf("FAIL HRESULT 0x%08X\n",unsigned(hr));return 1;}
 catch(const std::exception& e){std::puts(e.what());return 1;}}

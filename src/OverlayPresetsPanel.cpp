@@ -134,30 +134,14 @@ Appearance::Profile FullProfile(const Appearance::Profile& profile, const Appear
 // Two-line list row: name, then when it applies. Returns true when clicked.
 bool PresetRow(int id, const char* name, const std::string& detail, bool selected, bool now, bool off)
 {
-    const auto& style = ImGui::GetStyle();
-    const float line = ImGui::GetTextLineHeight();
-    const float width = ImGui::GetContentRegionAvail().x;
-    const float height = line * 2 + style.FramePadding.y * 3;
-    const auto pos = ImGui::GetCursorScreenPos();
-    auto* draw = ImGui::GetWindowDrawList();
-    draw->AddRectFilled(pos, ImVec2(pos.x + width, pos.y + height), ImGui::GetColorU32(ImGuiCol_FrameBg));
+    std::string label = name;
+    if (now) label += " [current]";
+    if (off) label += " [off]";
+    label += "\n" + detail + "###row";
+    const float height = ImGui::GetTextLineHeight() * 2 + ImGui::GetStyle().FramePadding.y * 3;
     ImGui::PushID(id);
-    const bool clicked = ImGui::Selectable("##row", selected, 0, ImVec2(width, height));
+    const bool clicked = ImGui::Selectable(label.c_str(), selected, 0, ImVec2(0, height));
     ImGui::PopID();
-    draw->AddRectFilled(pos, ImVec2(pos.x + 3, pos.y + height), ImGui::GetColorU32(selected ? kAmber : kAmberDim));
-    const float text = pos.x + 3 + style.FramePadding.x * 2;
-    float right = pos.x + width - style.FramePadding.x;
-    if (now) {
-        right -= ImGui::CalcTextSize("NOW").x;
-        draw->AddText(ImVec2(right, pos.y + style.FramePadding.y), ImGui::GetColorU32(kSage), "NOW");
-        right -= style.ItemSpacing.x;
-    }
-    draw->PushClipRect(pos, ImVec2(right, pos.y + height), true);
-    draw->AddText(ImVec2(text, pos.y + style.FramePadding.y), ImGui::GetColorU32(off ? kMuted : kIvory), name);
-    draw->PopClipRect();
-    draw->PushClipRect(pos, ImVec2(pos.x + width - style.FramePadding.x, pos.y + height), true);
-    draw->AddText(ImVec2(text, pos.y + style.FramePadding.y * 2 + line), ImGui::GetColorU32(off ? kMuted : kAmber), detail.c_str());
-    draw->PopClipRect();
     return clicked;
 }
 // Answers the shared NR controls' questions about the preset being edited.
@@ -339,7 +323,7 @@ void OverlayUI::DrawPresetEditor(const std::function<void(SourceDLSSG::Preferenc
         ImGui::EndDisabled();
         Tooltip("Adds a copy with every setting stored, so it looks the same with anyone's Base. Share its file.");
     }
-    Note("Changed settings are amber. Everything else follows Base, including later Base edits.");
+    Note("Changed settings keep their own values. Everything else follows Base, including later Base edits.");
     if (BeginSettingRows("presetName", LabelWidth({"One pass while weapons are drawn", "Input colour is linear HDR"}))) {
         SettingRow("Name", nullptr, false, false, [&] {
             char name[81]{}; std::snprintf(name, sizeof(name), "%s", preset.name.c_str());
@@ -414,15 +398,14 @@ void OverlayUI::DrawPresetEditor(const std::function<void(SourceDLSSG::Preferenc
         Flow flow;
         for (std::size_t i = 0; i < Appearance::Times.size(); ++i) {
             const bool selected = presetTime == static_cast<int>(i);
-            if (selected) { ImGui::PushStyleColor(ImGuiCol_Button, kAmberDim); }
-            if (i == nowIndex) { ImGui::PushStyleColor(ImGuiCol_Text, kSage); }
-            if (flow.Button(std::format("{}##time{}", Appearance::Times[i], i).c_str())) { presetTime = static_cast<int>(i); }
-            ImGui::PopStyleColor(static_cast<int>(selected) + static_cast<int>(i == nowIndex));
+            const auto label = std::format("{}{}##time{}", Appearance::Times[i], i == nowIndex ? " [now]" : "", i);
+            flow.Next(ImGui::GetFrameHeight() + ImGui::GetStyle().ItemInnerSpacing.x + ImGui::CalcTextSize(label.c_str(), nullptr, true).x);
+            if (ImGui::RadioButton(label.c_str(), selected)) { presetTime = static_cast<int>(i); }
             const auto next = (i + 1) % Appearance::Times.size();
             Tooltip(std::format("From {}, blending toward {} at {}.{}", Clock(settings.hours[i]), Appearance::Times[next],
                 Clock(settings.hours[next]), i == nowIndex ? " Current time." : "").c_str());
         }
-        Note("Pick a time to edit its look; it blends into the next. Green is now. Other settings stay the same all day.");
+        Note("Pick a time to edit its look; it blends into the next. The current time is marked [now]. Other settings stay the same all day.");
     }
 
     if (ImGui::BeginPopup("weatherPicker")) {

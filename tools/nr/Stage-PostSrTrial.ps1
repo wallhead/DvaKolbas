@@ -21,7 +21,7 @@ Assert-NoVendorImports $dll
 $iniRelative='SKSE/Plugins/TheosRenderPipeline.ini'
 $iniPath=Join-Path $accepted $iniRelative
 $ini=Read-PackageIni $iniPath
-foreach($pair in @(@('NeuralRendering/CommunityRuntime','true'),@('NeuralRendering/SdrBytesTrial','true'),@('SourceDLSSG/NRStableColors','false'),@('SourceDLSSG/NRPasses','1'),@('SourceDLSSG/NRPreset','0'),@('SourceDLSSG/NRColorIsHDR','false'),@('SourceDLSSG/NRResolveMethod','0'),@('SourceDLSSG/NRPeripheralCompression','false'),@('SourceDLSSG/NRFusedPreparation','false'),@('SourceDLSSG/NRUICorrection','false'),@('Settings/NativeUI','true'),@('DynamicResolution/Enabled','false'),@('HDROutput/Enabled','false'))){
+foreach($pair in @(@('NeuralRendering/CommunityRuntime','true'),@('NeuralRendering/SdrBytesTrial','true'),@('SourceDLSSG/NRPasses','1'),@('SourceDLSSG/NRPreset','0'),@('SourceDLSSG/NRColorIsHDR','false'),@('SourceDLSSG/NRResolveMethod','0'),@('SourceDLSSG/NRPeripheralCompression','false'),@('SourceDLSSG/NRFusedPreparation','false'),@('SourceDLSSG/NRUICorrection','false'),@('Settings/NativeUI','true'),@('DynamicResolution/Enabled','false'),@('HDROutput/Enabled','false'))){
     if($ini[$pair[0]] -ne $pair[1]){throw "Unqualified reference setting: $($pair[0])"}
 }
 if([double]::Parse($ini['SourceDLSSG/NRInputScale'],[Globalization.CultureInfo]::InvariantCulture) -ne 1){throw 'Native NR input scale required'}

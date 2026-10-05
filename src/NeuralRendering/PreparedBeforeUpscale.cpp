@@ -65,9 +65,9 @@ struct PreparedBeforeUpscale::State {
 };
 PreparedBeforeUpscale::PreparedBeforeUpscale():state_(std::make_shared<State>()){}
 PreparedBeforeUpscale::~PreparedBeforeUpscale()=default;
-Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& c,unsigned preset,PerformanceMetrics* metrics,ColorDomain domain,Placement placement){
+Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& c,unsigned preset,PerformanceMetrics* metrics,ColorDomain domain,Placement placement,unsigned passes){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR source preparation initialization already attempted");s.attempted=true;
-    if(!device||c.colorExtent!=c.guideExtent||!c.colorExtent.width||!c.colorExtent.height||preset>1||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
+    if(!device||c.colorExtent!=c.guideExtent||!c.colorExtent.width||!c.colorExtent.height||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
         (placement!=Placement::Before&&placement!=Placement::After))return Fail(ErrorKind::InvalidInput,"NR source preparation native contract invalid");
     s.device=device;s.device12=c.device;device->GetImmediateContext(&s.context);s.extent=c.colorExtent;s.preset=preset;s.colorDomain=domain;s.placement=placement;
     auto ready=s.Gpu(s.context.As(&s.context4),"NR preparation requires authoritative context4");if(!ready)return ready;
@@ -83,7 +83,7 @@ Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> own
         r=make(DXGI_FORMAT_R32_FLOAT,D3D11_BIND_UNORDERED_ACCESS|D3D11_BIND_SHADER_RESOURCE,slot.depth);if(!r)return r;
         r=make(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE,slot.motion);if(!r)return r;
     }
-    s.uncertain=true;s.retainedSelf=state_;r=s.bridge.Initialize(std::move(owner),device,c,preset,s.metrics,s.timing.get(),domain,placement);if(!r){s.terminal=true;return r;}s.ready=true;return {};
+    s.uncertain=true;s.retainedSelf=state_;r=s.bridge.Initialize(std::move(owner),device,c,preset,s.metrics,s.timing.get(),domain,placement,passes);if(!r){s.terminal=true;return r;}s.ready=true;return {};
 }
 Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Upscaling::ColorEncoding encoding,const SettingsSnapshot& settings,PreparedFsrInput* linearOutput){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Runtime,"NR source preparation terminal; ownership retained");
@@ -93,12 +93,12 @@ Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Up
     if(!s.ready)return Fail(ErrorKind::InvalidInput,"NR source preparation not initialized");
     if(!Upscaling::IsKnownColorEncoding(encoding))return Fail(ErrorKind::InvalidInput,"NR source encoding unknown; explicit Linear/Gamma22/SRGB required");
     const bool sdr=s.colorDomain==ColorDomain::SdrBytes;
-    if(sdr&&(encoding==Upscaling::ColorEncoding::Linear||settings.stableColors||linearOutput))
-        return Fail(ErrorKind::Unsupported,"NR SDR byte trial requires encoded SDR, Stable colors off and encoded delivery");
+    if(sdr&&(encoding==Upscaling::ColorEncoding::Linear||linearOutput))
+        return Fail(ErrorKind::Unsupported,"NR SDR byte trial requires encoded SDR and encoded delivery");
     if(settings.placement!=s.placement||settings.reconstruction.preset!=s.preset||settings.reconstruction.inputScale!=1||
         settings.reconstruction.method>ResolveMethod::Ratio||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto||
         settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.fusedPreparation||settings.reconstruction.peripheralCompression)
-        return Fail(ErrorKind::Unsupported,"NR source adapter supports one native SDR pass at its latched placement");
+        return Fail(ErrorKind::Unsupported,"NR source adapter requires native SDR preparation at its latched placement");
     D3D11_TEXTURE2D_DESC color{},depth{},motion{};
     if(input.colorExtent!=s.extent||input.guideExtent!=s.extent||input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||
         !input.context||!D3D11FrameCopy::SameObject(input.context.Get(),s.context.Get())||input.context->GetType()!=D3D11_DEVICE_CONTEXT_IMMEDIATE||

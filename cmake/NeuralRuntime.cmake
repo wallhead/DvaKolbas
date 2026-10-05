@@ -24,7 +24,6 @@ function(trp_nr_enable_source_stage ngxInclude)
             "${trpNrRoot}/src/NeuralRendering/Stage.cpp"
             "${trpNrRoot}/src/NeuralRendering/PerformanceQueries.cpp"
             "${trpNrRoot}/src/NeuralRendering/BeforeUpscale.cpp"
-            "${trpNrRoot}/src/NeuralRendering/StableColorResolve.cpp"
             "${trpNrRoot}/src/NeuralRendering/PreparedBeforeUpscale.cpp"
             "${trpNrRoot}/src/NeuralRendering/PostUpscale.cpp"
             "${trpNrRoot}/src/NeuralRendering/BeforeHost.cpp"

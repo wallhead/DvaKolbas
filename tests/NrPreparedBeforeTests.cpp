@@ -32,10 +32,7 @@ int wmain(int argc,wchar_t** argv){try{
     s.enabled=true;auto unknown=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Unknown,s);
     Check(!unknown&&prepared.Diagnostics().evaluate==0,"UnknownSourceEncodingRejectedWithoutNrWork");
     if(sdr){
-        auto rejected=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,s);
-        Check(!rejected&&prepared.Diagnostics().evaluate==0,"SdrBytesRejectStableColorCorrectionBeforeNrWork");
-        s.stableColors=false;
-        rejected=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Linear,s);
+        auto rejected=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Linear,s);
         Check(!rejected&&prepared.Diagnostics().evaluate==0,"SdrBytesRejectLinearProducerBeforeNrWork");
         PreparedFsrInput lease;
         rejected=prepared.Evaluate(input,TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,s,&lease);

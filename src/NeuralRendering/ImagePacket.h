@@ -5,6 +5,7 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <optional>
+#include <array>
 
 namespace TheosRenderPipeline::NeuralRendering {
 enum class Placement { Before, After };
@@ -22,11 +23,15 @@ struct ImageExtent {
 struct SettingsSnapshot {
     uint64_t revision{};
     bool enabled{};
-    bool stableColors{true};
     Placement placement{Placement::Before};
     Tuning tuning;
+    int passes{1};
+    std::array<Tuning,2> additionalTuning;
     Reconstruction reconstruction;
 };
+inline const Tuning& PassTuning(const SettingsSnapshot& settings,unsigned index){
+    return index?settings.additionalTuning[index-1]:settings.tuning;
+}
 struct ImagePacket {
     // Retaining these references does not prove GPU completion. Stage tickets
     // must retain the whole packet until all submitted readers retire.

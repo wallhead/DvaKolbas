@@ -27,7 +27,7 @@ UIRecomposition=false
 Enabled=true
 BeforeUpscaling=false
 StableColors=false
-PassCount=1
+PassCount=3
 CommunityRuntime=true
 [NR PASS 1]
 Style=1
@@ -42,6 +42,11 @@ UseSameSettings=false
 Style=2
 Intensity=0.3
 InputScale=0.5
+[NR PASS 3]
+UseSameSettings=false
+Style=3
+Intensity=0.2
+InputScale=0.25
 [Runtime]
 StreamlineDirectory=Custom/SL
 NRRuntimePath=Custom/NR.dll
@@ -59,7 +64,8 @@ NRLocalTone=0.1
 FrameGenerationBackend=1
 )ini") >= 0, "parse new-format fixture");
     const auto nr = SourceDLSSG::LoadPreferences(ini);
-    Check(nr.neuralEnabled && !nr.neuralBeforeUpscaling && !nr.neuralStableColors,
+    Check(nr.neuralPasses == 3, "canonical community preference retains three requested passes");
+    Check(nr.neuralEnabled && !nr.neuralBeforeUpscaling,
         "canonical NR switches override stale legacy values");
     Check(nr.neuralTuning.style == 1 && nr.neuralTuning.intensity == .4f &&
         nr.neuralTuning.localToneStrength == .7f && nr.neuralTuning.localStructureStrength == .8f &&
@@ -69,6 +75,9 @@ FrameGenerationBackend=1
     Check(!nr.neuralSecondPass.linked && nr.neuralSecondPass.tuning.style == 2 &&
         nr.neuralSecondPass.tuning.intensity == .3f && nr.neuralSecondPass.inputScale == .5f,
         "second-pass overrides remain independent");
+    Check(!nr.neuralThirdPass.linked && nr.neuralThirdPass.tuning.style == 3 &&
+        nr.neuralThirdPass.tuning.intensity == .2f && nr.neuralThirdPass.inputScale == .25f,
+        "third-pass overrides remain independent of the first two passes");
     Check(nr.generation.generatedFrames == 3 && !nr.uiRecomposition,
         "FG preferences are independent of NR");
     auto& owner = *SourceFrameGeneration::GetSingleton();
@@ -87,11 +96,13 @@ FrameGenerationBackend=1
     ini.SetValue("Runtime", "NRRuntimePath", "Edited/NR.dll");
     ini.SetValue("Experimental", "KeepUnknown", "user-value");
     ini.SetValue("SourceDLSSG", "FutureSetting", "42");
+    ini.SetBoolValue("SourceDLSSG", "NRStableColors", true);
     IniLayout::PrepareForUpdate(ini);
     owner.StoreRuntimePaths(ini);
     auto changed = nr;
     changed.neuralTuning.style = 0;
     changed.neuralTuning.localToneStrength = .9f;
+    changed.neuralThirdPass.tuning.style = 4;
     SourceDLSSG::StorePreferences(ini, changed);
     owner.StoreInterpolationPreference(ini);
     Overlay::StoreLayout(ini, layout);
@@ -99,6 +110,10 @@ FrameGenerationBackend=1
     Check(!ini.GetValue("SourceDLSSG", "NRStyle", nullptr) &&
         !ini.GetValue("Experimental", "FrameGenerationBackend", nullptr),
         "save removes migrated keys so edits cannot conflict");
+    Check(!ini.GetValue("SourceDLSSG", "NRStableColors", nullptr) &&
+        !ini.GetValue("NeuralRendering", "StableColors", nullptr), "save removes both retired color settings");
+    Check(ini.GetLongValue("NR PASS 3", "Style", -1) == 4 &&
+        !ini.GetValue("SourceDLSSG", "NRPass3Style", nullptr), "save writes third-pass canonical section");
     Check(ini.GetLongValue("NR PASS 1", "Style", -1) == 0 &&
         std::abs(ini.GetDoubleValue("NR PASS 1", "Tone", -1) - .9) < .000001,
         "applied values replace old canonical values");
@@ -118,6 +133,14 @@ FrameGenerationBackend=1
     const auto inherited = SourceDLSSG::LoadPreferences(partial);
     Check(!inherited.neuralSecondPass.linked && inherited.neuralSecondPass.inputScale == .5f &&
         inherited.neuralSecondPass.tuning.intensity == .6f, "partial new INIs retain inheritance");
+    Check(inherited.neuralThirdPass.linked && inherited.neuralThirdPass.inputScale == .5f &&
+        inherited.neuralThirdPass.tuning.intensity == .6f, "missing pass three follows first-pass defaults");
+    partial.SetBoolValue("SourceDLSSG", "NRStableColors", false);
+    partial.SetBoolValue("NeuralRendering", "StableColors", true);
+    Check(SourceDLSSG::LoadPreferences(partial) == inherited, "retired color options cannot alter loaded preferences");
+    IniLayout::StoreCanonical(partial);
+    Check(!partial.GetValue("SourceDLSSG", "NRStableColors", nullptr) &&
+        !partial.GetValue("NeuralRendering", "StableColors", nullptr), "migration removes retired keys without a preference writer");
     // Never substitute a legacy nonempty path for an explicitly empty new path.
     partial.SetValue("Runtime", "NRRuntimePath", "");
     partial.SetValue("Experimental", "NeuralRenderingRuntimePath", "Old/NR.dll");

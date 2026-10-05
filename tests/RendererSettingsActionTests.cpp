@@ -58,11 +58,22 @@ void Generation()
 }
 void Neural()
 {
+    RendererSettingsDraft legacy; legacy.valid = true; legacy.sourceDLSSG.neuralEnabled = true;
+    RendererSettingsCapabilities legacyCaps{true,true,true,false};
+    legacy.sourceDLSSG.neuralPasses = 2;
+    Require(!ValidateRendererSettings(legacy, legacyCaps), "legacy renderer accepts two passes");
+    legacy.sourceDLSSG.neuralPasses = 3;
+    Require(ValidateRendererSettings(legacy, legacyCaps), "legacy renderer rejects an unsupported third pass");
+    auto thirdDraft = legacy; thirdDraft.sourceDLSSG.neuralThirdPass.tuning.intensity = .5f;
+    Require(!SameNeuralPreferences(legacy.sourceDLSSG, thirdDraft.sourceDLSSG) &&
+        CountRendererSettingsChanges(thirdDraft, legacy) == 1, "third-pass edits participate in Apply and capability validation");
     RendererSettingsDraft current; current.valid = true; current.sourceDLSSG.neuralEnabled = true;
     auto draft = current; draft.upscaleType = DLAA; draft.qualityLevel = 4;
     RendererSettingsCapabilities lostUI{true,true,false,false};
     Require(ValidateRendererSettings(draft, lostUI) != nullptr, "new unavailable NR requests rejected");
     Require(ValidateRendererSettings(draft, lostUI, &current) == nullptr, "unchanged NR cannot block unrelated DLAA save");
+    auto thirdOnly = current; thirdOnly.sourceDLSSG.neuralThirdPass.tuning.intensity = .5f;
+    Require(ValidateRendererSettings(thirdOnly, lostUI, &current), "third-pass edits cannot bypass lost NR capability validation");
     Require(NeuralSettingsUnavailable(draft.upscaleType, lostUI) != nullptr, "preserved request cannot enable execution without composition");
     draft.sourceDLSSG.neuralPasses = 2;
     Require(ValidateRendererSettings(draft, lostUI, &current) != nullptr, "cannot reconfigure enabled NR after capability loss");
@@ -104,7 +115,12 @@ void CommunityNeural()
     after.upscaleType=DLSS;
     Require(ValidateRendererSettings(after,caps),"scaled DLSS After cannot claim qualified display guides");
     auto twice=draft; twice.sourceDLSSG.neuralPasses=2;
-    Require(ValidateRendererSettings(twice,caps),"first community trial permits one pass");
+    Require(!ValidateRendererSettings(twice,caps),"community renderer accepts two native passes");
+    auto thrice=draft; thrice.sourceDLSSG.neuralPasses=3;
+    Require(!ValidateRendererSettings(thrice,caps),"community renderer accepts three native passes");
+    thrice.sourceDLSSG.neuralThirdPass.linked=false;
+    thrice.sourceDLSSG.neuralThirdPass.inputScale=.5f;
+    Require(ValidateRendererSettings(thrice,caps),"community renderer rejects reduced pass-three model input");
     auto reduced=draft; reduced.sourceDLSSG.neuralReconstruction.inputScale=0.5f;
     Require(ValidateRendererSettings(reduced,caps),"reduced model cannot silently run native");
     caps.neuralRuntime=false; draft.sourceDLSSG.neuralEnabled=false;

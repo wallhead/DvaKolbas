@@ -22,7 +22,6 @@ inline constexpr std::array keys{
     Key{"SourceDLSSG", "ReflexMode", "FrameGeneration", "ReflexMode"},
     Key{"SourceDLSSG", "NeuralRenderingEnabled", "NeuralRendering", "Enabled"},
     Key{"SourceDLSSG", "NRBeforeUpscaling", "NeuralRendering", "BeforeUpscaling"},
-    Key{"SourceDLSSG", "NRStableColors", "NeuralRendering", "StableColors"},
     Key{"SourceDLSSG", "NRPasses", "NeuralRendering", "PassCount"},
     Key{"SourceDLSSG", "NROnePassInCombat", "NeuralRendering", "OnePassInCombat"},
     Key{"SourceDLSSG", "NROnePassWeaponsDrawn", "NeuralRendering", "OnePassWeaponsDrawn"},
@@ -54,6 +53,16 @@ inline constexpr std::array keys{
     Key{"SourceDLSSG", "NRPass2SkinStructure", "NR PASS 2", "SkinStructure"},
     Key{"SourceDLSSG", "NRPass2AutoSkinMask", "NR PASS 2", "AutoSkin"},
     Key{"SourceDLSSG", "NRPass2UICorrection", "NR PASS 2", "UICorrection"},
+    Key{"SourceDLSSG", "NRPass3UseSameSettings", "NR PASS 3", "UseSameSettings"},
+    Key{"SourceDLSSG", "NRPass3InputScale", "NR PASS 3", "InputScale"},
+    Key{"SourceDLSSG", "NRPass3Preset", "NR PASS 3", "Preset"},
+    Key{"SourceDLSSG", "NRPass3Style", "NR PASS 3", "Style"},
+    Key{"SourceDLSSG", "NRPass3Intensity", "NR PASS 3", "Intensity"},
+    Key{"SourceDLSSG", "NRPass3LocalTone", "NR PASS 3", "Tone"},
+    Key{"SourceDLSSG", "NRPass3LocalStructure", "NR PASS 3", "Structure"},
+    Key{"SourceDLSSG", "NRPass3SkinStructure", "NR PASS 3", "SkinStructure"},
+    Key{"SourceDLSSG", "NRPass3AutoSkinMask", "NR PASS 3", "AutoSkin"},
+    Key{"SourceDLSSG", "NRPass3UICorrection", "NR PASS 3", "UICorrection"},
     Key{"Experimental", "SourceDLSSGStreamlineDirectory", "Runtime", "StreamlineDirectory"},
     Key{"Experimental", "NeuralRenderingRuntimePath", "Runtime", "NRRuntimePath"},
     Key{"NeuralRendering", "RuntimeRoot", "Runtime", "NRRuntimeRoot"},
@@ -93,6 +102,8 @@ private:
 // values win, including false, zero and explicitly empty runtime paths.
 template<class Ini> void PrepareForUpdate(Ini& ini)
 {
+    ini.Delete("SourceDLSSG", "NRStableColors");
+    ini.Delete("NeuralRendering", "StableColors");
     for (const auto& entry : keys) {
         if (const auto value = ini.GetValue(entry.section, entry.key, nullptr)) {
             const std::string copy(value);
@@ -105,6 +116,8 @@ template<class Ini> void PrepareForUpdate(Ini& ini)
 // replace old canonical values. Unknown keys and sections are preserved.
 template<class Ini> void StoreCanonical(Ini& ini)
 {
+    ini.Delete("SourceDLSSG", "NRStableColors");
+    ini.Delete("NeuralRendering", "StableColors");
     for (const auto& entry : keys) {
         if (const auto value = ini.GetValue(entry.legacySection, entry.legacyKey, nullptr)) {
             const std::string copy(value);

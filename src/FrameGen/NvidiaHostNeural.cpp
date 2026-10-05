@@ -134,16 +134,28 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     InspectCommunityNeural();
     NR::SettingsSnapshot snapshot;
     snapshot.enabled=p.neuralEnabled;snapshot.placement=p.neuralBeforeUpscaling?NR::Placement::Before:NR::Placement::After;
-    snapshot.stableColors=p.neuralStableColors;
+    snapshot.passes=p.neuralPasses;
     snapshot.tuning=p.neuralTuning;snapshot.reconstruction=p.neuralReconstruction;
+    snapshot.additionalTuning={
+        NR::EffectiveSecondPass(p.neuralSecondPass,p.neuralReconstruction,p.neuralTuning).tuning,
+        NR::EffectiveSecondPass(p.neuralThirdPass,p.neuralReconstruction,p.neuralTuning).tuning};
     const bool placementChanged=communitySnapshotValid_ && snapshot.placement!=communitySnapshot_.placement;
     const bool changed=!communitySnapshotValid_ || snapshot.enabled!=communitySnapshot_.enabled ||
-        snapshot.placement!=communitySnapshot_.placement || snapshot.stableColors!=communitySnapshot_.stableColors || snapshot.tuning!=communitySnapshot_.tuning ||
+        snapshot.placement!=communitySnapshot_.placement || snapshot.passes!=communitySnapshot_.passes ||
+        snapshot.additionalTuning!=communitySnapshot_.additionalTuning || snapshot.tuning!=communitySnapshot_.tuning ||
         snapshot.reconstruction!=communitySnapshot_.reconstruction;
     snapshot.revision=communitySnapshot_.revision+(changed?1:0);
     communitySnapshot_=snapshot;communitySnapshotValid_=true;
-    if(changed)logger::info("[Community NR settings] revision={} placement={} stableColors={} tone={} structure={} style={}",
-        snapshot.revision,p.neuralBeforeUpscaling?"Before SR":"After SR before FG",snapshot.stableColors,snapshot.tuning.localToneStrength,snapshot.tuning.localStructureStrength,snapshot.tuning.style);
+    if(changed) {
+        logger::info("[Community NR settings] revision={} placement={} passes={}",
+            snapshot.revision,p.neuralBeforeUpscaling?"Before SR":"After SR before FG",snapshot.passes);
+        for(int pass=0;pass<snapshot.passes;++pass) {
+            const auto& tuning=pass?snapshot.additionalTuning[pass-1]:snapshot.tuning;
+            logger::info("[Community NR pass] revision={} pass={} style={} intensity={} tone={} structure={} skin={} autoSkin={}",
+                snapshot.revision,pass+1,tuning.style,tuning.intensity,tuning.localToneStrength,
+                tuning.localStructureStrength,tuning.skinStructureStrength,tuning.useAutoSkinMask);
+        }
+    }
     // Snapshot/reset changes are seen before SR. After owns NR evaluation only
     // at the completed source boundary, so one request cannot run two passes.
     if(!post && !p.neuralBeforeUpscaling){reset=NR::SourceResetForNrSettings(reset,changed,false,placementChanged);return true;}

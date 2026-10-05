@@ -16,7 +16,7 @@ int main(){try{
     p.neuralReconstruction.method=NeuralRendering::ResolveMethod::Ratio;
     p.neuralReconstruction.colorIsHDR=true;p.neuralReconstruction.producerColor=true;
     p.neuralReconstruction.fusedPreparation=true;p.neuralReconstruction.peripheralCompression=true;
-    p.hdrOutput.enabled=true;p.neuralStableColors=false;
+    p.hdrOutput.enabled=true;
     const auto original=p;ImRect action;
     auto frame=[&]{
         ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
@@ -30,12 +30,26 @@ int main(){try{
     io.AddMouseButtonEvent(0,false);frame();
     Require(!NeuralRendering::NativeBeforeUnavailable(p)&&!NeuralRendering::NativeAfterUnavailable(p,DLSS,Upscaling::Quality::Quality,false),
         "visible repair action must recover unsupported community NR preferences");
-    Require(p.neuralEnabled&&!p.neuralStableColors&&p.neuralTuning.style==3&&p.neuralTuning.intensity==.6f,
-        "repair retains enabled state, stable-color choice and supported visual tuning");
-    Require(p.neuralPasses==1&&!p.neuralTuning.uiCorrection&&!p.hdrOutput.enabled&&p.neuralBeforeUpscaling,
-        "repair selects native SDR one-pass Before settings");
+    Require(p.neuralEnabled&&p.neuralTuning.style==3&&p.neuralTuning.intensity==.6f,
+        "repair retains enabled state and supported visual tuning");
+    Require(p.neuralPasses==2&&!p.neuralTuning.uiCorrection&&!p.hdrOutput.enabled&&p.neuralBeforeUpscaling,
+        "repair preserves supported pass count while selecting native SDR Before settings");
     RendererSettingsDraft draft;draft.valid=true;draft.sourceDLSSG=p;
     RendererSettingsCapabilities capabilities{true,true,true,false};capabilities.communityNeural=true;
     Require(!ValidateRendererSettings(draft,capabilities),"repaired draft passes actual Apply validation");
+    p.neuralPasses=3;
+    p.neuralSecondPass.linked=true;p.neuralSecondPass.tuning.style=5;
+    p.neuralThirdPass.linked=false;p.neuralThirdPass.tuning.style=2;
+    p.neuralThirdPass.tuning.localToneStrength=.4f;
+    const auto three=p;
+    for(int i=0;i<2;++i) {
+        ImGui::NewFrame();ImGui::SetNextWindowSize({800,650},ImGuiCond_Always);
+        ImGui::Begin("Three NR passes");
+        const auto ids=ImGui::GetCurrentWindow()->IDStack.Size;
+        Overlay::DrawCommunityNeuralPassControls(p);
+        Require(ImGui::GetCurrentWindow()->IDStack.Size==ids,"pass controls balance per-pass widget IDs");
+        ImGui::End();ImGui::Render();
+    }
+    Require(p==three,"drawing three passes preserves independent and linked saved overrides");
     ImGui::DestroyContext();std::cout<<"PASS explicit community NR draft repair without silent normalization\n";return 0;
 }catch(const std::exception& error){if(ImGui::GetCurrentContext())ImGui::DestroyContext();std::cerr<<error.what()<<'\n';return 1;}}

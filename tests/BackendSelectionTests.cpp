@@ -11,8 +11,51 @@ static void Require(bool ok, const char* why)
     if (!ok) { std::fprintf(stderr, "FAIL: %s\n", why); std::exit(1); }
 }
 
+static void StartupNeuralPassLimit()
+{
+    for (const bool canonical : {false, true}) {
+        CSimpleIniA startup;
+        const char* section = canonical ? "NeuralRendering" : "SourceDLSSG";
+        const char* enabled = canonical ? "Enabled" : "NeuralRenderingEnabled";
+        const char* passes = canonical ? "PassCount" : "NRPasses";
+        startup.SetBoolValue(section, enabled, true);
+        startup.SetLongValue(section, passes, 2);
+        auto validate = [&] { return TheosRenderPipeline::ValidateRendererConfiguration(startup, true, true); };
+        Require(!validate(), "legacy startup permits two enabled NR passes");
+        for (const long count : {3L, 5L}) {
+            startup.SetLongValue(section, passes, count);
+            const auto error = validate();
+            Require(error && std::string_view(error).find("legacy NR") != std::string_view::npos,
+                "legacy startup rejects unsupported pass count with an NR-specific reason");
+        }
+        startup.SetLongValue(section, passes, 3);
+        startup.SetBoolValue(section, enabled, false);
+        Require(!validate(), "disabled legacy NR keeps an inactive three-pass preference");
+        startup.SetBoolValue(section, enabled, true);
+        startup.SetBoolValue("NeuralRendering", "CommunityRuntime", true);
+        Require(!validate(), "community startup accepts three enabled passes");
+        startup.SetLongValue("Settings", "UpscaleType", FSR);
+        startup.SetLongValue("FrameGeneration", "Backend", 0);
+        startup.SetBoolValue("FrameGeneration", "Enabled", false);
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        Require(!validate(), "community three-pass startup works with ordinary FSR");
+#endif
+        Require(TheosRenderPipeline::ValidateRendererConfiguration(startup, false, true),
+            "community three-pass startup still obeys FSR build availability");
+    }
+    CSimpleIniA mixed;
+    mixed.LoadData("[SourceDLSSG]\nNeuralRenderingEnabled=true\nNRPasses=3\n[NeuralRendering]\nEnabled=true\nPassCount=2\n");
+    Require(!TheosRenderPipeline::ValidateRendererConfiguration(mixed, true),
+        "canonical two-pass value overrides an unsupported stale legacy count");
+    mixed.SetLongValue("NeuralRendering", "PassCount", 3);
+    mixed.SetBoolValue("NeuralRendering", "Enabled", false);
+    Require(!TheosRenderPipeline::ValidateRendererConfiguration(mixed, true),
+        "canonical disabled value overrides an enabled stale legacy request");
+}
+
 int main()
 {
+    StartupNeuralPassLimit();
     // Rejecting a supported ordinary FSR request because it lacks NVIDIA
     // ownership is the production bug this test catches.
     CSimpleIniA ini;

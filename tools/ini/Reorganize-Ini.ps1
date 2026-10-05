@@ -11,6 +11,9 @@ $output=[IO.Path]::GetFullPath($OutputIni)
 if($source -eq $output -or (Test-Path -LiteralPath $output)){throw 'Use a new output file; source INI stays untouched'}
 $sourceHash=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
 $values=Read-PackageIni $source -Raw
+foreach($retired in @('SourceDLSSG/NRStableColors','NeuralRendering/StableColors')){
+    $values.Remove($retired)
+}
 foreach($alias in Get-IniLayoutAliases){
     if($values.ContainsKey($alias.Legacy)){
         if(-not $values.ContainsKey($alias.Canonical)){$values[$alias.Canonical]=$values[$alias.Legacy]}
@@ -62,7 +65,8 @@ $temporary=$output+'.tmp-'+[Guid]::NewGuid().ToString('N')
 try {
     [IO.File]::WriteAllLines($temporary,$lines,[Text.UTF8Encoding]::new($false))
     $before=Read-PackageIni $source;$after=Read-PackageIni $temporary
-    foreach($key in $before.Keys){
+foreach($key in $before.Keys){
+    if($key -in @('SourceDLSSG/NRStableColors','NeuralRendering/StableColors')){continue}
         if($key -eq 'Settings/ConfigVersion'){continue}
         if(-not $after.ContainsKey($key) -or $after[$key] -cne $before[$key]){throw "INI value changed: $key"}
     }

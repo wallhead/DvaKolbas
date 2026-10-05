@@ -38,6 +38,11 @@ namespace TheosRenderPipeline
     template<class Ini> const char* ValidateRendererConfiguration(const Ini& source, bool fsrBuilt, bool fsrFgBuilt = false)
     {
         const TheosRenderPipeline::IniLayout::ReadView ini(source);
+        if (ini.GetBoolValue("SourceDLSSG", "NeuralRenderingEnabled", false) &&
+            !ini.GetBoolValue("NeuralRendering", "CommunityRuntime", false) &&
+            ini.GetLongValue("SourceDLSSG", "NRPasses", 1) > 2) {
+            return "The legacy NR runtime supports only one or two passes. Choose at most two passes or use the community NR runtime.";
+        }
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
         if (mode != FSR) { return ValidateNvidiaBaseline(ini); }
         if (!fsrBuilt) { return "FSR support is unavailable in this build."; }

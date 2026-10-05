@@ -9,27 +9,20 @@
 
 using namespace TheosRenderPipeline::Overlay;
 
-bool OverlayUI::BeginSettingsColumns(const char* id, float height, const FrameView& view)
+bool OverlayUI::BeginSettingsColumns(const char* id, float height, const FrameView&)
 {
     ImGui::PushID(id);
     const auto columns = DrawColumnSplitter(ImGui::GetContentRegionAvail().x, height, layout.leftFraction);
-    ImGui::BeginChild("##left", ImVec2(columns.left, height), false,
-                      ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-    DrawFrameMeasurements(view, height);
-    ImGui::BeginChild("##details", ImVec2(0, 0), false);
+    ImGui::BeginChild("##settings", ImVec2(columns.left, height), false);
     ImGui::PushTextWrapPos(0);
+    ImGui::PushItemWidth((std::min)(310.0f, ImGui::GetContentRegionAvail().x * 0.6f));
     return true;
 }
 
-void OverlayUI::NextSettingsColumn(float height)
+void OverlayUI::NextSettingsColumn(float)
 {
-    ImGui::PopTextWrapPos();
-    ImGui::EndChild();
-    ImGui::EndChild();
-    ImGui::SameLine(0, ColumnGap);
-    ImGui::BeginChild("##right", ImVec2(0, height), false);
-    ImGui::PushTextWrapPos(0);
-    ImGui::PushItemWidth(-180.0f);
+    ImGui::Spacing();
+    ImGui::Separator();
 }
 
 void OverlayUI::EndSettingsColumns()
@@ -79,7 +72,7 @@ void OverlayUI::DrawStageMeasurements(SettingsPage page)
     if (!performance->TimingEnabled() || !timings.lastCompletedGeneration)
     {
         ImGui::TextDisabled("%s", performance->TimingEnabled() ? "GPU timings: waiting" : "GPU timings: off");
-        DrawSettingsHelp("Enable stage timings in Advanced, then Apply.");
+        DrawSettingsHelp("Enable stage timings in DLSS > Advanced settings, then Apply.");
         return;
     }
     using Stage = PerformanceTuning::D3D11Stage;

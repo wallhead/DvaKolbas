@@ -19,13 +19,12 @@ namespace TheosRenderPipeline::SourceDLSSG
 		GenerationRequest generation{};
 		bool neuralEnabled{ false };
 		bool neuralBeforeUpscaling{ true };
-		// Community NR Before only: preserve original broad SDR colors.
-		bool neuralStableColors{ true };
 		int neuralPasses{ 1 };
 		NeuralRendering::CombatSettings neuralCombat{};
 		NeuralRendering::Tuning neuralTuning{};
 		NeuralRendering::Reconstruction neuralReconstruction{};
 		NeuralRendering::SecondPassSettings neuralSecondPass{};
+		NeuralRendering::SecondPassSettings neuralThirdPass{};
 		HDROutput::Settings hdrOutput{};
 		bool operator==(const Preferences&) const = default;
 	};
@@ -36,10 +35,11 @@ namespace TheosRenderPipeline::SourceDLSSG
 		value.outputFPSLimit = std::clamp(value.outputFPSLimit, 0, 1000);
 		value.generation = SanitizeGenerationRequest(value.generation);
 		value.neuralTuning = NeuralRendering::SanitizeBuild14Tuning(value.neuralTuning);
-		value.neuralPasses = std::clamp(value.neuralPasses, 1, 2);
+		value.neuralPasses = std::clamp(value.neuralPasses, 1, 3);
 		value.neuralCombat = NeuralRendering::SanitizeCombatSettings(value.neuralCombat);
 		value.neuralReconstruction = NeuralRendering::SanitizeReconstruction(value.neuralReconstruction);
 		value.neuralSecondPass = NeuralRendering::SanitizeSecondPass(value.neuralSecondPass);
+		value.neuralThirdPass = NeuralRendering::SanitizeSecondPass(value.neuralThirdPass);
 		value.hdrOutput = HDROutput::Sanitize(value.hdrOutput);
 		return value;
 	}
@@ -60,7 +60,6 @@ namespace TheosRenderPipeline::SourceDLSSG
 		value.uiRecomposition = ini.GetBoolValue(section, "UIRecomposition", true);
 		value.neuralEnabled = ini.GetBoolValue(section, "NeuralRenderingEnabled", false);
 		value.neuralBeforeUpscaling = ini.GetBoolValue(section, "NRBeforeUpscaling", value.neuralBeforeUpscaling);
-		value.neuralStableColors = ini.GetBoolValue(section, "NRStableColors", true);
 		value.neuralPasses = static_cast<int>(ini.GetLongValue(section, "NRPasses", 1));
 		value.neuralCombat.inCombat = ini.GetBoolValue(section, "NROnePassInCombat", false);
 		value.neuralCombat.weaponsDrawn = ini.GetBoolValue(section, "NROnePassWeaponsDrawn", false);
@@ -75,6 +74,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		nr.uiCorrection = ini.GetBoolValue(section, "NRUICorrection", false);
 		value.neuralReconstruction = NeuralRendering::LoadReconstruction(ini, section);
 		value.neuralSecondPass = NeuralRendering::LoadSecondPass(ini, section, value.neuralReconstruction, value.neuralTuning);
+		value.neuralThirdPass = NeuralRendering::LoadThirdPass(ini, section, value.neuralReconstruction, value.neuralTuning);
 		value.hdrOutput = HDROutput::Load(ini);
 		return SanitizePreferences(value);
 	}
@@ -92,7 +92,8 @@ namespace TheosRenderPipeline::SourceDLSSG
 		ini.SetBoolValue(section, "UIRecomposition", value.uiRecomposition);
 		ini.SetBoolValue(section, "NeuralRenderingEnabled", value.neuralEnabled);
 		ini.SetBoolValue(section, "NRBeforeUpscaling", value.neuralBeforeUpscaling);
-		ini.SetBoolValue(section, "NRStableColors", value.neuralStableColors);
+		ini.Delete(section, "NRStableColors");
+		ini.Delete("NeuralRendering", "StableColors");
 		ini.SetLongValue(section, "NRPasses", value.neuralPasses);
 		ini.SetBoolValue(section, "NROnePassInCombat", value.neuralCombat.inCombat);
 		ini.SetBoolValue(section, "NROnePassWeaponsDrawn", value.neuralCombat.weaponsDrawn);
@@ -107,6 +108,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		ini.SetBoolValue(section, "NRUICorrection", nr.uiCorrection);
 		NeuralRendering::StoreReconstruction(ini, section, value.neuralReconstruction);
 		NeuralRendering::StoreSecondPass(ini, section, value.neuralSecondPass);
+		NeuralRendering::StoreThirdPass(ini, section, value.neuralThirdPass);
 		HDROutput::Store(ini, value.hdrOutput);
 	}
 }

@@ -84,14 +84,14 @@ void OverlayUI::DrawHDROutputSettings()
                      "brightness. Highlights the preset already clipped cannot be recovered. Requires Windows HDR.");
     if (hdr.enabled != state.requested)
     {
-        ImGui::TextColored(kAmber, "Save as default and restart to %s HDR output", hdr.enabled ? "allocate" : "release");
+        ImGui::TextWrapped("Save as default and restart to %s HDR output", hdr.enabled ? "allocate" : "release");
     }
     else if (state.requested)
     {
         const auto status = state.displayMaxNits > 0.0f ?
             std::format("{} (display reports {:.0f} nits)", state.reason, state.displayMaxNits) : std::string(state.reason);
         if (state.display) { ImGui::TextDisabled("%s", status.c_str()); }
-        else { ImGui::TextColored(kAmber, "%s", status.c_str()); }
+        else { ImGui::TextWrapped("%s", status.c_str()); }
         if (state.gpu.samples)
         {
             ImGui::TextDisabled("Output pass GPU: %.2f ms average, %.2f ms max", state.gpu.AverageUs() / 1000.0,
@@ -104,7 +104,7 @@ void OverlayUI::DrawHDROutputSettings()
     if (hdr.matchWindowsSDR)
     {
         if (windowsKnown) { ImGui::TextDisabled("Paper white and UI: %.0f nits from Windows", state.windowsSDRWhiteNits); }
-        else if (state.requested) { ImGui::TextColored(kAmber, "Windows SDR brightness unavailable; using the values below"); }
+        else if (state.requested) { ImGui::TextWrapped("Windows SDR brightness unavailable; using the values below"); }
     }
     DrawSettingsHelp("Uses Windows' SDR content brightness (Settings > Display > HDR) for paper white and UI, "
                      "so whites match the desktop. Untick to set them here.");
@@ -145,7 +145,7 @@ void OverlayUI::DrawHDROutputSettings()
 void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
 {
     auto* host = NvidiaHost::GetSingleton();
-    if (!ImGui::BeginTabItem("Image", nullptr,
+    if (!ImGui::BeginTabItem("DLSS", nullptr,
                              requestedPage == SettingsPage::Image ? ImGuiTabItemFlags_SetSelected : 0))
     {
         return;
@@ -155,7 +155,8 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         ImGui::EndTabItem();
         return;
     }
-    DrawImageMeasurements(view);
+    if (ImGui::CollapsingHeader("Status and measurements"))
+        DrawImageMeasurements(view);
     NextSettingsColumn(tabCardHeight);
     if (TheosRenderPipeline::CommunityShaders::Active())
     {
@@ -224,11 +225,11 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             const auto& configuration = host->SourceUpscalerSettings();
             if (configuration.NeedsRestart())
             {
-                ImGui::TextColored(kAmber, "Mode/render scale awaiting restart");
+                ImGui::TextWrapped("Mode/render scale awaiting restart");
             }
             if (configuration.Failed())
             {
-                ImGui::TextColored(kRust, "Feature update failed; restart required");
+                ImGui::TextWrapped("Feature update failed; restart required");
             }
             else if (configuration.NeedsLiveChange())
             {
@@ -237,7 +238,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         }
         else
         {
-            ImGui::TextColored(kRust, "Presentation host is unavailable.");
+            ImGui::TextWrapped("Presentation host is unavailable.");
         }
         if(view.fsrActive || settingsDraft.upscaleType==FSR) {
             ImGui::TextWrapped("%s",view.fsrStatus.text.c_str());
@@ -304,6 +305,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
     {
         DrawTextureMemoryPanel(view);
     }
+    DrawAdvancedPanel(tabCardHeight, view);
     EndSettingsColumns();
     ImGui::EndTabItem();
 }
@@ -347,7 +349,7 @@ void OverlayUI::DrawTextureMemoryPanel(const FrameView& view)
     if (view.textureProviderAvailable && settingsDraft.textureProviderSettings.enabled &&
         !view.textureTelemetry.hooksInstalled)
     {
-        ImGui::TextColored(kOchre, "The provider started without hooks. Save the startup default and relaunch "
+        ImGui::TextWrapped("The provider started without hooks. Save the startup default and relaunch "
                                    "to enable texture interception.");
     }
     else

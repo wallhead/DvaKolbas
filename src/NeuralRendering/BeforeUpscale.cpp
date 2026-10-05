@@ -1,7 +1,6 @@
 #include "BeforeUpscale.h"
 #include "PerformanceQueries.h"
 #include "History.h"
-#include "StableColorResolve.h"
 #include "Graphics/D3D11D3D12Interop.h"
 #include <cmath>
 #include <chrono>
@@ -17,21 +16,20 @@ void Transition(ID3D12GraphicsCommandList* list,ID3D12Resource* resource,D3D12_R
 struct BeforeUpscale::State {
     PerformanceMetrics* metrics{};PerformanceQueries* queries11{};std::unique_ptr<PerformanceQueries> ownTiming11;
     Stage stage;
-    StableColorResolve stableColor;
     Graphics::D3D11D3D12Interop interop;
     StageContract contract;
     ComPtr<ID3D11Device> device11;
     ComPtr<ID3D11DeviceContext> context;
-    struct Slot {Graphics::SharedTexture color,depth,motion,output;StableColorResolve::Views stableViews;BeforeInput heldInput;std::optional<EvaluationTicket> ticket;uint64_t id{},source{},epoch{};};
+    struct Slot {Graphics::SharedTexture color,depth,motion,output;BeforeInput heldInput;std::optional<EvaluationTicket> ticket;uint64_t id{},source{},epoch{};};
     std::array<Slot,3> slots;size_t nextSlot{};
     Detail::TicketOwnership deliveryOwner;uint64_t deliverySerial{};
     ComPtr<ID3D12Fence> handoffFence,completionFence;
     ComPtr<ID3D11Fence> handoff11;
     uint64_t handoffValue{},completionValue{};
-    unsigned preset{};
+    unsigned preset{},passes{1};
     ColorDomain colorDomain{ColorDomain::Linear};
     Placement placement{Placement::Before};
-    std::optional<int> recordedStyle;
+    std::optional<std::array<int,3>> recordedStyles;
     History history;
     bool attempted{},ready{},uncertain{},terminal{};
     Slot* Find(const DeliveryTicket& t){if(!deliveryOwner.Owns(t.owner_)||t.slot_>=slots.size())return nullptr;auto& slot=slots[t.slot_];return slot.id&&slot.id==t.id_&&slot.source==t.source_&&slot.epoch==t.epoch_?&slot:nullptr;}
@@ -71,14 +69,13 @@ struct BeforeUpscale::State {
 };
 BeforeUpscale::BeforeUpscale():state_(std::make_unique<State>()){}
 BeforeUpscale::~BeforeUpscale(){if(state_->uncertain)state_.release();}
-Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,PerformanceQueries* queries11,ColorDomain domain,Placement placement){
+Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,PerformanceQueries* queries11,ColorDomain domain,Placement placement,unsigned passes){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR Before initialization already attempted");s.attempted=true;
     if(!device||!owner||!contract.device||!contract.queue||!contract.colorExtent.width||!contract.colorExtent.height||
-        contract.colorExtent!=contract.guideExtent||preset>1||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
+        contract.colorExtent!=contract.guideExtent||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
         (placement!=Placement::Before&&placement!=Placement::After))return Fail(ErrorKind::InvalidInput,"NR native source device/extent/color/placement contract incomplete");
     auto r=s.Gpu(s.interop.Initialize(device,contract.device.Get(),contract.queue.Get()),"NR Before same-adapter bridge initialization failed");if(!r)return r;
-    s.device11=device;s.contract=contract;s.preset=preset;s.colorDomain=domain;s.placement=placement;device->GetImmediateContext(&s.context);
-    r=s.Gpu(s.stableColor.Initialize(device),"NR stable color shader initialization failed");if(!r)return r;
+    s.device11=device;s.contract=contract;s.preset=preset;s.passes=passes;s.colorDomain=domain;s.placement=placement;device->GetImmediateContext(&s.context);
     if(metrics&&metrics->Enabled()){
         s.metrics=metrics;s.queries11=queries11;
         if(!queries11){s.ownTiming11=std::make_unique<PerformanceQueries>(metrics);s.ownTiming11->Initialize11(device);s.queries11=s.ownTiming11.get();}
@@ -104,7 +101,7 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
         std::tuple{NrColorFormat(domain),&slot.output,true}}){r=make(format,*texture,uav);if(!r)return r;}
     // Stage initialization can submit feature creation; never destroy this
     // bridge's retained devices/queue after an uncertain result.
-    s.uncertain=true;r=s.stage.Initialize(std::move(owner),contract,preset,s.metrics);if(!r){s.terminal=true;return r;}
+    s.uncertain=true;r=s.stage.Initialize(std::move(owner),contract,preset,s.metrics,passes);if(!r){s.terminal=true;return r;}
     s.ready=true;return {};
 }
 Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const SettingsSnapshot& settings){
@@ -114,20 +111,18 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     if(!settings.enabled){auto drained=s.WaitPending();if(!drained)return std::unexpected(drained.error());s.history.ResetNext();return BeforeResult{false,input.reset};}
     if(!s.ready)return Fail(ErrorKind::InvalidInput,"NR Before runtime/bridge not initialized");
     if(settings.placement!=s.placement)return Fail(ErrorKind::Unsupported,"NR native source request differs from latched placement");
+    if(settings.passes!=int(s.passes))return Fail(ErrorKind::InvalidInput,"NR native source pass count differs from initialized chain");
     if(input.colorDomain!=s.colorDomain||input.colorExtent!=s.contract.colorExtent||input.guideExtent!=s.contract.guideExtent||
         !input.context||input.context->GetType()!=D3D11_DEVICE_CONTEXT_IMMEDIATE||!D3D11FrameCopy::SameObject(input.context.Get(),s.context.Get())||
         !s.Texture(input.color.Get(),NrColorFormat(s.colorDomain))||!s.Texture(input.depth.Get(),DXGI_FORMAT_R32_FLOAT)||!s.Texture(input.motion.Get(),DXGI_FORMAT_R16G16_FLOAT)||
         input.color.Get()==input.depth.Get()||input.color.Get()==input.motion.Get()||input.depth.Get()==input.motion.Get()||
         input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||!std::isfinite(input.motionScaleX)||!std::isfinite(input.motionScaleY)||!input.motionScaleX||!input.motionScaleY)
         return Fail(ErrorKind::InvalidInput,"NR Before input ownership/encoding/native guides invalid");
-    if(settings.stableColors&&s.colorDomain==ColorDomain::SdrBytes)return Fail(ErrorKind::Unsupported,"NR SDR byte trial requires Stable colors off");
-    if(settings.stableColors){D3D11_TEXTURE2D_DESC d{};input.color->GetDesc(&d);
-        if(!(d.BindFlags&D3D11_BIND_RENDER_TARGET))return Fail(ErrorKind::InvalidInput,"NR stable colors require a render-target destination");}
     if(settings.reconstruction.preset!=s.preset||settings.reconstruction.inputScale!=1||settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.peripheralCompression||settings.reconstruction.fusedPreparation||
         settings.reconstruction.method>ResolveMethod::Ratio||EffectiveResolve(settings.reconstruction)!=ResolveMethod::Auto)
         return Fail(ErrorKind::Unsupported,"NR Before native bridge requires adapter-owned color/reconstruction preparation");
-    const auto style=SanitizeBuild14Tuning(settings.tuning).style;
-    if(s.recordedStyle&&*s.recordedStyle!=style){
+    std::array<int,3> styles{};for(unsigned i=0;i<s.passes;++i)styles[i]=SanitizeBuild14Tuning(PassTuning(settings,i)).style;
+    if(s.recordedStyles&&*s.recordedStyles!=styles){
         // A live style switch in the supplied runtime reproduced a device hang
         // even with Reset set while older evaluations
         // still in flight. Retire their genuine vendor AND delivery readers
@@ -144,7 +139,6 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     auto index=s.Acquire();if(!index)return std::unexpected(index.error());auto& slot=s.slots[*index];slot.heldInput=input;
     if(s.deliverySerial==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR Before delivery sequence exhausted");}slot.id=++s.deliverySerial;slot.source=input.sourceId;slot.epoch=input.epoch;
     auto gpu=[&](HRESULT hr,const char* text)->Result<void>{return s.Gpu(hr,text);};
-    if(settings.stableColors){auto prepared=gpu(s.stableColor.Prepare(slot.stableViews,slot.color.texture11.Get(),slot.output.texture11.Get(),input.color.Get(),s.metrics),"NR stable color views rejected");if(!prepared)return std::unexpected(prepared.error());}
     if(s.ownTiming11)s.queries11->Begin11(input.context.Get(),input.sourceId);
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::InputCopy,true);
     auto r=gpu(MeasurePerformance(s.metrics,CpuPhase::InputCopy,[&]{return s.interop.CopyInput(input.color.Get(),slot.color);}),"NR Before color copy rejected");if(!r)return std::unexpected(r.error());
@@ -161,7 +155,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     p.colorState=p.depthState=p.motionState=read;p.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
     p.reset=history->Reset();auto ticket=s.stage.RecordQueued(list,p,settings);
     if(!ticket){s.terminal=true;return std::unexpected(ticket.error());}
-    s.recordedStyle=style;
+    s.recordedStyles=styles;
     slot.ticket=*ticket;
     r=s.history.CommitRecorded(*history);if(!r){s.terminal=true;return std::unexpected(r.error());}
     for(auto* resource:{slot.color.texture12.Get(),slot.depth.texture12.Get(),slot.motion.texture12.Get()})Transition(list,resource,read,D3D12_RESOURCE_STATE_COMMON);
@@ -171,12 +165,11 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     r=s.stage.MarkSubmitted(*ticket,s.completionFence.Get(),++s.completionValue);if(!r){s.terminal=true;return std::unexpected(r.error());}
     r=gpu(s.interop.WaitConsumer(),"NR Before D3D11 consumer wait failed");if(!r)return std::unexpected(r.error());
     if(s.queries11)s.queries11->Stamp11(input.context.Get(),GpuPhase::Delivery,true);
-    r=gpu(MeasurePerformance(s.metrics,CpuPhase::Delivery,[&]{return settings.stableColors?
-        s.stableColor.Draw(input.context.Get(),slot.stableViews):
+    r=gpu(MeasurePerformance(s.metrics,CpuPhase::Delivery,[&]{return
         D3D11FrameCopy::Color(input.context.Get(),slot.output.texture11.Get(),input.color.Get(),{input.colorExtent.width,input.colorExtent.height});}),"NR Before color delivery failed");if(!r)return std::unexpected(r.error());
     if(s.queries11){s.queries11->Stamp11(input.context.Get(),GpuPhase::Delivery,false);if(s.ownTiming11)s.queries11->End11(input.context.Get());}
-    // Cover both shared source and NR output reads, including the stable-color
-    // draw. Stage retains them through this signal's genuine completion.
+    // Cover shared source and final NR output reads. Stage retains the entire
+    // chain through this signal's genuine completion.
     if(s.handoffValue==UINT64_MAX){s.terminal=true;return Fail(ErrorKind::Runtime,"NR Before consumer sequence exhausted");}
     r=gpu(s.interop.Context11()->Signal(s.handoff11.Get(),++s.handoffValue),"NR Before output reader signal failed");if(!r)return std::unexpected(r.error());
     r=s.stage.TrackReader(*ticket,s.handoffFence.Get(),s.handoffValue);if(!r){s.terminal=true;return std::unexpected(r.error());}

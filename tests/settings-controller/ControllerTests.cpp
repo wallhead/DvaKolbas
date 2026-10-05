@@ -13,9 +13,16 @@ int main(){try{
     fg.settings.neuralStartup.community=true;
     auto draft=controller.Capture(true,false);draft.sourceDLSSG.neuralEnabled=true;
     draft.sourceDLSSG.neuralBeforeUpscaling=false;draft.sourceDLSSG.neuralTuning.style=0;
+    draft.sourceDLSSG.neuralPasses=3;
+    draft.sourceDLSSG.neuralSecondPass.linked=false;draft.sourceDLSSG.neuralSecondPass.tuning.intensity=.5f;
+    draft.sourceDLSSG.neuralThirdPass.linked=false;draft.sourceDLSSG.neuralThirdPass.tuning.intensity=.7f;
     auto applied=controller.Apply(draft,false);
     Require(applied.applied&&!applied.error&&pipeline.saves==0,"Apply changes only session defaults");
     Require(fg.settings.sourceDLSSG.neuralEnabled&&!fg.settings.sourceDLSSG.neuralBeforeUpscaling,"actual Apply publishes NR After request");
+    Require(fg.settings.sourceDLSSG.neuralPasses==3&&
+        fg.settings.sourceDLSSG.neuralSecondPass.tuning.intensity==.5f&&
+        fg.settings.sourceDLSSG.neuralThirdPass.tuning.intensity==.7f,
+        "Apply publishes all three requested passes with independent tuning");
     Require(!SourceDLSSG::Backend::Get().NeuralConfiguration().enabled,"community owner cannot also enable the legacy NR pass");
     for(bool enabled:{false,true,false,true}){
         draft=controller.Capture(true,false);draft.sourceDLSSG.neuralEnabled=enabled;draft.generationEnabled=enabled;

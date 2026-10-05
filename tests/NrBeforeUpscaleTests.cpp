@@ -39,6 +39,10 @@ int wmain(int argc,wchar_t** argv){try{
     if((argc!=3&&argc!=4)||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
     if(NrRuntimeResearch::GameRunningOrUnknown())return 1;
     BeforeUpscale bridge;SettingsSnapshot settings;settings.revision=1;
+    const unsigned passes=argc==4&&std::wstring_view(argv[3])==L"chain-two"?2:argc==4&&std::wstring_view(argv[3])==L"chain-three"?3:1;
+    settings.passes=int(passes);
+    settings.additionalTuning[0]={1,.75f,.5f,1.25f,-1.f,true,false};
+    settings.additionalTuning[1]={2,1.25f,1.5f,.75f,.5f,false,false};
     auto disabled=bridge.Evaluate({},settings);
     Check(disabled&&!disabled->evaluated&&bridge.Diagnostics().recorded==0,"DisabledBeforeNeedsNoRuntimeOrGpuWork");
     settings.enabled=true;
@@ -57,7 +61,7 @@ int wmain(int argc,wchar_t** argv){try{
     auto owner=std::make_shared<RuntimeOwner>(RuntimeOwnerPaths{argv[1],argv[2],std::filesystem::absolute("nr-before-cache"),true});
     AdapterIdentity id{desc.VendorId,desc.DeviceId,desc.SubSysId,contract.adapterLuid,false};
     auto opened=owner->Open(RuntimeCatalog()[1],contract.device.Get(),id);if(!opened){std::puts(opened.error().message.c_str());return 1;}
-    auto initialized=bridge.Initialize(owner,device11.Get(),contract);if(!initialized){std::printf("%s native=0x%08x\n",initialized.error().message.c_str(),unsigned(initialized.error().nativeCode));return 1;}
+    auto initialized=bridge.Initialize(owner,device11.Get(),contract,0,nullptr,nullptr,ColorDomain::Linear,Placement::Before,passes);if(!initialized){std::printf("%s native=0x%08x\n",initialized.error().message.c_str(),unsigned(initialized.error().nativeCode));return 1;}
     Check(bridge.Diagnostics().create==1,"BeforeOwnsExactlyOneSharedStageFeature");
     auto color=Texture(device11.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT);
     auto depth=Texture(device11.Get(),DXGI_FORMAT_R32_FLOAT);
@@ -76,9 +80,13 @@ int wmain(int argc,wchar_t** argv){try{
     Check(!bridge.Evaluate(stale,settings)&&bridge.Diagnostics().evaluate==0,"StaleGuidesRejectedBeforeVendorWork");
     D3D11_TEXTURE2D_DESC noTargetDesc{};color->GetDesc(&noTargetDesc);noTargetDesc.BindFlags=D3D11_BIND_SHADER_RESOURCE;
     auto noTarget=input;Need(device11->CreateTexture2D(&noTargetDesc,nullptr,&noTarget.color));
-    const auto rejected=bridge.Evaluate(noTarget,settings);
-    Check(!rejected&&rejected.error().kind==ErrorKind::InvalidInput&&bridge.Diagnostics().evaluate==0,
-        "StableColorsRejectMissingRenderTargetBeforeVendorWork");
+    if(argc==4&&std::wstring_view(argv[3])==L"copy-without-rt"){
+        auto direct=bridge.Evaluate(noTarget,settings);
+        Check(direct&&direct->evaluated,"NativeNrDeliveryCanCopyIntoSourceWithoutRenderTargetBinding");
+        if(!direct)return 1;
+        Check(bool(bridge.WaitDelivery(*direct))&&bool(bridge.Retire())&&bool(owner->Retire()),"CopyOnlyDeliveryRetiresGenuineReaders");
+        return failures?1:0;
+    }
     auto late=settings;late.placement=Placement::After;
     Check(!bridge.Evaluate(input,late)&&bridge.Diagnostics().evaluate==0,"AfterCannotSilentlyRunBefore");
     auto ratio=settings;ratio.reconstruction.method=ResolveMethod::Ratio;
@@ -108,6 +116,7 @@ int wmain(int argc,wchar_t** argv){try{
         input.sourceId=input.guideSourceId=frame+1;input.previousSourceId=frame;
         input.presentationTime=double(frame+1)/60.;input.reset=frame==120;
         settings.enabled=!(frame>=80&&frame<88);settings.revision=frame<80?1:frame<88?2:3;
+        if(passes>1)settings.additionalTuning[passes-2].style=int((frame/20)%3);
         const auto producerWaitsBefore=observedQueue->waits;
         auto result=bridge.Evaluate(input,settings);
         if(!result){std::printf("frame %u: %s\n",frame,result.error().message.c_str());return 1;}
@@ -131,7 +140,7 @@ int wmain(int argc,wchar_t** argv){try{
         outputHashes.push_back(Hash(measured));if(result->evaluated)rgbHashes.push_back(Hash(rgbPixels));
         if(frame==0)Check(!bridge.Evaluate(input,settings)&&bridge.Diagnostics().evaluate==1,"DuplicateSourceRejectedWithoutSecondEvaluation");
     }
-    Check(evaluated==232&&bypassed==8&&bridge.Diagnostics().recorded==232,"NativeBridge240FramesWithLiveOffOnAndOneNrPass");
+    Check(evaluated==232&&bypassed==8&&bridge.Diagnostics().recorded==232&&bridge.Diagnostics().evaluatedPasses==232*passes,"NativeBridge240FramesWithLiveOffOnAndAllRequestedNrPasses");
     Check(resumedReset==3,"FirstReenabledAndExplicitResetAreEffective");
     Check(alphaPixels==uint64_t(width)*height*240,"ExactSourceAlphaPreservedAcrossD3D11RoundTrip");
     Check(finitePixels==alphaPixels&&changedPixels>uint64_t(width)*height,"FiniteNrModifiedRgbReturnedToD3D11");
@@ -139,12 +148,12 @@ int wmain(int argc,wchar_t** argv){try{
     const std::set<std::string> distinct(rgbHashes.begin(),rgbHashes.end());
     Check(distinct.size()==232,"EveryEvaluatedNativeFrameHasDistinctRgbOutput");
     const auto pooled=bridge.Diagnostics();
-    Check(pooled.bridgeSlots==3&&pooled.descriptorOwners==3&&pooled.parameterOwners==3&&!pooled.pendingTickets,"ThreeRetainedBridgeSlotsReuseDescriptorsAndParameters");
+    Check(pooled.bridgeSlots==3&&pooled.descriptorOwners==3*passes&&pooled.parameterOwners==3*passes&&!pooled.pendingTickets,"ThreeRetainedBridgeSlotsReusePerPassDescriptorsAndParameters");
     const auto retired=bridge.Retire();Check(bool(retired),"BeforeRetiresStageAfterD3D11Readers");
     Check(bool(owner->Retire()),"BeforeRuntimeShutsDownAfterFeatureRetirement");
     const auto diagnostics=bridge.Diagnostics();
     Check(diagnostics.release==1&&diagnostics.destroyParameters==1&&diagnostics.allocations==diagnostics.releases,"BeforeFeatureAndCallbackAllocationsRetired");
-    const auto receipt=argc==4?std::filesystem::path(argv[3]):std::filesystem::path("nr-before-probe.json");
+    const auto receipt=passes>1?std::filesystem::path(passes==2?"nr-before-chain-two.json":"nr-before-chain-three.json"):argc==4?std::filesystem::path(argv[3]):std::filesystem::path("nr-before-probe.json");
     std::filesystem::create_directories(std::filesystem::absolute(receipt).parent_path());std::ofstream out(receipt);
     out<<"{\n\"schema\":1,\"result\":"<<std::quoted(failures?"FAIL":"PASS")
         <<",\"sourceRevision\":"<<std::quoted(NrRuntimeResearch::buildRevision)<<",\"cleanSource\":"<<(NrRuntimeResearch::buildClean?"true":"false")

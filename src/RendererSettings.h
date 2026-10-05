@@ -146,7 +146,8 @@ inline bool SameNeuralPreferences(const SourceDLSSG::Preferences& a, const Sourc
 {
     return a.neuralEnabled == b.neuralEnabled && a.neuralBeforeUpscaling == b.neuralBeforeUpscaling &&
         a.neuralPasses == b.neuralPasses && a.neuralCombat == b.neuralCombat && a.neuralTuning == b.neuralTuning &&
-        a.neuralReconstruction == b.neuralReconstruction && a.neuralSecondPass == b.neuralSecondPass;
+        a.neuralReconstruction == b.neuralReconstruction && a.neuralSecondPass == b.neuralSecondPass &&
+        a.neuralThirdPass == b.neuralThirdPass;
 }
 
 inline const char* NeuralSettingsUnavailable(int mode, RendererSettingsCapabilities capabilities)
@@ -201,6 +202,9 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
 #if !defined(TRP_NO_NEURAL_RENDERING)
     if (draft.sourceDLSSG.neuralEnabled)
     {
+        if (draft.sourceDLSSG.neuralPasses < 1 || draft.sourceDLSSG.neuralPasses > (capabilities.communityNeural ? 3 : 2)) {
+            return capabilities.communityNeural ? "Choose one, two or three NR passes." : "The legacy NR runtime supports only one or two passes.";
+        }
         if (capabilities.communityNeural) {
             if (capabilities.externalWorld || !draft.nativeUI) return "Community NR requires TRP world ownership and native UI.";
             if (const auto error=NeuralRendering::NativeBeforeUnavailable(draft.sourceDLSSG)) return error;
