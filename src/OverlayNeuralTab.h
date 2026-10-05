@@ -5,11 +5,16 @@
 namespace TheosRenderPipeline::Overlay
 {
 // Returning true transfers the open tab to the caller, which must call EndTabItem.
-inline bool BeginNeuralRenderingTab(bool selected, bool fsrActive, bool community=false)
+inline bool BeginNeuralRenderingTab(bool selected, bool fsrActive, bool community=false, bool amd=false)
 {
     if (!ImGui::BeginTabItem("NR", nullptr,
                             selected ? ImGuiTabItemFlags_SetSelected : 0))
         return false;
+    if (amd) {
+        ImGui::TextWrapped("Neural Rendering is unavailable on AMD. Use FSR upscaling and optional FSR frame generation.");
+        ImGui::EndTabItem();
+        return false;
+    }
     // Reject unsupported NR before opening the caller's nested settings columns.
     // Their cleanup is valid only after switching from the left to the right column.
     if (fsrActive && !community)

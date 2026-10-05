@@ -191,28 +191,9 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	if (baselineIni.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") < 0) {
 		util::report_and_fail("Theo's Render Pipeline: SKSE/Plugins/TheosRenderPipeline.ini is missing or unreadable. Install the packaged TheosRenderPipeline.ini and restart Skyrim.");
 	}
-    constexpr bool fsrBuilt =
-#if defined(TRP_ENABLE_FSR)
-        true;
-#else
-        false;
-#endif
-	if (const auto* error = TheosRenderPipeline::ValidateRendererConfiguration(baselineIni, fsrBuilt,
-#if defined(TRP_ENABLE_FSR_FG)
-        true
-#else
-        false
-#endif
-    )) {
-		util::report_and_fail(std::format("Theo's Render Pipeline configuration error:\n\n{}\n\nCorrect SKSE/Plugins/TheosRenderPipeline.ini and restart Skyrim.", error));
-	}
+	// Provider validation runs at device creation, after identifying the actual
+	// renderer adapter and normalizing saved NVIDIA choices for AMD.
 	logger::info("{} {}", Plugin::DISPLAY_NAME, Plugin::RELEASE_VERSION);
-    if (baselineIni.GetLongValue("Settings", "UpscaleType", 0)==FSR) {
-        const auto settings=TheosRenderPipeline::Upscaling::ReadFsrSettings(baselineIni);
-        if(!settings)util::report_and_fail(std::format("Theo's Render Pipeline FSR configuration error: {}",settings.error().message));
-        if(!TheosRenderPipeline::Upscaling::IsKnownColorEncoding(settings->sourceColorEncoding))
-            util::report_and_fail("Theo's Render Pipeline FSR configuration error: set [FSR] SourceColorEncoding to Linear, Gamma22 or SRGB after checking the Skyrim/ENB source producer. Missing/Unknown encoding is not guessed.");
-    }
 
 	// Capture the engine callee before post-load renderer hooks replace its call.
 	TheosRenderPipeline::CommunityShaders::RememberEngineBoundary();

@@ -11,6 +11,16 @@ void Require(bool v,const char* message){if(!v)throw std::runtime_error(message)
 int main(){try{
     auto controller=RendererSettingsController::Current();auto& host=*NvidiaHost::GetSingleton();
     auto& fg=*SourceFrameGeneration::GetSingleton();auto& pipeline=*RenderPipeline::GetSingleton();
+    {
+        pipeline.mAdapterVendorId=0x1002;
+        const auto invalid=controller.Capture(true,false);
+        const auto saves=pipeline.saves, requests=host.requests;
+        const auto result=controller.Apply(invalid,true);
+        Require(result.error&&!result.applied&&pipeline.saves==saves&&host.requests==requests,
+            "AMD refuses NVIDIA settings before saving or issuing runtime requests");
+        Require(controller.SetNeuralRenderingEnabled(true).error,"AMD hotkey cannot enable NR");
+        pipeline.mAdapterVendorId=0;
+    }
     fg.settings.neuralStartup.community=true;
     auto draft=controller.Capture(true,false);draft.sourceDLSSG.neuralEnabled=true;
     draft.sourceDLSSG.neuralBeforeUpscaling=false;draft.sourceDLSSG.neuralTuning.style=0;

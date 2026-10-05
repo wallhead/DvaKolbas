@@ -340,7 +340,8 @@ void DrawSourceNeuralControls(TheosRenderPipeline::SourceDLSSG::Preferences& dra
 void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
 {
     const bool community=SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community;
-    if (!BeginNeuralRenderingTab(requestedPage == SettingsPage::NeuralRendering, view.fsrActive, community))
+    if (!BeginNeuralRenderingTab(requestedPage == SettingsPage::NeuralRendering, view.fsrActive, community,
+            TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId)))
         return;
     if (community) {
         const auto* host=NvidiaHost::GetSingleton();

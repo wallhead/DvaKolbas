@@ -37,6 +37,7 @@ namespace TheosRenderPipeline::Upscaling
         bool neuralRendering{}, hdr{}, dynamicResolution{};
         bool communityNeural{};
         float sharpness{};
+        std::uint32_t adapterVendorId{};
     };
     struct BackendDecision
     {

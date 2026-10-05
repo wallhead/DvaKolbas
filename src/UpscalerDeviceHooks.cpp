@@ -13,6 +13,10 @@
 #include "PerformanceTuning.h"
 #include "CommunityShaderIntegration.h"
 #include "HookInstallation.h"
+#include "PluginPaths.h"
+#include "RendererGpuPolicy.h"
+#include "RendererStartupValidation.h"
+#include <SimpleIni.h>
 
 decltype(&D3D11CreateDeviceAndSwapChain) ptrD3D11CreateDeviceAndSwapChain;
 decltype(&IDXGIFactory::CreateSwapChain) ptrFactoryCreateSwapChain;
@@ -88,7 +92,55 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
 
     // The stable render-sized buffer is allocated inside CreateSwapChain, so
     // load its quality/sharpening contract before that one-way size decision.
-    RenderPipeline::GetSingleton()->LoadINI();
+    Microsoft::WRL::ComPtr<IDXGIDevice> rendererDxgi;
+    Microsoft::WRL::ComPtr<IDXGIAdapter> rendererAdapter;
+    DXGI_ADAPTER_DESC rendererDesc{};
+    auto adapterResult = d3d11Device->QueryInterface(IID_PPV_ARGS(&rendererDxgi));
+    if (SUCCEEDED(adapterResult)) adapterResult = rendererDxgi->GetAdapter(&rendererAdapter);
+    if (SUCCEEDED(adapterResult)) adapterResult = rendererAdapter->GetDesc(&rendererDesc);
+    if (FAILED(adapterResult)) {
+        logger::critical("[Renderer GPU] actual rendering adapter query failed HRESULT=0x{:08X}", static_cast<unsigned>(adapterResult));
+        d3d11Device->Release();
+        return adapterResult;
+    }
+    auto* pipeline = RenderPipeline::GetSingleton();
+    pipeline->mAdapterVendorId = rendererDesc.VendorId;
+    CSimpleIniA startup;
+    startup.SetUnicode();
+    if (startup.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") < 0) {
+        nvidiaHost->FailLifecycle(E_INVALIDARG, "Renderer startup INI is missing or unreadable");
+        d3d11Device->Release();
+        return E_INVALIDARG;
+    }
+    const auto startupError = TheosRenderPipeline::ValidateRendererStartup(startup, rendererDesc.VendorId,
+#if defined(TRP_ENABLE_FSR)
+        true,
+#else
+        false,
+#endif
+#if defined(TRP_ENABLE_FSR_FG)
+        true
+#else
+        false
+#endif
+    );
+    if (!startupError.empty()) {
+        logger::critical("[Renderer GPU] normalized startup configuration rejected: {}", startupError);
+        nvidiaHost->FailLifecycle(E_INVALIDARG, startupError.c_str());
+        d3d11Device->Release();
+        return E_INVALIDARG;
+    }
+    pipeline->LoadINI();
+    logger::info("[Renderer GPU] vendor=0x{:04X} device=0x{:04X} LUID={:08X}:{:08X} AMD FSR-only={}",
+        rendererDesc.VendorId, rendererDesc.DeviceId, static_cast<unsigned>(rendererDesc.AdapterLuid.HighPart),
+        rendererDesc.AdapterLuid.LowPart, TheosRenderPipeline::IsAmdRenderer(rendererDesc.VendorId));
+    if (TheosRenderPipeline::IsAmdRenderer(rendererDesc.VendorId)) {
+        auto* generation = SourceFrameGeneration::GetSingleton();
+        generation->LoadINI(rendererDesc.VendorId);
+        generation->ResolveRuntimePaths(TheosRenderPipeline::PluginPaths::Directory());
+        logger::info("[Renderer GPU] AMD policy: FSR analytical, presenter={}, FG requested={}, NR disabled; INI unchanged",
+            generation->settings.generationBackend, generation->settings.enabled);
+    }
     const auto result = nvidiaHost->CreateSwapChain(This, d3d11Device, pDesc, ppSwapChain, ptrFactoryCreateSwapChain);
     if (SUCCEEDED(result))
     {

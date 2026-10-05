@@ -1,12 +1,20 @@
 #include "SourceFrameGeneration.h"
 #include <PCH.h>
 #include <SimpleIni.h>
+#include "RendererGpuPolicy.h"
 
-void SourceFrameGeneration::LoadINI()
+void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId)
 {
     CSimpleIniA ini;
     ini.SetUnicode();
     const auto result = ini.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini");
+    TheosRenderPipeline::ApplyRendererGpuPolicy(ini, adapterVendorId,
+#if defined(TRP_ENABLE_FSR_FG)
+        true
+#else
+        false
+#endif
+    );
     LoadStartupPreferences(ini);
     const TheosRenderPipeline::IniLayout::ReadView read(ini);
     logger::info("[NvidiaHost] startup INI=Data/SKSE/Plugins/TheosRenderPipeline.ini readResult={} SourceDLSSGMFGUnlock={} origin={} raw={}",

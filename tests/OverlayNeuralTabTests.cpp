@@ -12,7 +12,7 @@ void Require(bool condition, const char* message)
         throw std::runtime_error(message);
 }
 
-void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents, bool community=false)
+void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents, bool community=false, bool amd=false)
 {
     ImGui::NewFrame();
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Always);
@@ -29,7 +29,7 @@ void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents,
             ImGui::TextUnformatted("Image controls");
             ImGui::EndTabItem();
         }
-        if (TheosRenderPipeline::Overlay::BeginNeuralRenderingTab(selectNeural, fsr, community))
+        if (TheosRenderPipeline::Overlay::BeginNeuralRenderingTab(selectNeural, fsr, community, amd))
         {
             ++neuralContents;
             // Represents the caller's settings layout. An unavailable tab must
@@ -62,9 +62,10 @@ void Frame(bool fsr, bool selectNeural, int& neuralContents, int& imageContents,
     ImGui::End();
     ImGui::Render();
     Require(!fsr || community || neuralContents == 0, "FSR NR tab allowed unsupported layout/backend work");
+    Require(!amd || neuralContents == 0, "AMD NR tab allowed unsupported layout/backend work");
 }
 
-void Exercise(bool fsr, bool community=false)
+void Exercise(bool fsr, bool community=false, bool amd=false)
 {
     ImGui::CreateContext();
     auto& io = ImGui::GetIO();
@@ -76,9 +77,9 @@ void Exercise(bool fsr, bool community=false)
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     int neural = 0, image = 0;
     for (int i = 0; i < 120; ++i)
-        Frame(fsr, (i / 10) % 2 == 0, neural, image, community);
+        Frame(fsr, (i / 10) % 2 == 0, neural, image, community, amd);
     Require(image > 0, "Image tab stopped working after NR selection");
-    Require(fsr && !community ? neural == 0 : neural > 0, "NR availability routing changed");
+    Require(amd || (fsr && !community) ? neural == 0 : neural > 0, "NR availability routing changed");
     ImGui::DestroyContext();
 }
 }
@@ -90,6 +91,7 @@ int main()
         Exercise(true);
         Exercise(false);
         Exercise(true,true);
+        Exercise(true,true,true);
         std::cout << "Repeated FSR NR selection, ImGui stack balance and supported NR routing passed\n";
         return 0;
     }

@@ -33,6 +33,13 @@ void RenderPipeline::LoadINI()
 		logger::warn("Could not load Data\\SKSE\\Plugins\\TheosRenderPipeline.ini (rc={}), using defaults", static_cast<int>(loadResult));
 	}
 	TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
+    TheosRenderPipeline::ApplyRendererGpuPolicy(ini, mAdapterVendorId,
+#if defined(TRP_ENABLE_FSR_FG)
+        true
+#else
+        false
+#endif
+    );
 	mUpscaleType = (int)ini.GetLongValue("Settings", "UpscaleType", 0);
     if (const auto fsr=TheosRenderPipeline::Upscaling::ReadFsrSettings(ini)) { mFsrSettings=*fsr; }
     else if(mUpscaleType==FSR) { logger::error("[FSR] {}",fsr.error().message); }
@@ -57,8 +64,8 @@ void RenderPipeline::LoadINI()
 	PerformanceTuning::GetSingleton()->ApplySettings(performanceSettings);
 	const bool unsupportedDynamicResolution = ini.GetBoolValue("DynamicResolution", "Enabled", false) ||
 		ini.GetBoolValue("DynamicResolution", "Oscillate", false);
+	mDynamicResolutionRequested = unsupportedDynamicResolution;
 	if (unsupportedDynamicResolution) {
-        mDynamicResolutionRequested = true;
 		logger::error(
 			"[DynRes] ignored unsupported DynamicResolution request: TheosRenderPipeline's scaled-proxy path upscales at Present and requires a fixed full proxy input");
 	}

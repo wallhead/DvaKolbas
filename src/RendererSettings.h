@@ -2,6 +2,7 @@
 
 #include "TextureProviderBridge.h"
 #include "UpscaleType.h"
+#include "RendererGpuPolicy.h"
 #include "NeuralRenderingMode.h"
 #include "NeuralRendering/BeforeSettings.h"
 #include "FrameGen/SourceDLSSGSettings.h"
@@ -153,6 +154,7 @@ struct RendererSettingsCapabilities
     bool fsrFgBuilt{};
     bool fsrFgPresenter{};
     bool communityNeural{};
+    std::uint32_t adapterVendorId{};
 };
 
 template<class Generation>
@@ -205,6 +207,10 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     if (!capabilities.sourceHost)
     {
         return "Presentation host is unavailable; settings were not applied.";
+    }
+    if (IsAmdRenderer(capabilities.adapterVendorId) &&
+        !AmdRendererSelectionAllowed(draft.upscaleType, draft.generationBackend, draft.sourceDLSSG.neuralEnabled)) {
+        return "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
     }
     if (capabilities.fsrFgPresenter && !draft.nativeUI) {
         return "Native UI must stay enabled while the AMD FSR presenter is active. Restart with the new presenter before disabling it.";

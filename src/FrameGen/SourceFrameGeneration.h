@@ -31,7 +31,7 @@ class SourceFrameGeneration
     };
     Settings settings;
 
-    void LoadINI();
+    void LoadINI(std::uint32_t adapterVendorId = 0);
     // Called once before installing device hooks. Live changes do not reload
     // this startup snapshot or rebuild the presentation host.
     template<class Ini> void LoadStartupPreferences(const Ini& source)

@@ -123,6 +123,7 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
     bool actionMessageIsError = false;
     const bool sourceUpscaler = host_.StartupConfigured();
     RendererSettingsCapabilities capabilities{sourceUpscaler, false, host_.DedicatedUITextureMode(), CommunityShaders::Active()};
+    capabilities.adapterVendorId = upscaler_.mAdapterVendorId;
 #if !defined(TRP_NO_NEURAL_RENDERING)
     if (frameGen_.settings.neuralStartup.community) {
         capabilities.communityNeural=true;
@@ -263,6 +264,8 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
 
 RendererSettingsResult RendererSettingsController::SetNeuralRenderingEnabled(bool enabled)
 {
+    if (enabled && IsAmdRenderer(upscaler_.mAdapterVendorId))
+        return {"Neural Rendering is unavailable on AMD; use FSR and optional FSR frame generation.", true};
 #if defined(TRP_NO_NEURAL_RENDERING)
     (void)enabled;
     return {"Neural Rendering is not included in this build.", true};

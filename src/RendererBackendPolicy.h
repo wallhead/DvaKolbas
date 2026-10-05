@@ -1,5 +1,6 @@
 #pragma once
 #include "IniLayout.h"
+#include "RendererGpuPolicy.h"
 
 #include "NvidiaBaselinePolicy.h"
 #include "Upscaling/UpscalerBackend.h"
@@ -11,7 +12,12 @@ namespace TheosRenderPipeline
     {
         using namespace Upscaling;
         BackendDecision decision{config.backend, PresentationKind::Nvidia, false, config.generationEnabled, {}};
-        if (!config.enabled) { decision.diagnostic = "This renderer requires an enabled temporal upscaler."; }
+        if (IsAmdRenderer(config.adapterVendorId) &&
+            !AmdRendererSelectionAllowed(config.backend == BackendKind::Fsr ? FSR : DLSS,
+                config.generationBackend, config.neuralRendering)) {
+            decision.diagnostic = "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
+        }
+        else if (!config.enabled) { decision.diagnostic = "This renderer requires an enabled temporal upscaler."; }
         else if (config.backend == BackendKind::Dlss || config.backend == BackendKind::Dlaa) {
             if (config.generationBackend != 1) { decision.diagnostic = "DLSS/DLAA requires the NVIDIA presentation backend."; }
             else { decision.valid = true; }

@@ -5,6 +5,7 @@ class RenderPipeline {
 public:
     static RenderPipeline* GetSingleton(){static RenderPipeline v;return &v;}
     int mUpscaleType{DLAA},mQualityLevel{4},mDLSSPreset{11};
+    std::uint32_t mAdapterVendorId{};
     TheosRenderPipeline::Upscaling::FsrSettings mFsrSettings;
     bool mDynamicResolutionRequested{},mAutoExposure{true},mSharpening{},mEnableJitter{true},mNativeUI{true};
     bool mReShadeBeforeUpscaling{},mWheelerLateOverlayBridge{true};float mSharpness{};

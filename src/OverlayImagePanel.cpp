@@ -185,7 +185,10 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
                 1;
 #endif
             ImGui::SetNextItemWidth(-1);
-            if (ImGui::Combo("##mode", &mode, modes, modeCount))
+            if (TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId)) {
+                ImGui::TextUnformatted("FSR");
+            }
+            else if (ImGui::Combo("##mode", &mode, modes, modeCount))
             {
                 TheosRenderPipeline::StageRendererUpscaleProvider(settingsDraft, mode == 1);
             }
