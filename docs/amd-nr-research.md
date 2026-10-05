@@ -247,3 +247,39 @@ No supplied executable was run and no product arithmetic was enabled. A portable
 source-owned E4M3 encoder is the next bounded implementation. Spatial mappings,
 WMMA accumulation, complete blocks/network, integration and Radeon acceptance
 remain outstanding; inference is still unavailable.
+
+## Portable E4M3 encoding implementation
+
+The recovered output policy is implemented in our C++ numerical core and
+portable byte-addressed HLSL shader. Both standalone tools accept
+`--format f32-to-e4m3`, preserving the four-byte storage-word convention and
+explicit GPU selection. Quantization uses bounded integer shifts, handles deep
+underflow correctly and has no HIP/native FP8 dependency.
+
+An independent nearest-distance oracle matches CPU, WARP and RTX 4080 SUPER on
+166,314 words, with zero bit mismatches: all promoted half encodings, every FP8
+midpoint neighbor across both signs, explicit special/underflow words, and a
+100,000-word random fixture. All previous format modes match their complete
+independent fixtures. The standalone suite has 12 passes, one missing-debug-layer
+skip and zero failures. Exact scope is in [the test README](../tests/amd-nr/README.md).
+
+The whole-branch independent review of `246d152..c4dddd9` found no Critical or
+Important issue. One deferred Minor notes that earlier README/design paragraphs
+still describe encoding as pending; the implemented APIs and current encoder
+results above supersede those historical status statements.
+
+This closes product storage encoding. Residual FMA execution, WMMA equivalence,
+spatial layouts and complete inference remain pending. No supplied executable
+code is loaded by the product.
+
+## Additional user-provided OptiScaler reference
+
+The [pinned reference audit](amd-nr-optiscaler-reference.md) examines the supplied
+OptiScaler repository at `f0c0232a2384f1fc9ee0167dcabf2dbe34fd7708`. It supplies
+host integration source and an external-runtime API, not the complete neural
+runtime implementation. Its device policy rejects RDNA1/2, and its RDNA3 notice
+describes FP8 work on FP16 matrix units. These findings support retaining our
+portable baseline and investigating optimized gfx11 math after numerical
+closure. Its full-network flag and producer/consumer lifecycle provide useful
+comparison and integration conditions. No external source was copied into the
+product and no runtime package was executed.
