@@ -69,12 +69,13 @@ and a projection contribution of `-1.125`:
 | Contribution added after that boundary | 0.0009765625 |
 | Product and contribution combined before one half conversion | 0.0010986328125 |
 
-The residual route also selects between a native fragment pointer at packet
+The residual route also selects between an external blocked pointer at packet
 offset `0x08` and a Tin fallback pointer at `0x10`. The non-null test precedes
 reuse of the scalar registers: at `0x2b88e0`, registers previously holding
 `0x08` are assigned an address derived from `0x10`. Later loads must be traced
-through that assignment. This closes pointer selection, not the full Tin/HWC
-coordinate map.
+through that assignment. The subsequent [tensor-layout audit](amd-nr-c512-tensor-layout.md)
+closes its external 16-channel-block and packed Tin coordinates for this selected
+variant; game-frame input/output conventions remain open.
 
 ## E4M3 output policy
 
@@ -115,9 +116,11 @@ output = encodeE4M3(halfToFloat(average))
 ```
 
 The three half adds occur at `0x2b9b28`, `0x2b9b34`, and `0x2b9b48`; the half
-quarter multiply occurs at `0x2b9b6c`. Full spatial association of these four
-samples remains open. This establishes a four-sample numerical average, not a
-complete pooling layout. Averaging previously quantized FP8 bytes, or performing
+quarter multiply occurs at `0x2b9b6c`. The subsequent
+[tensor-layout audit](amd-nr-c512-tensor-layout.md#optional-reduction-is-spatially-2x2)
+identifies these samples as one non-overlapping 2x2 pixel block and recovers its
+packed destination address. Padded destination tails remain untouched, and their
+initialization is still open. Averaging previously quantized FP8 bytes, or performing
 one FP32 average followed by a single half conversion, is incorrect. Generated
 values `[1024,0.5,-1024,0.5]` give `0.125` through these half boundaries and
 `0.25` through a single final rounding.
@@ -168,9 +171,10 @@ hashes/counts, numerical totals, and the host-helper limitation. All extracted
 objects, instructions, source exports, trained weights and private probes remain
 ignored. Only this prose contract is a repository deliverable at this stage.
 
-The next bounded product addition is a portable E4M3 encoder. Production
-projection still requires native/spatial coordinate closure and WMMA reduction
-equivalence. Attention/FFN, other families, the full graph, temporal/noise/input
+The portable E4M3 encoder is now implemented. The selected false-view kernel's
+spatial coordinates are closed by the tensor-layout audit. Production projection
+still requires WMMA numerical comparisons, padding initialization and auditing
+the other variants. Attention/FFN, other families, the full graph, temporal/noise/input
 contracts, TRP integration, debug validation and representative RDNA2/3/4 tests
 remain necessary. Model status stays `KnownArchiveIncompleteSchema` and
 `inference=unavailable`.

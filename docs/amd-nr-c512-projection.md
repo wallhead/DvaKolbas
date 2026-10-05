@@ -11,10 +11,11 @@ and full inference remain incomplete.
 ## Coordinate basis and storage contract
 
 Define `W[n,k]`, with output channel `n` and reduction channel `k` in `[0,512)`.
-These channel numbers use native WMMA fragment coordinates. They are **not yet
-the model's spatial/HWC channel convention**. In particular, a permutation of
-the low channel bits cannot be dismissed as an equivalent image layout until
-the input and output codecs are traced.
+These channel numbers use native WMMA fragment coordinates. The subsequent
+[tensor-layout audit](amd-nr-c512-tensor-layout.md) connects them to pixels and
+both internal storage layouts in the selected false-view kernel. The complete
+model's game-frame input/output convention remains open; arbitrary channel
+permutations still cannot be dismissed as equivalent image layouts.
 
 `deposit(value, positions)` places bit `i` of `value` into physical bit
 `positions[i]`, with positions listed from the least significant logical bit.
@@ -147,8 +148,11 @@ calculator run.
 The recovered codec is now an owned, bounded C++ logical view, tested with
 generated data. The subsequent [residual and output audit](amd-nr-c512-residual-output.md)
 closes residual initialization, E4M3 encoding policy and an optional half average
-as static numerical contracts; those operations are not implemented in the
-product yet. Remaining gates include projection input/output channel and
-spatial mappings, WMMA dot order, attention/FFN math, other record families,
-whole graph, TRP integration, and real RDNA2/3/4 validation.
+as static numerical contracts. Portable E4M3 encoding is now implemented;
+projection and residual arithmetic remain research contracts. The
+[tensor-layout audit](amd-nr-c512-tensor-layout.md) closes selected false-view
+input/output spatial mappings and the optional 2x2 reduction. Remaining gates
+include other variants, padding initialization, WMMA dot order, attention/FFN
+math, other record families, whole graph/input/output conventions, TRP integration,
+and real RDNA2/3/4 validation.
 `KnownArchiveIncompleteSchema` and `inference=unavailable` remain correct.

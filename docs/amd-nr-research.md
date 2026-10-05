@@ -283,3 +283,30 @@ portable baseline and investigating optimized gfx11 math after numerical
 closure. Its full-network flag and producer/consumer lifecycle provide useful
 comparison and integration conditions. No external source was copied into the
 product and no runtime package was executed.
+
+## C512 tensor spatial mapping and reduction
+
+The selected false-view projection now has a recovered internal spatial contract.
+A workgroup processes one 4x4 tile in Y-first order. The canonical matrix channels
+connect to both packed Tin storage and the external view with 16-channel blocks.
+Forward gather/output tracing and AMD's pinned A-operand coordinate calculator
+agree on every tile byte. Complete coverage passes for five aligned extents,
+totaling 1,540,096 bytes, with no duplicate or missing addresses.
+
+The optional half reduction uses one non-overlapping 2x2 pixel block. Its four
+source half coordinates and packed destination addresses pass exhaustive generated
+fixtures. Padded tails are not written: the 60x36 to 32x20 route leaves 51,200
+bytes untouched beyond the active 30x18 region. Padding initialization remains
+a separate dependency to recover.
+
+An asymmetric dyadic projection fixture passes all 8,192 pixel/channel values
+through packed gathering, CPU research arithmetic, encoding and forward storage
+with zero mismatches. The fresh audit checks both original identities, 70 GPU
+instruction sites, 21 host sites and gfx1200/1201 body equality. It executes no
+supplied runtime and adds no product arithmetic. Formulas, reproduction and limits
+are in [the tensor-layout report](amd-nr-c512-tensor-layout.md).
+
+This closes selected internal spatial addressing. General WMMA equivalence,
+other variants, padding initialization, complete graph/game-frame conventions,
+renderer integration and representative RDNA2/3/4 acceptance remain open.
+`KnownArchiveIncompleteSchema` and `inference=unavailable` remain accurate.
