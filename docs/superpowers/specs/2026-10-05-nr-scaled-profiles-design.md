@@ -1,6 +1,6 @@
 # Common post-upscale NR, scaled sources and GPU qualification
 
-Status: conversational direction approved; written spec awaiting owner review.
+Status: written spec approved by the owner's "go" on 2026-10-05.
 Date: 2026-10-05. Baseline: `509733894da7fd231e0b6db36fdac62cd28e7091`.
 
 ## Owner intent and scope
@@ -14,7 +14,7 @@ This design uses one common source order for every NR model/profile:
 HUD-less input -> DLSS/DLAA or FSR/Native AA -> NR -> optional FG -> native UI -> final
 ```
 
-Interpretation to confirm in written-spec review: "all NR paths" includes
+Approved interpretation: "all NR paths" includes
 placement as well as GPU profiles. The old user-facing Before placement is
 therefore replaced by the common post-upscale order. Previously saved
 `neuralBeforeUpscaling=true` is migrated to post-upscale; it must not silently
