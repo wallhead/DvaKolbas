@@ -9,9 +9,12 @@ namespace TheosRenderPipeline::Overlay
 struct Layout
 {
     float x{40}, y{40};
-    float width{1100}, height{720};
+    float width{640}, height{720};
     float leftFraction{0.5f};
 };
+
+inline constexpr float MinimumMenuWidth = 480.0f;
+inline constexpr float MinimumMenuHeight = 420.0f;
 
 inline float ClampColumnFraction(float value)
 {
@@ -41,10 +44,10 @@ inline Layout SanitizeLayout(Layout value)
 inline Layout FitLayout(Layout value, float displayWidth, float displayHeight)
 {
     value = SanitizeLayout(value);
-    displayWidth = std::isfinite(displayWidth) && displayWidth > 0 ? displayWidth : 1100.0f;
+    displayWidth = std::isfinite(displayWidth) && displayWidth > 0 ? displayWidth : Layout{}.width;
     displayHeight = std::isfinite(displayHeight) && displayHeight > 0 ? displayHeight : 720.0f;
-    value.width = std::clamp(value.width, (std::min)(780.0f, displayWidth), displayWidth);
-    value.height = std::clamp(value.height, (std::min)(560.0f, displayHeight), displayHeight);
+    value.width = std::clamp(value.width, (std::min)(MinimumMenuWidth, displayWidth), displayWidth);
+    value.height = std::clamp(value.height, (std::min)(MinimumMenuHeight, displayHeight), displayHeight);
     value.x = std::clamp(value.x, 0.0f, displayWidth - value.width);
     value.y = std::clamp(value.y, 0.0f, displayHeight - value.height);
     return value;
@@ -93,4 +96,12 @@ inline float GraphHeight(float columnHeight)
 
 // Legacy entry point: returns the full settings width without drawing a divider.
 ColumnSizes DrawColumnSplitter(float width, float height, float& leftFraction);
+
+// Body reserves a fixed footer; settings consume the remaining area after tabs.
+bool BeginSettingsBody();
+void EndSettingsBody();
+void BeginScrollableSettings(const char* id);
+void EndScrollableSettings();
+bool DrawSaveDefaultsButton();
+void DrawSettingsActionStatus(const char* text);
 } // namespace TheosRenderPipeline::Overlay

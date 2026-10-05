@@ -25,6 +25,10 @@ in DLSS Render scale for native anti-aliasing. Mode and render scale require res
 shortcuts are opt-in. HDR is experimental, through Community Shaders or TRP's own
 HDR output; see [HDR](#hdr-experimental).
 
+The menu starts at 640 pixels wide and can shrink to 480 pixels. Each tab's
+scroll area follows the window size. Save as default stays below the tabs;
+long status messages scroll separately. Existing saved window sizes are retained.
+
 The main INI groups upscaling, frame generation, Neural Rendering and individual
 `[NR PASS 1]` / `[NR PASS 2]` controls separately. Runtime paths are in `[Runtime]`
 and menu geometry is in `[Menu]`. Existing INIs remain readable; **Save as default**

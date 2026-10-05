@@ -30,7 +30,7 @@ void Settings()
     Require(ini.LoadData("[Settings]\nQualityLevel=4\n[SourceDLSSG]\nNRPasses=2\n[Unrecognized]\nKeep=hello\n") >= 0,
             "legacy settings load");
     const auto defaults = LoadLayout(ini);
-    Require(defaults.width == 1100 && defaults.height == 720 && defaults.leftFraction == 0.5f,
+    Require(defaults.width == 640 && defaults.height == 720 && defaults.leftFraction == 0.5f,
             "missing layout keys keep the ordinary menu defaults");
     const Layout edited{152, 86, 1450, 920, 0.62f};
     StoreLayout(ini, edited);
@@ -51,18 +51,24 @@ void Settings()
     restart.SetValue("Overlay", "WindowHeight", "-700");
     restart.SetValue("Overlay", "LeftColumnFraction", "garbage");
     const auto corrupt = LoadLayout(restart);
-    Require(corrupt.width == 1100 && corrupt.height == 720 && corrupt.leftFraction == 0.5f,
+    Require(corrupt.width == 640 && corrupt.height == 720 && corrupt.leftFraction == 0.5f,
             "malformed geometry and divider use valid defaults");
     const auto fit = FitLayout({4000, 1000, 4000, 1400, 0.65f}, 1280, 720);
     Require(fit.x == 0 && fit.y == 0 && fit.width == 1280 && fit.height == 720,
             "large ultrawide layout fits a smaller output");
     const auto small = FitLayout({-500, -300, 10, 20, 0.5f}, 640, 480);
-    Require(small.x == 0 && small.y == 0 && small.width == 640 && small.height == 480,
+    Require(small.x == 0 && small.y == 0 && small.width == 480 && small.height == 420,
             "small output wins over normal minimum size");
     const float nan = std::numeric_limits<float>::quiet_NaN();
     const auto invalid = FitLayout({nan, nan, nan, nan, nan}, 1920, 1080);
-    Require(invalid.x == 40 && invalid.y == 40 && invalid.width == 1100 && invalid.leftFraction == 0.5f,
+    Require(invalid.x == 40 && invalid.y == 40 && invalid.width == 640 && invalid.leftFraction == 0.5f,
             "nonfinite inputs cannot make menu unreachable");
+    const auto narrow = FitLayout({40, 40, 480, 420, 0.5f}, 1920, 1080);
+    Require(narrow.width == 480 && narrow.height == 420,
+            "a compact saved menu must not expand to the old two-column minimum");
+    const auto tiny = FitLayout({0, 0, 480, 420, 0.5f}, 400, 300);
+    Require(tiny.width == 400 && tiny.height == 300,
+            "display size still wins over the compact minimum");
     const auto left = FitColumns(740, 0.01f);
     const auto right = FitColumns(740, 0.99f);
     Require(left.left >= 260 && right.right >= 350 && Near(left.left + left.right + ColumnGap, 740),
@@ -227,6 +233,74 @@ void StockStyle()
                 "overlay palette must match stock StyleColorsDark for every widget");
     ImGui::DestroyContext();
 }
+
+void ResponsiveMenu()
+{
+    ImGui::CreateContext();
+    auto& io = ImGui::GetIO();
+    io.IniFilename = nullptr;
+    io.DisplaySize = {1920, 1080};
+    io.DeltaTime = 1.f / 60;
+    unsigned char* pixels;
+    int width, height;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+    const std::string longStatus(600, 'W');
+    struct Geometry { ImVec2 panelSize; ImVec2 saveMin, saveMax; ImRect rootClip; bool parentScroll; float scroll; };
+    const auto frame = [&](ImVec2 size, bool scrollToEnd, const char* tab) {
+        ImGui::NewFrame();
+        ImGui::SetNextWindowPos({20, 20}, ImGuiCond_Always);
+        ImGui::SetNextWindowSize(size, ImGuiCond_Always);
+        ImGui::Begin("Responsive menu", nullptr, ImGuiWindowFlags_NoCollapse);
+        ImGui::TextUnformatted("Raster FPS / Output FPS");
+        float samples[2]{16, 17};
+        ImGui::PlotLines("##graph", samples, 2, 0, nullptr, 0, 50, {-1, 90});
+        Geometry result{};
+        if (BeginSettingsBody()) {
+            if (ImGui::BeginTabBar("##tabs")) {
+                if (ImGui::BeginTabItem(tab, nullptr, ImGuiTabItemFlags_SetSelected)) {
+                    BeginScrollableSettings(tab);
+                    result.panelSize = ImGui::GetWindowSize();
+                    for (int row = 0; row != 80; ++row) ImGui::Text("Setting %d", row);
+                    if (scrollToEnd) ImGui::SetScrollY(10000);
+                    result.scroll = ImGui::GetScrollY();
+                    EndScrollableSettings();
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
+        }
+        EndSettingsBody();
+        DrawSaveDefaultsButton();
+        result.saveMin = ImGui::GetItemRectMin();
+        result.saveMax = ImGui::GetItemRectMax();
+        DrawSettingsActionStatus(longStatus.c_str());
+        const auto* parent = ImGui::GetCurrentWindow();
+        result.rootClip = parent->InnerClipRect;
+        result.parentScroll = parent->ScrollbarY;
+        ImGui::End();
+        ImGui::Render();
+        return result;
+    };
+    ImVec2 small{}, large{};
+    for (const auto size : {ImVec2{480, 420}, ImVec2{640, 720}, ImVec2{960, 900}, ImVec2{480, 420}}) {
+        for (const char* tab : {"DLSS", "NR", "Frame generation"}) {
+            Geometry g{};
+            for (int settle = 0; settle != 4; ++settle) g = frame(size, false, tab);
+            Require(g.panelSize.x > 0 && g.panelSize.y > 0, "tab scroll area remains usable at compact sizes");
+            Require(!g.parentScroll, "settings and long statuses must not create a parent scrollbar");
+            Require(g.saveMin.x >= g.rootClip.Min.x && g.saveMax.x <= g.rootClip.Max.x &&
+                        g.saveMin.y >= g.rootClip.Min.y && g.saveMax.y <= g.rootClip.Max.y,
+                    "Save as default stays fully visible while resizing every tab");
+            frame(size, true, tab);
+            g = frame(size, false, tab);
+            Require(g.scroll > 0, "tab settings retain independent scrolling");
+            if (size.x == 480) small = g.panelSize;
+            if (size.x == 960) large = g.panelSize;
+        }
+    }
+    Require(large.x > small.x && large.y > small.y, "scroll areas stretch with both dimensions of the window");
+    ImGui::DestroyContext();
+}
 } // namespace
 
 int main()
@@ -237,6 +311,7 @@ int main()
         Dragging();
         PipelineNavigation();
         StockStyle();
+        ResponsiveMenu();
         std::cout << "Layout persistence, display fitting and full-width ImGui settings passed\n";
         return 0;
     }

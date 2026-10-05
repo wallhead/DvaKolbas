@@ -357,7 +357,7 @@ void OverlayUI::BuildUI()
         layoutPending = false;
     }
     ImGui::SetNextWindowSizeConstraints(
-        ImVec2((std::min)(780.0f, displaySize.x), (std::min)(560.0f, displaySize.y)), displaySize);
+        ImVec2((std::min)(MinimumMenuWidth, displaySize.x), (std::min)(MinimumMenuHeight, displaySize.y)), displaySize);
     if (!ImGui::Begin(Plugin::DISPLAY_NAME.data(), nullptr, ImGuiWindowFlags_NoCollapse))
     {
         ImGui::End();
@@ -371,31 +371,29 @@ void OverlayUI::BuildUI()
     layout.width = windowSize.x;
     layout.height = windowSize.y;
     DrawFrameMeasurements(view, 410.0f);
-    const auto& layoutStyle = ImGui::GetStyle();
-    const auto status = TheosRenderPipeline::SettingsStatus(CountStagedChanges(), actionMessage, actionMessageIsError);
-    const float statusWidth = (std::max)(1.0f, ImGui::GetContentRegionAvail().x);
-    const float reservedActionHeight = ImGui::GetFrameHeightWithSpacing() * 2.0f +
-        ImGui::CalcTextSize(status.text.c_str(), nullptr, false, statusWidth).y + layoutStyle.ItemSpacing.y * 2.0f;
-    const float tabCardHeight = (std::max)(1.0f, ImGui::GetContentRegionAvail().y - reservedActionHeight);
-
     const auto beforeEdits = settingsDraft;
-    if (ImGui::BeginTabBar("##theosrenderpipelineTabs", ImGuiTabBarFlags_None))
+    if (BeginSettingsBody())
     {
-        DrawImagePanel(tabCardHeight, view);
+        if (ImGui::BeginTabBar("##theosrenderpipelineTabs", ImGuiTabBarFlags_None))
+        {
+            // The scroll child fills the space remaining below the tab header.
+            DrawImagePanel(0, view);
 
 #if !defined(TRP_NO_NEURAL_RENDERING)
-        DrawNeuralRenderingPanel(tabCardHeight, view);
+            DrawNeuralRenderingPanel(0, view);
 #else
-        if (ImGui::BeginTabItem("NR"))
-        {
-            ImGui::TextDisabled("Neural Rendering is not included in this build.");
-            ImGui::EndTabItem();
-        }
+            if (ImGui::BeginTabItem("NR"))
+            {
+                ImGui::TextDisabled("Neural Rendering is not included in this build.");
+                ImGui::EndTabItem();
+            }
 #endif
 
-        DrawFrameGenerationPanel(tabCardHeight, view);
-        ImGui::EndTabBar();
+            DrawFrameGenerationPanel(0, view);
+            ImGui::EndTabBar();
+        }
     }
+    EndSettingsBody();
 
     settingsEdits.Observe(beforeEdits,settingsDraft,ImGui::GetActiveID(),
         [this](const auto& before,const auto& after){ApplyLiveSettingsEdits(before,after);});
@@ -496,12 +494,10 @@ void OverlayUI::OnPresent(ID3D11Texture2D* producerUI)
 
 void OverlayUI::DrawSettingsActions()
 {
-    ImGui::Separator();
-    const int stagedChanges = CountStagedChanges();
-    const auto status = TheosRenderPipeline::SettingsStatus(stagedChanges, actionMessage, actionMessageIsError);
-    ImGui::TextWrapped("%s", status.text.c_str());
-    ImGui::TextDisabled("Toggles apply immediately; values apply when editing ends. Save as default to keep choices.");
-    if (ImGui::Button("Save as default"))
+    if (DrawSaveDefaultsButton())
         ApplySettingsDraft(true);
-    DrawSettingsHelp("Save choices and window layout. Mode, render scale and presenter changes require restart.");
+    DrawSettingsHelp("Save choices and window layout. Toggles apply immediately; values apply when editing ends. "
+                     "Mode, render scale and presenter changes require restart.");
+    const auto status = TheosRenderPipeline::SettingsStatus(CountStagedChanges(), actionMessage, actionMessageIsError);
+    DrawSettingsActionStatus(status.text.c_str());
 }

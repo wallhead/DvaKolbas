@@ -9,13 +9,9 @@
 
 using namespace TheosRenderPipeline::Overlay;
 
-bool OverlayUI::BeginSettingsColumns(const char* id, float height, const FrameView&)
+bool OverlayUI::BeginSettingsColumns(const char* id, float, const FrameView&)
 {
-    ImGui::PushID(id);
-    const auto columns = DrawColumnSplitter(ImGui::GetContentRegionAvail().x, height, layout.leftFraction);
-    ImGui::BeginChild("##settings", ImVec2(columns.left, height), false);
-    ImGui::PushTextWrapPos(0);
-    ImGui::PushItemWidth((std::min)(310.0f, ImGui::GetContentRegionAvail().x * 0.6f));
+    BeginScrollableSettings(id);
     return true;
 }
 
@@ -27,10 +23,7 @@ void OverlayUI::NextSettingsColumn(float)
 
 void OverlayUI::EndSettingsColumns()
 {
-    ImGui::PopItemWidth();
-    ImGui::PopTextWrapPos();
-    ImGui::EndChild();
-    ImGui::PopID();
+    EndScrollableSettings();
 }
 
 void OverlayUI::DrawFrameMeasurements(const FrameView& view, float columnHeight)
