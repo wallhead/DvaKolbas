@@ -29,6 +29,12 @@ add_custom_command(OUTPUT "${TRP_AMD_NR_PROJECTION_HEADER}"
     DEPENDS TRPCompileAmdNrShaders "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/Shaders/C512Projection.hlsl" "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/Shaders/FormatConversions.hlsli" VERBATIM)
 add_library(TRPAmdNrProbe STATIC "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/FormatProbe.cpp" "${TRP_AMD_NR_SHADER_HEADER}")
 target_sources(TRPAmdNrProbe PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/C512ProjectionProbe.cpp" "${TRP_AMD_NR_PROJECTION_HEADER}")
+set(TRP_AMD_NR_REDUCTION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/amd-nr-generated/C512ReductionBytecode.h")
+add_custom_command(OUTPUT "${TRP_AMD_NR_REDUCTION_HEADER}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/amd-nr-generated"
+    COMMAND TRPCompileAmdNrShaders "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/Shaders/C512Reduction.hlsl" "${TRP_AMD_NR_REDUCTION_HEADER}" C512Reduction
+    DEPENDS TRPCompileAmdNrShaders "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/Shaders/C512Reduction.hlsl" "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/Shaders/FormatConversions.hlsli" VERBATIM)
+target_sources(TRPAmdNrProbe PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/C512ReductionProbe.cpp" "${TRP_AMD_NR_REDUCTION_HEADER}")
 target_include_directories(TRPAmdNrProbe PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/amd-nr-generated")
 target_link_libraries(TRPAmdNrProbe PUBLIC TRPAmdNrCore d3d12 dxgi)
 add_executable(TRPAmdNrFormatProbe "${TRP_AMD_NR_ROOT}/tools/AmdNrFormatProbe.cpp")

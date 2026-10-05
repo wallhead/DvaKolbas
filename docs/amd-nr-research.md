@@ -362,3 +362,18 @@ HIP dependency or supplied code execution. WMMA-order comparison, GPU pooling,
 remaining variants/full graph, temporal/input/output conventions, renderer and
 RDNA2/3/4 validation remain necessary. Model/inference status is unchanged.
 [Execution report and reproduction](amd-nr-c512-portable-execution.md).
+
+## Portable C512 GPU pooling
+
+The source-owned GPU reduction now implements the recovered half pair-sum,
+sum and quarter-multiply rounding boundaries, writing packed FP8 and preserving
+caller-provided padding. One thread owns each complete output word, using inverse
+packed coordinates; it reuses the established queue/fence transport.
+
+The independent NumPy/forward-gather oracle compares 1,007,616 packed bytes on
+CPU, WARP and RTX, including 51,200 padding bytes, all exact. Five fixtures cover
+all half encodings, seeded tuples, crop/padding, asymmetric association and maximum
+diagnostic sizes. The full suite has 21 passes, three missing-debug-layer skips
+and no failures. Model/inference status is unchanged; original-runtime parity,
+WMMA, remaining variants/full graph, renderer and Radeon acceptance remain open.
+[GPU reduction report](amd-nr-c512-gpu-reduction.md).

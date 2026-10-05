@@ -39,5 +39,6 @@ private:
     std::unique_ptr<ProbeState> state_;
     friend struct FormatProbeTestAccess;
     friend class C512ProjectionProbe;
+    friend class C512ReductionProbe;
 };
 }

@@ -246,3 +246,18 @@ snapshots, distinct payload/readback sizes, move/drop ownership, foreign jobs/
 queues and gated timeout recovery. The suite has 18 passes, two unavailable-debug-
 layer skips and zero failures. The test-only binary driver rejects malformed
 fixtures before writes. [Arithmetic, identities and remaining gates](../../docs/amd-nr-c512-portable-execution.md).
+
+## Portable C512 GPU reduction
+
+`C512ReductionProbe` now executes the CPU reference's four half-rounding steps on
+D3D12 and returns packed FP8 bytes. It snapshots initial destination bytes and
+preserves padding exactly. Each thread writes a complete word, avoiding shared-
+byte UAV races. Source/destination caps are 4096/1024 pixels; spans must be exact.
+
+The independent forward-address/NumPy oracle matches 1,007,616 packed bytes on
+CPU, WARP and explicitly selected RTX, including 51,200 preserved padding bytes.
+Five cases cover exhaustive half words/seeded tuples, non-square padding/crop,
+asymmetric coordinates and maximum accepted sizes. Lifecycle/cap tests pass.
+The full suite has 21 passes, three unavailable-debug-layer skips and zero
+failures. No model is enabled; Radeon acceptance remains open.
+[Arithmetic, fixtures and reproduction](../../docs/amd-nr-c512-gpu-reduction.md).
