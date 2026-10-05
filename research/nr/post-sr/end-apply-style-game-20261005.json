@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "qualification": "PASS_BOUNDED_LIVE_STYLE_APPLY_TELEMETRY; owner visual completion pending",
+  "ownerReply": "I\u2019ll test that now",
+  "ownerVisualResult": "PENDING, not inferred from silence",
+  "installedBuildRevision": "effbf2c9b0b0",
+  "milestonesComplete": 5,
+  "milestonesTotal": 8,
+  "retainedPrefix": {
+    "localPath": ".superpowers\\sdd\\2026-10-04-nr-post-sr\\end-apply-style-game-prefix-20261005.log",
+    "sha256": "f5051455202615dd7644a7da03adc659f210d1067ec3599574cb9c73905dfb89",
+    "bytes": 339567,
+    "lastTimestamp": "2026-10-05 08:27:36.697"
+  },
+  "curatedLog": {
+    "path": "end-apply-style-game-20261005.log",
+    "sha256": "84d3cf0b9ff695e9d0558c50523368c3b30161ce52106cfd247e4b817b88626e"
+  },
+  "nrSettingEvents": [
+    {
+      "timestamp": "2026-10-05 08:09:47.871",
+      "revision": 1,
+      "style": 0,
+      "tone": 1.0,
+      "structure": 1.0
+    },
+    {
+      "timestamp": "2026-10-05 08:13:39.233",
+      "revision": 2,
+      "style": 0,
+      "tone": 1.0,
+      "structure": 1.0
+    },
+    {
+      "timestamp": "2026-10-05 08:13:40.960",
+      "revision": 3,
+      "style": 0,
+      "tone": 1.0,
+      "structure": 1.0
+    },
+    {
+      "timestamp": "2026-10-05 08:13:43.912",
+      "revision": 4,
+      "style": 0,
+      "tone": 1.0,
+      "structure": 1.0
+    },
+    {
+      "timestamp": "2026-10-05 08:13:47.382",
+      "revision": 5,
+      "style": 0,
+      "tone": 1.0,
+      "structure": 1.0
+    },
+    {
+      "timestamp": "2026-10-05 08:13:52.281",
+      "revision": 6,
+      "style": 0,
+      "tone": 0.56,
+      "structure": 1.544
+    },
+    {
+      "timestamp": "2026-10-05 08:25:43.035",
+      "revision": 7,
+      "style": 1,
+      "tone": 0.56,
+      "structure": 1.544
+    },
+    {
+      "timestamp": "2026-10-05 08:25:45.501",
+      "revision": 8,
+      "style": 0,
+      "tone": 0.56,
+      "structure": 1.544
+    },
+    {
+      "timestamp": "2026-10-05 08:25:47.741",
+      "revision": 9,
+      "style": 4,
+      "tone": 0.56,
+      "structure": 1.544
+    },
+    {
+      "timestamp": "2026-10-05 08:26:33.856",
+      "revision": 10,
+      "style": 1,
+      "tone": 0.56,
+      "structure": 1.544
+    },
+    {
+      "timestamp": "2026-10-05 08:26:36.125",
+      "revision": 11,
+      "style": 0,
+      "tone": 0.56,
+      "structure": 1.544
+    },
+    {
+      "timestamp": "2026-10-05 08:26:38.145",
+      "revision": 12,
+      "style": 6,
+      "tone": 0.56,
+      "structure": 1.544
+    }
+  ],
+  "evidence": {
+    "sessionApplyActions": 15,
+    "styleSequence": [
+      0,
+      1,
+      0,
+      4,
+      1,
+      0,
+      6
+    ],
+    "completedStyle1To0Cycles": 2,
+    "currentEffectiveStyle": 6,
+    "currentTone": 0.56,
+    "currentStructure": 1.544,
+    "lastNrFrame": "[2026-10-05 08:27:26.186] [thread 34036] [info] [Community NR frame] source=69995 requested=true evaluated=true profile=rtx40 revision=12 reset=false frames=48000 resets=103 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass",
+    "postStyleMenuX2First": "[2026-10-05 08:26:39.042] [thread 34036] [info] [SourceDLSSG] frame=67800 enabled=true status=0 presented=2 maximum=1 inputFence=0x1b8d1653410 value=67800 runtimePresentedTotal=100089 stateQueries=67801 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=67800 nativeOutputs=100019 nativeBatchedAdditional=32230 nativeQueryFailures=0 outputBatches=67800 generatedPresented=32289 interpolatedNotPresented=12685 batchMismatches=0 unknownOutputBatches=0 configurationChanges=7 reflexQueries=2119 reflexFailures=0 reflexReports=67742 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+    "postStyleMenuX2Last": "[2026-10-05 08:27:30.282] [thread 34036] [info] [SourceDLSSG] frame=70200 enabled=true status=0 presented=2 maximum=1 inputFence=0x1b8d1653410 value=70200 runtimePresentedTotal=104889 stateQueries=70201 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=70200 nativeOutputs=104815 nativeBatchedAdditional=34626 nativeQueryFailures=0 outputBatches=70200 generatedPresented=34689 interpolatedNotPresented=12685 batchMismatches=0 unknownOutputBatches=0 configurationChanges=7 reflexQueries=2194 reflexFailures=0 reflexReports=70142 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+    "errorCriticalCount": 0
+  },
+  "limits": [
+    "Owner visual/camera/HUD result still pending",
+    "Style1/0 changes happened while End was open; later menu-close observations are Style4/6, not separate closed-menu readbacks of every style",
+    "Normal sparse runtime telemetry is not actual GPU pixel/readback/display cadence or pending-fence observation",
+    "No settings or game/MO2 changes by agent"
+  ]
+}

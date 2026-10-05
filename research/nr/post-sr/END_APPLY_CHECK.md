@@ -1,5 +1,11 @@
 # Next Skyrim gate: actual End-menu Apply
 
+Style follow-up: two Style 1 -> 0 cycles and Styles 4/6 now reach effective
+settings, bringing session Apply actions to 15. NR and NVIDIA x2 continue
+after the menu. The owner's visual result remains pending; current Style 6,
+Tone 0.56 and Structure 1.544 were left untouched by the agent.
+[Receipt](end-apply-style-game-20261005.json).
+
 2026-10-05 result: owner reports the menu tested. The current clean build
 logs nine successful Apply actions, NR off/on, After -> Before -> After,
 changed tone/structure and resumed NVIDIA x2 output, with no error/critical
