@@ -17,7 +17,7 @@ bool TextureProviderBridge::Resolve()
 	const auto getProvider = reinterpret_cast<SolFGTextureProviderAPI::GetProviderFn>(
 		::GetProcAddress(module, "TextureDownscaler_GetSolFGProvider"));
 	if (!getProvider) {
-		status_ = "provider loaded without the TheosRenderPipeline control API";
+		status_ = "provider loaded without the RaZkolbaS control API";
 		return false;
 	}
 

@@ -349,7 +349,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
     }
     if (!device_ || !context_ || renderWidth_ == 0 || renderHeight_ == 0)
     {
-        status_ = "TheosRenderPipeline DLSS split source prerequisites are incomplete";
+        status_ = "RaZkolbaS DLSS split source prerequisites are incomplete";
         return false;
     }
 
@@ -364,7 +364,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
                  static_cast<std::uint32_t>(allocation.deviceRemovedReason), static_cast<std::uint32_t>(outputResult));
     if (FAILED(outputResult) || !gameTargets_.UpscaleOutput())
     {
-        status_ = std::format("TheosRenderPipeline DLSS native handoff texture creation failed (0x{:08X})", static_cast<std::uint32_t>(outputResult));
+        status_ = std::format("RaZkolbaS DLSS native handoff texture creation failed (0x{:08X})", static_cast<std::uint32_t>(outputResult));
         return false;
     }
     {
@@ -406,7 +406,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
                            creation.AllocationQuality()))
     {
         sourceUpscalerSettings_.Completed(false);
-        status_ = "TheosRenderPipeline direct DLSS feature initialization failed";
+        status_ = "RaZkolbaS direct DLSS feature initialization failed";
         gameTargets_.ResetUpscaleOutputAfterRetirement();
         return false;
     }
@@ -417,7 +417,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
     if (dlss->RenderWidth() != static_cast<int>(renderWidth_) || dlss->RenderHeight() != static_cast<int>(renderHeight_))
     {
         sourceUpscalerSettings_.Completed(false);
-        status_ = "TheosRenderPipeline direct DLSS disagreed with the prepared render extent";
+        status_ = "RaZkolbaS direct DLSS disagreed with the prepared render extent";
         return false;
     }
 
@@ -429,7 +429,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
                      "split source; retaining HUD-less-only fallback");
     }
     status_ = "Source DLSS and NVIDIA frame-generation path ready";
-    logger::info("[NvidiaHost] split source initialized owner=TheosRenderPipeline-DLSS render={}x{} "
+    logger::info("[NvidiaHost] split source initialized owner=RaZkolbaS-DLSS render={}x{} "
                  "output={}x{} format={} quality={} evaluator=SourceNvidiaFrameEvaluator",
                  renderWidth_, renderHeight_, a_outputDesc.Width, a_outputDesc.Height, static_cast<std::uint32_t>(a_outputDesc.Format),
                  creation.AllocationQuality());

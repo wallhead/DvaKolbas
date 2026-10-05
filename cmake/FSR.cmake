@@ -20,7 +20,7 @@ if(TRP_ENABLE_FSR)
     target_compile_features(TRPFsrRuntime PUBLIC cxx_std_23)
     target_compile_definitions(TRPFsrRuntime PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN TRP_ENABLE_FSR)
     target_include_directories(TRPFsrRuntime PUBLIC src "${TRP_FSR_API_INCLUDE}" "${TRP_FSR_UPSCALE_INCLUDE}")
-    target_link_libraries(TheosRenderPipeline PRIVATE TRPFsrRuntime)
+    target_link_libraries(RaZkolbaS PRIVATE TRPFsrRuntime)
 endif()
 
 option(TRP_ENABLE_FSR_FG "Build optional FidelityFX frame generation integration" OFF)

@@ -23,7 +23,7 @@ namespace
 	std::string TraceMetadata()
 	{
 		return std::format(
-			R"({{"format":"TheosRenderPipeline frame trace","schema":1,"plugin":"{}","version":"{}","source_revision":"{}","d3d11_stage_schema":2,"clock":"QueryPerformanceCounter","present_semantics":"host Present submission, not physical scanout","gpu_stage_units":"nanoseconds","cpu_stage_units":"nanoseconds"}})",
+			R"({{"format":"RaZkolbaS frame trace","schema":1,"plugin":"{}","version":"{}","source_revision":"{}","d3d11_stage_schema":2,"clock":"QueryPerformanceCounter","present_semantics":"host Present submission, not physical scanout","gpu_stage_units":"nanoseconds","cpu_stage_units":"nanoseconds"}})",
 			Plugin::NAME,
 			Plugin::VERSION_STRING,
 			Plugin::SOURCE_REVISION);
@@ -90,14 +90,14 @@ bool FrameTrace::Start()
 		return false;
 	}
 	std::error_code error;
-	const auto traceDirectory = *logDirectory / "TheosRenderPipeline Traces";
+	const auto traceDirectory = *logDirectory / "RaZkolbaS Traces";
 	std::filesystem::create_directories(traceDirectory, error);
 	if (error) {
 		logger::error("[FrameTrace] could not create trace directory: {}", error.message());
 		return false;
 	}
 	outputPath_ = traceDirectory / std::format(
-		"TheosRenderPipeline-{}-{}-{}.sfgtrace",
+		"RaZkolbaS-{}-{}-{}.sfgtrace",
 		TraceTimestamp(),
 		::GetCurrentProcessId(),
 		::GetTickCount64());

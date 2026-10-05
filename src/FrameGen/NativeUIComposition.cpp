@@ -41,7 +41,7 @@ bool NativeUIComposition::Initialize(ID3D11Device* a_device, ID3D11DeviceContext
 
 	D3D11_TEXTURE2D_DESC uiDesc = snapshotDesc;
 	// The tagged UI texture supports SRV, RTV and UAV bindings.
-	// TheosRenderPipeline writes through the UAV; the
+	// RaZkolbaS writes through the UAV; the
 	// remaining bindings keep the resource valid for Streamline and later
 	// composition modes.
 	uiDesc.BindFlags =
@@ -109,7 +109,7 @@ void main(uint3 id : SV_DispatchThreadID)
 	const auto compileResult = D3DCompile(
 		kShader,
 		sizeof(kShader) - 1,
-		"TheosRenderPipelineNativeUIColorAndAlphaCS",
+		"RaZkolbaSNativeUIColorAndAlphaCS",
 		nullptr,
 		nullptr,
 		"main",
@@ -158,7 +158,7 @@ void main(uint3 id : SV_DispatchThreadID)
 		const auto compositionCompileResult = D3DCompile(
 			kCompositionShader,
 			sizeof(kCompositionShader) - 1,
-			"TheosRenderPipelineDedicatedNativeUICompositionCS",
+			"RaZkolbaSDedicatedNativeUICompositionCS",
 			nullptr,
 			nullptr,
 			"main",

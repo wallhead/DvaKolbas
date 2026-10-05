@@ -4,16 +4,16 @@ param([Parameter(Mandatory)][string]$PackageDirectory)
 . (Join-Path $PSScriptRoot 'RuntimePackageCommon.ps1')
 $root=[IO.Path]::GetFullPath($PackageDirectory)
 $plugins=Join-Path $root 'SKSE/Plugins'
-$ini=Read-PackageIni (Join-Path $plugins 'TheosRenderPipeline.ini')
+$ini=Read-PackageIni (Join-Path $plugins 'RaZkolbaS.ini')
 if($ini['Settings/UpscaleType'] -notin @('0','3')) {throw 'This preflight requires a DLSS/DLAA-selected NR trial'}
 $manifest=Get-Content -LiteralPath (Join-Path $root 'nr-trial-manifest.json') -Raw | ConvertFrom-Json
 $pin=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime-pin.json') -Raw | ConvertFrom-Json
 if(($manifest.profiles|ConvertTo-Json -Depth 8 -Compress) -ne ($pin.profiles|ConvertTo-Json -Depth 8 -Compress)){throw 'Manifest NR profile catalog differs from current pins'}
-Assert-NrRuntimeModels $pin.profiles (Join-Path $plugins 'TheosRenderPipeline')
+Assert-NrRuntimeModels $pin.profiles (Join-Path $plugins 'RaZkolbaS')
 $configured=$ini['Experimental/SourceDLSSGStreamlineDirectory']
 if([string]::IsNullOrWhiteSpace($configured)) {throw 'NVIDIA trial has no configured Streamline directory'}
 $streamline=[IO.Path]::GetFullPath($(if([IO.Path]::IsPathRooted($configured)) {$configured} else {Join-Path $plugins $configured}))
-$paths=@((Join-Path $plugins 'TheosRenderPipeline/nvngx_dlss.dll'),(Join-Path $root 'NVIDIA-Streamline-license.txt'))
+$paths=@((Join-Path $plugins 'RaZkolbaS/nvngx_dlss.dll'),(Join-Path $root 'NVIDIA-Streamline-license.txt'))
 foreach($name in @('nvngx_dlssg.dll','sl.common.dll','sl.dlss_g.dll','sl.interposer.dll','sl.pcl.dll','sl.reflex.dll')) {$paths+=Join-Path $streamline $name}
 foreach($path in $paths) {
     $full=[IO.Path]::GetFullPath($path)

@@ -165,7 +165,7 @@ See [PR #33](https://github.com/theosw/theosrenderpipeline/pull/33) for the inpu
 The NR menu checkbox works independently of keyboard shortcuts. Bracket
 shortcuts are disabled by default, including for older INIs without the new key.
 To opt in, set `EnableNRHotkeys=true` under `[Hotkeys]` in the winning
-`TheosRenderPipeline.ini` and restart Skyrim. On a US keyboard, `[` turns NR
+`RaZkolbaS.ini` and restart Skyrim. On a US keyboard, `[` turns NR
 off and `]` turns it on for the session, even with the TRP menu closed.
 They are suppressed while editing text in TRP's menu. Other mods can share
 these keys. Use Save as default to retain an NR state for future launches.
@@ -187,7 +187,7 @@ Standard's DLAA/NR correction passes offline checks; the local gameplay test
 used Universal. Native RTX 50-series operation and physical cadence remain unverified.
 
 For reports, include TRP-STANDARD-PACKAGE.txt, GPU/driver, game/mod versions,
-settings and TheosRenderPipeline.log/skse64.log. Logs are normally under
+settings and RaZkolbaS.log/skse64.log. Logs are normally under
 Documents/My Games/Skyrim Special Edition/SKSE/.
 
 ## Included runtimes and notices

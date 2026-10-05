@@ -20,10 +20,10 @@ namespace TheosRenderPipeline::NeuralRendering
 {
 	namespace
 	{
-		constexpr unsigned long long kTheosRenderPipelineGenericCmsId = 0x0876232Cull;
+		constexpr unsigned long long kRaZkolbaSGenericCmsId = 0x0876232Cull;
 		constexpr auto kFeatureApiVersion = static_cast<NVSDK_NGX_Version>(0x15);
-		constexpr const char* kTheosRenderPipelineNGXProjectId = "f1b2e5d8-9c4a-4e7b-8a36-5d2e90c47a11";
-		constexpr const char* kTheosRenderPipelineNGXEngineVersion = "0.1.0-neural-rendering-source";
+		constexpr const char* kRaZkolbaSNGXProjectId = "f1b2e5d8-9c4a-4e7b-8a36-5d2e90c47a11";
+		constexpr const char* kRaZkolbaSNGXEngineVersion = "0.1.0-neural-rendering-source";
 		constexpr auto kNeuralRenderingFeature = static_cast<NVSDK_NGX_Feature>(0x12);
 
 		using D3D12Init = NVSDK_NGX_Result(NVSDK_CONV*)(
@@ -66,7 +66,7 @@ namespace TheosRenderPipeline::NeuralRendering
 			if (error) {
 				return {};
 			}
-			path /= L"TheosRenderPipeline";
+			path /= L"RaZkolbaS";
 			path /= L"NeuralRenderingFeatureSession";
 			std::filesystem::create_directories(path, error);
 			return error ? std::filesystem::path{} : path;
@@ -211,9 +211,9 @@ namespace TheosRenderPipeline::NeuralRendering
 		featureInfo.PathListInfo.Path = &searchPath;
 		featureInfo.PathListInfo.Length = 1;
 		const auto publicInitResult = NVSDK_NGX_D3D12_Init_with_ProjectID(
-			kTheosRenderPipelineNGXProjectId,
+			kRaZkolbaSNGXProjectId,
 			NVSDK_NGX_ENGINE_TYPE_CUSTOM,
-			kTheosRenderPipelineNGXEngineVersion,
+			kRaZkolbaSNGXEngineVersion,
 			dataPath.c_str(),
 			a_info.device,
 			&featureInfo,
@@ -268,11 +268,11 @@ namespace TheosRenderPipeline::NeuralRendering
 		auto initResult = NVSDK_NGX_Result_FAIL_NotInitialized;
 		if (init) {
 			initResult = init(
-				kTheosRenderPipelineGenericCmsId, dataPath.c_str(), a_info.device, kFeatureApiVersion);
+				kRaZkolbaSGenericCmsId, dataPath.c_str(), a_info.device, kFeatureApiVersion);
 		}
 		if (NVSDK_NGX_FAILED(initResult) && initExt) {
 			initResult = initExt(
-				kTheosRenderPipelineGenericCmsId,
+				kRaZkolbaSGenericCmsId,
 				dataPath.c_str(),
 				a_info.device,
 				kFeatureApiVersion,

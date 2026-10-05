@@ -62,7 +62,7 @@ void OverlayUI::Init(IDXGISwapChain* a_swapChain, ID3D11Device* a_device, ID3D11
     io.ConfigWindowsResizeFromEdges = true;
     CSimpleIniA menuIni;
     menuIni.SetUnicode();
-    if (menuIni.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") >= 0)
+    if (menuIni.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini") >= 0)
         layout = LoadLayout(menuIni);
 	ImGui::StyleColorsDark();
 	ApplyRendererStyle();

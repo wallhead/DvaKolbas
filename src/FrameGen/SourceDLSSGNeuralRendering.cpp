@@ -293,7 +293,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		// NR UI correction reads Backbuffer's existing pixels. The reconstruction
 		// output/backbuffer alias must therefore contain the original scene, not
 		// fresh allocation contents or last frame's NR result. UI remains separate
-		// here because TheosRenderPipeline composes it once after NR for both presentation paths.
+		// here because RaZkolbaS composes it once after NR for both presentation paths.
 		if (NeuralRendering::UsesReconstructionContract(feature_.Build()) && options.tuning.uiCorrection &&
 			FAILED(Interop::RecordCopy(list, featureColor, featureOutput))) {
 			status_ = "NR correction background copy rejected"; return false;

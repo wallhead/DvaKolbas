@@ -255,6 +255,6 @@ void OverlayUI::DrawReportingDetails(const FrameView& view)
         }
         ImGui::TextWrapped(
             "Include your GPU, driver, game and TRP versions, the active renderer, settings and reproduction steps.");
-        ImGui::TextWrapped("Attach TheosRenderPipeline.log from Documents / My Games / Skyrim Special Edition / SKSE.");
+        ImGui::TextWrapped("Attach RaZkolbaS.log from Documents / My Games / Skyrim Special Edition / SKSE.");
     }
 }

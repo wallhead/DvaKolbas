@@ -35,7 +35,7 @@ int main()
     static_assert(std::size(entries) == CompiledNeuralShaders::Resolve.size());
     for (std::size_t i = 0; i < std::size(entries); ++i) {
         Compare(CompiledNeuralShaders::Resolve[i], kNeuralResolveShader, sizeof(kNeuralResolveShader) - 1,
-            "TheosRenderPipeline-NR-resolve", entries[i], "cs_5_1");
+            "RaZkolbaS-NR-resolve", entries[i], "cs_5_1");
     }
     Compare(CompiledNeuralShaders::Compose, kNeuralComposeShader, sizeof(kNeuralComposeShader) - 1,
         "SourceDLSSG-NR-compose", "main", "cs_5_0");

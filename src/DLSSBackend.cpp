@@ -17,7 +17,7 @@
 
 namespace
 {
-	// TheosRenderPipeline's own NGX project id (random UUID, not shared with any other title).
+	// RaZkolbaS's own NGX project id (random UUID, not shared with any other title).
 	constexpr const char* kNGXProjectId = "f1b2e5d8-9c4a-4e7b-8a36-5d2e90c47a11";
 
 	const char* NGXResultToString(NVSDK_NGX_Result a_result)
@@ -90,7 +90,7 @@ namespace
 		if (ec) {
 			return {};
 		}
-		path /= L"TheosRenderPipeline";
+		path /= L"RaZkolbaS";
 		std::filesystem::create_directories(path, ec);
 		return path;
 	}
@@ -135,8 +135,8 @@ bool DLSSBackend::EnsureNGXInitialized()
 	}
 
 	const auto dataPath = GetNGXDataPath();
-	// nvngx_dlss.dll ships in Data/SKSE/Plugins/TheosRenderPipeline next to the plugin DLL.
-	const auto modulePath = GetPluginDirectory() / L"TheosRenderPipeline";
+	// nvngx_dlss.dll ships in Data/SKSE/Plugins/RaZkolbaS next to the plugin DLL.
+	const auto modulePath = GetPluginDirectory() / L"RaZkolbaS";
 	const auto modulePathString = modulePath.wstring();
 	const wchar_t* moduleSearchPath = modulePathString.c_str();
 
@@ -439,7 +439,7 @@ bool DLSSBackend::EnsureRCAS(float a_sharpness)
 	if (FAILED(rcasParameters.Update(device, context, a_sharpness))) { return false; }
 	if (rcasShader) { return true; }
 
-	const auto shaderPath = GetPluginDirectory() / L"TheosRenderPipeline\\RCAS.hlsl";
+	const auto shaderPath = GetPluginDirectory() / L"RaZkolbaS\\RCAS.hlsl";
 
 	ID3DBlob* blob = nullptr;
 	ID3DBlob* errors = nullptr;

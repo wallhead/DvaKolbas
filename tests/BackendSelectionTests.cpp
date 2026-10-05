@@ -100,7 +100,7 @@ int main()
     incompatible.SetValue("FSR", "SourceColorEncoding", "Unknown");
     const auto encodingError = ValidateRendererStartup(incompatible, 0x1002, true, true);
     Require(!encodingError.empty(), "AMD startup never guesses unknown FSR source encoding");
-    Require(encodingError.find("[FSR]") != std::string::npos && encodingError.find("TheosRenderPipeline.ini") != std::string::npos,
+    Require(encodingError.find("[FSR]") != std::string::npos && encodingError.find("RaZkolbaS.ini") != std::string::npos,
         "first-launch encoding error identifies the INI and section to edit");
     incompatible.SetValue("FSR", "SourceColorEncoding", "Gamma22");
     Require(!ValidateRendererStartup(incompatible, 0x1002, false, true).empty(), "AMD rejects build without FSR instead of using NVIDIA");

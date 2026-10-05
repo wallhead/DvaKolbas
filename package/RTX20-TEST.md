@@ -21,7 +21,7 @@ test; HDR on RTX 20 has not been tested.
 3. Save settings and restart once. Test NR separately afterward; it is expensive
    on the recorded RTX 2060 setup.
 
-Send an End-menu screenshot and `TheosRenderPipeline.log` from
+Send an End-menu screenshot and `RaZkolbaS.log` from
 `Documents/My Games/Skyrim Special Edition/SKSE` before another launch overwrites
 it. Include GPU/driver, ENB or CS and the settings used. On startup/kernel failure,
 send the message and log rather than repeatedly reinstalling.

@@ -88,8 +88,8 @@ int main(int argc, char** argv)
         communityPaths.SetValue("NeuralRendering","DriverCore","drivers/_nvngx.dll");
         communityPaths.SetValue("NeuralRendering","SourceColorEncoding","Gamma22");
         owner.LoadStartupPreferences(communityPaths);owner.ResolveRuntimePaths(firstRoot);owner.ResolveRuntimePaths(movedRoot);
-        Require(owner.settings.neuralStartup.runtimeRoot==movedRoot/"TheosRenderPipeline" &&
-            owner.settings.neuralStartup.driverCore==movedRoot/"TheosRenderPipeline/drivers/_nvngx.dll",
+        Require(owner.settings.neuralStartup.runtimeRoot==movedRoot/"RaZkolbaS" &&
+            owner.settings.neuralStartup.driverCore==movedRoot/"RaZkolbaS/drivers/_nvngx.dll",
             "community profile root follows the controlled runtime directory on repeated resolution");
         CSimpleIniA absolutePaths;
         absolutePaths.SetValue("Experimental", "SourceDLSSGStreamlineDirectory", "E:/Custom/Streamline");

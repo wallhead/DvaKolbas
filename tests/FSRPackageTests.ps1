@@ -21,7 +21,7 @@ $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $pack
 Rejected {& $validate -Edition $Edition -PackageDirectory $package} 'WrongRuntimeWithUpdatedManifest'
 Copy-Item -LiteralPath (Join-Path $RuntimeDirectory 'amd_fidelityfx_loader_dx12.dll') -Destination $runtime
 $originalManifest | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
-$shader=Join-Path $package 'SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl'
+$shader=Join-Path $package 'SKSE/Plugins/RaZkolbaS/RCAS.hlsl'
 $shaderBytes=[IO.File]::ReadAllBytes($shader)
 Remove-Item -LiteralPath $shader
 Rejected {& $validate -Edition $Edition -PackageDirectory $package} 'IncompletePackage'
@@ -36,27 +36,27 @@ $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $pack
 Rejected {& $validate -Edition $Edition -PackageDirectory $package} 'ExtraAmdRuntime'
 Remove-Item -LiteralPath $extra
 $originalManifest | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
-$config=Join-Path $package 'SKSE/Plugins/TheosRenderPipeline.ini'
+$config=Join-Path $package 'SKSE/Plugins/RaZkolbaS.ini'
 $configOriginal=[IO.File]::ReadAllText($config)
 foreach($encoding in @('Unknown','Guess','')) {
     $lines=Set-PackageIniValues ($configOriginal -split '\r?\n') @{'FSR/SourceColorEncoding'=$encoding}
     [IO.File]::WriteAllLines($config,$lines)
     if((Read-PackageIni $config)['FSR/SourceColorEncoding'] -cne $encoding){throw 'Color mutation did not apply'}
     $manifest=$originalManifest | ConvertFrom-Json
-    foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
+    foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/RaZkolbaS.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
     $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
     Rejected {& $validate -Edition $Edition -PackageDirectory $package} "UnspecifiedOrInvalidColor-$encoding"
 }
 [IO.File]::WriteAllLines($config,(Set-PackageIniValues ($configOriginal -split '\r?\n') @{'FSR/Quality'='quality'}))
 if((Read-PackageIni $config)['FSR/Quality'] -cne 'quality'){throw 'Quality mutation did not apply'}
 $manifest=$originalManifest | ConvertFrom-Json
-foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
+foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/RaZkolbaS.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
 Rejected {& $validate -Edition $Edition -PackageDirectory $package} 'InvalidCaseQuality'
 [IO.File]::WriteAllLines($config,(Set-PackageIniValues ($configOriginal -split '\r?\n') @{'Experimental/PureDarkFullDelegation'='true'}))
 if((Read-PackageIni $config)['Experimental/PureDarkFullDelegation'] -ne 'true'){throw 'Delegation mutation did not apply'}
 $manifest=$originalManifest | ConvertFrom-Json
-foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
+foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/RaZkolbaS.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
 Rejected {& $validate -Edition $Edition -PackageDirectory $package} 'UnsupportedDelegation'
 Write-Output 'PASS: NvidiaFreePackage RuntimeManifestMatchesFiles WrongRuntimePackageRejected incomplete and edition checks'

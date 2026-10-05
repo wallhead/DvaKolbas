@@ -30,14 +30,14 @@ namespace TheosRenderPipeline::SourceDLSSG
 		spdlog::error("[SourceDLSSG MFG] startup/verification failed: {}", reason);
 		const auto guidance = (state_.adapter == midpoint_fix::AdapterKind::Ampere || state_.adapter == midpoint_fix::AdapterKind::Turing) ?
 			std::string("RTX 20/30-series frame generation requires the Universal compatibility path.\n"
-				"Keep SourceDLSSGMFGUnlock=true and include TheosRenderPipeline.log when reporting this startup failure.\n") :
+				"Keep SourceDLSSGMFGUnlock=true and include RaZkolbaS.log when reporting this startup failure.\n") :
 			std::format("Temporal error: {}. Attempts: {}.\n\n"
-				"Set SourceDLSSGMFGUnlock=false in SKSE/Plugins/TheosRenderPipeline.ini to use the unmodified NVIDIA runtime.\n",
+				"Set SourceDLSSGMFGUnlock=false in SKSE/Plugins/RaZkolbaS.ini to use the unmodified NVIDIA runtime.\n",
 				state_.temporalFailure, state_.attempts);
 		util::report_and_fail(std::format(
 			"RaZkolbaS: MFG startup or patch verification failed.\n\n"
 			"{}\n\n{}"
-			"See TheosRenderPipeline.log for details. Skyrim will close after this message.", reason, guidance));
+			"See RaZkolbaS.log for details. Skyrim will close after this message.", reason, guidance));
 	}
 	void MFGUnlock::EnterStartupScope() noexcept { trp::ampere::EnterStartupScope(); }
 	void MFGUnlock::LeaveStartupScope() noexcept { trp::ampere::LeaveStartupScope(); }
@@ -69,7 +69,7 @@ namespace TheosRenderPipeline::SourceDLSSG
                     spdlog::critical("[SourceDLSSG Turing] {}", reason);
                     spdlog::default_logger()->flush();
                     util::report_and_fail(std::format("RaZkolbaS: RTX20 test stopped.\n\n{}\n\n"
-                        "Send TheosRenderPipeline.log to the developer. Skyrim will close after this message.",reason));
+                        "Send RaZkolbaS.log to the developer. Skyrim will close after this message.",reason));
                 })) {
 				const auto snapshot = trp::ampere::Snapshot();
 				Fail(snapshot.error ? snapshot.error : "Ampere startup preparation failed");

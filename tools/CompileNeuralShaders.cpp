@@ -46,7 +46,7 @@ int wmain(int argc, wchar_t** argv)
             "PrepareColor", "PackGuides", "ResizeColor", "RestoreSecond" };
         for (const auto* entry : entries) {
             Compile(generated, entry, kNeuralResolveShader, sizeof(kNeuralResolveShader) - 1,
-                "TheosRenderPipeline-NR-resolve", entry, "cs_5_1");
+                "RaZkolbaS-NR-resolve", entry, "cs_5_1");
         }
         Compile(generated, "ComposeBytes", kNeuralComposeShader, sizeof(kNeuralComposeShader) - 1,
             "SourceDLSSG-NR-compose", "main", "cs_5_0");

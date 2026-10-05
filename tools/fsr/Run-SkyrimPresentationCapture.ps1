@@ -19,7 +19,7 @@ if($games.Count -ne 1){throw 'Start Skyrim manually through MO2, load a save, th
 $game=$games[0]
 $run=Join-Path $repository ('out/research/skyrim-presentation/'+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N'))
 [IO.Directory]::CreateDirectory($run)|Out-Null
-$log=Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'My Games/Skyrim Special Edition/SKSE/TheosRenderPipeline.log'
+$log=Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'My Games/Skyrim Special Edition/SKSE/RaZkolbaS.log'
 if(Test-Path -LiteralPath $log){Copy-Item -LiteralPath $log -Destination (Join-Path $run 'skyrim-before.log')}
 $captures=@()
 Write-Host 'Keep the same scene and camera. Do not Save as default. This tool does not launch Skyrim or edit settings.'

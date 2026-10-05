@@ -38,7 +38,7 @@ namespace stl
 	void detour_thunk(REL::RelocationID a_relId)
 	{
 		const auto original = TheosRenderPipeline::HookSafety::InstallEntryDetour(a_relId.address(), (uintptr_t)&T::thunk);
-		if (!original) { SKSE::stl::report_and_fail("Could not preserve an existing renderer entry hook. See TheosRenderPipeline.log."); }
+		if (!original) { SKSE::stl::report_and_fail("Could not preserve an existing renderer entry hook. See RaZkolbaS.log."); }
 		*(uintptr_t*)&T::func = original;
 	}
 }

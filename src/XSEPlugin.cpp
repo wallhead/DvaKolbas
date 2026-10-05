@@ -77,7 +77,7 @@ namespace
 			RenderPipeline::GetSingleton()->LoadINI();
 			if (!TheosRenderPipeline::CommunityShaders::Active()) {
 				if (RenderPipeline::GetSingleton()->mUpscaleType != FSR) {
-				const auto runtime = GetPluginDirectory() / L"TheosRenderPipeline" / L"nvngx_dlss.dll";
+				const auto runtime = GetPluginDirectory() / L"RaZkolbaS" / L"nvngx_dlss.dll";
 				logger::info("nvngx_dlss.dll preload from \"{}\": {}", runtime.string(), ::LoadLibraryW(runtime.c_str()) ? "ok" : "failed");
 				}
 				DRS::InstallHooks();
@@ -188,8 +188,8 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 
 	CSimpleIniA baselineIni;
 	baselineIni.SetUnicode();
-	if (baselineIni.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") < 0) {
-		util::report_and_fail("RaZkolbaS: SKSE/Plugins/TheosRenderPipeline.ini is missing or unreadable. Install the packaged TheosRenderPipeline.ini and restart Skyrim.");
+	if (baselineIni.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini") < 0) {
+		util::report_and_fail("RaZkolbaS: SKSE/Plugins/RaZkolbaS.ini is missing or unreadable. Install the packaged RaZkolbaS.ini and restart Skyrim.");
 	}
 	// Provider validation runs at device creation, after identifying the actual
 	// renderer adapter and normalizing saved NVIDIA choices for AMD.

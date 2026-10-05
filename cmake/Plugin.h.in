@@ -15,7 +15,7 @@ namespace Plugin
 		// clang-format on
 	};
 
-	// Retained SKSE identity also controls log filenames and existing tooling.
+	// Plugin identity also controls the RaZkolbaS log filename.
 	inline constexpr auto NAME = "@TRP_PLUGIN_TARGET@"sv;
 	inline constexpr auto VERSION_STRING = "@PROJECT_VERSION@"sv;
 	inline constexpr auto DISPLAY_NAME = "@TRP_DISPLAY_NAME@"sv;

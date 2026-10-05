@@ -25,7 +25,7 @@ public:
     std::shared_ptr<const std::vector<WeatherEntry>> Catalogue() const { std::scoped_lock lock(mutex_); return catalogue_; }
     void Apply(SourceDLSSG::NeuralOptions& options, bool& sharpening, float& sharpness);
     // Presets are one file each in this folder, relative to the game directory.
-    static std::filesystem::path PresetFolder() { return L"Data\\SKSE\\Plugins\\TheosRenderPipeline\\Presets"; }
+    static std::filesystem::path PresetFolder() { return L"Data\\SKSE\\Plugins\\RaZkolbaS\\Presets"; }
     // Reads the main INI's appearance settings and every preset file.
     static Settings Load(const CSimpleIniA& ini);
 

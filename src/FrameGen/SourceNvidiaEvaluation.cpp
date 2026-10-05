@@ -184,7 +184,7 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
                 static_cast<std::uint32_t>(loadingScreenResult_));
         } else {
             status_ = !backend.Ready() ? backend.Status() :
-                std::format("TheosRenderPipeline direct DLSS evaluation failed (0x{:08X}); generation held off",
+                std::format("RaZkolbaS direct DLSS evaluation failed (0x{:08X}); generation held off",
                     DLSSBackend::GetSingleton()->LastEvalResult());
         }
         if (!splitSourceRuntimeFailureLogged_) {

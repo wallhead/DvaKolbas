@@ -28,9 +28,9 @@ void RenderPipeline::LoadINI()
 {
 	CSimpleIniA ini;
 	ini.SetUnicode();
-	const auto loadResult = ini.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini");
+	const auto loadResult = ini.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
 	if (loadResult < 0) {
-		logger::warn("Could not load Data\\SKSE\\Plugins\\TheosRenderPipeline.ini (rc={}), using defaults", static_cast<int>(loadResult));
+		logger::warn("Could not load Data\\SKSE\\Plugins\\RaZkolbaS.ini (rc={}), using defaults", static_cast<int>(loadResult));
 	}
 	TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
     TheosRenderPipeline::ApplyRendererGpuPolicy(ini, mAdapterVendorId,
@@ -67,7 +67,7 @@ void RenderPipeline::LoadINI()
 	mDynamicResolutionRequested = unsupportedDynamicResolution;
 	if (unsupportedDynamicResolution) {
 		logger::error(
-			"[DynRes] ignored unsupported DynamicResolution request: TheosRenderPipeline's scaled-proxy path upscales at Present and requires a fixed full proxy input");
+			"[DynRes] ignored unsupported DynamicResolution request: RaZkolbaS's scaled-proxy path upscales at Present and requires a fixed full proxy input");
 	}
 	mToggleOverlayHotkey = (int)ini.GetLongValue("Hotkeys", "ToggleOverlay", 0x23);
 	mEnableNRHotkeys = TheosRenderPipeline::Overlay::LoadNRHotkeysEnabled(ini);
@@ -107,9 +107,9 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 {
 	CSimpleIniA ini;
 	ini.SetUnicode();
-	const auto loadResult = TheosRenderPipeline::SettingsFile::LoadForUpdate(ini, L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini");
+	const auto loadResult = TheosRenderPipeline::SettingsFile::LoadForUpdate(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
 	if (loadResult < 0) {
-		logger::error("Could not read Data\\SKSE\\Plugins\\TheosRenderPipeline.ini before saving (rc={}); file left unchanged", static_cast<int>(loadResult));
+		logger::error("Could not read Data\\SKSE\\Plugins\\RaZkolbaS.ini before saving (rc={}); file left unchanged", static_cast<int>(loadResult));
 		return false;
 	}
 	TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
@@ -157,9 +157,9 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 	ini.SetBoolValue("Debug", "LogMenuMetrics", mLogMenuMetrics);
     if (layout) { TheosRenderPipeline::Overlay::StoreLayout(ini, *layout); }
 	TheosRenderPipeline::IniLayout::StoreCanonical(ini);
-	const auto rc = ini.SaveFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini");
+	const auto rc = ini.SaveFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
 	if (rc < 0) {
-		logger::error("Could not save Data\\SKSE\\Plugins\\TheosRenderPipeline.ini (rc={})", static_cast<int>(rc));
+		logger::error("Could not save Data\\SKSE\\Plugins\\RaZkolbaS.ini (rc={})", static_cast<int>(rc));
 		return false;
 	}
 	logger::info("Settings saved (rc={})", static_cast<int>(rc));
@@ -306,7 +306,7 @@ void RenderPipeline::InitUpscaler()
 	}
 	logger::info(
 		"NVIDIA host topology initialized: sourceOwner={} {} x {} -> {} x {} (scale {:.3f}, mip bias {:.2f})",
-		nvidiaHost->SplitSourceDLSSActive() ? "TheosRenderPipeline-DLSS" : "unavailable",
+		nvidiaHost->SplitSourceDLSSActive() ? "RaZkolbaS-DLSS" : "unavailable",
 		mRenderSizeX,
 		mRenderSizeY,
 		mDisplaySizeX,

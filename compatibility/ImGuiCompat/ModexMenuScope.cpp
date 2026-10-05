@@ -5,7 +5,7 @@
 
 namespace
 {
-    inline constexpr auto kIniPath = L"Data\\SKSE\\Plugins\\TheosRenderPipelineImGui.ini";
+    inline constexpr auto kIniPath = L"Data\\SKSE\\Plugins\\RaZkolbaSImGui.ini";
     inline constexpr std::string_view kMenuName = "ModexGUIMenu";
     // IMenu::PostDisplay; the slot is part of the engine's menu ABI, not Modex's build.
     inline constexpr std::size_t kPostDisplaySlot = 6;
@@ -39,7 +39,7 @@ void TheosRenderPipeline::ModexMenuScope::OnMenuOpened()
     // Retry on a later opening if the instance is not yet published.
     if (!menu || installAttempted.exchange(true)) { return; }
     if (!Enabled()) {
-        logger::info("[Modex] preview surface adapter disabled in TheosRenderPipelineImGui.ini");
+        logger::info("[Modex] preview surface adapter disabled in RaZkolbaSImGui.ini");
         return;
     }
     const auto module = ::GetModuleHandleW(L"Modex.dll");

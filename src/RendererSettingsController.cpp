@@ -232,7 +232,7 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
     {
         const bool saved = upscaler_.SaveINI(layout);
         actionMessage =
-            saved ? "Startup defaults saved." : "Could not write TheosRenderPipeline.ini; settings remain active for this session.";
+            saved ? "Startup defaults saved." : "Could not write RaZkolbaS.ini; settings remain active for this session.";
         actionMessageIsError = !saved;
     }
     else

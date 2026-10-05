@@ -11,7 +11,7 @@ inline std::string RuntimeModuleFailureMessage(std::string_view name, bool frame
     if (name == "nvngx_dlssg.dll" && frameGenerationOverrideObserved) {
         message += ". NVIDIA reported a DLSS Frame Generation override. In NVIDIA App's Skyrim profile, set "
             "DLSS Override - Model Presets (Frame Generation) and DLSS Override - Frame Generation to "
-            "Use the 3D application setting, then restart Skyrim. See TheosRenderPipeline.log for paths";
+            "Use the 3D application setting, then restart Skyrim. See RaZkolbaS.log for paths";
     }
     return message;
 }

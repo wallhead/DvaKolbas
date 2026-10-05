@@ -17,4 +17,4 @@ add_library(TRPD3D11EntryObservers STATIC
 target_compile_features(TRPD3D11EntryObservers PRIVATE cxx_std_23)
 target_compile_definitions(TRPD3D11EntryObservers PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 target_include_directories(TRPD3D11EntryObservers PRIVATE "${hde64_SOURCE_DIR}/include")
-target_link_libraries(TheosRenderPipeline PRIVATE TRPD3D11EntryObservers)
+target_link_libraries(RaZkolbaS PRIVATE TRPD3D11EntryObservers)

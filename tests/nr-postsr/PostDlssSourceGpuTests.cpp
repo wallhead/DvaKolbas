@@ -217,7 +217,7 @@ int wmain(int argc,wchar_t** argv){try{
         else if(mode==L"--reentry"||mode==L"--reentry-reuse-retired"){scriptedReentry=true;readerMode=false;reuseRetiredPreparation=mode==L"--reentry-reuse-retired";}
         else if(mode!=L"--readers")return 1;}
     const NR::RuntimeProfile srPin{"dlss-sr-probe","nvngx_dlss.dll","c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",58956400};
-    const auto srPath=PluginPaths::Directory()/L"TheosRenderPipeline"/L"nvngx_dlss.dll";
+    const auto srPath=PluginPaths::Directory()/L"RaZkolbaS"/L"nvngx_dlss.dll";
     auto srLease=Neural(NR::RuntimeFileLease::Open(srPath,srPin));
     ComPtr<IDXGIFactory6> factory;Gpu(CreateDXGIFactory2(0,IID_PPV_ARGS(&factory)));ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 desc{};
     for(UINT i=0;;++i){ComPtr<IDXGIAdapter1> candidate;auto hr=factory->EnumAdapterByGpuPreference(i,DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&candidate));if(hr==DXGI_ERROR_NOT_FOUND)break;Gpu(hr);Gpu(candidate->GetDesc1(&desc));if(desc.VendorId==0x10de&&desc.DeviceId==0x2702){adapter=candidate;break;}}

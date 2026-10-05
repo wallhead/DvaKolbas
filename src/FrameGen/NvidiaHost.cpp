@@ -91,7 +91,7 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
     evaluationFailureLogged_ = false;
     if (StartupConfigured())
     {
-        status_ = std::format("TheosRenderPipeline source DLSS + Streamline DLSS-G; camera/input "
+        status_ = std::format("RaZkolbaS source DLSS + Streamline DLSS-G; camera/input "
                               "valid={} warm-up={}",
                               !splitSourceRuntimeFailureLogged_, warmupPresentsRemaining_);
     }
@@ -104,7 +104,7 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
         }
         logger::info("[NvidiaHost] evaluation={} sourceOwner={} entry={} upscale={} "
                      "generation={} render={}x{} output={}x{} slot={} reset={}",
-                     evaluationCount_, "TheosRenderPipeline-DLSS", "SourceNvidiaFrameEvaluator", upscaleEvaluationCount_, evaluationCount_,
+                     evaluationCount_, "RaZkolbaS-DLSS", "SourceNvidiaFrameEvaluator", upscaleEvaluationCount_, evaluationCount_,
                      renderWidth_, renderHeight_, outputWidth_, outputHeight_, currentIndex, resetHistory);
     }
     return true;

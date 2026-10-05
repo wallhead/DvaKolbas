@@ -36,7 +36,7 @@ namespace
 	using namespace std::literals;
 
 	// Retain existing adapter settings when upgrading from the companion plugin.
-	inline constexpr auto kIniPath = L"Data\\SKSE\\Plugins\\TheosRenderPipelineImGui.ini";
+	inline constexpr auto kIniPath = L"Data\\SKSE\\Plugins\\RaZkolbaSImGui.ini";
 	inline constexpr std::size_t kProducerCount = 8;
 	inline constexpr std::size_t kGuardSize = 17;
 	inline constexpr std::size_t kCallGuardSize = 5;
@@ -180,7 +180,7 @@ namespace
 	// avoiding a prologue trampoline whose stolen instructions contain a
 	// PC-relative call.
 	// Patched builds can normalize MenuCursor coordinates in Vanity itself. Such
-	// profiles still need native ImGui rendering, but must not receive TheosRenderPipeline's
+	// profiles still need native ImGui rendering, but must not receive RaZkolbaS's
 	// legacy mouse call-site patch or the cursor would be scaled twice.
 	inline constexpr std::array<VanityBinaryProfile, 3> kVanityBinaryProfiles{
 		VanityBinaryProfile{
@@ -235,7 +235,7 @@ namespace
 
 	SKSE::Trampoline& GetVanityCallTrampoline()
 	{
-		static SKSE::Trampoline trampoline{ "TheosRenderPipelineImGui.Vanity" };
+		static SKSE::Trampoline trampoline{ "RaZkolbaSImGui.Vanity" };
 		return trampoline;
 	}
 
@@ -265,7 +265,7 @@ namespace
 		if (!bridge || bridge->structSize < sizeof(SolFGLateOverlayAPI::BridgeV1) ||
 			bridge->version != SolFGLateOverlayAPI::kVersion1 ||
 			!bridge->query || !bridge->begin || !bridge->end) {
-			logger::warn("compatibility layer disabled: TheosRenderPipeline late-overlay bridge v1 is unavailable");
+			logger::warn("compatibility layer disabled: RaZkolbaS late-overlay bridge v1 is unavailable");
 			return false;
 		}
 		GetBridge() = bridge;
@@ -758,7 +758,7 @@ namespace
 		if (!began) {
 			const auto rejected = ++state.rejectCount;
 			if (rejected <= 3) {
-				logger::info("{} draw {} used its original target; TheosRenderPipeline native frame was unavailable", kProfiles[Index].name, draw);
+				logger::info("{} draw {} used its original target; RaZkolbaS native frame was unavailable", kProfiles[Index].name, draw);
 			}
 			original(a_drawData);
 			return;

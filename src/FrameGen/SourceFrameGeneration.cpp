@@ -7,7 +7,7 @@ void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId)
 {
     CSimpleIniA ini;
     ini.SetUnicode();
-    const auto result = ini.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini");
+    const auto result = ini.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
     TheosRenderPipeline::ApplyRendererGpuPolicy(ini, adapterVendorId,
 #if defined(TRP_ENABLE_FSR_FG)
         true
@@ -17,7 +17,7 @@ void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId)
     );
     LoadStartupPreferences(ini);
     const TheosRenderPipeline::IniLayout::ReadView read(ini);
-    logger::info("[NvidiaHost] startup INI=Data/SKSE/Plugins/TheosRenderPipeline.ini readResult={} SourceDLSSGMFGUnlock={} origin={} raw={}",
+    logger::info("[NvidiaHost] startup INI=Data/SKSE/Plugins/RaZkolbaS.ini readResult={} SourceDLSSGMFGUnlock={} origin={} raw={}",
         static_cast<int>(result), settings.sourceDLSSGMFGUnlock,
         settings.sourceDLSSGMFGUnlockPresent ? "INI" : "packaged-default",
         read.GetValue("Experimental", "SourceDLSSGMFGUnlock", "<missing>"));

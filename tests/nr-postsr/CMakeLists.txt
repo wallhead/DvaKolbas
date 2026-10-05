@@ -49,8 +49,8 @@ if(TRP_NR_NGX_INCLUDE_DIR AND EXISTS "${TRP_NR_NGX_INCLUDE_DIR}/nvsdk_ngx.h")
         target_include_directories(TRPNrPostDlssSourceGpuTests PRIVATE dlss "${TRP_NR_NGX_INCLUDE_DIR}" "${TRP_STREAMLINE_INCLUDE_DIR}")
         target_link_libraries(TRPNrPostDlssSourceGpuTests PRIVATE TRPNeuralRuntime "${TRP_NGX_LIB}" d3d11 d3d12 dxgi d3dcompiler bcrypt user32)
         add_custom_command(TARGET TRPNrPostDlssSourceGpuTests POST_BUILD
-            COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:TRPNrPostDlssSourceGpuTests>/Data/SKSE/Plugins/TheosRenderPipeline"
-            COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${TRP_NR_DLSS_SR_DLL}" "$<TARGET_FILE_DIR:TRPNrPostDlssSourceGpuTests>/Data/SKSE/Plugins/TheosRenderPipeline/nvngx_dlss.dll")
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:TRPNrPostDlssSourceGpuTests>/Data/SKSE/Plugins/RaZkolbaS"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${TRP_NR_DLSS_SR_DLL}" "$<TARGET_FILE_DIR:TRPNrPostDlssSourceGpuTests>/Data/SKSE/Plugins/RaZkolbaS/nvngx_dlss.dll")
         add_test(NAME NrPostDlssSourceGpu COMMAND TRPNrPostDlssSourceGpuTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}")
         set_tests_properties(NrPostDlssSourceGpu PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 180)
         add_test(NAME NrPostDlssSourceReentryGpu COMMAND TRPNrPostDlssSourceGpuTests "${TRP_NR_RTX40_DLL}" "${TRP_NR_DRIVER_CORE}" --reentry)

@@ -6,11 +6,11 @@ $stage=Join-Path $PSScriptRoot '../tools/fsr/Stage-Package.ps1';$validate=Join-P
 function Require([bool]$Value,[string]$Reason){if(-not $Value){throw $Reason};Write-Output "PASS: $Reason"}
 function Rejected([scriptblock]$Action,[string]$Case){$failed=$false;try{& $Action}catch{$failed=$true};Require $failed $Case}
 $repository=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$defaultIni=Join-Path $repository 'package/SKSE/Plugins/TheosRenderPipeline.ini';$defaultHash=(Get-FileHash -LiteralPath $defaultIni).Hash
+$defaultIni=Join-Path $repository 'package/SKSE/Plugins/RaZkolbaS.ini';$defaultHash=(Get-FileHash -LiteralPath $defaultIni).Hash
 & $stage -Edition $Edition -BuildDirectory $BuildDirectory -RuntimeDirectory $RuntimeDirectory -OutputDirectory $root -FrameGeneration
 $package=Join-Path $root ($Edition+'-FSR-FG');& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration
 $manifestPath=Join-Path $package 'manifest.json';$manifestOriginal=[IO.File]::ReadAllText($manifestPath)
-$config=Join-Path $package 'SKSE/Plugins/TheosRenderPipeline.ini';$configOriginal=[IO.File]::ReadAllText($config)
+$config=Join-Path $package 'SKSE/Plugins/RaZkolbaS.ini';$configOriginal=[IO.File]::ReadAllText($config)
 foreach($field in @('frameGenerationCompiled','neuralRenderingCompiled','fsrEnabled')) {
  $tampered=$manifestOriginal|ConvertFrom-Json;$tampered.$field=-not $tampered.$field
  $tampered|ConvertTo-Json -Depth 12|Set-Content -LiteralPath $manifestPath
@@ -35,13 +35,13 @@ foreach($change in @(@('Settings/NativeUI','false'),@('Experimental/NativeUIComp
  $lines=Set-PackageIniValues ($configOriginal -split '\r?\n') @{$change[0]=$change[1]}
  [IO.File]::WriteAllLines($config,$lines)
  Require ((Read-PackageIni $config)[$change[0]] -eq $change[1]) ("ConfigMutationApplied-"+$change[0])
- Update-ManifestFile 'SKSE/Plugins/TheosRenderPipeline.ini'
+ Update-ManifestFile 'SKSE/Plugins/RaZkolbaS.ini'
  Rejected {& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration} ("InvalidFgConfig-"+$change[0])
 }
 [IO.File]::WriteAllText($config,$configOriginal);[IO.File]::WriteAllText($manifestPath,$manifestOriginal)
 Rejected {& $stage -Edition $Edition -BuildDirectory $BuildDirectory -RuntimeDirectory $RuntimeDirectory -OutputDirectory $root -FrameGeneration} 'StagingNeverOverwritesPackage'
 $fakeBuild=Join-Path $root 'fg-off-build';[IO.Directory]::CreateDirectory((Join-Path $fakeBuild 'Release'))|Out-Null
-Copy-Item -LiteralPath (Join-Path $BuildDirectory 'Release/TheosRenderPipeline.dll') -Destination (Join-Path $fakeBuild 'Release/TheosRenderPipeline.dll')
+Copy-Item -LiteralPath (Join-Path $BuildDirectory 'Release/RaZkolbaS.dll') -Destination (Join-Path $fakeBuild 'Release/RaZkolbaS.dll')
 $cache=[IO.File]::ReadAllText((Join-Path $BuildDirectory 'CMakeCache.txt'));[IO.File]::WriteAllText((Join-Path $fakeBuild 'CMakeCache.txt'),$cache.Replace('TRP_ENABLE_FSR_FG:BOOL=ON','TRP_ENABLE_FSR_FG:BOOL=OFF'))
 Rejected {& $stage -Edition $Edition -BuildDirectory $fakeBuild -RuntimeDirectory $RuntimeDirectory -OutputDirectory (Join-Path $root 'bad-build') -FrameGeneration} 'FgBuildCapabilityRequired'
 $srOnly=Join-Path $root 'sr-sdk/runtime';[IO.Directory]::CreateDirectory($srOnly)|Out-Null

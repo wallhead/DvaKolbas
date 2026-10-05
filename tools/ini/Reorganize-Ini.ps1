@@ -1,7 +1,7 @@
 param(
     [Parameter(Mandatory)][string]$SourceIni,
     [Parameter(Mandatory)][string]$OutputIni,
-    [string]$TemplateIni=(Join-Path $PSScriptRoot '../../package/SKSE/Plugins/TheosRenderPipeline.ini')
+    [string]$TemplateIni=(Join-Path $PSScriptRoot '../../package/SKSE/Plugins/RaZkolbaS.ini')
 )
 # Writes a separate reviewable file. Never changes the source or fills missing
 # optional settings from the template: absent values must retain reader defaults.

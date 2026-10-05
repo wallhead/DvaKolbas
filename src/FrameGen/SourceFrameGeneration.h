@@ -52,7 +52,7 @@ class SourceFrameGeneration
     }
     void ResolveRuntimePaths(const std::filesystem::path& pluginDirectory)
     {
-        settings.neuralStartup = settings.configuredNeuralStartup.Resolve(pluginDirectory / "TheosRenderPipeline");
+        settings.neuralStartup = settings.configuredNeuralStartup.Resolve(pluginDirectory / "RaZkolbaS");
         const auto resolved = settings.configuredRuntimePaths.Resolve(pluginDirectory);
         settings.sourceDLSSGStreamlineDirectory = resolved.streamline;
         settings.neuralRenderingRuntimePath = resolved.neural;

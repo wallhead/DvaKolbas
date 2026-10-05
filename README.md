@@ -1,9 +1,9 @@
 # RaZkolbaS
 
 Formerly DvaKolbas; based on [Theo's Render Pipeline](https://github.com/theosw/theosrenderpipeline).
-The menu and package use the RaZkolbaS name. Existing installations keep
-`TheosRenderPipeline.dll`, `TheosRenderPipeline.ini`, `TheosRenderPipeline.log`
-and the `TheosRenderPipeline/` resource directory for compatibility.
+The plugin, menu, configuration, log and resource directory use the RaZkolbaS name.
+Upgrade with the complete package: disable/remove the old renderer mod first so
+`TheosRenderPipeline.dll` and `RaZkolbaS.dll` are never loaded together.
 
 NVIDIA rendering integration for Skyrim: DLSS/DLAA, frame generation, optional
 Neural Rendering (NR), and native-resolution menus and HUD. Current version:
@@ -36,7 +36,7 @@ long status messages scroll separately. Existing saved window sizes are retained
 
 AMD renderers use FSR upscaling and optional FSR frame generation; DLSS, DLAA,
 NVIDIA FG and NR are unavailable. Before the first AMD launch, set `[FSR]
-SourceColorEncoding` in `SKSE/Plugins/TheosRenderPipeline.ini` to match the verified
+SourceColorEncoding` in `SKSE/Plugins/RaZkolbaS.ini` to match the verified
 Skyrim/ENB source. The packaged value `Unknown` intentionally stops startup with
 setup instructions. AMD currently uses the Analytical 3.1.5 provider;
 Compatible/ML is not validated. See [AMD setup](package/INI-SETTINGS.md#amd-first-launch).
@@ -134,7 +134,7 @@ Standard, other hardware and physical frame cadence remain untested.
 The loader supports Steam Skyrim **1.5.97, 1.6.640, 1.6.1170 and 1.7.104**.
 Versions 1.5.97, 1.6.640 and 1.7.104 remain experimental; 1.6.640 and 1.7.104
 are untested in-game. Nolvus Awakening 6.0.20 has scoped positive Universal
-input/x5/NR feedback on 1.5.97. The plugin/SKSE identity is `TheosRenderPipeline`;
+input/x5/NR feedback on 1.5.97. The plugin/SKSE identity is `RaZkolbaS`;
 existing `SolFG_*` companion exports retain their names and layouts.
 
 RTX 20 evidence is limited to an RTX 2060 volunteer run reporting x2/x3/x4/x6,

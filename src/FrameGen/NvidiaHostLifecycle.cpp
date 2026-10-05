@@ -282,7 +282,7 @@ void NvidiaHost::OnPresentCompleted(HRESULT a_result)
     // Advance host warm-up after every real outer Present, including failed
     // DXGI calls. Do not enable generation at this boundary:
     // the next valid evaluation must still prove complete color, depth, motion,
-    // and presentation inputs before TheosRenderPipeline crosses the runtime boundary.
+    // and presentation inputs before RaZkolbaS crosses the runtime boundary.
     --warmupPresentsRemaining_;
     if (warmupPresentsRemaining_ == 0)
     {

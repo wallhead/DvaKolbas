@@ -15,7 +15,7 @@ foreach($pin in @('runtime-pin.json','fg-runtime-pin.json')){Copy-Item -LiteralP
 cmake_minimum_required(VERSION 3.21)
 project(FsrHeaderIsolation LANGUAGES CXX)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/stub.cpp" "void package_header_probe() {}")
-add_library(TheosRenderPipeline STATIC "${CMAKE_CURRENT_BINARY_DIR}/stub.cpp")
+add_library(RaZkolbaS STATIC "${CMAKE_CURRENT_BINARY_DIR}/stub.cpp")
 include(cmake/FSR.cmake)
 '@ | Set-Content -LiteralPath (Join-Path $source 'CMakeLists.txt')
 $bad=Join-Path $root 'fg-on';$good=Join-Path $root 'fg-off'

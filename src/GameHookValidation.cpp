@@ -33,7 +33,7 @@ namespace TheosRenderPipeline
                     name, site - base, readable ? observed : "unreadable", slot, target,
                     path[0] ? std::filesystem::path(path.data()).string() : "unknown/private memory");
                 util::report_and_fail(std::format("RaZkolbaS: {} does not match the verified Skyrim {} hook contract (RVA 0x{:X}). "
-                    "No renderer game-code patches were installed. Check conflicting mods and see TheosRenderPipeline.log.",
+                    "No renderer game-code patches were installed. Check conflicting mods and see RaZkolbaS.log.",
                     name, profile->version.string(), site - base));
             }
         };

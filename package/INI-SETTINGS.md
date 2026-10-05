@@ -1,6 +1,6 @@
 # INI settings
 
-`SKSE/Plugins/TheosRenderPipeline.ini` uses layout version 2. Comments beside each
+`SKSE/Plugins/RaZkolbaS.ini` uses layout version 2. Comments beside each
 key describe its range, backend and restart requirements. The layout resembles
 AIO19's grouped settings, but values retain DvaKolbas's meanings: DLSS preset
 numbers, FG backend numbers and generated-frame counts are not AIO19 indexes.
@@ -36,7 +36,7 @@ NR are unavailable. Startup detects Skyrim's actual rendering adapter and
 normalizes incompatible NVIDIA choices in memory. Save as default persists the
 effective startup settings; merely launching does not rewrite the INI.
 
-Before launching, edit `SKSE/Plugins/TheosRenderPipeline.ini` in the installed mod
+Before launching, edit `SKSE/Plugins/RaZkolbaS.ini` in the installed mod
 (the virtual `Data` tree when using MO2). In `[FSR]`, set `SourceColorEncoding` to
 `Linear`, `Gamma22` or `SRGB`, matching the verified Skyrim/ENB source. Preserve
 an existing known-working value for the same setup. GPU model and texture format
@@ -72,8 +72,8 @@ For an offline conversion, with Skyrim and MO2 closed before installing the resu
 
 ```powershell
 pwsh -NoProfile -File tools/ini/Reorganize-Ini.ps1 `
-  -SourceIni 'path/to/current/TheosRenderPipeline.ini' `
-  -OutputIni 'path/to/new/TheosRenderPipeline.ini'
+  -SourceIni 'path/to/current/RaZkolbaS.ini' `
+  -OutputIni 'path/to/new/RaZkolbaS.ini'
 ```
 
 The converter uses the commented packaged template for order and descriptions.

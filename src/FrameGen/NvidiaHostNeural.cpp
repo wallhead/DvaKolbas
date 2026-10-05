@@ -110,7 +110,7 @@ void NvidiaHost::InspectCommunityNeural()
     if (!SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community || communityNeural_) return;
     communityNeural_=std::make_unique<NR::BeforeHost>();
     const auto& startup=SourceFrameGeneration::GetSingleton()->settings.neuralStartup;
-    const auto cache=PluginPaths::Directory()/"TheosRenderPipeline"/"NR"/"cache";
+    const auto cache=PluginPaths::Directory()/"RaZkolbaS"/"NR"/"cache";
     ID3D12Device* presenter{};
 #if defined(TRP_ENABLE_FSR)
     if(fsrResources_ && fsrResources_->Bridge())presenter=fsrResources_->Bridge()->Device12();

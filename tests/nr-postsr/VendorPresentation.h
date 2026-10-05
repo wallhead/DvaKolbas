@@ -87,7 +87,7 @@ struct VendorPresentation {
         const wchar_t* paths[]{root.c_str()};const sl::Feature features[]{sl::kFeatureReflex,sl::kFeatureDLSS_G};
         sl::Preferences preferences{};preferences.pathsToPlugins=paths;preferences.numPathsToPlugins=1;
         preferences.featuresToLoad=features;preferences.numFeaturesToLoad=2;preferences.renderAPI=sl::RenderAPI::eD3D12;
-        preferences.engine=sl::EngineType::eCustom;preferences.engineVersion="TheosRenderPipeline 0.1";
+        preferences.engine=sl::EngineType::eCustom;preferences.engineVersion="RaZkolbaS 0.1";
         preferences.projectId="f1b2e5d8-9c4a-4e7b-8a36-5d2e90c47a11";
         preferences.flags=sl::PreferenceFlags::eDisableCLStateTracking|sl::PreferenceFlags::eUseManualHooking|sl::PreferenceFlags::eUseDXGIFactoryProxy;
         preferences.logLevel=sl::LogLevel::eDefault;

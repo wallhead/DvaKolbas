@@ -21,18 +21,18 @@ try {
     Check ($files.Count -eq 2 -and ($files|Measure-Object Length -Sum).Sum -eq 7) 'ThreeLogicalProfilesCopyTwoPhysicalFiles'
     Check (-not (Test-Path -LiteralPath (Join-Path $destination 'NR/rtx50'))) 'NoSeparateRtx50DirectoryRequired'
     $legacy=Join-Path $root 'accepted'
-    $legacyModels=Join-Path $legacy 'SKSE/Plugins/TheosRenderPipeline'
+    $legacyModels=Join-Path $legacy 'SKSE/Plugins/RaZkolbaS'
     Copy-NrRuntimeModels $profiles $sources $legacyModels
     $oldFifty=Join-Path $legacyModels 'NR/rtx50/nvngx_dlssnr.dll'
     [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($oldFifty))|Out-Null
     Copy-Item -LiteralPath $fp16 -Destination $oldFifty
-    [IO.File]::WriteAllText((Join-Path $legacy 'SKSE/Plugins/TheosRenderPipeline.ini'),'unchanged user settings')
+    [IO.File]::WriteAllText((Join-Path $legacy 'SKSE/Plugins/RaZkolbaS.ini'),'unchanged user settings')
     $trial=Join-Path $root 'trial'
     Copy-NrTrialFiles -Profiles $profiles -SourceRoot $legacy -DestinationRoot $trial
-    Assert-NrRuntimeModels $profiles (Join-Path $trial 'SKSE/Plugins/TheosRenderPipeline')
-    Check (-not (Test-Path -LiteralPath (Join-Path $trial 'SKSE/Plugins/TheosRenderPipeline/NR/rtx50'))) 'LegacyThirdPayloadOmittedDuringStaging'
+    Assert-NrRuntimeModels $profiles (Join-Path $trial 'SKSE/Plugins/RaZkolbaS')
+    Check (-not (Test-Path -LiteralPath (Join-Path $trial 'SKSE/Plugins/RaZkolbaS/NR/rtx50'))) 'LegacyThirdPayloadOmittedDuringStaging'
     Check ((Get-FileHash -LiteralPath $oldFifty -Algorithm SHA256).Hash.ToLowerInvariant() -eq $fp16Hash) 'AcceptedLegacyPayloadPreserved'
-    Check ([IO.File]::ReadAllText((Join-Path $trial 'SKSE/Plugins/TheosRenderPipeline.ini')) -eq 'unchanged user settings') 'StagingPreservesOtherAssets'
+    Check ([IO.File]::ReadAllText((Join-Path $trial 'SKSE/Plugins/RaZkolbaS.ini')) -eq 'unchanged user settings') 'StagingPreservesOtherAssets'
     $different=@($profiles|ForEach-Object{$_.PSObject.Copy()});$different[0].sha256=$fp16Hash
     Rejected {Get-NrPhysicalModels $different} 'SharedPathWithDifferentHashRejected'
     $different=@($profiles|ForEach-Object{$_.PSObject.Copy()});$different[0].compatibility='SignedDirect'

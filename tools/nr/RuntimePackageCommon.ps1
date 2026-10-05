@@ -41,7 +41,7 @@ function Assert-NrRuntimeModels([object[]]$Profiles,[string]$RuntimeRoot) {
     }
 }
 function Copy-NrTrialFiles([object[]]$Profiles,[string]$SourceRoot,[string]$DestinationRoot) {
-    $runtimeRelative='SKSE/Plugins/TheosRenderPipeline/'
+    $runtimeRelative='SKSE/Plugins/RaZkolbaS/'
     $sources=@{}
     foreach($p in @(Get-NrPhysicalModels $Profiles)){
         $sources[$p.relativePath]=Join-Path $SourceRoot ($runtimeRelative+$p.relativePath)

@@ -6,7 +6,7 @@ $manifest=Get-Content -LiteralPath (Join-Path $root 'manifest.json') -Raw | Conv
 $runtimePins=@($pin.runtime)
 if($FrameGeneration){$fgPin=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'fg-runtime-pin.json') -Raw|ConvertFrom-Json;$runtimePins+=@($fgPin.runtime)}
 if($manifest.frameGenerationImplemented -ne [bool]$FrameGeneration){throw 'Package FG selection mismatch'}
-$identity=Get-EmbeddedBuildIdentity (Join-Path $root 'SKSE/Plugins/TheosRenderPipeline.dll')
+$identity=Get-EmbeddedBuildIdentity (Join-Path $root 'SKSE/Plugins/RaZkolbaS.dll')
 if($identity.edition -ne $Edition -or -not $identity.fsrCompiled -or ($FrameGeneration -and -not $identity.frameGenerationCompiled)){throw 'Compiled package capability mismatch'}
 if(($identity|ConvertTo-Json -Compress) -ne ($manifest.buildIdentity|ConvertTo-Json -Compress)){throw 'Embedded source/capability marker differs from manifest'}
 if($manifest.fsrEnabled -ne $identity.fsrCompiled -or $manifest.frameGenerationCompiled -ne $identity.frameGenerationCompiled -or $manifest.neuralRenderingCompiled -ne $identity.neuralRenderingCompiled){throw 'Manifest capability differs from compiled DLL'}
@@ -15,9 +15,9 @@ if($FrameGeneration){$expectedProviders=@($fgPin.observedProviders)}
 if((ConvertTo-Json -InputObject @($manifest.providerVersions) -Compress) -ne (ConvertTo-Json -InputObject $expectedProviders -Compress)){throw 'Recorded provider versions differ from pinned observations'}
 if($RequireCleanSource -and -not $identity.sourceClean){throw 'Final package requires an embedded clean source revision'}
 if($manifest.schema -ne 2 -or $manifest.edition -ne $Edition -or $manifest.sdkCommit -ne $pin.commit -or $manifest.sdkRelease -ne $pin.release){throw 'Package identity mismatch'}
-$required=@('SKSE/Plugins/TheosRenderPipeline.dll','SKSE/Plugins/TheosRenderPipeline.ini','SKSE/Plugins/TheosRenderPipelineImGui.ini','SKSE/Plugins/TheosRenderPipeline/RCAS.hlsl','LICENSE','THIRD_PARTY_FSR.md','AMD-FidelityFX-license.md','FSR-API-MIT-NOTICE.txt','FSR_TEST_CHECKLIST.md')
+$required=@('SKSE/Plugins/RaZkolbaS.dll','SKSE/Plugins/RaZkolbaS.ini','SKSE/Plugins/RaZkolbaSImGui.ini','SKSE/Plugins/RaZkolbaS/RCAS.hlsl','LICENSE','THIRD_PARTY_FSR.md','AMD-FidelityFX-license.md','FSR-API-MIT-NOTICE.txt','FSR_TEST_CHECKLIST.md')
 $required+=@($runtimePins | ForEach-Object {'SKSE/Plugins/FSR/'+$_.filename})
-$required+='SKSE/Plugins/TheosRenderPipeline/Audio/razkolbas.mp3'
+$required+='SKSE/Plugins/RaZkolbaS/Audio/razkolbas.mp3'
 $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 foreach($entry in $manifest.files) {
     if([IO.Path]::IsPathRooted($entry.path) -or $entry.path -match '(^|[\\/])\.\.([\\/]|$)|:'){throw 'Unsafe manifest path'}
@@ -32,7 +32,7 @@ foreach($file in Get-ChildItem -LiteralPath $root -Recurse -File) {
     if(-not $seen.Contains($relative)){throw "Unrecorded package file: $relative"}
     if($file.Name -match '^(sl\.|_?nvngx|nvapi)'){throw "NVIDIA runtime in FSR-only package: $relative"}
     if($file.Extension -ieq '.dll'){
-        if($relative -notin (@('SKSE/Plugins/TheosRenderPipeline.dll')+@($runtimePins|ForEach-Object {'SKSE/Plugins/FSR/'+$_.filename}))){throw "Unapproved DLL in FSR-only package: $relative"}
+        if($relative -notin (@('SKSE/Plugins/RaZkolbaS.dll')+@($runtimePins|ForEach-Object {'SKSE/Plugins/FSR/'+$_.filename}))){throw "Unapproved DLL in FSR-only package: $relative"}
         Assert-NoVendorImports $file.FullName
         $imports=@(Get-PEImports $file.FullName)
         if((ConvertTo-Json -InputObject $imports -Compress) -ne (ConvertTo-Json -InputObject @($manifest.dllImports.$relative) -Compress)){throw "Recorded normal/delayed imports differ: $relative"}
@@ -41,7 +41,7 @@ foreach($file in Get-ChildItem -LiteralPath $root -Recurse -File) {
 foreach($runtime in $runtimePins){Assert-PinnedFile (Join-Path $root ('SKSE/Plugins/FSR/'+$runtime.filename)) $runtime.sha256 $runtime.bytes}
 $license=$pin.headers | Where-Object {$_.path -eq 'Kits/FidelityFX/docs/license.md'}
 Assert-PinnedFile (Join-Path $root 'AMD-FidelityFX-license.md') $license.sha256
-$ini=Read-PackageIni (Join-Path $root 'SKSE/Plugins/TheosRenderPipeline.ini')
+$ini=Read-PackageIni (Join-Path $root 'SKSE/Plugins/RaZkolbaS.ini')
 foreach($pair in @(@('Settings/UpscaleType','4'),@('FrameGeneration/Enabled',$(if($FrameGeneration){'true'}else{'false'})),@('Experimental/FrameGenerationBackend',$(if($FrameGeneration){'2'}else{'0'})),@('SourceDLSSG/NeuralRenderingEnabled','false'),@('HDROutput/Enabled','false'),@('DynamicResolution/Enabled','false'),@('DynamicResolution/Oscillate','false'))) {
     if($ini[$pair[0]] -ne $pair[1]){throw "Invalid FSR selector: $($pair[0])"}
 }

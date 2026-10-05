@@ -6,7 +6,7 @@
 
 namespace TheosRenderPipeline::Upscaler
 {
-    // Preserve existing TheosRenderPipeline INI mode values: 0 = DLSS, 3 = DLAA.
+    // Preserve existing RaZkolbaS INI mode values: 0 = DLSS, 3 = DLAA.
     struct Creation
     {
         int mode{0}, quality{2}, preset{11};

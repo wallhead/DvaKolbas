@@ -15,5 +15,5 @@ if(MSVC)
     add_compile_options(${arp_path_options})
     # Directory options initialize later targets; the plugin already exists.
     target_compile_options(${TRP_PLUGIN_TARGET} PRIVATE ${arp_path_options})
-    target_link_options(${TRP_PLUGIN_TARGET} PRIVATE "/PDBALTPATH:TheosRenderPipeline.pdb")
+    target_link_options(${TRP_PLUGIN_TARGET} PRIVATE "/PDBALTPATH:RaZkolbaS.pdb")
 endif()

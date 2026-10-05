@@ -55,8 +55,8 @@ skip the runtime downloads below.
 
 | Files from `bin/x64` | Folder inside this mod |
 | --- | --- |
-| `nvngx_dlss.dll` | `SKSE/Plugins/TheosRenderPipeline/` |
-| `nvngx_dlssg.dll`, `sl.common.dll`, `sl.dlss_g.dll`, `sl.interposer.dll`, `sl.pcl.dll`, `sl.reflex.dll` | `SKSE/Plugins/TheosRenderPipeline/NVIDIA/Streamline/` |
+| `nvngx_dlss.dll` | `SKSE/Plugins/RaZkolbaS/` |
+| `nvngx_dlssg.dll`, `sl.common.dll`, `sl.dlss_g.dll`, `sl.interposer.dll`, `sl.pcl.dll`, `sl.reflex.dll` | `SKSE/Plugins/RaZkolbaS/NVIDIA/Streamline/` |
 
 4. Enable **Hardware-Accelerated GPU Scheduling** in Windows graphics settings.
    Restart your PC if you changed it. Use **windowed or borderless mode** in Skyrim.
@@ -73,7 +73,7 @@ choose **Old files → DLSS5 reshade**, version 1, uploaded **31 August 2026**
 
 | File | Folder inside this mod |
 | --- | --- |
-| `nvngx_dlssnr.dll` | `SKSE/Plugins/TheosRenderPipeline/NVIDIA/` |
+| `nvngx_dlssnr.dll` | `SKSE/Plugins/RaZkolbaS/NVIDIA/` |
 
 Then enable **Neural Rendering** in the End menu. Leave it off if you skip this
 download. You do not need ReShade or the other files from that archive.
@@ -216,7 +216,7 @@ See [PR #33](https://github.com/theosw/theosrenderpipeline/pull/33) for the inpu
 The NR menu checkbox works independently of keyboard shortcuts. Bracket
 shortcuts are disabled by default, including for older INIs without the new key.
 To opt in, set `EnableNRHotkeys=true` under `[Hotkeys]` in the winning
-`TheosRenderPipeline.ini` and restart Skyrim. On a US keyboard, `[` turns NR
+`RaZkolbaS.ini` and restart Skyrim. On a US keyboard, `[` turns NR
 off and `]` turns it on for the session, even with the TRP menu closed.
 They are suppressed while editing text in TRP's menu. Other mods can share
 these keys. Use Save as default to retain an NR state for future launches.
@@ -232,7 +232,7 @@ Third-party ImGui integration covers the listed producer builds; older or
 SE-specific versions of those mods need their own compatibility checks.
 
 Include `TRP-FULL-PACKAGE.txt`, your GPU/driver, game/mod versions, settings and
-`TheosRenderPipeline.log`/`skse64.log` when reporting a problem. The package
+`RaZkolbaS.log`/`skse64.log` when reporting a problem. The package
 identity links to the matching source revision in the
 [source repository](https://github.com/theosw/theosrenderpipeline).
 Logs are normally under `Documents/My Games/Skyrim Special Edition/SKSE/`.
@@ -244,6 +244,6 @@ Notices for SDK code included in the renderer are consolidated in
 In 0.2.2, a missing `Experimental/SourceDLSSGMFGUnlock` key uses the packaged
 `true` default. Explicit `false` remains respected. RTX 30 requires Universal
 and this setting enabled even when interpolation is off. If startup fails,
-include `TheosRenderPipeline.log`; its opening lines identify the edition,
+include `RaZkolbaS.log`; its opening lines identify the edition,
 source revision, renderer path and effective startup setting. Standard alone
 does not supply the compatibility path required by RTX 30.

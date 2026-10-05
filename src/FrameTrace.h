@@ -10,7 +10,7 @@
 #include <string>
 #include <thread>
 
-// Opt-in frame-aligned trace stream for the offline TheosRenderPipeline trace viewer.
+// Opt-in frame-aligned trace stream for the offline RaZkolbaS trace viewer.
 // Producers never allocate, format text, wait for disk, or block on a mutex.
 // A bounded lock-free queue hands fixed-size records to one low-priority writer.
 class FrameTrace

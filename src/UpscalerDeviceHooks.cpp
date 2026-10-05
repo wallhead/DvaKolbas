@@ -107,7 +107,7 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     pipeline->mAdapterVendorId = rendererDesc.VendorId;
     CSimpleIniA startup;
     startup.SetUnicode();
-    if (startup.LoadFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini") < 0) {
+    if (startup.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini") < 0) {
         nvidiaHost->FailLifecycle(E_INVALIDARG, "Renderer startup INI is missing or unreadable");
         d3d11Device->Release();
         return E_INVALIDARG;
@@ -165,7 +165,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIV
 {
     static TheosRenderPipeline::HookSafety::DeviceAdmission gameDevice;
     if (!gameDevice.Begin()) {
-        util::report_and_fail("RaZkolbaS already owns a game-device creation request. A second or reentrant request cannot replace the active NVIDIA host. Restart Skyrim and check TheosRenderPipeline.log.");
+        util::report_and_fail("RaZkolbaS already owns a game-device creation request. A second or reentrant request cannot replace the active NVIDIA host. Restart Skyrim and check RaZkolbaS.log.");
     }
     logger::info("Calling original D3D11CreateDeviceAndSwapChain");
     TheosRenderPipeline::CommunityShaders::InstallEngineHooks();
@@ -240,7 +240,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIV
         // The completion boundary has cleared failed outputs. Show the actual
         // startup error once, instead of leaving the game to fail without context.
         util::report_and_fail(std::format("RaZkolbaS could not start rendering.\n\n{}\nHRESULT: 0x{:08X}\n\n"
-                                          "See TheosRenderPipeline.log for details. Skyrim will close after this message.",
+                                          "See RaZkolbaS.log for details. Skyrim will close after this message.",
                                           nvidiaHost->Status(), (uint32_t)hr));
     }
 

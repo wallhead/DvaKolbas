@@ -125,7 +125,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		preferences.numFeaturesToLoad = 2;
 		preferences.renderAPI = sl::RenderAPI::eD3D12;
 		preferences.engine = sl::EngineType::eCustom;
-		preferences.engineVersion = "TheosRenderPipeline 0.1";
+		preferences.engineVersion = "RaZkolbaS 0.1";
 		// Share the project identity with the D3D11 DLSS backend.
 		preferences.projectId = "f1b2e5d8-9c4a-4e7b-8a36-5d2e90c47a11";
 		preferences.flags = sl::PreferenceFlags::eDisableCLStateTracking |

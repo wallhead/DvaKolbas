@@ -116,7 +116,7 @@ intermediate blended values.
 
 ## Preset files and sharing
 
-Each preset is one file in `Data/SKSE/Plugins/TheosRenderPipeline/Presets/`, and
+Each preset is one file in `Data/SKSE/Plugins/RaZkolbaS/Presets/`, and
 the file name is its name: `Moody rain.ini` is the preset "Moody rain". Renaming the
 file renames the preset, and a copied file is a new preset. Files added to that
 folder load at the next game start. Names cannot contain characters Windows file
@@ -129,7 +129,7 @@ file. To package presets as a mod:
 
 1. In MO2, choose **Create empty mod** and name it, for example
    `TRP Presets - Moody Weather`.
-2. Open the new mod's folder and create `SKSE/Plugins/TheosRenderPipeline/Presets/`.
+2. Open the new mod's folder and create `SKSE/Plugins/RaZkolbaS/Presets/`.
 3. Copy the preset `.ini` files you want from MO2's Overwrite (the same path) into
    that folder, and enable the mod.
 
@@ -169,7 +169,7 @@ true/false. Pass 2 settings apply only while Pass 2 has its own settings,
 
 ## Persistence and compatibility
 
-`Data/SKSE/Plugins/TheosRenderPipeline.ini` keeps `[Appearance]` format 4: the time
+`Data/SKSE/Plugins/RaZkolbaS.ini` keeps `[Appearance]` format 4: the time
 schedule, smoothing and `PresetOrder`, the list order by file name. Files it does
 not list, such as newly added packs, follow in name order. `Enabled` is written as
 whether any preset is in use, for older builds; this build derives it on load.

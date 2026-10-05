@@ -13,7 +13,7 @@ void OverlayUI::DrawRazkolbasPanel() {
     if (!razkolbasPlayer)
       razkolbasPlayer = new TheosRenderPipeline::AudioPlayer(
           TheosRenderPipeline::PluginPaths::Directory() /
-          L"TheosRenderPipeline" / L"Audio" / L"razkolbas.mp3");
+          L"RaZkolbaS" / L"Audio" / L"razkolbas.mp3");
     auto *player = razkolbasPlayer;
     ImGui::TextWrapped("MC Vspishkin & Nikiforovna - Kolbasny tsekh");
     ImGui::Spacing();

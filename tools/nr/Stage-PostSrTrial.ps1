@@ -12,13 +12,13 @@ $allowed=[IO.Path]::GetFullPath((Join-Path $repository 'out/packages'))+[IO.Path
 if(-not $output.StartsWith($allowed,[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $output)){
     throw 'Use a new stage directory inside this worktree/out/packages'
 }
-$dll=Join-Path (Resolve-Path -LiteralPath $BuildDirectory).Path 'Release/TheosRenderPipeline.dll'
+$dll=Join-Path (Resolve-Path -LiteralPath $BuildDirectory).Path 'Release/RaZkolbaS.dll'
 $identity=Get-EmbeddedBuildIdentity $dll
 if(-not $identity.sourceClean -or -not $identity.neuralRenderingCompiled -or -not $identity.fsrCompiled -or -not $identity.frameGenerationCompiled){
     throw 'Post-SR trial needs a clean source NR/SR/FG build'
 }
 Assert-NoVendorImports $dll
-$iniRelative='SKSE/Plugins/TheosRenderPipeline.ini'
+$iniRelative='SKSE/Plugins/RaZkolbaS.ini'
 $iniPath=Join-Path $accepted $iniRelative
 $ini=Read-PackageIni $iniPath
 foreach($pair in @(@('NeuralRendering/CommunityRuntime','true'),@('NeuralRendering/SdrBytesTrial','true'),@('SourceDLSSG/NRPasses','1'),@('SourceDLSSG/NRPreset','0'),@('SourceDLSSG/NRColorIsHDR','false'),@('SourceDLSSG/NRResolveMethod','0'),@('SourceDLSSG/NRPeripheralCompression','false'),@('SourceDLSSG/NRFusedPreparation','false'),@('SourceDLSSG/NRUICorrection','false'),@('Settings/NativeUI','true'),@('DynamicResolution/Enabled','false'),@('HDROutput/Enabled','false'))){
@@ -32,7 +32,7 @@ if(-not ($dlaa -or $fsr)){throw 'After trial requires the accepted DLAA or FSR N
 $pin=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime-pin.json') -Raw | ConvertFrom-Json
 Assert-PinnedFile $ini['NeuralRendering/DriverCore'] $pin.qualifiedProbeDriverCore.sha256 $pin.qualifiedProbeDriverCore.bytes
 if($ini['NeuralRendering/RuntimeRoot']){throw 'Stage currently requires packaged, relative NR model paths'}
-foreach($profile in @(Get-NrPhysicalModels $pin.profiles)){Assert-PinnedFile (Join-Path $accepted ('SKSE/Plugins/TheosRenderPipeline/'+$profile.relativePath)) $profile.sha256 $profile.bytes}
+foreach($profile in @(Get-NrPhysicalModels $pin.profiles)){Assert-PinnedFile (Join-Path $accepted ('SKSE/Plugins/RaZkolbaS/'+$profile.relativePath)) $profile.sha256 $profile.bytes}
 if(-not $ini.ContainsKey('SourceDLSSG/NRBeforeUpscaling')){throw 'Reference needs an explicit placement key'}
 $lines=Set-PackageIniValues ([IO.File]::ReadAllLines($iniPath)) @{'SourceDLSSG/NRBeforeUpscaling'='false'}
 $protected=@{}
@@ -42,8 +42,8 @@ foreach($file in Get-ChildItem -LiteralPath $accepted -Recurse -File){
 }
 [IO.Directory]::CreateDirectory($output)|Out-Null
 Copy-NrTrialFiles $pin.profiles $accepted $output
-Assert-NrRuntimeModels $pin.profiles (Join-Path $output 'SKSE/Plugins/TheosRenderPipeline')
-Copy-Item -LiteralPath $dll -Destination (Join-Path $output 'SKSE/Plugins/TheosRenderPipeline.dll')
+Assert-NrRuntimeModels $pin.profiles (Join-Path $output 'SKSE/Plugins/RaZkolbaS')
+Copy-Item -LiteralPath $dll -Destination (Join-Path $output 'SKSE/Plugins/RaZkolbaS.dll')
 [IO.File]::WriteAllLines((Join-Path $output $iniRelative),$lines,[Text.UTF8Encoding]::new($false))
 $stagedIni=Read-PackageIni (Join-Path $output $iniRelative)
 foreach($key in $ini.Keys){if($key -notin @('SourceDLSSG/NRBeforeUpscaling','NeuralRendering/BeforeUpscaling') -and $stagedIni[$key] -ne $ini[$key]){throw "Unexpected INI change: $key"}}
@@ -65,7 +65,7 @@ foreach($file in Get-ChildItem -LiteralPath $output -Recurse -File){
     if($relative -eq 'post-sr-manifest.json'){continue} # Receipt cannot hash its own replacement.
     $hash=(Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
     $manifest+=@{path=$relative;bytes=$file.Length;sha256=$hash}
-    if($protected.ContainsKey($relative) -and $relative -notin @($iniRelative,'SKSE/Plugins/TheosRenderPipeline.dll','nr-trial-manifest.json','POST_SR_TRIAL.md') -and $hash -ne $protected[$relative]){throw "Unexpected staged change: $relative"}
+    if($protected.ContainsKey($relative) -and $relative -notin @($iniRelative,'SKSE/Plugins/RaZkolbaS.dll','nr-trial-manifest.json','POST_SR_TRIAL.md') -and $hash -ne $protected[$relative]){throw "Unexpected staged change: $relative"}
 }
 foreach($relative in $protected.Keys){if((Get-FileHash -LiteralPath (Join-Path $accepted $relative) -Algorithm SHA256).Hash.ToLowerInvariant() -ne $protected[$relative]){throw "Reference changed during staging: $relative"}}
 @{schema=1;scope='Local Native-AA post-SR trial; not installed or game-tested';identity=$identity;sourceMod=$accepted;iniChangedKeys=@('SourceDLSSG/NRBeforeUpscaling');sourceFiles=$protected;files=$manifest} |
