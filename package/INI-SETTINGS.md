@@ -29,6 +29,33 @@ overrides for a later return to the community runtime.
 Reorganizing settings does not extend hardware or scaled-resolution qualification.
 AMD NR remains unsupported. These limits are enforced by the same runtime policies.
 
+## AMD first launch
+
+AMD uses **FSR / Native AA → optional FSR FG → UI**. DLSS, DLAA, NVIDIA FG and
+NR are unavailable. Startup detects Skyrim's actual rendering adapter and
+normalizes incompatible NVIDIA choices in memory. Save as default persists the
+effective startup settings; merely launching does not rewrite the INI.
+
+Before launching, edit `SKSE/Plugins/TheosRenderPipeline.ini` in the installed mod
+(the virtual `Data` tree when using MO2). In `[FSR]`, set `SourceColorEncoding` to
+`Linear`, `Gamma22` or `SRGB`, matching the verified Skyrim/ENB source. Preserve
+an existing known-working value for the same setup. GPU model and texture format
+do not establish color encoding. If the source is not verified, keep `Unknown`:
+startup stops with instructions rather than processing incorrectly encoded color.
+
+AMD currently uses **Analytical 3.1.5**. The menu shows this fixed provider and
+does not offer Compatible/ML until that path has been validated. This provider
+policy is not a claim of completed AMD hardware testing.
+
+`[FrameGeneration] Backend=0` selects FSR without FG; `Backend=2` selects the FSR
+FG presenter. Backend changes require restart. With backend 2 already active,
+the FG checkbox toggles interpolation live. A saved NVIDIA FG request is not
+automatically converted into enabled FSR FG.
+
+When saving FSR for a later restart from a legacy NVIDIA NR session, the current
+NR pass stays active. Live NR off/on still addresses the current NVIDIA owner;
+the next-launch FSR NR preference remains disabled.
+
 ## Existing files
 
 Old `[Settings] QualityLevel/DLSSPreset`, `[SourceDLSSG]`, `[Experimental]` runtime

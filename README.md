@@ -29,6 +29,13 @@ The menu starts at 640 pixels wide and can shrink to 480 pixels. Each tab's
 scroll area follows the window size. Save as default stays below the tabs;
 long status messages scroll separately. Existing saved window sizes are retained.
 
+AMD renderers use FSR upscaling and optional FSR frame generation; DLSS, DLAA,
+NVIDIA FG and NR are unavailable. Before the first AMD launch, set `[FSR]
+SourceColorEncoding` in `SKSE/Plugins/TheosRenderPipeline.ini` to match the verified
+Skyrim/ENB source. The packaged value `Unknown` intentionally stops startup with
+setup instructions. AMD currently uses the Analytical 3.1.5 provider;
+Compatible/ML is not validated. See [AMD setup](package/INI-SETTINGS.md#amd-first-launch).
+
 The main INI groups upscaling, frame generation, Neural Rendering and individual
 `[NR PASS 1]` / `[NR PASS 2]` controls separately. Runtime paths are in `[Runtime]`
 and menu geometry is in `[Menu]`. Existing INIs remain readable; **Save as default**

@@ -17,6 +17,9 @@ namespace TheosRenderPipeline
                 config.generationBackend, config.neuralRendering)) {
             decision.diagnostic = "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
         }
+        else if (IsAmdRenderer(config.adapterVendorId) && config.providerPolicy != ProviderPolicy::Analytical) {
+            decision.diagnostic = "AMD currently uses the Analytical FSR provider; Compatible/ML is not validated.";
+        }
         else if (!config.enabled) { decision.diagnostic = "This renderer requires an enabled temporal upscaler."; }
         else if (config.backend == BackendKind::Dlss || config.backend == BackendKind::Dlaa) {
             if (config.generationBackend != 1) { decision.diagnostic = "DLSS/DLAA requires the NVIDIA presentation backend."; }

@@ -16,7 +16,10 @@ template<class Ini> std::string ValidateRendererStartup(Ini& ini, std::uint32_t 
         const auto fsr = Upscaling::ReadFsrSettings(ini);
         if (!fsr) return fsr.error().message;
         if (!Upscaling::IsKnownColorEncoding(fsr->sourceColorEncoding))
-            return "FSR requires an explicit SourceColorEncoding: Linear, Gamma22 or SRGB. Missing/Unknown encoding is not guessed.";
+            return std::string(IsAmdRenderer(vendor) ? "AMD uses FSR in this build. " : "") +
+                "Before launching, edit Data/SKSE/Plugins/TheosRenderPipeline.ini: set [FSR] SourceColorEncoding "
+                "to Linear, Gamma22 or SRGB to match your Skyrim/ENB source. See package/INI-SETTINGS.md for setup guidance. "
+                "Missing/Unknown encoding is not guessed.";
     }
     return {};
 }

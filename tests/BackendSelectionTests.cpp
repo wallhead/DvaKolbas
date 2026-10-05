@@ -98,7 +98,10 @@ int main()
     Require(!ValidateRendererStartup(incompatible, 0x10de, true, true).empty(), "NVIDIA still rejects incompatible saved FSR/NVIDIA presenter");
     Require(ValidateRendererStartup(incompatible, 0x1002, true, true).empty(), "AMD normalizes same incompatible saved presenter before validation");
     incompatible.SetValue("FSR", "SourceColorEncoding", "Unknown");
-    Require(!ValidateRendererStartup(incompatible, 0x1002, true, true).empty(), "AMD startup never guesses unknown FSR source encoding");
+    const auto encodingError = ValidateRendererStartup(incompatible, 0x1002, true, true);
+    Require(!encodingError.empty(), "AMD startup never guesses unknown FSR source encoding");
+    Require(encodingError.find("[FSR]") != std::string::npos && encodingError.find("TheosRenderPipeline.ini") != std::string::npos,
+        "first-launch encoding error identifies the INI and section to edit");
     incompatible.SetValue("FSR", "SourceColorEncoding", "Gamma22");
     Require(!ValidateRendererStartup(incompatible, 0x1002, false, true).empty(), "AMD rejects build without FSR instead of using NVIDIA");
     for (const auto mode : {Upscaling::BackendKind::Dlss, Upscaling::BackendKind::Dlaa, Upscaling::BackendKind::Fsr}) {
@@ -112,6 +115,11 @@ int main()
         amd.backend = Upscaling::BackendKind::Fsr;
         amd.neuralRendering = amd.communityNeural = true;
         Require(!ResolveBackend(amd, true, true).valid, "AMD rejects NR independently of provider normalization");
+        amd.neuralRendering = amd.communityNeural = false;
+        amd.generationBackend = 0;
+        amd.generationEnabled = false;
+        amd.providerPolicy = Upscaling::ProviderPolicy::Compatible;
+        Require(!ResolveBackend(amd, true, true).valid, "AMD rejects unqualified provider selection instead of silently overwriting it");
     }
     StartupNeuralPassLimit();
     // Rejecting a supported ordinary FSR request because it lacks NVIDIA

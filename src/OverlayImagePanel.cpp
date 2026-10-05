@@ -253,7 +253,11 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"Analytical (3.1.5)","Compatible (runtime selected)"};
             int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);
-            if(ImGui::Combo("Provider##fsr",&policy,policies,2))settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
+            if (TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId)) {
+                ImGui::TextUnformatted("Provider: Analytical (3.1.5)");
+                DrawSettingsHelp("AMD currently uses the Analytical provider. Compatible/ML is not validated in this build.");
+            }
+            else if(ImGui::Combo("Provider##fsr",&policy,policies,2))settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
             const char* encodings[]{"Unknown (choose before enabling FSR)","Linear SDR","Gamma 2.2 SDR","sRGB SDR"};
             int encoding=static_cast<int>(settingsDraft.fsr.sourceColorEncoding);
             if(ImGui::Combo("Source color encoding##fsr",&encoding,encodings,4))settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);

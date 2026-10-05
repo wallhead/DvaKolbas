@@ -212,6 +212,8 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         !AmdRendererSelectionAllowed(draft.upscaleType, draft.generationBackend, draft.sourceDLSSG.neuralEnabled)) {
         return "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
     }
+    if (IsAmdRenderer(capabilities.adapterVendorId) && draft.fsr.providerPolicy != Upscaling::ProviderPolicy::Analytical)
+        return "AMD currently uses the Analytical FSR provider; Compatible/ML is not validated.";
     if (capabilities.fsrFgPresenter && !draft.nativeUI) {
         return "Native UI must stay enabled while the AMD FSR presenter is active. Restart with the new presenter before disabling it.";
     }
