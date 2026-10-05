@@ -72,7 +72,7 @@ C:\Python314\python.exe local\amd-nr-re\map_kernel_registration.py
 C:\Python314\python.exe local\amd-nr-re\extract_graph_manifest.py
 ```
 
-The local Ghidra project, 25 selected host decompilations, archive directory, kernel registration/metadata, top-level graph inventory, numerical constants/probes, and disassembly are in ignored `local/amd-nr-re/`. None of the supplied or extracted binaries, model parameters, or external source files are part of the branch's committed documentation.
+The local Ghidra project, 30 selected host decompilations, archive directory, kernel registration/metadata, top-level graph inventory, numerical constants/probes, and disassembly are in ignored `local/amd-nr-re/`. None of the supplied or extracted binaries, model parameters, or external source files are part of the branch's committed documentation.
 
 Remaining work: close internal schemas and all numerical operations, implement the independent CPU/GPU graph, build the AMD host/session route, compare intermediate and final results, and run actual tests on RDNA2, RDNA3, and RDNA4. The local workstation currently has an RTX 4080 SUPER and AMD integrated graphics; physical acceptance on those three Radeon generations remains outstanding.
 
@@ -94,3 +94,54 @@ The integrated AMD adapter is reported by WMI but absent from DXGI enumeration,
 and discrete RDNA2/3/4 acceptance is outstanding. These are format results,
 not model inference or quality results. See [reproduction commands and stage
 limits](../tests/amd-nr/README.md).
+
+## Further group-dispatch evidence
+
+Read-only Ghidra exports recovered the record-name helper at `0x43c60`, grouped
+Swin run assembly at `0x45660`, and C256 chain assembly at `0x45160`. The helper
+constructs `block<block>.layer<layer>.layer` and calls the named lookup at
+`0x4a4e0`. The run and chain helpers construct different parameter packets;
+they cannot be treated as one generic per-block dispatch.
+
+Capstone confirms the relevant token references and copy sizes, and AMDGPU
+metadata agrees across all nine embedded targets: C64 run tokens
+`0x8c930/0x8c938` use a 392-byte `RunParams`; C256 chain tokens
+`0x8ca68/0x8c928` use a 1680-byte `ChainParams`. Local stack allocation sizes
+are not the ABI packet lengths. The signed shift table at RVA `0x814c0` contains
+`(0,0), (-4,-4), (-4,0), (0,-4)`. Both helpers use these values when constructing
+window grids. Axis ordering and full indexing still require recovery; replacing
+these signed values with positive offsets would change the grid calculation.
+The ignored `verify_network_dispatch.py` and `network-dispatch-contracts.json`
+reproduce this cross-check without executing the DLL. This evidence does not
+close the internal tensor views or establish runnable grouped operations.
+
+## Foundation review and decisions
+
+A fresh independent reviewer assessed `246d152..26fc428`, found no actionable
+Critical/Important/Minor defect, and reran CTest: 10 passed, 1 debug validation
+test skipped. The stage is reviewable independently of full NR inference.
+The implementation remains on the user's separately requested branch.
+
+Execution decisions, in order:
+
+1. Reuse the selected checkout on `codex/amd-nr-engine`; simultaneous editing
+   would compromise isolation, so no other implementer edited the checkout.
+2. Continue independent foundations despite the pre-existing Graphics Tools
+   failure; GPU debug validation remains unavailable.
+3. Explicitly skip the debug fixture and run separate storage/CLI/manual probes;
+   this leaves resource/state warnings unobserved.
+4. Keep inference, internal schemas, FP8 encoding, history/noise, and TRP
+   integration behind the next evidence gates; the full original objective is
+   incomplete until those are implemented.
+5. Keep discrete RDNA2/3/4 compatibility unvalidated; generation-specific
+   defects may remain undiscovered.
+6. Preserve the debug-validation gate after review; storage/fence fixtures
+   supply narrower evidence and cannot eliminate resource/state risks.
+7. Treat the review as verification against recovered contracts, with the
+   original DLL unexecuted; a mistaken static contract can still differ from
+   the original runtime.
+8. Preserve the separate branch without merging or pushing; integration waits
+   for a later explicit request.
+
+There are no deferred minor findings. Build commands and the exact scope of
+numerical/hardware verification are in `tests/amd-nr/README.md`.
