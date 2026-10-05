@@ -47,7 +47,7 @@
 - [x] Add independent oracle fixtures: all 65,536 half encodings plus 65,525 random four-half tuples and eleven literals at source64x16 ->dest32x8; seeded 60x36 ->32x20 padded fixture; crop16x12 ->4x4; asymmetric8x16 ->4x8; maximal64x64 ->32x32. Compare every packed byte, including padding; retain inputs/expected/actual/report in ignored output. Literal averages include negative zero, NaN, overflow and midpoint bytes.
 - [x] Implement wrapper/header, word-owning shader and build registration. Invalid counts/limits return Count, moved context InvalidDevice; Readback propagates transport errors and maps allocation failure to Memory. No generic public shader API or second lifetime engine.
 - [x] Run strict build and full suite via `local/amd-nr-re/Build-Foundations.ps1 -Configure`; expected no enabled failures, debug skipped77 if absent. Run physical oracle/lifecycle using a freshly enumerated explicit adapter LUID when available; zero byte mismatches, no Radeon claim.
-- [ ] Record actual totals/adapter identities/limits; commit. Complete task with full suite. Request fresh Native whole-branch review from246d152; fix Critical/Important once with RED/GREEN tests, defer Minors and ledger every declined scope. Preserve branch and ignored scratch (prior cleanup rejection).
+- [x] Record actual totals/adapter identities/limits; commit. Complete task with full suite. Request fresh Native whole-branch review from246d152; fix Critical/Important once with RED/GREEN tests, defer Minors and ledger every declined scope. Preserve branch and ignored scratch (prior cleanup rejection).
 
 ## Self-review
 

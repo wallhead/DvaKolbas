@@ -90,3 +90,21 @@ remain unresolved. Exact original-runtime comparison, WMMA dot order, other
 operator variants, full graph, temporal/noise/input contracts, renderer/game
 integration, production timing/memory and representative RDNA2/3/4 acceptance
 remain open. Model stays `KnownArchiveIncompleteSchema`, `inference=unavailable`.
+
+## Native whole-branch review
+
+The fresh review of `246d152..4ee2632` found no Critical or Important issues. The
+reviewer independently repeated all 24 standalone entries (21 passes, three
+unavailable-debug-layer skips), physical RTX lifecycle tests and the complete
+1,007,616-byte physical oracle, with zero mismatches. Tracked state remained clean.
+
+One new Minor is deferred: the GPU unit tests for oversized layouts also pass
+undersized spans, so they cannot isolate the wrapper's cap checks from its span
+checks. Product cap checks are correct and precede allocation, but those tests
+would still reject after removing a cap check. The inherited compiler optional-
+keyword validation and historical encoder-status wording also remain deferred.
+
+The verdict covers the standalone source-owned stage, not original-runtime or
+WMMA equivalence, persistent padding, unsupported domains, remaining graph/game
+contracts, Radeon acceptance, debug validation or production scheduling/memory/
+performance. No merge or push is performed.
