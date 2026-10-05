@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-05 11:44:43",
+  "modRoot": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\TRP NR Before - DvaKolbas trial",
+  "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-shared-78c8bb0-20261005-114441",
+  "sourceRevision": "78c8bb04768e",
+  "dllSha256": "960806b1daad41d56fe1c73b7d1660e0994e24326d51ee4555b865372d4d38bc",
+  "iniSha256": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d",
+  "iniUnchanged": true,
+  "otherOriginalFilesUnchanged": true,
+  "physicalModels": 2,
+  "logicalProfiles": 3,
+  "modelPayloadBytes": 475512032,
+  "removedFromMod": "NR/rtx50 (moved into rollback)",
+  "rtx50Hardware": "NOT RUN",
+  "skyrimStartup": "PENDING"
+}
