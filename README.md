@@ -10,6 +10,8 @@ Neural Rendering (NR), and native-resolution menus and HUD. Current version:
 - Frame generation and multi-frame generation (MFG).
 - NR before or after DLSS/DLAA, one or two independently configured passes,
   input scaling and tuning, in both editions. NR defaults off.
+- Experimental: on AMD GPUs, load your separately installed DLSS-NR-on-AMD mod on
+  the FSR path. Off by default; see [AMD NR](package/AMD-NR.md).
 - Optional peripheral compression and combined NR preparation, both off by default.
 - Optional weather and time presets for any NR setting and sharpening, with smooth
   transitions and separate interior settings. Presets are shareable files. See

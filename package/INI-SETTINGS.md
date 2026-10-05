@@ -22,7 +22,9 @@ numbers, FG backend numbers and generated-frame counts are not AIO19 indexes.
 Current qualified community After rendering order remains **DLSS/FSR → NR → FG → UI**.
 After currently requires DLAA or FSR NativeAA; community NR remains one pass.
 Reorganizing settings does not extend hardware or scaled-resolution qualification.
-AMD NR remains unsupported. These limits are enforced by the same runtime policies.
+TRP's own NR remains NVIDIA-only. On AMD, `[NeuralRendering] AmdBridge` and
+`[Runtime] AmdNRModule` can load the separately installed DLSS-NR-on-AMD mod on
+the FSR path; see [AMD NR](AMD-NR.md). These limits are enforced by the same runtime policies.
 
 ## Existing files
 
