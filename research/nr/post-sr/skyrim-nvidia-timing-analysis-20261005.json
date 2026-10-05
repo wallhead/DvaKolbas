@@ -1,0 +1,102 @@
+{
+  "captureDirectory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\skyrim-presentation\\20261005-093641-d342b8319f0341b4b1094b7446da5940",
+  "analysis": "Trim2s from each end; mean positive MsBetweenDisplayChange determines ETW display-update rate; percentiles use linear interpolation",
+  "timestampCaveat": "CSV wall-clock fields are three hours ahead of collector UTC converted to Moscow and Skyrim log. Phase alignment uses collector startedUtc plus5s delay, not raw CSV clock; relative CSV durations retained.",
+  "phases": [
+    {
+      "mode": "Off",
+      "swapchain": "0x2DABAF83DE0",
+      "processId": 26728,
+      "presentMode": "Hardware: Independent Flip",
+      "tearingAllowed": "1",
+      "totalRows": 1410,
+      "selectedRows": 1206,
+      "recordedSpanSeconds": 29.9334353,
+      "firstRawCsvTime": "2026-10-5 12:37:25.545612200",
+      "lastRawCsvTime": "2026-10-5 12:37:55.479047500",
+      "collectorStartUtc": "2026-10-05T06:37:25.4196269+00:00",
+      "collectorEndUtc": "2026-10-05T06:37:55.4196269+00:00",
+      "positiveDisplayIntervals": {
+        "count": 1206,
+        "mean": 21.498022305140957,
+        "min": 19.1515,
+        "max": 28.7185,
+        "p50": 21.195549999999997,
+        "p95": 24.800325,
+        "p99": 27.632410000000004
+      },
+      "apiIntervals": {
+        "count": 1206,
+        "mean": 21.497552570480973,
+        "min": 17.0785,
+        "max": 30.5879,
+        "p50": 21.255200000000002,
+        "p95": 25.3228,
+        "p99": 27.86598
+      },
+      "displayLatency": {
+        "count": 1206,
+        "mean": 10.346185820895531,
+        "min": 8.2183,
+        "max": 28.1523,
+        "p50": 9.77185,
+        "p95": 15.1357,
+        "p99": 24.18252
+      },
+      "displayUpdateRateHz": 46.515906710212306,
+      "nonPositiveOrUnavailableDisplayRows": 0,
+      "unavailableDisplayLatencyRows": 0
+    },
+    {
+      "mode": "On",
+      "swapchain": "0x2DABAF83DE0",
+      "processId": 26728,
+      "presentMode": "Hardware: Independent Flip",
+      "tearingAllowed": "1",
+      "totalRows": 2673,
+      "selectedRows": 2308,
+      "recordedSpanSeconds": 29.9401656,
+      "firstRawCsvTime": "2026-10-5 12:38:52.094217100",
+      "lastRawCsvTime": "2026-10-5 12:39:22.034382700",
+      "collectorStartUtc": "2026-10-05T06:38:51.9981122+00:00",
+      "collectorEndUtc": "2026-10-05T06:39:21.9981122+00:00",
+      "positiveDisplayIntervals": {
+        "count": 2308,
+        "mean": 11.241578942807594,
+        "min": 0.6852,
+        "max": 22.6339,
+        "p50": 11.199449999999999,
+        "p95": 12.30011,
+        "p99": 13.220916999999998
+      },
+      "apiIntervals": {
+        "count": 2308,
+        "mean": 11.241289211438499,
+        "min": 0.1533,
+        "max": 38.7896,
+        "p50": 9.586,
+        "p95": 23.09766,
+        "p99": 25.000881999999997
+      },
+      "displayLatency": {
+        "count": 2308,
+        "mean": 28.83696607452339,
+        "min": 13.764,
+        "max": 37.4922,
+        "p50": 25.4897,
+        "p95": 35.45832,
+        "p99": 36.28481699999999
+      },
+      "displayUpdateRateHz": 88.95547547969709,
+      "nonPositiveOrUnavailableDisplayRows": 0,
+      "unavailableDisplayLatencyRows": 0
+    }
+  ],
+  "displayRateRatioOnOff": 1.9123667960269473,
+  "limitations": [
+    "Allows tearing: update rate is not proof that every frame was displayed in full",
+    "No FrameType markers; individual generated frames are not labelled",
+    "No optical scanout or input-to-photon latency measurement",
+    "No claim that absence of NA records proves absence of all dropped frames"
+  ]
+}

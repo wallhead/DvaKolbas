@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "scope": "Actual DLAA -> NR After -> NVIDIA FG, local native SDR 2560x1440 borderless trial",
+  "verdict": "PASS within ETW display-update and sampled NR/source-state scope",
+  "milestonesComplete": 7,
+  "milestonesTotal": 8,
+  "build": "effbf2c9b0b0",
+  "sameImplementationAsFinalMatrix": true,
+  "ownerReport": "done",
+  "ownerVisualResultThisCapture": "Not separately reported",
+  "phases": [
+    {
+      "mode": "Off",
+      "rows": 1410,
+      "selectedRows": 1206,
+      "displayUpdateHz": 46.515906710212285,
+      "displayIntervalMeanMs": 21.498022305140964,
+      "displayIntervalP95Ms": 24.800325,
+      "displayIntervalP99Ms": 27.632410000000004,
+      "collectorWindowMoscow": [
+        "2026-10-05 09:37:25.419626",
+        "2026-10-05 09:37:55.419626"
+      ],
+      "csvClockOffsetSeconds": 10800.125986,
+      "swapchain": "0x2DABAF83DE0",
+      "processId": 26728,
+      "presentModes": [
+        "Hardware: Independent Flip"
+      ],
+      "tearingAllowed": [
+        "1"
+      ],
+      "rawNaDisplayIntervalRows": 0,
+      "selectedNaDisplayLatencyRows": 0,
+      "selectedDisplayMetricUnavailableOrNonpositive": 0,
+      "duplicateCsvRows": 0,
+      "sourceTelemetrySamples": 3,
+      "nrTelemetrySamples": 2,
+      "nrRevision": 1,
+      "sourceTelemetryFrameRateEstimate": 46.56938838869916,
+      "sourceTelemetryEvidence": [
+        "[2026-10-05 09:37:26.258] [thread 6124] [info] [SourceDLSSG] frame=45600 enabled=false status=0 presented=1 maximum=1 inputFence=0x2c134e85940 value=44509 runtimePresentedTotal=46506 stateQueries=45601 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=45600 nativeOutputs=46489 nativeBatchedAdditional=893 nativeQueryFailures=0 outputBatches=45600 generatedPresented=906 interpolatedNotPresented=2817 batchMismatches=0 unknownOutputBatches=0 configurationChanges=2 reflexQueries=1426 reflexFailures=0 reflexReports=45566 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+        "[2026-10-05 09:37:39.103] [thread 6124] [info] [SourceDLSSG] frame=46200 enabled=false status=0 presented=1 maximum=1 inputFence=0x2c134e85940 value=44509 runtimePresentedTotal=47106 stateQueries=46201 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=46200 nativeOutputs=47089 nativeBatchedAdditional=893 nativeQueryFailures=0 outputBatches=46200 generatedPresented=906 interpolatedNotPresented=2817 batchMismatches=0 unknownOutputBatches=0 configurationChanges=2 reflexQueries=1444 reflexFailures=0 reflexReports=46144 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+        "[2026-10-05 09:37:52.026] [thread 6124] [info] [SourceDLSSG] frame=46800 enabled=false status=0 presented=1 maximum=1 inputFence=0x2c134e85940 value=44509 runtimePresentedTotal=47706 stateQueries=46801 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=46800 nativeOutputs=47689 nativeBatchedAdditional=893 nativeQueryFailures=0 outputBatches=46800 generatedPresented=906 interpolatedNotPresented=2817 batchMismatches=0 unknownOutputBatches=0 configurationChanges=2 reflexQueries=1463 reflexFailures=0 reflexReports=46752 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00"
+      ],
+      "nrTelemetryEvidence": [
+        "[2026-10-05 09:37:37.225] [thread 6124] [info] [Community NR frame] source=46112 requested=true evaluated=true profile=rtx40 revision=1 reset=false frames=5400 resets=32 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass",
+        "[2026-10-05 09:37:50.125] [thread 6124] [info] [Community NR frame] source=46712 requested=true evaluated=true profile=rtx40 revision=1 reset=false frames=6000 resets=32 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass"
+      ],
+      "overlayOrConfigurationTransitions": [],
+      "errors": []
+    },
+    {
+      "mode": "On",
+      "rows": 2673,
+      "selectedRows": 2308,
+      "displayUpdateHz": 88.95547547969683,
+      "displayIntervalMeanMs": 11.241578942807626,
+      "displayIntervalP95Ms": 12.30011,
+      "displayIntervalP99Ms": 13.220916999999998,
+      "collectorWindowMoscow": [
+        "2026-10-05 09:38:51.998112",
+        "2026-10-05 09:39:21.998112"
+      ],
+      "csvClockOffsetSeconds": 10800.096105,
+      "swapchain": "0x2DABAF83DE0",
+      "processId": 26728,
+      "presentModes": [
+        "Hardware: Independent Flip"
+      ],
+      "tearingAllowed": [
+        "1"
+      ],
+      "rawNaDisplayIntervalRows": 0,
+      "selectedNaDisplayLatencyRows": 0,
+      "selectedDisplayMetricUnavailableOrNonpositive": 0,
+      "duplicateCsvRows": 0,
+      "sourceTelemetrySamples": 2,
+      "nrTelemetrySamples": 2,
+      "nrRevision": 1,
+      "sourceTelemetryFrameRateEstimate": 44.45432318292954,
+      "sourceTelemetryEvidence": [
+        "[2026-10-05 09:38:57.732] [thread 6124] [info] [SourceDLSSG] frame=49800 enabled=true status=0 presented=2 maximum=1 inputFence=0x2c134e85940 value=49800 runtimePresentedTotal=51393 stateQueries=49801 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=49800 nativeOutputs=51372 nativeBatchedAdditional=1578 nativeQueryFailures=0 outputBatches=49800 generatedPresented=1593 interpolatedNotPresented=3379 batchMismatches=0 unknownOutputBatches=0 configurationChanges=3 reflexQueries=1557 reflexFailures=0 reflexReports=49758 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00",
+        "[2026-10-05 09:39:11.229] [thread 6124] [info] [SourceDLSSG] frame=50400 enabled=true status=0 presented=2 maximum=1 inputFence=0x2c134e85940 value=50400 runtimePresentedTotal=52593 stateQueries=50401 stateQueryResult=0 stateWarnings=0 presentationEpoch=1 nativePresentSamples=50400 nativeOutputs=52572 nativeBatchedAdditional=2178 nativeQueryFailures=0 outputBatches=50400 generatedPresented=2193 interpolatedNotPresented=3379 batchMismatches=0 unknownOutputBatches=0 configurationChanges=3 reflexQueries=1576 reflexFailures=0 reflexReports=50367 reflexAvailable=true latencyReportAvailable=true pacerSkips=0 presentSkips=0 drops=0 identityMismatches=0 warmupResets=0 syncFailures=0 nrGpuSamples=0 nrGpuFailures=0 nrGpuAvgUs=0.00 nrGpuMaxUs=0.00 nrCpuSamples=0 nrCpuAvgUs=0.00 nrCpuMaxUs=0.00"
+      ],
+      "nrTelemetryEvidence": [
+        "[2026-10-05 09:38:55.775] [thread 6124] [info] [Community NR frame] source=49712 requested=true evaluated=true profile=rtx40 revision=1 reset=false frames=9000 resets=32 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass",
+        "[2026-10-05 09:39:09.262] [thread 6124] [info] [Community NR frame] source=50312 requested=true evaluated=true profile=rtx40 revision=1 reset=false frames=9600 resets=32 status=NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass"
+      ],
+      "overlayOrConfigurationTransitions": [],
+      "errors": []
+    }
+  ],
+  "displayRateRatioOnOff": 1.9123667960269426,
+  "method": "Independent Python CSV/hash/PID/swapchain/strict monotonicity checks; trim two seconds at each end; 1000/mean positive MsBetweenDisplayChange; source/NR log samples aligned using collector UTC plus five-second delay, converted to Moscow",
+  "timestampCaveat": "Raw CSV wall-clock is approximately three hours ahead of Moscow collector/game-log time; independently measured offset, not assumed. Relative intervals preserved.",
+  "source": {
+    "captureDirectory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\skyrim-presentation\\20261005-093641-d342b8319f0341b4b1094b7446da5940",
+    "files": {
+      "capture.json": {
+        "bytes": 5220,
+        "sha256": "eb00be3e2b92ee75217ad1a658b68bfa2466cd78c3f9d9538bb38b13d115e7d6"
+      },
+      "fg-off-stderr.log": {
+        "bytes": 2,
+        "sha256": "b3d510ef04275ca8e698e5b3cbb0ece3949ef9252f0cdc839e9ee347409a2209"
+      },
+      "fg-off-stdout.log": {
+        "bytes": 82,
+        "sha256": "a9130f7ca0a9bf20318a0122cdf0d1189d2a1ffbb038a45a6bfaf514bf9c5931"
+      },
+      "fg-off.csv": {
+        "bytes": 414436,
+        "sha256": "17959f137f0b979d8ce26b89da97aeee77421e514d2e63246c8ca4abb52e848f"
+      },
+      "fg-on-stderr.log": {
+        "bytes": 2,
+        "sha256": "b3d510ef04275ca8e698e5b3cbb0ece3949ef9252f0cdc839e9ee347409a2209"
+      },
+      "fg-on-stdout.log": {
+        "bytes": 82,
+        "sha256": "a9130f7ca0a9bf20318a0122cdf0d1189d2a1ffbb038a45a6bfaf514bf9c5931"
+      },
+      "fg-on.csv": {
+        "bytes": 792067,
+        "sha256": "d733c251062e941aa27f133af25a0e066959d59ad493d080d7d2b4725fab9449"
+      },
+      "skyrim-after.log": {
+        "bytes": 222584,
+        "sha256": "81765a06fadd1308a2d5a876d968b3d1b412ff92529123698d418e1b86202254"
+      },
+      "skyrim-before.log": {
+        "bytes": 201139,
+        "sha256": "cbb8662127a44125a016bb89c872c8ebffa8007b6d5f5ff52d48584930666fce"
+      }
+    },
+    "rawArchive": {
+      "file": "skyrim-nvidia-timing-raw-20261005.zip",
+      "bytes": 302755,
+      "sha256": "75fd7dd0517e38861935e8374ab0f88eadf8a60b97781b7d5675ed8848741de3",
+      "allArchivedMembersMatch": true
+    }
+  },
+  "nrSettings": "Revision1: After SR before FG, full tone, tone1 structure1 style0 stableColors=false; unchanged between phases",
+  "noFilesEdited": true,
+  "gameStillRunningAtInspection": true,
+  "limitations": [
+    "ETW display updates with tearing are not optical scanout or proof every image appears in full",
+    "CSV lacks FrameType/Dropped markers; unavailable display metrics checked, no claim of zero dropped frames",
+    "MsUntilDisplayed is API-to-display timing, not input-to-photon latency; approximately10.35ms Off vs28.84ms On",
+    "Source/NR telemetry sampled, no per-frame NR guarantee from periodic logs",
+    "No matched AIO19 comparison, wider GPU qualification or new FSR cadence proof in this capture"
+  ],
+  "protectedInstalledFilesUnchanged": true
+}
