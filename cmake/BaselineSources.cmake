@@ -100,6 +100,7 @@ set(ARP_BASELINE_SOURCES
     src/ScreenshotFile.cpp
     src/ScreenshotFile.h
     src/ScreenshotWorker.h
+    src/IniLayout.h
     src/SettingsFile.h
     src/PluginPaths.h
     src/SkyrimRuntime.h

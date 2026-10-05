@@ -9,6 +9,7 @@
 #include "FrameGen/SourceDLSSGBackend.h"
 #include "PerformanceTuning.h"
 #include "SettingsFile.h"
+#include "IniLayout.h"
 #include "OverlayHotkeys.h"
 #include "OverlayLayout.h"
 #include "WeatherAppearanceINI.h"
@@ -31,6 +32,7 @@ void RenderPipeline::LoadINI()
 	if (loadResult < 0) {
 		logger::warn("Could not load Data\\SKSE\\Plugins\\TheosRenderPipeline.ini (rc={}), using defaults", static_cast<int>(loadResult));
 	}
+	TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
 	mUpscaleType = (int)ini.GetLongValue("Settings", "UpscaleType", 0);
     if (const auto fsr=TheosRenderPipeline::Upscaling::ReadFsrSettings(ini)) { mFsrSettings=*fsr; }
     else if(mUpscaleType==FSR) { logger::error("[FSR] {}",fsr.error().message); }
@@ -103,6 +105,7 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 		logger::error("Could not read Data\\SKSE\\Plugins\\TheosRenderPipeline.ini before saving (rc={}); file left unchanged", static_cast<int>(loadResult));
 		return false;
 	}
+	TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
 	auto* sourceHost = NvidiaHost::GetSingleton();
 	const auto creation = sourceHost->StartupConfigured() ?
 		sourceHost->SourceUpscalerSettings().Requested() :
@@ -146,6 +149,7 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
     const bool presetsSaved = presets.Ok();
 	ini.SetBoolValue("Debug", "LogMenuMetrics", mLogMenuMetrics);
     if (layout) { TheosRenderPipeline::Overlay::StoreLayout(ini, *layout); }
+	TheosRenderPipeline::IniLayout::StoreCanonical(ini);
 	const auto rc = ini.SaveFile(L"Data\\SKSE\\Plugins\\TheosRenderPipeline.ini");
 	if (rc < 0) {
 		logger::error("Could not save Data\\SKSE\\Plugins\\TheosRenderPipeline.ini (rc={})", static_cast<int>(rc));

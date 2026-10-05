@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 #include "SourceDLSSGSettings.h"
 #include "RuntimePathSettings.h"
 #include "NeuralRendering/StartupSettings.h"
@@ -33,8 +34,9 @@ class SourceFrameGeneration
     void LoadINI();
     // Called once before installing device hooks. Live changes do not reload
     // this startup snapshot or rebuild the presentation host.
-    template<class Ini> void LoadStartupPreferences(const Ini& ini)
+    template<class Ini> void LoadStartupPreferences(const Ini& source)
     {
+        const TheosRenderPipeline::IniLayout::ReadView ini(source);
         settings.neuralStartup = settings.configuredNeuralStartup = TheosRenderPipeline::NeuralRendering::LoadStartupSettings(ini);
         settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", true);
         settings.generationBackend = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);

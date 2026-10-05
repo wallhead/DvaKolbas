@@ -1,0 +1,50 @@
+# INI settings
+
+`SKSE/Plugins/TheosRenderPipeline.ini` uses layout version 2. Comments beside each
+key describe its range, backend and restart requirements. The layout resembles
+AIO19's grouped settings, but values retain DvaKolbas's meanings: DLSS preset
+numbers, FG backend numbers and generated-frame counts are not AIO19 indexes.
+
+| Section | Purpose |
+| --- | --- |
+| Settings | Upscaler selection, shared sharpening, jitter, exposure, native UI |
+| DLSS | NVIDIA quality and NGX model preset |
+| FSR | Quality, provider, sharpening and source color encoding |
+| FrameGeneration | Backend, live enable request, NVIDIA multiplier, Reflex, HUD handling |
+| NeuralRendering | Live enable request, placement, pass count, combat policy, startup profile |
+| NR PASS 1 | First-pass style, tone, structure, preset, scale and resolve controls |
+| NR PASS 2 | Saved independent second-pass overrides and linking |
+| Hotkeys / Menu | Keyboard shortcuts and saved window layout |
+| Appearance | Optional weather, time and interior presets |
+| Compatibility / Runtime | Integration preferences and startup runtime paths |
+| HDROutput / DynamicResolution / Performance / Debug | Display, unsupported dynamic resolution, timing and logging |
+
+Current qualified community After rendering order remains **DLSS/FSR → NR → FG → UI**.
+After currently requires DLAA or FSR NativeAA; community NR remains one pass.
+Reorganizing settings does not extend hardware or scaled-resolution qualification.
+AMD NR remains unsupported. These limits are enforced by the same runtime policies.
+
+## Existing files
+
+Old `[Settings] QualityLevel/DLSSPreset`, `[SourceDLSSG]`, `[Experimental]` runtime
+selectors and `[Overlay]` geometry remain accepted. Canonical new keys take
+precedence individually, including explicit zero, false and empty path values.
+Missing pass-2 overrides keep the existing pass-1 inheritance.
+
+**Save as default** migrates recognized old keys to the new sections, removes the
+recognized duplicates and retains unknown settings. Startup paths edited on disk
+since launch are retained. Older DLLs do not understand the new sections: roll
+back the DLL and its matching old INI together.
+
+For an offline conversion, with Skyrim and MO2 closed before installing the result:
+
+```powershell
+pwsh -NoProfile -File tools/ini/Reorganize-Ini.ps1 `
+  -SourceIni 'path/to/current/TheosRenderPipeline.ini' `
+  -OutputIni 'path/to/new/TheosRenderPipeline.ini'
+```
+
+The converter uses the commented packaged template for order and descriptions.
+It writes a new file, checks that existing values are preserved, and never fills
+missing optional settings with template defaults. Unknown keys and their attached
+comments remain. Back up the working DLL and INI before installing a new build.

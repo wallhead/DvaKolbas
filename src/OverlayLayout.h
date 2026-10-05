@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 
 #include <algorithm>
 #include <cmath>
@@ -49,8 +50,9 @@ inline Layout FitLayout(Layout value, float displayWidth, float displayHeight)
     return value;
 }
 
-template <class Ini> Layout LoadLayout(const Ini& ini)
+template <class Ini> Layout LoadLayout(const Ini& source)
 {
+    const TheosRenderPipeline::IniLayout::ReadView ini(source);
     Layout value;
     value.x = static_cast<float>(ini.GetDoubleValue("Overlay", "WindowX", value.x));
     value.y = static_cast<float>(ini.GetDoubleValue("Overlay", "WindowY", value.y));

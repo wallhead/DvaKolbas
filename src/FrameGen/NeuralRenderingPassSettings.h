@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 #include "NeuralRenderingReconstruction.h"
 #include "NeuralRenderingTuning.h"
 
@@ -23,8 +24,9 @@ namespace TheosRenderPipeline::NeuralRendering
 	{
 		return SanitizeSecondPass(value.linked ? SecondPassSettings{ true, first.inputScale, first.preset, tuning } : value);
 	}
-	template<class Ini> SecondPassSettings LoadSecondPass(const Ini& ini, const char* section, const Reconstruction& first, const Tuning& tuning)
+	template<class Ini> SecondPassSettings LoadSecondPass(const Ini& source, const char* section, const Reconstruction& first, const Tuning& tuning)
 	{
+		const TheosRenderPipeline::IniLayout::ReadView ini(source);
 		// Missing overrides inherit the old shared settings. Relinking never erases
 		// saved overrides, so experimenting with the checkbox is reversible.
 		SecondPassSettings value;

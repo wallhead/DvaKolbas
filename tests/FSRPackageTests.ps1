@@ -1,5 +1,6 @@
 param([Parameter(Mandatory)][string]$BuildDirectory,[Parameter(Mandatory)][string]$RuntimeDirectory,[Parameter(Mandatory)][string]$ScratchRoot,[ValidateSet('Standard','Universal')][string]$Edition='Standard')
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot '../tools/fsr/PackageCommon.ps1')
 $root=Join-Path ([IO.Path]::GetFullPath($ScratchRoot)) ([guid]::NewGuid().ToString('N'))
 $stage=Join-Path $PSScriptRoot '../tools/fsr/Stage-Package.ps1'
 $validate=Join-Path $PSScriptRoot '../tools/fsr/Validate-Package.ps1'
@@ -38,19 +39,22 @@ $originalManifest | Set-Content -LiteralPath (Join-Path $package 'manifest.json'
 $config=Join-Path $package 'SKSE/Plugins/TheosRenderPipeline.ini'
 $configOriginal=[IO.File]::ReadAllText($config)
 foreach($encoding in @('Unknown','Guess','')) {
-    $replacement=if($encoding){"SourceColorEncoding=$encoding"}else{''}
-    [IO.File]::WriteAllText($config,$configOriginal.Replace('SourceColorEncoding=Gamma22',$replacement))
+    $lines=Set-PackageIniValues ($configOriginal -split '\r?\n') @{'FSR/SourceColorEncoding'=$encoding}
+    [IO.File]::WriteAllLines($config,$lines)
+    if((Read-PackageIni $config)['FSR/SourceColorEncoding'] -cne $encoding){throw 'Color mutation did not apply'}
     $manifest=$originalManifest | ConvertFrom-Json
     foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
     $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
     Rejected {& $validate -Edition $Edition -PackageDirectory $package} "UnspecifiedOrInvalidColor-$encoding"
 }
-[IO.File]::WriteAllText($config,$configOriginal.Replace('Quality=Quality','Quality=quality'))
+[IO.File]::WriteAllLines($config,(Set-PackageIniValues ($configOriginal -split '\r?\n') @{'FSR/Quality'='quality'}))
+if((Read-PackageIni $config)['FSR/Quality'] -cne 'quality'){throw 'Quality mutation did not apply'}
 $manifest=$originalManifest | ConvertFrom-Json
 foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
 Rejected {& $validate -Edition $Edition -PackageDirectory $package} 'InvalidCaseQuality'
-[IO.File]::WriteAllText($config,$configOriginal.Replace('FrameGenerationBackend=0',"FrameGenerationBackend=0`nPureDarkFullDelegation=true"))
+[IO.File]::WriteAllLines($config,(Set-PackageIniValues ($configOriginal -split '\r?\n') @{'Experimental/PureDarkFullDelegation'='true'}))
+if((Read-PackageIni $config)['Experimental/PureDarkFullDelegation'] -ne 'true'){throw 'Delegation mutation did not apply'}
 $manifest=$originalManifest | ConvertFrom-Json
 foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/TheosRenderPipeline.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8

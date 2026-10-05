@@ -1,5 +1,6 @@
 param([Parameter(Mandatory)][string]$BuildDirectory,[Parameter(Mandatory)][string]$RuntimeDirectory,[Parameter(Mandatory)][string]$ScratchRoot,[ValidateSet('Standard','Universal')][string]$Edition='Standard')
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot '../tools/fsr/PackageCommon.ps1')
 $root=Join-Path ([IO.Path]::GetFullPath($ScratchRoot)) ([guid]::NewGuid().ToString('N'))
 $stage=Join-Path $PSScriptRoot '../tools/fsr/Stage-Package.ps1';$validate=Join-Path $PSScriptRoot '../tools/fsr/Validate-Package.ps1'
 function Require([bool]$Value,[string]$Reason){if(-not $Value){throw $Reason};Write-Output "PASS: $Reason"}
@@ -30,9 +31,12 @@ Copy-Item -LiteralPath (Join-Path $RuntimeDirectory (Split-Path $fg -Leaf)) -Des
 Rejected {& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration} 'WrongFgHashRejectedEvenWithUpdatedManifest'
 Copy-Item -LiteralPath (Join-Path $RuntimeDirectory (Split-Path $fg -Leaf)) -Destination $fg
 [IO.File]::WriteAllText($manifestPath,$manifestOriginal)
-foreach($change in @(@('NativeUI=true','NativeUI=false'),@('NativeUICompositionMode=0','NativeUICompositionMode=1'),@('ProviderPolicy=Analytical','ProviderPolicy=Compatible'),@('FrameGenerationBackend=2','FrameGenerationBackend=0'))) {
- [IO.File]::WriteAllText($config,$configOriginal.Replace($change[0],$change[1]));Update-ManifestFile 'SKSE/Plugins/TheosRenderPipeline.ini'
- Rejected {& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration} ("InvalidFgConfig-"+$change[1])
+foreach($change in @(@('Settings/NativeUI','false'),@('Experimental/NativeUICompositionMode','1'),@('FSR/ProviderPolicy','Compatible'),@('Experimental/FrameGenerationBackend','0'))) {
+ $lines=Set-PackageIniValues ($configOriginal -split '\r?\n') @{$change[0]=$change[1]}
+ [IO.File]::WriteAllLines($config,$lines)
+ Require ((Read-PackageIni $config)[$change[0]] -eq $change[1]) ("ConfigMutationApplied-"+$change[0])
+ Update-ManifestFile 'SKSE/Plugins/TheosRenderPipeline.ini'
+ Rejected {& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration} ("InvalidFgConfig-"+$change[0])
 }
 [IO.File]::WriteAllText($config,$configOriginal);[IO.File]::WriteAllText($manifestPath,$manifestOriginal)
 Rejected {& $stage -Edition $Edition -BuildDirectory $BuildDirectory -RuntimeDirectory $RuntimeDirectory -OutputDirectory $root -FrameGeneration} 'StagingNeverOverwritesPackage'

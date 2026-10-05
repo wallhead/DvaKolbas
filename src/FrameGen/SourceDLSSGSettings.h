@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 
 #include "NeuralRenderingPassSettings.h"
 #include "NeuralRenderingReconstruction.h"
@@ -43,8 +44,9 @@ namespace TheosRenderPipeline::SourceDLSSG
 		return value;
 	}
 
-	template <class Ini> Preferences LoadPreferences(const Ini& ini)
+	template <class Ini> Preferences LoadPreferences(const Ini& source)
 	{
+		const TheosRenderPipeline::IniLayout::ReadView ini(source);
 		constexpr auto section = "SourceDLSSG";
 		Preferences value;
 		value.reflexMode = static_cast<int>(ini.GetLongValue(section, "ReflexMode", 1));

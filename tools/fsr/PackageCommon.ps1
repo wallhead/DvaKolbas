@@ -1,4 +1,5 @@
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot '../ini/IniLayoutCommon.ps1')
 function Assert-PinnedFile([string]$Path,[string]$Hash,[long]$Bytes=-1) {
     if(-not (Test-Path -LiteralPath $Path -PathType Leaf)){throw "Required file absent: $Path"}
     if($Bytes -ge 0 -and (Get-Item -LiteralPath $Path).Length -ne $Bytes){throw "Pinned size mismatch: $Path"}
@@ -41,7 +42,7 @@ function Get-PEImports([string]$Path) {
         if($entry -ge 4096){throw "Unbounded import table: $Path"}
     }
 }
-function Read-PackageIni([string]$Path) {
+function Read-PackageIni([string]$Path,[switch]$Raw) {
     $settings=@{};$section=''
     foreach($line in [IO.File]::ReadAllLines($Path)) {
         $line=$line.Trim();if(-not $line -or $line.StartsWith(';') -or $line.StartsWith('#')){continue}
@@ -49,7 +50,8 @@ function Read-PackageIni([string]$Path) {
         if($line -notmatch '^([^=]+)=(.*)$'){throw "Invalid INI line: $line"}
         $key=$section+'/'+$Matches[1].Trim();if($settings.ContainsKey($key)){throw "Duplicate INI key: $key"};$settings[$key]=$Matches[2].Trim()
     }
-    return $settings
+    if($Raw){return $settings}
+    return ConvertTo-IniReadView $settings
 }
 
 function Assert-NoVendorImports([string]$Path) {

@@ -33,6 +33,8 @@ $pin=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime-pin.json') -Raw 
 Assert-PinnedFile $ini['NeuralRendering/DriverCore'] $pin.qualifiedProbeDriverCore.sha256 $pin.qualifiedProbeDriverCore.bytes
 if($ini['NeuralRendering/RuntimeRoot']){throw 'Stage currently requires packaged, relative NR model paths'}
 foreach($profile in @(Get-NrPhysicalModels $pin.profiles)){Assert-PinnedFile (Join-Path $accepted ('SKSE/Plugins/TheosRenderPipeline/'+$profile.relativePath)) $profile.sha256 $profile.bytes}
+if(-not $ini.ContainsKey('SourceDLSSG/NRBeforeUpscaling')){throw 'Reference needs an explicit placement key'}
+$lines=Set-PackageIniValues ([IO.File]::ReadAllLines($iniPath)) @{'SourceDLSSG/NRBeforeUpscaling'='false'}
 $protected=@{}
 foreach($file in Get-ChildItem -LiteralPath $accepted -Recurse -File){
     $relative=[IO.Path]::GetRelativePath($accepted,$file.FullName).Replace('\','/')
@@ -42,15 +44,9 @@ foreach($file in Get-ChildItem -LiteralPath $accepted -Recurse -File){
 Copy-NrTrialFiles $pin.profiles $accepted $output
 Assert-NrRuntimeModels $pin.profiles (Join-Path $output 'SKSE/Plugins/TheosRenderPipeline')
 Copy-Item -LiteralPath $dll -Destination (Join-Path $output 'SKSE/Plugins/TheosRenderPipeline.dll')
-$lines=[IO.File]::ReadAllLines($iniPath);$section='';$changed=0
-for($i=0;$i -lt $lines.Length;$i++){
-    if($lines[$i].Trim() -match '^\[([^\]]+)\]$'){$section=$Matches[1];continue}
-    if($section -eq 'SourceDLSSG' -and $lines[$i] -match '^\s*NRBeforeUpscaling\s*='){$lines[$i]='NRBeforeUpscaling = false';$changed++}
-}
-if($changed -ne 1){throw 'Reference needs exactly one explicit placement key'}
 [IO.File]::WriteAllLines((Join-Path $output $iniRelative),$lines,[Text.UTF8Encoding]::new($false))
 $stagedIni=Read-PackageIni (Join-Path $output $iniRelative)
-foreach($key in $ini.Keys){if($key -ne 'SourceDLSSG/NRBeforeUpscaling' -and $stagedIni[$key] -ne $ini[$key]){throw "Unexpected INI change: $key"}}
+foreach($key in $ini.Keys){if($key -notin @('SourceDLSSG/NRBeforeUpscaling','NeuralRendering/BeforeUpscaling') -and $stagedIni[$key] -ne $ini[$key]){throw "Unexpected INI change: $key"}}
 Copy-Item -LiteralPath (Join-Path $repository 'docs/NR_POST_SR_TRIAL.md') -Destination (Join-Path $output 'POST_SR_TRIAL.md')
 # Refresh an inherited NR manifest so its profiles and file list match this stage.
 $nrManifestPath=Join-Path $output 'nr-trial-manifest.json'

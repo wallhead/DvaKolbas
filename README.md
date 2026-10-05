@@ -23,6 +23,12 @@ settings and window layout; **Discard** drops unapplied edits. NR keyboard
 shortcuts are opt-in. HDR is experimental, through Community Shaders or TRP's own
 HDR output; see [HDR](#hdr-experimental).
 
+The main INI groups upscaling, frame generation, Neural Rendering and individual
+`[NR PASS 1]` / `[NR PASS 2]` controls separately. Runtime paths are in `[Runtime]`
+and menu geometry is in `[Menu]`. Existing INIs remain readable; **Save as default**
+writes the new layout while preserving values and unknown keys. New keys take
+precedence when both layouts are present. See [INI layout and migration](package/INI-SETTINGS.md).
+
 With two NR passes selected, optional **One pass in combat** and **One pass while
 weapons/spells are drawn** controls temporarily skip the second pass. The return
 delay defaults to five seconds after all selected conditions clear and pauses

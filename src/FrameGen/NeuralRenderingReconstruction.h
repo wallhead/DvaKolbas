@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -73,8 +74,9 @@ namespace TheosRenderPipeline::NeuralRendering
 		return extent ? (std::max)(1u, static_cast<std::uint32_t>(std::llround(
 			double(extent) * NormalizeInputScale(value.inputScale) * (value.peripheralCompression ? 0.9 : 1.0)))) : 0;
 	}
-	template<class Ini> Reconstruction LoadReconstruction(const Ini& ini, const char* section)
+	template<class Ini> Reconstruction LoadReconstruction(const Ini& source, const char* section)
 	{
+		const TheosRenderPipeline::IniLayout::ReadView ini(source);
 		Reconstruction value;
 		value.preset = static_cast<int>(ini.GetLongValue(section, "NRPreset", 0));
 		value.method = static_cast<ResolveMethod>(ini.GetLongValue(section, "NRResolveMethod", 0));

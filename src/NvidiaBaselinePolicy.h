@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 
 #include "UpscaleType.h"
 #include <filesystem>
@@ -36,8 +37,9 @@ namespace TheosRenderPipeline
 
     // Missing legacy selectors retain NVIDIA defaults. FSR startup validation
     // is separate, so an unused legacy NVIDIA selector cannot acquire ownership.
-    template <class Ini> const char* ValidateNvidiaBaseline(const Ini& ini)
+    template <class Ini> const char* ValidateNvidiaBaseline(const Ini& source)
     {
+        const TheosRenderPipeline::IniLayout::ReadView ini(source);
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
         if (!ini.GetBoolValue("Settings", "EnableUpscaler", true) || (mode != DLSS && mode != DLAA)) {
             return "This renderer requires DLSS or DLAA. Use the Frame generation checkbox to turn interpolation off.";

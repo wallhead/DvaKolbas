@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 
 #include "NvidiaBaselinePolicy.h"
 #include "Upscaling/UpscalerBackend.h"
@@ -34,8 +35,9 @@ namespace TheosRenderPipeline
         return decision;
     }
 
-    template<class Ini> const char* ValidateRendererConfiguration(const Ini& ini, bool fsrBuilt, bool fsrFgBuilt = false)
+    template<class Ini> const char* ValidateRendererConfiguration(const Ini& source, bool fsrBuilt, bool fsrFgBuilt = false)
     {
+        const TheosRenderPipeline::IniLayout::ReadView ini(source);
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
         if (mode != FSR) { return ValidateNvidiaBaseline(ini); }
         if (!fsrBuilt) { return "FSR support is unavailable in this build."; }

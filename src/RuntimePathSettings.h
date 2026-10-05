@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 
 #include "NvidiaBaselinePolicy.h"
 #include <filesystem>
@@ -11,8 +12,9 @@ namespace TheosRenderPipeline
         std::string streamline;
         std::string neural;
 
-        template<class Ini> void Load(const Ini& ini)
+        template<class Ini> void Load(const Ini& source)
         {
+            const TheosRenderPipeline::IniLayout::ReadView ini(source);
             streamline = ini.GetValue("Experimental", "SourceDLSSGStreamlineDirectory", "");
             neural = ini.GetValue("Experimental", "NeuralRenderingRuntimePath", "");
         }

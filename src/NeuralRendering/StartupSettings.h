@@ -1,4 +1,5 @@
 #pragma once
+#include "IniLayout.h"
 #include "Upscaling/FSRColorContract.h"
 #include <filesystem>
 namespace TheosRenderPipeline::NeuralRendering {
@@ -15,7 +16,8 @@ struct StartupSettings {
         return result;
     }
 };
-template<class Ini> StartupSettings LoadStartupSettings(const Ini& ini){
+template<class Ini> StartupSettings LoadStartupSettings(const Ini& source){
+    const IniLayout::ReadView ini(source);
     StartupSettings result;result.community=ini.GetBoolValue("NeuralRendering","CommunityRuntime",false);
     result.sdrBytesTrial=ini.GetBoolValue("NeuralRendering","SdrBytesTrial",false);
     result.profile=ini.GetValue("NeuralRendering","Profile","Auto");

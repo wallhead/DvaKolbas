@@ -42,13 +42,13 @@ $changes=@{
     'SourceDLSSG/NRColorIsHDR'='false';'SourceDLSSG/NRPeripheralCompression'='false';'SourceDLSSG/NRFusedPreparation'='false';
     'SourceDLSSG/NRUICorrection'='false';'FrameGeneration/Enabled'='true';'Hotkeys/EnableNRHotkeys'='true';'Appearance/Enabled'='false'
 }
-for($i=0;$i -lt $lines.Count;$i++){
-    $line=$lines[$i].Trim();if($line -match '^\[([^\]]+)\]$'){$section=$Matches[1];continue}
-    if($line -match '^([^=]+)=(.*)$'){$key=$section+'/'+$Matches[1].Trim();if($changes.ContainsKey($key)){$lines[$i]=$Matches[1].Trim()+' = '+$changes[$key];$changes.Remove($key)}}
-}
-if($changes.Count){throw 'Reference INI lacks a required explicit trial setting'}
-if($ini.ContainsKey('NeuralRendering/CommunityRuntime')){throw 'Reference INI already contains community startup settings'}
-$lines.AddRange([string[]]@('','[NeuralRendering]','CommunityRuntime = true','Profile = Auto','RuntimeRoot =',('DriverCore = '+[IO.Path]::GetFullPath($DriverCore)),'SourceColorEncoding = Gamma22'))
+if($ini['NeuralRendering/CommunityRuntime'] -eq 'true'){throw 'Reference INI already selects the community trial'}
+$changes['NeuralRendering/CommunityRuntime']='true'
+$changes['NeuralRendering/Profile']='Auto'
+$changes['Runtime/NRRuntimeRoot']=''
+$changes['Runtime/NRDriverCore']=[IO.Path]::GetFullPath($DriverCore)
+$changes['NeuralRendering/SourceColorEncoding']='Gamma22'
+$lines=Set-PackageIniValues $lines.ToArray() $changes
 [IO.File]::WriteAllLines((Join-Path $root 'SKSE/Plugins/TheosRenderPipeline.ini'),$lines,[Text.UTF8Encoding]::new($false))
 Copy-Item -LiteralPath (Join-Path $repository 'docs/NR_BEFORE_TRIAL.md') -Destination (Join-Path $root 'README.md')
 foreach($relative in @('LICENSE','THIRD_PARTY_FSR.md','AMD-FidelityFX-license.md','FSR-API-MIT-NOTICE.txt')){
