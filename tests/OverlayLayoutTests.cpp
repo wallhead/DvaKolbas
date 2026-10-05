@@ -283,7 +283,7 @@ void ResponsiveMenu()
     };
     ImVec2 small{}, large{};
     for (const auto size : {ImVec2{480, 420}, ImVec2{640, 720}, ImVec2{960, 900}, ImVec2{480, 420}}) {
-        for (const char* tab : {"DLSS", "NR", "Frame generation"}) {
+        for (const char* tab : {"DLSS", "NR", "Frame generation", "razkolbas"}) {
             Geometry g{};
             for (int settle = 0; settle != 4; ++settle) g = frame(size, false, tab);
             Require(g.panelSize.x > 0 && g.panelSize.y > 0, "tab scroll area remains usable at compact sizes");

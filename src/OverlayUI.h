@@ -53,6 +53,7 @@ private:
     void DrawTextureMemoryPanel(const FrameView& view);
     void DrawAdvancedPanel(float tabCardHeight, const FrameView& view);
     void DrawFrameGenerationAdvanced(const FrameView& view);
+    void DrawRazkolbasPanel();
     bool BeginSettingsColumns(const char* id, float height, const FrameView& view);
     void NextSettingsColumn(float height);
     void EndSettingsColumns();

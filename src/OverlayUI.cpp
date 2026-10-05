@@ -390,6 +390,7 @@ void OverlayUI::BuildUI()
 #endif
 
             DrawFrameGenerationPanel(0, view);
+            DrawRazkolbasPanel();
             ImGui::EndTabBar();
         }
     }

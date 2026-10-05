@@ -156,6 +156,7 @@ set(ARP_BASELINE_SOURCES
     src/OverlayGameInput.cpp
     src/OverlayGameInput.h
     src/OverlayUI.cpp
+    src/OverlayRazkolbasPanel.cpp
     src/OverlayFrameView.cpp
     src/OverlayFrameView.h
     src/OverlayPipeline.cpp
