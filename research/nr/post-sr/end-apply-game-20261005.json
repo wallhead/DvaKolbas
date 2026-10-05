@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "qualification": "PASS_BOUNDED_GAME_MENU_APPLY; style cycle and broader game checklist not yet confirmed",
+  "ownerReport": "game started . menu tested",
+  "installedBuildRevision": "effbf2c9b0b0",
+  "gitDocumentationBase": "60e91969864abb473cb9553a72ded55760258b2f",
+  "milestonesComplete": 5,
+  "milestonesTotal": 8,
+  "game": {
+    "pid": 40604,
+    "started": "2026-10-05 08:08:52",
+    "SkyrimVersion": "1.6.1170",
+    "route": "DLAA native-size SDR -> selected Before/After NR -> NVIDIA FG -> native UI",
+    "gpuProfile": "rtx40"
+  },
+  "retainedRawPrefix": {
+    "localPath": ".superpowers\\sdd\\2026-10-04-nr-post-sr\\end-apply-game-prefix-20261005.log",
+    "sha256": "9736992ed562d081da6ddfa23e92e485dafb8ee630c83868f04bcd34ec982ec0",
+    "bytes": 289954,
+    "firstTimestamp": "2026-10-05 08:09:05.524",
+    "lastTimestamp": "2026-10-05 08:22:06.451"
+  },
+  "curatedLog": {
+    "path": "end-apply-game-20261005.log",
+    "sha256": "54b14140ed63c96f004ffb033f3c2388672f0329a2dde7dcd194871eca8f7a28"
+  },
+  "evidence": {
+    "successfulApplyActions": 9,
+    "savedDefaults": false,
+    "menuOpenActions": 2,
+    "menuCloseActions": 2,
+    "nrRevisionStates": [
+      {
+        "timestamp": "2026-10-05 08:09:47.872",
+        "source": "1",
+        "requested": "true",
+        "evaluated": "false",
+        "revision": "1",
+        "reset": "true",
+        "frames": "0",
+        "resets": "0",
+        "status": "NR paused; waiting for a valid TRP world frame"
+      },
+      {
+        "timestamp": "2026-10-05 08:13:39.240",
+        "source": "22402",
+        "requested": "false",
+        "evaluated": "false",
+        "revision": "2",
+        "reset": "true",
+        "frames": "561",
+        "resets": "26",
+        "status": "NR off"
+      },
+      {
+        "timestamp": "2026-10-05 08:13:40.961",
+        "source": "22505",
+        "requested": "true",
+        "evaluated": "true",
+        "revision": "3",
+        "reset": "true",
+        "frames": "562",
+        "resets": "27",
+        "status": "NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass"
+      },
+      {
+        "timestamp": "2026-10-05 08:13:44.065",
+        "source": "22647",
+        "requested": "true",
+        "evaluated": "true",
+        "revision": "4",
+        "reset": "true",
+        "frames": "704",
+        "resets": "28",
+        "status": "NR active before upscaling; rtx40; one SDR RGBA8 byte trial pass"
+      },
+      {
+        "timestamp": "2026-10-05 08:13:47.546",
+        "source": "22806",
+        "requested": "true",
+        "evaluated": "true",
+        "revision": "5",
+        "reset": "true",
+        "frames": "863",
+        "resets": "29",
+        "status": "NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass"
+      },
+      {
+        "timestamp": "2026-10-05 08:13:54.584",
+        "source": "23143",
+        "requested": "true",
+        "evaluated": "true",
+        "revision": "6",
+        "reset": "false",
+        "frames": "1200",
+        "resets": "30",
+        "status": "NR active after upscaling, before FG; rtx40; one SDR RGBA8 byte trial pass"
+      }
+    ],
+    "fgTransitions": [
+      {
+        "timestamp": "2026-10-05 08:09:35.424",
+        "frame": "1",
+        "enabled": "false",
+        "presented": "1",
+        "generatedPresented": "0",
+        "nativeBatchedAdditional": "0",
+        "configurationChanges": "0"
+      },
+      {
+        "timestamp": "2026-10-05 08:13:35.004",
+        "frame": "22200",
+        "enabled": "true",
+        "presented": "2",
+        "generatedPresented": "258",
+        "nativeBatchedAdditional": "247",
+        "configurationChanges": "1"
+      },
+      {
+        "timestamp": "2026-10-05 08:13:59.622",
+        "frame": "23400",
+        "enabled": "false",
+        "presented": "1",
+        "generatedPresented": "1286",
+        "nativeBatchedAdditional": "1271",
+        "configurationChanges": "2"
+      },
+      {
+        "timestamp": "2026-10-05 08:14:11.883",
+        "frame": "24000",
+        "enabled": "true",
+        "presented": "2",
+        "generatedPresented": "1551",
+        "nativeBatchedAdditional": "1533",
+        "configurationChanges": "3"
+      },
+      {
+        "timestamp": "2026-10-05 08:20:11.490",
+        "frame": "48000",
+        "enabled": "false",
+        "presented": "1",
+        "generatedPresented": "25378",
+        "nativeBatchedAdditional": "25359",
+        "configurationChanges": "4"
+      },
+      {
+        "timestamp": "2026-10-05 08:20:32.500",
+        "frame": "49200",
+        "enabled": "true",
+        "presented": "2",
+        "generatedPresented": "26371",
+        "nativeBatchedAdditional": "26327",
+        "configurationChanges": "7"
+      }
+    ],
+    "postMenuX2Observed": true,
+    "lastPostMenuX2Timestamp": "2026-10-05 08:20:57.615",
+    "lastNrFrame": {
+      "source": "53795",
+      "requested": "true",
+      "evaluated": "true",
+      "profile": "rtx40",
+      "revision": "6",
+      "reset": "false",
+      "frames": "31800",
+      "resets": "93",
+      "status": "NR"
+    },
+    "errorCriticalCount": 0,
+    "warningCount": 6
+  },
+  "unconfirmed": [
+    "Style 0 -> 1 -> 0: all retained NR settings are style0",
+    "Tone restore to1: observed change1->0.56 and structure1->1.544, not prescribed1->.65->1",
+    "New-run camera appearance/HUD and inventory/map/save/reload/minimize not individually reported",
+    "Actual generated pixel/cadence or matched performance"
+  ],
+  "interpretation": [
+    "Actual End Apply/game Present dispatch observed; nine successful actions followed by continuing world frames",
+    "NR off/on, After->Before->After, and changed tone/structure reach effective settings",
+    "NVIDIA x2 outputs resume after menu closure; sparse counters are runtime observations, not physical display timing",
+    "No production changes, GPU probes, game launch, settings edits or MO2 writes performed by agent",
+    "Prior accepted gameplay and isolated pending-reader tests remain separate evidence"
+  ],
+  "installedFilesSha256": {
+    "TheosRenderPipeline.dll": "dfa5943c416035fbd3078048922e165e27abf7efab7163639323e6fb3c98633f",
+    "TheosRenderPipeline.ini": "bce53ee30962863b87d549714344dd49946f16e14b64d91dbf8e5394ab19779d"
+  }
+}

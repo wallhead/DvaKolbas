@@ -1,5 +1,13 @@
 # Next Skyrim gate: actual End-menu Apply
 
+2026-10-05 result: owner reports the menu tested. The current clean build
+logs nine successful Apply actions, NR off/on, After -> Before -> After,
+changed tone/structure and resumed NVIDIA x2 output, with no error/critical
+entries. All captured NR revisions still have Style 0; the missing style
+Apply cycle was requested separately. See the
+[bounded receipt](end-apply-game-20261005.json). The original checklist below
+is retained for provenance; do not repeat already accepted steps wholesale.
+
 The accepted NVIDIA trial uses DLAA, one After NR pass, NVIDIA FG, Style 0,
 Tone 1, full tone and Stable colors off. Provider replacement remains staged
 for restart. This gate exercises the real menu and game Present path; the CPU
