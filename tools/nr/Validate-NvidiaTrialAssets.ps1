@@ -1,12 +1,15 @@
 param([Parameter(Mandatory)][string]$PackageDirectory)
 # Additional preflight for an NR trial preserving DLSS/DLAA user selectors.
 # FSR-only qualification does not establish that these NVIDIA assets exist.
-. (Join-Path $PSScriptRoot '../fsr/PackageCommon.ps1')
+. (Join-Path $PSScriptRoot 'RuntimePackageCommon.ps1')
 $root=[IO.Path]::GetFullPath($PackageDirectory)
 $plugins=Join-Path $root 'SKSE/Plugins'
 $ini=Read-PackageIni (Join-Path $plugins 'TheosRenderPipeline.ini')
 if($ini['Settings/UpscaleType'] -notin @('0','3')) {throw 'This preflight requires a DLSS/DLAA-selected NR trial'}
 $manifest=Get-Content -LiteralPath (Join-Path $root 'nr-trial-manifest.json') -Raw | ConvertFrom-Json
+$pin=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime-pin.json') -Raw | ConvertFrom-Json
+if(($manifest.profiles|ConvertTo-Json -Depth 8 -Compress) -ne ($pin.profiles|ConvertTo-Json -Depth 8 -Compress)){throw 'Manifest NR profile catalog differs from current pins'}
+Assert-NrRuntimeModels $pin.profiles (Join-Path $plugins 'TheosRenderPipeline')
 $configured=$ini['Experimental/SourceDLSSGStreamlineDirectory']
 if([string]::IsNullOrWhiteSpace($configured)) {throw 'NVIDIA trial has no configured Streamline directory'}
 $streamline=[IO.Path]::GetFullPath($(if([IO.Path]::IsPathRooted($configured)) {$configured} else {Join-Path $plugins $configured}))

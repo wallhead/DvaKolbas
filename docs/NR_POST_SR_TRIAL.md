@@ -1,5 +1,12 @@
 # Native AA post-upscale NR trial
 
+Packaging update, 2026-10-05: new stages use two physical NR DLLs. RTX40 and
+RTX50 keep separate logical profiles but share `NR/rtx40/nvngx_dlssnr.dll`
+(`e67dee...`) and its caller-identity compatibility policy. RTX20/30 retain the
+existing FP16 DLL. This saves 158.16 MiB; actual RTX50 output remains NOT RUN.
+Staging omits the old RTX50 payload and preserves the accepted source mod and
+rollback files. The historical package/build receipts below remain unchanged.
+
 Final functional acceptance, 2026-10-05: **8 of 8 milestones complete for the
 tested native SDR setup**. The owner confirms NVIDIA inventory/map/dialogue
 and minimize/restore, plus FSR Native AA After fast travel, completing the

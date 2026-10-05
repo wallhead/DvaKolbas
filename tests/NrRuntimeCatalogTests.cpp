@@ -21,7 +21,7 @@ int main() {
     Check(RuntimeCatalog().size()==3, "OnlyThreeRequestedNvidiaProfiles");
     struct Expected { const char* id; const char* sha; uint64_t bytes; uint32_t device; };
     const Expected expected[] {
-        {"rtx50","e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",165840496,0x2b85},
+        {"rtx50","e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",165840496,0x2b85},
         {"rtx40","e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",165840496,0x2702},
         {"rtx20-30","6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8",309671536,0x1e04}};
     for (const auto& e: expected) {
@@ -29,6 +29,25 @@ int main() {
         Check(selected.profile && selected.profile->bytes==e.bytes && selected.profile->sha256==e.sha,e.id);
     }
     Selected(0x1e04,"rtx20-30"); Selected(0x2203,"rtx20-30"); Selected(0x2702,"rtx40"); Selected(0x2f06,"rtx50");
+    // Logical hardware profiles survive consolidation; no RTX50 payload is needed.
+    const auto fifty=SelectRuntime(Nvidia(0x2b85),"rtx50",artifacts);
+    const auto forty=SelectRuntime(Nvidia(0x2702),"rtx40",artifacts);
+    Check(fifty.profile && fifty.profile->relativePath=="NR/rtx40/nvngx_dlssnr.dll",
+        "Rtx50ExplicitSettingResolvesSharedPhysicalFile");
+    Check(fifty.profile && forty.profile && fifty.profile->relativePath==forty.profile->relativePath &&
+        fifty.profile->sha256==forty.profile->sha256 &&
+        fifty.profile->compatibility==CompatibilityPolicy::CallerIdentityProbeRequired,
+        "SharedPatchedRuntimeRequiresCallerIdentityPolicyOnRtx50");
+    std::vector<std::string_view> paths;
+    uint64_t payloadBytes{};
+    for(const auto& p:RuntimeCatalog()) if(std::ranges::find(paths,p.relativePath)==paths.end()) {
+        paths.push_back(p.relativePath); payloadBytes+=p.bytes;
+    }
+    Check(paths.size()==2 && payloadBytes==475512032,"TwoPhysicalModelsServeThreeLogicalProfiles");
+    auto noShared=artifacts; noShared[0].present=noShared[1].present=false;
+    Check(!SelectRuntime(Nvidia(0x2b85),"Auto",noShared).profile &&
+        !SelectRuntime(Nvidia(0x2702),"Auto",noShared).profile,"MissingSharedFileRejectsBothFamilies");
+    Check(fifty.qualification==Qualification::HardwareNotRun,"SharedPayloadDoesNotQualifyRtx50Output");
     Check(ClassifyGpu(0x10de,0x2702,false)==GpuFamily::Rtx40,"ExactDesktop4080Super");
     Check(ClassifyGpu(0x1002,0x744c,false)==GpuFamily::AmdUnsupported,"AmdUnsupported");
     Check(ClassifyGpu(0x8086,0x2702,false)==GpuFamily::Unknown,"SameDeviceIdDifferentVendorRejected");

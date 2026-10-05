@@ -2,13 +2,12 @@ param(
     [Parameter(Mandatory)][string]$BuildDirectory,
     [Parameter(Mandatory)][string]$AcceptedModDirectory,
     [Parameter(Mandatory)][string]$DriverCore,
-    [Parameter(Mandatory)][string]$Rtx50,
     [Parameter(Mandatory)][string]$Rtx40,
     [Parameter(Mandatory)][string]$Rtx20_30,
     [Parameter(Mandatory)][string]$OutputDirectory
 )
 # Stage only. Profile activation and launching Skyrim are separate operations.
-. (Join-Path $PSScriptRoot '../fsr/PackageCommon.ps1')
+. (Join-Path $PSScriptRoot 'RuntimePackageCommon.ps1')
 $repository=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $root=[IO.Path]::GetFullPath($OutputDirectory)
 if(Test-Path -LiteralPath $root){throw "Trial output already exists: $root"}
@@ -18,8 +17,8 @@ $identity=Get-EmbeddedBuildIdentity $dll
 if(-not $identity.sourceClean -or -not $identity.neuralRenderingCompiled -or -not $identity.fsrCompiled -or -not $identity.frameGenerationCompiled){throw 'Trial requires clean NR/SR/FG compiled source'}
 Assert-NoVendorImports $dll
 Assert-PinnedFile $DriverCore $pin.qualifiedProbeDriverCore.sha256 $pin.qualifiedProbeDriverCore.bytes
-$models=@{'rtx50'=$Rtx50;'rtx40'=$Rtx40;'rtx20-30'=$Rtx20_30}
-foreach($p in $pin.profiles){Assert-PinnedFile $models[$p.id] $p.sha256 $p.bytes}
+$models=@{'NR/rtx40/nvngx_dlssnr.dll'=$Rtx40;'NR/rtx20-30/nvngx_dlssnr.dll'=$Rtx20_30}
+foreach($p in @(Get-NrPhysicalModels $pin.profiles)){Assert-PinnedFile $models[$p.relativePath] $p.sha256 $p.bytes}
 $accepted=[IO.Path]::GetFullPath($AcceptedModDirectory)
 $iniSource=Join-Path $accepted 'SKSE/Plugins/TheosRenderPipeline.ini'
 $ini=Read-PackageIni $iniSource
@@ -35,7 +34,7 @@ $amdPins=@((Get-Content -LiteralPath (Join-Path $PSScriptRoot '../fsr/runtime-pi
 $amdPins+=@((Get-Content -LiteralPath (Join-Path $PSScriptRoot '../fsr/fg-runtime-pin.json') -Raw|ConvertFrom-Json).runtime)
 [IO.Directory]::CreateDirectory((Join-Path $root 'SKSE/Plugins/FSR'))|Out-Null
 foreach($p in $amdPins){$file=Join-Path $accepted ('SKSE/Plugins/FSR/'+$p.filename);Assert-PinnedFile $file $p.sha256 $p.bytes;Copy-Item -LiteralPath $file -Destination (Join-Path $root 'SKSE/Plugins/FSR')}
-foreach($p in $pin.profiles){$destination=Join-Path $root ('SKSE/Plugins/TheosRenderPipeline/'+$p.relativePath);[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($destination))|Out-Null;Copy-Item -LiteralPath $models[$p.id] -Destination $destination}
+Copy-NrRuntimeModels $pin.profiles $models (Join-Path $root 'SKSE/Plugins/TheosRenderPipeline')
 $lines=[Collections.Generic.List[string]]::new();$lines.AddRange([string[]][IO.File]::ReadAllLines($iniSource));$section=''
 $changes=@{
     'SourceDLSSG/NeuralRenderingEnabled'='true';'SourceDLSSG/NRBeforeUpscaling'='true';'SourceDLSSG/NRPasses'='1';

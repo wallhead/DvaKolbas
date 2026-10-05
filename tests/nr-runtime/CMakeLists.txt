@@ -9,6 +9,9 @@ set(TRP_NR_PERF_FSR_SDK "${nrRoot}/out/research/sdk-v2.3.0" CACHE PATH "Pinned F
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_test(NAME NrPerformanceComparison COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/test_performance_comparison.py")
 find_program(nrPresentMonPowerShell NAMES powershell.exe REQUIRED)
+find_program(nrPackagePowerShell NAMES pwsh.exe REQUIRED)
+add_test(NAME NrModelPackage COMMAND "${nrPackagePowerShell}" -NoProfile -ExecutionPolicy Bypass
+    -File "${nrRoot}/tests/NrModelPackageTests.ps1")
 add_test(NAME NrPresentMonComparison COMMAND "${nrPresentMonPowerShell}" -NoProfile -ExecutionPolicy Bypass
     -File "${CMAKE_CURRENT_LIST_DIR}/PresentMonComparisonTests.ps1")
 include("${nrRoot}/cmake/NeuralRuntime.cmake")

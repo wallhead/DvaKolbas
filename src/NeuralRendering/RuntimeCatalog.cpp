@@ -18,9 +18,10 @@ constexpr std::array rtx50{0x2b85u,0x2b87u,0x2b8cu,0x2c02u,0x2c05u,0x2c09u,0x2d0
 static_assert(std::ranges::is_sorted(rtx20) && std::ranges::is_sorted(rtx30) &&
     std::ranges::is_sorted(rtx40) && std::ranges::is_sorted(rtx50));
 constexpr std::array profiles{
-    RuntimeProfile{"rtx50","NR/rtx50/nvngx_dlssnr.dll",
-        "e16bcf15e16e13f527491cdf7845b2fe6521a738d8f7c9c721866a8496e1fc8e",165840496,
-        GpuFamily::Rtx50,false,CompatibilityPolicy::SignedDirect},
+    // Separate hardware eligibility/receipts, one shared compatibility payload.
+    RuntimeProfile{"rtx50","NR/rtx40/nvngx_dlssnr.dll",
+        "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",165840496,
+        GpuFamily::Rtx50,false,CompatibilityPolicy::CallerIdentityProbeRequired},
     RuntimeProfile{"rtx40","NR/rtx40/nvngx_dlssnr.dll",
         "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",165840496,
         GpuFamily::Rtx40,false,CompatibilityPolicy::CallerIdentityProbeRequired},
