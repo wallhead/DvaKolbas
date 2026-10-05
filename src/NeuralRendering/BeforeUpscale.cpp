@@ -101,7 +101,15 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
         std::tuple{NrColorFormat(domain),&slot.output,true}}){r=make(format,*texture,uav);if(!r)return r;}
     // Stage initialization can submit feature creation; never destroy this
     // bridge's retained devices/queue after an uncertain result.
-    s.uncertain=true;r=s.stage.Initialize(std::move(owner),contract,preset,s.metrics,passes);if(!r){s.terminal=true;return r;}
+    s.uncertain=true;r=s.stage.Initialize(std::move(owner),contract,preset,s.metrics,passes);if(!r){
+        if(s.stage.InitializationRolledBackBeforeCreate()){
+            auto healthy=s.Gpu(device->GetDeviceRemovedReason(),"NR Before D3D11 device removed during initialization rollback");if(!healthy)return healthy;
+            healthy=s.Gpu(contract.device->GetDeviceRemovedReason(),"NR Before D3D12 device removed during initialization rollback");if(!healthy)return healthy;
+            // Initialize allocated bridge resources but recorded/submitted none.
+            s.uncertain=false;s.terminal=false;
+        }else s.terminal=true;
+        return r;
+    }
     s.ready=true;return {};
 }
 Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const SettingsSnapshot& settings){
@@ -187,5 +195,6 @@ Result<void> BeforeUpscale::Retire(){
     if(s.ownTiming11)s.queries11->Collect11(s.context.Get());
     r=s.stage.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;return {};
 }
+bool BeforeUpscale::InitializationRolledBackBeforeCreate()const noexcept{return !state_->terminal&&!state_->uncertain&&state_->stage.InitializationRolledBackBeforeCreate();}
 StageDiagnostics BeforeUpscale::Diagnostics()const{auto d=state_->stage.Diagnostics();d.terminal|=state_->terminal;d.bridgeSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->ownTiming11){d.gpuTiming11Available=state_->queries11->Available11();d.gpuTimingDropped+=state_->queries11->Dropped();}return d;}
 }

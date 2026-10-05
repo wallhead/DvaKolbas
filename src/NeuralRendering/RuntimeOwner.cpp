@@ -119,6 +119,14 @@ Result<void> RuntimeOwner::CheckInitializationFallbackSafety(){
     return s.shim.CheckOwnership();
 }
 std::string_view RuntimeOwner::ProfileId()const noexcept{return state_->profileId;}
+Result<void> RuntimeOwner::CheckStageInitializationFallbackSafety(){
+    std::scoped_lock lock(processMutex);auto& s=*state_;
+    if(s.phase!=Phase::Ready || s.clients || !s.device)
+        return Fail(ErrorKind::Retirement,"NR runtime cannot admit stage initialization fallback");
+    const auto hr=s.device->GetDeviceRemovedReason();
+    if(FAILED(hr))return Fail(ErrorKind::Runtime,"NR stage initialization fallback device is removed",hr);
+    return s.shim.CheckOwnership();
+}
 Result<void> RuntimeOwner::CheckClientDevice(ID3D12Device* device)const{
     std::scoped_lock lock(processMutex);const auto& s=*state_;
     ComPtr<IUnknown> actual,expected;

@@ -52,6 +52,9 @@ public:
     Result<void> WaitForProgress(uint32_t timeoutMilliseconds);
     Result<uint32_t> CollectCompleted();
     Result<void> Retire();
+    // Explicit proof: no vendor CreateFeature attempt or submitted creation
+    // work, and all parameters/client/callback ownership rolled back.
+    bool InitializationRolledBackBeforeCreate()const noexcept;
     StageDiagnostics Diagnostics()const;
 private:
     Result<EvaluationTicket> RecordInternal(ID3D12GraphicsCommandList*,const ImagePacket&,const SettingsSnapshot&,bool queued);

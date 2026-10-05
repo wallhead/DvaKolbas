@@ -63,7 +63,7 @@ void Neural()
     legacy.sourceDLSSG.neuralPasses = 2;
     Require(!ValidateRendererSettings(legacy, legacyCaps), "legacy renderer accepts two passes");
     legacy.sourceDLSSG.neuralPasses = 3;
-    Require(ValidateRendererSettings(legacy, legacyCaps), "legacy renderer rejects an unsupported third pass");
+    Require(!ValidateRendererSettings(legacy, legacyCaps), "legacy Apply preserves a saved third pass while execution caps at two");
     auto thirdDraft = legacy; thirdDraft.sourceDLSSG.neuralThirdPass.tuning.intensity = .5f;
     Require(!SameNeuralPreferences(legacy.sourceDLSSG, thirdDraft.sourceDLSSG) &&
         CountRendererSettingsChanges(thirdDraft, legacy) == 1, "third-pass edits participate in Apply and capability validation");

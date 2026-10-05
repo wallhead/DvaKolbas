@@ -59,7 +59,7 @@ struct Stage::State {
     struct Feature {NVSDK_NGX_Parameter* parameters{};void* handle{};std::optional<int> recordedStyle;};
     std::array<Feature,3> features;
     unsigned passes{1};
-    bool attempted{},ready{},client{},terminal{},sdrViewsQualified{};
+    bool attempted{},ready{},client{},terminal{},sdrViewsQualified{},featureCreateAttempted{},initializationRolledBack{};
     unsigned preset{};
     uint64_t serial{},recorded{},evaluatedPasses{},submissionValue{1};
     uint32_t create{},evaluate{},release{},destroy{};
@@ -89,6 +89,8 @@ struct Stage::State {
         // Called only before entering vendor CreateFeature. No feature or
         // command recording can own these parameters/allocator callbacks yet.
         // Failed cleanup still retains the client and process allocator claim.
+        if(featureCreateAttempted){terminal=true;return Fail(ErrorKind::Retirement,"NR feature creation was attempted; rollback is unproven");}
+        auto healthy=Gpu(contract.device->GetDeviceRemovedReason(),"NR device removed before initialization rollback");if(!healthy)return healthy;
         {std::scoped_lock lock(allocationMutex);
             if(activeAllocation!=&allocation || !allocation.resources.empty() || allocation.failed){terminal=true;return Fail(ErrorKind::Retirement,"NR early initialization allocator ownership is uncertain");}}
         for(auto& feature:features)if(feature.parameters){
@@ -96,6 +98,7 @@ struct Stage::State {
             auto destroyed=Native(destroy,"NR early initialization parameter destruction failed; ownership retained");
             if(!destroyed)return destroyed;feature.parameters=nullptr;
         }
+        healthy=Gpu(contract.device->GetDeviceRemovedReason(),"NR device removed during initialization rollback");if(!healthy)return healthy;
         {std::scoped_lock lock(allocationMutex);
             if(activeAllocation!=&allocation || !allocation.resources.empty() || allocation.failed){terminal=true;return Fail(ErrorKind::Retirement,"NR early initialization callback cleanup is uncertain");}
             auto released=owner->ReleaseClientAfterRetirement();if(!released){terminal=true;return released;}
@@ -104,6 +107,7 @@ struct Stage::State {
         creationFence.Reset();creationList.Reset();creationAllocator.Reset();
         alphaPipeline.Reset();alphaRoot.Reset();allocation.device.Reset();
         contract={};timing.reset();owner.reset();
+        terminal=false;initializationRolledBack=true;
         return failure;
     }
     Result<void> BuildAlpha(){
@@ -156,7 +160,7 @@ Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageCo
     r=s.Gpu(c.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&s.creationAllocator)),"NR creation allocator failed");if(!r)return s.FailBeforeFeatureCreate(r);
     r=s.Gpu(c.device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,s.creationAllocator.Get(),nullptr,IID_PPV_ARGS(&s.creationList)),"NR creation list failed");if(!r)return s.FailBeforeFeatureCreate(r);
     r=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&s.creationFence)),"NR creation fence failed");if(!r)return s.FailBeforeFeatureCreate(r);
-    for(unsigned i=0;i<passes;++i){auto& feature=s.features[i];s.create=e.create(s.creationList.Get(),kDirectNrFeatureId,feature.parameters,&feature.handle);r=s.Native(s.create,"NR shared feature creation failed");if(!r)return r;
+    for(unsigned i=0;i<passes;++i){auto& feature=s.features[i];s.featureCreateAttempted=true;s.create=e.create(s.creationList.Get(),kDirectNrFeatureId,feature.parameters,&feature.handle);r=s.Native(s.create,"NR shared feature creation failed");if(!r)return r;
     if(!feature.handle){s.terminal=true;return Fail(ErrorKind::Runtime,"NR create returned no feature");}}
     r=s.Gpu(s.creationList->Close(),"NR creation list close failed");if(!r)return r;
     ID3D12CommandList* lists[]={s.creationList.Get()};c.queue->ExecuteCommandLists(1,lists);r=s.Gpu(c.queue->Signal(s.creationFence.Get(),1),"NR creation signal failed");if(!r)return r;
@@ -302,6 +306,7 @@ Result<void> Stage::Retire(){
     {std::scoped_lock lock(allocationMutex);if(activeAllocation!=&s.allocation || !s.allocation.resources.empty() || s.allocation.failed){s.terminal=true;return Fail(ErrorKind::Retirement,"NR callback allocation ownership unbalanced");}activeAllocation=nullptr;}
     r=s.owner->ReleaseClientAfterRetirement();if(!r){s.terminal=true;return r;}s.client=false;s.ready=false;return {};
 }
+bool Stage::InitializationRolledBackBeforeCreate()const noexcept{return state_->initializationRolledBack;}
 StageDiagnostics Stage::Diagnostics()const{const auto& s=*state_;StageDiagnostics d{s.create,s.evaluate,s.release,s.destroy,s.allocation.allocations,s.allocation.releases,s.recorded,s.terminal};
     d.activePasses=s.passes;d.evaluatedPasses=s.evaluatedPasses;
     d.slotCount=uint32_t(s.slots.size());for(const auto& slot:s.slots){for(const auto& pass:slot.passes){d.descriptorOwners+=bool(pass.views);d.parameterOwners+=bool(pass.parameters);}d.pendingTickets+=bool(slot.pending);}

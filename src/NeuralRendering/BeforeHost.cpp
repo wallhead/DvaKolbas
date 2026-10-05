@@ -23,6 +23,18 @@ struct BeforeHost::State {
         return prepared->Evaluate(input,settings.sourceEncoding,snapshot,settings.sdrBytesTrial?nullptr:output);
     }
     void MarkTerminal(const Error& error){status=error.message;active=false;terminal=true;}
+    Result<void> DisableAfterPreparationFailure(const Error& error){
+        const bool rolledBack=post?post->InitializationRolledBackBeforeCreate():prepared&&prepared->InitializationRolledBackBeforeCreate();
+        if(!rolledBack||!device11||!contract.device||!owner){MarkTerminal(error);return std::unexpected(error);}
+        auto hr=device11->GetDeviceRemovedReason();if(SUCCEEDED(hr))hr=contract.device->GetDeviceRemovedReason();
+        if(FAILED(hr)){Error removed{ErrorKind::Runtime,hr,"NR device removed during preparation initialization rollback"};MarkTerminal(removed);return std::unexpected(removed);}
+        auto safe=owner->CheckStageInitializationFallbackSafety();if(!safe){MarkTerminal(safe.error());return safe;}
+        auto retired=owner->Retire();if(!retired){MarkTerminal(retired.error());return retired;}
+        // Prior preparations have already retired; this failed preparation never
+        // created a feature or submitted work. Keep the session unavailable.
+        post.reset();prepared.reset();owner.reset();uncertain=false;available=false;active=false;
+        status=error.message+" (native="+std::to_string(error.nativeCode)+"); NR unavailable for this session; source upscaling continues";return {};
+    }
     Result<void> DisableAfterOpenFailure(const Error& error){
         // This boundary precedes preparation, feature creation and NR frames.
         // A partial Init_Ext owner remains untouched for the process lifetime.
@@ -118,7 +130,7 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
         if(metadata){s.post=std::make_unique<PostUpscale>();initialized=s.post->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,ColorDomain::SdrBytes,unsigned(s.passes));}
         else{s.prepared=std::make_unique<PreparedBeforeUpscale>();initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,
             s.settings.sdrBytesTrial?ColorDomain::SdrBytes:ColorDomain::Linear,Placement::Before,unsigned(s.passes));}
-        if(!initialized){s.MarkTerminal(initialized.error());return std::unexpected(initialized.error());}
+        if(!initialized){auto disabled=s.DisableAfterPreparationFailure(initialized.error());if(!disabled)return std::unexpected(disabled.error());return BeforeResult{false,wasActive||input.reset};}
     }
     if(s.settings.sdrBytesTrial&&linearOutput&&linearOutput->Valid())
         return Fail(ErrorKind::InvalidInput,"NR SDR byte trial cannot replace a retained FSR lease");

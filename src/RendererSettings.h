@@ -202,8 +202,8 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
 #if !defined(TRP_NO_NEURAL_RENDERING)
     if (draft.sourceDLSSG.neuralEnabled)
     {
-        if (draft.sourceDLSSG.neuralPasses < 1 || draft.sourceDLSSG.neuralPasses > (capabilities.communityNeural ? 3 : 2)) {
-            return capabilities.communityNeural ? "Choose one, two or three NR passes." : "The legacy NR runtime supports only one or two passes.";
+        if (draft.sourceDLSSG.neuralPasses < 1 || draft.sourceDLSSG.neuralPasses > 3) {
+            return "Choose one, two or three NR passes. The legacy runtime executes at most two.";
         }
         if (capabilities.communityNeural) {
             if (capabilities.externalWorld || !draft.nativeUI) return "Community NR requires TRP world ownership and native UI.";

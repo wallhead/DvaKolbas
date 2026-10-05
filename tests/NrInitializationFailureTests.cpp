@@ -1,5 +1,6 @@
 // Source inclusion keeps fault injection and private lifecycle snapshots inside
-// this CPU-only executable; the product exposes no fault injection interface.
+// this executable; GPU modes use real devices and a pinned, initialized runtime.
+// The product exposes no fault injection interface.
 #include "NeuralRendering/RuntimeCatalog.h"
 #include "NeuralRendering/ImagePacket.h"
 #include "NeuralRendering/TicketOwnership.h"
@@ -12,18 +13,31 @@
 #undef private
 #include "../src/NeuralRendering/RuntimeOwner.cpp"
 #define Fail StageFail
+#define Transition(...) StageTransition(__VA_ARGS__)
 #include "../src/NeuralRendering/Stage.cpp"
+#undef Transition
 #undef Fail
+#define Fail BeforeFail
+#include "../src/NeuralRendering/BeforeUpscale.cpp"
+#undef Fail
+#define Fail PreparedFail
+#include "../src/NeuralRendering/PreparedBeforeUpscale.cpp"
+#undef Fail
+#include "../src/NeuralRendering/PostUpscale.cpp"
 #define Fail HostFail
 #include "../src/NeuralRendering/BeforeHost.cpp"
 #undef Fail
 #include "nr-runtime/NrTestComStubs.h"
+#include "nr-runtime/GpuProbeGuard.h"
 #include <cstdio>
+#include <cstring>
 using namespace TheosRenderPipeline::NeuralRendering;
 namespace {
 int failures{},allocates{},destroys{},creates{},shutdowns{};
+BeforeHost* injectedHost{};
+std::weak_ptr<PreparedBeforeUpscale::State> failedPreparation;
 void Check(bool ok,const char* message){std::printf("%s %s\n",ok?"PASS":"FAIL",message);failures+=!ok;}
-enum class Fault { Alpha, Allocate, AllocatePartial, Abi, Allocator, List, Fence, VendorCreate, SecondVendorCreate, Destroy };
+enum class Fault { Alpha, Allocate, AllocatePartial, Abi, Allocator, List, Fence, VendorCreate, SecondVendorCreate, Destroy, NullFeature, Shutdown };
 Fault fault;
 struct Parameters final : NVSDK_NGX_Parameter {
 #define PARAM(T) void Set(const char*,T)override{} NVSDK_NGX_Result Get(const char*,T* out)const override{*out={};return NVSDK_NGX_Result_Success;}
@@ -31,12 +45,15 @@ struct Parameters final : NVSDK_NGX_Parameter {
     PARAM(ID3D11Resource*) PARAM(ID3D12Resource*) PARAM(void*)
 #undef PARAM
     void Set(const char*,int)override{}
-    NVSDK_NGX_Result Get(const char*,int* out)const override{*out=fault==Fault::Abi?1:0;return NVSDK_NGX_Result_Success;}
+    NVSDK_NGX_Result Get(const char*,int* out)const override{*out=fault==Fault::Abi||fault==Fault::Destroy?1:0;return NVSDK_NGX_Result_Success;}
     void Reset()override{}
 } parameters;
-uint32_t __cdecl AllocateParameters(NVSDK_NGX_Parameter** out){++allocates;if(fault==Fault::Allocate){*out=nullptr;return 0xbad00002;}*out=&parameters;return fault==Fault::AllocatePartial?0xbad00002:1;}
+uint32_t __cdecl AllocateParameters(NVSDK_NGX_Parameter** out){
+    if(injectedHost)failedPreparation=injectedHost->state_->post?injectedHost->state_->post->bridge_.state_:injectedHost->state_->prepared->state_;
+    ++allocates;if(fault==Fault::Allocate){*out=nullptr;return 0xbad00002;}*out=&parameters;return fault==Fault::AllocatePartial?0xbad00002:1;
+}
 uint32_t __cdecl DestroyParameters(NVSDK_NGX_Parameter*){++destroys;return fault==Fault::Destroy?0xbad00002:1;}
-uint32_t __cdecl CreateFeature(ID3D12GraphicsCommandList*,uint32_t,NVSDK_NGX_Parameter*,void** out){++creates;if(fault==Fault::SecondVendorCreate&&creates==1){*out=reinterpret_cast<void*>(0x123);return 1;}return 0xbad00002;}
+uint32_t __cdecl CreateFeature(ID3D12GraphicsCommandList*,uint32_t,NVSDK_NGX_Parameter*,void** out){++creates;if(fault==Fault::SecondVendorCreate&&creates==1){*out=reinterpret_cast<void*>(0x123);return 1;}*out=nullptr;return fault==Fault::NullFeature?1:0xbad00002;}
 uint32_t __cdecl Shutdown(ID3D12Device*){++shutdowns;return 1;}
 int inits{};
 uint32_t __cdecl RejectInit(uint64_t,const wchar_t*,ID3D12Device*,uint32_t,const void*){++inits;return 0xbad00002;}
@@ -70,6 +87,7 @@ void EarlyFailure(Fault injected,const char* name){
     auto owner=Owner(device.Get());StageContract c{device,queue,{123,0},{64,32},{64,32}};
     auto stage=std::make_unique<Stage>();auto result=stage->Initialize(owner,c);
     Check(!result,name);Check(creates==0&&queue->executions==0,"Early failure never enters vendor creation or submits GPU work");
+    Check(!stage->Diagnostics().terminal,"Confirmed pre-create rollback is not terminal");
     stage.reset();Check(owner->state_->clients==0,"Early failure releases retained runtime client");
     Check(activeAllocation==nullptr,"Early failure releases process allocator claim");
     Check(destroys==(injected==Fault::Alpha||injected==Fault::Allocate?0:1),"Early parameter owner is destroyed exactly once");
@@ -80,7 +98,94 @@ void EarlyFailure(Fault injected,const char* name){
     Check(bool(owner->Retire()),"Runtime can retire after safe early failure");
 }
 }
-int main(){
+// These regressions catch the wrappers converting a proven Stage rollback into
+// terminal retention, or the host returning fatal/retrying after safe failure.
+RuntimeExports::ShutdownFn realShutdown;
+uint32_t __cdecl CountRealShutdown(ID3D12Device* device){++shutdowns;return fault==Fault::Shutdown?0xbad00002:realShutdown(device);}
+int GpuFailure(int argc,char** argv){
+    if(argc!=6||NrRuntimeResearch::GameRunningOrUnknown()){std::puts("GPU fixture arguments invalid or Skyrim/process enumeration blocked");return 1;}
+    const std::string_view layer=argv[3],injected=argv[5];const bool after=std::string_view(argv[4])=="after";
+    std::printf("GPU fixture layer=%s placement=%s fault=%s\n",argv[3],argv[4],argv[5]);
+    if(injected=="allocate")fault=Fault::Allocate;
+    else if(injected=="partial")fault=Fault::AllocatePartial;
+    else if(injected=="abi"||injected=="shutdown")fault=injected=="abi"?Fault::Abi:Fault::Shutdown;
+    else if(injected=="destroy")fault=Fault::Destroy;
+    else if(injected=="create")fault=Fault::VendorCreate;
+    else if(injected=="second-create")fault=Fault::SecondVendorCreate;
+    else if(injected=="null-feature")fault=Fault::NullFeature;
+    else return 1;
+    ComPtr<IDXGIFactory6> factory;if(FAILED(CreateDXGIFactory2(0,IID_PPV_ARGS(&factory))))return 77;
+    ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 d{};
+    for(UINT i=0;;++i){ComPtr<IDXGIAdapter1> candidate;auto hr=factory->EnumAdapterByGpuPreference(i,DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&candidate));if(hr==DXGI_ERROR_NOT_FOUND)break;if(FAILED(hr)||FAILED(candidate->GetDesc1(&d)))return 1;if(d.VendorId==0x10de&&d.DeviceId==0x2702){adapter=candidate;break;}}
+    if(!adapter)return 77;
+    StageContract c;c.colorExtent=c.guideExtent={64,32};c.adapterLuid={d.AdapterLuid.LowPart,d.AdapterLuid.HighPart};
+    if(FAILED(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&c.device))))return 77;
+    D3D12_COMMAND_QUEUE_DESC q{};if(FAILED(c.device->CreateCommandQueue(&q,IID_PPV_ARGS(&c.queue))))return 1;
+    ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context;
+    const auto device11Result=D3D11CreateDevice(adapter.Get(),D3D_DRIVER_TYPE_UNKNOWN,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&device,nullptr,&context);if(FAILED(device11Result)){std::printf("D3D11 setup failed: %08x\n",unsigned(device11Result));return 77;}
+    StartupSettings startup;startup.community=true;startup.runtimeRoot=std::filesystem::absolute(argv[1]);startup.driverCore=std::filesystem::absolute(argv[2]);startup.sourceEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;startup.sdrBytesTrial=true;
+    BeforeHost host;auto inspected=host.Inspect(device.Get(),startup,std::filesystem::absolute("nr-initialization-failure-cache"),c.device.Get());
+    if(!inspected){std::puts(inspected.error().message.c_str());return 1;}
+    auto owner=std::make_shared<RuntimeOwner>(RuntimeOwnerPaths{host.state_->nrFile,startup.driverCore,std::filesystem::absolute("nr-initialization-failure-cache"),true});
+    auto opened=owner->Open(*host.state_->profile,c.device.Get(),host.state_->adapter);if(!opened){std::puts(opened.error().message.c_str());return 1;}
+    // Replace only external operations below the real lifecycle owner. Genuine
+    // init, devices, interop allocations, callback claims and shutdown stay real.
+    owner->state_->exports.allocate=AllocateParameters;owner->state_->exports.destroy=DestroyParameters;owner->state_->exports.create=CreateFeature;
+    realShutdown=owner->state_->exports.shutdown;owner->state_->exports.shutdown=CountRealShutdown;
+    const bool safe=fault==Fault::Allocate||fault==Fault::AllocatePartial||fault==Fault::Abi;
+    const unsigned passes=fault==Fault::SecondVendorCreate?3:1;
+    if(layer=="wrapper"){
+        auto wrapper=std::make_unique<PreparedBeforeUpscale>();auto& prepared=*wrapper;
+        std::weak_ptr<PreparedBeforeUpscale::State> lifetime=prepared.state_;
+        auto failed=prepared.Initialize(owner,device.Get(),c,0,nullptr,ColorDomain::SdrBytes,after?Placement::After:Placement::Before,passes);
+        Check(!failed,"Injected wrapper initialization fails");
+        if(safe){
+            Check(!prepared.Diagnostics().terminal&&!prepared.state_->uncertain&&!prepared.state_->retainedSelf,"Safe wrapper rollback releases self-retention and terminal state");
+            Check(!prepared.state_->bridge.state_->uncertain&&prepared.InitializationRolledBackBeforeCreate()&&owner->state_->clients==0&&!activeAllocation,"Safe wrapper preserves stage rollback proof and releases bridge retention");
+            SettingsSnapshot off;auto bypass=prepared.Evaluate({},startup.sourceEncoding,off);Check(bypass&&!bypass->evaluated,"Safe failed wrapper permits disabled passthrough");
+            Check(bool(prepared.Retire())&&bool(owner->Retire()),"Safe wrapper permits genuine runtime retirement");
+        }else{
+            Check(prepared.Diagnostics().terminal&&prepared.state_->uncertain&&prepared.state_->retainedSelf,"Uncertain wrapper failure retains every owner");
+            Check(!prepared.Retire()&&!owner->Retire(),"Uncertain wrapper failure forbids retirement retry");
+        }
+        wrapper.reset();Check(lifetime.expired()==safe,"Wrapper destruction frees proven-safe preparation and retains uncertain preparation");
+    }else if(layer=="host"){
+        host.state_->owner=owner;host.state_->uncertain=true;host.state_->contract=c;
+        // Simulate a menu restart after the previous preparation retired safely.
+        host.state_->active=injected!="partial";host.state_->recorded=injected=="partial"?0:7;
+        std::vector<unsigned char> bytes(64*32*4,83);ComPtr<ID3D11Texture2D> color;
+        D3D11_TEXTURE2D_DESC t{};t.Width=64;t.Height=32;t.MipLevels=t.ArraySize=t.SampleDesc.Count=1;t.Format=DXGI_FORMAT_R8G8B8A8_UNORM;t.Usage=D3D11_USAGE_DEFAULT;t.BindFlags=D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE;
+        D3D11_SUBRESOURCE_DATA pixels{bytes.data(),64*4,0};if(FAILED(device->CreateTexture2D(&t,&pixels,&color)))return 1;
+        BeforeInput input;input.context=context;input.color=color;input.depth=color;input.motion=color;input.colorExtent=input.guideExtent={64,32};input.epoch=input.guideEpoch=input.sourceId=input.guideSourceId=1;
+        PostSrInput post;post.resources=input;auto& m=post.source;m.backend=TheosRenderPipeline::Upscaling::BackendKind::Fsr;m.outcome=TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal;m.epoch=m.guideEpoch=m.sourceId=m.guideSourceId=1;m.render=m.display=m.color=m.guides={64,32};m.colorDomain=ColorDomain::SdrBytes;m.encoding=startup.sourceEncoding;m.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;m.guideOrigin=GuideOrigin::RealSource;m.motion.currentToPrevious=true;m.motion.scaleX=64;m.motion.scaleY=32;
+        SettingsSnapshot enabled;enabled.enabled=true;enabled.placement=after?Placement::After:Placement::Before;enabled.passes=int(passes);
+        auto run=[&]{return after?host.EvaluatePost(post,enabled):host.Evaluate(input,enabled);};
+        // A shutdown failure also begins with the safe ABI rejection, then fails
+        // genuine runtime retirement. It must not disable the host as healthy.
+        if(fault==Fault::Shutdown)owner->state_->exports.allocate=+[](NVSDK_NGX_Parameter** out)->uint32_t{++allocates;*out=nullptr;return 0xbad00002;};
+        injectedHost=&host;auto result=run();injectedHost=nullptr;
+        if(safe){
+            const bool expectedReset=injected=="partial"?false:true;
+            Check(result&&!result->evaluated&&result->effectiveReset==expectedReset&&!host.Terminal()&&!host.Available()&&!host.Active(),"Safe host failure disables NR and preserves initial/restart source reset");
+            Check(!host.state_->HasPreparation()&&!host.state_->owner&&!host.state_->uncertain,"Safe host rollback releases preparations and runtime");
+            Check(failedPreparation.expired(),"Safe host destroys the failed preparation without a self-retention cycle");
+            if(injected=="allocate"||injected=="partial")Check(host.Status().find("3134193666")!=std::string::npos,"Latched unavailable status retains the vendor native failure code");
+            const auto allocations=allocates,creationCalls=creates,shutdownCalls=shutdowns;
+            for(int i=0;i<3;++i){auto bypass=run();Check(bypass&&!bypass->evaluated&&!bypass->effectiveReset,"Latched unavailable host passes later sources without forced resets");}
+            Check(allocates==allocations&&creates==creationCalls&&shutdowns==shutdownCalls,"Latched unavailable host never retries initialization");
+            Check(bool(host.Retire())&&!host.Terminal(),"Safe failed host retires normally");
+        }else{
+            Check(!result&&host.Terminal()&&host.state_->HasPreparation()&&host.state_->uncertain,"Uncertain host initialization remains terminal and retained");
+            const auto calls=creates;Check(!run()&&creates==calls&&!host.Retire(),"Terminal host never retries feature creation or teardown");
+        }
+        ComPtr<ID3D11Texture2D> readback;t.Usage=D3D11_USAGE_STAGING;t.BindFlags=0;t.CPUAccessFlags=D3D11_CPU_ACCESS_READ;if(FAILED(device->CreateTexture2D(&t,nullptr,&readback)))return 1;context->CopyResource(readback.Get(),color.Get());D3D11_MAPPED_SUBRESOURCE mapped{};if(FAILED(context->Map(readback.Get(),0,D3D11_MAP_READ,0,&mapped)))return 1;
+        bool unchanged=true;for(UINT y=0;y<32;++y)unchanged&=std::memcmp(static_cast<unsigned char*>(mapped.pData)+y*mapped.RowPitch,bytes.data()+y*64*4,64*4)==0;context->Unmap(readback.Get(),0);Check(unchanged,"Initialization failure leaves real source color bytes unchanged");
+    }else return 1;
+    return failures?1:0;
+}
+int main(int argc,char** argv){
+    setvbuf(stdout,nullptr,_IONBF,0);
+    if(argc>1)return GpuFailure(argc,argv);
     EarlyFailure(Fault::Alpha,"Alpha construction failure injected");
     EarlyFailure(Fault::Allocate,"Parameter allocation failure injected");
     EarlyFailure(Fault::AllocatePartial,"Partial parameter allocation failure injected");
@@ -88,6 +193,14 @@ int main(){
     EarlyFailure(Fault::Allocator,"Command allocator failure injected");
     EarlyFailure(Fault::List,"Command list failure injected");
     EarlyFailure(Fault::Fence,"Creation fence failure injected");
+    fault=Fault::Allocate;ComPtr<Device> lostDevice;lostDevice.Attach(new Device);lostDevice->removed=true;
+    ComPtr<Queue> lostQueue;lostQueue.Attach(new Queue);lostQueue->device=lostDevice.Get();auto lostOwner=Owner(lostDevice.Get());
+    StageContract lostContract{lostDevice,lostQueue,{123,0},{64,32},{64,32}};
+    {Stage lostStage;auto failed=lostStage.Initialize(lostOwner,lostContract);
+        Check(!failed&&lostStage.Diagnostics().terminal&&!lostStage.InitializationRolledBackBeforeCreate(),"Device loss before creation never proves healthy rollback");
+        Check(!lostStage.Retire(),"Removed-device stage forbids teardown retry");}
+    Check(lostOwner->state_->clients==1&&activeAllocation&&!lostOwner->Retire(),"Removed-device early failure retains runtime client and allocator claim");
+    activeAllocation=nullptr;
     fault=Fault::Destroy;ComPtr<Device> cleanupDevice;cleanupDevice.Attach(new Device);ComPtr<Queue> cleanupQueue;cleanupQueue.Attach(new Queue);cleanupQueue->device=cleanupDevice.Get();
     auto cleanupOwner=Owner(cleanupDevice.Get());StageContract cleanupContract{cleanupDevice,cleanupQueue,{123,0},{64,32},{64,32}};
     {Stage cleanup;Check(!cleanup.Initialize(cleanupOwner,cleanupContract),"Early parameter destruction failure injected");}

@@ -101,7 +101,7 @@ void DrawNeuralSettings(TheosRenderPipeline::SourceDLSSG::Preferences& draft, bo
     auto& second = draft.neuralSecondPass;
     const bool cs = TheosRenderPipeline::CommunityShaders::Active();
     const bool producerColor = cs && draft.neuralBeforeUpscaling;
-    const bool twoPasses = draft.neuralPasses == 2;
+    const bool twoPasses = draft.neuralPasses >= 2;
     const float label = LabelWidth({"One pass while weapons are drawn", "Input colour is linear HDR", "NR input resolution"});
     const auto* host = NvidiaHost::GetSingleton();
     const auto width = draft.neuralBeforeUpscaling ? host->RenderWidth() : host->OutputWidth();
@@ -127,6 +127,9 @@ void DrawNeuralSettings(TheosRenderPipeline::SourceDLSSG::Preferences& draft, bo
         ImGui::EndTable();
     }
     ImGui::TextDisabled("! restarts NR briefly when changed");
+    if (draft.neuralPasses > 2) {
+        ImGui::TextWrapped("Legacy NR uses two passes. Your saved three-pass preference and Pass 3 settings are kept for the community runtime.");
+    }
 
     const auto* decor = ActivePresetDecor();
     const auto heading = decor && decor->EditingTime() ? std::format("Passes  |  editing {}", decor->EditingTime())

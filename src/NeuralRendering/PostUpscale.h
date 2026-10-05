@@ -13,6 +13,7 @@ public:
     Result<void> TrackReader(const DeliveryTicket& ticket,ID3D12Fence* fence,uint64_t value){return bridge_.TrackReader(ticket,fence,value);}
     Result<uint32_t> CollectCompleted(){return bridge_.CollectCompleted();}
     Result<void> Retire(){return bridge_.Retire();}
+    bool InitializationRolledBackBeforeCreate()const noexcept{return bridge_.InitializationRolledBackBeforeCreate();}
     StageDiagnostics Diagnostics()const{return bridge_.Diagnostics();}
 private:
     PreparedBeforeUpscale bridge_;

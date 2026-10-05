@@ -83,7 +83,14 @@ Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> own
         r=make(DXGI_FORMAT_R32_FLOAT,D3D11_BIND_UNORDERED_ACCESS|D3D11_BIND_SHADER_RESOURCE,slot.depth);if(!r)return r;
         r=make(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE,slot.motion);if(!r)return r;
     }
-    s.uncertain=true;s.retainedSelf=state_;r=s.bridge.Initialize(std::move(owner),device,c,preset,s.metrics,s.timing.get(),domain,placement,passes);if(!r){s.terminal=true;return r;}s.ready=true;return {};
+    s.uncertain=true;s.retainedSelf=state_;r=s.bridge.Initialize(std::move(owner),device,c,preset,s.metrics,s.timing.get(),domain,placement,passes);if(!r){
+        if(s.bridge.InitializationRolledBackBeforeCreate()){
+            auto healthy=s.Gpu(device->GetDeviceRemovedReason(),"NR preparation D3D11 device removed during initialization rollback");if(!healthy)return healthy;
+            healthy=s.Gpu(c.device->GetDeviceRemovedReason(),"NR preparation D3D12 device removed during initialization rollback");if(!healthy)return healthy;
+            s.uncertain=false;s.terminal=false;s.retainedSelf.reset();
+        }else s.terminal=true;
+        return r;
+    }s.ready=true;return {};
 }
 Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Upscaling::ColorEncoding encoding,const SettingsSnapshot& settings,PreparedFsrInput* linearOutput){
     auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Runtime,"NR source preparation terminal; ownership retained");
@@ -156,5 +163,6 @@ Result<void> PreparedBeforeUpscale::WaitDelivery(const BeforeResult& result){aut
 Result<void> PreparedBeforeUpscale::TrackReader(const DeliveryTicket& delivery,ID3D12Fence* fence,uint64_t value){auto& s=*state_;auto* slot=s.Find(delivery);if(s.terminal||!slot||!slot->busy)return Fail(ErrorKind::InvalidInput,"NR prepared reader delivery expired/foreign");auto result=s.bridge.TrackReader(slot->bridgeDelivery.delivery,fence,value);if(!result){s.terminal=true;return result;}slot->readers.push_back({fence,value});return {};}
 Result<void> PreparedBeforeUpscale::Retire(){auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR preparation terminal; no teardown retry");if(!s.ready)return {};
     auto drained=s.WaitPending();if(!drained)return drained;if(s.timing)s.timing->Collect11(s.context.Get());auto r=s.bridge.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;s.retainedSelf.reset();return {};}
+bool PreparedBeforeUpscale::InitializationRolledBackBeforeCreate()const noexcept{return !state_->terminal&&!state_->uncertain&&state_->bridge.InitializationRolledBackBeforeCreate();}
 StageDiagnostics PreparedBeforeUpscale::Diagnostics()const{auto d=state_->bridge.Diagnostics();d.terminal|=state_->terminal;d.preparedSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->timing){d.gpuTiming11Available=state_->timing->Available11();d.gpuTimingDropped+=state_->timing->Dropped();}return d;}
 }

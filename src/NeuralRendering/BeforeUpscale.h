@@ -40,6 +40,7 @@ public:
     Result<void> WaitDelivery(const BeforeResult&);
     Result<void> TrackReader(const DeliveryTicket&,ID3D12Fence*,uint64_t value);
     Result<void> Retire();
+    bool InitializationRolledBackBeforeCreate()const noexcept;
     StageDiagnostics Diagnostics()const;
 private:
     struct State;std::unique_ptr<State> state_;

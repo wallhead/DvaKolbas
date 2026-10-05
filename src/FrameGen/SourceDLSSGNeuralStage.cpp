@@ -9,7 +9,12 @@ namespace TheosRenderPipeline::SourceDLSSG
 	void Backend::ConfigureNeuralRendering(NeuralOptions a_options)
 	{
 		const bool requested = a_options.enabled;
+		const auto requestedPasses = a_options.passes;
 		a_options = SanitizeNeuralOptions(std::move(a_options));
+		if (requested && requestedPasses > a_options.passes) {
+			logger::warn("[SourceDLSSG NR] legacy runtime executes {} of {} requested passes; saved pass count and Pass 3 settings remain unchanged",
+				a_options.passes, requestedPasses);
+		}
 		if (requested && !a_options.enabled) {
 			logger::warn("[SourceDLSSG NR] optional runtime not found at {}; NR disabled, standard DLSS continues",
 				a_options.runtimePath.string());

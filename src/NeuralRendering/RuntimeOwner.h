@@ -38,6 +38,8 @@ public:
     bool Ready() const noexcept;
     RuntimeOpenDisposition OpenDisposition() const noexcept;
     Result<void> CheckInitializationFallbackSafety();
+    // Called only with the stage's independent proof of pre-create rollback.
+    Result<void> CheckStageInitializationFallbackSafety();
     std::string_view ProfileId()const noexcept;
     Result<void> CheckClientDevice(ID3D12Device*)const;
     // A client covers parameters, feature, every recording and every reader.

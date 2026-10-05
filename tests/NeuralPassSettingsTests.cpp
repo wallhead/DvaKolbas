@@ -33,6 +33,13 @@ int main()
 	StorePreferences(ini, old);
 	Require(LoadPreferences(ini) == old && LoadPreferences(ini).neuralPasses == 3,
 		"three requested passes and all custom settings round trip independently");
+	NeuralOptions legacy; legacy.passes = old.neuralPasses;
+	const auto bounded = SanitizeNeuralOptions(legacy);
+	Require(bounded.passes == 2 && bounded.EffectivePasses() == 2,
+		"legacy execution never creates a third pass for a saved community request");
+	StorePreferences(ini, old);
+	Require(LoadPreferences(ini) == old,
+		"saving after legacy execution keeps all three requested passes and custom overrides");
 	old.neuralSecondPass.linked = true;
 	old.neuralThirdPass.linked = true;
 	StorePreferences(ini, old);

@@ -24,9 +24,9 @@ static void StartupNeuralPassLimit()
         Require(!validate(), "legacy startup permits two enabled NR passes");
         for (const long count : {3L, 5L}) {
             startup.SetLongValue(section, passes, count);
-            const auto error = validate();
-            Require(error && std::string_view(error).find("legacy NR") != std::string_view::npos,
-                "legacy startup rejects unsupported pass count with an NR-specific reason");
+            Require(!validate(), "legacy startup keeps rendering with a saved community pass count");
+            Require(startup.GetLongValue(section, passes, 0) == count,
+                "legacy startup validation preserves the saved pass count");
         }
         startup.SetLongValue(section, passes, 3);
         startup.SetBoolValue(section, enabled, false);
