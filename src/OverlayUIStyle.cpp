@@ -67,7 +67,7 @@ const char* ModeName(int a_mode)
     case FSR:
         return "FSR";
     case DLAA:
-        return "DLAA";
+        return "DLSS Native";
     default:
         return "DLSS";
     }

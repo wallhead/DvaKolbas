@@ -277,7 +277,7 @@ void OverlayUI::DrawPresetList()
             const auto path = std::filesystem::path(executable).parent_path() / L"enbseries.ini";
             CSimpleIniA ini;
             const auto hours = length && length < MAX_PATH && ini.LoadFile(path.c_str()) >= 0 ? Appearance::ReadENBSchedule(ini) : std::nullopt;
-            if (hours) { settings.hours = *hours; actionMessage = "Copied ENB clock markers and dawn/dusk boundaries. Review the times, then Apply."; actionMessageIsError = false; }
+            if (hours) { settings.hours = *hours; actionMessage = "Copied ENB clock markers and dawn/dusk boundaries. Changes apply automatically."; actionMessageIsError = false; }
             else { actionMessage = "Could not derive an increasing 24-hour schedule from the game's enbseries.ini. Enter the times manually."; actionMessageIsError = true; }
         }
         Tooltip("Uses ENB's Night, Sunrise, Day and Sunset markers, plus Sunrise minus DawnDuration and Sunset plus DuskDuration. "
@@ -518,7 +518,7 @@ void OverlayUI::DrawPresetEditor(const std::function<void(SourceDLSSG::Preferenc
     if (ImGui::Button("Delete preset...")) { ImGui::OpenPopup("deletePreset"); }
     if (ImGui::BeginPopup("deletePreset")) {
         ImGui::Text("Delete \"%s\"?", ShownName(preset));
-        ImGui::TextDisabled("Where it applied, Base or another preset is used.\nSave as default deletes its preset file; Discard undoes this.");
+        ImGui::TextDisabled("Where it applied, Base or another preset is used.\nSave as default deletes its preset file.");
         if (ImGui::Button("Delete")) { remove = true; ImGui::CloseCurrentPopup(); }
         ImGui::SameLine();
         if (ImGui::Button("Cancel")) { ImGui::CloseCurrentPopup(); }

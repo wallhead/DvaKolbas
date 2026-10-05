@@ -26,6 +26,84 @@ void Feedback()
     Require(SettingsStatus(0, "Settings saved.", false).kind == SettingsStatusKind::Success, "successful save remains visible");
     Require(SettingsStatus(0, "", false).kind == SettingsStatusKind::Neutral, "idle footer");
 }
+void ImmediateMenuEdits()
+{
+    RendererSettingsDraft active; active.valid = true;
+    auto draft = active;
+    RendererSettingsCapabilities caps{true,true,true,false};
+    int applications = 0;
+    const auto apply = [&] {
+        ++applications;
+        if (!ValidateRendererSettings(draft, caps, &active)) {
+            active = draft;
+            RefreshAppliedRendererSettingsDraft(draft, active);
+        }
+    };
+    auto before = draft;
+    Require(!ApplyRendererSettingsEdits(before, draft, apply) && applications == 0,
+        "opening or redrawing the menu cannot apply settings");
+    draft.sourceDLSSG.neuralEnabled = true;
+    Require(ApplyRendererSettingsEdits(before, draft, apply) && active.sourceDLSSG.neuralEnabled && applications == 1,
+        "NR checkbox applies without an Apply button");
+    before = draft;
+    draft.sourceDLSSG.generation.dynamic = true;
+    draft.sourceDLSSG.generation.dynamicTargetFPS = 12;
+    Require(ApplyRendererSettingsEdits(before, draft, apply) && applications == 2 &&
+        !active.sourceDLSSG.generation.dynamic, "invalid edits preserve the active configuration");
+    before = draft;
+    for (int frame = 0; frame != 120; ++frame)
+        Require(!ApplyRendererSettingsEdits(before, draft, apply), "a rejected edit cannot retry each redraw");
+    Require(applications == 2, "passive menu frames cannot repeat rejected applications");
+    draft.sourceDLSSG.generation.dynamicTargetFPS = 120;
+    Require(ApplyRendererSettingsEdits(before, draft, apply) && applications == 3 &&
+        active.sourceDLSSG.generation.dynamicTargetFPS == 120, "corrected edits apply on the next interaction");
+    draft.sourceDLSSG.hdrOutput.enabled = true;
+    draft.fsr.sourceColorEncoding = Upscaling::ColorEncoding::Gamma22;
+    before = draft;
+    SetRendererUpscaleMode(draft, FSR);
+    caps.fsrBuilt = true;
+    Require(ApplyRendererSettingsEdits(before, draft, apply) && active.upscaleType == FSR,
+        "provider changes automatically stage valid startup settings");
+    before = draft;
+    SetRendererUpscaleMode(draft, DLSS);
+    Require(draft.sourceDLSSG.neuralEnabled && draft.sourceDLSSG.hdrOutput.enabled,
+        "automatic recapture preserves the NVIDIA choices across provider changes");
+    Require(ApplyRendererSettingsEdits(before, draft, apply), "returning to DLSS applies restored choices");
+}
+void NativeRenderScale()
+{
+    RendererSettingsDraft before; before.valid = true;
+    auto preciseEdit = before;
+    preciseEdit.sharpness = std::nextafter(before.sharpness, 1.0f);
+    bool applied = false;
+    Require(ApplyRendererSettingsEdits(before, preciseEdit, [&] { applied = true; }) && applied,
+        "fine sharpness edits cannot disappear between UI frames");
+    RendererSettingsDraft draft; draft.valid = true; draft.qualityLevel = 4;
+    draft.sourceDLSSG.neuralEnabled = true;
+    SetNvidiaRenderScale(draft, -1);
+    Require(draft.upscaleType == DLAA && draft.qualityLevel == 4 && draft.sourceDLSSG.neuralEnabled,
+        "Native scale selects the compatible DLAA INI mode and preserves other settings");
+    for (int quality : {3,0,1,2,4}) {
+        SetNvidiaRenderScale(draft, quality);
+        Require(draft.upscaleType == DLSS && draft.qualityLevel == quality && draft.sourceDLSSG.neuralEnabled,
+            "every scaled option leaves Native and selects the existing DLSS quality ID");
+        SetNvidiaRenderScale(draft, -1);
+        Require(draft.upscaleType == DLAA && draft.qualityLevel == quality,
+            "returning to Native preserves the last scaled quality");
+    }
+    SetRendererUpscaleProvider(draft, true);
+    Require(draft.upscaleType == FSR, "FSR provider can replace Native DLSS");
+    auto captured = draft; captured.nvidiaMode = {}; captured.fsrMode = {};
+    RefreshAppliedRendererSettingsDraft(draft, captured);
+    SetRendererUpscaleProvider(draft, false);
+    Require(draft.upscaleType == DLAA && draft.sourceDLSSG.neuralEnabled,
+        "returning to DLSS restores Native with the NVIDIA NR preference");
+    SetNvidiaRenderScale(draft, 2);
+    SetRendererUpscaleProvider(draft, true);
+    SetRendererUpscaleProvider(draft, false);
+    Require(draft.upscaleType == DLSS && draft.qualityLevel == 2,
+        "provider round trip also preserves a scaled DLSS choice");
+}
 void Generation()
 {
     using namespace SourceDLSSG;
@@ -264,6 +342,6 @@ void EffectivePresenterUi()
 }
 int main()
 {
-    try { Feedback(); Generation(); Neural(); LiveGenerationActions(); DraftModeRoundTrip(); StagedGenerationDefaults(); ActualPresenterGenerationGate(); LiveGenerationWithOrdinaryDraft(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
+    try { ImmediateMenuEdits(); NativeRenderScale(); Feedback(); Generation(); Neural(); LiveGenerationActions(); DraftModeRoundTrip(); StagedGenerationDefaults(); ActualPresenterGenerationGate(); LiveGenerationWithOrdinaryDraft(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: automatic menu edits, Native render scale, visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

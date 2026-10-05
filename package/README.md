@@ -87,13 +87,13 @@ Newer runtimes use the same filenames and folders; compatibility may vary.
 
 ## Controls
 
-**End** opens settings. **Apply** changes this session. **Save as default**
-also saves settings and window layout; **Discard** drops unapplied edits. DLSS/DLAA mode
-and render scale changes take effect after restarting Skyrim.
+**End** opens settings. Live changes apply automatically. **Save as default**
+saves settings and window layout. Select **100% | Native** under DLSS Render scale
+for native anti-aliasing. Mode, render scale and presenter changes require restart.
 
 Live FPS and related measurements stay beside the controls. Resize the window
-and drag the column divider to change the layout. The pipeline bar above the
-tabs shows the applied rendering order. Advanced contains Lab mode for detailed
+and drag the column divider to change the layout. The frame-time graph remains
+above the DLSS, NR and Frame generation tabs. Advanced contains Lab mode for detailed
 runtime information and the information needed for problem reports.
 
 The Neural Rendering tab contains **Base** and named presets. Presets change

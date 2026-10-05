@@ -172,7 +172,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 if (TheosRenderPipeline::Overlay::FPSInput("##sourceMFGTarget", target))
                 {
                     // Keep intermediate digits while typing 120, rather than
-                    // replacing 1 and 12 with zero. Validate on Apply.
+                    // replacing 1 and 12 with zero. Invalid edits leave active settings unchanged.
                     request.dynamicTargetFPS = static_cast<unsigned>(std::clamp(target, 0, 1000));
                 }
                 ImGui::TextDisabled("0 = display refresh rate; explicit targets must exceed 60 FPS.");
@@ -188,7 +188,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             }
             ImGui::Checkbox("UI recomposition##sourceDLSSG", &settingsDraft.sourceDLSSG.uiRecomposition);
             DrawSettingsHelp("Generates the scene and HUD separately to reduce HUD ghosting in motion. "
-                             "Small GPU and VRAM cost. Apply to compare live.");
+                             "Small GPU and VRAM cost. Changes apply automatically.");
             if (frameGenerationRuntimeActive && sourceState.uiRecompositionRequested)
             {
                 if (sourceState.options.enableUserInterfaceRecomposition == sl::eTrue)

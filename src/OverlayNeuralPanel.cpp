@@ -82,7 +82,7 @@ const char* NeuralUnavailableReason(int upscaleType, bool nrRuntimePresent)
     }
     if (!TheosRenderPipeline::SupportsNeuralRenderingMode(upscaleType, TheosRenderPipeline::CommunityShaders::Active()))
     {
-        return "NR requires DLSS or DLAA mode. Select either in the DLSS tab and restart Skyrim.";
+        return "NR requires DLSS. Select it in the DLSS tab and restart Skyrim.";
     }
     if (!TheosRenderPipeline::CommunityShaders::Active() && !NvidiaHost::GetSingleton()->DedicatedUITextureMode())
     {
@@ -212,7 +212,7 @@ void DrawNeuralSettings(TheosRenderPipeline::SourceDLSSG::Preferences& draft, bo
             {
                 ImGui::BeginTooltip();
                 DrawNRInputPreview("Requested input", width, height, scale, reconstruction);
-                ImGui::TextUnformatted("Relative to the selected stage's scene size. Apply to update.");
+                ImGui::TextUnformatted("Relative to the selected stage's scene size. Updates automatically.");
                 ImGui::EndTooltip();
             }
             return changed;
@@ -351,7 +351,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             if(ImGui::CollapsingHeader("Status and measurements")) {
             DrawSettingsValue("Placement",view.neuralBeforeUpscaling?"Before upscaling and frame generation":"After upscaling, before frame generation");
             DrawSettingsValue("Model","Native SDR, up to three passes");
-            ImGui::TextDisabled("After upscaling currently requires DLAA or FSR Native AA.");
+            ImGui::TextDisabled("After upscaling currently requires Native render scale.");
             ImGui::TextWrapped("RTX 40/50 share a runtime path; RTX 20/30 use a separate compatibility runtime. AMD NR is currently unsupported.");
             }
             NextSettingsColumn(height);
@@ -359,7 +359,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             ImGui::BeginDisabled(!TheosRenderPipeline::CanEditNeuralEnabled(p.neuralEnabled,host->CommunityNeuralAvailable()));
             ImGui::Checkbox("Neural Rendering",&p.neuralEnabled);
             ImGui::EndDisabled();
-            ImGui::TextDisabled("Use Apply for this session or Save as default.");
+            ImGui::TextDisabled("Changes apply automatically. Save as default to keep them.");
             ImGui::BeginDisabled(!host->CommunityNeuralAvailable());
             int placement=p.neuralBeforeUpscaling?0:1;
             const char* placements[]{"Before upscaling","After upscaling, before FG"};

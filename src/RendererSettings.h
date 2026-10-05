@@ -9,6 +9,7 @@
 #include "Upscaling/FSRSettings.h"
 #include <array>
 #include <cmath>
+#include <utility>
 
 namespace TheosRenderPipeline
 {
@@ -37,10 +38,11 @@ struct RendererSettingsDraft
     Appearance::Settings appearance;
     bool textureProviderConnected{false};
     TextureProviderBridge::Settings textureProviderSettings{};
-    // Menu-only memory: mode changes are reversible until Apply/Discard.
+    // Menu-only memory: retain each provider's choices across automatic applies.
     struct ModePreferences {
         bool captured{}, generationEnabled{}, neuralEnabled{}, hdrEnabled{}, dynamicResolution{};
         long generationBackend{};
+        bool nativeScale{};
     } nvidiaMode, fsrMode;
 };
 
@@ -49,7 +51,8 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     if (mode == draft.upscaleType) return;
     auto& previous = draft.upscaleType == FSR ? draft.fsrMode : draft.nvidiaMode;
     previous = {true, draft.generationEnabled, draft.sourceDLSSG.neuralEnabled,
-                draft.sourceDLSSG.hdrOutput.enabled, draft.dynamicResolution, draft.generationBackend};
+                draft.sourceDLSSG.hdrOutput.enabled, draft.dynamicResolution, draft.generationBackend,
+                draft.upscaleType == DLAA};
     draft.upscaleType = mode;
     const auto& next = mode == FSR ? draft.fsrMode : draft.nvidiaMode;
     if (next.captured) {
@@ -67,6 +70,26 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     } else {
         draft.generationBackend = 1;
     }
+}
+
+inline void SetRendererUpscaleProvider(RendererSettingsDraft& draft, bool fsr)
+{
+    if ((draft.upscaleType == FSR) == fsr) return;
+    SetRendererUpscaleMode(draft, fsr ? FSR : draft.nvidiaMode.nativeScale ? DLAA : DLSS);
+}
+
+// -1 is the menu's Native choice. Persist the existing DLAA ID for INI compatibility.
+inline void SetNvidiaRenderScale(RendererSettingsDraft& draft, int quality)
+{
+    SetRendererUpscaleMode(draft, quality == -1 ? DLAA : DLSS);
+    if (quality >= 0 && quality <= 4) draft.qualityLevel = quality;
+}
+
+inline void RefreshAppliedRendererSettingsDraft(RendererSettingsDraft& draft, RendererSettingsDraft current)
+{
+    current.nvidiaMode = draft.nvidiaMode;
+    current.fsrMode = draft.fsrMode;
+    draft = std::move(current);
 }
 
 inline int CountRendererSettingsChanges(const RendererSettingsDraft& draft, const RendererSettingsDraft& current)
@@ -108,6 +131,18 @@ inline int CountRendererSettingsChanges(const RendererSettingsDraft& draft, cons
         }
     }
     return count;
+}
+
+template<class Apply>
+inline bool ApplyRendererSettingsEdits(const RendererSettingsDraft& before,
+                                      const RendererSettingsDraft& after, Apply&& apply)
+{
+    // Compare this UI frame's edits, not differences from active settings. A rejected
+    // or restart-only request must not be submitted again on passive menu frames.
+    if (!before.valid || !after.valid ||
+        (CountRendererSettingsChanges(after, before) == 0 && after.sharpness == before.sharpness)) return false;
+    apply();
+    return true;
 }
 
 struct RendererSettingsCapabilities

@@ -25,9 +25,20 @@ int main(){try{
         "Apply publishes all three requested passes with independent tuning");
     Require(!SourceDLSSG::Backend::Get().NeuralConfiguration().enabled,"community owner cannot also enable the legacy NR pass");
     for(bool enabled:{false,true,false,true}){
-        draft=controller.Capture(true,false);draft.sourceDLSSG.neuralEnabled=enabled;draft.generationEnabled=enabled;
-        applied=controller.Apply(draft,false);
-        Require(applied.applied&&!applied.error&&fg.RuntimeInterpolationRequested()==enabled&&fg.settings.sourceDLSSG.neuralEnabled==enabled,"Apply preserves live NR/FG requests");
+        draft=controller.Capture(true,false);const auto beforeEdits=draft;
+        draft.sourceDLSSG.neuralEnabled=enabled;draft.generationEnabled=enabled;
+        const auto previousRequests=host.requests;
+        Require(ApplyRendererSettingsEdits(beforeEdits,draft,[&]{
+            applied=controller.Apply(draft,false);
+            if(applied.applied)RefreshAppliedRendererSettingsDraft(draft,controller.Capture(true,false));
+        }),"checkbox edits automatically reach the production controller");
+        Require(applied.applied&&!applied.error&&fg.RuntimeInterpolationRequested()==enabled&&fg.settings.sourceDLSSG.neuralEnabled==enabled&&pipeline.saves==0,
+            "automatic Apply preserves live NR/FG requests without writing defaults");
+        const auto idle=draft;
+        for(int frame=0;frame<120;++frame)
+            Require(!ApplyRendererSettingsEdits(idle,draft,[&]{controller.Apply(draft,false);}),
+                "idle menu frames cannot resubmit the production controller");
+        Require(host.requests==previousRequests+1,"one checkbox interaction publishes one configuration request");
     }
     draft=controller.Capture(true,false);draft.sourceDLSSG.neuralBeforeUpscaling=true;
     Require(controller.Apply(draft,true).applied&&pipeline.saves==1,"Save reaches writer exactly once");

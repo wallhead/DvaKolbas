@@ -176,23 +176,23 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         {
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Mode");
-            const char* modes[]{"DLSS", "DLAA", "FSR (SR only)"};
-            int mode = settingsDraft.upscaleType == FSR ? 2 : settingsDraft.upscaleType == DLAA ? 1 : 0;
+            const char* modes[]{"DLSS", "FSR"};
+            int mode = settingsDraft.upscaleType == FSR ? 1 : 0;
             constexpr int modeCount =
 #if defined(TRP_ENABLE_FSR)
-                3;
-#else
                 2;
+#else
+                1;
 #endif
             ImGui::SetNextItemWidth(-1);
             if (ImGui::Combo("##mode", &mode, modes, modeCount))
             {
-                TheosRenderPipeline::SetRendererUpscaleMode(settingsDraft, mode==2?FSR:mode==1?DLAA:DLSS);
+                TheosRenderPipeline::SetRendererUpscaleProvider(settingsDraft, mode == 1);
             }
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Render scale");
             if(settingsDraft.upscaleType==FSR) {
-                const char* qualities[]{"67% | Quality","59% | Balanced","50% | Performance","100% | NativeAA"};
+                const char* qualities[]{"67% | Quality","59% | Balanced","50% | Performance","100% | Native"};
                 int quality=static_cast<int>(settingsDraft.fsr.quality);
                 ImGui::SetNextItemWidth(-1);
                 if(ImGui::Combo("##fsrQuality",&quality,qualities,4))settingsDraft.fsr.quality=static_cast<TheosRenderPipeline::Upscaling::Quality>(quality);
@@ -200,26 +200,26 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             const char* scales[]{"50% | Performance", "58% | Balanced", "67% | Quality", "33% | Ultra Performance",
                                  "78% | Ultra Quality"};
             const bool native = settingsDraft.upscaleType == DLAA;
-            ImGui::BeginDisabled(native);
             ImGui::SetNextItemWidth(-1);
             if (ImGui::BeginCombo("##renderScale",
                                   native ? "100% | Native" : scales[std::clamp(settingsDraft.qualityLevel, 0, 4)]))
             {
                 for (const int i : {3, 0, 1, 2, 4})
                 {
-                    if (ImGui::Selectable(scales[i], settingsDraft.qualityLevel == i))
+                    if (ImGui::Selectable(scales[i], !native && settingsDraft.qualityLevel == i))
                     {
-                        settingsDraft.qualityLevel = i;
+                        TheosRenderPipeline::SetNvidiaRenderScale(settingsDraft, i);
                     }
                 }
+                if (ImGui::Selectable("100% | Native", native))
+                    TheosRenderPipeline::SetNvidiaRenderScale(settingsDraft, -1);
                 ImGui::EndCombo();
             }
-            ImGui::EndDisabled();
             }
             ImGui::EndTable();
         }
         DrawSettingsHelp(
-            "DLAA uses native resolution. Lower DLSS render scales reduce the size of the rendered world.");
+            "Native uses the full output resolution. Lower render scales reduce the size of the rendered world.");
         if (view.sourceDLSSGActive || view.fsrActive)
         {
             const auto& configuration = host->SourceUpscalerSettings();
@@ -243,7 +243,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         if(view.fsrActive || settingsDraft.upscaleType==FSR) {
             ImGui::TextWrapped("%s",view.fsrStatus.text.c_str());
             DrawSettingsHelp("Choosing FSR first stages ordinary presentation with FG, NR, HDR and dynamic resolution off. "
-                             "Apply changes NR for this session; the current presenter keeps its live FG request until restart. "
+                             "NR changes apply automatically; the current presenter keeps its live FG request until restart. "
                              "Save and restart to change mode, quality, provider or source color encoding. Sharpness applies after Present.");
         }
         if(settingsDraft.upscaleType==FSR) {
@@ -255,7 +255,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             if(ImGui::Combo("Source color encoding##fsr",&encoding,encodings,4))settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);
             DrawSettingsHelp("Choose the actual Skyrim/ENB source encoding. Texture format does not determine it. Unknown prevents FSR startup; changing encoding requires Save and restart.");
             ImGui::SliderFloat("Sharpness##fsr",&settingsDraft.fsr.sharpness,0,1,"%.2f");
-            DrawSettingsHelp("FSR uses this sharpness value. DLSS/DLAA sharpening settings do not affect FSR.");
+            DrawSettingsHelp("FSR uses this sharpness value. DLSS sharpening settings do not affect FSR.");
             ImGui::TextWrapped("Reactive and transparency masks are unavailable. Auto exposure is enabled. Camera jitter uses the selected provider.");
         } else {
         ImGui::Separator();

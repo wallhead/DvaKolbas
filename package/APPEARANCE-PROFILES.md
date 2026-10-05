@@ -36,8 +36,8 @@ restart the game; it is not saved.
    change. **Reset all to Base** clears every change. Settings you leave alone
    follow Base, including later Base edits. In the pass table each pass's cell is
    marked separately, so a preset can change only Pass 2's style.
-5. **Apply** for this session or **Save as default** for future sessions.
-   **Discard** restores the applied configuration.
+5. Changes apply automatically for this session. Use **Save as default** for
+   future sessions.
 
 Look settings (intensity, local tone, local structure and sharpening strength)
 blend smoothly between weathers and times of day and keep NR history. With
@@ -100,7 +100,7 @@ Hours must be within a 24-hour day and increase in that order.
 only when clicked. It copies NightTime, SunriseTime, DayTime and SunsetTime and
 derives Dawn as SunriseTime minus DawnDuration, Dusk as SunsetTime plus DuskDuration.
 For example, markers 1/8.5/10.5/17.5 with durations 3.5/4 give anchors
-01:00/05:00/08:30/10:30/17:30/21:30. Review and Apply the result. Missing or
+01:00/05:00/08:30/10:30/17:30/21:30. Review the automatically applied result. Missing or
 non-increasing schedules leave the previous anchors unchanged.
 
 This provides an editable approximation from the ENB configuration. TRP retains
@@ -175,7 +175,7 @@ not list, such as newly added packs, follow in name order. `Enabled` is written 
 whether any preset is in use, for older builds; this build derives it on load.
 
 Save as default writes every preset file, renames the file of a renamed preset and
-deletes the files of deleted presets; Discard undoes both before saving. Preset
+deletes the files of deleted presets. Session edits apply automatically. Preset
 files the game has not loaded are left alone. Presets
 from formats 1-3 in the main INI load as before and move into files at the next
 save, which removes their old sections. Unrelated INI settings remain intact.

@@ -72,7 +72,7 @@ void OverlayUI::DrawStageMeasurements(SettingsPage page)
     if (!performance->TimingEnabled() || !timings.lastCompletedGeneration)
     {
         ImGui::TextDisabled("%s", performance->TimingEnabled() ? "GPU timings: waiting" : "GPU timings: off");
-        DrawSettingsHelp("Enable stage timings in DLSS > Advanced settings, then Apply.");
+        DrawSettingsHelp("Enable stage timings in DLSS > Advanced settings.");
         return;
     }
     using Stage = PerformanceTuning::D3D11Stage;
@@ -134,17 +134,17 @@ void OverlayUI::DrawOutputOptimizations()
 {
     ImGui::Separator();
     ImGui::Checkbox("Direct RCAS output", &settingsDraft.directRCASOutput);
-    DrawSettingsHelp("Writes sharpened output directly, avoiding its final copy. Apply required.");
+    DrawSettingsHelp("Writes sharpened output directly, avoiding its final copy. Changes apply automatically.");
     ImGui::Checkbox("Direct DLSS output", &settingsDraft.directDLSSOutput);
-    DrawSettingsHelp("Avoids the DLSS copy when sharpening is off; does not disable sharpening. Apply required.");
+    DrawSettingsHelp("Avoids the DLSS copy when sharpening is off; does not disable sharpening. Changes apply automatically.");
 }
 
 void OverlayUI::DrawMeasurementControls()
 {
     ImGui::Checkbox("Stage timings", &settingsDraft.enableGPUTimings);
-    DrawSettingsHelp("Non-blocking GPU/CPU measurements; Apply required.");
+    DrawSettingsHelp("Non-blocking GPU/CPU measurements; changes apply automatically.");
     ImGui::Checkbox("Record frame trace", &settingsDraft.enableFrameTrace);
-    DrawSettingsHelp("Writes a .sfgtrace sidecar on a background thread; Apply required.");
+    DrawSettingsHelp("Writes a .sfgtrace sidecar on a background thread; changes apply automatically.");
     const auto trace = FrameTrace::GetSingleton()->GetStatus();
     if (trace.enabled || trace.written || trace.dropped || trace.writerFailed)
     {

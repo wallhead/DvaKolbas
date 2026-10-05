@@ -319,7 +319,9 @@ void OverlayUI::ApplySettingsDraft(bool save)
     actionMessageIsError = result.error;
     if (result.applied)
     {
-        CaptureSettingsDraft();
+        RefreshNeuralRuntimeAvailability();
+        TheosRenderPipeline::RefreshAppliedRendererSettingsDraft(settingsDraft,
+            TheosRenderPipeline::RendererSettingsController::Current().Capture(nrRuntimePresent));
     }
 }
 
@@ -352,7 +354,6 @@ void OverlayUI::BuildUI()
     layout.y = windowPos.y;
     layout.width = windowSize.x;
     layout.height = windowSize.y;
-    DrawPipelineSummary(view);
     DrawFrameMeasurements(view, 410.0f);
     const auto& layoutStyle = ImGui::GetStyle();
     const auto status = TheosRenderPipeline::SettingsStatus(CountStagedChanges(), actionMessage, actionMessageIsError);
@@ -361,6 +362,7 @@ void OverlayUI::BuildUI()
         ImGui::CalcTextSize(status.text.c_str(), nullptr, false, statusWidth).y + layoutStyle.ItemSpacing.y * 2.0f;
     const float tabCardHeight = (std::max)(1.0f, ImGui::GetContentRegionAvail().y - reservedActionHeight);
 
+    const auto beforeEdits = settingsDraft;
     if (ImGui::BeginTabBar("##theosrenderpipelineTabs", ImGuiTabBarFlags_None))
     {
         DrawImagePanel(tabCardHeight, view);
@@ -379,6 +381,8 @@ void OverlayUI::BuildUI()
         ImGui::EndTabBar();
     }
 
+    TheosRenderPipeline::ApplyRendererSettingsEdits(beforeEdits, settingsDraft,
+        [this] { ApplySettingsDraft(false); });
     requestedPage = SettingsPage::None;
     DrawSettingsActions();
 
@@ -480,23 +484,8 @@ void OverlayUI::DrawSettingsActions()
     const int stagedChanges = CountStagedChanges();
     const auto status = TheosRenderPipeline::SettingsStatus(stagedChanges, actionMessage, actionMessageIsError);
     ImGui::TextWrapped("%s", status.text.c_str());
-    ImGui::BeginDisabled(stagedChanges == 0);
-    if (ImGui::Button("Apply"))
-        ApplySettingsDraft(false);
-    DrawSettingsHelp("Apply live settings for this session. Mode and render scale require Save and restart.");
-    ImGui::EndDisabled();
-    ImGui::SameLine();
+    ImGui::TextDisabled("Live settings apply automatically. Save as default to keep your choices.");
     if (ImGui::Button("Save as default"))
         ApplySettingsDraft(true);
-    DrawSettingsHelp("Apply live settings and save choices and window layout. Mode and render scale require restart.");
-    ImGui::SameLine();
-    ImGui::BeginDisabled(stagedChanges == 0);
-    if (ImGui::Button("Discard"))
-    {
-        CaptureSettingsDraft();
-        actionMessage = "Unapplied edits discarded.";
-        actionMessageIsError = false;
-    }
-    DrawSettingsHelp("Discard unapplied edits. Applied settings and saved defaults stay as they are.");
-    ImGui::EndDisabled();
+    DrawSettingsHelp("Save choices and window layout. Mode, render scale and presenter changes require restart.");
 }

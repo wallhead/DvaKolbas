@@ -9,7 +9,7 @@ weather, game hour and resolved preset names shown in the Neural Rendering tab.
    image and controls behave normally. Record NR/Image values and a short
    stationary frame-time sample.
 2. **Shared assignment:** create a preset, duplicate it, name it, and add
-   two selected weather records to it. Change a value and Apply. Verify both
+   two selected weather records to it. Change a value and verify it applies automatically. Verify both
    assignments still point to it; check current-weather assignment and inheritance.
 3. **Visible transition:** give clear and rainy weather observably different but
    comfortable tuning. Observe a gradual transition while stationary and moving.
@@ -19,7 +19,7 @@ weather, game hour and resolved preset names shown in the Neural Rendering tab.
    fast travel and entering/leaving an interior. Look for stale outdoor tuning,
    a single incorrect frame or prolonged history contamination. Review copied ENB
    anchors against visible lighting; adjust them if needed.
-5. **Controls and persistence:** test Pause presets, Apply, Discard,
+5. **Controls and persistence:** test Pause presets, automatic updates,
    Save as default and a manual restart. Check preset names, shared assignments and
    distinct time points survive. Delete a copy and confirm its assignments fall
    back. Check the Image tab reports preset sharpening. Type a preset name and a

@@ -56,14 +56,15 @@ input scaling and tuning remain available. NR and frame generation are independe
 Both NR placements now work with native DLAA. At 100% NR input scale, both
 process the native resolution, so placement alone does not reduce inference cost.
 
-Apply changes this session. Save as default also saves settings and window
-layout. Discard drops unapplied edits. DLSS/DLAA mode and render scale need a restart.
+Live changes apply automatically. Save as default saves settings and window
+layout. Select 100% | Native under DLSS Render scale for native anti-aliasing.
+Mode, render scale and presenter changes need a restart.
 If the NR DLL is removed, its controls become unavailable until it is restored
 and Skyrim restarted; DLSS/frame generation remain available.
 
 Live FPS and related measurements stay beside the controls. Resize the window
-and drag the column divider to change the layout. The pipeline bar above the
-tabs shows the applied rendering order. Advanced contains Lab mode for detailed
+and drag the column divider to change the layout. The frame-time graph remains
+above the DLSS, NR and Frame generation tabs. Advanced contains Lab mode for detailed
 runtime information and the information needed for problem reports.
 
 The Neural Rendering tab contains **Base** and named presets. Presets change
