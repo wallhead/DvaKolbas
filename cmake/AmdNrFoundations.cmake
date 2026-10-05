@@ -1,0 +1,8 @@
+include_guard(GLOBAL)
+get_filename_component(TRP_AMD_NR_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+add_library(TRPAmdNrCore STATIC "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/WeightArchive.cpp")
+target_compile_features(TRPAmdNrCore PUBLIC cxx_std_23)
+target_include_directories(TRPAmdNrCore PUBLIC "${TRP_AMD_NR_ROOT}/src")
+if(MSVC)
+    target_compile_options(TRPAmdNrCore PRIVATE /W4 /permissive-)
+endif()
