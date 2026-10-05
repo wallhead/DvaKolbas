@@ -145,3 +145,31 @@ Execution decisions, in order:
 
 There are no deferred minor findings. Build commands and the exact scope of
 numerical/hardware verification are in `tests/amd-nr/README.md`.
+
+## Packed-region recovery after foundations
+
+The user requested stable project copies of the supplied inputs. They now reside
+under ignored `local/amd-nr-re/input/`; both SHA-256 identities match the original
+files. RE scripts use these copies instead of paths that move during game setup.
+
+The next static audit recovered physical partitions for the four core records of
+C512 blocks 23–30 and 40–47: 64 records, totaling 31,491,072 bytes. These combine
+FP8 matrix banks, FP16 residual coefficients and attention bias, and FP32 scale
+tails. The loader's record relocation preserves bytes. Treating an entire record
+as linear FP16 is therefore incorrect. Exact boundaries, launch-packet fields,
+GPU access sites, and the remaining logical-indexing gaps are documented in
+[the packed-region report](amd-nr-packed-regions.md).
+
+The audit also distinguishes registered symbols from implemented entry paths:
+51 of 182 entries start with `s_trap 2` in each of the gfx10-3/gfx1030 and gfx11
+targets, zero in gfx1200/gfx1201, and 158 in gfx9-generic. All eight examined
+split-C512 variants start with traps outside gfx1200/gfx1201. Other families have
+non-trap bodies on older targets; this is neither a whole-DLL incompatibility
+finding nor proof that those alternate routes work. Matching ABI metadata across
+targets does not establish functional support.
+
+Fresh checks passed for the original hashes, archive boundaries, 182 Capstone
+registration mappings, nine ELF entry audits, eight byte-identical gfx1200/1201
+variant bodies, 64 closing physical partitions, and exhaustive coefficient
+address coverage. Logical schemas and operation math remain incomplete;
+`KnownArchiveIncompleteSchema` and unavailable inference remain correct.
