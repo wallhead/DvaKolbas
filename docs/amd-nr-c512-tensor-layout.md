@@ -160,8 +160,36 @@ into a padded 32x20 destination writes a 30x18 region:
 | 8x12 | 4x8 | 12,288 | 4,096 |
 | 60x36 | 32x20 | 276,480 | 51,200 |
 
-Initialization and lifetime of that padding remain open. An implementation must
-not assume this kernel writes or clears the padded tail.
+The subsequent allocator audit establishes zero initialization at allocation;
+persistent frame lifetime remains open. An implementation must not assume this
+kernel writes or clears the padded tail.
+
+### Allocator initialization follow-up
+
+Fresh Capstone checks fifteen allocator/producer instruction sites and resolves
+both delayed HIP import thunks from the supplied PE's delay-import directory.
+At RVA `0x42c88` the allocator reads the tile count from manager offset `0x41c`;
+it multiplies by 8,192 bytes, calls `hipMalloc` at `0x42c9b`, then `hipMemset`
+with value zero and the same size at `0x42caa`. The resulting pointer is stored
+at manager offset `0x340` at `0x42ce3`.
+
+In the orchestrator, RVA `0x3c9c3` selects block 30; `0x3c9c8` reads that same
+pointer, and `0x3c9f6` supplies it as the sixth argument to the C512 runner called
+at `0x3ca0c`. Combined with the recovered runner packet, this connects the cleared
+allocation to the optional reduction output. The cached geometry/allocator
+exports corroborate its tile count and allocation route.
+
+This establishes constructor initialization and selected producer routing, not
+all writers or padding contents across every alternative execution route and
+frame lifecycle. Our CPU primitive therefore preserves padding and leaves its
+initialization to the caller. A caller can initialize fresh encoded storage with
+zero bytes to represent positive E4M3 zero.
+
+```powershell
+& C:\Python314\python.exe local/amd-nr-re/probe_c512_padding_initialization.py
+```
+
+The ignored report is `local/amd-nr-re/c512-padding-initialization-contract.json`.
 
 ## Verification and remaining work
 
@@ -186,8 +214,11 @@ The ignored report is `local/amd-nr-re/c512-tensor-layout-contract.json`.
 Original binaries, trained data, extracted code and private probes remain ignored;
 this prose contains the independently derived storage contract.
 
-Next gates are padding initialization, other projection variants and a portable
-projection implementation with justified numerical comparisons. Attention/FFN,
+Checked C++ layout conversion and a CPU half-reduction reference are now
+implemented; [standalone tests](../tests/amd-nr/README.md#c512-tensor-primitives)
+cover generated storage and independent numerical fixtures. Next gates are
+persistent padding lifetime, other projection variants and a portable projection
+implementation with justified numerical comparisons. Attention/FFN,
 other tensor families, complete graph/input/output contracts, renderer integration
 and RDNA2/3/4 validation remain necessary. Product model status stays
 `KnownArchiveIncompleteSchema`, `inference=unavailable`.

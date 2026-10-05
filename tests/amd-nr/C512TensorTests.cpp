@@ -1,4 +1,6 @@
 #include "NeuralRendering/Amd/C512Tensor.h"
+#include "NeuralRendering/Amd/C512Reduction.h"
+#include "NeuralRendering/Amd/NumericFormats.h"
 #include "TestSupport.h"
 #include <algorithm>
 #include <array>
@@ -92,8 +94,81 @@ void InvalidLayoutsAndBuffers() {
     for(auto o:orders) Require(bool(ReorderC512Tensor(l,o,o,b,b)),"in-place identity permitted");
     Require(std::all_of(b.begin(),b.end(),[](auto n){return n==0x69;}),"identity preserves bits");
 }
+void HalfReductionBoundaries() {
+    constexpr std::array<std::array<std::uint16_t,4>,9> values{{
+        {0x6400,0x3800,0xe400,0x3800}, // half boundaries: 0.125, not 0.25
+        {0x8000,0x8000,0x8000,0x8000},
+        {0x7c00,0,0xfc00,0},
+        {0x7bff,0x7bff,0x7bff,0x7bff},
+        {0x7d01,0,0,0},
+        {0x0001,0x0001,0x0001,0x0001},
+        {0x3c00,0x3c00,0x3c00,0x3c00},
+        {0xbc00,0xbc00,0xbc00,0xbc00},
+        {0x0000,0x8000,0x8000,0x8000}
+    }};
+    constexpr std::array<std::uint8_t,9> encoded{0x20,0x80,0x7f,0x7e,0x7f,0x00,0x38,0xb8,0x00};
+    struct Pair { Extent source,destination; };
+    constexpr Pair cases[]{{{4,4},{4,4}},{{60,36},{32,20}},{{8,12},{4,4}}};
+    for(auto dims:cases) {
+        const auto src=MakeC512TensorLayout(dims.source).value(),dst=MakeC512TensorLayout(dims.destination).value();
+        const auto e=src.Dimensions(),d=dst.Dimensions();
+        std::vector<std::uint16_t> input(src.ByteCount());
+        std::vector<std::uint8_t> output(dst.ByteCount(),0xa5);
+        for(unsigned x=0;x<e.width;++x) for(unsigned y=0;y<e.height;++y) for(unsigned n=0;n<512;++n) {
+            const auto pattern=((x/2)*7+(y/2)*3+n)%values.size();
+            input[(std::size_t(x)*e.height+y)*512+n]=values[pattern][(x%2)*2+y%2];
+        }
+        Require(bool(ReduceC512Half2x2(src,dst,input,output)),"half reduction succeeds");
+        std::size_t padding=0;
+        for(unsigned x=0;x<d.width;++x) for(unsigned y=0;y<d.height;++y) for(unsigned n=0;n<512;++n) {
+            const auto active=x<e.width/2 && y<e.height/2;
+            const auto want=active?encoded[(x*7+y*3+n)%values.size()]:0xa5;
+            Require(output[PackedAddress(d,x,y,n)]==want,"literal values, spatial/channel association and padding");
+            padding+=!active;
+        }
+        if(e==Extent{60,36}) Require(padding==51200,"exact padded tail count");
+        const auto before=output;
+        auto bad=ReduceC512Half2x2(src,dst,std::span(input).first(input.size()-1),output);
+        Require(!bad && bad.error()==TensorError::CountMismatch && output==before,"half count error before writes");
+        bad=ReduceC512Half2x2(src,dst,input,std::span(output).first(output.size()-1));
+        Require(!bad && bad.error()==TensorError::CountMismatch && output==before,"output count error before writes");
+    }
+    const auto l=MakeC512TensorLayout({4,4}).value();
+    std::vector<std::uint16_t> data(l.ByteCount(),0x1234);
+    for(auto offset:{0u,1u,8192u}) {
+        const auto before=data;
+        auto bytes=std::span(reinterpret_cast<std::uint8_t*>(data.data())+offset,l.ByteCount());
+        auto r=ReduceC512Half2x2(l,l,data,bytes);
+        Require(!r && r.error()==TensorError::Overlap && data==before,"half/byte overlap before writes");
+    }
+    std::vector<std::uint16_t> shifted(l.ByteCount()+1,0x4321);
+    const auto before=shifted;
+    auto bytes=std::span(reinterpret_cast<std::uint8_t*>(shifted.data()),l.ByteCount());
+    auto reverse=ReduceC512Half2x2(l,l,std::span(shifted).subspan(1),bytes);
+    Require(!reverse && reverse.error()==TensorError::Overlap && shifted==before,"reverse half/byte overlap");
+    auto extended=ReduceC512Half2x2(l,l,shifted,bytes);
+    Require(!extended && extended.error()==TensorError::CountMismatch && shifted==before,"extended half count before writes");
+    const auto huge=MakeC512TensorLayout({0x40000000u,0x01000000u},std::numeric_limits<std::size_t>::max()).value();
+    auto overflow=ReduceC512Half2x2(huge,l,{},{});
+    Require(!overflow && overflow.error()==TensorError::Overflow,"half byte count overflow before span access");
 }
-int main() {
-    LayoutsAndForwardOracle();InvalidLayoutsAndBuffers();
-    std::puts("PASS: C512 tensor layout and byte-preserving conversions");
+void OracleDriver(const char* inputPath,const char* outputPath) {
+    const auto src=MakeC512TensorLayout({64,16}).value(),dst=MakeC512TensorLayout({32,8}).value();
+    std::vector<std::uint16_t> half(src.ByteCount());
+    std::ifstream input(inputPath,std::ios::binary);
+    Require(bool(input.read(reinterpret_cast<char*>(half.data()),std::streamsize(half.size()*2))),"oracle exact input read");
+    Require(input.peek()==std::char_traits<char>::eof(),"oracle input has no tail");
+    std::vector<std::uint8_t> packed(dst.ByteCount(),0xa5),canonical(dst.ByteCount());
+    Require(bool(ReduceC512Half2x2(src,dst,half,packed)),"oracle reduction");
+    Require(bool(ReorderC512Tensor(dst,C512TensorOrder::Packed,C512TensorOrder::Canonical,packed,canonical)),"oracle output view");
+    std::ofstream output(outputPath,std::ios::binary|std::ios::trunc);
+    output.write(reinterpret_cast<const char*>(canonical.data()),std::streamsize(canonical.size()));
+    output.close();Require(bool(output),"oracle output write/close");
+}
+}
+int main(int argc,char** argv) {
+    if(argc==4 && std::string(argv[1])=="--oracle") { OracleDriver(argv[2],argv[3]);return 0; }
+    Require(argc==1,"test executable arguments");
+    LayoutsAndForwardOracle();InvalidLayoutsAndBuffers();HalfReductionBoundaries();
+    std::puts("PASS: C512 tensor layout, storage conversion and half reduction");
 }

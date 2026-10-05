@@ -310,3 +310,28 @@ This closes selected internal spatial addressing. General WMMA equivalence,
 other variants, padding initialization, complete graph/game-frame conventions,
 renderer integration and representative RDNA2/3/4 acceptance remain open.
 `KnownArchiveIncompleteSchema` and `inference=unavailable` remain accurate.
+
+## C512 executable tensor primitives
+
+The next source-owned CPU additions implement checked C512 tensor metadata,
+bit-preserving conversion between canonical/packed/16-channel-block storage and
+the recovered 2x2 half reduction. The reduction writes only the active output,
+preserves padded bytes, rejects incorrect spans and byte overlap before writes,
+and applies all four half-rounding boundaries before E4M3 encoding.
+
+Generated address checks cover 1,540,096 coordinates. An independent oracle
+checks 131,072 reduction output bytes: every half encoding in one source position,
+65,525 random four-half tuples and eleven explicit boundary/special tuples.
+All bytes match. The full standalone suite reports 14 passes, one skip because
+the Windows debug layer is absent, and zero failures.
+
+The private allocator audit resolves both HIP delayed imports and checks fifteen
+fresh host sites. It connects a zero-filled allocation at manager offset `0x340`
+to block 30's reduced output. This closes constructor initialization; all-route,
+multi-frame padding lifetime remains unestablished. Exact evidence is appended
+to [the tensor-layout report](amd-nr-c512-tensor-layout.md).
+
+This implements CPU numerical-reference primitives, not a complete C512 block.
+GPU projection/reduction, general WMMA comparison, the remaining model graph,
+input/output conventions, TRP integration and RDNA2/3/4 acceptance remain open.
+Model/inference status is unchanged.

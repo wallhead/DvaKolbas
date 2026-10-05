@@ -189,3 +189,44 @@ This completes the [encoder plan](../../docs/superpowers/plans/2026-10-05-amd-nr
 It establishes output storage conversion, not matrix math, model image quality,
 runtime performance or Radeon acceptance. No supplied binary code is executed.
 Model status remains `KnownArchiveIncompleteSchema`, `inference=unavailable`.
+
+## C512 tensor primitives
+
+`MakeC512TensorLayout` validates positive extents aligned to 4, 512 channels,
+size overflow and a default 256 MiB byte budget. The immutable layout exposes
+checked coordinates for canonical `[X,Y,channel]` storage (Y advances before X),
+packed 4x4 tiles and the external view with 16-channel blocks.
+`ReorderC512Tensor` preserves every encoded byte between these orders. Exact
+counts are required; invalid orders, out-of-range coordinates, partial overlap
+and overlapping permutations fail before writes. Exact in-place identity
+conversion succeeds.
+
+`ReduceC512Half2x2` is a CPU reference taking canonical raw half words and writing
+packed E4M3 bytes. Each non-overlapping 2x2 block undergoes two half pair sums,
+a half sum of those pairs, and a half quarter multiplication before encoding.
+The destination may crop source-derived pixels or contain padding; padding is
+left untouched. Source count equals its layout's FP8 byte count interpreted as
+the number of half words, so the input occupies twice that many actual bytes.
+Any input/output byte overlap and incorrect counts fail before writes.
+
+Generated tests check 1,540,096 coordinates against forward gather definitions,
+all nine order pairs with address-bit patterns and all FP8 codes, extent/budget
+and overlap failures, literal half rounding/special cases, cropped reduction and
+exactly 51,200 preserved padding bytes for 60x36 ->32x20.
+
+The independent NumPy oracle checks 131,072 encoded reduction outputs with zero
+byte mismatches: all 65,536 half encodings in the first source position, 65,525
+seeded random four-half tuples, and eleven literal boundary/special tuples.
+Each arithmetic step rounds to NumPy half; expected E4M3 bytes come from the
+mathematical nearest-distance oracle, independently of production conversion.
+The file driver is a test-only mode of `TRPAmdNrTensorTests`, not a game tool.
+
+```powershell
+& local/amd-nr-re/Build-Foundations.ps1 -Tests '^AmdNrC512(Tensor|ReductionOracle)$'
+```
+
+The full standalone suite on 2026-10-05 reports 14 passes, one missing-debug-layer
+skip, and zero failures. These additions execute no supplied code, require no HIP
+runtime and enable no model block. GPU reduction/projection, WMMA comparisons,
+persistent padding lifetime, full graph, renderer integration and RDNA2/3/4
+acceptance remain open. [Static contract and allocator evidence](../../docs/amd-nr-c512-tensor-layout.md).

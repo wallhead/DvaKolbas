@@ -51,19 +51,19 @@ Canonical byte/half index is `(x*height+y)*512+channel`. Packed and Blocked16 of
 
 ### Task 1: Validated C512 layout and storage conversion
 
-- [ ] Write `LayoutsAndForwardOracle`: enumerate 4x4, 8x12, 12x8, 32x20 and 60x36; compare every packed offset to independent forward gather integer definitions; independently check Blocked16 strides and Canonical index. Require exact single-visit coverage. Reorder address-bit patterns both directions among all three orders; preserve all 256 FP8 codes.
-- [ ] Write `InvalidLayoutsAndBuffers`: reject zero/unaligned extents, 32-bit maximum aligned product overflow, budget underflow; test exact budget acceptance, out-of-range coordinates and invalid orders; count errors, alias and partial-overlap rejection leave sentinels unchanged; identity in-place succeeds.
-- [ ] Wire target/core source only when implementation exists. First configure/build target with test includes naming the absent API: expected failure identifies missing `C512Tensor.h`. Keep the red output.
-- [ ] Implement checked metadata, recovered bit-deposit indexing and conversion. No allocation or numeric decode. Use integer address comparisons for byte overlap without relational comparisons between unrelated C++ pointers.
-- [ ] Build and run `AmdNrC512Tensor`; expected exit 0 and exact address/storage assertions passing. Commit Task 1 source/tests/build changes.
+- [x] Write `LayoutsAndForwardOracle`: enumerate 4x4, 8x12, 12x8, 32x20 and 60x36; compare every packed offset to independent forward gather integer definitions; independently check Blocked16 strides and Canonical index. Require exact single-visit coverage. Reorder address-bit patterns both directions among all three orders; preserve all 256 FP8 codes.
+- [x] Write `InvalidLayoutsAndBuffers`: reject zero/unaligned extents, 32-bit maximum aligned product overflow, budget underflow; test exact budget acceptance, out-of-range coordinates and invalid orders; count errors, alias and partial-overlap rejection leave sentinels unchanged; identity in-place succeeds.
+- [x] Wire target/core source only when implementation exists. First configure/build target with test includes naming the absent API: expected failure identifies missing `C512Tensor.h`. Keep the red output.
+- [x] Implement checked metadata, recovered bit-deposit indexing and conversion. No allocation or numeric decode. Use integer address comparisons for byte overlap without relational comparisons between unrelated C++ pointers.
+- [x] Build and run `AmdNrC512Tensor`; expected exit 0 and exact address/storage assertions passing. Commit Task 1 source/tests/build changes.
 
 ### Task 2: Half reduction and independent comparison
 
-- [ ] Add `HalfReductionBoundaries`: literals `[1024,0.5,-1024,0.5] -> 0x20`, all-negative zero -> `0x80`, opposite infinite sums -> `0x7f`, all large positives -> `0x7e`; source pixels/channels differ. Check 60x36 ->32x20 preserves exactly 51,200 sentinel padding bytes, cropped 8x12 ->4x4, count and overlap failures before writes.
-- [ ] Add test-only `--oracle input output` driver using fixed source64x16/destination32x8 and exact input length (524,288 raw half words). Python oracle covers all 65,536 half encodings in one input position, 65,536 fixed-seed random four-half tuples, and literal special/boundary tuples. NumPy rounds each half arithmetic step; E4M3 expected values use the existing independent nearest-distance oracle. Compare all 131,072 canonical encoded bytes exactly.
-- [ ] Build before implementing reduction: expected missing header/API failure. Retain red output.
-- [ ] Implement reduction with the existing explicit half conversions and E4M3 encoder; verify counts and any byte overlap before touching output. Preserve padding.
-- [ ] Build/run full suite and independent oracle: expected 14 passes, one missing-debug-layer skip, zero failures and zero bit mismatches. Update actual results and allocator initialization limits; commit Task 2 changes.
+- [x] Add `HalfReductionBoundaries`: literals `[1024,0.5,-1024,0.5] -> 0x20`, all-negative zero -> `0x80`, opposite infinite sums -> `0x7f`, all large positives -> `0x7e`; source pixels/channels differ. Check 60x36 ->32x20 preserves exactly 51,200 sentinel padding bytes, cropped 8x12 ->4x4, count and overlap failures before writes.
+- [x] Add test-only `--oracle input output` driver using fixed source64x16/destination32x8 and exact input length (524,288 raw half words). Python oracle covers all 65,536 half encodings in one input position, 65,536 fixed-seed random four-half tuples, and literal special/boundary tuples. NumPy rounds each half arithmetic step; E4M3 expected values use the existing independent nearest-distance oracle. Compare all 131,072 canonical encoded bytes exactly.
+- [x] Build before implementing reduction: expected missing header/API failure. Retain red output.
+- [x] Implement reduction with the existing explicit half conversions and E4M3 encoder; verify counts and any byte overlap before touching output. Preserve padding.
+- [x] Build/run full suite and independent oracle: expected 14 passes, one missing-debug-layer skip, zero failures and zero bit mismatches. Update actual results and allocator initialization limits; commit Task 2 changes.
 - [ ] Run the Native whole-branch fresh review against branch merge-base, resolve Critical/Important findings with red/green tests, ledger deferred Minors and scope rulings. Keep branch local.
 
 ## Self-review

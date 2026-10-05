@@ -7,6 +7,7 @@ target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/
 target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/C512Projection.cpp")
 target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/C512ProjectionArchive.cpp")
 target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/C512Tensor.cpp")
+target_sources(TRPAmdNrCore PRIVATE "${TRP_AMD_NR_ROOT}/src/NeuralRendering/Amd/C512Reduction.cpp")
 target_link_libraries(TRPAmdNrCore PUBLIC bcrypt)
 target_compile_definitions(TRPAmdNrCore PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN)
 add_executable(TRPAmdNrInspect "${TRP_AMD_NR_ROOT}/tools/AmdNrInspect.cpp")
