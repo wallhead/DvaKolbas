@@ -1,0 +1,8 @@
+add_library(TRPModulePathHookFixture SHARED Fixture.cpp)
+target_compile_definitions(TRPModulePathHookFixture PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+add_executable(TRPModulePathHookTests ModulePathHookTests.cpp ../../src/FrameGen/NeuralRenderingModulePathHook.cpp)
+target_compile_features(TRPModulePathHookTests PRIVATE cxx_std_23)
+target_compile_definitions(TRPModulePathHookTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_include_directories(TRPModulePathHookTests PRIVATE ../nr-peripheral ../../src)
+add_dependencies(TRPModulePathHookTests TRPModulePathHookFixture)
+add_test(NAME NeuralModulePathHook COMMAND TRPModulePathHookTests "$<TARGET_FILE:TRPModulePathHookFixture>")

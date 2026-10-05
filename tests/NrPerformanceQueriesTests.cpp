@@ -1,6 +1,7 @@
 #include "NeuralRendering/PerformanceQueries.h"
 #include "Graphics/D3D11D3D12Interop.h"
 #include "nr-runtime/GpuProbeGuard.h"
+#include "D3D11QueryReadinessProbe.h"
 #include <cstdio>
 #include <d3d11_4.h>
 #include <dxgi1_6.h>
@@ -54,6 +55,26 @@ int main(){
     queries.Collect12();check(!metrics.Snapshot().frames[3].gpuMilliseconds[size_t(GpuPhase::FsrDispatch)],"ObservedFsrSubmissionCannotCollectBeforeRealGpuGate");
     Need(gate->Signal(5));Need(interop.WaitConsumer());Need(interop.Drain());queries.Collect12();interop.SetPerformanceSink({});
     check(metrics.Snapshot().frames[3].gpuMilliseconds[size_t(GpuPhase::FsrDispatch)].has_value(),"ObservedFsrTimestampCollectsAfterGenuineRetirement");
+    metrics.BeginFrame(5,true);
+    queries.Begin11(context.Get(),5);
+    for(const auto phase:{GpuPhase::PrepareColor,GpuPhase::PrepareGuides}){
+        queries.Stamp11(context.Get(),phase,true);queries.Stamp11(context.Get(),phase,false);
+    }
+    queries.End11(context.Get());Need(context4->Signal(gate11.Get(),6));context->Flush();
+    event=CreateEventW(nullptr,FALSE,FALSE,nullptr);Need(gate->SetEventOnCompletion(6,event));
+    if(WaitForSingleObject(event,20000)!=WAIT_OBJECT_0)ExitProcess(1);CloseHandle(event);
+    {
+        D3D11QueryReadinessProbe readiness(context.Get());
+        check(readiness.Installed(),"PartialReadinessFixtureInstalledOnRealContext");
+        if(!readiness.Installed())return 1;
+        queries.Collect11(context.Get());
+        const auto partial=metrics.Snapshot().frames[4].gpuMilliseconds;
+        check(readiness.DelayedOneRead()&&partial[size_t(GpuPhase::PrepareColor)].has_value()&&
+            !partial[size_t(GpuPhase::PrepareGuides)],"OneCompletedPhaseCollectedWhileAnotherRemainsPending");
+        queries.Collect11(context.Get());
+        check(readiness.CompletedPhaseReads()==2,"CompletedPhaseNotQueriedAgainWhenPendingPhaseResumes");
+        check(metrics.Snapshot().frames[4].gpuMilliseconds[size_t(GpuPhase::PrepareGuides)].has_value(),"PreviouslyPendingPhaseCollectedOnRetry");
+    }
     PerformanceMetrics off;PerformanceQueries disabled(&off);
     check(disabled.Initialize12(device.Get(),queue.Get())==S_FALSE&&!disabled.Available12(),"DisabledQueriesCreateNoGpuInstrumentation");
     return failures?1:0;

@@ -10,20 +10,24 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 add_compile_definitions(SKYRIM)
 
+# IPO variables initialize target properties at creation, including the plugin.
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 add_library("${PROJECT_NAME}" SHARED)
 include(cmake/ReleaseMetadata.cmake)
 
 target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_23)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 set(BUILD_TESTS OFF)
 set(SKSE_SUPPORT_XBYAK ON CACHE BOOL "" FORCE)
 
 function(arp_configure_plugin_target target)
-    if(CMAKE_GENERATOR MATCHES "Visual Studio")
-        target_compile_options(${target} PRIVATE /MP /W4 /permissive- /Zc:__cplusplus)
+    if(MSVC)
+        target_compile_options(${target} PRIVATE /W4 /permissive- /Zc:__cplusplus)
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+            target_compile_options(${target} PRIVATE /MP)
+        endif()
         target_link_options(${target} PRIVATE
             "$<$<CONFIG:DEBUG>:/INCREMENTAL;/OPT:NOREF;/OPT:NOICF>"
             "$<$<CONFIG:RELEASE>:/LTCG;/INCREMENTAL:NO;/OPT:REF;/OPT:ICF;/DEBUG:FULL>")
@@ -113,7 +117,7 @@ set_source_files_properties(compatibility/ImGuiCompat/ImGuiIntegration.cpp PROPE
     SKIP_PRECOMPILE_HEADERS ON
     COMPILE_DEFINITIONS "UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOMINMAX")
 
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
+if(MSVC)
 	add_compile_definitions(_UNICODE)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE "$<$<CONFIG:DEBUG>:DEBUG>")
 
@@ -258,6 +262,14 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     target_link_libraries(TRPSourceFrameEvaluatorTests PRIVATE d3d11)
     add_test(NAME SourceFrameEvaluation COMMAND TRPSourceFrameEvaluatorTests)
     enable_testing()
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/plugin-policy-$<CONFIG>.txt"
+        CONTENT "IPO=$<TARGET_PROPERTY:TheosRenderPipeline,INTERPROCEDURAL_OPTIMIZATION>\nDebugIPO=$<TARGET_PROPERTY:TheosRenderPipeline,INTERPROCEDURAL_OPTIMIZATION_DEBUG>\nCompile=$<TARGET_PROPERTY:TheosRenderPipeline,COMPILE_OPTIONS>\nLink=$<TARGET_PROPERTY:TheosRenderPipeline,LINK_OPTIONS>\n")
+    if(MSVC)
+        add_test(NAME PluginCompilerPolicy COMMAND ${CMAKE_COMMAND}
+            "-DPOLICY_FILE=${CMAKE_CURRENT_BINARY_DIR}/plugin-policy-$<CONFIG>.txt" "-DCONFIG=$<CONFIG>"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/PluginCompilerPolicyTests.cmake")
+    endif()
+    add_subdirectory(tests/nr-module-hook)
     trp_add_fsr_tests()
     add_executable(TRPOrdinaryMacroTests tests/OrdinaryPresentationMacroTests.cpp)
     target_compile_features(TRPOrdinaryMacroTests PRIVATE cxx_std_23)

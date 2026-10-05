@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,34 +19,42 @@ namespace TheosRenderPipeline::NeuralRendering
 		{
 			void** slot{ nullptr };
 			void* original{ nullptr };
+			void* replacement{ nullptr };
 		};
 
 		struct ActiveHook
 		{
 			HMODULE featureModule{ nullptr };
+			HMODULE retainedFeature{ nullptr };
+			HMODULE callerModule{ nullptr };
 			std::wstring normalLoaderPathW;
 			std::string normalLoaderPathA;
 			std::vector<PatchedImport> patches;
 			std::size_t users{ 0 };
+			bool restorePending{ false };
 		};
 
 		std::mutex g_hookMutex;
 		ActiveHook g_activeHook;
 
-		std::string ToAnsi(const std::wstring& a_text)
+		std::optional<std::string> ToAnsi(const std::wstring& a_text)
 		{
 			if (a_text.empty()) {
-				return {};
+				return std::nullopt;
 			}
+			const auto codePage = ::GetACP();
+			const auto flags = codePage == CP_UTF8 ? WC_ERR_INVALID_CHARS : WC_NO_BEST_FIT_CHARS;
+			BOOL usedDefault = FALSE;
+			auto* defaultResult = codePage == CP_UTF8 ? nullptr : &usedDefault;
 			const auto required = ::WideCharToMultiByte(
-				CP_ACP, 0, a_text.c_str(), -1, nullptr, 0, nullptr, nullptr);
-			if (required <= 1) {
-				return {};
+				codePage, flags, a_text.c_str(), -1, nullptr, 0, nullptr, defaultResult);
+			if (required <= 1 || usedDefault) {
+				return std::nullopt;
 			}
 			std::string result(static_cast<std::size_t>(required), '\0');
 			if (::WideCharToMultiByte(
-					CP_ACP, 0, a_text.c_str(), -1, result.data(), required, nullptr, nullptr) <= 0) {
-				return {};
+					codePage, flags, a_text.c_str(), -1, result.data(), required, nullptr, defaultResult) != required || usedDefault) {
+				return std::nullopt;
 			}
 			result.pop_back();
 			return result;
@@ -80,7 +89,7 @@ namespace TheosRenderPipeline::NeuralRendering
 			const auto originalResult = ::GetModuleFileNameW(a_module, a_filename, a_capacity);
 			std::scoped_lock lock(g_hookMutex);
 			if (!a_module || !a_filename || a_capacity == 0 ||
-				a_module == g_activeHook.featureModule) {
+				a_module != g_activeHook.callerModule || g_activeHook.normalLoaderPathW.empty()) {
 				return originalResult;
 			}
 			return CopyModulePath(g_activeHook.normalLoaderPathW, a_filename, a_capacity);
@@ -94,7 +103,7 @@ namespace TheosRenderPipeline::NeuralRendering
 			const auto originalResult = ::GetModuleFileNameA(a_module, a_filename, a_capacity);
 			std::scoped_lock lock(g_hookMutex);
 			if (!a_module || !a_filename || a_capacity == 0 ||
-				a_module == g_activeHook.featureModule) {
+				a_module != g_activeHook.callerModule || g_activeHook.normalLoaderPathA.empty()) {
 				return originalResult;
 			}
 			return CopyModulePath(g_activeHook.normalLoaderPathA, a_filename, a_capacity);
@@ -109,10 +118,11 @@ namespace TheosRenderPipeline::NeuralRendering
 			if (!::VirtualProtect(a_slot, sizeof(*a_slot), PAGE_READWRITE, &oldProtection)) {
 				return false;
 			}
-			*a_original = ::InterlockedExchangePointer(a_slot, a_replacement);
+			*a_original = *a_slot;
+			const auto previous = ::InterlockedCompareExchangePointer(a_slot, a_replacement, *a_original);
 			DWORD ignored = 0;
 			::VirtualProtect(a_slot, sizeof(*a_slot), oldProtection, &ignored);
-			return true;
+			return previous == *a_original;
 		}
 
 		bool RestorePointer(const PatchedImport& a_patch)
@@ -125,10 +135,10 @@ namespace TheosRenderPipeline::NeuralRendering
 					a_patch.slot, sizeof(*a_patch.slot), PAGE_READWRITE, &oldProtection)) {
 				return false;
 			}
-			::InterlockedExchangePointer(a_patch.slot, a_patch.original);
+			const auto previous = ::InterlockedCompareExchangePointer(a_patch.slot, a_patch.original, a_patch.replacement);
 			DWORD ignored = 0;
 			::VirtualProtect(a_patch.slot, sizeof(*a_patch.slot), oldProtection, &ignored);
-			return true;
+			return previous == a_patch.replacement;
 		}
 
 		bool IsTargetImport(const char* a_name, void** a_replacement)
@@ -188,7 +198,7 @@ namespace TheosRenderPipeline::NeuralRendering
 			auto* slot = reinterpret_cast<void**>(&a_iatThunk->u1.Function);
 			void* original = nullptr;
 			if (ReplacePointer(slot, replacement, &original)) {
-				a_patches.push_back({ slot, original });
+				a_patches.push_back({ slot, original, replacement });
 			}
 		}
 
@@ -246,6 +256,15 @@ namespace TheosRenderPipeline::NeuralRendering
 				}
 			}
 		}
+
+		void ReleaseActiveHook()
+		{
+			const auto feature = g_activeHook.retainedFeature;
+			const auto caller = g_activeHook.callerModule;
+			g_activeHook = {};
+			if (feature) { ::FreeLibrary(feature); }
+			if (caller) { ::FreeLibrary(caller); }
+		}
 	}
 
 	struct ModulePathHook::State
@@ -274,26 +293,41 @@ namespace TheosRenderPipeline::NeuralRendering
 		if (!ImageHeaders(a_featureModule, &base, &ntHeaders)) {
 			return false;
 		}
+		const auto pathW = a_normalLoaderPath.wstring();
+		const auto pathA = ToAnsi(pathW);
+		if (!pathA) {
+			logger::error("[DLSSNR Source] loader path cannot be represented exactly in the Windows ANSI code page; import hook not installed");
+			return false;
+		}
 
 		std::scoped_lock lock(g_hookMutex);
 		if (g_activeHook.featureModule) {
-			if (g_activeHook.featureModule != a_featureModule ||
-				g_activeHook.normalLoaderPathW != a_normalLoaderPath.wstring()) {
+			if (g_activeHook.restorePending || g_activeHook.featureModule != a_featureModule ||
+				g_activeHook.normalLoaderPathW != pathW) {
 				return false;
 			}
 			++g_activeHook.users;
 			state_->installed = true;
 			return true;
 		}
+		// Keep the target and this proxy's containing caller module resident until
+		// every import has been restored. A failed restore retains both references.
+		if (!::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+				reinterpret_cast<LPCWSTR>(a_featureModule), &g_activeHook.retainedFeature) ||
+			!::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+				reinterpret_cast<LPCWSTR>(&HookGetModuleFileNameW), &g_activeHook.callerModule)) {
+			ReleaseActiveHook();
+			return false;
+		}
 		g_activeHook.featureModule = a_featureModule;
-		g_activeHook.normalLoaderPathW = a_normalLoaderPath.wstring();
-		g_activeHook.normalLoaderPathA = ToAnsi(g_activeHook.normalLoaderPathW);
+		g_activeHook.normalLoaderPathW = pathW;
+		g_activeHook.normalLoaderPathA = *pathA;
 		g_activeHook.users = 1;
 
 		PatchNormalImports(base, ntHeaders, g_activeHook.patches);
 		PatchDelayImports(base, ntHeaders, g_activeHook.patches);
 		if (g_activeHook.patches.empty()) {
-			g_activeHook = {};
+			ReleaseActiveHook();
 			return false;
 		}
 		state_->installed = true;
@@ -306,16 +340,23 @@ namespace TheosRenderPipeline::NeuralRendering
 			return false;
 		}
 		std::scoped_lock lock(g_hookMutex);
-		state_->installed = false;
 		if (g_activeHook.users > 1) {
+			state_->installed = false;
 			--g_activeHook.users;
 			return true;
 		}
 		bool restored = true;
 		for (auto it = g_activeHook.patches.rbegin(); it != g_activeHook.patches.rend(); ++it) {
-			restored = RestorePointer(*it) && restored;
+			if (RestorePointer(*it)) { it->slot = nullptr; }
+			else { restored = false; }
 		}
-		g_activeHook = {};
+		std::erase_if(g_activeHook.patches, [](const PatchedImport& patch) { return patch.slot == nullptr; });
+		if (restored) {
+			state_->installed = false;
+			ReleaseActiveHook();
+		} else {
+			g_activeHook.restorePending = true;
+		}
 		return restored;
 	}
 }

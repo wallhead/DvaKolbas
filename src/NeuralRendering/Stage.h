@@ -27,6 +27,9 @@ class Stage {
 public:
     // All calls, including diagnostics, are serialized by the stage's owner.
     // One serialized real-image history; three retained submitted image slots.
+    // NGX allocator callbacks have no per-client context: only one initialized
+    // Stage may own them process-wide. A second owner fails with Conflict until
+    // the first has retired features, callback allocations and GPU readers.
     Stage();~Stage();
     Stage(const Stage&)=delete;Stage& operator=(const Stage&)=delete;
     Result<void> Initialize(std::shared_ptr<RuntimeOwner>,const StageContract&,unsigned preset=0,PerformanceMetrics* metrics=nullptr);

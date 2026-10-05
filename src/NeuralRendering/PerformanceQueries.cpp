@@ -51,7 +51,11 @@ void PerformanceQueries::Collect11(ID3D11DeviceContext* context){
             const auto first=context->GetData(frame.stamps[phase*2].Get(),&begin,sizeof(begin),D3D11_ASYNC_GETDATA_DONOTFLUSH);
             const auto last=context->GetData(frame.stamps[phase*2+1].Get(),&end,sizeof(end),D3D11_ASYNC_GETDATA_DONOTFLUSH);
             if(FAILED(first)||FAILED(last)){s.available11=false;return;}
-            if(first==S_OK&&last==S_OK)s.metrics->RecordGpuFor(frame.source,GpuPhase(phase),begin,end,disjoint.Frequency,true,bool(disjoint.Disjoint));else ready=false;
+            if(first==S_OK&&last==S_OK){
+                s.metrics->RecordGpuFor(frame.source,GpuPhase(phase),begin,end,disjoint.Frequency,true,bool(disjoint.Disjoint));
+                // This phase is consumed even when another remains pending.
+                frame.beginMask&=~(1u<<phase);frame.endMask&=~(1u<<phase);
+            }else ready=false;
         }if(ready)frame.pending=false;
     }
 }
