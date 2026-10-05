@@ -90,7 +90,7 @@ std::expected<FormatProbe,ProbeError> FormatProbe::Create(ID3D12Device* device,I
 }
 std::expected<FormatProbeJob,ProbeError> FormatProbe::Submit(FormatOperation operation,std::span<const std::uint32_t> input) {
     if(!state_) return std::unexpected(ProbeError::InvalidDevice);
-    if(operation!=FormatOperation::Float32ToHalf && operation!=FormatOperation::HalfToFloat32 && operation!=FormatOperation::E4m3ToHalf) return std::unexpected(ProbeError::InvalidOperation);
+    if(operation!=FormatOperation::Float32ToHalf && operation!=FormatOperation::HalfToFloat32 && operation!=FormatOperation::E4m3ToHalf && operation!=FormatOperation::Float32ToE4m3) return std::unexpected(ProbeError::InvalidOperation);
     if(input.size()>65535u*64) return std::unexpected(ProbeError::Count);
     if(state_->signalFailed || state_->injectRetirementFailure) return std::unexpected(ProbeError::Api);
     try {

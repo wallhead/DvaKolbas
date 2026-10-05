@@ -118,10 +118,12 @@ def fixtures():
     fp8=value.astype(np.float16).view(np.uint16).astype(np.uint32)
     fp8[(code&127)==127]=0x7e00
     yield 'e4m3-to-f16',code|0xffff0000,fp8
+    words,encoded=e4m3_encode_fixtures()
+    yield 'f32-to-e4m3',words,encoded
 
 def verify(cpu,gpu,selection,directory):
     directory.mkdir(parents=True,exist_ok=True)
-    report={'rng_seed':12345,'cases':[], 'unvalidated':['RDNA2 discrete','RDNA3 discrete','RDNA4 discrete'],
+    report={'rng_seed':12345,'e4m3_rng_seed':20261005,'cases':[], 'unvalidated':['RDNA2 discrete','RDNA3 discrete','RDNA4 discrete'],
             'scope':'Storage conversions only; no inference or numerical accumulation acceptance.'}
     for operation,words,expected in fixtures():
         source=directory/(operation+'.input.bin')

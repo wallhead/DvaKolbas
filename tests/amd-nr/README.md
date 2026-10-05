@@ -66,7 +66,7 @@ processing `1920x1088`, deepest `32x20`, and incomplete-schema status.
 `--no-extra-height` are checked explicitly. Exit codes: 0 known archive/help or
 successful conversion, 3 unknown archive, 2 malformed input/arguments/I/O.
 
-Numerical CLI modes on both tools use `--format f32-to-f16|f16-to-f32|e4m3-to-f16
+Numerical CLI modes on both tools use `--format f32-to-f16|f16-to-f32|e4m3-to-f16|f32-to-e4m3
 --input PATH --output PATH`; GPU additionally requires `--warp` or
 `--adapter-luid HIGH:LOW`. No physical adapter is chosen implicitly.
 Oracle fixtures, complete expected/actual outputs, and JSON reports remain under
@@ -146,5 +146,46 @@ success does not establish WMMA dot accuracy, spatial channel conventions,
 residual execution, FP8 output execution or a complete C512 block. A subsequent
 [residual/output audit](../../docs/amd-nr-c512-residual-output.md) closes those
 two surrounding numerical boundaries with private static and generated probes.
-It does not add arithmetic to the product; its numerical totals are separate
-from the standalone CTest results above.
+Its private numerical totals are separate from the standalone CTest results
+above. The output encoder implementation is described below; residual and
+projection arithmetic remain research contracts.
+
+## Portable E4M3 output encoder
+
+`EncodeFloatToE4m3Rne(float)` and shader operation 3 encode FP32 words with
+nearest-even rounding, signed zero, finite saturation at ±448 (including
+infinities), and positive canonical NaN `0x7f`. Both implementations use integer
+quantization with deep-underflow guards; they require neither HIP nor native FP8
+instructions. Existing operation values 0/1/2 retain their conversion behavior.
+
+Both tools expose `--format f32-to-e4m3`. Input and output files use complete
+little-endian `uint32_t` words; each encoded byte occupies the low eight bits
+of an output word, with the upper bits zero. Existing size, alias, publication,
+explicit GPU selection and fence-retirement checks continue to apply.
+
+```powershell
+& out/amd-nr-foundations/Release/TRPAmdNrFormatProbe.exe --warp `
+  --format f32-to-e4m3 --input out/amd-nr-foundations/oracle-warp/f32-to-e4m3.input.bin `
+  --output out/amd-nr-foundations/e4m3-encoded-words.bin
+```
+
+On 2026-10-05 the independent distance oracle matched CPU, WARP and the enumerated
+RTX 4080 SUPER on 166,314 FP32 words, with zero storage-bit mismatches: all 65,536
+promoted half encodings, 756 midpoint neighbors, 22 literal boundary/special
+words, and 100,000 random words using seed 20261005. The oracle constructs E4M3
+values mathematically and chooses the nearest by FP64 distance and tie parity;
+it does not reproduce production bit quantization or use the AMD host converter.
+The previous three conversion modes also passed their complete independent
+fixtures on all three execution paths. Adapter identities remain as listed above.
+
+CPU tests cover every FP8 midpoint on both signs, code roundtrips, canonical NaN,
+deep underflow, zero extension and in-place batches. GPU tests cover dispatch
+counts 0/1/63/64/65 and complete outputs. CLI fixtures cover aliases, empty files,
+malformed words and preservation of an existing destination on failed input.
+All 13 registered standalone tests reported zero failures: 12 passed and the
+debug-layer test was skipped because Windows Graphics Tools is unavailable.
+
+This completes the [encoder plan](../../docs/superpowers/plans/2026-10-05-amd-nr-e4m3-encoder.md).
+It establishes output storage conversion, not matrix math, model image quality,
+runtime performance or Radeon acceptance. No supplied binary code is executed.
+Model status remains `KnownArchiveIncompleteSchema`, `inference=unavailable`.

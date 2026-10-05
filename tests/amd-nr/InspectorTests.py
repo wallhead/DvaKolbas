@@ -47,4 +47,15 @@ with tempfile.TemporaryDirectory(prefix='TRP AMD NR ') as folder:
     source.write_bytes(b'');run(fmt,0);assert target.read_bytes()==b''
     run(fmt+['--width','1'],2)
     run(['--format','bad','--input',source,'--output',target],2)
+    source.write_bytes(struct.pack('<IIIIII',0,0x80000000,0x3f800000,0x7f800000,0xff800001,0x9a996262))
+    fp8=['--format','f32-to-e4m3','--input',source,'--output',target]
+    run(fp8,0);assert target.read_bytes()==struct.pack('<IIIIII',0,0x80,0x38,0x7e,0x7f,0x80)
+    original=source.read_bytes();previous=target.read_bytes()
+    for output in [source,alias]:
+        run(['--format','f32-to-e4m3','--input',source,'--output',output],2)
+        assert source.read_bytes()==original and target.read_bytes()==previous
+    run(['--format','f32-to-e4m3','--input',source,'--output',d/'missing'/'out.bin'],2)
+    assert target.read_bytes()==previous
+    source.write_bytes(b'123');run(fp8,2);assert target.read_bytes()==previous
+    source.write_bytes(b'');run(fp8,0);assert target.read_bytes()==b''
 print('PASS: AMD NR inspector')

@@ -23,4 +23,15 @@ with tempfile.TemporaryDirectory(prefix='TRP AMD NR GPU ') as folder:
     source.write_bytes(b'');run(['--warp',*fmt],0);assert target.read_bytes()==b''
     run(['--warp','--format','bad','--input',source,'--output',target],2)
     run(['--warp','--format','e4m3-to-f16','--input',source,'--output',d/'absent'/'out.bin'],2)
+    source.write_bytes(struct.pack('<IIIIII',0,0x80000000,0x3f800000,0x7f800000,0xff800001,0x9a996262))
+    fp8=['--format','f32-to-e4m3','--input',source,'--output',target]
+    run(['--warp',*fp8],0);assert target.read_bytes()==struct.pack('<IIIIII',0,0x80,0x38,0x7e,0x7f,0x80)
+    original=source.read_bytes();previous=target.read_bytes()
+    for output in [source,alias]:
+        run(['--warp','--format','f32-to-e4m3','--input',source,'--output',output],2)
+        assert source.read_bytes()==original and target.read_bytes()==previous
+    run(['--warp','--format','f32-to-e4m3','--input',source,'--output',d/'absent'/'out.bin'],2)
+    assert target.read_bytes()==previous
+    source.write_bytes(b'123');run(['--warp',*fp8],2);assert target.read_bytes()==previous
+    source.write_bytes(b'');run(['--warp',*fp8],0);assert target.read_bytes()==b''
 print('PASS: explicit GPU selection and file conversion')

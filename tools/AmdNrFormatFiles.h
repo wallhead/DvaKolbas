@@ -14,6 +14,7 @@ inline auto ParseFormat(std::wstring_view value) {
     if(value==L"f32-to-f16") return FormatOperation::Float32ToHalf;
     if(value==L"f16-to-f32") return FormatOperation::HalfToFloat32;
     if(value==L"e4m3-to-f16") return FormatOperation::E4m3ToHalf;
+    if(value==L"f32-to-e4m3") return FormatOperation::Float32ToE4m3;
     throw std::runtime_error("invalid format");
 }
 inline void CheckDistinct(const std::filesystem::path& input,const std::filesystem::path& output) {

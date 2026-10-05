@@ -37,7 +37,7 @@ int wmain(int argc,wchar_t** argv) {
         }
         if(options.contains(L"--help")) {
             if(options.size()!=1) throw std::runtime_error("help takes no other options");
-            std::cout<<"--weights PATH --width U32 --height U32 [--mode default|8|128] [--no-extra-height] [--list] [--projection-block U32 --projection-layer U32]\n--format f32-to-f16|f16-to-f32|e4m3-to-f16 --input PATH --output PATH\n";return 0;
+            std::cout<<"--weights PATH --width U32 --height U32 [--mode default|8|128] [--no-extra-height] [--list] [--projection-block U32 --projection-layer U32]\n--format f32-to-f16|f16-to-f32|e4m3-to-f16|f32-to-e4m3 --input PATH --output PATH\n";return 0;
         }
         const auto need=[&](const wchar_t* key)->const std::wstring& {auto i=options.find(key);if(i==options.end()) throw std::runtime_error("missing required option");return i->second;};
         if(options.contains(L"--format")) {

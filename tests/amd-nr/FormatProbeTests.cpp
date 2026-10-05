@@ -34,12 +34,19 @@ int main(int argc,char**) {
     for(unsigned i=0;i<half.size();++i) half[i]=0xffff0000|i;
     for(unsigned i=0;i<fp8.size();++i) fp8[i]=0xffff0000|i;
     std::mt19937 generator(12345);for(auto& v:random) v=generator();
-    random.insert(random.end(),{0,0x80000000,0x33000000,0x33800000,0x387fc000,0x38800000,0x477fe000,0x477ff000,0x7f800001,0xff800001,0x7fc12345});
-    for(auto [op,input]:{std::pair{FormatOperation::HalfToFloat32,&half},std::pair{FormatOperation::E4m3ToHalf,&fp8},std::pair{FormatOperation::Float32ToHalf,&random}}) {
+    random.insert(random.end(),{0,0x80000000,0x33000000,0x33800000,0x387fc000,0x38800000,0x477fe000,0x477ff000,0x7f800001,0xff800001,0x7fc12345,
+        1,0x80000001,0x007fffff,0x807fffff,0x00800000,0x80800000,0x1a996262,0x9a996262,0x3a800000,0x3a800001,0x43e00000,0xc3e00000,0x7f800000,0xff800000});
+    for(auto [op,input]:{std::pair{FormatOperation::HalfToFloat32,&half},std::pair{FormatOperation::E4m3ToHalf,&fp8},std::pair{FormatOperation::Float32ToHalf,&random},std::pair{FormatOperation::Float32ToE4m3,&random}}) {
         std::vector<std::uint32_t> expected(input->size());Require(bool(ConvertFormatWords(op,*input,expected)),"CPU reference");
         auto job=probe->Submit(op,*input);Require(bool(job),"submit");
         auto got=probe->Readback(*job,std::chrono::seconds(10));Require(bool(got) && *got==expected,"GPU format storage bits");
         Require(probe->Readback(*job,std::chrono::seconds(1)).value()==expected,"repeated readback");
+    }
+    for(unsigned count:{0u,1u,63u,64u,65u}) {
+        const auto input=std::span<const std::uint32_t>(random).first(count);
+        std::vector<std::uint32_t> expected(count);Require(bool(ConvertFormatWords(FormatOperation::Float32ToE4m3,input,expected)),"FP8 dispatch tail CPU reference");
+        auto tail=probe->Submit(FormatOperation::Float32ToE4m3,input);Require(bool(tail),"FP8 dispatch tail submission");
+        Require(probe->Readback(*tail,std::chrono::seconds(10)).value()==expected,"FP8 dispatch tail output length/bits");
     }
     // Keep jobs alive across another submission and release an unconsumed job.
     const std::uint32_t word=0x38;

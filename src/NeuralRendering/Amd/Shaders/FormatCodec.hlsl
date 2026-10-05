@@ -38,6 +38,22 @@ uint E4m3Half(uint bits) {
     }
     return result;
 }
+uint FloatE4m3(uint bits) {
+    uint sign=(bits>>24)&128, magnitude=bits&0x7fffffff;
+    uint result=sign;
+    if(magnitude>0x7f800000) result=0x7f;
+    else if(magnitude>=0x43e00000) result=sign|0x7e;
+    // Covers zero, deep underflow and the even zero/subnormal midpoint.
+    // Remaining shift counts are bounded to [20,24].
+    else if(magnitude>0x3a800000) {
+        uint exponent=magnitude>>23, significand=(magnitude&0x7fffff)|0x800000;
+        uint shift=exponent<121?141-exponent:20;
+        uint rounded=significand>>shift, remainder=significand&((1u<<shift)-1), midpoint=1u<<(shift-1);
+        rounded+=(remainder>midpoint || (remainder==midpoint && (rounded&1)))?1:0;
+        result=sign|((exponent<121?0:((exponent-120)<<3)-8)+rounded);
+    }
+    return result;
+}
 [numthreads(64,1,1)]
 void main(uint3 id : SV_DispatchThreadID) {
     if(id.x>=Count) return;
@@ -45,6 +61,7 @@ void main(uint3 id : SV_DispatchThreadID) {
     uint result=0;
     if(Operation==0) result=FloatHalf(value);
     else if(Operation==1) result=HalfFloat(value);
-    else result=E4m3Half(value);
+    else if(Operation==2) result=E4m3Half(value);
+    else if(Operation==3) result=FloatE4m3(value);
     Output.Store(id.x*4,result);
 }

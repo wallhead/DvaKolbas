@@ -16,7 +16,7 @@ int wmain(int argc,wchar_t** argv) {
             else if(values.contains(key) && i+1<argc) options[key]=argv[++i];
             else throw std::runtime_error("unknown option or missing value");
         }
-        if(options.contains(L"--help")) {if(options.size()!=1) throw std::runtime_error("help takes no other options");std::cout<<"--warp|--adapter-luid HIGH:LOW --format f32-to-f16|f16-to-f32|e4m3-to-f16 --input PATH --output PATH\n--list-adapters\n";return 0;}
+        if(options.contains(L"--help")) {if(options.size()!=1) throw std::runtime_error("help takes no other options");std::cout<<"--warp|--adapter-luid HIGH:LOW --format f32-to-f16|f16-to-f32|e4m3-to-f16|f32-to-e4m3 --input PATH --output PATH\n--list-adapters\n";return 0;}
         if(options.contains(L"--list-adapters")) {if(options.size()!=1) throw std::runtime_error("list takes no other options");AmdNrTools::ListAdapters();return 0;}
         bool warp=options.contains(L"--warp"),explicitLuid=options.contains(L"--adapter-luid");
         if(warp==explicitLuid || options.size()!=4 || !options.contains(L"--format") || !options.contains(L"--input") || !options.contains(L"--output")) throw std::runtime_error("explicit adapter and three file-mode options required");
