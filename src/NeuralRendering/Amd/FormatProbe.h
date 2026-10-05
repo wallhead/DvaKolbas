@@ -4,6 +4,7 @@
 #include <chrono>
 #include <memory>
 #include <vector>
+#include <array>
 namespace TheosRenderPipeline::NeuralRendering::Amd {
 enum class ProbeError { InvalidDevice, InvalidQueue, InvalidOperation, Count, Busy, Api, Memory, Timeout, DeviceRemoved, InvalidJob };
 struct ProbeJobData;
@@ -30,9 +31,13 @@ public:
     std::expected<std::vector<std::uint32_t>,ProbeError> Readback(FormatProbeJob&,std::chrono::milliseconds);
     std::expected<void,ProbeError> Drain(std::chrono::milliseconds);
 private:
+    static std::expected<FormatProbe,ProbeError> CreateCompute(ID3D12Device*,ID3D12CommandQueue*,std::span<const std::uint8_t>);
+    std::expected<FormatProbeJob,ProbeError> SubmitCompute(std::span<const std::uint32_t>,std::size_t outputWords,
+        std::size_t workItems,std::array<std::uint32_t,2> constants);
     explicit FormatProbe(std::unique_ptr<ProbeState>);
     void Shutdown() noexcept;
     std::unique_ptr<ProbeState> state_;
     friend struct FormatProbeTestAccess;
+    friend class C512ProjectionProbe;
 };
 }

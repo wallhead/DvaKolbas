@@ -1,8 +1,13 @@
 #include "NeuralRendering/Amd/C512ProjectionReference.h"
+#include "NeuralRendering/Amd/C512ProjectionProbe.h"
 #include "NeuralRendering/Amd/NumericFormats.h"
 #include "TestSupport.h"
 #include <array>
 #include <algorithm>
+#include "../../tools/AmdNrDevices.h"
+#include <d3d12sdklayers.h>
+#include <filesystem>
+#include <fstream>
 using namespace TheosRenderPipeline::NeuralRendering::Amd;
 using AmdNrTest::Require;
 
@@ -110,7 +115,128 @@ void ValidationBeforeWrites() {
     Require(bool(ValidateC512ProjectionInputs(l,input,{},owner)),"moved-to weights valid");
 }
 }
-int main() {
+struct GpuContext {
+    AmdNrTools::ComPtr<ID3D12Device> device;
+    AmdNrTools::ComPtr<ID3D12CommandQueue> queue;
+    AmdNrTools::ComPtr<ID3D12InfoQueue> info;
+    GpuContext(bool warp,LUID luid={},bool debug=false) {
+        auto adapter=AmdNrTools::SelectAdapter(warp,luid);AmdNrTools::Describe(adapter.Get());
+        AmdNrTools::CheckDeviceApi(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_11_0,IID_PPV_ARGS(&device)));
+        D3D12_COMMAND_QUEUE_DESC desc{};
+        AmdNrTools::CheckDeviceApi(device->CreateCommandQueue(&desc,IID_PPV_ARGS(&queue)));
+        if(debug) AmdNrTools::CheckDeviceApi(device.As(&info));
+    }
+    void CheckMessages() {
+        if(info) for(UINT64 i=0;i<info->GetNumStoredMessagesAllowedByRetrievalFilter();++i) {
+            SIZE_T size{};info->GetMessage(i,nullptr,&size);std::vector<std::byte> storage(size);
+            auto message=reinterpret_cast<D3D12_MESSAGE*>(storage.data());
+            AmdNrTools::CheckDeviceApi(info->GetMessage(i,message,&size));
+            if(message->Severity<=D3D12_MESSAGE_SEVERITY_WARNING) {
+                std::fprintf(stderr,"D3D12: %s\n",message->pDescription);Require(false,"validation warning/error");
+            }
+        }
+    }
+};
+void GpuTests(bool warp,LUID luid,bool debug) {
+    GpuContext context(warp,luid,debug);
+    auto probe=C512ProjectionProbe::Create(context.device.Get(),context.queue.Get());Require(bool(probe),"projection probe");
+    Require(!C512ProjectionProbe::Create(nullptr,context.queue.Get()),"null device");
+    Require(!C512ProjectionProbe::Create(context.device.Get(),nullptr),"null queue");
+    D3D12_COMMAND_QUEUE_DESC desc{};desc.Type=D3D12_COMMAND_LIST_TYPE_COMPUTE;
+    AmdNrTools::ComPtr<ID3D12CommandQueue> compute;
+    AmdNrTools::CheckDeviceApi(context.device->CreateCommandQueue(&desc,IID_PPV_ARGS(&compute)));
+    Require(!C512ProjectionProbe::Create(context.device.Get(),compute.Get()),"compute queue rejected");
+    auto factory=AmdNrTools::Factory();
+    for(UINT i=0;;++i) {
+        AmdNrTools::ComPtr<IDXGIAdapter1> adapter;
+        if(factory->EnumAdapters1(i,&adapter)==DXGI_ERROR_NOT_FOUND) break;
+        DXGI_ADAPTER_DESC1 description{};adapter->GetDesc1(&description);
+        if(description.Flags&DXGI_ADAPTER_FLAG_SOFTWARE) continue;
+        AmdNrTools::ComPtr<ID3D12Device> other;
+        if(SUCCEEDED(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_11_0,IID_PPV_ARGS(&other))) && other.Get()!=context.device.Get()) {
+            Require(!C512ProjectionProbe::Create(other.Get(),context.queue.Get()),"foreign device queue");break;
+        }
+    }
+    const auto l=MakeC512TensorLayout({4,4}).value();
+    std::vector<std::uint8_t> matrix(262144),input(l.ByteCount()),residual(l.ByteCount());
+    for(unsigned k=0;k<512;++k) matrix[((37*k+11)%512)*512+k]=0x38;
+    for(unsigned p=0;p<16;++p) for(unsigned k=0;k<512;++k) input[p*512+k]=std::uint8_t((p+k)%126+1|(((p+k)&1)<<7));
+    const auto weights=Weights(matrix);const auto expected=Evaluate(l,input,residual,weights);
+    auto job=probe->Submit(l,input,residual,weights);Require(bool(job),"projection submit");
+    std::fill(input.begin(),input.end(),0);std::fill(residual.begin(),residual.end(),0x38);
+    auto moved=std::move(*probe);
+    Require(!probe->Readback(*job,std::chrono::milliseconds(0)),"moved-from context");
+    const auto got=moved.Readback(*job,std::chrono::seconds(30));
+    Require(bool(got) && *got==expected && got->size()==2*l.ByteCount(),"snapshot and separate readback count");
+    Require(moved.Readback(*job,std::chrono::seconds(1)).value()==expected,"repeat readback");
+    auto foreign=C512ProjectionProbe::Create(context.device.Get(),context.queue.Get());
+    const auto wrong=foreign->Readback(*job,std::chrono::milliseconds(0));
+    Require(!wrong && wrong.error()==ProbeError::InvalidJob,"foreign job");
+    auto shortInput=moved.Submit(l,std::span(input).first(input.size()-1),{},weights);
+    Require(!shortInput && shortInput.error()==ProbeError::Count,"short input");
+    Require(!moved.Submit(l,input,std::span(residual).first(residual.size()-1),weights),"short residual");
+    Require(!moved.Submit(MakeC512TensorLayout({20,16}).value(),input,{},weights),"excessive extent");
+    auto invalidWeights=Weights(matrix);auto owner=std::move(invalidWeights);
+    Require(!moved.Submit(l,input,{},invalidWeights),"moved weights");
+    std::array<std::uint16_t,512> coef{};coef[0]=0x7c00;coef[1]=0xbc00;
+    const auto special=Weights(matrix,coef);std::fill(residual.begin(),residual.end(),0);
+    auto absent=moved.Submit(l,input,{},special);auto zeros=moved.Submit(l,input,residual,special);
+    Require(bool(absent) && bool(zeros),"optional residual submissions");
+    const auto zeroExpected=Evaluate(l,input,residual,special);
+    Require(moved.Readback(*absent,std::chrono::seconds(30)).value()==zeroExpected &&
+        moved.Readback(*zeros,std::chrono::seconds(30)).value()==zeroExpected,"absent residual is decoded positive zero, including zero times infinity");
+    { auto dropped=moved.Submit(l,input,{},weights);Require(bool(dropped),"dropped handle submit"); }
+    Require(bool(moved.Drain(std::chrono::seconds(30))),"dropped handle remains owned");
+    AmdNrTools::ComPtr<ID3D12Fence> gate;
+    AmdNrTools::CheckDeviceApi(context.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&gate)));
+    AmdNrTools::CheckDeviceApi(context.queue->Wait(gate.Get(),1));
+    auto delayed=moved.Submit(l,input,{},weights);Require(bool(delayed),"gated submit");
+    const auto timeout=moved.Readback(*delayed,std::chrono::milliseconds(0));
+    // Release even if the timeout assertion fails, so no queued resources are stranded by this test.
+    AmdNrTools::CheckDeviceApi(gate->Signal(1));
+    Require(!timeout && timeout.error()==ProbeError::Timeout,"timeout preserves job");
+    Require(moved.Readback(*delayed,std::chrono::seconds(30)).value()==Evaluate(l,input,{},weights),"delayed job readable");
+    Require(bool(moved.Drain(std::chrono::seconds(30))),"drain after gate");context.CheckMessages();
+    std::puts("PASS: portable C512 shader, snapshots, counts, ownership and queue timeout");
+}
+void FileOracle(bool cpu,bool warp,LUID luid,const wchar_t* inputPath,const wchar_t* outputPath) {
+    // Test-only format: LE extent, canonical input/residual bytes, generated raw weight record.
+    std::ifstream file(std::filesystem::path(inputPath),std::ios::binary);
+    std::array<unsigned char,8> header{};
+    if(!file.read(reinterpret_cast<char*>(header.data()),header.size())) throw std::runtime_error("short header");
+    auto word=[&](unsigned at){return std::uint32_t(header[at])|std::uint32_t(header[at+1])<<8|std::uint32_t(header[at+2])<<16|std::uint32_t(header[at+3])<<24;};
+    auto layout=MakeC512TensorLayout({word(0),word(4)});
+    if(!layout || layout->ByteCount()>C512ProjectionMaxValues) throw std::runtime_error("invalid extent");
+    std::vector<std::uint8_t> input(layout->ByteCount()),residual(layout->ByteCount());std::vector<std::byte> raw(263168);
+    if(!file.read(reinterpret_cast<char*>(input.data()),input.size()) ||
+       !file.read(reinterpret_cast<char*>(residual.data()),residual.size()) ||
+       !file.read(reinterpret_cast<char*>(raw.data()),raw.size()) || file.peek()!=std::char_traits<char>::eof()) throw std::runtime_error("invalid fixture length");
+    auto weights=DecodeC512Projection(raw);if(!weights) throw std::runtime_error("invalid record");
+    std::vector<std::uint32_t> output;
+    if(cpu) output=Evaluate(*layout,input,residual,*weights);
+    else { GpuContext context(warp,luid);auto probe=C512ProjectionProbe::Create(context.device.Get(),context.queue.Get());
+        if(!probe) throw std::runtime_error("probe creation");auto job=probe->Submit(*layout,input,residual,*weights);
+        if(!job) throw std::runtime_error("submission");output=probe->Readback(*job,std::chrono::seconds(30)).value(); }
+    std::ofstream result(std::filesystem::path(outputPath),std::ios::binary|std::ios::trunc);
+    result.write(reinterpret_cast<const char*>(output.data()),output.size()*4);result.close();
+    if(!result) throw std::runtime_error("output write");
+}
+int wmain(int argc,wchar_t** argv) try {
+    if(argc>=2 && std::wstring_view(argv[1])==L"--oracle") {
+        if(argc==5 && std::wstring_view(argv[2])==L"--cpu") FileOracle(true,false,{},argv[3],argv[4]);
+        else if(argc==5 && std::wstring_view(argv[2])==L"--warp") FileOracle(false,true,{},argv[3],argv[4]);
+        else if(argc==6 && std::wstring_view(argv[2])==L"--adapter-luid") FileOracle(false,false,AmdNrTools::ParseLuid(argv[3]),argv[4],argv[5]);
+        else throw std::runtime_error("oracle arguments");return 0;
+    }
+    if(argc>1) {
+        bool warp=std::wstring_view(argv[1])==L"--warp";
+        bool debug=argc==3 && std::wstring_view(argv[2])==L"--debug";
+        if(!(warp && (argc==2 || debug)) && !(argc==3 && std::wstring_view(argv[1])==L"--adapter-luid")) throw std::runtime_error("arguments");
+        AmdNrTools::ComPtr<ID3D12Debug> layer;
+        if(debug && FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&layer)))) {std::puts("UNAVAILABLE: D3D12 debug layer");return 77;}
+        if(layer) layer->EnableDebugLayer();GpuTests(warp,warp?LUID{}:AmdNrTools::ParseLuid(argv[2]),debug);return 0;
+    }
     AsymmetricPixelChannels();ResidualAndChunkBoundaries();ChunkRounding();EarlyResidualRounding();SpecialValues();ValidationBeforeWrites();
     std::puts("PASS: ordered C512 CPU reference, rounding boundaries, special values and validation");
-}
+    return 0;
+} catch(const std::exception& error) {std::fprintf(stderr,"FAIL: %s\n",error.what());return 1;}

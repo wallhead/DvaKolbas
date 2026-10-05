@@ -345,3 +345,20 @@ the new primitives, not full AMD NR. Static original-runtime equivalence,
 persistent padding contents, unsupported tensor domains, game/GPU/full-graph
 execution, Radeon hardware performance and missing debug validation remain
 explicit limits.
+
+## Portable C512 projection execution
+
+The CPU reference and source-owned cs_5_1 shader now execute a bounded canonical
+C512 projection with our explicit ascending-K FP32 sum and recovered residual/
+32-channel half-rounding boundaries. The wrapper reuses queue/fence ownership,
+with independent payload/output/dispatch counts. Five generated oracle cases
+compare 49,152 values / 98,304 words each on CPU, WARP and RTX 4080 SUPER, all exact.
+An oracle-discovered FXC signed-zero optimization is covered by a failing-then-
+passing GPU regression and explicit bit handling. All 18 enabled standalone tests
+pass; two debug-layer tests skip because the layer is unavailable.
+
+This executes our declared diagnostic order, enables no model block, and adds no
+HIP dependency or supplied code execution. WMMA-order comparison, GPU pooling,
+remaining variants/full graph, temporal/input/output conventions, renderer and
+RDNA2/3/4 validation remain necessary. Model/inference status is unchanged.
+[Execution report and reproduction](amd-nr-c512-portable-execution.md).

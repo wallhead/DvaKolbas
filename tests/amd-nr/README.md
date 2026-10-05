@@ -230,3 +230,19 @@ skip, and zero failures. These additions execute no supplied code, require no HI
 runtime and enable no model block. GPU reduction/projection, WMMA comparisons,
 persistent padding lifetime, full graph, renderer integration and RDNA2/3/4
 acceptance remain open. [Static contract and allocator evidence](../../docs/amd-nr-c512-tensor-layout.md).
+
+## Portable C512 projection diagnostic
+
+`C512ProjectionReference` and `C512ProjectionProbe` execute our declared ascending-K
+FP32 sum, rounding to half after residual initialization and each 32-channel chunk.
+This diagnostic accepts at most 256 canonical pixels and outputs two words per
+value. It establishes no equivalence to WMMA's internal order or complete model.
+
+`C512ProjectionExecutionOracle.py` constructs FP8 mathematically, applies NumPy
+serial FP32 adds/half rounds and uses the independent nearest-distance encoder.
+Five generated cases compare 49,152 values / 98,304 words on CPU, WARP and the
+selected RTX 4080 SUPER, with zero mismatches on each path. GPU tests also cover
+snapshots, distinct payload/readback sizes, move/drop ownership, foreign jobs/
+queues and gated timeout recovery. The suite has 18 passes, two unavailable-debug-
+layer skips and zero failures. The test-only binary driver rejects malformed
+fixtures before writes. [Arithmetic, identities and remaining gates](../../docs/amd-nr-c512-portable-execution.md).

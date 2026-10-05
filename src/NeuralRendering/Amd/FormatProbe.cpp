@@ -67,6 +67,9 @@ void FormatProbe::Shutdown() noexcept {
     else state_.reset();
 }
 std::expected<FormatProbe,ProbeError> FormatProbe::Create(ID3D12Device* device,ID3D12CommandQueue* queue) {
+    return CreateCompute(device,queue,AmdNrShader::FormatCodec);
+}
+std::expected<FormatProbe,ProbeError> FormatProbe::CreateCompute(ID3D12Device* device,ID3D12CommandQueue* queue,std::span<const std::uint8_t> bytecode) {
     if(!device) return std::unexpected(ProbeError::InvalidDevice);
     if(!queue || queue->GetDesc().Type!=D3D12_COMMAND_LIST_TYPE_DIRECT) return std::unexpected(ProbeError::InvalidQueue);
     ComPtr<IUnknown> a,b;
@@ -83,7 +86,7 @@ std::expected<FormatProbe,ProbeError> FormatProbe::Create(ID3D12Device* device,I
         D3D12_ROOT_SIGNATURE_DESC rootDesc{};rootDesc.NumParameters=3;rootDesc.pParameters=parameters;
         ComPtr<ID3DBlob> blob,errors;Check(D3D12SerializeRootSignature(&rootDesc,D3D_ROOT_SIGNATURE_VERSION_1,&blob,&errors));
         Check(device->CreateRootSignature(0,blob->GetBufferPointer(),blob->GetBufferSize(),IID_PPV_ARGS(&state->root)));
-        D3D12_COMPUTE_PIPELINE_STATE_DESC pipeline{};pipeline.pRootSignature=state->root.Get();pipeline.CS={AmdNrShader::FormatCodec,sizeof(AmdNrShader::FormatCodec)};
+        D3D12_COMPUTE_PIPELINE_STATE_DESC pipeline{};pipeline.pRootSignature=state->root.Get();pipeline.CS={bytecode.data(),bytecode.size()};
         Check(device->CreateComputePipelineState(&pipeline,IID_PPV_ARGS(&state->pipeline)));
         return FormatProbe(std::move(state));
     } catch(const Failure& e){return std::unexpected(e.error);}catch(const std::bad_alloc&){return std::unexpected(ProbeError::Memory);}
@@ -92,18 +95,26 @@ std::expected<FormatProbeJob,ProbeError> FormatProbe::Submit(FormatOperation ope
     if(!state_) return std::unexpected(ProbeError::InvalidDevice);
     if(operation!=FormatOperation::Float32ToHalf && operation!=FormatOperation::HalfToFloat32 && operation!=FormatOperation::E4m3ToHalf && operation!=FormatOperation::Float32ToE4m3) return std::unexpected(ProbeError::InvalidOperation);
     if(input.size()>65535u*64) return std::unexpected(ProbeError::Count);
+    return SubmitCompute(input,input.size(),input.size(),{std::uint32_t(input.size()),std::uint32_t(operation)});
+}
+std::expected<FormatProbeJob,ProbeError> FormatProbe::SubmitCompute(std::span<const std::uint32_t> input,
+    std::size_t outputWords,std::size_t workItems,std::array<std::uint32_t,2> constants) {
+    if(!state_) return std::unexpected(ProbeError::InvalidDevice);
+    constexpr auto limit=65535u*64;
+    if(input.size()>limit || outputWords>limit || workItems>limit ||
+        ((!input.empty() || outputWords || workItems) && (input.empty() || !outputWords || !workItems))) return std::unexpected(ProbeError::Count);
     if(state_->signalFailed || state_->injectRetirementFailure) return std::unexpected(ProbeError::Api);
     try {
-        auto job=std::make_shared<ProbeJobData>();job->owner=state_->owner;job->count=input.size();
+        auto job=std::make_shared<ProbeJobData>();job->owner=state_->owner;job->count=outputWords;
         if(input.empty()) return FormatProbeJob(std::move(job));
         auto& pending=state_->pending;
         std::erase_if(pending,[&](const auto& p){return bool(Wait(*state_,*p,std::chrono::steady_clock::now()));});
         if(pending.size()>=64) return std::unexpected(ProbeError::Busy);
-        auto device=state_->device.Get();const auto bytes=UINT64(input.size())*4;
+        auto device=state_->device.Get();const auto bytes=UINT64(input.size())*4,outputBytes=UINT64(outputWords)*4;
         job->upload=Buffer(device,bytes,D3D12_HEAP_TYPE_UPLOAD,D3D12_RESOURCE_STATE_GENERIC_READ);
         job->input=Buffer(device,bytes,D3D12_HEAP_TYPE_DEFAULT,D3D12_RESOURCE_STATE_COPY_DEST);
-        job->output=Buffer(device,bytes,D3D12_HEAP_TYPE_DEFAULT,D3D12_RESOURCE_STATE_UNORDERED_ACCESS,true);
-        job->readback=Buffer(device,bytes,D3D12_HEAP_TYPE_READBACK,D3D12_RESOURCE_STATE_COPY_DEST);
+        job->output=Buffer(device,outputBytes,D3D12_HEAP_TYPE_DEFAULT,D3D12_RESOURCE_STATE_UNORDERED_ACCESS,true);
+        job->readback=Buffer(device,outputBytes,D3D12_HEAP_TYPE_READBACK,D3D12_RESOURCE_STATE_COPY_DEST);
         void* mapped{};D3D12_RANGE empty{};Check(job->upload->Map(0,&empty,&mapped));std::memcpy(mapped,input.data(),std::size_t(bytes));
         D3D12_RANGE written{0,std::size_t(bytes)};job->upload->Unmap(0,&written);
         Check(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&job->allocator)));
@@ -111,9 +122,9 @@ std::expected<FormatProbeJob,ProbeError> FormatProbe::Submit(FormatOperation ope
         auto list=job->list.Get();list->CopyBufferRegion(job->input.Get(),0,job->upload.Get(),0,bytes);
         Barrier(list,job->input.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
         list->SetComputeRootSignature(state_->root.Get());list->SetComputeRootShaderResourceView(0,job->input->GetGPUVirtualAddress());list->SetComputeRootUnorderedAccessView(1,job->output->GetGPUVirtualAddress());
-        const UINT constants[]{UINT(input.size()),UINT(operation)};list->SetComputeRoot32BitConstants(2,2,constants,0);list->Dispatch(UINT((input.size()+63)/64),1,1);
+        list->SetComputeRoot32BitConstants(2,2,constants.data(),0);list->Dispatch(UINT((workItems+63)/64),1,1);
         Barrier(list,job->output.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COPY_SOURCE);
-        list->CopyBufferRegion(job->readback.Get(),0,job->output.Get(),0,bytes);Check(list->Close());
+        list->CopyBufferRegion(job->readback.Get(),0,job->output.Get(),0,outputBytes);Check(list->Close());
         Check(device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&job->fence)));
         // All potentially allocating work is complete before GPU submission.
         pending.push_back(job);ID3D12CommandList* lists[]{list};state_->queue->ExecuteCommandLists(1,lists);
