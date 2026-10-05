@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "sourceRevision": "78c8bb04768e",
+  "sourceClean": true,
+  "stage": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\nr-shared-78c8bb0-20261005",
+  "physicalModels": 2,
+  "logicalProfiles": 3,
+  "modelPayloadBytes": 475512032,
+  "savedBytes": 165840496,
+  "postManifestFiles": 24,
+  "nrManifestFiles": 23,
+  "allManifestHashes": "PASS",
+  "sourcePackagePreserved": "PASS",
+  "installedDllIniUnchanged": "PASS",
+  "refreshedReadme": "PASS",
+  "nvidiaAssetPreflight": "PASS",
+  "rtx50Hardware": "NOT RUN",
+  "date": "2026-10-05",
+  "buildDllSha256": "960806b1daad41d56fe1c73b7d1660e0994e24326d51ee4555b865372d4d38bc",
+  "tests": {
+    "passed": 216,
+    "failed": 0,
+    "gpu": 57,
+    "reshade": 6,
+    "interactive": "excluded; prior acceptance preserved",
+    "prerequisiteExclusions": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ]
+  },
+  "review": {
+    "status": "No remaining introduced Critical/Important findings",
+    "fixed": [
+      "Allow intentional trial README refresh",
+      "Exclude inherited post-SR receipt from its own file list"
+    ],
+    "orchestration": "Real legacy three-payload package staged; all final manifest hashes verified"
+  },
+  "gpuQualification": {
+    "RTX40": "RTX4080SUPER regression passed",
+    "RTX20": "NOT RUN",
+    "RTX30": "NOT RUN",
+    "RTX50": "NOT RUN"
+  }
+}
