@@ -17,6 +17,15 @@ visual acceptance remain open. AMD NR, HDR NR and
 dynamic resolution remain unsupported. Historical native counts below retain
 their scope.
 
+**Review 7, 2026-10-06:** failed post-SR guide admission now clears guessed
+motion scales, bypasses that source, resets history and exposes the rejection
+reason. Diagnostics distinguish render-pixel from display-pixel motion and
+retain actual guide jitter. Fifteen affected CPU/real-GPU checks pass. These
+checks do not establish correspondence between jittered guides and reconstructed
+color at moving edges, or full-tone camera stability at Performance. The
+[review response and Native/Performance game checklist](../research/nr/scaled/REVIEW7.md)
+keep those visual gates open. **3 of 6 remains complete.**
+
 **8 of 8 milestones complete for the tested native-size SDR setup:** native-size post-SR contract (Task1), inherited runtime/catalog (Task2), shared Before/After source stage (Task3), native-size FSR After source/presentation integration (Task4), native-size DLAA After source/NVIDIA FG handoff (Task5), live controls and source lifecycle (Task6), clean build matrix/package/final review (Task7), local Skyrim functional acceptance (Task8).
 
 **Task8 complete, 2026-10-05:** the owner confirms all remaining NVIDIA inventory/map/dialogue and minimize/restore checks passed, and separately confirms FSR Native AA After fast travel passed. Combine these fresh reports with the retained provider gameplay checklists, actual End Apply/style acceptance, source/lifecycle readbacks, matrix/review/package proof and the independently validated NVIDIA ETW capture. Normal logging is already retained. [Final functional acceptance](../research/nr/post-sr/task8-functional-acceptance-20261005.json). Matched AIO19 comparison is excluded by the owner's explicit instruction, not passed; no parity claim is made. Actual GPU qualification remains RTX4080SUPER, native SDR After only; scaled After/HDR and other NVIDIA families remain unqualified, AMD NR unsupported. Generated images inherit enhanced real sources and receive no separate NR pass. **8 of 8 done in this scope.**

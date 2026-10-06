@@ -44,6 +44,13 @@ int main(){
     Check(result && result->motionScaleX==1 && result->motionScaleY==1,"AlreadyDisplayPixelVectorsNotScaledTwice");
     c=Native();c.render=c.guides={427,203};c.motion={427,203,true,false};result=ValidatePostSrSourceContract(c);
     Check(result && std::abs(result->motionScaleX-640)<.001 && std::abs(result->motionScaleY-360)<.001,"NonIntegralPerAxisRatioNormalizedMotion");
+    float boundX=123, boundY=456;
+    auto bound=BindPostSrMotionScales(c,boundX,boundY);
+    Check(bound && boundX==bound->motionScaleX && boundY==bound->motionScaleY,"ValidGuidePlanBindsExactDisplayMotionScales");
+    c.guides.width++;
+    bound=BindPostSrMotionScales(c,boundX,boundY);
+    Check(!bound && boundX==0 && boundY==0 && bound.error().message=="NR post-SR real color/guide extent invalid",
+          "InvalidGuidePlanClearsFallbackScalesAndPreservesReason");
     c=Native();c.render=c.guides={641,360};Check(!ValidatePostSrSourceContract(c),"GuidesLargerThanDisplayRejected");
     c=Native();c.render=c.guides={320,180};c.motion.scaleX=std::numeric_limits<float>::max();
     Check(!ValidatePostSrSourceContract(c),"MotionScaleOverflowRejected");

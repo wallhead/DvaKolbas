@@ -86,4 +86,15 @@ inline std::optional<MotionStats> SummarizeMotionRg16(const std::uint8_t* data,s
     return s;
 }
 
+struct MotionDomainStats { MotionStats render,display; };
+inline std::optional<MotionDomainStats> SummarizeMotionRg16Domains(const std::uint8_t* data,std::size_t pitch,
+    std::uint32_t width,std::uint32_t height,double renderScaleX,double renderScaleY,
+    double displayScaleX,double displayScaleY,std::uint32_t stride=8)
+{
+    const auto render=SummarizeMotionRg16(data,pitch,width,height,renderScaleX,renderScaleY,stride);
+    const auto display=SummarizeMotionRg16(data,pitch,width,height,displayScaleX,displayScaleY,stride);
+    if(!render||!display)return std::nullopt;
+    return MotionDomainStats{*render,*display};
+}
+
 }

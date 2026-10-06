@@ -31,6 +31,16 @@ int main(){
     const auto guide=SummarizeMotionRg16(reinterpret_cast<const std::uint8_t*>(motion.data()),16,2,1,2,1,1);
     Check(guide && guide->samples==2 && Near(guide->meanXpixels,-.25) && Near(guide->meanMagnitudePixels,.75),
         "MotionReadbackUsesNormalizedSignedHalfAndPixelScale");
+    const auto domains=SummarizeMotionRg16Domains(reinterpret_cast<const std::uint8_t*>(motion.data()),16,2,1,2,1,4,2,1);
+    Check(domains && Near(domains->render.meanXpixels,-.25) && Near(domains->display.meanXpixels,-.5) &&
+          Near(domains->render.meanMagnitudePixels,.75) && Near(domains->display.meanMagnitudePixels,1.5),
+          "PerformanceMotionReportsRenderAndDisplayPixelsSeparately");
+    const auto native=SummarizeMotionRg16Domains(reinterpret_cast<const std::uint8_t*>(motion.data()),16,2,1,2,1,2,1,1);
+    Check(native && native->render.meanXpixels==native->display.meanXpixels &&
+          native->render.meanMagnitudePixels==native->display.meanMagnitudePixels,
+          "NativeMotionDomainsRemainIdentical");
+    Check(!SummarizeMotionRg16Domains(reinterpret_cast<const std::uint8_t*>(motion.data()),16,2,1,2,1,0,2,1),
+          "InvalidDisplayMotionScaleCannotProduceDiagnosticData");
     motion[2]=DirectX::PackedVector::XMConvertFloatToHalf(std::numeric_limits<float>::infinity());
     const auto bad=SummarizeMotionRg16(reinterpret_cast<const std::uint8_t*>(motion.data()),16,2,1,2,1,1);
     Check(bad && bad->nonFinite==1 && bad->samples==1,"NonFiniteMotionIsCountedAndExcluded");

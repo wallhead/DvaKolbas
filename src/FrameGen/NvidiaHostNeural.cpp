@@ -59,18 +59,21 @@ struct NrMotionDiagnostic {
     }
     struct Capture {
         std::vector<std::uint8_t> color;
-        std::optional<NR::MotionStats> motion;
+        std::optional<NR::MotionDomainStats> motion;
         DXGI_FORMAT depthFormat{};
         NR::DiagnosticRegion region;
+        UINT guideWidth{},guideHeight{};
         bool ready{};
     };
     Capture Before(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* color,
-        ID3D11Texture2D* depth,ID3D11Texture2D* motion,UINT width,UINT height,UINT guideWidth,UINT guideHeight) {
+        ID3D11Texture2D* depth,ID3D11Texture2D* motion,UINT width,UINT height,UINT guideWidth,UINT guideHeight,
+        float renderScaleX,float renderScaleY,float displayScaleX,float displayScaleY) {
         Capture capture;
         const auto region=NR::DiagnosticReadbackRegion(width,height);
         const auto motionRegion=NR::DiagnosticReadbackRegion(guideWidth,guideHeight);
         if(!depth||!region||!motionRegion){Failure("invalid diagnostic extent/depth",E_INVALIDARG);return capture;}
         capture.region=*region;
+        capture.guideWidth=guideWidth;capture.guideHeight=guideHeight;
         D3D11_TEXTURE2D_DESC depthDesc{};depth->GetDesc(&depthDesc);capture.depthFormat=depthDesc.Format;
         ComPtr<ID3D11Texture2D> colorCopy,motionCopy;
         if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,*region,colorCopy) ||
@@ -78,7 +81,8 @@ struct NrMotionDiagnostic {
         std::vector<std::uint8_t> rawMotion;
         if(!ReadRows(context,colorCopy.Get(),region->width,region->height,4,capture.color) ||
            !ReadRows(context,motionCopy.Get(),motionRegion->width,motionRegion->height,4,rawMotion))return capture;
-        capture.motion=NR::SummarizeMotionRg16(rawMotion.data(),std::size_t(motionRegion->width)*4,motionRegion->width,motionRegion->height,width,height);
+        capture.motion=NR::SummarizeMotionRg16Domains(rawMotion.data(),std::size_t(motionRegion->width)*4,
+            motionRegion->width,motionRegion->height,renderScaleX,renderScaleY,displayScaleX,displayScaleY);
         capture.ready=bool(capture.motion);
         return capture;
     }
@@ -95,13 +99,14 @@ struct NrMotionDiagnostic {
         ++samples;
         logger::info("[NR color probe region] source={} sourceExtent={}x{} origin=({}, {}) sampled={}x{}",
             sourceId,width,height,region.x,region.y,region.width,region.height);
-        logger::info("[NR color probe] sample={}/16 source={} revision={} reset={} extent={}x{} depthFormat={} rgbIn=({:.2f},{:.2f},{:.2f}) rgbOut=({:.2f},{:.2f},{:.2f}) rgbSigned=({:+.2f},{:+.2f},{:+.2f}) rgbAbs=({:.2f},{:.2f},{:.2f}) motionPxMean=({:+.2f},{:+.2f}) motionPxAbs={:.2f} motionSamples={} motionZero={} motionInvalid={} motionOutsideUv={}",
-            samples,sourceId,revision,reset,width,height,static_cast<unsigned>(before.depthFormat),
+        logger::info("[NR color probe] sample={}/16 source={} revision={} reset={} extent={}x{} guides={}x{} depthFormat={} rgbIn=({:.2f},{:.2f},{:.2f}) rgbOut=({:.2f},{:.2f},{:.2f}) rgbSigned=({:+.2f},{:+.2f},{:+.2f}) rgbAbs=({:.2f},{:.2f},{:.2f}) motionRenderPxMean=({:+.2f},{:+.2f}) motionRenderPxAbs={:.2f} motionDisplayPxMean=({:+.2f},{:+.2f}) motionDisplayPxAbs={:.2f} motionSamples={} motionZero={} motionInvalid={} motionOutsideUv={}",
+            samples,sourceId,revision,reset,width,height,before.guideWidth,before.guideHeight,static_cast<unsigned>(before.depthFormat),
             rgb->before[0],rgb->before[1],rgb->before[2],rgb->after[0],rgb->after[1],rgb->after[2],
             rgb->signedChange[0],rgb->signedChange[1],rgb->signedChange[2],
             rgb->absoluteChange[0],rgb->absoluteChange[1],rgb->absoluteChange[2],
-            before.motion->meanXpixels,before.motion->meanYpixels,before.motion->meanMagnitudePixels,before.motion->samples,
-            before.motion->zeroVectors,before.motion->nonFinite,before.motion->outsideUv);
+            before.motion->render.meanXpixels,before.motion->render.meanYpixels,before.motion->render.meanMagnitudePixels,
+            before.motion->display.meanXpixels,before.motion->display.meanYpixels,before.motion->display.meanMagnitudePixels,
+            before.motion->render.samples,before.motion->render.zeroVectors,before.motion->render.nonFinite,before.motion->render.outsideUv);
     }
 };
 NrMotionDiagnostic nrMotionDiagnostic;
@@ -194,11 +199,8 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     // Reset retained temporal state on menus, invalid camera, or an unavailable
     // request; the user's authoritative enabled/placement choices stay intact.
     if (!eligible || unavailable) snapshot.enabled=false;
-    const bool probe=eligible && snapshot.enabled && communityNeural_->Available() &&
-        PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && nrMotionDiagnostic.Due();
-    const auto probeBefore=probe?nrMotionDiagnostic.Before(device_.Get(),context_.Get(),color,depth,motion,width,height,guideExtent.width,guideExtent.height):
-        NrMotionDiagnostic::Capture{};
     const bool previouslyActive=communityNeural_->Active();
+    std::string guideRejection;
     NR::PostSrInput completed;completed.resources=input;
     if(post){
         completed.resources.colorDomain=NR::ColorDomain::SdrBytes;
@@ -213,11 +215,18 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
         m.guideOrigin=NR::GuideOrigin::RealSource;m.depthInverted=input.depthInverted;
         m.motion=post->motionConvention;
-        if(const auto guides=NR::ValidatePostSrSourceContract(m)) {
-            completed.resources.motionScaleX=guides->motionScaleX;
-            completed.resources.motionScaleY=guides->motionScaleY;
+        const auto guides=NR::BindPostSrMotionScales(m,completed.resources.motionScaleX,completed.resources.motionScaleY);
+        if(!guides) {
+            guideRejection=guides.error().message;unavailable=guideRejection.c_str();
+            eligible=false;snapshot.enabled=false;communityCameraHistory_.Invalidate();
         }
     }
+    const bool probe=eligible && snapshot.enabled && communityNeural_->Available() &&
+        PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && nrMotionDiagnostic.Due();
+    const auto probeBefore=probe?nrMotionDiagnostic.Before(device_.Get(),context_.Get(),color,depth,motion,width,height,
+        guideExtent.width,guideExtent.height,post?post->motionConvention.scaleX:input.motionScaleX,
+        post?post->motionConvention.scaleY:input.motionScaleY,completed.resources.motionScaleX,completed.resources.motionScaleY):
+        NrMotionDiagnostic::Capture{};
     const auto result=post?communityNeural_->EvaluatePost(completed,snapshot):communityNeural_->Evaluate(input,snapshot,probe?nullptr:linearOutput);
     if(!post && FsrActive() && result){
         const auto route=communityFsrRouteDiagnostics_.Observe(result->evaluated,linearOutput&&linearOutput->Valid(),pipeline->mReShadeBeforeUpscaling,probe);
@@ -237,10 +246,12 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         else if (!eligible) status="NR paused; waiting for a valid TRP world frame";
     }
     if (status!=communityLastStatus_ || (result && result->evaluated && communityNeural_->Recorded()%600==0)) {
-        logger::info("[Community NR frame] source={} requested={} evaluated={} profile={} revision={} reset={} frames={} resets={} color={}x{} guides={}x{} motionScale=({}, {}) status={}",
+        logger::info("[Community NR frame] source={} requested={} evaluated={} profile={} revision={} reset={} frames={} resets={} color={}x{} guides={}x{} motionScale=({}, {}) guideJitterRenderPx=({}, {}) status={}",
             sourceId,p.neuralEnabled,result && result->evaluated,communityNeural_->ProfileId(),snapshot.revision,
             result && result->effectiveReset,communityNeural_->Recorded(),communityNeural_->Resets(),width,height,
-            guideExtent.width,guideExtent.height,completed.resources.motionScaleX,completed.resources.motionScaleY,status);
+            guideExtent.width,guideExtent.height,completed.resources.motionScaleX,completed.resources.motionScaleY,
+            post?post->jitterX:(pipeline->mEnableJitter?pipeline->mJitterOffsets[0]:0.f),
+            post?post->jitterY:(pipeline->mEnableJitter?pipeline->mJitterOffsets[1]:0.f),status);
         communityLastStatus_=status;
     }
     if (!result || !result->evaluated) communityCameraHistory_.Invalidate();

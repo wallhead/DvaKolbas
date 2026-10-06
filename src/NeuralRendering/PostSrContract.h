@@ -67,4 +67,11 @@ inline Result<PostSrGuidePlan> ValidatePostSrSourceContract(const PostSrSourceCo
         return fail(ErrorKind::InvalidInput,"NR post-SR display motion scale overflow");
     return PostSrGuidePlan{source.guides,scaleX,scaleY};
 }
+inline Result<PostSrGuidePlan> BindPostSrMotionScales(const PostSrSourceContract& source,float& scaleX,float& scaleY) {
+    // Never leave guessed or previous-frame scales behind after failed admission.
+    scaleX=scaleY=0;
+    auto plan=ValidatePostSrSourceContract(source);
+    if(plan){scaleX=plan->motionScaleX;scaleY=plan->motionScaleY;}
+    return plan;
+}
 }
