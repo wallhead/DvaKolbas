@@ -86,6 +86,9 @@ int wmain(int argc,wchar_t** argv){try {
     Microsoft::WRL::ComPtr<ID3D12Device> device;
     Require(SUCCEEDED(D3D12CreateDevice(nullptr,D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&device))),"D3D12 device creation failed");
     Policy::SetLog(&PolicyLog);
+    // Match the product order: a balanced read-only DRS session precedes
+    // NGX/Streamline initialization and must not disrupt their NVAPI lifetime.
+    Policy::ReportDriverSettings();
     std::uintptr_t* compatibilitySlot{};
     if(compatibility) {
         const auto common=LoadLibraryExW((directory/L"sl.common.dll").c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);

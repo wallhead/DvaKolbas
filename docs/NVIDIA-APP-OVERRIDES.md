@@ -16,3 +16,55 @@ Run `NvidiaAppSettings`, `NvidiaAppSettingsGpu-control`, `NvidiaAppSettingsGpu-f
 
 The game log records `[NVIDIA App Settings]` installation and suppressed values, alongside the existing `[SourceDLSSG] loaded` paths. If another module initialized NGX before this shim, it may have cached an unfiltered resolver; an unexpected selected runtime remains a startup error. Restarting the process is required after changing installed runtime files.
 
+## Driver effects and startup diagnostics
+
+On the actual NVIDIA rendering adapter, startup also reads the executable's DRS
+profile, including inherited values. It uses the full executable path to select
+the profile applied to that installation, and uses the current global profile
+only when NVAPI reports that the application is absent. Failed reads remain unknown. The snapshot uses a separate,
+read-only DRS session, destroyed on every exit; NVAPI initialization is balanced
+with unload. Snapshot failure is diagnostic and does not block rendering. AMD
+renderers skip these NVIDIA calls, and NVIDIA renderers get the snapshot when
+using FSR too.
+
+The snapshot reports Smooth Motion enable/API mask, RTX HDR, RTX Dynamic
+Vibrance, frame limiting and the community-documented DLSS forced model profile.
+These are **observations, not additional filtered settings**. Their IDs and Smooth
+Motion's API-mask semantics are listed in [NVIDIA Profile Inspector's setting
+metadata](https://github.com/Orbmu2k/nvidiaProfileInspector/blob/master/nvidiaProfileInspector/CustomSettingNames.xml).
+The Smooth Motion/HDR/vibrance/profile-selection keys are not a published NVIDIA
+runtime opt-out contract. In particular, do not infer that the absence of a
+Smooth Motion setting means the driver effect is disabled.
+
+Smooth Motion configured for DX11 produces a startup log warning. NVIDIA provides
+a [per-program control in NVIDIA App](https://nvidia.custhelp.com/app/answers/detail/a_id/5621):
+Graphics → Skyrim Program settings → Driver Settings → Smooth Motion → Off.
+Change it before launching Skyrim when using RaZkolbaS frame generation. This
+keeps other programs' preferences. RaZkolbaS does not save that change itself.
+
+The log separately records whether `NvPresent64.dll` is loaded at the startup
+boundary and its path when present. Module presence alone does not prove active
+interpolation; absence at that boundary does not exclude a later load. The local
+driver's NvPresent exports provide device/swapchain creation, destruction and
+initialization entry points, with no exported disable operation. NVIDIA's public
+NVAPI headers do not currently document a Smooth Motion runtime opt-out. A wider
+NGX key whitelist therefore does not establish Smooth Motion suppression. A
+process-local suppression route needs separate consumer/timing evidence and
+hardware validation before shipping.
+
+## Portable packaging and remaining driver qualification
+
+The distributable INI leaves both NR runtime-root and driver-core overrides blank.
+The NR model paths resolve within the game's virtual Data tree; core discovery
+uses the NVIDIA rendering driver actually loaded after device creation. Trial
+stagers clear both current and legacy path aliases. Their local core path stays
+in research receipts for validation, and the MO2 metadata contains only the ZIP
+basename. Probe wrappers require explicit local model/core inputs instead of
+assuming a developer's Downloads directory or DriverStore folder.
+
+**Discovery is not driver-version qualification.** NR still accepts the exact
+qualified core identity in `RuntimeOwner.cpp`; an unfamiliar core returns the
+observed and expected size/hash with its path. Supporting it requires a validated
+core qualification change. The patched NR model hashes remain pinned, and a core
+from another installed driver directory is not a portable fallback.
+

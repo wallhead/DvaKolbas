@@ -1,6 +1,41 @@
-# RaZkolbaS — Universal, 0.3.5
+# RaZkolbaS — DLSS, FSR, FG and NR
 
-FSR SR development builds use a separate, validated FSR-only package and `[FSR]` settings; the default package below retains its NVIDIA selection. See [the FSR gameplay checklist](https://github.com/wallhead/RaZkolbaS/blob/codex/fsr-sr/docs/FSR_TEST_CHECKLIST.md) and `THIRD_PARTY_FSR.md`. FSR frame generation is unavailable. Standalone GPU/plugin-load checks do not establish Skyrim acceptance. Do not install the staged test package over a running game or edit MO2 while it is open.
+## Current development MO2 archive
+
+`RaZkolbas DLSS FSR FG NR.zip` contains `SKSE/` and `meta.ini` at its root,
+with the validated DLSS/Streamline, FSR SR/FG and community NR payloads bundled.
+Install and enable it through MO2, with other upscaler/FG mods disabled. Use
+windowed or borderless Skyrim and launch SKSE. Close Skyrim and MO2 before
+replacing the installed package.
+
+Press **End** for settings. Live NR/FG controls apply automatically; **Save as
+default** persists them. Startup/provider changes marked in the menu require a
+restart. NR After keeps the order **DLSS/FSR → NR → FG → UI**. AMD's supported
+route is FSR plus optional FSR FG, with NR unavailable. Set `[FSR]
+SourceColorEncoding` to the verified scene encoding before first enabling FSR;
+the shipped source INI deliberately uses `Unknown` until configured.
+
+Leave `[Runtime] NRRuntimeRoot` and `NRDriverCore` blank for portable packages.
+The models resolve from the mod's resource tree and the core is discovered beside
+the NVIDIA rendering driver loaded by Skyrim. Discovery does not qualify a new
+driver core: unsupported hashes are reported with the actual path and expected
+identity. The RTX 40/50 profiles share one model file; RTX 20/30 use a separate
+model. Hardware eligibility and validation remain separate from selecting a file.
+
+The log is in Skyrim's SKSE log directory, normally
+`Documents/My Games/Skyrim Special Edition/SKSE/RaZkolbaS.log`; redirected Documents
+folders can change its location. `[NVIDIA App Settings]` records actual override
+suppression separately from read-only observations of driver effects. Smooth
+Motion is outside the NGX filter. Disable it in NVIDIA App's **Skyrim Program
+settings** before launch when using RaZkolbaS FG; the mod does not write driver
+profiles. See [driver settings behavior](../docs/NVIDIA-APP-OVERRIDES.md).
+
+## Historical Universal 0.3.5 instructions
+
+The notes below describe earlier Universal distributions with separately supplied
+runtimes. Their download/setup steps do not apply to the bundled development
+archive described above. Standalone checks do not establish support on untested
+GPU/driver combinations.
 
 Version 0.3.5 enables DLSS-G UI recomposition by default to reduce HUD
 ghosting; toggle it live under Frame generation. GPU retirement waits now

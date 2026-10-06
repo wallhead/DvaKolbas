@@ -1,7 +1,7 @@
 param(
     [ValidateSet('rtx40','rtx50','rtx20-30')][string]$Profile='rtx40',
-    [string]$RuntimeDll='C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll',
-    [string]$DriverCore='C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll',
+    [Parameter(Mandatory)][string]$RuntimeDll,
+    [Parameter(Mandatory)][string]$DriverCore,
     [ValidateSet('on','off')][string]$CallerShim='on',
     [ValidateRange(2,240)][int]$Frames=30,
     [string]$Executable,

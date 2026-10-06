@@ -47,10 +47,11 @@ if($ini['NeuralRendering/CommunityRuntime'] -eq 'true'){throw 'Reference INI alr
 $changes['NeuralRendering/CommunityRuntime']='true'
 $changes['NeuralRendering/Profile']='Auto'
 $changes['Runtime/NRRuntimeRoot']=''
-$changes['Runtime/NRDriverCore']=[IO.Path]::GetFullPath($DriverCore)
+$changes['Runtime/NRDriverCore']=''
 $changes['NeuralRendering/SourceColorEncoding']='Gamma22'
-$lines=Set-PackageIniValues $lines.ToArray() $changes
+$lines=ConvertTo-PortableNrPackageIni (Set-PackageIniValues $lines.ToArray() $changes)
 [IO.File]::WriteAllLines((Join-Path $root 'SKSE/Plugins/RaZkolbaS.ini'),$lines,[Text.UTF8Encoding]::new($false))
+Write-PortableModMetadata -Directory $root -Revision $identity.sourceRevision
 Copy-Item -LiteralPath (Join-Path $repository 'docs/NR_BEFORE_TRIAL.md') -Destination (Join-Path $root 'README.md')
 foreach($relative in @('LICENSE','THIRD_PARTY_FSR.md','AMD-FidelityFX-license.md','FSR-API-MIT-NOTICE.txt')){
     $source=if($relative -eq 'LICENSE'){Join-Path $repository 'LICENSE'}else{Join-Path $accepted $relative}

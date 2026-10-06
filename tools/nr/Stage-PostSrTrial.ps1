@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory)][string]$BuildDirectory,
     [Parameter(Mandatory)][string]$AcceptedModDirectory,
-    [Parameter(Mandatory)][string]$OutputDirectory
+    [Parameter(Mandatory)][string]$OutputDirectory,
+    [string]$DriverCore
 )
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RuntimePackageCommon.ps1')
@@ -30,11 +31,14 @@ $dlaa=$ini['Settings/UpscaleType'] -eq '3' -and $ini['Experimental/FrameGenerati
 $fsr=$ini['Settings/UpscaleType'] -eq '4' -and $ini['FSR/Quality'] -eq 'NativeAA' -and $ini['FSR/SourceColorEncoding'] -eq $ini['NeuralRendering/SourceColorEncoding']
 if(-not ($dlaa -or $fsr)){throw 'After trial requires the accepted DLAA or FSR Native AA route'}
 $pin=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime-pin.json') -Raw | ConvertFrom-Json
-Assert-PinnedFile $ini['NeuralRendering/DriverCore'] $pin.qualifiedProbeDriverCore.sha256 $pin.qualifiedProbeDriverCore.bytes
-if($ini['NeuralRendering/RuntimeRoot']){throw 'Stage currently requires packaged, relative NR model paths'}
+if(-not $DriverCore){$DriverCore=$ini['Runtime/NRDriverCore']}
+if(-not $DriverCore){$DriverCore=$ini['NeuralRendering/DriverCore']}
+if(-not $DriverCore){throw 'Provide -DriverCore for local qualification; the staged startup INI will use automatic discovery'}
+Assert-PinnedFile $DriverCore $pin.qualifiedProbeDriverCore.sha256 $pin.qualifiedProbeDriverCore.bytes
+if($ini['Runtime/NRRuntimeRoot'] -or $ini['NeuralRendering/RuntimeRoot']){throw 'Stage currently requires packaged, relative NR model paths'}
 foreach($profile in @(Get-NrPhysicalModels $pin.profiles)){Assert-PinnedFile (Join-Path $accepted ('SKSE/Plugins/RaZkolbaS/'+$profile.relativePath)) $profile.sha256 $profile.bytes}
 if(-not $ini.ContainsKey('SourceDLSSG/NRBeforeUpscaling')){throw 'Reference needs an explicit placement key'}
-$lines=Set-PackageIniValues ([IO.File]::ReadAllLines($iniPath)) @{'SourceDLSSG/NRBeforeUpscaling'='false'}
+$lines=ConvertTo-PortableNrPackageIni (Set-PackageIniValues ([IO.File]::ReadAllLines($iniPath)) @{'SourceDLSSG/NRBeforeUpscaling'='false'})
 $protected=@{}
 foreach($file in Get-ChildItem -LiteralPath $accepted -Recurse -File){
     $relative=[IO.Path]::GetRelativePath($accepted,$file.FullName).Replace('\','/')
@@ -45,8 +49,9 @@ Copy-NrTrialFiles $pin.profiles $accepted $output
 Assert-NrRuntimeModels $pin.profiles (Join-Path $output 'SKSE/Plugins/RaZkolbaS')
 Copy-Item -LiteralPath $dll -Destination (Join-Path $output 'SKSE/Plugins/RaZkolbaS.dll')
 [IO.File]::WriteAllLines((Join-Path $output $iniRelative),$lines,[Text.UTF8Encoding]::new($false))
-$stagedIni=Read-PackageIni (Join-Path $output $iniRelative)
-foreach($key in $ini.Keys){if($key -notin @('SourceDLSSG/NRBeforeUpscaling','NeuralRendering/BeforeUpscaling') -and $stagedIni[$key] -ne $ini[$key]){throw "Unexpected INI change: $key"}}
+Write-PortableModMetadata -Directory $output -Revision $identity.sourceRevision
+$stagedIni=Read-PortableNrPackageIni (Join-Path $output $iniRelative)
+foreach($key in $ini.Keys){if($key -notin @('SourceDLSSG/NRBeforeUpscaling','NeuralRendering/BeforeUpscaling','Runtime/NRDriverCore','Runtime/NRRuntimeRoot','NeuralRendering/DriverCore','NeuralRendering/RuntimeRoot') -and $stagedIni[$key] -ne $ini[$key]){throw "Unexpected INI change: $key"}}
 Copy-Item -LiteralPath (Join-Path $repository 'docs/NR_POST_SR_TRIAL.md') -Destination (Join-Path $output 'POST_SR_TRIAL.md')
 # Refresh an inherited NR manifest so its profiles and file list match this stage.
 $nrManifestPath=Join-Path $output 'nr-trial-manifest.json'
@@ -65,9 +70,9 @@ foreach($file in Get-ChildItem -LiteralPath $output -Recurse -File){
     if($relative -eq 'post-sr-manifest.json'){continue} # Receipt cannot hash its own replacement.
     $hash=(Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
     $manifest+=@{path=$relative;bytes=$file.Length;sha256=$hash}
-    if($protected.ContainsKey($relative) -and $relative -notin @($iniRelative,'SKSE/Plugins/RaZkolbaS.dll','nr-trial-manifest.json','POST_SR_TRIAL.md') -and $hash -ne $protected[$relative]){throw "Unexpected staged change: $relative"}
+    if($protected.ContainsKey($relative) -and $relative -notin @($iniRelative,'SKSE/Plugins/RaZkolbaS.dll','nr-trial-manifest.json','POST_SR_TRIAL.md','meta.ini') -and $hash -ne $protected[$relative]){throw "Unexpected staged change: $relative"}
 }
 foreach($relative in $protected.Keys){if((Get-FileHash -LiteralPath (Join-Path $accepted $relative) -Algorithm SHA256).Hash.ToLowerInvariant() -ne $protected[$relative]){throw "Reference changed during staging: $relative"}}
-@{schema=1;scope='Local Native-AA post-SR trial; not installed or game-tested';identity=$identity;sourceMod=$accepted;iniChangedKeys=@('SourceDLSSG/NRBeforeUpscaling');sourceFiles=$protected;files=$manifest} |
+@{schema=1;scope='Local Native-AA post-SR trial; not installed or game-tested';identity=$identity;sourceMod=$accepted;qualificationCore=[IO.Path]::GetFullPath($DriverCore);iniChangedKeys=@('SourceDLSSG/NRBeforeUpscaling','Runtime/NRDriverCore','Runtime/NRRuntimeRoot','NeuralRendering/DriverCore','NeuralRendering/RuntimeRoot');sourceFiles=$protected;files=$manifest} |
     ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $output 'post-sr-manifest.json') -Encoding utf8
 Write-Output "STAGED ONLY: $output"

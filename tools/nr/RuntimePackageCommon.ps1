@@ -1,5 +1,39 @@
 # Logical hardware profiles may share one physical runtime. Validate/copy it once.
 . (Join-Path $PSScriptRoot '../fsr/PackageCommon.ps1')
+function ConvertTo-PortableNrPackageIni([string[]]$Lines) {
+    # Packaged NR models are relative to the virtual Data tree. Keep research
+    # core paths in validation receipts, never in another user's startup INI.
+    Set-PackageIniValues $Lines @{
+        'Runtime/NRRuntimeRoot'='';'Runtime/NRDriverCore'='';
+        'NeuralRendering/RuntimeRoot'='';'NeuralRendering/DriverCore'=''
+    }
+}
+function Assert-PortableNrPackageIni([hashtable]$Ini) {
+    foreach($pair in @(
+        @{Current='Runtime/NRRuntimeRoot';Legacy='NeuralRendering/RuntimeRoot'},
+        @{Current='Runtime/NRDriverCore';Legacy='NeuralRendering/DriverCore'}
+    )){
+        if(-not $Ini.ContainsKey($pair.Current) -and -not $Ini.ContainsKey($pair.Legacy)){throw "Packaged NR path key is missing: $($pair.Current)"}
+        foreach($key in @($pair.Current,$pair.Legacy)){
+            if($Ini.ContainsKey($key) -and $Ini[$key]){throw "Packaged NR path is not portable: $key"}
+        }
+    }
+}
+function Read-PortableNrPackageIni([string]$Path) {
+    # Check raw aliases before normalization hides stale legacy values.
+    $ini=Read-PackageIni $Path -Raw
+    Assert-PortableNrPackageIni $ini
+    return ConvertTo-IniReadView $ini
+}
+function Write-PortableModMetadata([string]$Directory,[string]$Revision) {
+    if($Revision -notmatch '^[a-zA-Z0-9._-]+$'){throw 'Invalid metadata revision'}
+    $lines=@('[General]','gameName=SkyrimSE','modid=0','version=0.3.5','newestVersion=','category=0','nexusFileStatus=1',
+        'installationFile=RaZkolbas DLSS FSR FG NR.zip','repository=','ignoredVersion=',
+        'comments=RaZkolbas DLSS FSR FG NR',"notes=Build $Revision; DLSS/FSR -> NR -> FG -> UI.",
+        'url=https://github.com/wallhead/RaZkolbaS','hasCustomURL=true','converted=false','validated=false','',
+        '[installedFiles]','size=0')
+    [IO.File]::WriteAllLines((Join-Path $Directory 'meta.ini'),$lines,[Text.UTF8Encoding]::new($false))
+}
 function Get-NrPhysicalModels([object[]]$Profiles) {
     $paths=@{};$ids=@{}
     foreach($p in $Profiles){

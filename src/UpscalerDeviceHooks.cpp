@@ -14,6 +14,7 @@
 #include "CommunityShaderIntegration.h"
 #include "HookInstallation.h"
 #include "PluginPaths.h"
+#include "NvidiaAppSettings.h"
 #include "RendererGpuPolicy.h"
 #include "RendererStartupValidation.h"
 #include <SimpleIni.h>
@@ -134,6 +135,10 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     logger::info("[Renderer GPU] vendor=0x{:04X} device=0x{:04X} LUID={:08X}:{:08X} AMD FSR-only={}",
         rendererDesc.VendorId, rendererDesc.DeviceId, static_cast<unsigned>(rendererDesc.AdapterLuid.HighPart),
         rendererDesc.AdapterLuid.LowPart, TheosRenderPipeline::IsAmdRenderer(rendererDesc.VendorId));
+    if (rendererDesc.VendorId==0x10DE) {
+        TheosRenderPipeline::NvidiaAppSettings::SetLog([](const char* message){logger::info("[NVIDIA App Settings] {}",message);});
+        TheosRenderPipeline::NvidiaAppSettings::ReportDriverSettings();
+    }
     if (TheosRenderPipeline::IsAmdRenderer(rendererDesc.VendorId)) {
         auto* generation = SourceFrameGeneration::GetSingleton();
         generation->LoadINI(rendererDesc.VendorId);

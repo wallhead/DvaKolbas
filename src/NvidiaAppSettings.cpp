@@ -1,5 +1,6 @@
 #include "NvidiaAppSettings.h"
 #include "NvidiaAppSettingsPolicy.h"
+#include "NvidiaDriverSettings.h"
 #include "HookSafety.h"
 #include <atomic>
 #include <array>
@@ -75,6 +76,55 @@ std::uintptr_t* ResolverSlot(HMODULE module) {
 }
 }
 void SetLog(Log log) noexcept {Get().log.store(log);}
+void ReportDriverSettings() {
+    static std::once_flag once;
+    std::call_once(once,[]{try {
+        struct Module {HMODULE value{};~Module(){if(value)FreeLibrary(value);}} nvapi{
+            LoadLibraryExW(L"nvapi64.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32)};
+        const auto query=nvapi.value?reinterpret_cast<Query>(GetProcAddress(nvapi.value,"nvapi_QueryInterface")):nullptr;
+        if(!query){Report("driver settings snapshot unavailable: System32 NVAPI query missing; startup continues");return;}
+        const auto init=reinterpret_cast<int(__cdecl*)()>(query(0x0150e828));
+        const auto unload=reinterpret_cast<int(__cdecl*)()>(query(0xd22bdd7e));
+        if(!init||!unload){Report("driver settings snapshot unavailable: NVAPI lifecycle missing; startup continues");return;}
+        const auto initialized=init();
+        if(initialized!=0){char text[128];std::snprintf(text,sizeof(text),"driver settings snapshot unavailable: NVAPI init=%d; startup continues",initialized);Report(text);return;}
+        struct ApiLifetime {int(__cdecl* unload)();~ApiLifetime(){unload();}} lifetime{unload};
+        DriverSettingsApi api;
+        api.create=reinterpret_cast<decltype(api.create)>(query(0x0694d52e));
+        api.destroy=reinterpret_cast<decltype(api.destroy)>(query(0xdad9cff8));
+        api.load=reinterpret_cast<decltype(api.load)>(query(0x375dbd6b));
+        api.find=reinterpret_cast<decltype(api.find)>(query(0xeee566b2));
+        api.global=reinterpret_cast<decltype(api.global)>(query(0x617bff9f));
+        api.read=reinterpret_cast<decltype(api.read)>(query(0x73bf8338));
+        std::array<wchar_t,32768> path{};
+        const auto size=GetModuleFileNameW(nullptr,path.data(),static_cast<DWORD>(path.size()));
+        const auto snapshot=InspectDriverSettings(api,size&&size<path.size()?std::wstring_view(path.data(),size):std::wstring_view{});
+        char text[320];
+        std::snprintf(text,sizeof(text),"read-only driver settings snapshot: status=%d scope=%s; saved profiles unchanged",snapshot.status,snapshot.globalProfile?"global fallback":"application");Report(text);
+        if(snapshot.status==0)for(const auto& value:snapshot.values) {
+            if(value.status==0)
+                std::snprintf(text,sizeof(text),"observed %s (0x%08X): value=0x%08X location=%u; diagnostic only, not suppressed",value.name,value.id,value.value,value.location);
+            else
+                std::snprintf(text,sizeof(text),"observed %s (0x%08X): status=%d value=unknown; diagnostic only, not suppressed",value.name,value.id,value.status);
+            Report(text);
+        }
+        const auto configured=SmoothMotionDx11Configured(snapshot);
+        if(configured==DriverConflict::Enabled)
+            Report("Smooth Motion is configured for DX11 and is outside our NGX/Streamline filter. Disable Smooth Motion in NVIDIA App's Skyrim Program settings before launch when using RaZkolbaS FG; no automatic profile write was made.");
+        else if(configured==DriverConflict::Unknown)
+            Report("Smooth Motion DX11 configuration is unknown; this snapshot does not establish that driver interpolation is off.");
+        const auto present=GetModuleHandleW(L"NvPresent64.dll");
+        if(present) {
+            path.fill(0);const auto written=GetModuleFileNameW(present,path.data(),static_cast<DWORD>(path.size()));
+            std::string actual="unavailable";
+            if(written&&written<path.size()) {
+                const auto utf8=std::filesystem::path(path.data()).u8string();
+                actual.assign(reinterpret_cast<const char*>(utf8.data()),utf8.size());
+            }
+            Report(("NVIDIA presentation interposer NvPresent64.dll is loaded: "+actual+"; module presence does not prove active frame generation").c_str());
+        }else Report("NvPresent64.dll is not loaded at this startup boundary; it may load later, so this is not proof that Smooth Motion is disabled.");
+    }catch(...) {Report("driver settings diagnostics could not complete; startup continues and saved profiles remain unchanged");}});
+}
 bool ProtectModule(HMODULE module) {
     auto& s=Get();std::scoped_lock lock(s.mutex);
     if(!module)return false;

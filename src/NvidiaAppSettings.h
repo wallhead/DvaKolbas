@@ -6,6 +6,9 @@
 namespace TheosRenderPipeline::NvidiaAppSettings {
 using Log = void(*)(const char*);
 void SetLog(Log callback) noexcept;
+// Read-only startup snapshot. Call for an actual NVIDIA renderer, including FSR.
+// Configuration is not proof of active interpolation; loaded interposers are logged separately.
+void ReportDriverSettings();
 // Hook only owned NVIDIA/NGX imports. All references live until process exit.
 // No NVAPI SetSetting/SaveSettings or registry writes are used.
 bool ProtectModule(HMODULE module);

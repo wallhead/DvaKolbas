@@ -1,7 +1,7 @@
 param(
     [ValidateSet('rtx40','aio19-rtx40','aio19-rtx40-shim')][string]$RuntimeProfile='rtx40',
-    [string]$RuntimeDll,
-    [string]$DriverCore='C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll',
+    [Parameter(Mandatory)][string]$RuntimeDll,
+    [Parameter(Mandatory)][string]$DriverCore,
     [ValidateRange(2,1000)][int]$Frames=300,
     [ValidateRange(0,240)][int]$Warmup=120,
     [ValidateRange(16,3840)][int]$Width=2560,
@@ -19,10 +19,6 @@ param(
 $ErrorActionPreference='Stop'
 $taskRoot=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 if(-not $Executable){$Executable=Join-Path $taskRoot 'out/build/nr-runtime/Release/TRPNrPerformanceProbe.exe'}
-if(-not $RuntimeDll){
-    if($RuntimeProfile -eq 'rtx40'){$RuntimeDll='C:/Users/user/Downloads/nvngx_dlssnr_4_series/nvngx_dlssnr.dll'}
-    else{$RuntimeDll=Join-Path $taskRoot 'out/research/aio19/extracted/UpscalerBasePlugin/nvngx_dlssnr.dll'}
-}
 if(-not $Output){$Output=Join-Path $taskRoot "out/research/nr/performance/$RuntimeProfile-$Enabled-$Instrumentation-$Readback-timer$TimerPeriodMs"}
 foreach($file in @($Executable,$RuntimeDll,$DriverCore)){if(-not (Test-Path -LiteralPath $file -PathType Leaf)){throw "Required file missing: $file"}}
 for($run=1;$run -le $Repeats;$run++){
