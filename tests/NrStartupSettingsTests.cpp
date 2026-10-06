@@ -31,4 +31,22 @@ core=automatic.ResolveDriverCore();
 check(!core&&core.error().kind==ErrorKind::Unsupported&&core.error().message.find("missing DriverStore override")!=std::string::npos,
     "MissingDriverStoreOverrideUsesDiscoveryAndReportsRecoveryContext");
 i.v["SourceColorEncoding"]="garbage";check(LoadStartupSettings(i).sourceEncoding==TheosRenderPipeline::Upscaling::ColorEncoding::Unknown,"InvalidEncodingCannotGuessGamma");
+const auto fixture=std::filesystem::temp_directory_path()/(L"RazNrRoot-"+std::to_wstring(GetCurrentProcessId()));
+const auto renamed=fixture/L"RaZkolbaS";
+std::filesystem::create_directories(renamed/L"NR");
+StartupSettings legacy;legacy.runtimeRoot="TheosRenderPipeline";
+check(legacy.Resolve(renamed).runtimeRoot==renamed,"LegacyCommunityRootRecoversRenamedResources");
+legacy.runtimeRoot="TheosRenderPipeline/NR";
+check(legacy.Resolve(renamed).runtimeRoot==renamed/L"NR","LegacyCommunitySubdirectoryRecoversRenamedResources");
+std::filesystem::create_directories(fixture/L"TheosRenderPipeline/NR");
+check(legacy.Resolve(renamed).runtimeRoot==fixture/L"TheosRenderPipeline/NR","ExistingLegacyCommunityRootIsPreserved");
+legacy.runtimeRoot=fixture/L"TheosRenderPipeline";
+check(legacy.Resolve(renamed).runtimeRoot==legacy.runtimeRoot,"AbsoluteCommunityOverrideIsPreserved");
+legacy.runtimeRoot="custom";
+check(legacy.Resolve(renamed).runtimeRoot==renamed/L"custom","CustomRelativeCommunityOverrideIsPreserved");
+std::filesystem::remove(fixture/L"TheosRenderPipeline/NR");
+std::filesystem::remove(fixture/L"TheosRenderPipeline");
+legacy.runtimeRoot="TheosRenderPipeline/missing";
+check(legacy.Resolve(renamed).runtimeRoot==renamed/L"TheosRenderPipeline/missing","MissingRenamedCommunityResourcesDoNotInventFallback");
+std::filesystem::remove(renamed/L"NR");std::filesystem::remove(renamed);std::filesystem::remove(fixture);
 return failed?1:0;}

@@ -245,9 +245,10 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(IDXGIAdapter* pAdapter, D3D_DRIV
         // The completion boundary has cleared failed outputs. Show the actual
         // startup error once, instead of leaving the game to fail without context.
         const auto* smoothMotionNotice=TheosRenderPipeline::NvidiaAppSettings::CurrentSmoothMotionNotice();
-        util::report_and_fail(std::format("RaZkolbaS could not start rendering.\n\n{}\nHRESULT: 0x{:08X}\n\n{}{}"
+        util::report_and_fail(std::format("RaZkolbaS could not start rendering.\n\n{}\nHRESULT: 0x{:08X}\n\n{}{}{}"
                                           "See RaZkolbaS.log for details. Skyrim will close after this message.",
                                           nvidiaHost->Status(), (uint32_t)hr,
+                                          smoothMotionNotice?"Separately, NVIDIA driver settings need attention:\n":"",
                                           smoothMotionNotice?smoothMotionNotice:"",smoothMotionNotice?"\n\n":""));
     }
 

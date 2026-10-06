@@ -2,6 +2,7 @@
 #include "NvidiaAppSettingsPolicy.h"
 #include "NvidiaDriverSettings.h"
 #include "HookSafety.h"
+#include "NvidiaResolverImports.h"
 #include <atomic>
 #include <array>
 #include <cstdio>
@@ -68,13 +69,20 @@ template<std::size_t I> FARPROC WINAPI Resolve(HMODULE module,LPCSTR name) {
     return result;
 }
 constexpr std::array<Resolver,8> resolvers{Resolve<0>,Resolve<1>,Resolve<2>,Resolve<3>,Resolve<4>,Resolve<5>,Resolve<6>,Resolve<7>};
-std::uintptr_t* ResolverSlot(HMODULE module) {
-    std::uintptr_t* found{};
-    for(const auto* name:{"kernel32.dll","api-ms-win-core-libraryloader-l1-2-0.dll","api-ms-win-core-libraryloader-l1-2-1.dll"}) {
-        auto* candidate=HookSafety::ImportSlot(reinterpret_cast<std::uintptr_t>(module),name,"GetProcAddress");
-        if(candidate) {if(found)return nullptr;found=candidate;}
-    }
-    return found;
+void ReportFileFailure(const std::filesystem::path& path,const char* reason,DWORD native=0) noexcept {
+    try {
+        const auto utf8=path.u8string();
+        const std::string name(reinterpret_cast<const char*>(utf8.data()),utf8.size());
+        Report((std::string(reason)+"; path="+name+"; native="+std::to_string(native)).c_str());
+    }catch(...) {Report(reason);}
+}
+void ReportModuleFailure(HMODULE module,const char* reason) noexcept {
+    try {
+        std::array<wchar_t,32768> path{};
+        const auto length=GetModuleFileNameW(module,path.data(),static_cast<DWORD>(path.size()));
+        if(length&&length<path.size())ReportFileFailure(path.data(),reason);
+        else Report(reason);
+    }catch(...) {Report(reason);}
 }
 }
 void SetLog(Log log) noexcept {Get().log.store(log);}
@@ -141,10 +149,10 @@ bool ProtectModule(HMODULE module) {
     auto& s=Get();std::scoped_lock lock(s.mutex);
     if(!module)return false;
     for(auto& record:s.records)if(record.module==module)return record.installed;
-    auto* slot=ResolverSlot(module);
-    if(!slot) {Report("NVIDIA module has no unique GetProcAddress import; cannot install override filter");return false;}
+    auto* slot=Detail::ResolverSlot(module);
+    if(!slot) {ReportModuleFailure(module,"NVIDIA module has no unique supported GetProcAddress import; application override filtering unavailable");return false;}
     if(!s.nvapi)s.nvapi=LoadLibraryExW(L"nvapi64.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if(!s.nvapi)return false;
+    if(!s.nvapi){Report("System32 nvapi64.dll could not load; application override filtering unavailable");return false;}
     if(!s.self && !GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,reinterpret_cast<LPCWSTR>(&ProtectModule),&s.self))return false;
     // Last reader slot is reserved for the existing checked compatibility wrapper.
     for(std::size_t i=0;i<s.records.size()-1;++i) {
@@ -171,7 +179,7 @@ bool PrepareCore() {
     if(!count || count>=path.size()) {Report("active NVIDIA driver module path unavailable");return false;}
     const auto corePath=std::filesystem::path(path.data()).parent_path()/L"_nvngx.dll";
     const auto core=LoadLibraryExW(corePath.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if(!core) {Report("cannot preload active driver NGX core for application settings");return false;}
+    if(!core) {ReportFileFailure(corePath,"cannot preload active driver NGX core for application settings",GetLastError());return false;}
     if(!ProtectModule(core)) {FreeLibrary(core);return false;}
     // ProtectModule holds the core and the callback code until process exit.
     FreeLibrary(core);return true;
@@ -188,7 +196,7 @@ bool PrepareStreamline(const std::filesystem::path& directory,StreamlineResolver
         // Its NVAPI wrapper composes FilterNvapiFunction directly instead.
         if(owner==StreamlineResolverOwner::Compatibility && std::wcscmp(name,L"sl.common.dll")==0)continue;
         const auto module=LoadLibraryExW((directory/name).c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-        if(!module)return false;
+        if(!module){ReportFileFailure(directory/name,"cannot preload configured Streamline module for application settings",GetLastError());return false;}
         const auto ok=ProtectModule(module);FreeLibrary(module);if(!ok)return false;
     }
     return true;

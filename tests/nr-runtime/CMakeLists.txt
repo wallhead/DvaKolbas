@@ -254,6 +254,8 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         tests/nr-runtime/RuntimeProbeReport.h tests/nr-runtime/GpuProbeGuard.h tests/nr-runtime/run_reshade_before.py tests/NrImagePacketTests.cpp src/NeuralRendering/RuntimeCatalog.cpp src/NeuralRendering/RuntimeCatalog.h
         src/NeuralRendering/RuntimeFileLease.cpp src/NeuralRendering/RuntimeFileLease.h
         src/NeuralRendering/DriverCoreTrust.cpp src/NeuralRendering/DriverCoreTrust.h
+        src/NvidiaAppSettings.cpp src/NvidiaAppSettings.h src/NvidiaAppSettingsPolicy.h
+        src/NvidiaDriverSettings.h src/NvidiaResolverImports.h cmake/NvidiaAppSettings.cmake
         src/NeuralRendering/RuntimeOwner.cpp src/NeuralRendering/RuntimeOwner.h
         src/NeuralRendering/CallerIdentityShim.cpp src/NeuralRendering/CallerIdentityShim.h
         src/NeuralRendering/Error.h src/NeuralRendering/ImagePacket.h src/NeuralRendering/ImagePacket.cpp

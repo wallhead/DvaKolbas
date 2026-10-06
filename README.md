@@ -4,6 +4,8 @@ Formerly DvaKolbas; based on [Theo's Render Pipeline](https://github.com/theosw/
 The plugin, menu, configuration, log and resource directory use the RaZkolbaS name.
 Upgrade with the complete package: disable/remove the old renderer mod first so
 `TheosRenderPipeline.dll` and `RaZkolbaS.dll` are never loaded together.
+Startup also rejects a leftover `TheosRenderPipeline.dll` in `SKSE/Plugins`,
+even before it loads. Remove that old DLL or disable the mod providing it.
 
 NVIDIA rendering integration for Skyrim: DLSS/DLAA, frame generation, optional
 Neural Rendering (NR), and native-resolution menus and HUD. Current version:
