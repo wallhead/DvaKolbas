@@ -29,6 +29,14 @@ int main(){try{
     Need(SmoothMotionNotice(DriverConflict::Enabled)!=nullptr,"configured Smooth Motion needs an actionable player-facing notice");
     Need(SmoothMotionNotice(DriverConflict::Disabled)==nullptr&&SmoothMotionNotice(DriverConflict::Unknown)==nullptr,
         "disabled and unknown settings must not falsely tell the player Smooth Motion is enabled");
+    const auto* possible=SmoothMotionNotice(DriverConflict::Unknown,true);
+    Need(possible&&std::string_view(possible).find("possible double frame generation")!=std::string_view::npos,
+        "unreadable Smooth Motion with its interposer loaded must show a possible double-FG warning");
+    Need(std::string_view(possible).find("could not be read")!=std::string_view::npos&&
+        std::string_view(possible).find("Disable NVIDIA Smooth Motion for Skyrim")!=std::string_view::npos,
+        "possible conflict notice must explain uncertainty and how to disable Smooth Motion");
+    Need(SmoothMotionNotice(DriverConflict::Disabled,true)==nullptr,
+        "a module alone must not turn a known disabled setting into an enabled warning");
     s.values[1].status=0;s.values[1].value=1;
     Need(SmoothMotionDx11Configured(s)==DriverConflict::Disabled,"DX12-only mask does not enable DX11");
     s.values[1].value=2;

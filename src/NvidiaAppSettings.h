@@ -11,6 +11,9 @@ void SetLog(Log callback) noexcept;
 // Configuration is not proof of active interpolation; loaded interposers are logged separately.
 void ReportDriverSettings();
 DriverConflict SmoothMotionStatus() noexcept;
+// Notice uses the current loaded-module observation, including late driver
+// loads. A module plus an unreadable setting means possible conflict only.
+const char* CurrentSmoothMotionNotice() noexcept;
 // Hook only owned NVIDIA/NGX imports. All references live until process exit.
 // No NVAPI SetSetting/SaveSettings or registry writes are used.
 bool ProtectModule(HMODULE module);

@@ -27,6 +27,7 @@ struct State {
     HMODULE nvapi{},self{};
     std::atomic<unsigned> reports{};
     std::atomic<DriverConflict> smoothMotion{DriverConflict::Unknown};
+    std::atomic<bool> nvidiaRenderer{};
 };
 State& Get(){static auto* state=new State;return *state;}
 void Report(const char* message) noexcept {
@@ -78,9 +79,19 @@ std::uintptr_t* ResolverSlot(HMODULE module) {
 }
 void SetLog(Log log) noexcept {Get().log.store(log);}
 DriverConflict SmoothMotionStatus() noexcept {return Get().smoothMotion.load();}
+const char* CurrentSmoothMotionNotice() noexcept {
+    // This observation is relevant only after startup identified NVIDIA as the
+    // rendering adapter. An NVIDIA DLL in an AMD-rendered process is unrelated.
+    if(!Get().nvidiaRenderer.load())return nullptr;
+    return SmoothMotionNotice(SmoothMotionStatus(),GetModuleHandleW(L"NvPresent64.dll")!=nullptr);
+}
 void ReportDriverSettings() {
     static std::once_flag once;
     std::call_once(once,[]{try {
+        Get().nvidiaRenderer.store(true);
+        // Still report the possible conflict when the NVAPI snapshot exits
+        // early. Failure to read the setting must not hide a loaded interposer.
+        struct FinalNotice {~FinalNotice(){if(const auto* notice=CurrentSmoothMotionNotice())Report(notice);}} finalNotice;
         struct Module {HMODULE value{};~Module(){if(value)FreeLibrary(value);}} nvapi{
             LoadLibraryExW(L"nvapi64.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32)};
         const auto query=nvapi.value?reinterpret_cast<Query>(GetProcAddress(nvapi.value,"nvapi_QueryInterface")):nullptr;
@@ -112,9 +123,7 @@ void ReportDriverSettings() {
         }
         const auto configured=SmoothMotionDx11Configured(snapshot);
         Get().smoothMotion.store(configured);
-        if(const auto* notice=SmoothMotionNotice(configured))
-            Report(notice);
-        else if(configured==DriverConflict::Unknown)
+        if(configured==DriverConflict::Unknown)
             Report("Smooth Motion DX11 configuration is unknown; this snapshot does not establish that driver interpolation is off.");
         const auto present=GetModuleHandleW(L"NvPresent64.dll");
         if(present) {

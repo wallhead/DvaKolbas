@@ -34,10 +34,16 @@ struct DriverSettingsSnapshot {
     }};
 };
 enum class DriverConflict { Unknown,Disabled,Enabled };
-inline const char* SmoothMotionNotice(DriverConflict status) noexcept {
+inline const char* SmoothMotionNotice(DriverConflict status, bool presentationInterposerLoaded = false) noexcept {
+    if(status==DriverConflict::Unknown&&presentationInterposerLoaded)
+        return "Disable NVIDIA Smooth Motion for Skyrim.\n"
+            "NVIDIA's presentation interposer is loaded, but the Smooth Motion setting could not be read. This is a possible double frame generation conflict.\n"
+            "If Smooth Motion is on, it can stack with RaZkolbaS DLSS or FSR frame generation. Module presence alone does not prove it is active.\n"
+            "NVIDIA App -> Graphics -> Program settings -> Skyrim -> Driver Settings -> Smooth Motion: Off.\n"
+            "Then restart Skyrim. RaZkolbaS has not changed this driver setting.";
     if(status!=DriverConflict::Enabled)return nullptr;
     return "Disable NVIDIA Smooth Motion for Skyrim.\n"
-        "Smooth Motion is configured for DX11 and can interfere with DLSS or FSR frame generation.\n"
+        "Smooth Motion is configured for DX11 and can stack with RaZkolbaS DLSS or FSR frame generation.\n"
         "NVIDIA App -> Graphics -> Program settings -> Skyrim -> Driver Settings -> Smooth Motion: Off.\n"
         "Then restart Skyrim. RaZkolbaS has not changed this driver setting.";
 }

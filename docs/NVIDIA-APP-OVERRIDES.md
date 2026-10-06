@@ -39,8 +39,16 @@ Smooth Motion setting means the driver effect is disabled.
 Smooth Motion configured for DX11 produces a startup log warning and a notice at
 the top of the Frame generation tab, including on the NVIDIA FSR path. The notice
 says to disable Smooth Motion for Skyrim, gives the NVIDIA App navigation and asks
-the player to restart. It is outside collapsed status/developer sections. Unknown
-or disabled configurations do not show an enabled-conflict notice. If rendering
+the player to restart. It is outside collapsed status/developer sections. A
+readable disabled setting does not show an enabled-conflict notice. An unknown
+setting with `NvPresent64.dll` loaded shows a **possible double frame generation**
+notice with the same disable/restart instructions, explicitly explaining that
+the setting could not be read and module presence alone does not prove active
+interpolation. The menu checks module presence live, so a load after the startup
+snapshot is visible too. These notices are restricted to an actual NVIDIA
+renderer, including NVIDIA FSR. An unknown setting without the module remains a
+log observation. Snapshot failures do not hide the possible-conflict notice.
+If rendering
 startup fails with Smooth Motion configured, the error dialog includes the same
 instruction alongside the actual startup error/HRESULT; it does not claim that
 Smooth Motion caused every failure. NVIDIA provides

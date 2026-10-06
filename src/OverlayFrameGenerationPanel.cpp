@@ -25,8 +25,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                                                                            : ImGuiTabItemFlags_None))
     {
         const auto drawSmoothMotionNotice=[] {
-            if(const auto* notice=TheosRenderPipeline::NvidiaAppSettings::SmoothMotionNotice(
-                TheosRenderPipeline::NvidiaAppSettings::SmoothMotionStatus())) {
+            if(const auto* notice=TheosRenderPipeline::NvidiaAppSettings::CurrentSmoothMotionNotice()) {
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(1.0f,0.75f,0.25f,1.0f));
                 ImGui::TextWrapped("%s",notice);
                 ImGui::PopStyleColor();
