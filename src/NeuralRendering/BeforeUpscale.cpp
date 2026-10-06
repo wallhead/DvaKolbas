@@ -1,6 +1,7 @@
 #include "BeforeUpscale.h"
 #include "PerformanceQueries.h"
 #include "History.h"
+#include "RuntimeParameters.h"
 #include "Graphics/D3D11D3D12Interop.h"
 #include <cmath>
 #include <chrono>
@@ -58,11 +59,11 @@ struct BeforeUpscale::State {
         auto remaining=std::chrono::ceil<std::chrono::milliseconds>(deadline-std::chrono::steady_clock::now()).count();if(remaining<=0){terminal=true;return Fail(ErrorKind::Retirement,"NR Before reader retirement deadline exceeded; ownership retained");}
         auto waited=selected?stage.WaitForRetirement(*oldest->ticket,uint32_t(remaining)):stage.WaitForProgress(uint32_t(remaining));if(!waited)terminal=true;return waited;
     }
-    bool Texture(ID3D11Texture2D* texture,DXGI_FORMAT format)const {
+    bool Texture(ID3D11Texture2D* texture,DXGI_FORMAT format,ImageExtent extent)const {
         if(!texture)return false;ComPtr<ID3D11Device> device;texture->GetDevice(&device);
         D3D11_TEXTURE2D_DESC d{};texture->GetDesc(&d);
         return D3D11FrameCopy::SameObject(device.Get(),device11.Get())&&d.Format==format&&
-            d.Width==contract.colorExtent.width&&d.Height==contract.colorExtent.height&&
+            d.Width==extent.width&&d.Height==extent.height&&
             d.ArraySize==1&&d.MipLevels==1&&d.SampleDesc.Count==1&&!d.SampleDesc.Quality&&
             !(d.BindFlags&D3D11_BIND_DEPTH_STENCIL)&&d.Usage==D3D11_USAGE_DEFAULT;
     }
@@ -72,7 +73,7 @@ BeforeUpscale::~BeforeUpscale(){if(state_->uncertain)state_.release();}
 Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& contract,unsigned preset,PerformanceMetrics* metrics,PerformanceQueries* queries11,ColorDomain domain,Placement placement,unsigned passes){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR Before initialization already attempted");s.attempted=true;
     if(!device||!owner||!contract.device||!contract.queue||!contract.colorExtent.width||!contract.colorExtent.height||
-        contract.colorExtent!=contract.guideExtent||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
+        !ValidDirectExtents(contract.colorExtent,contract.guideExtent)||(placement==Placement::Before&&contract.colorExtent!=contract.guideExtent)||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
         (placement!=Placement::Before&&placement!=Placement::After))return Fail(ErrorKind::InvalidInput,"NR native source device/extent/color/placement contract incomplete");
     auto r=s.Gpu(s.interop.Initialize(device,contract.device.Get(),contract.queue.Get()),"NR Before same-adapter bridge initialization failed");if(!r)return r;
     s.device11=device;s.contract=contract;s.preset=preset;s.passes=passes;s.colorDomain=domain;s.placement=placement;device->GetImmediateContext(&s.context);
@@ -88,7 +89,8 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
     r=s.Gpu(opened,"NR Before D3D11 fence open failed");if(!r)return r;
     r=s.Gpu(contract.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&s.completionFence)),"NR Before completion fence creation failed");if(!r)return r;
     auto make=[&](DXGI_FORMAT format,Graphics::SharedTexture& texture,bool uav){
-        D3D11_TEXTURE2D_DESC d{};d.Width=contract.colorExtent.width;d.Height=contract.colorExtent.height;
+        const auto extent=format==DXGI_FORMAT_R32_FLOAT||format==DXGI_FORMAT_R16G16_FLOAT?contract.guideExtent:contract.colorExtent;
+        D3D11_TEXTURE2D_DESC d{};d.Width=extent.width;d.Height=extent.height;
         d.MipLevels=d.ArraySize=d.SampleDesc.Count=1;d.Format=format;d.Usage=D3D11_USAGE_DEFAULT;
         // The accepted D3D12-to-D3D11 shared-open route needs RTV capability,
         // including input resources which this adapter only copies/samples.
@@ -122,7 +124,7 @@ Result<BeforeResult> BeforeUpscale::Evaluate(const BeforeInput& input,const Sett
     if(settings.passes!=int(s.passes))return Fail(ErrorKind::InvalidInput,"NR native source pass count differs from initialized chain");
     if(input.colorDomain!=s.colorDomain||input.colorExtent!=s.contract.colorExtent||input.guideExtent!=s.contract.guideExtent||
         !input.context||input.context->GetType()!=D3D11_DEVICE_CONTEXT_IMMEDIATE||!D3D11FrameCopy::SameObject(input.context.Get(),s.context.Get())||
-        !s.Texture(input.color.Get(),NrColorFormat(s.colorDomain))||!s.Texture(input.depth.Get(),DXGI_FORMAT_R32_FLOAT)||!s.Texture(input.motion.Get(),DXGI_FORMAT_R16G16_FLOAT)||
+        !s.Texture(input.color.Get(),NrColorFormat(s.colorDomain),s.contract.colorExtent)||!s.Texture(input.depth.Get(),DXGI_FORMAT_R32_FLOAT,s.contract.guideExtent)||!s.Texture(input.motion.Get(),DXGI_FORMAT_R16G16_FLOAT,s.contract.guideExtent)||
         input.color.Get()==input.depth.Get()||input.color.Get()==input.motion.Get()||input.depth.Get()==input.motion.Get()||
         input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||!std::isfinite(input.motionScaleX)||!std::isfinite(input.motionScaleY)||!input.motionScaleX||!input.motionScaleY)
         return Fail(ErrorKind::InvalidInput,"NR Before input ownership/encoding/native guides invalid");

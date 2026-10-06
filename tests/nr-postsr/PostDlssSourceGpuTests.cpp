@@ -133,18 +133,19 @@ struct Operations {
     ID3D11DeviceContext* context;std::unique_ptr<NR::PostUpscale>& post;NR::SettingsSnapshot& settings;SL::Interop& bridge;SL::Session& session;TagSink& observer;Stats& stats;
     Graphics::SharedTexture colorTag,motionTag,depthTag,uiTag;UINT width,height;uint64_t epoch{},source{};bool fg{};
     std::vector<unsigned char> original,enhanced,frozen,expectedUi;
+    UINT renderWidth{},renderHeight{};
     void CopyInput(ID3D11DeviceContext* c,const SourceNvidiaFrameInputs& f){c->CopyResource(f.input,f.color);frozen=Read(c,f.input);}
     bool EvaluateNeuralBeforeDLSS(SourceNvidiaFrameInputs&){return true;}
     void RenderReShade(const SourceNvidiaFrameInputs&,bool){}
-    bool EvaluateDLSS(const SourceNvidiaFrameInputs& f){return DLSSBackend::GetSingleton()->Evaluate(f.input,f.motion,f.depth,f.output,width,height,0,0,0,float(width),float(height),f.reset);}
+    bool EvaluateDLSS(const SourceNvidiaFrameInputs& f){return DLSSBackend::GetSingleton()->Evaluate(f.input,f.motion,f.depth,f.output,renderWidth,renderHeight,0,0,0,float(renderWidth),float(renderHeight),f.reset);}
     void UpscaleSucceeded(){++stats.sr;}
     bool EvaluateNeuralAfterDLSS(SourceNvidiaFrameInputs& f,Upscaling::UpscaleOutcome outcome){
         ++stats.post;original=Read(context,f.output);NR::PostSrInput input;auto& r=input.resources;
         r.context=context;r.color=f.output;r.depth=f.depth;r.motion=f.motion;r.epoch=r.guideEpoch=epoch;r.sourceId=r.guideSourceId=source;r.previousSourceId=source-1;
         r.presentationTime=double(source)/60.;r.colorExtent=r.guideExtent={width,height};r.colorDomain=NR::ColorDomain::SdrBytes;r.motionScaleX=float(width);r.motionScaleY=float(height);r.reset=f.reset;
         auto& m=input.source;m.backend=Upscaling::BackendKind::Dlaa;m.outcome=outcome;m.epoch=m.guideEpoch=epoch;m.sourceId=m.guideSourceId=source;m.previousSourceId=source-1;
-        m.sourceTime=m.guideTime=r.presentationTime;m.render=m.display=m.color=m.guides={width,height};m.colorDomain=NR::ColorDomain::SdrBytes;m.encoding=Upscaling::ColorEncoding::Gamma22;
-        m.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;m.guideOrigin=NR::GuideOrigin::RealSource;m.motion={float(width),float(height),true,false};
+        m.sourceTime=m.guideTime=r.presentationTime;m.display=m.color={width,height};m.render=m.guides=r.guideExtent={renderWidth,renderHeight};m.backend=renderWidth==width?Upscaling::BackendKind::Dlaa:Upscaling::BackendKind::Dlss;m.colorDomain=NR::ColorDomain::SdrBytes;m.encoding=Upscaling::ColorEncoding::Gamma22;
+        m.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;m.guideOrigin=NR::GuideOrigin::RealSource;m.motion={float(renderWidth),float(renderHeight),true,false};
         auto result=Neural(post->Evaluate(input,settings));Check(result.evaluated==settings.enabled,"OneNrAfterActualDlaaSource");Neural(post->WaitDelivery(result));f.reset|=result.effectiveReset;
         enhanced=Read(context,f.output);stats.nr+=result.evaluated;stats.fgOffNr+=result.evaluated&&!fg;stats.frozen+=Read(context,f.input)==frozen;
         stats.pixels+=original.size()/4;for(size_t i=0;i<original.size()/4;++i){stats.alpha+=original[i*4+3]==enhanced[i*4+3];stats.changed+=std::memcmp(&original[i*4],&enhanced[i*4],3)!=0;}
@@ -204,6 +205,12 @@ struct Operations {
 };
 }
 int wmain(int argc,wchar_t** argv){try{
+    int selectedQuality=5;float ratio=1;
+#if defined(TRP_POSTSR_DLSS_SCALED)
+    if(argc<4)return 1;selectedQuality=std::stoi(argv[argc-1]);--argc;
+    if(selectedQuality<0||selectedQuality>4)return 1;
+    const float ratios[]{2.f,1.7f,1.5f,3.f,1.3f};ratio=ratios[selectedQuality];
+#endif
     std::setvbuf(stdout,nullptr,_IONBF,0);if(argc<3||argc>5||NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: arguments/game inventory");return 1;}
     if(argc==5){const std::wstring_view mode=argv[3];
         vendorLifecycle=mode==L"--vendor-lifecycle"||mode==L"--vendor-lifecycle-visible"||mode==L"--vendor-lifecycle-omit-gates"||mode==L"--vendor-lifecycle-omit-gates-visible";
@@ -254,24 +261,28 @@ int wmain(int argc,wchar_t** argv){try{
         const float clear[]{.1f,.1f,.1f,1};list->ClearRenderTargetView(handle,clear,0,nullptr);std::swap(b.Transition.StateBefore,b.Transition.StateAfter);list->ResourceBarrier(1,&b);
         Gpu(bridge.Submit(SL::Work::SwapChain));vendor->RequireForeground(false);if(!session.BeforePresent(false))throw std::runtime_error("Warm-up BeforePresent failed");Gpu(vendor->Present());if(!session.AfterPresent(true))throw std::runtime_error("Warm-up AfterPresent failed");Gpu(bridge.Drain());
     }if(!warmLifetime.Retire())throw std::runtime_error("Warm-up resources quarantined");std::puts("VENDOR_WARMUP actualPresents=600 generation=off");}
-    for(unsigned cycle=0;cycle<2;++cycle){const UINT width=vendor?(cycle?1344:1280):(cycle?384:320),height=vendor?(cycle?756:720):(cycle?216:180);contract.colorExtent=contract.guideExtent={width,height};
+    for(unsigned cycle=0;cycle<2;++cycle){const UINT width=vendor?(cycle?1344:1280):(cycle?384:320),height=vendor?(cycle?756:720):(cycle?216:180);
+        const UINT renderWidth=UINT(float(width)/ratio),renderHeight=UINT(float(height)/ratio);
+        contract.colorExtent={width,height};contract.guideExtent={renderWidth,renderHeight};
+        std::printf("SOURCE_EXTENTS display=%ux%u render=%ux%u quality=%d\n",width,height,renderWidth,renderHeight,selectedQuality);
         auto post=std::make_unique<NR::PostUpscale>();Neural(post->Initialize(owner,device.Get(),contract));observer.Allocate(contract.device.Get(),width,height);
         if(vendor&&cycle)vendor->Resize(width,height);
         if(readerMode)observer.reader=std::make_shared<TaggedSourceReader>(contract.device.Get(),width,height);
-        Surface world(device.Get(),width,height,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE),
-            input(device.Get(),width,height,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE),
+        Surface world(device.Get(),renderWidth,renderHeight,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE),
+            input(device.Get(),renderWidth,renderHeight,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE),
             output(device.Get(),width,height,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE),
-            motion(device.Get(),width,height,DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE),depth(device.Get(),width,height,DXGI_FORMAT_R32_FLOAT,D3D11_BIND_SHADER_RESOURCE),
+            motion(device.Get(),renderWidth,renderHeight,DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE),depth(device.Get(),renderWidth,renderHeight,DXGI_FORMAT_R32_FLOAT,D3D11_BIND_SHADER_RESOURCE),
             ui(device.Get(),width,height,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE);
-        std::vector<unsigned short> velocity(size_t(width)*height*2);context->UpdateSubresource(motion.texture.Get(),0,nullptr,velocity.data(),width*4,0);
-        std::vector<float> z(size_t(width)*height,.5f);context->UpdateSubresource(depth.texture.Get(),0,nullptr,z.data(),width*4,0);
+        std::vector<unsigned short> velocity(size_t(renderWidth)*renderHeight*2);context->UpdateSubresource(motion.texture.Get(),0,nullptr,velocity.data(),renderWidth*4,0);
+        std::vector<float> z(size_t(renderWidth)*renderHeight,.5f);context->UpdateSubresource(depth.texture.Get(),0,nullptr,z.data(),renderWidth*4,0);
         std::vector<unsigned char> hud(size_t(width)*height*4);for(size_t i=0;i<hud.size()/4;++i){hud[i*4]=(i%width)<20?255:0;hud[i*4+3]=(i%width)<20?255:0;}context->UpdateSubresource(ui.texture.Get(),0,nullptr,hud.data(),width*4,0);
-        if(!dlss->InitUpscale(width,height,width,height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,5))throw std::runtime_error("Actual production DLAA creation failed");
+        if(!dlss->InitUpscale(renderWidth,renderHeight,width,height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,selectedQuality))throw std::runtime_error("Actual production DLSS/DLAA creation failed");
         Check(srLease.Matches(PluginPaths::ModulePath(GetModuleHandleW(L"nvngx_dlss.dll"))),"LoadedDlaaRuntimeMatchesHeldQualifiedFile");
         NR::SettingsSnapshot settings;settings.placement=NR::Placement::After;
         Operations ops{context.Get(),post,settings,bridge,session,observer,stats,{},{},{},{},width,height,cycle+1};
+        ops.renderWidth=renderWidth;ops.renderHeight=renderHeight;
         ops.expectedUi=hud;
-        for(auto* pair:{&ops.colorTag,&ops.uiTag,&ops.depthTag,&ops.motionTag}){D3D11_TEXTURE2D_DESC d{};d.Width=width;d.Height=height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=pair==&ops.motionTag?DXGI_FORMAT_R16G16_FLOAT:pair==&ops.depthTag?DXGI_FORMAT_R32_FLOAT:DXGI_FORMAT_R8G8B8A8_UNORM;d.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;if(pair==&ops.depthTag)d.BindFlags|=D3D11_BIND_UNORDERED_ACCESS;const auto hr=bridge.CreateSharedTexture(d,*pair);if(FAILED(hr))std::printf("SHARED_ALLOCATION format=%u bind=%u result=0x%08x\n",unsigned(d.Format),d.BindFlags,unsigned(hr));Gpu(hr);}
+        for(auto* pair:{&ops.colorTag,&ops.uiTag,&ops.depthTag,&ops.motionTag}){const bool guide=pair==&ops.depthTag||pair==&ops.motionTag;D3D11_TEXTURE2D_DESC d{};d.Width=guide?renderWidth:width;d.Height=guide?renderHeight:height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=pair==&ops.motionTag?DXGI_FORMAT_R16G16_FLOAT:pair==&ops.depthTag?DXGI_FORMAT_R32_FLOAT:DXGI_FORMAT_R8G8B8A8_UNORM;d.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;if(pair==&ops.depthTag)d.BindFlags|=D3D11_BIND_UNORDERED_ACCESS;const auto hr=bridge.CreateSharedTexture(d,*pair);if(FAILED(hr))std::printf("SHARED_ALLOCATION format=%u bind=%u result=0x%08x\n",unsigned(d.Format),d.BindFlags,unsigned(hr));Gpu(hr);}
         if(vendor){D3D11_TEXTURE2D_DESC d{};d.Width=width;d.Height=height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=DXGI_FORMAT_R8G8B8A8_UNORM;d.BindFlags=D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE;Gpu(bridge.CreateSharedTexture(d,observer.presentInput));}
         auto resources=std::make_unique<SubmittedResources>();resources->vendor=vendor;
         if(vendor){resources->textures11.push_back(observer.presentInput.texture11);resources->textures12.push_back(observer.presentInput.texture12);
@@ -306,15 +317,15 @@ int wmain(int argc,wchar_t** argv){try{
                 Gpu(bridge.SignalD3D11(SL::Work::FrameGeneration));Gpu(bridge.Drain());
                 if(vendorReuseExpected){Check(observer.pendingVendorFence->GetCompletedValue()>=observer.pendingVendorValue&&std::chrono::steady_clock::now()-sourceStart>=std::chrono::milliseconds(100),"ActualVendorInputReaderRetiresBeforeFeatureRelease");++vendorReentry;observer.vendorReuseExpected=false;}
                 Neural(post->Retire());dlss->ReleaseFeature();
-                if(!dlss->InitUpscale(width,height,width,height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,5))throw std::runtime_error("Reentry DLAA creation failed");
+                if(!dlss->InitUpscale(renderWidth,renderHeight,width,height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,selectedQuality))throw std::runtime_error("Reentry DLSS/DLAA creation failed");
                 // Preparation instances initialize once, even after successful retirement.
                 if(!reuseRetiredPreparation)post=std::make_unique<NR::PostUpscale>();
                 Neural(post->Initialize(owner,device.Get(),contract));Check(session.ResumeAfterResize(),"SourceSessionResumesAfterFeatureReentry");++sourceReentries;
             }
-            std::vector<unsigned char> bytes(size_t(width)*height*4);for(size_t i=0;i<bytes.size()/4;++i){bytes[i*4]=((i/8+ops.source)%2)?48:208;bytes[i*4+1]=(i+ops.source)%256;bytes[i*4+2]=(i/width+ops.source)%256;bytes[i*4+3]=255;}
-            const bool reuse=readerMode&&local==32;const auto producerStart=std::chrono::steady_clock::now();if(reuse)Check(observer.reader->Pending(),"PriorEnhancedTagReaderPendingBeforeProducerReuse");context->UpdateSubresource(world.texture.Get(),0,nullptr,bytes.data(),width*4,0);
+            std::vector<unsigned char> bytes(size_t(renderWidth)*renderHeight*4);for(size_t i=0;i<bytes.size()/4;++i){bytes[i*4]=((i/8+ops.source)%2)?48:208;bytes[i*4+1]=(i+ops.source)%256;bytes[i*4+2]=(i/renderWidth+ops.source)%256;bytes[i*4+3]=255;}
+            const bool reuse=readerMode&&local==32;const auto producerStart=std::chrono::steady_clock::now();if(reuse)Check(observer.reader->Pending(),"PriorEnhancedTagReaderPendingBeforeProducerReuse");context->UpdateSubresource(world.texture.Get(),0,nullptr,bytes.data(),renderWidth*4,0);
             SourceNvidiaFrameInputs frame;frame.color=world.texture.Get();frame.input=input.texture.Get();frame.output=frame.hudLessColor=output.texture.Get();frame.depth=depth.texture.Get();frame.motion=motion.texture.Get();frame.uiColorAndAlpha=ui.texture.Get();
-            frame.renderWidth=frame.outputWidth=width;frame.renderHeight=frame.outputHeight=height;frame.motionScaleX=float(width);frame.motionScaleY=float(height);frame.reset=local==0||settingsChanged||reentryBoundary;frame.jitterEnabled=true;
+            frame.renderWidth=renderWidth;frame.outputWidth=width;frame.renderHeight=renderHeight;frame.outputHeight=height;frame.motionScaleX=float(renderWidth);frame.motionScaleY=float(renderHeight);frame.reset=local==0||settingsChanged||reentryBoundary;frame.jitterEnabled=true;
             const auto result=SourceNvidiaFrameEvaluator::Evaluate(context.Get(),frame,ops);Check(result.upscaled&&result.cameraValid&&result.prepared,"ActualDlaaSourceFullyPrepared");
             if(vendorReuseExpected&&local!=224){Check(observer.pendingVendorFence->GetCompletedValue()>=observer.pendingVendorValue&&std::chrono::steady_clock::now()-sourceStart>=std::chrono::milliseconds(100),"NewSourceSettingsWaitForGenuineVendorInputReader");++vendorReuse;observer.vendorReuseExpected=false;}
             if(vendor){const auto& snapshot=session.Snapshot();std::printf("VENDOR_FRAME source=%llu configured=%u actual=%u status=%u fenceValue=%llu reset=%u\n",(unsigned long long)ops.source,SL::GenerationEnabled(snapshot.options.mode),snapshot.state.numFramesActuallyPresented,unsigned(snapshot.state.status),(unsigned long long)snapshot.state.lastPresentInputsProcessingCompletionFenceValue,frame.reset);std::this_thread::sleep_until(sourceStart+std::chrono::milliseconds(33));}

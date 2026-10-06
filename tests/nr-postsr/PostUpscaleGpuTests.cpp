@@ -7,6 +7,7 @@
 #if defined(TRP_POSTSR_FSR_SOURCE)
 #include "Upscaling/FSRHostResources.h"
 #include "Upscaling/FSRFrameAdapter.h"
+#include "Upscaling/FSRSettings.h"
 #include "FrameGen/FSRPresentationTransport.h"
 #include <DirectXMath.h>
 #include <cstring>
@@ -37,6 +38,13 @@ void SdkMessage(uint32_t,const wchar_t* text){++sdkMessages;if(text)std::fwprint
 }
 int wmain(int argc,wchar_t** argv){try{
     std::setvbuf(stdout,nullptr,_IONBF,0);
+    Upscaling::Quality selectedQuality=Upscaling::Quality::NativeAA;
+#if defined(TRP_POSTSR_SCALED_SOURCE)
+    const int qualityArgument=argc-1;const std::wstring_view quality=argv[qualityArgument];
+    selectedQuality=quality==L"Quality"?Upscaling::Quality::Quality:quality==L"Balanced"?Upscaling::Quality::Balanced:Upscaling::Quality::Performance;
+    if(quality!=L"Quality"&&quality!=L"Balanced"&&quality!=L"Performance")return 1;
+    --argc;
+#endif
 #if defined(TRP_POSTSR_FSR_PRESENT)
     if(argc!=5)return 1;
     const bool observed=std::wstring_view(argv[4])==L"observer";
@@ -60,6 +68,9 @@ int wmain(int argc,wchar_t** argv){try{
     if(!adapter){std::puts("REFUSED: qualified RTX40 adapter unavailable");return 1;}
     std::printf("ADAPTER vendor=0x%04x device=0x%04x luidLow=%u luidHigh=%d\n",desc.VendorId,desc.DeviceId,desc.AdapterLuid.LowPart,desc.AdapterLuid.HighPart);
     StageContract contract;contract.colorExtent=contract.guideExtent={320,180};contract.adapterLuid={desc.AdapterLuid.LowPart,desc.AdapterLuid.HighPart};
+#if defined(TRP_POSTSR_SCALED_BRIDGE)
+    contract.guideExtent={160,90};
+#endif
     Need(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&contract.device)));
     D3D12_COMMAND_QUEUE_DESC queue{};Need(contract.device->CreateCommandQueue(&queue,IID_PPV_ARGS(&contract.queue)));
     ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context;
@@ -73,15 +84,16 @@ int wmain(int argc,wchar_t** argv){try{
 #if defined(TRP_POSTSR_FSR_SOURCE)
     Upscaling::FsrHostResources sr(std::filesystem::absolute(argv[3]));
     Upscaling::BackendConfiguration configuration;configuration.backend=Upscaling::BackendKind::Fsr;
-    configuration.quality=Upscaling::Quality::NativeAA;configuration.generationEnabled=false;configuration.generationBackend=0;
+    configuration.quality=selectedQuality;configuration.generationEnabled=false;configuration.generationBackend=0;
     auto sizing=sr.PrepareSizing(device.Get(),configuration,{320,180},DXGI_FORMAT_R8G8B8A8_UNORM,Upscaling::ColorEncoding::Gamma22);
     if(!sizing){std::printf("FAIL FSR sizing: %s\n",sizing.error().message.c_str());return 1;}
-    if(*sizing!=Upscaling::Extent{320,180})return 1;
+    contract.guideExtent={sizing->width,sizing->height};
+    if(selectedQuality==Upscaling::Quality::NativeAA && *sizing!=Upscaling::Extent{320,180})return 1;
     auto started=sr.CompleteStartup();if(!started){std::printf("FAIL FSR startup: %s\n",started.error().message.c_str());return 1;}
     contract.device=sr.Bridge()->Device12();contract.queue=sr.Bridge()->Queue();
     Upscaling::FsrFrameAdapter reconstruction(*sr.Upscaler(),sr.Bridge(),sr.Resources(),sr.Color11(),sr.Depth11(),sr.Motion11(),sr.Output11(),sr.HandoffEncoding());
     FsrPresentationTransport foreground;Need(foreground.Initialize(sr.Bridge(),{320,180}));
-    std::printf("ACTUAL_FSR provider=%s id=%llu encoding=Gamma22 quality=NativeAA\n",sr.Provider().name.c_str(),(unsigned long long)sr.Provider().id);
+    std::printf("ACTUAL_FSR provider=%s id=%llu encoding=Gamma22 quality=%s render=%ux%u display=320x180\n",sr.Provider().name.c_str(),(unsigned long long)sr.Provider().id,Upscaling::QualityName(selectedQuality),contract.guideExtent.width,contract.guideExtent.height);
 #if defined(TRP_POSTSR_FSR_PRESENT)
     Accepted(sr.LoadFrameGeneration());auto runtime=sr.Runtime();
     ComPtr<ID3D12InfoQueue> diagnostics12;contract.device.As(&diagnostics12);
@@ -119,7 +131,7 @@ int wmain(int argc,wchar_t** argv){try{
     swapDesc.SampleDesc.Count=1;swapDesc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;swapDesc.BufferCount=1;
     Accepted(presenter.Create(factory.Get(),runtime,sr.Bridge(),swapDesc,sw));
     Need(presenter.Present({},Upscaling::UpscaleOutcome::SkippedInvalidInput,{},nullptr,Upscaling::ColorEncoding::Unknown,nullptr,nullptr,false,false,false,0,0));
-    Upscaling::FsrGenerationLimits limits;limits.render=limits.display={320,180};limits.debugChecking=true;
+    Upscaling::FsrGenerationLimits limits;limits.render={contract.guideExtent.width,contract.guideExtent.height};limits.display={320,180};limits.debugChecking=true;
     Accepted(presenter.CompleteStartup(limits,fg));
     unsigned generatedCallbacks{},suppressed{},reentries{},generatedReadbacks{},renderedReadbacks{},changingGenerated{};
     uint64_t compositedUiExact{},enhancedRenderedRgbExact{};std::unordered_set<uint64_t> sourceIds,eligibleIds;
@@ -130,8 +142,9 @@ int wmain(int argc,wchar_t** argv){try{
     auto opened=owner->Open(RuntimeCatalog()[1],contract.device.Get(),{desc.VendorId,desc.DeviceId,desc.SubSysId,contract.adapterLuid,false});
     if(!opened){std::puts(opened.error().message.c_str());return 1;}
     auto initialized=post.Initialize(owner,device.Get(),contract);if(!initialized){std::puts(initialized.error().message.c_str());return 1;}
-    const auto texture=[&](DXGI_FORMAT format,UINT bind,bool staging=false){D3D11_TEXTURE2D_DESC d{};
-        d.Width=320;d.Height=180;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=format;d.BindFlags=staging?0:bind;
+    const auto texture=[&](DXGI_FORMAT format,UINT bind,bool staging=false,ImageExtent extent={320,180}){D3D11_TEXTURE2D_DESC d{};
+        if(format==DXGI_FORMAT_R32_TYPELESS || format==DXGI_FORMAT_R16G16_FLOAT)extent=contract.guideExtent;
+        d.Width=extent.width;d.Height=extent.height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=format;d.BindFlags=staging?0:bind;
         d.Usage=staging?D3D11_USAGE_STAGING:D3D11_USAGE_DEFAULT;d.CPUAccessFlags=staging?D3D11_CPU_ACCESS_READ:0;
         ComPtr<ID3D11Texture2D> result;Need(device->CreateTexture2D(&d,nullptr,&result));return result;};
     auto color=texture(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE);
@@ -140,17 +153,18 @@ int wmain(int argc,wchar_t** argv){try{
     auto readback=texture(DXGI_FORMAT_R8G8B8A8_UNORM,0,true);
     ComPtr<ID3D11DepthStencilView> dsv;D3D11_DEPTH_STENCIL_VIEW_DESC depthView{};depthView.Format=DXGI_FORMAT_D32_FLOAT;depthView.ViewDimension=D3D11_DSV_DIMENSION_TEXTURE2D;
     Need(device->CreateDepthStencilView(depth.Get(),&depthView,&dsv));context->ClearDepthStencilView(dsv.Get(),D3D11_CLEAR_DEPTH,.5f,0);
-    std::vector<unsigned short> velocity(320*180*2);context->UpdateSubresource(motion.Get(),0,nullptr,velocity.data(),320*4,0);
+    std::vector<unsigned short> velocity(contract.guideExtent.width*contract.guideExtent.height*2);
+    context->UpdateSubresource(motion.Get(),0,nullptr,velocity.data(),contract.guideExtent.width*4,0);
     const auto pixels=[&](ID3D11Texture2D* texture){
         D3D11_TEXTURE2D_DESC shape{};texture->GetDesc(&shape);const unsigned pixelBytes=shape.Format==DXGI_FORMAT_R16G16B16A16_FLOAT?8:4;
         ComPtr<ID3D11Texture2D> staging=readback;
-        if(pixelBytes!=4){shape.Usage=D3D11_USAGE_STAGING;shape.BindFlags=shape.MiscFlags=0;shape.CPUAccessFlags=D3D11_CPU_ACCESS_READ;Need(device->CreateTexture2D(&shape,nullptr,&staging));}
-        std::vector<unsigned char> result(320*180*pixelBytes);context->CopyResource(staging.Get(),texture);
+        if(pixelBytes!=4||shape.Width!=320||shape.Height!=180){shape.Usage=D3D11_USAGE_STAGING;shape.BindFlags=shape.MiscFlags=0;shape.CPUAccessFlags=D3D11_CPU_ACCESS_READ;Need(device->CreateTexture2D(&shape,nullptr,&staging));}
+        std::vector<unsigned char> result(size_t(shape.Width)*shape.Height*pixelBytes);context->CopyResource(staging.Get(),texture);
         D3D11_MAPPED_SUBRESOURCE mapped{};Need(context->Map(staging.Get(),0,D3D11_MAP_READ,0,&mapped));
-        for(unsigned y=0;y<180;++y)std::memcpy(result.data()+y*320*pixelBytes,static_cast<const unsigned char*>(mapped.pData)+y*mapped.RowPitch,320*pixelBytes);
+        for(unsigned y=0;y<shape.Height;++y)std::memcpy(result.data()+size_t(y)*shape.Width*pixelBytes,static_cast<const unsigned char*>(mapped.pData)+y*mapped.RowPitch,shape.Width*pixelBytes);
         context->Unmap(staging.Get(),0);return result;};
 #if defined(TRP_POSTSR_FSR_SOURCE)
-    auto source=texture(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE);
+    auto source=texture(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE,false,contract.guideExtent);
     auto reference=texture(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE);
     auto ui=texture(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE);
     std::vector<unsigned char> hud(320*180*4);for(size_t i=0;i<320*180;++i){hud[i*4]=(i%320<20)?255:0;hud[i*4+1]=(i%320>=20&&i%320<40)?128:0;hud[i*4+3]=(i%320<20)?255:(i%320<40)?128:0;}
@@ -159,7 +173,7 @@ int wmain(int argc,wchar_t** argv){try{
     Upscaling::FsrColorConverter referenceEncoder;
     Upscaling::UpscaleFrame real;real.backend=Upscaling::BackendKind::Fsr;real.color=real.input=source.Get();real.output=color.Get();
     real.depthFormat=DXGI_FORMAT_R32_FLOAT;real.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
-    real.depth=depth.Get();real.motion=motion.Get();real.render=real.subrect=real.display={320,180};real.motionConvention={320,180,true,false};real.deltaMilliseconds=1000.f/60;
+    real.depth=depth.Get();real.motion=motion.Get();real.render=real.subrect={contract.guideExtent.width,contract.guideExtent.height};real.display={320,180};real.motionConvention={float(contract.guideExtent.width),float(contract.guideExtent.height),true,false};real.deltaMilliseconds=1000.f/60;
     real.camera.worldUnitsToMeters=1;real.camera.identity=1;real.camera.nearDistance=.1f;real.camera.farDistance=100;real.camera.verticalFovRadians=1;
     DirectX::XMFLOAT4X4 view,projection;DirectX::XMStoreFloat4x4(&view,DirectX::XMMatrixIdentity());
     DirectX::XMStoreFloat4x4(&projection,DirectX::XMMatrixPerspectiveFovLH(1,320.f/180,.1f,100));
@@ -177,6 +191,13 @@ int wmain(int argc,wchar_t** argv){try{
     metadata.epoch=metadata.guideEpoch=1;metadata.sourceId=metadata.guideSourceId=1;metadata.sourceTime=metadata.guideTime=native.presentationTime;
     metadata.render=metadata.display=metadata.color=metadata.guides={320,180};metadata.colorDomain=ColorDomain::SdrBytes;metadata.encoding=Upscaling::ColorEncoding::Gamma22;
     metadata.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;metadata.depthFormat=DXGI_FORMAT_R32_FLOAT;metadata.motionFormat=DXGI_FORMAT_R16G16_FLOAT;metadata.guideOrigin=GuideOrigin::RealSource;metadata.motion={320,180,true,false};
+#if defined(TRP_POSTSR_SCALED_BRIDGE) || defined(TRP_POSTSR_SCALED_SOURCE)
+    native.guideExtent=metadata.render=metadata.guides=contract.guideExtent;
+#if !defined(TRP_POSTSR_FSR_SOURCE)
+    metadata.backend=Upscaling::BackendKind::Dlss;
+#endif
+    metadata.motion={float(contract.guideExtent.width),float(contract.guideExtent.height),true,false};
+#endif
     settings.enabled=true;
     auto stale=input;stale.source.guideSourceId=0;auto rejected=post.Evaluate(stale,settings);
     Check(!rejected && rejected.error().kind==ErrorKind::InvalidInput && post.Diagnostics().evaluate==0,"StalePostGuidesRejectedBeforeVendorWork");
@@ -199,7 +220,14 @@ int wmain(int argc,wchar_t** argv){try{
         Need(presenter.WaitBeforeProducer());
         if(frame==160){Accepted(presenter.Suspend());Accepted(presenter.Resume());}
 #endif
-        Need(foreground.WaitBeforeProducer());context->CopyResource(source.Get(),color.Get());
+        Need(foreground.WaitBeforeProducer());
+        if(real.render==real.display)context->CopyResource(source.Get(),color.Get());
+        else{
+            std::vector<unsigned char> renderBytes(size_t(real.render.width)*real.render.height*4);
+            for(unsigned y=0;y<real.render.height;++y)for(unsigned x=0;x<real.render.width;++x){const auto p=(size_t(y)*real.render.width+x)*4;
+                renderBytes[p]=((x/8+frame)%2)?48:208;renderBytes[p+1]=(x+frame)%256;renderBytes[p+2]=(y+frame)%256;renderBytes[p+3]=(x+y+frame)%256;}
+            context->UpdateSubresource(source.Get(),0,nullptr,renderBytes.data(),real.render.width*4,0);
+        }
         real.sourceId=frame+1;real.sourceEpoch=1;real.reset=frame==0 || frame==80 || frame==81;
         auto jitter=sr.Upscaler()->QueryJitter(real.sourceId);if(!jitter)return 1;real.jitterX=(*jitter)[0];real.jitterY=(*jitter)[1];
         auto reconstructed=reconstruction.Evaluate(real);

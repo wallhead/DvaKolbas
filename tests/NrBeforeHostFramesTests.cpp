@@ -18,12 +18,13 @@ using namespace TheosRenderPipeline::NeuralRendering;
 using Microsoft::WRL::ComPtr;
 namespace {int failures{};void Check(bool v,const char* name){std::printf("%s %s\n",v?"PASS":"FAIL",name);failures+=!v;}void Need(HRESULT h){if(FAILED(h))throw h;}}
 int wmain(int argc,wchar_t** argv){try{
-    bool wrapped=false,sdr=false,post=false,liveSettings=false,passCycle=false,omitController=false;
-    if(argc<3||argc>9||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
+    bool wrapped=false,sdr=false,post=false,liveSettings=false,passCycle=false,omitController=false,scaled=false;
+    if(argc<3||argc>10||!std::filesystem::exists(argv[1])||!std::filesystem::exists(argv[2]))return 77;
     for(int i=4;i<argc;++i){if(std::wstring_view(argv[i])==L"--require-wrapped")wrapped=true;
         else if(std::wstring_view(argv[i])==L"--sdr-bytes")sdr=true;else if(std::wstring_view(argv[i])==L"--post-sr")post=true;
         else if(std::wstring_view(argv[i])==L"--live-settings")liveSettings=true;
         else if(std::wstring_view(argv[i])==L"--pass-cycle")passCycle=true;
+        else if(std::wstring_view(argv[i])==L"--scaled-guides")scaled=true;
         else if(std::wstring_view(argv[i])==L"--omit-controller")omitController=true;else return 1;}
     if((liveSettings||passCycle)&&(!post||!sdr))return 1;
 #if !defined(TRP_CONTROLLER_APPLY_PROBE)
@@ -59,8 +60,8 @@ int wmain(int argc,wchar_t** argv){try{
     auto inspected=prepared.Inspect(device.Get(),startup,std::filesystem::absolute("nr-host-frames-cache"),(wrapped||post)?c.device.Get():nullptr);
     if(!inspected){std::puts(inspected.error().message.c_str());return 1;}
     Check(prepared.Available() && prepared.Recorded()==0 && !GetModuleHandleW(L"nvngx_dlssnr.dll"),"InspectedHostDoesNotInitializeVendorBeforeSource");
-    unsigned width=320,height=180;
-    const auto texture=[&](DXGI_FORMAT format,UINT bind,D3D11_USAGE usage=D3D11_USAGE_DEFAULT){D3D11_TEXTURE2D_DESC t{};t.Width=width;t.Height=height;t.ArraySize=t.MipLevels=t.SampleDesc.Count=1;t.Format=format;t.Usage=usage;t.BindFlags=bind;t.CPUAccessFlags=usage==D3D11_USAGE_STAGING?D3D11_CPU_ACCESS_READ:0;ComPtr<ID3D11Texture2D> v;Need(device->CreateTexture2D(&t,nullptr,&v));return v;};
+    unsigned width=320,height=180,guideWidth=scaled?160:320,guideHeight=scaled?90:180;
+    const auto texture=[&](DXGI_FORMAT format,UINT bind,D3D11_USAGE usage=D3D11_USAGE_DEFAULT){D3D11_TEXTURE2D_DESC t{};const bool guide=scaled&&(format==DXGI_FORMAT_R32_TYPELESS||format==DXGI_FORMAT_R16G16_FLOAT);t.Width=guide?guideWidth:width;t.Height=guide?guideHeight:height;t.ArraySize=t.MipLevels=t.SampleDesc.Count=1;t.Format=format;t.Usage=usage;t.BindFlags=bind;t.CPUAccessFlags=usage==D3D11_USAGE_STAGING?D3D11_CPU_ACCESS_READ:0;ComPtr<ID3D11Texture2D> v;Need(device->CreateTexture2D(&t,nullptr,&v));return v;};
     auto color=texture(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE);
     auto depth=texture(DXGI_FORMAT_R32_TYPELESS,D3D11_BIND_DEPTH_STENCIL|D3D11_BIND_SHADER_RESOURCE);
     auto motion=texture(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE);
@@ -82,7 +83,16 @@ int wmain(int argc,wchar_t** argv){try{
 #endif
     SettingsSnapshot previousSettings=s;
     for(UINT frame=0;frame<240;++frame){
-        if(frame==120){
+        if(scaled&&(frame==119||frame==160)){
+            context->OMSetRenderTargets(0,nullptr,nullptr);guideWidth=frame==119?213:160;guideHeight=frame==119?101:90;
+            depth=texture(DXGI_FORMAT_R32_TYPELESS,D3D11_BIND_DEPTH_STENCIL|D3D11_BIND_SHADER_RESOURCE);
+            motion=texture(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE);
+            dsv.Reset();Need(device->CreateDepthStencilView(depth.Get(),&view,&dsv));context->ClearDepthStencilView(dsv.Get(),D3D11_CLEAR_DEPTH,.5f,0);
+            velocities.assign(guideWidth*guideHeight*2,0);context->UpdateSubresource(motion.Get(),0,nullptr,velocities.data(),guideWidth*4,0);
+            input.depth=depth;input.motion=motion;input.guideExtent={guideWidth,guideHeight};input.reset=true;
+            retainedSources->textures.push_back(depth);retainedSources->textures.push_back(motion);
+        }
+        if(!scaled&&frame==120){
             context->OMSetRenderTargets(0,nullptr,nullptr);width=160;height=90;
             color=texture(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE);
             depth=texture(DXGI_FORMAT_R32_TYPELESS,D3D11_BIND_DEPTH_STENCIL|D3D11_BIND_SHADER_RESOURCE);
@@ -103,6 +113,7 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         auto* target=rtv.Get();context->OMSetRenderTargets(1,&target,nullptr);
         PreparedFsrInput lease;
         s.placement=post && (frame<119 || frame>=160)?Placement::After:Placement::Before;
+        if(scaled){s.placement=Placement::After;input.guideExtent={guideWidth,guideHeight};}
         if(post && frame>=119)s.revision=frame<160?4:5;
         const bool changedBoundary=(liveSettings||passCycle)&&(frame==19||frame==59||frame==99||frame==119||frame==160);
         if(passCycle){
@@ -130,7 +141,8 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         meta.colorDomain=ColorDomain::SdrBytes;meta.encoding=startup.sourceEncoding;meta.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;
         meta.depthFormat=DXGI_FORMAT_R32_FLOAT;meta.motionFormat=DXGI_FORMAT_R16G16_FLOAT;meta.guideOrigin=GuideOrigin::RealSource;
         meta.motion={float(width),float(height),true,false};
-        if(post && frame==40){meta.render=meta.guides={width/2,height/2};}
+        if(scaled){meta.render=meta.guides=input.guideExtent;meta.motion={float(guideWidth),float(guideHeight),true,false};}
+        if(post && frame==40){meta.guideSourceId=0;}
         // Hold the real D3D11 preparation/encoder chain after feature creation.
         // The next placement change must wait for that genuine source reader.
         const bool gateSource=post&&((liveSettings||passCycle)?(frame==18||frame==58||frame==98||frame==118||frame==159):frame==118);
@@ -176,7 +188,7 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
         if(!result){std::printf("frame %u %s\n",frame,result.error().message.c_str());return 1;}
         Check(result->evaluated==expectedEvaluation,"OneNrEvaluationOnlyWhenEnabled");
         if(sdr)Check(!lease.Valid(),"SdrHostReturnsEncodedColorWithoutLinearLease");
-        if(frame==0 || frame==81 || frame==120 || (post&&(frame==41||frame==119||frame==160)) || (liveSettings&&(frame==19||frame==60||frame==99)) || (passCycle&&changedBoundary)) Check(result->effectiveReset,"FirstReenabledAndResizedSourceResetHistory");
+        if(frame==0 || frame==81 || (!scaled&&frame==120) || (post&&(frame==41||frame==119||frame==160)) || (liveSettings&&(frame==19||frame==60||frame==99)) || (passCycle&&changedBoundary)) Check(result->effectiveReset,"FirstReenabledAndResizedSourceResetHistory");
         if(passCycle&&result->evaluated)Check(prepared.Status().find("; "+std::to_string(s.passes)+" SDR")!=std::string::npos,"HostReportsAllRequestedSequentialPasses");
         ComPtr<ID3D11RenderTargetView> restored;context->OMGetRenderTargets(1,&restored,nullptr);if(restored.Get()!=rtv.Get())return 1;
         if(gateSource){
@@ -199,17 +211,17 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
 #endif
     Check(bypassPixels==expectedBypass,"ScheduledSourcesBypassedWithoutNr");
     Check(alpha==expectedAlpha,"AllUnormAlphaValuesSurviveDecodeNrEncode");Check(changed>320*180,"NrModifiedRgbDeliveredToOriginalSdrColor");
-    Check(prepared.Resets()>=(post?6u:3u),"PlacementAndUnqualifiedSourceResetHistory");
+    Check(prepared.Resets()>=(post&&!scaled?6u:3u),"PlacementAndUnqualifiedSourceResetHistory");
     Check(prepared.Recorded()==expectedNr,"PreparedNrOffOnUsesOnePassPerEnabledSource");
     Check(lifetime.Retire() && !prepared.Terminal(),"PreparedReadersAndRuntimeRetire");
     if(argc>=4){
         auto coreEvidence=RuntimeFileLease::OpenDriverCore(argv[2]);if(!coreEvidence)return 1;
         std::ofstream report{std::filesystem::path(argv[3])};
-        report << "{\n\"schema\":1,\"scope\":\"synthetic native SDR real-source host; game quality pending\",\n\"result\":\"" << (failures?"FAIL":"PASS")
+        report << "{\n\"schema\":1,\"scope\":\"synthetic " << (scaled?"scaled":"native") << " SDR real-source host; game quality pending\",\n\"result\":\"" << (failures?"FAIL":"PASS")
             << "\",\"sourceRevision\":\"" << NrRuntimeResearch::buildRevision << "\",\"sourceClean\":" << (NrRuntimeResearch::buildClean?"true":"false")
             << ",\n\"profile\":\"rtx40\",\"vendorId\":" << d.VendorId << ",\"deviceId\":" << d.DeviceId
             << ",\"adapterLuidLow\":" << d.AdapterLuid.LowPart << ",\"adapterLuidHigh\":" << d.AdapterLuid.HighPart
-            << ",\"frames\":240,\"nrEvaluations\":" << expectedNr << ",\"resizes\":1,\"sourceAlphaPixels\":" << alpha
+            << ",\"frames\":240,\"nrEvaluations\":" << expectedNr << ",\"resizes\":" << (scaled?2:1) << ",\"sourceAlphaPixels\":" << alpha
             << ",\"wrappedDeviceRequired\":" << (wrapped?"true":"false")
             << ",\"sdrBytesTrial\":" << (sdr?"true":"false")
             << ",\"liveSettings\":" << (liveSettings?"true":"false") << ",\"pendingSettingsBoundaries\":" << pendingSettings

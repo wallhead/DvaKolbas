@@ -248,7 +248,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             DrawSettingsHelp("Choosing FSR stages the next launch; current NR and FG stay active. "
                              "Save and restart to change mode, quality, provider or source color encoding. "
                              "Ordinary presentation saves FG off; FSR saves HDR and dynamic resolution off. "
-                             "After NR requires Native scale. Sharpness applies after editing ends.");
+                             "After NR supports fixed DLSS/FSR render scales. Sharpness applies after editing ends.");
         }
         if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"Analytical (3.1.5)","Compatible (runtime selected)"};

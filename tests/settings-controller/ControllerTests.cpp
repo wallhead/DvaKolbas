@@ -125,9 +125,10 @@ int main(){try{
     Require(pipeline.mUpscaleType==DLAA&&host.configuration.Effective().mode==DLAA&&host.configuration.Requested().mode==FSR&&!host.FsrFgActive(),"staged provider cannot replace active source or presenter");
     draft=controller.Capture(true,false);draft.sourceDLSSG.neuralBeforeUpscaling=false;
     draft.fsr.quality=Upscaling::Quality::Quality;
+    draft.dynamicResolution=true;
     const auto old=fg.settings.sourceDLSSG;const auto requests=host.requests;const auto saves=pipeline.saves;
     applied=controller.Apply(draft,true);
-    Require(applied.error&&!applied.applied&&host.requests==requests&&pipeline.saves==saves&&fg.settings.sourceDLSSG==old,"invalid scaled After is rejected before state/writer changes");
+    Require(applied.error&&!applied.applied&&host.requests==requests&&pipeline.saves==saves&&fg.settings.sourceDLSSG==old,"dynamic After is rejected before state/writer changes");
     draft=controller.Capture(true,false);draft.textureProviderConnected=true;
     applied=controller.Apply(draft,false);
     Require(applied.error&&!applied.applied&&host.requests==requests,"external provider failure is rejected before renderer mutations");

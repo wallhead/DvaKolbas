@@ -185,13 +185,19 @@ void CommunityNeural()
     draft.sourceDLSSG.neuralReconstruction.inputScale=1;
     Require(!ValidateRendererSettings(draft,caps),"community NR Before works with FSR FG");
     auto after=draft; after.sourceDLSSG.neuralBeforeUpscaling=false;
-    Require(ValidateRendererSettings(after,caps),"reduced-resolution After remains unavailable");
+    Require(!ValidateRendererSettings(after,caps),"reduced-resolution FSR After uses qualified render guides");
+    for(auto quality : {Upscaling::Quality::Quality,Upscaling::Quality::Balanced,Upscaling::Quality::Performance,Upscaling::Quality::NativeAA}) {
+        after.fsr.quality=quality;
+        Require(!ValidateRendererSettings(after,caps),"fixed FSR quality permits After NR");
+    }
     after.fsr.quality=Upscaling::Quality::NativeAA;
     Require(!ValidateRendererSettings(after,caps),"Native AA permits source NR after FSR before FG");
     after.upscaleType=DLAA;after.generationBackend=1;
     Require(!ValidateRendererSettings(after,caps),"DLAA permits source NR after reconstruction");
     after.upscaleType=DLSS;
-    Require(ValidateRendererSettings(after,caps),"scaled DLSS After cannot claim qualified display guides");
+    Require(!ValidateRendererSettings(after,caps),"scaled DLSS After uses qualified render guides");
+    after.dynamicResolution=true;
+    Require(ValidateRendererSettings(after,caps),"dynamic guide sizes remain unavailable for After NR");
     auto twice=draft; twice.sourceDLSSG.neuralPasses=2;
     Require(!ValidateRendererSettings(twice,caps),"community renderer accepts two native passes");
     auto thrice=draft; thrice.sourceDLSSG.neuralPasses=3;

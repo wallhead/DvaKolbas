@@ -21,12 +21,15 @@ numbers, FG backend numbers and generated-frame counts are not AIO19 indexes.
 | HDROutput / DynamicResolution / Performance / Debug | Display, unsupported dynamic resolution, timing and logging |
 
 Current qualified community After rendering order remains **DLSS/FSR → NR → FG → UI**.
-After currently requires DLAA or FSR NativeAA.
+After supports fixed DLSS and FSR render scales, including Native. Its enhanced
+image stays at display size while depth and motion stay at render size.
+Dynamic resolution and HDR NR remain unavailable.
 Community NR supports one to three sequential passes. The legacy NR runtime
 executes at most two passes, with a warning when a saved three-pass preference
 is used. Saving unrelated settings retains that preference and the Pass 3
 overrides for a later return to the community runtime.
-Reorganizing settings does not extend hardware or scaled-resolution qualification.
+Reorganizing settings does not extend hardware qualification. Scaled After has
+standalone GPU evidence on RTX 4080 SUPER; its Skyrim visual check is pending.
 AMD NR remains unsupported. These limits are enforced by the same runtime policies.
 
 ## AMD first launch

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "date": "2026-10-06",
+  "baseline": "70b87f61f5b3",
+  "scope": "local fixed-scale SDR After NR, actual RTX4080SUPER; Skyrim and other-card acceptance pending",
+  "fullRegression": {
+    "interactiveExcluded": true,
+    "excludedGraphicsTools": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "skipped": 0,
+    "tests": 301,
+    "failures": 0
+  },
+  "localProviderTests": {
+    "dlssFixedSource": 6,
+    "fsrFixedSource": 3,
+    "fsrScaledPresentation": 6,
+    "fsrNativeAndScaledLifecycle": 8,
+    "scaledNvidiaForegroundLifecycle": 1
+  },
+  "claims": {
+    "rtx50": "NOT RUN",
+    "generatedNvidiaPixelReadback": false,
+    "amdNr": "UNSUPPORTED",
+    "rtx20": "NOT RUN",
+    "physicalCadence": false,
+    "rtx30": "NOT RUN",
+    "skyrimScaledAcceptance": "PENDING"
+  },
+  "freshReview": {
+    "scope": "c086c9e plus uncommitted implementation",
+    "actionableFindings": 0,
+    "gpuTestsRunByReviewer": false,
+    "reviewBase": "70b87f6"
+  },
+  "summaries": [
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=65",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=64",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=64",
+    "NVIDIA_SOURCE sources=128 dlaa=128 nr=126 tags=128 exactTagBytes=35979264 expectedTagBytes=35979264 alphaExact=8994816 expectedPixels=8994816 frozen=128 hud=128 nrWhileFgOff=64 configuredOn=64 configuredOff=64",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=NativeAA render=320x180 display=320x180",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Quality render=213x120 display=320x180",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Balanced render=188x105 display=320x180",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Performance render=160x90 display=320x180",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=NativeAA render=320x180 display=320x180",
+    "FSR_NR_PRESENT mode=observer sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=195 renderedReadbacks=238 changingGenerated=194 uiExactChannels=1108480 enhancedRealRgbExact=456960 sdkMessages=0",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=NativeAA render=320x180 display=320x180",
+    "FSR_NR_PRESENT mode=automatic sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=0 renderedReadbacks=0 changingGenerated=0 uiExactChannels=0 enhancedRealRgbExact=0 sdkMessages=0",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Quality render=213x120 display=320x180",
+    "FSR_NR_PRESENT mode=observer sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=195 renderedReadbacks=238 changingGenerated=194 uiExactChannels=1108480 enhancedRealRgbExact=456960 sdkMessages=0",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Quality render=213x120 display=320x180",
+    "FSR_NR_PRESENT mode=automatic sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=0 renderedReadbacks=0 changingGenerated=0 uiExactChannels=0 enhancedRealRgbExact=0 sdkMessages=0",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Balanced render=188x105 display=320x180",
+    "FSR_NR_PRESENT mode=observer sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=195 renderedReadbacks=238 changingGenerated=194 uiExactChannels=1108480 enhancedRealRgbExact=456960 sdkMessages=0",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Balanced render=188x105 display=320x180",
+    "FSR_NR_PRESENT mode=automatic sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=0 renderedReadbacks=0 changingGenerated=0 uiExactChannels=0 enhancedRealRgbExact=0 sdkMessages=0",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Performance render=160x90 display=320x180",
+    "FSR_NR_PRESENT mode=observer sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=195 renderedReadbacks=238 changingGenerated=194 uiExactChannels=1108480 enhancedRealRgbExact=456960 sdkMessages=0",
+    "ACTUAL_FSR provider=3.1.5 id=17700776140660019205 encoding=Gamma22 quality=Performance render=160x90 display=320x180",
+    "FSR_NR_PRESENT mode=automatic sources=240 callbacks=197 suppressed=43 reentries=5 generatedReadbacks=0 renderedReadbacks=0 changingGenerated=0 uiExactChannels=0 enhancedRealRgbExact=0 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=observer sources=192 nr=189 callbacks=153 generatedReadbacks=147 changingGenerated=144 realReadbacks=186 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=380928 realRgbExpected=380928 uiVerified=909312 uiExpected=909312 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=automatic sources=192 nr=189 callbacks=153 generatedReadbacks=0 changingGenerated=0 realReadbacks=0 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=0 realRgbExpected=0 uiVerified=0 uiExpected=0 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=observer sources=192 nr=189 callbacks=153 generatedReadbacks=147 changingGenerated=144 realReadbacks=186 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=380928 realRgbExpected=380928 uiVerified=909312 uiExpected=909312 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=automatic sources=192 nr=189 callbacks=153 generatedReadbacks=0 changingGenerated=0 realReadbacks=0 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=0 realRgbExpected=0 uiVerified=0 uiExpected=0 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=observer sources=192 nr=189 callbacks=153 generatedReadbacks=147 changingGenerated=144 realReadbacks=186 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=380928 realRgbExpected=380928 uiVerified=909312 uiExpected=909312 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=automatic sources=192 nr=189 callbacks=153 generatedReadbacks=0 changingGenerated=0 realReadbacks=0 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=0 realRgbExpected=0 uiVerified=0 uiExpected=0 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=observer sources=192 nr=189 callbacks=153 generatedReadbacks=147 changingGenerated=144 realReadbacks=186 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=380928 realRgbExpected=380928 uiVerified=909312 uiExpected=909312 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0",
+    "FSR_NR_LIFECYCLE mode=automatic sources=192 nr=189 callbacks=153 generatedReadbacks=0 changingGenerated=0 realReadbacks=0 alphaExact=12681216 pixelExpected=12681216 bypassExact=198144 realRgbExact=0 realRgbExpected=0 uiVerified=0 uiExpected=0 suspensions=3 resizes=2 pendingBoundaries=6 reentries=18 sdkMessages=0"
+  ]
+}

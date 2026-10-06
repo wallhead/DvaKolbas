@@ -1,6 +1,7 @@
 #include "PreparedBeforeUpscale.h"
 #include "PerformanceQueries.h"
 #include "History.h"
+#include "RuntimeParameters.h"
 #include "RetirementEvent.h"
 #include "Upscaling/FSRColorConversion.h"
 #include "FrameGen/D3D11FrameCopy.h"
@@ -23,7 +24,7 @@ struct PreparedBeforeUpscale::State {
     Detail::TicketOwnership deliveryOwner;uint64_t deliverySerial{},readerSerial{};ComPtr<ID3D12Fence> readerFence;ComPtr<ID3D11Fence> reader11;
     Upscaling::FsrColorConverter decode,encode;
     D3D11FrameCopy::Depth depthCopy;D3D11ContextIsolation isolation;
-    ImageExtent extent;unsigned preset{};
+    ImageExtent extent,guideExtent;unsigned preset{};
     ColorDomain colorDomain{ColorDomain::Linear};
     Placement placement{Placement::Before};
     bool attempted{},ready{},uncertain{},terminal{};
@@ -57,9 +58,9 @@ struct PreparedBeforeUpscale::State {
         for(const auto& reader:oldest->readers){r=wait(reader.fence.Get(),reader.value);if(!r)return r;}
         return {};
     }
-    bool Shape(ID3D11Texture2D* texture,D3D11_TEXTURE2D_DESC& d)const{
+    bool Shape(ID3D11Texture2D* texture,D3D11_TEXTURE2D_DESC& d,ImageExtent expected)const{
         if(!texture)return false;ComPtr<ID3D11Device> actual;texture->GetDevice(&actual);texture->GetDesc(&d);
-        return D3D11FrameCopy::SameObject(actual.Get(),device.Get())&&d.Width==extent.width&&d.Height==extent.height&&
+        return D3D11FrameCopy::SameObject(actual.Get(),device.Get())&&d.Width==expected.width&&d.Height==expected.height&&
             d.MipLevels==1&&d.ArraySize==1&&d.SampleDesc.Count==1&&!d.SampleDesc.Quality&&d.Usage==D3D11_USAGE_DEFAULT;
     }
 };
@@ -67,16 +68,16 @@ PreparedBeforeUpscale::PreparedBeforeUpscale():state_(std::make_shared<State>())
 PreparedBeforeUpscale::~PreparedBeforeUpscale()=default;
 Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& c,unsigned preset,PerformanceMetrics* metrics,ColorDomain domain,Placement placement,unsigned passes){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR source preparation initialization already attempted");s.attempted=true;
-    if(!device||c.colorExtent!=c.guideExtent||!c.colorExtent.width||!c.colorExtent.height||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
+    if(!device||!ValidDirectExtents(c.colorExtent,c.guideExtent)||(placement==Placement::Before&&c.colorExtent!=c.guideExtent)||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
         (placement!=Placement::Before&&placement!=Placement::After))return Fail(ErrorKind::InvalidInput,"NR source preparation native contract invalid");
-    s.device=device;s.device12=c.device;device->GetImmediateContext(&s.context);s.extent=c.colorExtent;s.preset=preset;s.colorDomain=domain;s.placement=placement;
+    s.device=device;s.device12=c.device;device->GetImmediateContext(&s.context);s.extent=c.colorExtent;s.guideExtent=c.guideExtent;s.preset=preset;s.colorDomain=domain;s.placement=placement;
     auto ready=s.Gpu(s.context.As(&s.context4),"NR preparation requires authoritative context4");if(!ready)return ready;
     if(!c.device)return Fail(ErrorKind::InvalidInput,"NR preparation retained D3D12 device missing");
     ready=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_SHARED,IID_PPV_ARGS(&s.readerFence)),"NR preparation private reader fence creation failed");if(!ready)return ready;
     HANDLE shared{};ready=s.Gpu(c.device->CreateSharedHandle(s.readerFence.Get(),nullptr,GENERIC_ALL,nullptr,&shared),"NR preparation reader shared handle failed");if(!ready)return ready;
     ComPtr<ID3D11Device5> device5;auto query=device->QueryInterface(IID_PPV_ARGS(&device5));HRESULT opened=FAILED(query)?query:device5->OpenSharedFence(shared,IID_PPV_ARGS(&s.reader11));CloseHandle(shared);ready=s.Gpu(opened,"NR preparation private reader fence open failed");if(!ready)return ready;
     if(metrics&&metrics->Enabled()){s.metrics=metrics;s.timing=std::make_unique<PerformanceQueries>(metrics);s.timing->Initialize11(device);}
-    auto make=[&](DXGI_FORMAT format,UINT bind,ComPtr<ID3D11Texture2D>& out){D3D11_TEXTURE2D_DESC d{};d.Width=s.extent.width;d.Height=s.extent.height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=format;d.Usage=D3D11_USAGE_DEFAULT;d.BindFlags=bind;return s.Gpu(device->CreateTexture2D(&d,nullptr,&out),"NR prepared source allocation failed");};
+    auto make=[&](DXGI_FORMAT format,UINT bind,ComPtr<ID3D11Texture2D>& out){const auto extent=format==DXGI_FORMAT_R32_FLOAT||format==DXGI_FORMAT_R16G16_FLOAT?s.guideExtent:s.extent;D3D11_TEXTURE2D_DESC d{};d.Width=extent.width;d.Height=extent.height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=format;d.Usage=D3D11_USAGE_DEFAULT;d.BindFlags=bind;return s.Gpu(device->CreateTexture2D(&d,nullptr,&out),"NR prepared source allocation failed");};
     Result<void> r;
     for(auto& slot:s.slots){r=make(NrColorFormat(domain),D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE,slot.color);if(!r)return r;
         r=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&slot.leaseFence)),"NR prepared lease fence allocation failed");if(!r)return r;
@@ -107,9 +108,9 @@ Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Up
         settings.reconstruction.colorIsHDR||settings.reconstruction.producerColor||settings.reconstruction.fusedPreparation||settings.reconstruction.peripheralCompression)
         return Fail(ErrorKind::Unsupported,"NR source adapter requires native SDR preparation at its latched placement");
     D3D11_TEXTURE2D_DESC color{},depth{},motion{};
-    if(input.colorExtent!=s.extent||input.guideExtent!=s.extent||input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||
+    if(input.colorExtent!=s.extent||input.guideExtent!=s.guideExtent||input.guideEpoch!=input.epoch||input.guideSourceId!=input.sourceId||
         !input.context||!D3D11FrameCopy::SameObject(input.context.Get(),s.context.Get())||input.context->GetType()!=D3D11_DEVICE_CONTEXT_IMMEDIATE||
-        !s.Shape(input.color.Get(),color)||!s.Shape(input.depth.Get(),depth)||!s.Shape(input.motion.Get(),motion)||
+        !s.Shape(input.color.Get(),color,s.extent)||!s.Shape(input.depth.Get(),depth,s.guideExtent)||!s.Shape(input.motion.Get(),motion,s.guideExtent)||
         !Upscaling::SupportsFsrHandoffFormat(color.Format)||(sdr&&color.Format!=DXGI_FORMAT_R8G8B8A8_UNORM)||(color.BindFlags&(D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET))!=(D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET)||
         !(depth.BindFlags&D3D11_BIND_SHADER_RESOURCE)||(depth.Format!=DXGI_FORMAT_R32_TYPELESS&&depth.Format!=DXGI_FORMAT_R32_FLOAT&&depth.Format!=DXGI_FORMAT_R24G8_TYPELESS&&depth.Format!=DXGI_FORMAT_R32G8X24_TYPELESS)||motion.Format!=DXGI_FORMAT_R16G16_FLOAT)
         return Fail(ErrorKind::InvalidInput,"NR native source color/depth/motion ownership or shape invalid");
@@ -124,8 +125,8 @@ Result<BeforeResult> PreparedBeforeUpscale::Evaluate(const BeforeInput& input,Up
     if(s.timing){s.timing->Stamp11(input.context.Get(),GpuPhase::PrepareColor,false);s.timing->Stamp11(input.context.Get(),GpuPhase::PrepareGuides,true);}
     {
         D3D11ContextIsolation::Scope scope(s.isolation,input.context.Get());if(!scope){s.terminal=true;return Fail(ErrorKind::Runtime,"NR guide preparation state isolation failed");}
-        r=s.Gpu(MeasurePerformance(s.metrics,CpuPhase::PrepareGuides,[&]{return s.depthCopy.Copy(input.context.Get(),input.depth.Get(),slot.depth.Get(),{s.extent.width,s.extent.height});}),"NR source depth preparation failed");if(!r)return std::unexpected(r.error());
-        r=s.Gpu(MeasurePerformance(s.metrics,CpuPhase::PrepareGuides,[&]{return D3D11FrameCopy::Color(input.context.Get(),input.motion.Get(),slot.motion.Get(),{s.extent.width,s.extent.height});}),"NR source motion preparation failed");if(!r)return std::unexpected(r.error());
+        r=s.Gpu(MeasurePerformance(s.metrics,CpuPhase::PrepareGuides,[&]{return s.depthCopy.Copy(input.context.Get(),input.depth.Get(),slot.depth.Get(),{s.guideExtent.width,s.guideExtent.height});}),"NR source depth preparation failed");if(!r)return std::unexpected(r.error());
+        r=s.Gpu(MeasurePerformance(s.metrics,CpuPhase::PrepareGuides,[&]{return D3D11FrameCopy::Color(input.context.Get(),input.motion.Get(),slot.motion.Get(),{s.guideExtent.width,s.guideExtent.height});}),"NR source motion preparation failed");if(!r)return std::unexpected(r.error());
     }
     if(s.timing)s.timing->Stamp11(input.context.Get(),GpuPhase::PrepareGuides,false);
     auto preparedInput=input;preparedInput.color=slot.color;preparedInput.depth=slot.depth;preparedInput.motion=slot.motion;preparedInput.colorDomain=s.colorDomain;preparedInput.reset=history->Reset();

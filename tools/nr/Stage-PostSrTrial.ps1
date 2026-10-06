@@ -27,9 +27,7 @@ foreach($pair in @(@('NeuralRendering/CommunityRuntime','true'),@('NeuralRenderi
 }
 if([double]::Parse($ini['SourceDLSSG/NRInputScale'],[Globalization.CultureInfo]::InvariantCulture) -ne 1){throw 'Native NR input scale required'}
 if($ini['NeuralRendering/SourceColorEncoding'] -notin @('Gamma22','SRGB')){throw 'Encoded SDR NR source required'}
-$dlaa=$ini['Settings/UpscaleType'] -eq '3' -and $ini['Experimental/FrameGenerationBackend'] -eq '1'
-$fsr=$ini['Settings/UpscaleType'] -eq '4' -and $ini['FSR/Quality'] -eq 'NativeAA' -and $ini['FSR/SourceColorEncoding'] -eq $ini['NeuralRendering/SourceColorEncoding']
-if(-not ($dlaa -or $fsr)){throw 'After trial requires the accepted DLAA or FSR Native AA route'}
+if(-not (Test-PostSrTrialRoute $ini)){throw 'After trial requires a qualified fixed DLSS/FSR SDR route and compatible presenter'}
 $pin=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime-pin.json') -Raw | ConvertFrom-Json
 if(-not $DriverCore){$DriverCore=$ini['Runtime/NRDriverCore']}
 if(-not $DriverCore){$DriverCore=$ini['NeuralRendering/DriverCore']}
@@ -58,7 +56,7 @@ $nrManifestPath=Join-Path $output 'nr-trial-manifest.json'
 if(Test-Path -LiteralPath $nrManifestPath){
     $nrManifest=Get-Content -LiteralPath $nrManifestPath -Raw|ConvertFrom-Json
     $nrManifest.profiles=$pin.profiles;$nrManifest.buildIdentity=$identity
-    $nrManifest.scope='Native SDR post-SR; RTX40/50 share a compatibility runtime; RTX50 hardware NOT RUN'
+    $nrManifest.scope='Fixed-scale SDR post-SR; RTX40/50 share a compatibility runtime; RTX50 hardware NOT RUN'
     $nrManifest.files=@(Get-ChildItem -LiteralPath $output -Recurse -File | Where-Object Name -notin @('nr-trial-manifest.json','post-sr-manifest.json') | Sort-Object FullName | ForEach-Object {
         [ordered]@{path=[IO.Path]::GetRelativePath($output,$_.FullName).Replace('\','/');bytes=$_.Length;sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
     })
@@ -73,6 +71,6 @@ foreach($file in Get-ChildItem -LiteralPath $output -Recurse -File){
     if($protected.ContainsKey($relative) -and $relative -notin @($iniRelative,'SKSE/Plugins/RaZkolbaS.dll','nr-trial-manifest.json','POST_SR_TRIAL.md','meta.ini') -and $hash -ne $protected[$relative]){throw "Unexpected staged change: $relative"}
 }
 foreach($relative in $protected.Keys){if((Get-FileHash -LiteralPath (Join-Path $accepted $relative) -Algorithm SHA256).Hash.ToLowerInvariant() -ne $protected[$relative]){throw "Reference changed during staging: $relative"}}
-@{schema=1;scope='Local Native-AA post-SR trial; not installed or game-tested';identity=$identity;sourceMod=$accepted;qualificationCore=[IO.Path]::GetFullPath($DriverCore);iniChangedKeys=@('SourceDLSSG/NRBeforeUpscaling','Runtime/NRDriverCore','Runtime/NRRuntimeRoot','NeuralRendering/DriverCore','NeuralRendering/RuntimeRoot');sourceFiles=$protected;files=$manifest} |
+@{schema=1;scope='Local fixed-scale post-SR trial; not installed or game-tested';identity=$identity;sourceMod=$accepted;qualificationCore=[IO.Path]::GetFullPath($DriverCore);iniChangedKeys=@('SourceDLSSG/NRBeforeUpscaling','Runtime/NRDriverCore','Runtime/NRRuntimeRoot','NeuralRendering/DriverCore','NeuralRendering/RuntimeRoot');sourceFiles=$protected;files=$manifest} |
     ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $output 'post-sr-manifest.json') -Encoding utf8
 Write-Output "STAGED ONLY: $output"

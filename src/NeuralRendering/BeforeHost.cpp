@@ -1,5 +1,6 @@
 #include "BeforeHost.h"
 #include "RuntimeFileLease.h"
+#include "RuntimeParameters.h"
 #include "FrameGen/D3D11FrameCopy.h"
 #include <dxgi1_6.h>
 #include <optional>
@@ -113,9 +114,9 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
             return BeforeResult{false,wasActive||input.reset};
         }
     }
-    if(!input.context||!input.color||!input.depth||!input.motion||!input.colorExtent.width||!input.colorExtent.height||input.colorExtent!=input.guideExtent||!input.epoch||!input.sourceId||input.guideSourceId!=input.sourceId||input.guideEpoch!=input.epoch){
+    if(!input.context||!input.color||!input.depth||!input.motion||!ValidDirectExtents(input.colorExtent,input.guideExtent)||(!metadata&&input.colorExtent!=input.guideExtent)||!input.epoch||!input.sourceId||input.guideSourceId!=input.sourceId||input.guideEpoch!=input.epoch){
         s.status="NR waiting for matching real-world guides";if(s.HasPreparation()){auto off=settings;off.enabled=false;auto reset=s.Run(input,off,nullptr,metadata);if(!reset){s.MarkTerminal(reset.error());return std::unexpected(reset.error());}}return BeforeResult{false,wasActive||input.reset};}
-    if(s.HasPreparation()&&(s.contract.colorExtent!=input.colorExtent||s.placement!=settings.placement||s.passes!=settings.passes)){
+    if(s.HasPreparation()&&(s.contract.colorExtent!=input.colorExtent||s.contract.guideExtent!=input.guideExtent||s.placement!=settings.placement||s.passes!=settings.passes)){
         auto retired=s.RetirePreparation();if(!retired){s.MarkTerminal(retired.error());return std::unexpected(retired.error());}s.prepared.reset();s.post.reset();
     }
     if(!s.owner){
@@ -129,7 +130,7 @@ Result<BeforeResult> BeforeHost::EvaluateSource(const BeforeInput& input,const S
         if(!opened){auto disabled=s.DisableAfterOpenFailure(opened.error());if(!disabled)return std::unexpected(disabled.error());return BeforeResult{false,wasActive||input.reset};}
     }
     if(!s.HasPreparation()){
-        s.contract.colorExtent=s.contract.guideExtent=input.colorExtent;s.placement=settings.placement;s.passes=settings.passes;
+        s.contract.colorExtent=input.colorExtent;s.contract.guideExtent=input.guideExtent;s.placement=settings.placement;s.passes=settings.passes;
         Result<void> initialized;
         if(metadata){s.post=std::make_unique<PostUpscale>();initialized=s.post->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,ColorDomain::SdrBytes,unsigned(s.passes));}
         else{s.prepared=std::make_unique<PreparedBeforeUpscale>();initialized=s.prepared->Initialize(s.owner,s.device11.Get(),s.contract,0,nullptr,

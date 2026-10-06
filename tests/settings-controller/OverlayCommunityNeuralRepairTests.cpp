@@ -32,8 +32,8 @@ int main(){try{
         "visible repair action must recover unsupported community NR preferences");
     Require(p.neuralEnabled&&p.neuralTuning.style==3&&p.neuralTuning.intensity==.6f,
         "repair retains enabled state and supported visual tuning");
-    Require(p.neuralPasses==2&&!p.neuralTuning.uiCorrection&&!p.hdrOutput.enabled&&p.neuralBeforeUpscaling,
-        "repair preserves supported pass count while selecting native SDR Before settings");
+    Require(p.neuralPasses==2&&!p.neuralTuning.uiCorrection&&!p.hdrOutput.enabled&&!p.neuralBeforeUpscaling,
+        "repair preserves pass count and supported scaled After placement");
     RendererSettingsDraft draft;draft.valid=true;draft.sourceDLSSG=p;
     RendererSettingsCapabilities capabilities{true,true,true,false};capabilities.communityNeural=true;
     Require(!ValidateRendererSettings(draft,capabilities),"repaired draft passes actual Apply validation");

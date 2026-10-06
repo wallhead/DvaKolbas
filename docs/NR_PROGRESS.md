@@ -1,5 +1,18 @@
 # NR implementation progress — 2026-10-05
 
+**Scaled extension, 2026-10-06: 3 of 6 milestones complete.** The real vendor
+smaller-guide contract, retained bridge and local scaled provider/FG lifecycle
+are validated. After supports fixed DLSS qualities and FSR Quality/Balanced/
+Performance/Native AA. Color stays at display size, guides stay at render size,
+and declared render-pixel motion converts once to display pixels. Camera history
+tracks the real guide size; source alpha, full tone/styles, up to three passes
+and **DLSS/FSR -> NR -> FG -> UI** remain intact. Pending-guide resize tests,
+actual FSR generated-image/UI readbacks and foreground NVIDIA FG lifecycle
+passed on RTX 4080 SUPER. Portable cross-family scaled qualification, clean
+trial closure and Skyrim visual acceptance remain open. AMD NR, HDR NR and
+dynamic resolution remain unsupported. Historical native counts below retain
+their scope.
+
 **8 of 8 milestones complete for the tested native-size SDR setup:** native-size post-SR contract (Task1), inherited runtime/catalog (Task2), shared Before/After source stage (Task3), native-size FSR After source/presentation integration (Task4), native-size DLAA After source/NVIDIA FG handoff (Task5), live controls and source lifecycle (Task6), clean build matrix/package/final review (Task7), local Skyrim functional acceptance (Task8).
 
 **Task8 complete, 2026-10-05:** the owner confirms all remaining NVIDIA inventory/map/dialogue and minimize/restore checks passed, and separately confirms FSR Native AA After fast travel passed. Combine these fresh reports with the retained provider gameplay checklists, actual End Apply/style acceptance, source/lifecycle readbacks, matrix/review/package proof and the independently validated NVIDIA ETW capture. Normal logging is already retained. [Final functional acceptance](../research/nr/post-sr/task8-functional-acceptance-20261005.json). Matched AIO19 comparison is excluded by the owner's explicit instruction, not passed; no parity claim is made. Actual GPU qualification remains RTX4080SUPER, native SDR After only; scaled After/HDR and other NVIDIA families remain unqualified, AMD NR unsupported. Generated images inherit enhanced real sources and receive no separate NR pass. **8 of 8 done in this scope.**

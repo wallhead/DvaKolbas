@@ -1,4 +1,13 @@
-# Native AA post-upscale NR trial
+# Fixed-scale post-upscale NR trial
+
+Scaled extension, 2026-10-06: After NR now accepts fixed DLSS qualities and FSR
+Quality/Balanced/Performance as well as Native. Real color/output remain at
+display size; depth and motion remain at render size, with motion scaled once
+to display pixels. Direct vendor moving-guide checks, actual DLSS/FSR source
+readbacks, FSR generated-image/UI captures and pending-reader lifecycle tests
+pass on RTX 4080 SUPER. Skyrim scaled-image acceptance and actual RTX20/30/50
+qualification remain pending. Dynamic resolution and HDR NR remain unavailable.
+The historical native acceptance and receipts below keep their original scope.
 
 Packaging update, 2026-10-05: new stages use two physical NR DLLs. RTX40 and
 RTX50 keep separate logical profiles but share `NR/rtx40/nvngx_dlssnr.dll`
@@ -59,19 +68,19 @@ Start with the usual MO2 SKSE entry and run the
 [End-menu Apply checklist](../research/nr/post-sr/END_APPLY_CHECK.md).
 The End Apply gate is now accepted within the native-size SDR scope above.
 
-The order is **DLAA or FSR Native AA -> one NR pass -> optional FG -> native UI**.
+The order is **DLSS/DLAA or FSR -> one to three NR passes -> optional FG -> native UI**.
 Generated images inherit enhanced real sources. They receive no separate NR pass.
-Scaled DLSS/FSR remain supported with Before NR; their After guides are unavailable.
+Fixed scaled DLSS/FSR also support After NR with retained render-sized guides.
 
 This separate package preserves the accepted INI except `NRBeforeUpscaling=false`.
 It retains full vendor tone/styles, Stable colors off and the qualified SDR-byte
 runtime route. Model/driver paths stay fixed for the process. No MO2 settings are
 changed by staging.
 
-In End -> Neural Rendering, choose Before or After upscaling and Apply. NR off/on,
+In End -> NR, choose Before or After upscaling. Settings apply when edited. NR off/on,
 tuning and placement are live; mode/provider changes retain their existing
-restart requirements. `[` disables NR and `]` enables it. After currently needs
-DLAA or FSR Native AA. Menus/loading or invalid world guides bypass NR.
+restart requirements. `[` disables NR and `]` enables it. After supports fixed
+render scales. Menus/loading or invalid world guides bypass NR.
 
 The standalone tests prove actual RTX 40 NR output, exact alpha, pending source
 switches, resize, ReShade device ownership, actual FSR Native AA enhanced-source

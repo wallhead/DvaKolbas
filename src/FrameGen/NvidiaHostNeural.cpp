@@ -65,19 +65,20 @@ struct NrMotionDiagnostic {
         bool ready{};
     };
     Capture Before(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* color,
-        ID3D11Texture2D* depth,ID3D11Texture2D* motion,UINT width,UINT height) {
+        ID3D11Texture2D* depth,ID3D11Texture2D* motion,UINT width,UINT height,UINT guideWidth,UINT guideHeight) {
         Capture capture;
         const auto region=NR::DiagnosticReadbackRegion(width,height);
-        if(!depth||!region){Failure("invalid diagnostic extent/depth",E_INVALIDARG);return capture;}
+        const auto motionRegion=NR::DiagnosticReadbackRegion(guideWidth,guideHeight);
+        if(!depth||!region||!motionRegion){Failure("invalid diagnostic extent/depth",E_INVALIDARG);return capture;}
         capture.region=*region;
         D3D11_TEXTURE2D_DESC depthDesc{};depth->GetDesc(&depthDesc);capture.depthFormat=depthDesc.Format;
         ComPtr<ID3D11Texture2D> colorCopy,motionCopy;
         if(!CopyToStaging(device,context,color,DXGI_FORMAT_R8G8B8A8_UNORM,*region,colorCopy) ||
-           !CopyToStaging(device,context,motion,DXGI_FORMAT_R16G16_FLOAT,*region,motionCopy))return capture;
+           !CopyToStaging(device,context,motion,DXGI_FORMAT_R16G16_FLOAT,*motionRegion,motionCopy))return capture;
         std::vector<std::uint8_t> rawMotion;
         if(!ReadRows(context,colorCopy.Get(),region->width,region->height,4,capture.color) ||
-           !ReadRows(context,motionCopy.Get(),region->width,region->height,4,rawMotion))return capture;
-        capture.motion=NR::SummarizeMotionRg16(rawMotion.data(),std::size_t(region->width)*4,region->width,region->height,width,height);
+           !ReadRows(context,motionCopy.Get(),motionRegion->width,motionRegion->height,4,rawMotion))return capture;
+        capture.motion=NR::SummarizeMotionRg16(rawMotion.data(),std::size_t(motionRegion->width)*4,motionRegion->width,motionRegion->height,width,height);
         capture.ready=bool(capture.motion);
         return capture;
     }
@@ -171,9 +172,9 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     input.colorExtent=input.guideExtent={width,height};input.reset=reset || changed;
     input.presentationTime=std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();
     input.motionScaleX=float(width);input.motionScaleY=float(height);
+    const NR::ImageExtent guideExtent=post?NR::ImageExtent{post->render.width,post->render.height}:input.guideExtent;
     auto* pipeline=RenderPipeline::GetSingleton();
     const char* unavailable=NR::NativeBeforeUnavailable(p);
-    if(post && post->render!=post->display)unavailable="After upscaling NR requires Native AA; reduced guides are unqualified";
 #if defined(TRP_ENABLE_FSR)
     if(post && FsrActive() && fsrResources_->HandoffEncoding()!=startup.sourceEncoding)
         unavailable="After upscaling NR source encoding differs from its qualified runtime route";
@@ -181,10 +182,10 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     if(post && outcome!=Upscaling::UpscaleOutcome::Temporal)eligible=false;
     if (CommunityShaders::Active() || !nativeUI_.Dedicated() || !pipeline->mNativeUI) eligible=false;
     auto camera=eligible && snapshot.enabled && communityNeural_->Available() && !unavailable?
-        CaptureGameCameraMeasurements(pipeline->mGraphicsState,{width,height},pipeline->mEnableJitter,reset):
+        CaptureGameCameraMeasurements(pipeline->mGraphicsState,{guideExtent.width,guideExtent.height},pipeline->mEnableJitter,reset):
         Upscaling::Result<Upscaling::CameraMeasurements>{std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::InvalidInput,0,"NR waiting for world camera"})};
     if (camera) {
-        const auto decision=communityCameraHistory_.Accept(sourceId,*camera,{width,height});
+        const auto decision=communityCameraHistory_.Accept(sourceId,*camera,{guideExtent.width,guideExtent.height});
         eligible=decision.valid;
         input.depthInverted=camera->depthInverted;
         input.reset|=decision.reset;
@@ -195,7 +196,7 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     if (!eligible || unavailable) snapshot.enabled=false;
     const bool probe=eligible && snapshot.enabled && communityNeural_->Available() &&
         PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && nrMotionDiagnostic.Due();
-    const auto probeBefore=probe?nrMotionDiagnostic.Before(device_.Get(),context_.Get(),color,depth,motion,width,height):
+    const auto probeBefore=probe?nrMotionDiagnostic.Before(device_.Get(),context_.Get(),color,depth,motion,width,height,guideExtent.width,guideExtent.height):
         NrMotionDiagnostic::Capture{};
     const bool previouslyActive=communityNeural_->Active();
     NR::PostSrInput completed;completed.resources=input;
@@ -212,6 +213,10 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
         m.guideOrigin=NR::GuideOrigin::RealSource;m.depthInverted=input.depthInverted;
         m.motion=post->motionConvention;
+        if(const auto guides=NR::ValidatePostSrSourceContract(m)) {
+            completed.resources.motionScaleX=guides->motionScaleX;
+            completed.resources.motionScaleY=guides->motionScaleY;
+        }
     }
     const auto result=post?communityNeural_->EvaluatePost(completed,snapshot):communityNeural_->Evaluate(input,snapshot,probe?nullptr:linearOutput);
     if(!post && FsrActive() && result){
@@ -232,9 +237,10 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         else if (!eligible) status="NR paused; waiting for a valid TRP world frame";
     }
     if (status!=communityLastStatus_ || (result && result->evaluated && communityNeural_->Recorded()%600==0)) {
-        logger::info("[Community NR frame] source={} requested={} evaluated={} profile={} revision={} reset={} frames={} resets={} status={}",
+        logger::info("[Community NR frame] source={} requested={} evaluated={} profile={} revision={} reset={} frames={} resets={} color={}x{} guides={}x{} motionScale=({}, {}) status={}",
             sourceId,p.neuralEnabled,result && result->evaluated,communityNeural_->ProfileId(),snapshot.revision,
-            result && result->effectiveReset,communityNeural_->Recorded(),communityNeural_->Resets(),status);
+            result && result->effectiveReset,communityNeural_->Recorded(),communityNeural_->Resets(),width,height,
+            guideExtent.width,guideExtent.height,completed.resources.motionScaleX,completed.resources.motionScaleY,status);
         communityLastStatus_=status;
     }
     if (!result || !result->evaluated) communityCameraHistory_.Invalidate();

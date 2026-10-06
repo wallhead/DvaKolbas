@@ -352,7 +352,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             if(ImGui::CollapsingHeader("Status and measurements")) {
             DrawSettingsValue("Placement",view.neuralBeforeUpscaling?"Before upscaling and frame generation":"After upscaling, before frame generation");
             DrawSettingsValue("Model","Native SDR, up to three passes");
-            ImGui::TextDisabled("After upscaling currently requires Native render scale.");
+            ImGui::TextDisabled("After upscaling uses the selected fixed DLSS/FSR render scale.");
             ImGui::TextWrapped("RTX 40/50 share a runtime path; RTX 20/30 use a separate compatibility runtime. AMD NR is currently unsupported.");
             }
             NextSettingsColumn(height);

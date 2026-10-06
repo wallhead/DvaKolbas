@@ -1,5 +1,16 @@
 # Logical hardware profiles may share one physical runtime. Validate/copy it once.
 . (Join-Path $PSScriptRoot '../fsr/PackageCommon.ps1')
+function Test-PostSrTrialRoute([hashtable]$Ini) {
+    $mode=$Ini['Settings/UpscaleType'];$presenter=$Ini['Experimental/FrameGenerationBackend']
+    if($mode -eq '3') { return $presenter -eq '1' }
+    if($mode -eq '0') {
+        return $presenter -eq '1' -and (-not $Ini.ContainsKey('Settings/QualityLevel') -or
+            $Ini['Settings/QualityLevel'] -in @('0','1','2','3','4'))
+    }
+    return $mode -eq '4' -and $presenter -in @('0','2') -and
+        $Ini['FSR/Quality'] -in @('Quality','Balanced','Performance','NativeAA') -and
+        $Ini['FSR/SourceColorEncoding'] -eq $Ini['NeuralRendering/SourceColorEncoding']
+}
 function ConvertTo-PortableNrPackageIni([string[]]$Lines) {
     # Packaged NR models are relative to the virtual Data tree. Keep research
     # core paths in validation receipts, never in another user's startup INI.

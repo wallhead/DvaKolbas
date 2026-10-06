@@ -64,19 +64,19 @@ private:
 struct World {
     UINT width{},height{};ComPtr<ID3D11Device> device;ComPtr<ID3D11DeviceContext> context;
     ComPtr<ID3D11Texture2D> input,color,depth,motion,ui,reference;
-    World(ID3D11Device* d,ID3D11DeviceContext* c,Extent extent):width(extent.width),height(extent.height),device(d),context(c){
-        auto make=[&](DXGI_FORMAT format,UINT bind){D3D11_TEXTURE2D_DESC shape{};shape.Width=width;shape.Height=height;
+    World(ID3D11Device* d,ID3D11DeviceContext* c,Extent extent,Extent render):width(extent.width),height(extent.height),device(d),context(c){
+        auto make=[&](DXGI_FORMAT format,UINT bind,bool guide=false){D3D11_TEXTURE2D_DESC shape{};shape.Width=guide?render.width:width;shape.Height=guide?render.height:height;
             shape.MipLevels=shape.ArraySize=shape.SampleDesc.Count=1;shape.Format=format;shape.BindFlags=bind;
             ComPtr<ID3D11Texture2D> t;Gpu(device->CreateTexture2D(&shape,nullptr,&t));return t;};
-        input=make(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET);
+        input=make(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET,true);
         color=make(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET);
         ui=make(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET);
         reference=make(DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET);
-        depth=make(DXGI_FORMAT_R32_TYPELESS,D3D11_BIND_DEPTH_STENCIL|D3D11_BIND_SHADER_RESOURCE);
-        motion=make(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE);
+        depth=make(DXGI_FORMAT_R32_TYPELESS,D3D11_BIND_DEPTH_STENCIL|D3D11_BIND_SHADER_RESOURCE,true);
+        motion=make(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE,true);
         D3D11_DEPTH_STENCIL_VIEW_DESC desc{};desc.Format=DXGI_FORMAT_D32_FLOAT;desc.ViewDimension=D3D11_DSV_DIMENSION_TEXTURE2D;
         ComPtr<ID3D11DepthStencilView> view;Gpu(device->CreateDepthStencilView(depth.Get(),&desc,&view));context->ClearDepthStencilView(view.Get(),D3D11_CLEAR_DEPTH,.5f,0);
-        std::vector<unsigned short> velocity(size_t(width)*height*2);context->UpdateSubresource(motion.Get(),0,nullptr,velocity.data(),width*4,0);
+        std::vector<unsigned short> velocity(size_t(render.width)*render.height*2);context->UpdateSubresource(motion.Get(),0,nullptr,velocity.data(),render.width*4,0);
         auto hud=Hud();context->UpdateSubresource(ui.Get(),0,nullptr,hud.data(),width*4,0);
     }
     std::vector<unsigned char> Hud()const{
@@ -101,6 +101,12 @@ struct Stats {
 }
 int wmain(int argc,wchar_t** argv){try{
     std::setvbuf(stdout,nullptr,_IONBF,0);
+    Quality selectedQuality=Quality::NativeAA;
+#if defined(TRP_POSTSR_SCALED_SOURCE)
+    if(argc!=6)return 1;const std::wstring_view quality=argv[5];
+    if(quality!=L"Quality"&&quality!=L"Balanced"&&quality!=L"Performance")return 1;
+    selectedQuality=quality==L"Quality"?Quality::Quality:quality==L"Balanced"?Quality::Balanced:Quality::Performance;--argc;
+#endif
     if(argc!=5)return 1;const bool observed=std::wstring_view(argv[4])==L"observer";
     if(!observed&&std::wstring_view(argv[4])!=L"automatic")return 1;
     if(NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: Skyrim running or process inventory unavailable");return 1;}
@@ -119,10 +125,11 @@ int wmain(int argc,wchar_t** argv){try{
     window.value=CreateWindowExW(0,wc.lpszClassName,L"NR FSR lifecycle",WS_OVERLAPPEDWINDOW,0,0,500,320,nullptr,nullptr,wc.hInstance,nullptr);
     if(!window.value)throw std::runtime_error("fixture HWND");
     auto sr=std::make_shared<FsrHostResources>(std::filesystem::absolute(argv[3]));
-    FsrHostPresentation host;FsrSettings settings;settings.quality=Quality::NativeAA;settings.sourceColorEncoding=ColorEncoding::Gamma22;
+    FsrHostPresentation host;FsrSettings settings;settings.quality=selectedQuality;settings.sourceColorEncoding=ColorEncoding::Gamma22;
     DXGI_SWAP_CHAIN_DESC swap{};swap.OutputWindow=window.value;swap.Windowed=TRUE;swap.BufferDesc.Width=320;swap.BufferDesc.Height=180;
     swap.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;swap.SampleDesc.Count=1;swap.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;swap.BufferCount=1;
-    Check(Value(host.Create(factory.Get(),device.Get(),sr,swap,settings))==Extent{320,180},"HostNativeSizing");Gpu(host.StartupPresent(0,0));Accepted(sr->CompleteStartup());Gpu(host.SwapChain()->GetDesc(&swap));
+    const auto initialRender=Value(host.Create(factory.Get(),device.Get(),sr,swap,settings));
+    Check(initialRender.width&&initialRender.height&&initialRender.width<=320&&initialRender.height<=180,"HostFixedSizing");Gpu(host.StartupPresent(0,0));Accepted(sr->CompleteStartup());Gpu(host.SwapChain()->GetDesc(&swap));
     const auto bridge=sr->Bridge();const auto heldDevice=bridge->Device12();const auto heldQueue=bridge->Queue();const auto heldChain=host.SwapChain();
     ComPtr<ID3D12InfoQueue> diagnostics12;heldDevice->QueryInterface(IID_PPV_ARGS(&diagnostics12));
     std::printf("GRAPHICS_DEBUG d3d11=%u d3d12=%u\n",bool(diagnostics11),bool(diagnostics12));
@@ -137,9 +144,11 @@ int wmain(int argc,wchar_t** argv){try{
     NeuralAccepted(owner->Open(NR::RuntimeCatalog()[1],heldDevice,{desc.VendorId,desc.DeviceId,desc.SubSysId,luid,false}));
     Stats stats;const std::array<Extent,3> extents{{{320,180},{384,216},{320,180}}};
     for(unsigned cycle=0;cycle<extents.size();++cycle){const auto extent=extents[cycle];
-        World world(device.Get(),context.Get(),extent);NR::PostUpscale post;
+        const auto render=Value(sr->Upscaler()->RenderExtent());
+        std::printf("FSR_LIFECYCLE_EXTENT quality=%s display=%ux%u guides=%ux%u\n",QualityName(selectedQuality),extent.width,extent.height,render.width,render.height);
+        World world(device.Get(),context.Get(),extent,render);NR::PostUpscale post;
         NR::StageContract contract;contract.device=heldDevice;contract.queue=heldQueue;contract.adapterLuid=luid;
-        contract.colorExtent=contract.guideExtent={extent.width,extent.height};NeuralAccepted(post.Initialize(owner,device.Get(),contract));
+        contract.colorExtent={extent.width,extent.height};contract.guideExtent={render.width,render.height};NeuralAccepted(post.Initialize(owner,device.Get(),contract));
         auto reconstruction=std::make_unique<FsrFrameAdapter>(*sr->Upscaler(),bridge,sr->Resources(),sr->Color11(),sr->Depth11(),sr->Motion11(),sr->Output11(),sr->HandoffEncoding());
         std::unique_ptr<FgObservation::Capture> capture;
         if(observed){capture=std::make_unique<FgObservation::Capture>(heldDevice,136,extent.width,extent.height,true);FgObservation::activeCapture=capture.get();}
@@ -150,10 +159,10 @@ int wmain(int argc,wchar_t** argv){try{
             lifetime{host,capture};
         std::unordered_map<uint64_t,std::vector<unsigned char>> expectedRows;
         std::unordered_set<uint64_t> submitted,eligible,requiredReal,requiredGenerated;
-        FsrColorConverter encoder;UpscaleFrame real;real.backend=BackendKind::Fsr;real.render=real.subrect=real.display=extent;
+        FsrColorConverter encoder;UpscaleFrame real;real.backend=BackendKind::Fsr;real.render=real.subrect=render;real.display=extent;
         real.color=real.input=world.input.Get();real.output=world.color.Get();real.depth=world.depth.Get();real.motion=world.motion.Get();
         real.depthFormat=DXGI_FORMAT_R32_FLOAT;real.motionFormat=DXGI_FORMAT_R16G16_FLOAT;real.deltaMilliseconds=1000.f/60;
-        real.motionConvention={float(extent.width),float(extent.height),true,false};real.sourceEpoch=cycle+1;
+        real.motionConvention={float(render.width),float(render.height),true,false};real.sourceEpoch=cycle+1;
         real.camera.identity=1;real.camera.worldUnitsToMeters=1;real.camera.nearDistance=.1f;real.camera.farDistance=100;real.camera.verticalFovRadians=1;
         DirectX::XMFLOAT4X4 view,projection;DirectX::XMStoreFloat4x4(&view,DirectX::XMMatrixIdentity());
         DirectX::XMStoreFloat4x4(&projection,DirectX::XMMatrixPerspectiveFovLH(1,float(extent.width)/extent.height,.1f,100));
@@ -176,21 +185,22 @@ int wmain(int argc,wchar_t** argv){try{
             if(local==56)retirePending(true);
             Gpu(host.WaitBeforeProducer());real.sourceId=++stats.sources;real.reset=local==0||local==40||local==41||local==56;
             real.camera.reset=local==48;auto jitter=Value(sr->Upscaler()->QueryJitter(real.sourceId));real.jitterX=jitter[0];real.jitterY=jitter[1];
-            std::vector<unsigned char> bytes(size_t(extent.width)*extent.height*4);
+            std::vector<unsigned char> bytes(size_t(render.width)*render.height*4);
             for(size_t i=0;i<bytes.size()/4;++i){bytes[i*4]=((i/8+real.sourceId)%2)?48:208;bytes[i*4+1]=(i+real.sourceId)%256;
-                bytes[i*4+2]=(i/extent.width+real.sourceId)%256;bytes[i*4+3]=(i+real.sourceId)%256;}
-            context->UpdateSubresource(world.input.Get(),0,nullptr,bytes.data(),extent.width*4,0);
+                bytes[i*4+2]=(i/render.width+real.sourceId)%256;bytes[i*4+3]=(i+real.sourceId)%256;}
+            context->UpdateSubresource(world.input.Get(),0,nullptr,bytes.data(),render.width*4,0);
             Check(Value(reconstruction->Evaluate(real))==UpscaleOutcome::Temporal,"ActualTemporalSrBeforeNr");
             auto original=world.Read(world.color.Get());auto retained=world.Read(sr->Output11());
             NR::PostSrInput input;auto& native=input.resources;native.context=context;native.color=world.color;native.depth=world.depth;native.motion=world.motion;
             native.epoch=native.guideEpoch=cycle+1;native.sourceId=native.guideSourceId=real.sourceId;native.previousSourceId=real.sourceId-1;
-            native.presentationTime=double(real.sourceId)/60.;native.colorExtent=native.guideExtent={extent.width,extent.height};
+            native.presentationTime=double(real.sourceId)/60.;native.colorExtent={extent.width,extent.height};native.guideExtent={render.width,render.height};
             native.motionScaleX=float(extent.width);native.motionScaleY=float(extent.height);native.colorDomain=NR::ColorDomain::SdrBytes;native.reset=real.reset||real.camera.reset;
             auto& meta=input.source;meta.backend=BackendKind::Fsr;meta.outcome=UpscaleOutcome::Temporal;
             meta.epoch=meta.guideEpoch=native.epoch;meta.sourceId=meta.guideSourceId=native.sourceId;meta.previousSourceId=native.previousSourceId;
-            meta.sourceTime=meta.guideTime=native.presentationTime;meta.render=meta.display=meta.color=meta.guides={extent.width,extent.height};
+            meta.sourceTime=meta.guideTime=native.presentationTime;meta.display=meta.color={extent.width,extent.height};meta.render=meta.guides={render.width,render.height};
             meta.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;meta.depthFormat=DXGI_FORMAT_R32_FLOAT;meta.motionFormat=DXGI_FORMAT_R16G16_FLOAT;meta.guideOrigin=NR::GuideOrigin::RealSource;
             meta.colorDomain=NR::ColorDomain::SdrBytes;meta.encoding=ColorEncoding::Gamma22;meta.motion=real.motionConvention;
+            const auto guides=NeuralValue(NR::ValidatePostSrSourceContract(meta));native.motionScaleX=guides.motionScaleX;native.motionScaleY=guides.motionScaleY;
             tuning.enabled=local!=40;tuning.revision=local<40?1:local==40?2:3;
             auto output=NeuralValue(post.Evaluate(input,tuning));Check(output.evaluated==tuning.enabled,"ExactlyOneNrPassPerEnabledRealSource");
             NeuralAccepted(post.WaitDelivery(output));stats.nr+=output.evaluated;stats.historyResets+=output.effectiveReset;
@@ -243,8 +253,8 @@ int wmain(int argc,wchar_t** argv){try{
         }
         reconstruction.reset();Check(owner->Ready()&&sr->Bridge().get()==bridge.get()&&bridge->Device12()==heldDevice&&bridge->Queue()==heldQueue,"RuntimeAndDeviceRetainedAcrossSizeRetirement");
         if(cycle+1<extents.size()){swap.BufferDesc.Width=extents[cycle+1].width;swap.BufferDesc.Height=extents[cycle+1].height;
-            const auto resized=Value(host.Resize(swap));Gpu(resized.result);Check(resized.render==extents[cycle+1]&&host.SwapChain()==heldChain,"ActualSameSwapchainResizeNativeAa");
-            Accepted(sr->CompleteStartup());++stats.resizes;}
+            const auto resized=Value(host.Resize(swap));Gpu(resized.result);Check(resized.render.width&&resized.render.height&&host.SwapChain()==heldChain,"ActualSameSwapchainResizeFixedQuality");
+            Accepted(sr->CompleteStartup());Check(resized.render==Value(sr->Upscaler()->RenderExtent()),"ResizedGuidesMatchActualSrAllocation");++stats.resizes;}
     }
     Accepted(host.Retire());NeuralAccepted(owner->Retire());
     Check(stats.sources==192&&stats.nr==189,"ExactlyOneNrPerEnabledSourceAcrossThreeEpochs");
