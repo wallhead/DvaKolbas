@@ -26,6 +26,20 @@ color at moving edges, or full-tone camera stability at Performance. The
 [review response and Native/Performance game checklist](../research/nr/scaled/REVIEW7.md)
 keep those visual gates open. **3 of 6 remains complete.**
 
+**Remaining tone drift, 2026-10-06:** the owner reports that After also drifts at
+Native. The latest log already uses SDR bytes, one pass and full Style0/Tone1;
+the packaged false SDR default does not explain it. A new
+[identity/queue investigation](../research/nr/identity-probe/README.md) compares
+fixed vendor IO, creation parameters, independently rotating parameters and
+explicit source retirement. Seventy-seven real-GPU runs / 10,560 evaluated
+sources match every serial baseline output hash; four off controls preserve
+another 560 sources. The queued ring reaches three pending tickets.
+Context-dependent tone changes survive fixed IO and serialized evaluation.
+These are constant-depth synthetic results, not a Skyrim fix or a dismissal
+of the stable AIO/Raz reference. Next isolate Before/After at Native with one
+full-tone pass and FG off. Production/installed settings are unchanged. The
+visual defect remains open; **3 of 6** remains complete.
+
 **8 of 8 milestones complete for the tested native-size SDR setup:** native-size post-SR contract (Task1), inherited runtime/catalog (Task2), shared Before/After source stage (Task3), native-size FSR After source/presentation integration (Task4), native-size DLAA After source/NVIDIA FG handoff (Task5), live controls and source lifecycle (Task6), clean build matrix/package/final review (Task7), local Skyrim functional acceptance (Task8).
 
 **Task8 complete, 2026-10-05:** the owner confirms all remaining NVIDIA inventory/map/dialogue and minimize/restore checks passed, and separately confirms FSR Native AA After fast travel passed. Combine these fresh reports with the retained provider gameplay checklists, actual End Apply/style acceptance, source/lifecycle readbacks, matrix/review/package proof and the independently validated NVIDIA ETW capture. Normal logging is already retained. [Final functional acceptance](../research/nr/post-sr/task8-functional-acceptance-20261005.json). Matched AIO19 comparison is excluded by the owner's explicit instruction, not passed; no parity claim is made. Actual GPU qualification remains RTX4080SUPER, native SDR After only; scaled After/HDR and other NVIDIA families remain unqualified, AMD NR unsupported. Generated images inherit enhanced real sources and receive no separate NR pass. **8 of 8 done in this scope.**

@@ -1,0 +1,4676 @@
+{
+  "schema": 1,
+  "date": "2026-10-06",
+  "evaluatedSources": 10560,
+  "offSources": 560,
+  "runs": [
+    {
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "variant": "rotating",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "6c4fde95b59a277e28bc4b0384413a7a6e2222b18609313ec025bfbd003ef8f6",
+      "case": "context-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\rotating\\context-sdr-1",
+      "scene": "context",
+      "executableSha256": "be8d3b0ba105e86d52baa9649b734154c7f5301d77d5ddd341a8c866ff6449d6",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "66a09c76709a49e3f84a834b9adcc8638bdc8c2c3d8835505ffb2261a3c2caf6"
+    },
+    {
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "variant": "rotating",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "6c4fde95b59a277e28bc4b0384413a7a6e2222b18609313ec025bfbd003ef8f6",
+      "case": "pan2-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\rotating\\pan2-sdr-1",
+      "scene": "pan",
+      "executableSha256": "be8d3b0ba105e86d52baa9649b734154c7f5301d77d5ddd341a8c866ff6449d6",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "62ee32a8aa1a8730be3615c07958b5c7fb541999e377cb024aec089a603aef11"
+    },
+    {
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "variant": "rotating",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 1,
+      "stageSha256": "6c4fde95b59a277e28bc4b0384413a7a6e2222b18609313ec025bfbd003ef8f6",
+      "case": "pan16-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\rotating\\pan16-sdr-1",
+      "scene": "pan",
+      "executableSha256": "be8d3b0ba105e86d52baa9649b734154c7f5301d77d5ddd341a8c866ff6449d6",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "77a987e988e986444779a8522e336d656218683b67d5a5530219823d4c302894"
+    },
+    {
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "variant": "rotating",
+      "domain": "sdr",
+      "panStep": 64,
+      "passes": 1,
+      "stageSha256": "6c4fde95b59a277e28bc4b0384413a7a6e2222b18609313ec025bfbd003ef8f6",
+      "case": "pan64-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\rotating\\pan64-sdr-1",
+      "scene": "pan",
+      "executableSha256": "be8d3b0ba105e86d52baa9649b734154c7f5301d77d5ddd341a8c866ff6449d6",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "b5af6a44a1b6bad4635fbc1cb0fd78e2ef200d98926742c26c8a4321eedecdf1"
+    },
+    {
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "variant": "rotating",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 3,
+      "stageSha256": "6c4fde95b59a277e28bc4b0384413a7a6e2222b18609313ec025bfbd003ef8f6",
+      "case": "context-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\rotating\\context-sdr-3",
+      "scene": "context",
+      "executableSha256": "be8d3b0ba105e86d52baa9649b734154c7f5301d77d5ddd341a8c866ff6449d6",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "5b4e31b5fb53260c0058cbc7dc82bcd67a7a016432171a9a9c43916b80ad4d85"
+    },
+    {
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "variant": "rotating",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 3,
+      "stageSha256": "6c4fde95b59a277e28bc4b0384413a7a6e2222b18609313ec025bfbd003ef8f6",
+      "case": "pan16-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\rotating\\pan16-sdr-3",
+      "scene": "pan",
+      "executableSha256": "be8d3b0ba105e86d52baa9649b734154c7f5301d77d5ddd341a8c866ff6449d6",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "3ac9de3e716cd73bdb6d46233d2a29c7e1a696e05cdf2d0213c1db0ddccfd4da"
+    },
+    {
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "variant": "rotating",
+      "domain": "linear",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "6c4fde95b59a277e28bc4b0384413a7a6e2222b18609313ec025bfbd003ef8f6",
+      "case": "context-linear-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\rotating\\context-linear-1",
+      "scene": "context",
+      "executableSha256": "be8d3b0ba105e86d52baa9649b734154c7f5301d77d5ddd341a8c866ff6449d6",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "065d7d25edcccfc73a440408ad11c452863472562df4577391d25446890fdaf0"
+    },
+    {
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "variant": "fixed-parameters",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "735001f6ec892b696276bff811b475091b9bb847f3bd500f04fc640a36b51e1f",
+      "case": "context-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-parameters\\context-sdr-1",
+      "scene": "context",
+      "executableSha256": "298036b4e6d4da47cd8f9c2029a896993f62490252433d81d3d575fa8c07ee0c",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "3f2b7c1dc78858eb78c36e4a150cbc1ad0b92bd3f73c7647817ff2887b071425"
+    },
+    {
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "variant": "fixed-parameters",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "735001f6ec892b696276bff811b475091b9bb847f3bd500f04fc640a36b51e1f",
+      "case": "pan2-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-parameters\\pan2-sdr-1",
+      "scene": "pan",
+      "executableSha256": "298036b4e6d4da47cd8f9c2029a896993f62490252433d81d3d575fa8c07ee0c",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "a9f9f9e3c13f3c421bc1c104c9494845accf1df3a6e0020bec7b84974e734735"
+    },
+    {
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "variant": "fixed-parameters",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 1,
+      "stageSha256": "735001f6ec892b696276bff811b475091b9bb847f3bd500f04fc640a36b51e1f",
+      "case": "pan16-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-parameters\\pan16-sdr-1",
+      "scene": "pan",
+      "executableSha256": "298036b4e6d4da47cd8f9c2029a896993f62490252433d81d3d575fa8c07ee0c",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "06afa255cd15b918aa527e70d686c15a269d07bdcd21495c62724aabc5a1a56b"
+    },
+    {
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "variant": "fixed-parameters",
+      "domain": "sdr",
+      "panStep": 64,
+      "passes": 1,
+      "stageSha256": "735001f6ec892b696276bff811b475091b9bb847f3bd500f04fc640a36b51e1f",
+      "case": "pan64-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-parameters\\pan64-sdr-1",
+      "scene": "pan",
+      "executableSha256": "298036b4e6d4da47cd8f9c2029a896993f62490252433d81d3d575fa8c07ee0c",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "811bbb13a9bf1dcc807f94b4b22d20a6f656a7cfb540b77448c98e755161a73f"
+    },
+    {
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "variant": "fixed-parameters",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 3,
+      "stageSha256": "735001f6ec892b696276bff811b475091b9bb847f3bd500f04fc640a36b51e1f",
+      "case": "context-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-parameters\\context-sdr-3",
+      "scene": "context",
+      "executableSha256": "298036b4e6d4da47cd8f9c2029a896993f62490252433d81d3d575fa8c07ee0c",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "ffc364bf031662c2bbd7cdbb58ad4768404260dd1ba624359d1721a1b2dd96d9"
+    },
+    {
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "variant": "fixed-parameters",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 3,
+      "stageSha256": "735001f6ec892b696276bff811b475091b9bb847f3bd500f04fc640a36b51e1f",
+      "case": "pan16-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-parameters\\pan16-sdr-3",
+      "scene": "pan",
+      "executableSha256": "298036b4e6d4da47cd8f9c2029a896993f62490252433d81d3d575fa8c07ee0c",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "559dddb98c263a2bedbbab0b6cbf0144ade5f250dde4b65e61687dca2ce79b9d"
+    },
+    {
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "variant": "fixed-parameters",
+      "domain": "linear",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "735001f6ec892b696276bff811b475091b9bb847f3bd500f04fc640a36b51e1f",
+      "case": "context-linear-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-parameters\\context-linear-1",
+      "scene": "context",
+      "executableSha256": "298036b4e6d4da47cd8f9c2029a896993f62490252433d81d3d575fa8c07ee0c",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "67d945317cf387364016218871b062c16c6c2ca95438ca091e330badae879d0a"
+    },
+    {
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "variant": "fixed-resources",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "f8a82925e7ccd79d67362a82bcd74c0a9e78995fcfa99b1bbf4a877df0a19d13",
+      "case": "context-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-resources\\context-sdr-1",
+      "scene": "context",
+      "executableSha256": "7d052765efc1a6a7ba19247f919949d9d9ee1efea149abc24e49c11ad97eb3fa",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "16f17c19e09e3f1fd775f4c769b97623eabda054448c28d50437133f6825f352"
+    },
+    {
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "variant": "fixed-resources",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "f8a82925e7ccd79d67362a82bcd74c0a9e78995fcfa99b1bbf4a877df0a19d13",
+      "case": "pan2-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-resources\\pan2-sdr-1",
+      "scene": "pan",
+      "executableSha256": "7d052765efc1a6a7ba19247f919949d9d9ee1efea149abc24e49c11ad97eb3fa",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "cc0459662992a93d91bcf14e6c62292c45e16134ab69b1a02259f22b3c779b10"
+    },
+    {
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "variant": "fixed-resources",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 1,
+      "stageSha256": "f8a82925e7ccd79d67362a82bcd74c0a9e78995fcfa99b1bbf4a877df0a19d13",
+      "case": "pan16-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-resources\\pan16-sdr-1",
+      "scene": "pan",
+      "executableSha256": "7d052765efc1a6a7ba19247f919949d9d9ee1efea149abc24e49c11ad97eb3fa",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "ca2a447818fa40fe68c4bdd7a3fe683c138833833802645b70cf5c509a65fd48"
+    },
+    {
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "variant": "fixed-resources",
+      "domain": "sdr",
+      "panStep": 64,
+      "passes": 1,
+      "stageSha256": "f8a82925e7ccd79d67362a82bcd74c0a9e78995fcfa99b1bbf4a877df0a19d13",
+      "case": "pan64-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-resources\\pan64-sdr-1",
+      "scene": "pan",
+      "executableSha256": "7d052765efc1a6a7ba19247f919949d9d9ee1efea149abc24e49c11ad97eb3fa",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "4d5432684c4ecbe26543640caff93d4ba7f6c03b84cd933dd92dd04d7f5c04bd"
+    },
+    {
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "variant": "fixed-resources",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 3,
+      "stageSha256": "f8a82925e7ccd79d67362a82bcd74c0a9e78995fcfa99b1bbf4a877df0a19d13",
+      "case": "context-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-resources\\context-sdr-3",
+      "scene": "context",
+      "executableSha256": "7d052765efc1a6a7ba19247f919949d9d9ee1efea149abc24e49c11ad97eb3fa",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "89030fcafc02c36ab216451d7ef259ded49eed39e300a6cd5d9a0c26fa70ab93"
+    },
+    {
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "variant": "fixed-resources",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 3,
+      "stageSha256": "f8a82925e7ccd79d67362a82bcd74c0a9e78995fcfa99b1bbf4a877df0a19d13",
+      "case": "pan16-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-resources\\pan16-sdr-3",
+      "scene": "pan",
+      "executableSha256": "7d052765efc1a6a7ba19247f919949d9d9ee1efea149abc24e49c11ad97eb3fa",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "c7f36d3222d26ad89c8ba60a58dc07bc67e6b953f57bbe790ba1b223a7a830f6"
+    },
+    {
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "variant": "fixed-resources",
+      "domain": "linear",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "f8a82925e7ccd79d67362a82bcd74c0a9e78995fcfa99b1bbf4a877df0a19d13",
+      "case": "context-linear-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-resources\\context-linear-1",
+      "scene": "context",
+      "executableSha256": "7d052765efc1a6a7ba19247f919949d9d9ee1efea149abc24e49c11ad97eb3fa",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "8c42520a9d92f2a85dc892e7276f1b96887e9f90ff37d2a65fc1b193aa920f59"
+    },
+    {
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "variant": "fixed-both",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "782a08e46d73cd9fa4be52e68cc7d301d5536ccc311689ed480df69e1939185e",
+      "case": "context-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-both\\context-sdr-1",
+      "scene": "context",
+      "executableSha256": "15a4961e240ee893c447d9489b03e427d836a5ee0cdb67acc2213513b1e671ac",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "51b89a3b0dfcd0d8bf06b0f1d9ba1c87b48e30162b28a2ddc45877965f55a4f6"
+    },
+    {
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "variant": "fixed-both",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "782a08e46d73cd9fa4be52e68cc7d301d5536ccc311689ed480df69e1939185e",
+      "case": "pan2-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-both\\pan2-sdr-1",
+      "scene": "pan",
+      "executableSha256": "15a4961e240ee893c447d9489b03e427d836a5ee0cdb67acc2213513b1e671ac",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "9d2a44980f271dff9ff476e0cc70fef78370637aea9495edb2d7124af17e02bd"
+    },
+    {
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "variant": "fixed-both",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 1,
+      "stageSha256": "782a08e46d73cd9fa4be52e68cc7d301d5536ccc311689ed480df69e1939185e",
+      "case": "pan16-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-both\\pan16-sdr-1",
+      "scene": "pan",
+      "executableSha256": "15a4961e240ee893c447d9489b03e427d836a5ee0cdb67acc2213513b1e671ac",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "c5acfb7d9895358c8dc442fef5e49ba766c42e7d552974da92a1b04887993e23"
+    },
+    {
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "variant": "fixed-both",
+      "domain": "sdr",
+      "panStep": 64,
+      "passes": 1,
+      "stageSha256": "782a08e46d73cd9fa4be52e68cc7d301d5536ccc311689ed480df69e1939185e",
+      "case": "pan64-sdr-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-both\\pan64-sdr-1",
+      "scene": "pan",
+      "executableSha256": "15a4961e240ee893c447d9489b03e427d836a5ee0cdb67acc2213513b1e671ac",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "3a1f064c25584af12fc3934b30326ce304d2abb2c8bf4366f32907cc393b039a"
+    },
+    {
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "variant": "fixed-both",
+      "domain": "sdr",
+      "panStep": 2,
+      "passes": 3,
+      "stageSha256": "782a08e46d73cd9fa4be52e68cc7d301d5536ccc311689ed480df69e1939185e",
+      "case": "context-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-both\\context-sdr-3",
+      "scene": "context",
+      "executableSha256": "15a4961e240ee893c447d9489b03e427d836a5ee0cdb67acc2213513b1e671ac",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "20e3ef8e0a66ebffc7887790f8445e80c40a2df9fe93db117ca7b6c970f8b9e6"
+    },
+    {
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "variant": "fixed-both",
+      "domain": "sdr",
+      "panStep": 16,
+      "passes": 3,
+      "stageSha256": "782a08e46d73cd9fa4be52e68cc7d301d5536ccc311689ed480df69e1939185e",
+      "case": "pan16-sdr-3",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-both\\pan16-sdr-3",
+      "scene": "pan",
+      "executableSha256": "15a4961e240ee893c447d9489b03e427d836a5ee0cdb67acc2213513b1e671ac",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 120,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "60253a30acda7328805a79a8ccf38bb2e502361c991501b4f35069c947a5aea8"
+    },
+    {
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "variant": "fixed-both",
+      "domain": "linear",
+      "panStep": 2,
+      "passes": 1,
+      "stageSha256": "782a08e46d73cd9fa4be52e68cc7d301d5536ccc311689ed480df69e1939185e",
+      "case": "context-linear-1",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-both\\context-linear-1",
+      "scene": "context",
+      "executableSha256": "15a4961e240ee893c447d9489b03e427d836a5ee0cdb67acc2213513b1e671ac",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "sources": 160,
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "8b32ceece75ddc86d7889b14203503e0cc860d560ee5ecccbef4f8ef2aa4790e"
+    },
+    {
+      "domain": "sdr",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "executableSha256": "221c77714fac78c7f217a2a48d9ae6858cf89bc6ad442d6cfb779ef1b402832c",
+      "stageSha256": "749a021c1c9edf1d936d38e71aeadf6c9495df8bdee6a966871e8a9e43523537",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-sdr-1",
+      "sources": 160,
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "passes": 1,
+      "scene": "context",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-io-rotating-params\\context-sdr-1",
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "c4864625334b8567e9397ee29f266148e0e803ae55dd5302596b004a28ad2875"
+    },
+    {
+      "domain": "sdr",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "executableSha256": "221c77714fac78c7f217a2a48d9ae6858cf89bc6ad442d6cfb779ef1b402832c",
+      "stageSha256": "749a021c1c9edf1d936d38e71aeadf6c9495df8bdee6a966871e8a9e43523537",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan2-sdr-1",
+      "sources": 120,
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "passes": 1,
+      "scene": "pan",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-io-rotating-params\\pan2-sdr-1",
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "8f3d525263b2243e14b5da5c395a2a026362d7aa412ebbe6ba96a5bf162255e4"
+    },
+    {
+      "domain": "sdr",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "executableSha256": "221c77714fac78c7f217a2a48d9ae6858cf89bc6ad442d6cfb779ef1b402832c",
+      "stageSha256": "749a021c1c9edf1d936d38e71aeadf6c9495df8bdee6a966871e8a9e43523537",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan16-sdr-1",
+      "sources": 120,
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "passes": 1,
+      "scene": "pan",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-io-rotating-params\\pan16-sdr-1",
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "36f9035e6ba7befcff8f97a1ea7e92b2760f79fc785ed10a03899cedf7b46713"
+    },
+    {
+      "domain": "sdr",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "executableSha256": "221c77714fac78c7f217a2a48d9ae6858cf89bc6ad442d6cfb779ef1b402832c",
+      "stageSha256": "749a021c1c9edf1d936d38e71aeadf6c9495df8bdee6a966871e8a9e43523537",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan64-sdr-1",
+      "sources": 120,
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "passes": 1,
+      "scene": "pan",
+      "panStep": 64,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-io-rotating-params\\pan64-sdr-1",
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "023f41a9272581af6b6e015ba465b7fba31ff42d4bcd22cd2dc2d15e395c9c9c"
+    },
+    {
+      "domain": "sdr",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "executableSha256": "221c77714fac78c7f217a2a48d9ae6858cf89bc6ad442d6cfb779ef1b402832c",
+      "stageSha256": "749a021c1c9edf1d936d38e71aeadf6c9495df8bdee6a966871e8a9e43523537",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-sdr-3",
+      "sources": 160,
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "passes": 3,
+      "scene": "context",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-io-rotating-params\\context-sdr-3",
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "f51462dbac2765e0f36f2c3f979097b0764095218257c81de7814f5177aac614"
+    },
+    {
+      "domain": "sdr",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "executableSha256": "221c77714fac78c7f217a2a48d9ae6858cf89bc6ad442d6cfb779ef1b402832c",
+      "stageSha256": "749a021c1c9edf1d936d38e71aeadf6c9495df8bdee6a966871e8a9e43523537",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan16-sdr-3",
+      "sources": 120,
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "passes": 3,
+      "scene": "pan",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-io-rotating-params\\pan16-sdr-3",
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "79d77582ccde6cb67dd80307fe4e95f92419f53150a128afa3a47959965898c4"
+    },
+    {
+      "domain": "linear",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "executableSha256": "221c77714fac78c7f217a2a48d9ae6858cf89bc6ad442d6cfb779ef1b402832c",
+      "stageSha256": "749a021c1c9edf1d936d38e71aeadf6c9495df8bdee6a966871e8a9e43523537",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-linear-1",
+      "sources": 160,
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "passes": 1,
+      "scene": "context",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity\\fixed-io-rotating-params\\context-linear-1",
+      "capture": "serial",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": null
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "cf51ea320e8581fb4178965e4051a0a4a11f01f84dfc8c7179498f77d1f7168f"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "scene": "context",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "context-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "rotating",
+      "executableSha256": "04516d90c62de77c5d73586556b8167dbce098985aabb8b7908ab63eba6d3eb6",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\rotating\\context-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "cedef43a152e19d02455c4f1feb595cac48df091ea865da8807eabfebc9ea5ca"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "scene": "pan",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan2-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "rotating",
+      "executableSha256": "04516d90c62de77c5d73586556b8167dbce098985aabb8b7908ab63eba6d3eb6",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\rotating\\pan2-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "47413593b1b7d5d23d0758729ed13acf686c71cb7efc946804a032bfc6f73a19"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "scene": "pan",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan16-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "rotating",
+      "executableSha256": "04516d90c62de77c5d73586556b8167dbce098985aabb8b7908ab63eba6d3eb6",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\rotating\\pan16-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "76335ad11309e6026180c5ec441d0a44eb03417c3804956635590197ce3989fa"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "scene": "pan",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan64-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "rotating",
+      "executableSha256": "04516d90c62de77c5d73586556b8167dbce098985aabb8b7908ab63eba6d3eb6",
+      "panStep": 64,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\rotating\\pan64-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "64feafe7306f953497b4f71388f2302a378f1f36fb54cb5ea97dfe47ef0bf3b0"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "scene": "context",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "context-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "rotating",
+      "executableSha256": "04516d90c62de77c5d73586556b8167dbce098985aabb8b7908ab63eba6d3eb6",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\rotating\\context-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "d863bc95f85f8fd6572f40732a07841ece6a0c7fc7888167002b18eccfdb9bd8"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "scene": "pan",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan16-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "rotating",
+      "executableSha256": "04516d90c62de77c5d73586556b8167dbce098985aabb8b7908ab63eba6d3eb6",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\rotating\\pan16-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "f31db4bf48f335a2a7413106d665c4b626730ae66a78ef9afade05e549188387"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "scene": "context",
+      "bridgeSha256": "3ee6134f1dde7934731fac3debd164efa8c51291f86437dd3b19edfd692f7ead",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "context-linear-1",
+      "domain": "linear",
+      "passes": 1,
+      "variant": "rotating",
+      "executableSha256": "04516d90c62de77c5d73586556b8167dbce098985aabb8b7908ab63eba6d3eb6",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\rotating\\context-linear-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 3
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "738c28c6c1054ff1829f2754dea02b68aaced1bab85df281eb5d9307d8c114de"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "scene": "context",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "3a3c588f8d4fd0f7981c246dfbe448687647996ee0fb6074098f5f2d2bc65009",
+      "case": "context-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-parameters",
+      "executableSha256": "c871f1a505cc61ac635a0d27e16a932f6517c8be859fa8cf8c676bc614d2000f",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-parameters\\context-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "348c1116104283f0ce00d40c6edeba403d7971d8b9d4521cd30a45c6dd8e94a9"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "3a3c588f8d4fd0f7981c246dfbe448687647996ee0fb6074098f5f2d2bc65009",
+      "case": "pan2-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-parameters",
+      "executableSha256": "c871f1a505cc61ac635a0d27e16a932f6517c8be859fa8cf8c676bc614d2000f",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-parameters\\pan2-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "635ddecdff4038b6c89d758e8dc189d31b2ec961a7d3448f4781613bda6571b8"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "3a3c588f8d4fd0f7981c246dfbe448687647996ee0fb6074098f5f2d2bc65009",
+      "case": "pan16-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-parameters",
+      "executableSha256": "c871f1a505cc61ac635a0d27e16a932f6517c8be859fa8cf8c676bc614d2000f",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-parameters\\pan16-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "857f48f2b3643ae93f9b196a4f8352998d835c6ffc9cdb5e8245f607e3578bbf"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "3a3c588f8d4fd0f7981c246dfbe448687647996ee0fb6074098f5f2d2bc65009",
+      "case": "pan64-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-parameters",
+      "executableSha256": "c871f1a505cc61ac635a0d27e16a932f6517c8be859fa8cf8c676bc614d2000f",
+      "panStep": 64,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-parameters\\pan64-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "47dc1cb51bd558b746d1cf7bcc9297b992407c607cd47f4c12291d015867b7fa"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "scene": "context",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "3a3c588f8d4fd0f7981c246dfbe448687647996ee0fb6074098f5f2d2bc65009",
+      "case": "context-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "fixed-parameters",
+      "executableSha256": "c871f1a505cc61ac635a0d27e16a932f6517c8be859fa8cf8c676bc614d2000f",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-parameters\\context-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "2a5929294b2e6e34a82d9c236acbd9797ffed9ecda05033cfd9a6f225f5ff7ac"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "3a3c588f8d4fd0f7981c246dfbe448687647996ee0fb6074098f5f2d2bc65009",
+      "case": "pan16-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "fixed-parameters",
+      "executableSha256": "c871f1a505cc61ac635a0d27e16a932f6517c8be859fa8cf8c676bc614d2000f",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-parameters\\pan16-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "c24ab181f127928f0dc2101a936f06669f1f96ee83309446ed0d965aec667f0a"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "scene": "context",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "3a3c588f8d4fd0f7981c246dfbe448687647996ee0fb6074098f5f2d2bc65009",
+      "case": "context-linear-1",
+      "domain": "linear",
+      "passes": 1,
+      "variant": "fixed-parameters",
+      "executableSha256": "c871f1a505cc61ac635a0d27e16a932f6517c8be859fa8cf8c676bc614d2000f",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-parameters\\context-linear-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "749ff33766e655899cf850efb8219c8d86c09609c5492b011ae317c390056381"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "scene": "context",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "stageSha256": "e408f553a8a20381210f2f9937688dfa41fc7540cd43ae2e659ad8905cc2b54b",
+      "case": "context-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-resources",
+      "executableSha256": "f0aa9288682155da4f9f74b47fe1529679aee1f6300b9ca3d25afa8e62064aba",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-resources\\context-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "bd4a3da8f028742778dac43ace66bb41d9dc39093e644d93556278c9852d3dad"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "scene": "pan",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "stageSha256": "e408f553a8a20381210f2f9937688dfa41fc7540cd43ae2e659ad8905cc2b54b",
+      "case": "pan2-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-resources",
+      "executableSha256": "f0aa9288682155da4f9f74b47fe1529679aee1f6300b9ca3d25afa8e62064aba",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-resources\\pan2-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "4bebc52f353ba3db98d486e12519ca38df8de54a692adcb3d486626cc5a2fa11"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "scene": "pan",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "stageSha256": "e408f553a8a20381210f2f9937688dfa41fc7540cd43ae2e659ad8905cc2b54b",
+      "case": "pan16-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-resources",
+      "executableSha256": "f0aa9288682155da4f9f74b47fe1529679aee1f6300b9ca3d25afa8e62064aba",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-resources\\pan16-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "d61fb48f8a2198b1e3356a2da336eebea8b3d40fe94bd06cfe39cb7f8e30826a"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "scene": "pan",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "stageSha256": "e408f553a8a20381210f2f9937688dfa41fc7540cd43ae2e659ad8905cc2b54b",
+      "case": "pan64-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-resources",
+      "executableSha256": "f0aa9288682155da4f9f74b47fe1529679aee1f6300b9ca3d25afa8e62064aba",
+      "panStep": 64,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-resources\\pan64-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "b24128cb35ec4d436bee82f736491ebe74f0842fa703755bbca9bbad34722508"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "scene": "context",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "stageSha256": "e408f553a8a20381210f2f9937688dfa41fc7540cd43ae2e659ad8905cc2b54b",
+      "case": "context-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "fixed-resources",
+      "executableSha256": "f0aa9288682155da4f9f74b47fe1529679aee1f6300b9ca3d25afa8e62064aba",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-resources\\context-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "1a9d908a458a03bd51c414f3668a8998207aa1a3b4fdd3740e85e05d414abdf5"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "scene": "pan",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "stageSha256": "e408f553a8a20381210f2f9937688dfa41fc7540cd43ae2e659ad8905cc2b54b",
+      "case": "pan16-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "fixed-resources",
+      "executableSha256": "f0aa9288682155da4f9f74b47fe1529679aee1f6300b9ca3d25afa8e62064aba",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-resources\\pan16-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "fd33db12be29c9ab8b0258a1d59f39fbb1cf94b7f48acd4a08d067eb58dc4845"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "scene": "context",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "stageSha256": "e408f553a8a20381210f2f9937688dfa41fc7540cd43ae2e659ad8905cc2b54b",
+      "case": "context-linear-1",
+      "domain": "linear",
+      "passes": 1,
+      "variant": "fixed-resources",
+      "executableSha256": "f0aa9288682155da4f9f74b47fe1529679aee1f6300b9ca3d25afa8e62064aba",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-resources\\context-linear-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "747a846a6b8d0991301e98477af44e662d432931097fa3acacd6c5917b052ad3"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "scene": "context",
+      "bridgeSha256": "d5ed80b433412c8e026a19a9894e206d351d08a5b2578f05a2b6e7a5650947ad",
+      "stageSha256": "f5f4e90301e10f5a0d09e80432f5b6aec427d6b32e0f511f0900079deec9b730",
+      "case": "context-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-both",
+      "executableSha256": "a197eaa2fc29f8c31fe940afe1a4346581d6c317117634dd1003b5a923a43c66",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-both\\context-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "05c8f6c9c5c53044b685a19fd63738188a1d5226edbb52ee903c84cbd92b5f44"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "scene": "pan",
+      "bridgeSha256": "d5ed80b433412c8e026a19a9894e206d351d08a5b2578f05a2b6e7a5650947ad",
+      "stageSha256": "f5f4e90301e10f5a0d09e80432f5b6aec427d6b32e0f511f0900079deec9b730",
+      "case": "pan2-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-both",
+      "executableSha256": "a197eaa2fc29f8c31fe940afe1a4346581d6c317117634dd1003b5a923a43c66",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-both\\pan2-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "66015107f86beac1bbe1e16000d57dac0c8d3d234e88f1907a498d86c4d9e256"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "scene": "pan",
+      "bridgeSha256": "d5ed80b433412c8e026a19a9894e206d351d08a5b2578f05a2b6e7a5650947ad",
+      "stageSha256": "f5f4e90301e10f5a0d09e80432f5b6aec427d6b32e0f511f0900079deec9b730",
+      "case": "pan16-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-both",
+      "executableSha256": "a197eaa2fc29f8c31fe940afe1a4346581d6c317117634dd1003b5a923a43c66",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-both\\pan16-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "3432760cbbe4c90db6c8e0c1f77990d3d878a18fbd10ddbac4f9fd94b9e67f89"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "scene": "pan",
+      "bridgeSha256": "d5ed80b433412c8e026a19a9894e206d351d08a5b2578f05a2b6e7a5650947ad",
+      "stageSha256": "f5f4e90301e10f5a0d09e80432f5b6aec427d6b32e0f511f0900079deec9b730",
+      "case": "pan64-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "fixed-both",
+      "executableSha256": "a197eaa2fc29f8c31fe940afe1a4346581d6c317117634dd1003b5a923a43c66",
+      "panStep": 64,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-both\\pan64-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "6f01198feb0284771ec12f3b01d8aef51f2467afeeac007911a45ac6bbe4977e"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "scene": "context",
+      "bridgeSha256": "d5ed80b433412c8e026a19a9894e206d351d08a5b2578f05a2b6e7a5650947ad",
+      "stageSha256": "f5f4e90301e10f5a0d09e80432f5b6aec427d6b32e0f511f0900079deec9b730",
+      "case": "context-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "fixed-both",
+      "executableSha256": "a197eaa2fc29f8c31fe940afe1a4346581d6c317117634dd1003b5a923a43c66",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-both\\context-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "92aa9bbd19d6afffc77a8ce580104b46ee4811bad30157d9321086c153f88bfd"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "scene": "pan",
+      "bridgeSha256": "d5ed80b433412c8e026a19a9894e206d351d08a5b2578f05a2b6e7a5650947ad",
+      "stageSha256": "f5f4e90301e10f5a0d09e80432f5b6aec427d6b32e0f511f0900079deec9b730",
+      "case": "pan16-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "fixed-both",
+      "executableSha256": "a197eaa2fc29f8c31fe940afe1a4346581d6c317117634dd1003b5a923a43c66",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-both\\pan16-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "acb05041c4e63ba25f1936d41edc012b5d6867877b578d58714320a7447ef828"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "scene": "context",
+      "bridgeSha256": "d5ed80b433412c8e026a19a9894e206d351d08a5b2578f05a2b6e7a5650947ad",
+      "stageSha256": "f5f4e90301e10f5a0d09e80432f5b6aec427d6b32e0f511f0900079deec9b730",
+      "case": "context-linear-1",
+      "domain": "linear",
+      "passes": 1,
+      "variant": "fixed-both",
+      "executableSha256": "a197eaa2fc29f8c31fe940afe1a4346581d6c317117634dd1003b5a923a43c66",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-both\\context-linear-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 1,
+            "creation": 1
+          },
+          "creationObjectUsed": true,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "bf7f8b15121d34b0116897dc89c67628cd573e9834b7790da1a582776d41e87f"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "scene": "context",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "context-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "drain-only",
+      "executableSha256": "7a2a34d26c38143227bf84b8a5bb280f60a9b93aba290c429b10807080ea9da8",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\drain-only\\context-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "d9ac14e711bbe0ece212ecb0ba1110696d28a376cb16e9cd34ed12036275a960"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan2-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "drain-only",
+      "executableSha256": "7a2a34d26c38143227bf84b8a5bb280f60a9b93aba290c429b10807080ea9da8",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\drain-only\\pan2-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "4094fd840056084c63f5205ccfe143ed305db55abb71eb8ebec9051ce6778942"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan16-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "drain-only",
+      "executableSha256": "7a2a34d26c38143227bf84b8a5bb280f60a9b93aba290c429b10807080ea9da8",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\drain-only\\pan16-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "12e039fa8bee4bb52989061aeb002b0da2c728ae5c7080bf57f6647c97492995"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan64-sdr-1",
+      "domain": "sdr",
+      "passes": 1,
+      "variant": "drain-only",
+      "executableSha256": "7a2a34d26c38143227bf84b8a5bb280f60a9b93aba290c429b10807080ea9da8",
+      "panStep": 64,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\drain-only\\pan64-sdr-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "ef6b2209ac40dc3b2901fc0d7c7e19c5aaf8ab2480495a24046651400758ff4a"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "scene": "context",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "context-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "drain-only",
+      "executableSha256": "7a2a34d26c38143227bf84b8a5bb280f60a9b93aba290c429b10807080ea9da8",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\drain-only\\context-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "83f0e1617904e5f84b6a215cabc894cd97b2600893ad4b0e3951ffed43b3758a"
+    },
+    {
+      "sources": 120,
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "scene": "pan",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "pan16-sdr-3",
+      "domain": "sdr",
+      "passes": 3,
+      "variant": "drain-only",
+      "executableSha256": "7a2a34d26c38143227bf84b8a5bb280f60a9b93aba290c429b10807080ea9da8",
+      "panStep": 16,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\drain-only\\pan16-sdr-3",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "865367dc442e6470f70d740758137bca1a64a44d06729539c399f7c5a09d3b99"
+    },
+    {
+      "sources": 160,
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "scene": "context",
+      "bridgeSha256": "1938050fc59fb3d3d1ea529fd741036c5e4b389dd3b75458e29224eca1eb2851",
+      "stageSha256": "7826a72612992c15d7684cc255c813dfb7273d4b735d05588074769eeb4e3d79",
+      "case": "context-linear-1",
+      "domain": "linear",
+      "passes": 1,
+      "variant": "drain-only",
+      "executableSha256": "7a2a34d26c38143227bf84b8a5bb280f60a9b93aba290c429b10807080ea9da8",
+      "panStep": 2,
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\drain-only\\context-linear-1",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 3,
+            "depth": 3,
+            "motion": 3,
+            "output": 3,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "0e8bfe950f169edcd5f452e30363398ce29b6916a2fe4e853f2a55894876a1c6"
+    },
+    {
+      "stageSha256": "c18c429b77732311be0c8b06cf020d71a269e70568f90b90b878f3b697ea7784",
+      "variant": "fixed-io-rotating-params",
+      "csvSha256": "ee31363a8451c199c2d21787ec1bb07923af291e37179c67ab83b62b64a9cb2d",
+      "sources": 160,
+      "scene": "context",
+      "executableSha256": "dd4ad2e5e6472f8bb67a216d459632842de04a8970402498e115593efa49f9c0",
+      "panStep": 2,
+      "passes": 1,
+      "case": "context-sdr-1",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-io-rotating-params\\context-sdr-1",
+      "domain": "sdr",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            103.4862,
+            93.864175,
+            79.572425
+          ],
+          [
+            108.4329,
+            100.8369,
+            87.989975
+          ],
+          [
+            106.74845,
+            96.41625,
+            79.15111
+          ],
+          [
+            103.4442,
+            93.84757,
+            79.58933
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 8.838864999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "82295a6e148c997063da7aab584d3d95e76abcb5411d96dff93f69d42581ad57"
+    },
+    {
+      "stageSha256": "c18c429b77732311be0c8b06cf020d71a269e70568f90b90b878f3b697ea7784",
+      "variant": "fixed-io-rotating-params",
+      "csvSha256": "055477e9c0a1efa707ff58a76e4446c3988e2fd739f3d0a6f973db85e290507b",
+      "sources": 120,
+      "scene": "pan",
+      "executableSha256": "dd4ad2e5e6472f8bb67a216d459632842de04a8970402498e115593efa49f9c0",
+      "panStep": 2,
+      "passes": 1,
+      "case": "pan2-sdr-1",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-io-rotating-params\\pan2-sdr-1",
+      "domain": "sdr",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.19752885,
+          "stationaryAfterPan": 0.18947525
+        }
+      },
+      "logSha256": "fdea8540844f1416adb2f036c282312442cd5de02fe60dbb668cc4d973478038"
+    },
+    {
+      "stageSha256": "c18c429b77732311be0c8b06cf020d71a269e70568f90b90b878f3b697ea7784",
+      "variant": "fixed-io-rotating-params",
+      "csvSha256": "2414064979f2cb3015e470b4f5dde5cff8df4d86b7ed272ad5fec238f4bf362f",
+      "sources": 120,
+      "scene": "pan",
+      "executableSha256": "dd4ad2e5e6472f8bb67a216d459632842de04a8970402498e115593efa49f9c0",
+      "panStep": 16,
+      "passes": 1,
+      "case": "pan16-sdr-1",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-io-rotating-params\\pan16-sdr-1",
+      "domain": "sdr",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2221196,
+          "stationaryAfterPan": 0.16394805
+        }
+      },
+      "logSha256": "72cbfe8f3a00c8c515966d8da12adc94457a4f6dcd1f28e52213ab0e5fed3ed7"
+    },
+    {
+      "stageSha256": "c18c429b77732311be0c8b06cf020d71a269e70568f90b90b878f3b697ea7784",
+      "variant": "fixed-io-rotating-params",
+      "csvSha256": "bdc7756f04904e5946f69ed4a3f5e0a30f02f4de6dd4a9ee4141247078c12a48",
+      "sources": 120,
+      "scene": "pan",
+      "executableSha256": "dd4ad2e5e6472f8bb67a216d459632842de04a8970402498e115593efa49f9c0",
+      "panStep": 64,
+      "passes": 1,
+      "case": "pan64-sdr-1",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-io-rotating-params\\pan64-sdr-1",
+      "domain": "sdr",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.14451685,
+          "pan": 0.2719329,
+          "stationaryAfterPan": 0.16222245
+        }
+      },
+      "logSha256": "2b01ff3a4b56a2764eb392b4762b0aa77f3ac61a7db3b1ed7a5fbdd38a9f9b50"
+    },
+    {
+      "stageSha256": "c18c429b77732311be0c8b06cf020d71a269e70568f90b90b878f3b697ea7784",
+      "variant": "fixed-io-rotating-params",
+      "csvSha256": "4d5418c02b554698f4a0696527077d2fa3701f1c5686b7be3fda0a4bcd1945f4",
+      "sources": 160,
+      "scene": "context",
+      "executableSha256": "dd4ad2e5e6472f8bb67a216d459632842de04a8970402498e115593efa49f9c0",
+      "panStep": 2,
+      "passes": 3,
+      "case": "context-sdr-3",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-io-rotating-params\\context-sdr-3",
+      "domain": "sdr",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            98.8396,
+            89.10263,
+            75.340215
+          ],
+          [
+            112.48445,
+            107.8413,
+            96.894715
+          ],
+          [
+            114.70645,
+            97.032055,
+            64.57526
+          ],
+          [
+            98.791755,
+            89.06221,
+            75.351335
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 32.319455000000005,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "b7c43f27eab08269bd3392787ee70023a65c375e991f449fca859b23cf1a0770"
+    },
+    {
+      "stageSha256": "c18c429b77732311be0c8b06cf020d71a269e70568f90b90b878f3b697ea7784",
+      "variant": "fixed-io-rotating-params",
+      "csvSha256": "84bcfcfe72c1438aecc950dc72e1d95da2535be50a253be04f76a565bedbb3dc",
+      "sources": 120,
+      "scene": "pan",
+      "executableSha256": "dd4ad2e5e6472f8bb67a216d459632842de04a8970402498e115593efa49f9c0",
+      "panStep": 16,
+      "passes": 3,
+      "case": "pan16-sdr-3",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-io-rotating-params\\pan16-sdr-3",
+      "domain": "sdr",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 2,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        },
+        {
+          "pass": 3,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledWarpedRgbDifference": {
+          "stationary": 0.2843436,
+          "pan": 0.44127085,
+          "stationaryAfterPan": 0.32186865
+        }
+      },
+      "logSha256": "842d5d9f146fbd859505643a2e8d19fc04dd3c55c00a0b72cd3bc9d8975e24ef"
+    },
+    {
+      "stageSha256": "c18c429b77732311be0c8b06cf020d71a269e70568f90b90b878f3b697ea7784",
+      "variant": "fixed-io-rotating-params",
+      "csvSha256": "b2c1c7ed8f637c45db5fc0b96a0453eb04c7807da01ef0e1b197ae9fccc8497f",
+      "sources": 160,
+      "scene": "context",
+      "executableSha256": "dd4ad2e5e6472f8bb67a216d459632842de04a8970402498e115593efa49f9c0",
+      "panStep": 2,
+      "passes": 1,
+      "case": "context-linear-1",
+      "bridgeSha256": "4ec876cd48d8e66000d1b01c1f0b33f0b89d09730d494ede052dd26239adf7b4",
+      "directory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\nr-identity-deferred\\fixed-io-rotating-params\\context-linear-1",
+      "domain": "linear",
+      "capture": "deferred",
+      "identity": [
+        {
+          "pass": 1,
+          "unique": {
+            "color": 1,
+            "depth": 1,
+            "motion": 1,
+            "output": 1,
+            "params": 3,
+            "creation": 1
+          },
+          "creationObjectUsed": false,
+          "maxPendingTicketsInFirst12": 1
+        }
+      ],
+      "measurements": {
+        "settledPhaseMeanRgb": [
+          [
+            96.758115,
+            86.378995,
+            69.17432
+          ],
+          [
+            112.42655,
+            103.79765,
+            91.72678499999999
+          ],
+          [
+            112.53615,
+            102.7945,
+            86.39602
+          ],
+          [
+            96.94006,
+            86.530065,
+            69.327185
+          ]
+        ],
+        "maxSettledChannelDriftCodeValues": 22.552464999999998,
+        "inputSurfaceDrift": 0
+      },
+      "logSha256": "da4ca5674c43cd586839699316070fcf7154c18a33703d7dee95fb8ccdece030"
+    }
+  ],
+  "comparisonsToSerialRotating": [
+    {
+      "capture": "serial",
+      "variant": "rotating",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "rotating",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "rotating",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "rotating",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "rotating",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "rotating",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "rotating",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-parameters",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-parameters",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-parameters",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-parameters",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-parameters",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-parameters",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-parameters",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-resources",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-resources",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-resources",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-resources",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-resources",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-resources",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-resources",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-both",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-both",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-both",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-both",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-both",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-both",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-both",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "serial",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "rotating",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "rotating",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "rotating",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "rotating",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "rotating",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "rotating",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "rotating",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-parameters",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-parameters",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-parameters",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-parameters",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-parameters",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-parameters",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-parameters",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-resources",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-resources",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-resources",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-resources",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-resources",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-resources",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-resources",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-both",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-both",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-both",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-both",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-both",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-both",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-both",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "drain-only",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "drain-only",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "drain-only",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "drain-only",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "drain-only",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "drain-only",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "drain-only",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-sdr-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan2-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan16-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan64-sdr-1",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-sdr-3",
+      "comparedSources": 160,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-io-rotating-params",
+      "case": "pan16-sdr-3",
+      "comparedSources": 120,
+      "hashMismatches": []
+    },
+    {
+      "capture": "deferred",
+      "variant": "fixed-io-rotating-params",
+      "case": "context-linear-1",
+      "comparedSources": 160,
+      "hashMismatches": []
+    }
+  ],
+  "scope": "Native 640x360 SDR; same runtime/driver, Style0 Tone1, fixed depth, jitter0, no SR/FG/Skyrim",
+  "interpretation": "Identity and pending-queue comparisons are synthetic evidence; game drift remains unresolved"
+}

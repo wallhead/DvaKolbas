@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-06",
+  "sourceBase": "44ce67703e8fca70ee7b68b99dbce3acaebd637a",
+  "probeQualification": "Research working builds; no production behavior changes or new gameplay pixel capture",
+  "gameLog": {
+    "actualRecordedRoute": "DLSS Quality -> NR After -> NVIDIA FG; Gamma22 SDR bytes, one pass, Style0/Tone1",
+    "limits": "Game log predates df37c611f2af installed update; no pixel/motion samples in this run",
+    "lastRecorded": "source14017 frames6000 resets31 revision9",
+    "path": "C:/Users/user/Documents/My Games/Skyrim Special Edition/SKSE/RaZkolbaS.log",
+    "build": "63743105beb6",
+    "loadedAppearancePresets": 0,
+    "sha256": "0f716a88c4b4ecc975a0619d9eca5c1610b3444fa429f635960b18d6c7ea58be"
+  },
+  "ownerFollowup": "Native After also drifts, reported in current conversation",
+  "installed": {
+    "iniSha256": "c7a642be498a21c8491e54fca5bbda73f565fe4d5f3d35730ff036ac842e80e3",
+    "unchanged": true,
+    "dllSha256": "17dd4701976231c6ddd931aa40e639b1882f8da850f73d78b3cfd3ca7b9a0c7d"
+  },
+  "modelSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a"
+}
