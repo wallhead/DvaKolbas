@@ -8,8 +8,12 @@ and declared render-pixel motion converts once to display pixels. Camera history
 tracks the real guide size; source alpha, full tone/styles, up to three passes
 and **DLSS/FSR -> NR -> FG -> UI** remain intact. Pending-guide resize tests,
 actual FSR generated-image/UI readbacks and foreground NVIDIA FG lifecycle
-passed on RTX 4080 SUPER. Portable cross-family scaled qualification, clean
-trial closure and Skyrim visual acceptance remain open. AMD NR, HDR NR and
+passed on RTX 4080 SUPER. The [clean local trial](../research/nr/scaled/local-trial-matrix.json)
+is installed with a rollback of the working DLL/INI. Its next-launch route is
+DLSS Quality -> NR After -> NVIDIA FG; the MO2 archive is updated. NR-on passed
+301 checks; NR-off passed 177 plus seven initially skipped checks rerun with
+pinned runtime paths. Portable cross-family scaled qualification and Skyrim
+visual acceptance remain open. AMD NR, HDR NR and
 dynamic resolution remain unsupported. Historical native counts below retain
 their scope.
 

@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "date": "2026-10-06",
+  "implementation": "63743105beb6",
+  "nrOn": {
+    "failed": 0,
+    "graphicsToolsExcluded": [
+      "NativeUIComposition",
+      "NativeUIBlendState",
+      "NeuralPeripheralPixels"
+    ],
+    "productSha256": "29fe15ab31ef908b2617f48f7b526544804f28d087f97a0a67233f3cee02ec50",
+    "passed": 301,
+    "skipped": 0
+  },
+  "nrOff": {
+    "productSha256": "93364616a97de0a75817563eb009f8a218fe1f1265c04226752cd18d599b24a3",
+    "build": "PASS",
+    "testStatus": "PASS; seven argument-dependent skips rerun successfully with pinned paths",
+    "passed": 177,
+    "configuredSkips": 7,
+    "pinnedRerunsPassed": 7
+  },
+  "cleanVendor": {
+    "summaries": [
+      "287: NVIDIA_VENDOR actualPresents=1080 warmup=600 sources=480 on=416 off=64 doubles=379 firstOn=186 resumedOn=193 readerFenceSamples=458 realExactBytes=1860157440 expectedRealBytes=1860157440 status=0 failures=0",
+      "287: NVIDIA_SOURCE sources=480 dlaa=480 nr=476 tags=480 exactTagBytes=1860157440 expectedTagBytes=1860157440 alphaExact=465039360 expectedPixels=465039360 frozen=480 hud=480 nrWhileFgOff=64 configuredOn=416 configuredOff=665",
+      "287: NVIDIA_VENDOR_LIFECYCLE gates=8 pending=8 reuse=6 reentry=2 omittedGates=0 failures=0",
+      "287: NVIDIA_SOURCE_REENTRY count=2 reusedRetired=0 failures=0"
+    ],
+    "seconds": 26.77,
+    "result": "PASS",
+    "test": "NrPostDlssScaledVendorGpu"
+  },
+  "trial": {
+    "skyrimAcceptance": "PENDING",
+    "scope": "DLL/INI update; no duplicate model assets",
+    "stage": "out/packages/nr-scaled-after-63743105beb6",
+    "installed": true,
+    "receipt": {
+      "schema": 1,
+      "source": "63743105beb6",
+      "scope": "DLL/INI update only; accepted runtime assets reused; Skyrim scaled visual acceptance pending",
+      "identity": {
+        "edition": "Standard",
+        "sourceRevision": "63743105beb6",
+        "sourceClean": true,
+        "fsrCompiled": true,
+        "frameGenerationCompiled": true,
+        "neuralRenderingCompiled": true
+      },
+      "oldDllSha256": "b8f1be737c0ef27cb7e8f3e59dfb20c296cf434a20998b1268c34954e25ad0a7",
+      "oldIniSha256": "510247f7161abcf969adc8996f360dfbab71b43c1cbd5f37c61930d5b818ee79",
+      "newDllSha256": "29fe15ab31ef908b2617f48f7b526544804f28d087f97a0a67233f3cee02ec50",
+      "newIniSha256": "3139281a06417ab939dc757528f81160f5fb67ea75e4a1e966991bd996b11095",
+      "changedSettings": [
+        "Settings/UpscaleType=0",
+        "DLSS/QualityLevel=2",
+        "NeuralRendering/BeforeUpscaling=false"
+      ],
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-scaled-after-20261006-193234",
+      "installed": true
+    }
+  },
+  "archive": {
+    "path": "C:/Users/user/Downloads/RaZkolbas DLSS FSR FG NR.zip",
+    "sha256": "0ffe36f654f3f1f3f702ff0a03dae9da35a26faee557b459f2741a5ffc257df4",
+    "integrity": "7zip CRC + exact DLL/INI bytes + no duplicate paths",
+    "entries": 19
+  }
+}
