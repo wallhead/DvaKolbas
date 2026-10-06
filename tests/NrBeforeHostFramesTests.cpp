@@ -1,4 +1,5 @@
 #include "NeuralRendering/BeforeHost.h"
+#include "NeuralRendering/RuntimeFileLease.h"
 #include "nr-runtime/GpuProbeGuard.h"
 #include "nr-postsr/GpuProbeLifetime.h"
 #include <dxgi1_6.h>
@@ -201,7 +202,9 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
     Check(prepared.Resets()>=(post?6u:3u),"PlacementAndUnqualifiedSourceResetHistory");
     Check(prepared.Recorded()==expectedNr,"PreparedNrOffOnUsesOnePassPerEnabledSource");
     Check(lifetime.Retire() && !prepared.Terminal(),"PreparedReadersAndRuntimeRetire");
-    if(argc>=4){std::ofstream report{std::filesystem::path(argv[3])};
+    if(argc>=4){
+        auto coreEvidence=RuntimeFileLease::OpenDriverCore(argv[2]);if(!coreEvidence)return 1;
+        std::ofstream report{std::filesystem::path(argv[3])};
         report << "{\n\"schema\":1,\"scope\":\"synthetic native SDR real-source host; game quality pending\",\n\"result\":\"" << (failures?"FAIL":"PASS")
             << "\",\"sourceRevision\":\"" << NrRuntimeResearch::buildRevision << "\",\"sourceClean\":" << (NrRuntimeResearch::buildClean?"true":"false")
             << ",\n\"profile\":\"rtx40\",\"vendorId\":" << d.VendorId << ",\"deviceId\":" << d.DeviceId
@@ -214,7 +217,7 @@ for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const auto p=(y*width+x)*4;p
             << ",\"productionController\":true,\"pendingControllerApplies\":" << pendingApplies << ",\"hostAndVendorBoundary\":\"facade\""
 #endif
             << ",\"changedRgbPixels\":" << changed << ",\"bypassedSourcePixels\":" << bypassPixels
-            << ",\"runtimeSha256\":\"" << RuntimeCatalog()[1].sha256 << "\",\"driverCoreSha256\":\"" << QualifiedProbeDriverCore().sha256
+            << ",\"runtimeSha256\":\"" << RuntimeCatalog()[1].sha256 << "\",\"driverCoreSha256\":\"" << coreEvidence->Sha256()
             << "\",\"retired\":true,\n\"compiledSourcesSha256\":" << NrRuntimeResearch::compiledSourcesJson << "\n}\n";
         if(!report)return 1;
     }

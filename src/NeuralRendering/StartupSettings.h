@@ -13,7 +13,7 @@ struct StartupSettings {
     Upscaling::ColorEncoding sourceEncoding{Upscaling::ColorEncoding::Unknown};
     // Called after rendering-device creation. Missing OS DriverStore overrides
     // from older packages use the active driver; custom/existing overrides stay
-    // explicit. Discovery never skips the subsequent pinned-file qualification.
+    // explicit. Discovery never skips the subsequent driver-core trust checks.
     Result<std::filesystem::path> ResolveDriverCore() const;
     StartupSettings Resolve(const std::filesystem::path& pluginRoot)const{
         auto result=*this;result.runtimeRoot=runtimeRoot.empty()?pluginRoot:runtimeRoot.is_absolute()?runtimeRoot:pluginRoot/runtimeRoot;

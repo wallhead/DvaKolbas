@@ -1,4 +1,5 @@
 #include "NeuralRendering/BeforeUpscale.h"
+#include "NeuralRendering/RuntimeFileLease.h"
 #include "nr-runtime/GpuProbeGuard.h"
 #include "nr-runtime/ObservedQueue.h"
 #include "ProbeBuildIdentity.h"
@@ -155,13 +156,14 @@ int wmain(int argc,wchar_t** argv){try{
     Check(diagnostics.release==1&&diagnostics.destroyParameters==1&&diagnostics.allocations==diagnostics.releases,"BeforeFeatureAndCallbackAllocationsRetired");
     const auto receipt=passes>1?std::filesystem::path(passes==2?"nr-before-chain-two.json":"nr-before-chain-three.json"):argc==4?std::filesystem::path(argv[3]):std::filesystem::path("nr-before-probe.json");
     std::filesystem::create_directories(std::filesystem::absolute(receipt).parent_path());std::ofstream out(receipt);
+    auto coreEvidence=RuntimeFileLease::OpenDriverCore(argv[2]);if(!coreEvidence)return 1;
     out<<"{\n\"schema\":1,\"result\":"<<std::quoted(failures?"FAIL":"PASS")
         <<",\"sourceRevision\":"<<std::quoted(NrRuntimeResearch::buildRevision)<<",\"cleanSource\":"<<(NrRuntimeResearch::buildClean?"true":"false")
         <<",\"compiledSourceSha256\":"<<NrRuntimeResearch::compiledSourcesJson
         <<",\"scope\":\"standalone native D3D11-NR-D3D11 bridge, no SR/FG/game/UI qualification\""
         <<",\"guideScenario\":\"static depth and zero motion with changing color\""
         <<",\"vendorId\":"<<desc.VendorId<<",\"deviceId\":"<<desc.DeviceId<<",\"adapterLuidLow\":"<<desc.AdapterLuid.LowPart<<",\"adapterLuidHigh\":"<<desc.AdapterLuid.HighPart
-        <<",\"runtimeSha256\":"<<std::quoted(std::string(RuntimeCatalog()[1].sha256))<<",\"coreSha256\":"<<std::quoted(std::string(QualifiedProbeDriverCore().sha256))
+        <<",\"runtimeSha256\":"<<std::quoted(std::string(RuntimeCatalog()[1].sha256))<<",\"coreSha256\":"<<std::quoted(coreEvidence->Sha256())
         <<",\"width\":"<<width<<",\"height\":"<<height<<",\"frames\":240,\"evaluated\":"<<evaluated<<",\"bypassed\":"<<bypassed
         <<",\"sourceAlphaPreservedPixels\":"<<alphaPixels<<",\"finitePixels\":"<<finitePixels<<",\"changedFromInputPixels\":"<<changedPixels
         <<",\"bypassPreservedPixels\":"<<bypassPreservedPixels<<",\"distinctEvaluatedRgbHashes\":"<<distinct.size()<<",\"effectiveResetChecks\":"<<resumedReset

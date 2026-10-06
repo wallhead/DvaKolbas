@@ -21,7 +21,6 @@ struct RuntimeOwnerPaths {
     std::filesystem::path nrFile, coreFile, dataDirectory;
     bool callerIdentityShim{};
 };
-const RuntimeProfile& QualifiedProbeDriverCore() noexcept;
 // Resolves only; the owner must already have verified/retained these modules.
 Result<RuntimeExports> ResolveRuntimeExports(HMODULE nr,HMODULE core);
 // An Init_Ext rejection can disable NR for this session while retaining every

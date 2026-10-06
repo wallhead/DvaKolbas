@@ -13,12 +13,17 @@ public:
     RuntimeFileLease(RuntimeFileLease&&) noexcept;
     RuntimeFileLease& operator=(RuntimeFileLease&&) noexcept;
     static Result<RuntimeFileLease> Open(const std::filesystem::path&, const RuntimeProfile&);
+    // Installed NGX cores change with the driver. Trust is verified from the
+    // held file's Windows signature/catalog and NVIDIA NGX version metadata.
+    // The whole-file digest is evidence, not a per-driver allowlist.
+    static Result<RuntimeFileLease> OpenDriverCore(const std::filesystem::path&);
     bool Matches(const std::filesystem::path& loadedPath) const noexcept;
     const std::filesystem::path& Path() const noexcept { return path_; }
     const std::string& Sha256() const noexcept { return sha256_; }
     uint64_t Bytes() const noexcept { return bytes_; }
     bool Valid() const noexcept { return file_ != INVALID_HANDLE_VALUE; }
 private:
+    static Result<RuntimeFileLease> OpenHeld(const std::filesystem::path&, std::string_view artifact);
     HANDLE file_{INVALID_HANDLE_VALUE};
     std::filesystem::path path_;
     std::string sha256_;

@@ -24,7 +24,7 @@ struct Options {
 } options;
 struct WallSample {uint64_t id{},nanoseconds{};};
 PerformanceMetrics metrics;std::vector<WallSample> wall;
-std::string runtimeHash,failure;
+std::string runtimeHash,coreHash,failure;
 StageDiagnostics diagnostics;AdapterIdentity adapterIdentity;
 uint32_t rawInit{},rawShutdown{};uint64_t alphaPixels{},changedPixels{},expectedAlpha{};
 uint64_t shimSlotRva{};bool shimRestored{};
@@ -38,7 +38,7 @@ void Write(){
         <<"\"sourceRevision\":"<<std::quoted(NrRuntimeResearch::buildRevision)<<",\"cleanSource\":"<<(NrRuntimeResearch::buildClean?"true":"false")
         <<",\"compiledSourceSha256\":"<<NrRuntimeResearch::compiledSourcesJson
         <<",\"profile\":"<<std::quoted(options.profile)<<",\"runtimeSha256\":"<<std::quoted(runtimeHash)
-        <<",\"driverCoreSha256\":"<<std::quoted(std::string(QualifiedProbeDriverCore().sha256))
+        <<",\"driverCoreSha256\":"<<std::quoted(coreHash)
         <<",\"adapterVendor\":"<<adapterIdentity.vendorId<<",\"adapterDevice\":"<<adapterIdentity.deviceId
         <<",\"adapterLuidLow\":"<<adapterIdentity.luid.low<<",\"adapterLuidHigh\":"<<adapterIdentity.luid.high
         <<",\"width\":"<<options.width<<",\"height\":"<<options.height
@@ -104,7 +104,7 @@ int wmain(int argc,wchar_t** argv){try{
     Need(options.fsrRuntime.empty(),"FSR probe extension not built; configure TRP_NR_PERF_WITH_FSR=ON with pinned headers");
 #endif
     const RuntimeProfile* profile{};for(const auto& p:RuntimeCatalog())if(p.id==options.profile){profile=&p;break;}Need(profile!=nullptr,"unknown exact research profile");
-    auto lease=Value(RuntimeFileLease::Open(options.dll,*profile));runtimeHash=lease.Sha256();auto core=Value(RuntimeFileLease::Open(options.core,QualifiedProbeDriverCore()));
+    auto lease=Value(RuntimeFileLease::Open(options.dll,*profile));runtimeHash=lease.Sha256();auto core=Value(RuntimeFileLease::OpenDriverCore(options.core));coreHash=core.Sha256();
     ComPtr<IDXGIFactory6> factory;Gpu(CreateDXGIFactory2(0,IID_PPV_ARGS(&factory)),"factory");ComPtr<IDXGIAdapter1> adapter;
     for(UINT i=0;;++i){ComPtr<IDXGIAdapter1> candidate;const auto result=factory->EnumAdapterByGpuPreference(i,DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&candidate));if(result==DXGI_ERROR_NOT_FOUND)break;Gpu(result,"enumerate adapter");
         DXGI_ADAPTER_DESC1 d{};Gpu(candidate->GetDesc1(&d),"adapter descriptor");AdapterIdentity id{d.VendorId,d.DeviceId,d.SubSysId,{d.AdapterLuid.LowPart,d.AdapterLuid.HighPart},bool(d.Flags&DXGI_ADAPTER_FLAG_SOFTWARE)};

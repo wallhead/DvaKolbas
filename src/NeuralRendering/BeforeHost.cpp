@@ -87,7 +87,7 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& req
     settings.driverCore=*discovered;s.settings.driverCore=*discovered;
     auto path=RuntimePath(settings.runtimeRoot,*s.profile);if(!path){s.status=path.error().message;return std::unexpected(path.error());}s.nrFile=*path;
     auto lease=RuntimeFileLease::Open(s.nrFile,*s.profile);if(!lease){s.status=lease.error().message;return std::unexpected(lease.error());}s.runtimeLease=std::move(*lease);
-    auto core=RuntimeFileLease::Open(settings.driverCore,QualifiedProbeDriverCore());if(!core){s.status=core.error().message;return std::unexpected(core.error());}s.coreLease=std::move(*core);
+    auto core=RuntimeFileLease::OpenDriverCore(settings.driverCore);if(!core){s.status=core.error().message;return std::unexpected(core.error());}s.coreLease=std::move(*core);
     const ArtifactIdentity verified{s.profile->id,true,s.runtimeLease->Valid()};const auto selected=SelectRuntime(s.adapter,settings.profile,{&verified,1});
     if(!selected.profile)return stop(ErrorKind::Unsupported,selected.reason.c_str());
     s.available=true;s.status="NR ready for first real-world frame; GPU profile="+std::string(s.profile->id);return {};

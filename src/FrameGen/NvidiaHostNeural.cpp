@@ -117,6 +117,7 @@ void NvidiaHost::InspectCommunityNeural()
 #endif
     if(!presenter)presenter=SourceDLSSG::Backend::Get().Transport().Device12();
     // Never create another injector device proxy while the presenter is live.
+    logger::info("[Community NR startup] driverCorePolicy=Windows-signature/catalog + NVIDIA NGX metadata; whole-file SHA is diagnostic, not a fixed driver-version pin");
     const auto inspected=presenter?communityNeural_->Inspect(device_.Get(),startup,cache,presenter):
         NR::Result<void>{std::unexpected(NR::Error{NR::ErrorKind::Unsupported,0,"NR waiting for presenter D3D12 device"})};
     communityLastStatus_=inspected?communityNeural_->Status():inspected.error().message;

@@ -37,7 +37,7 @@ target_include_directories(TRPNrRuntimeFileLeaseTests PRIVATE "${nrRoot}/src")
 target_link_libraries(TRPNrRuntimeFileLeaseTests PRIVATE TRPNeuralRuntime)
 add_test(NAME NrRuntimeFileLease COMMAND TRPNrRuntimeFileLeaseTests)
 set(TRP_NR_RTX40_DLL "" CACHE FILEPATH "Exact local supplied RTX40 NR DLL for standalone shim tests")
-set(TRP_NR_DRIVER_CORE "" CACHE FILEPATH "Exact current pinned driver core for hardware owner tests")
+set(TRP_NR_DRIVER_CORE "" CACHE FILEPATH "Installed NVIDIA driver core for hardware owner tests")
 add_executable(TRPNrCallerIdentityShimTests ../NrCallerIdentityShimTests.cpp)
 target_compile_features(TRPNrCallerIdentityShimTests PRIVATE cxx_std_23)
 target_compile_definitions(TRPNrCallerIdentityShimTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
@@ -253,6 +253,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         src/NeuralRendering/PerformanceQueries.h src/NeuralRendering/PerformanceQueries.cpp
         tests/nr-runtime/RuntimeProbeReport.h tests/nr-runtime/GpuProbeGuard.h tests/nr-runtime/run_reshade_before.py tests/NrImagePacketTests.cpp src/NeuralRendering/RuntimeCatalog.cpp src/NeuralRendering/RuntimeCatalog.h
         src/NeuralRendering/RuntimeFileLease.cpp src/NeuralRendering/RuntimeFileLease.h
+        src/NeuralRendering/DriverCoreTrust.cpp src/NeuralRendering/DriverCoreTrust.h
         src/NeuralRendering/RuntimeOwner.cpp src/NeuralRendering/RuntimeOwner.h
         src/NeuralRendering/CallerIdentityShim.cpp src/NeuralRendering/CallerIdentityShim.h
         src/NeuralRendering/Error.h src/NeuralRendering/ImagePacket.h src/NeuralRendering/ImagePacket.cpp
@@ -387,7 +388,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_features(TRPNrPerformanceRuntime PUBLIC cxx_std_23)
     target_compile_definitions(TRPNrPerformanceRuntime PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNrPerformanceRuntime PUBLIC "${nrRoot}/src" PRIVATE "${TRP_NR_NGX_INCLUDE_DIR}" "${nrRoot}/src/NeuralRendering")
-    target_link_libraries(TRPNrPerformanceRuntime PUBLIC d3d12 dxgi bcrypt d3d11 d3dcompiler TRPNvidiaAppSettings)
+    target_link_libraries(TRPNrPerformanceRuntime PUBLIC d3d12 dxgi bcrypt wintrust crypt32 version d3d11 d3dcompiler TRPNvidiaAppSettings)
     add_executable(TRPNrPerformanceProbe PerformanceProbe.cpp)
     target_compile_features(TRPNrPerformanceProbe PRIVATE cxx_std_23)
     target_compile_definitions(TRPNrPerformanceProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)

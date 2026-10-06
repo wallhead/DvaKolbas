@@ -7,6 +7,7 @@ if(NOT TARGET TRPNeuralRuntime)
         "${trpNrRoot}/src/NeuralRendering/PerformanceMetrics.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeCatalog.cpp"
         "${trpNrRoot}/src/NeuralRendering/DriverCoreDiscovery.cpp"
+        "${trpNrRoot}/src/NeuralRendering/DriverCoreTrust.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeFileLease.cpp"
         "${trpNrRoot}/src/NeuralRendering/CallerIdentityShim.cpp"
         "${trpNrRoot}/src/NeuralRendering/RuntimeOwner.cpp"
@@ -15,7 +16,7 @@ if(NOT TARGET TRPNeuralRuntime)
     target_compile_features(TRPNeuralRuntime PUBLIC cxx_std_23)
     target_compile_definitions(TRPNeuralRuntime PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNeuralRuntime PUBLIC "${trpNrRoot}/src")
-    target_link_libraries(TRPNeuralRuntime PUBLIC d3d12 dxgi bcrypt TRPNvidiaAppSettings)
+    target_link_libraries(TRPNeuralRuntime PUBLIC d3d12 dxgi bcrypt wintrust crypt32 version TRPNvidiaAppSettings)
 endif()
 
 # Shared native source stage is compiled once for the product and research probes.

@@ -23,9 +23,7 @@ bool Matches(HMODULE module,const RuntimeFileLease& lease){
     return count && count<path.size() && lease.Matches(path.data());
 }
 HMODULE CallerModule(){HMODULE self{};GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&CallerModule),&self);return self;}
-const RuntimeProfile corePin{"driver-core","_nvngx.dll","66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",1428200};
 }
-const RuntimeProfile& QualifiedProbeDriverCore() noexcept {return corePin;}
 Result<RuntimeExports> ResolveRuntimeExports(HMODULE nr,HMODULE core){
     if(!nr||!core)return Fail(ErrorKind::InvalidInput,"NR/core module missing before export resolution");
     RuntimeExports e;
@@ -86,10 +84,10 @@ Result<void> RuntimeOwner::Open(const RuntimeProfile& requested,ID3D12Device* de
         return Fail(ErrorKind::Unsupported,"This signed profile has no caller shim qualification");
     if(GetModuleHandleW(L"nvngx_dlssnr.dll"))return Fail(ErrorKind::Conflict,"Conflicting resident NR module");
     auto lease=RuntimeFileLease::Open(s.paths.nrFile,*profile);if(!lease)return std::unexpected(lease.error());s.runtimeLease=std::move(*lease);
-    auto coreLease=RuntimeFileLease::Open(s.paths.coreFile,corePin);if(!coreLease)return std::unexpected(coreLease.error());s.coreLease=std::move(*coreLease);
+    auto coreLease=RuntimeFileLease::OpenDriverCore(s.paths.coreFile);if(!coreLease)return std::unexpected(coreLease.error());s.coreLease=std::move(*coreLease);
     std::error_code error;std::filesystem::create_directories(s.paths.dataDirectory,error);if(error)return Fail(ErrorKind::Io,"Cannot create NR data directory",error.value());
     s.core=LoadLibraryExW(s.paths.coreFile.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if(!s.core)return Fail(ErrorKind::Io,"Cannot load pinned driver core",GetLastError());
+    if(!s.core)return Fail(ErrorKind::Io,"Cannot load trusted NVIDIA driver core",GetLastError());
     if(!Matches(s.core,*s.coreLease))return Fail(ErrorKind::IdentityMismatch,"Loaded core does not match held driver file");
     if(!NvidiaAppSettings::ProtectModule(s.core))return Fail(ErrorKind::Runtime,"Cannot establish application-controlled NGX settings");
     s.nr=LoadLibraryExW(s.paths.nrFile.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);

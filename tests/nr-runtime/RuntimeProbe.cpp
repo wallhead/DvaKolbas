@@ -138,7 +138,7 @@ int wmain(int argc,wchar_t** argv){
             if(selected.profile){adapter=candidate;adapterIdentity=id;break;}}
         Need(adapter.Get()!=nullptr,"no eligible standalone adapter");ComPtr<ID3D12Device> device;Gpu(D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&device)),"device");
         const auto luid=device->GetAdapterLuid();Need(luid.LowPart==adapterIdentity.luid.low && luid.HighPart==adapterIdentity.luid.high,"device LUID mismatch");
-        auto coreLease=Value(RuntimeFileLease::Open(core,QualifiedProbeDriverCore()));report.coreSha256=coreLease.Sha256();
+        auto coreLease=Value(RuntimeFileLease::OpenDriverCore(core));report.coreSha256=coreLease.Sha256();
         auto owner=std::make_shared<RuntimeOwner>(RuntimeOwnerPaths{dll,core,std::filesystem::absolute(reportPath).parent_path()/"cache",shimRequested});
         const auto opened=owner->Open(*profile,device.Get(),adapterIdentity);report.init=owner->LastInitResult();shimRva=owner->ShimSlotRva();
         std::printf("INIT=0x%08x shim=%u\n",report.init,shimRequested);
