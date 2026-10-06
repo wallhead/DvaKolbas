@@ -37,3 +37,7 @@ placement/settings/pass changes, guide-only resize and actual FSR Quality,
 Balanced and Performance source processing, all five fixed DLSS qualities and
 pending DLSS reader retirement. The production plugin also builds. No Skyrim visual test was run by
 the agent. The scaled milestone count stays **3 of 6**.
+
+The [clean release and installation receipt](review7-validation.json) records
+the DLL-only trial update, preserved current INI/metadata, working rollback and
+updated MO2 archive. Archive runtime assets and its existing INI are unchanged.

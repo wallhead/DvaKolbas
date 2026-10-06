@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "source": "df37c611f2af",
+  "identity": {
+    "edition": "Standard",
+    "sourceRevision": "df37c611f2af",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "tests": {
+    "scope": "Focused CPU and real-GPU; full prior matrix not rerun",
+    "passed": 15,
+    "failed": 0
+  },
+  "installed": {
+    "dll": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZkolbas DLSS FSR FG NR\\SKSE\\Plugins\\RaZkolbaS.dll",
+    "metaPreserved": true,
+    "iniPreserved": true,
+    "scope": "DLL only; Skyrim closed; no MO2 profile/launch/INI writes",
+    "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\game-test-backups\\nr-review7-20261006-195414",
+    "newDllSha256": "17dd4701976231c6ddd931aa40e639b1882f8da850f73d78b3cfd3ca7b9a0c7d",
+    "oldDllSha256": "29fe15ab31ef908b2617f48f7b526544804f28d087f97a0a67233f3cee02ec50",
+    "iniSha256": "c7a642be498a21c8491e54fca5bbda73f565fe4d5f3d35730ff036ac842e80e3"
+  },
+  "stage": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\nr-review7-df37c611f2af",
+  "pending": [
+    "Jittered guide vs reconstructed color moving-edge acceptance",
+    "Native vs Performance full-tone camera comparison"
+  ],
+  "milestones": "3 of 6",
+  "archive": {
+    "integrity": "7zip CRC; normalized unique paths; exact new DLL; original INI; other entry hashes matched pre-update scan",
+    "iniPreserved": true,
+    "runtimeAssetsPreserved": true,
+    "entries": 19,
+    "sha256": "81be5488920552adc5be4858ce91500476852717adf2eb0602c6e7c41c7a2b9d",
+    "path": "C:/Users/user/Downloads/RaZkolbas DLSS FSR FG NR.zip"
+  }
+}
