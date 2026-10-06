@@ -37,7 +37,16 @@ int main(){
     c=Native();c.backend=Upscaling::BackendKind::External;Check(!ValidatePostSrSourceContract(c),"RejectExternalUnownedUpscaler");
     c=Native();c.guides.width=320;Check(!ValidatePostSrSourceContract(c),"RejectGuideColorExtentMismatch");
     c=Native();c.render={320,180};c.guides=c.render;result=ValidatePostSrSourceContract(c);
-    Check(!result && result.error().kind==ErrorKind::Unsupported,"ReducedExtentRecipeRemainsExplicitlyUnqualified");
+    Check(result && result->extent==c.render && result->motionScaleX==1280 && result->motionScaleY==720,"ReducedGuidesRetainedWithDisplayPixelMotion");
+    c.motion={1,1,true,false};result=ValidatePostSrSourceContract(c);
+    Check(result && result->motionScaleX==2 && result->motionScaleY==2,"RenderPixelVectorsScaledOnceToDisplayPixels");
+    c.motionScaleDomain=MotionScaleDomain::DisplayPixels;result=ValidatePostSrSourceContract(c);
+    Check(result && result->motionScaleX==1 && result->motionScaleY==1,"AlreadyDisplayPixelVectorsNotScaledTwice");
+    c=Native();c.render=c.guides={427,203};c.motion={427,203,true,false};result=ValidatePostSrSourceContract(c);
+    Check(result && std::abs(result->motionScaleX-640)<.001 && std::abs(result->motionScaleY-360)<.001,"NonIntegralPerAxisRatioNormalizedMotion");
+    c=Native();c.render=c.guides={641,360};Check(!ValidatePostSrSourceContract(c),"GuidesLargerThanDisplayRejected");
+    c=Native();c.render=c.guides={320,180};c.motion.scaleX=std::numeric_limits<float>::max();
+    Check(!ValidatePostSrSourceContract(c),"MotionScaleOverflowRejected");
     c=Native();c.color.width=0;Check(!ValidatePostSrSourceContract(c),"RejectEmptyColorExtent");
     c=Native();c.render=c.guides=c.color=c.display={0xffffffffu,0xffffffffu};Check(!ValidatePostSrSourceContract(c),"RejectOversizedExtentBeforeAllocation");
     c=Native();c.encoding=Upscaling::ColorEncoding::Linear;Check(!ValidatePostSrSourceContract(c),"EncodedBytesCannotBeClaimedLinear");

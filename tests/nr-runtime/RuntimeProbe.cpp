@@ -5,6 +5,8 @@
 #include "RuntimeProbeReport.h"
 #include "ProbeBuildIdentity.h"
 #include "GpuProbeGuard.h"
+#include "../nr-postfg/SyntheticScene.h"
+#include "NeuralRendering/PostSrContract.h"
 #include <nvsdk_ngx_params.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -25,6 +27,22 @@ using namespace TheosRenderPipeline::NeuralRendering;
 using Microsoft::WRL::ComPtr;
 namespace {
 constexpr UINT width=640,height=360;
+UINT guideWidth=width,guideHeight=height;
+bool movingScene{};
+uint64_t exactGuidePixels{};
+bool observedGuideParameters{};
+decltype(RuntimeExports::evaluate) vendorEvaluate{};
+uint32_t __cdecl ObserveGuideParameters(ID3D12GraphicsCommandList* list,void* feature,NVSDK_NGX_Parameter* p,void* callback){
+    unsigned cw{},ch{},dw{},dh{},mw{},mh{};float sx{},sy{};
+    p->Get("DLSSNR.ColorSubrectWidth",&cw);p->Get("DLSSNR.OutputSubrectHeight",&ch);
+    p->Get("DLSSNR.DepthSubrectWidth",&dw);p->Get("DLSSNR.DepthSubrectHeight",&dh);
+    p->Get("DLSSNR.MVecSubrectWidth",&mw);p->Get("DLSSNR.MVecSubrectHeight",&mh);
+    p->Get("DLSSNR.MVecScaleX",&sx);p->Get("DLSSNR.MVecScaleY",&sy);
+    observedGuideParameters=cw==width && ch==height && dw==guideWidth && dh==guideHeight &&
+        mw==guideWidth && mh==guideHeight && sx==float(width) && sy==float(height);
+    if(!observedGuideParameters)return 0xbad00002;
+    return vendorEvaluate(list,feature,p,callback);
+}
 NrRuntimeResearch::ProbeReport report;
 std::filesystem::path reportPath;
 std::vector<std::string> outputHashes;
@@ -64,7 +82,10 @@ void WriteReport() {
         <<",\"coreHeldAndMatched\":"<<(report.coreHeldAndMatched?"true":"false")
         <<",\"outputReadersRetired\":"<<(report.outputReadersRetired?"true":"false")
         <<",\"shimRestored\":"<<(report.shimRestored?"true":"false")
-        <<",\"colorFormat\":\"RGBA16F\",\"guideScenario\":\"static depth/zero motion; changing color pattern, not temporal scene qualification\""
+        <<",\"colorExtent\":["<<width<<','<<height<<"],\"guideExtent\":["<<guideWidth<<','<<guideHeight<<']'
+        <<",\"exactGuidePixels\":"<<exactGuidePixels
+        <<",\"observedGuideParameters\":"<<(observedGuideParameters?"true":"false")
+        <<",\"colorFormat\":\"RGBA16F\",\"guideScenario\":"<<std::quoted(movingScene?"independent real moving geometry at color/guide extents; no generated guides":"static depth/zero motion; changing color pattern, not temporal scene qualification")
         <<",\"ui\":\"null; no HUD composition in this NR runtime probe\",\"outputSha256\":[";
     for(size_t i=0;i<outputHashes.size();++i){if(i)out<<',';out<<std::quoted(outputHashes[i]);}
     out<<"],\"temporalRgbSha256\":[";
@@ -84,8 +105,8 @@ void WriteReport() {
 void Need(bool condition,const char* message){if(!condition)Stop(message);}
 void Gpu(HRESULT code,const char* message){if(FAILED(code)){std::ostringstream text;text<<message<<" HRESULT=0x"<<std::hex<<static_cast<uint32_t>(code);Stop(text.str());}}
 template<class T>T Value(Result<T> value){if(!value)Stop(value.error().message);return std::move(*value);}
-ComPtr<ID3D12Resource> Texture(ID3D12Device* device,DXGI_FORMAT format,bool uav=false){
-    D3D12_RESOURCE_DESC d{};d.Dimension=D3D12_RESOURCE_DIMENSION_TEXTURE2D;d.Width=width;d.Height=height;
+ComPtr<ID3D12Resource> Texture(ID3D12Device* device,DXGI_FORMAT format,bool uav=false,ImageExtent extent={width,height}){
+    D3D12_RESOURCE_DESC d{};d.Dimension=D3D12_RESOURCE_DIMENSION_TEXTURE2D;d.Width=extent.width;d.Height=extent.height;
     d.DepthOrArraySize=d.MipLevels=1;d.Format=format;d.SampleDesc.Count=1;d.Flags=uav?D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS:D3D12_RESOURCE_FLAG_NONE;
     D3D12_HEAP_PROPERTIES heap{};heap.Type=D3D12_HEAP_TYPE_DEFAULT;ComPtr<ID3D12Resource> r;
     Gpu(device->CreateCommittedResource(&heap,D3D12_HEAP_FLAG_NONE,&d,D3D12_RESOURCE_STATE_COPY_DEST,nullptr,IID_PPV_ARGS(&r)),"texture create");return r;
@@ -104,7 +125,7 @@ Transfer MakeTransfer(ID3D12Device* device,ID3D12Resource* texture,D3D12_HEAP_TY
 }
 void Upload(ID3D12GraphicsCommandList* list,ID3D12Resource* texture,const Transfer& t,const void* pixels,size_t rowBytes){
     unsigned char* mapped{};Gpu(t.buffer->Map(0,nullptr,reinterpret_cast<void**>(&mapped)),"upload map");
-    for(UINT y=0;y<height;++y)std::memcpy(mapped+t.footprint.Offset+size_t(y)*t.footprint.Footprint.RowPitch,static_cast<const unsigned char*>(pixels)+size_t(y)*rowBytes,rowBytes);
+    for(UINT y=0;y<t.footprint.Footprint.Height;++y)std::memcpy(mapped+t.footprint.Offset+size_t(y)*t.footprint.Footprint.RowPitch,static_cast<const unsigned char*>(pixels)+size_t(y)*rowBytes,rowBytes);
     t.buffer->Unmap(0,nullptr);D3D12_TEXTURE_COPY_LOCATION dst{},src{};dst.pResource=texture;dst.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
     src.pResource=t.buffer.Get();src.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;src.PlacedFootprint=t.footprint;list->CopyTextureRegion(&dst,0,0,0,&src,nullptr);
 }
@@ -112,6 +133,14 @@ std::string Hash(const std::vector<uint16_t>& pixels){
     std::array<unsigned char,32> digest{};
     Need(BCryptHash(BCRYPT_SHA256_ALG_HANDLE,nullptr,0,reinterpret_cast<PUCHAR>(const_cast<uint16_t*>(pixels.data())),static_cast<ULONG>(pixels.size()*2),digest.data(),32)>=0,"readback SHA256");
     std::ostringstream out;out<<std::hex<<std::setfill('0');for(auto byte:digest)out<<std::setw(2)<<unsigned(byte);return out.str();
+}
+NrPostFgResearch::ReferenceFrame MovingAt(ImageExtent extent,double time,double previous){
+    NrPostFgResearch::Scene scene;scene.cameraVelocityX=1.5;scene.cameraVelocityY=.5;
+    scene.boxes={{2,.5,2,2,.5,0,2,{.8f,.2f,.1f,1},1},{3,1,.1,2,0,.1,1,{.1f,.8f,.2f,1},2}};
+    const double sx=double(extent.width)/8,sy=double(extent.height)/4;
+    scene.cameraVelocityX*=sx;scene.cameraVelocityY*=sy;
+    for(auto& b:scene.boxes){b.left*=sx;b.width*=sx;b.velocityX*=sx;b.top*=sy;b.height*=sy;b.velocityY*=sy;}
+    return NrPostFgResearch::Rasterize(scene,extent.width,extent.height,time,previous);
 }
 }
 int wmain(int argc,wchar_t** argv){
@@ -122,11 +151,15 @@ int wmain(int argc,wchar_t** argv){
             else if(key==L"--profile")profileId=std::filesystem::path(value).string();
             else if(key==L"--caller-shim"){Need(std::wstring_view(value)==L"on"||std::wstring_view(value)==L"off","shim needs on/off");shimRequested=std::wstring_view(value)==L"on";}
             else if(key==L"--queued-producer"){Need(std::wstring_view(value)==L"on"||std::wstring_view(value)==L"off","queued producer needs on/off");queuedProducerRequested=std::wstring_view(value)==L"on";}
+            else if(key==L"--guide-width")guideWidth=std::stoul(value);
+            else if(key==L"--guide-height")guideHeight=std::stoul(value);
+            else if(key==L"--moving-scene"){Need(std::wstring_view(value)==L"on"||std::wstring_view(value)==L"off","moving scene needs on/off");movingScene=std::wstring_view(value)==L"on";}
             else if(key==L"--frames")report.requestedFrames=std::stoul(value);else Stop("unknown option");}
         report.profile=profileId;report.shimRequested=shimRequested;report.requireSourceAlpha=true;
         Need(!NrRuntimeResearch::GameRunningOrUnknown(),"Skyrim running or process inventory unavailable; GPU probe refused");
         Need(report.requestedFrames>=2 && report.requestedFrames<=240,"frame count outside bounded probe range");
         Need(!queuedProducerRequested||(report.requestedFrames>=4&&report.requestedFrames%2==0),"queued reference test needs at least two complete pairs");
+        Need(ValidDirectExtents({width,height},{guideWidth,guideHeight}),"invalid guide bounds");
         const RuntimeProfile* profile{};for(const auto& p:RuntimeCatalog())if(p.id==profileId)profile=&p;Need(profile!=nullptr,"profile missing/unknown");
         Need(!shimRequested || profile->compatibility==CompatibilityPolicy::CallerIdentityProbeRequired,"signed profile has no caller-shim justification");
         auto runtimeLease=Value(RuntimeFileLease::Open(dll,*profile));report.runtimeSha256=runtimeLease.Sha256();
@@ -149,9 +182,10 @@ int wmain(int argc,wchar_t** argv){
         ComPtr<ID3D12GraphicsCommandList> list;Gpu(device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,allocator.Get(),nullptr,IID_PPV_ARGS(&list)),"list");
         ComPtr<ID3D12Fence> fence;Gpu(device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&fence)),"fence");
         const auto event=CreateEventW(nullptr,FALSE,FALSE,nullptr);Need(event!=nullptr,"fence event");uint64_t fenceValue{};
-        Stage stage;StageContract stageContract{device,queue,adapterIdentity.luid,{width,height},{width,height}};
+        Stage stage;StageContract stageContract{device,queue,adapterIdentity.luid,{width,height},{guideWidth,guideHeight}};
         const auto initialized=stage.Initialize(owner,stageContract);report.create=stage.Diagnostics().create;
         if(!initialized)Stop(initialized.error().message);
+        if(movingScene){vendorEvaluate=owner->Exports().evaluate;const_cast<RuntimeExports&>(owner->Exports()).evaluate=ObserveGuideParameters;}
         Gpu(list->Close(),"initial empty list close");
         ComPtr<ID3D12CommandQueue> producer;
         ComPtr<ID3D12CommandAllocator> producerAllocator;
@@ -169,9 +203,10 @@ int wmain(int argc,wchar_t** argv){
             const auto marked=alreadySubmitted?stage.TrackReader(ticket,fence.Get(),++fenceValue):stage.MarkSubmitted(ticket,fence.Get(),++fenceValue);if(!marked)Stop(marked.error().message);
             if(alreadySubmitted)Gpu(queue->Signal(fence.Get(),fenceValue),"actual readback completion signal");
             Gpu(fence->SetEventOnCompletion(fenceValue,event),"fence event arm");Need(WaitForSingleObject(event,15000)==WAIT_OBJECT_0 && fence->GetCompletedValue()==fenceValue,"output fence incomplete");Gpu(device->GetDeviceRemovedReason(),"device removed");};
-        auto color=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT),motion=Texture(device.Get(),DXGI_FORMAT_R16G16_FLOAT),depth=Texture(device.Get(),DXGI_FORMAT_R32_FLOAT),output=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT,true);
+        auto color=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT),motion=Texture(device.Get(),DXGI_FORMAT_R16G16_FLOAT,false,{guideWidth,guideHeight}),depth=Texture(device.Get(),DXGI_FORMAT_R32_FLOAT,false,{guideWidth,guideHeight}),output=Texture(device.Get(),DXGI_FORMAT_R16G16B16A16_FLOAT,true);
         auto colorUpload=MakeTransfer(device.Get(),color.Get(),D3D12_HEAP_TYPE_UPLOAD),motionUpload=MakeTransfer(device.Get(),motion.Get(),D3D12_HEAP_TYPE_UPLOAD),depthUpload=MakeTransfer(device.Get(),depth.Get(),D3D12_HEAP_TYPE_UPLOAD),outputUpload=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_UPLOAD),readback=MakeTransfer(device.Get(),output.Get(),D3D12_HEAP_TYPE_READBACK);
-        std::vector<uint16_t> colors(width*height*4),motions(width*height*2),sentinel(width*height*4,DirectX::PackedVector::XMConvertFloatToHalf(-.25f)),pixels(colors.size());std::vector<float> depths(width*height,.5f);
+        auto depthReadback=MakeTransfer(device.Get(),depth.Get(),D3D12_HEAP_TYPE_READBACK),motionReadback=MakeTransfer(device.Get(),motion.Get(),D3D12_HEAP_TYPE_READBACK);
+        std::vector<uint16_t> colors(width*height*4),motions(guideWidth*guideHeight*2),sentinel(width*height*4,DirectX::PackedVector::XMConvertFloatToHalf(-.25f)),pixels(colors.size());std::vector<float> depths(guideWidth*guideHeight,.5f);
         SettingsSnapshot settings;settings.revision=1;settings.enabled=true;
         std::set<std::string> distinct;
         std::vector<uint16_t> queuedReference;
@@ -179,18 +214,29 @@ int wmain(int argc,wchar_t** argv){
             const UINT pattern=queuedProducerRequested?frame/2:frame;
             for(UINT y=0;y<height;++y)for(UINT x=0;x<width;++x){const size_t i=(size_t(y)*width+x)*4;const float a=((x/8+y/8+pattern)&1)?.1f:.9f;
                 colors[i]=DirectX::PackedVector::XMConvertFloatToHalf(a);colors[i+1]=DirectX::PackedVector::XMConvertFloatToHalf(float(x)/width);colors[i+2]=DirectX::PackedVector::XMConvertFloatToHalf(float(y)/height + .002f*pattern);colors[i+3]=DirectX::PackedVector::XMConvertFloatToHalf(float((x+pattern)%5)/4);}
+            if(movingScene){
+                const double time=double(pattern+1)/60,previous=double(pattern)/60;
+                const auto realColor=MovingAt({width,height},time,previous),realGuides=MovingAt({guideWidth,guideHeight},time,previous);
+                for(size_t i=0;i<realColor.pixels.size();++i)for(unsigned channel=0;channel<3;++channel)
+                    colors[4*i+channel]=DirectX::PackedVector::XMConvertFloatToHalf(realColor.pixels[i].color[channel]);
+                for(size_t i=0;i<realGuides.pixels.size();++i){const auto& p=realGuides.pixels[i];
+                    depths[i]=100.f/99.9f-.1f*100.f/(99.9f*p.depthMetres);
+                    motions[2*i]=DirectX::PackedVector::XMConvertFloatToHalf(p.currentToHistoryPixelsX/guideWidth);
+                    motions[2*i+1]=DirectX::PackedVector::XMConvertFloatToHalf(p.currentToHistoryPixelsY/guideHeight);
+                }
+            }
             Gpu(allocator->Reset(),"allocator reset");Gpu(list->Reset(allocator.Get(),nullptr),"list reset");
             auto* evaluationList=list.Get();
             if(queuedProducerRequested){Gpu(producerAllocator->Reset(),"producer allocator reset");Gpu(producerList->Reset(producerAllocator.Get(),nullptr),"producer reset");}
             auto* uploadList=queuedProducerRequested?producerList.Get():list.Get();
             if(frame){Barrier(uploadList,color.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(uploadList,motion.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(uploadList,depth.Get(),D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_DEST);Barrier(uploadList,output.Get(),D3D12_RESOURCE_STATE_COPY_SOURCE,D3D12_RESOURCE_STATE_COPY_DEST);}
-            Upload(uploadList,color.Get(),colorUpload,colors.data(),width*8);Upload(uploadList,motion.Get(),motionUpload,motions.data(),width*4);Upload(uploadList,depth.Get(),depthUpload,depths.data(),width*4);Upload(uploadList,output.Get(),outputUpload,sentinel.data(),width*8);
+            Upload(uploadList,color.Get(),colorUpload,colors.data(),width*8);Upload(uploadList,motion.Get(),motionUpload,motions.data(),guideWidth*4);Upload(uploadList,depth.Get(),depthUpload,depths.data(),guideWidth*4);Upload(uploadList,output.Get(),outputUpload,sentinel.data(),width*8);
             Barrier(uploadList,color.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(uploadList,motion.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(uploadList,depth.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);Barrier(uploadList,output.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
             ImagePacket packet;packet.color=color;packet.output=output;packet.depth=depth;packet.motion=motion;
             packet.epoch=packet.guideEpoch=1;packet.sourceId=packet.guideSourceId=packet.batchId=packet.imageId=frame+1;packet.previousSourceId=frame;
             packet.kind=ImageKind::Real;packet.interpolationFraction=1;packet.presentationTime=double(frame)/60;
-            packet.colorExtent=packet.guideExtent={width,height};packet.colorDomain=ColorDomain::Linear;packet.guideOrigin=GuideOrigin::RealSource;
-            packet.motionScaleX=packet.motionScaleY=1;packet.reset=frame==0;
+            packet.colorExtent={width,height};packet.guideExtent={guideWidth,guideHeight};packet.colorDomain=ColorDomain::Linear;packet.guideOrigin=GuideOrigin::RealSource;
+            packet.motionScaleX=movingScene?float(width):1;packet.motionScaleY=movingScene?float(height):1;packet.reset=frame==0;
             packet.colorState=packet.depthState=packet.motionState=D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;packet.outputState=D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
             const bool gated=queuedProducerRequested&&frame%2==0;
             if(queuedProducerRequested){
@@ -220,9 +266,27 @@ int wmain(int argc,wchar_t** argv){
                 Gpu(allocator->Reset(),"readback allocator reset");Gpu(list->Reset(allocator.Get(),nullptr),"readback list reset");
                 queuedProducerVerified=true;
             }
-            Barrier(list.Get(),output.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COPY_SOURCE);D3D12_TEXTURE_COPY_LOCATION dst{},src{};dst.pResource=readback.buffer.Get();dst.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;dst.PlacedFootprint=readback.footprint;src.pResource=output.Get();src.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;list->CopyTextureRegion(&dst,0,0,0,&src,nullptr);submit(ticket,gated);
+            Barrier(list.Get(),output.Get(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COPY_SOURCE);D3D12_TEXTURE_COPY_LOCATION dst{},src{};dst.pResource=readback.buffer.Get();dst.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;dst.PlacedFootprint=readback.footprint;src.pResource=output.Get();src.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;list->CopyTextureRegion(&dst,0,0,0,&src,nullptr);
+            if(movingScene){
+                for(const auto& pair:{std::pair{depth.Get(),&depthReadback},std::pair{motion.Get(),&motionReadback}}){
+                    Barrier(list.Get(),pair.first,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,D3D12_RESOURCE_STATE_COPY_SOURCE);
+                    D3D12_TEXTURE_COPY_LOCATION guideSource{},guideDestination{};guideSource.pResource=pair.first;guideSource.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+                    guideDestination.pResource=pair.second->buffer.Get();guideDestination.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;guideDestination.PlacedFootprint=pair.second->footprint;
+                    list->CopyTextureRegion(&guideDestination,0,0,0,&guideSource,nullptr);
+                    Barrier(list.Get(),pair.first,D3D12_RESOURCE_STATE_COPY_SOURCE,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+                }
+            }
+            submit(ticket,gated);
             unsigned char* mapped{};Gpu(readback.buffer->Map(0,nullptr,reinterpret_cast<void**>(&mapped)),"readback map");for(UINT y=0;y<height;++y)std::memcpy(pixels.data()+size_t(y)*width*4,mapped+readback.footprint.Offset+size_t(y)*readback.footprint.Footprint.RowPitch,width*8);D3D12_RANGE noWrite{};readback.buffer->Unmap(0,&noWrite);
             if(queuedProducerRequested){if(gated)queuedReference=pixels;else {Need(pixels==queuedReference,"PendingProducerQueueWaitOrdersRealOutput differs from serial reset reference");++queuedReferenceMatches;}}
+            if(movingScene){
+                for(const auto& pair:{std::pair{&depthReadback,reinterpret_cast<const unsigned char*>(depths.data())},std::pair{&motionReadback,reinterpret_cast<const unsigned char*>(motions.data())}}){
+                    unsigned char* guideData{};Gpu(pair.first->buffer->Map(0,nullptr,reinterpret_cast<void**>(&guideData)),"real guide readback map");
+                    for(unsigned y=0;y<guideHeight;++y){const bool exact=std::memcmp(guideData+pair.first->footprint.Offset+size_t(y)*pair.first->footprint.Footprint.RowPitch,pair.second+size_t(y)*guideWidth*4,guideWidth*4)==0;
+                        Need(exact,"vendor changed independently prepared real guides");exactGuidePixels+=guideWidth;}
+                    pair.first->buffer->Unmap(0,nullptr);
+                }
+            }
             for(size_t i=3;i<pixels.size();i+=4)if(pixels[i]==colors[i])++report.sourceAlphaPreservedPixels;
             std::array<float,3> minimum{INFINITY,INFINITY,INFINITY},maximum{-INFINITY,-INFINITY,-INFINITY};
             for(size_t i=0;i<pixels.size();i+=4){bool finite=true,changed=false;for(size_t c=0;c<3;++c){const float value=DirectX::PackedVector::XMConvertHalfToFloat(pixels[i+c]);finite&=std::isfinite(value);minimum[c]=std::min(minimum[c],value);maximum[c]=std::max(maximum[c],value);changed|=pixels[i+c]!=colors[i+c];}++report.outputPixels;if(finite)++report.finitePixels;if(NrRuntimeResearch::AllRgbOverwritten(std::span<const uint16_t,4>{pixels.data()+i,4},std::span<const uint16_t,4>{sentinel.data()+i,4}))++report.overwrittenPixels;if(changed)++report.changedFromInputPixels;}
@@ -262,6 +326,7 @@ int wmain(int argc,wchar_t** argv){
         const auto retired=owner->Retire();report.shutdown=owner->LastShutdownResult();if(!retired)Stop(retired.error().message);
         report.shimRestored=shimRequested;
         Need(!queuedProducerRequested||(queuedProducerVerified&&queuedReferenceMatches==report.requestedFrames/2),"queued producer/reference coverage incomplete");
+        Need(!movingScene||(observedGuideParameters && exactGuidePixels==uint64_t(guideWidth)*guideHeight*2*report.requestedFrames),"real smaller-guide observation coverage incomplete");
         WriteReport();
         const auto issues=NrRuntimeResearch::Validate(report);for(const auto& issue:issues)std::fprintf(stderr,"UNQUALIFIED %s\n",issue.c_str());
         CloseHandle(event);

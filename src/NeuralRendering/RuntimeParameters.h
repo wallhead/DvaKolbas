@@ -9,11 +9,25 @@ struct DirectCreationContract {
     ImageExtent colorExtent,guideExtent;
     unsigned preset{};
 };
+inline bool ValidDirectExtents(ImageExtent color,ImageExtent guides){
+    return color.width && color.height && color.width<=16384 && color.height<=16384 &&
+        guides.width && guides.height && guides.width<=color.width && guides.height<=color.height;
+}
+template<class Parameters>Result<void> WriteDirectSubrectParameters(Parameters& p,ImageExtent color,ImageExtent guides){
+    if(!ValidDirectExtents(color,guides))
+        return std::unexpected(Error{ErrorKind::InvalidInput,0,"NR direct color/guide subrect extent invalid"});
+    for(const char* plane:{"Color","MVec","Depth","Output"}){
+        const auto extent=std::string_view(plane)=="MVec"||std::string_view(plane)=="Depth"?guides:color;
+        const auto prefix=std::string("DLSSNR.")+plane+"Subrect";
+        p.Set((prefix+"BaseX").c_str(),0u);p.Set((prefix+"BaseY").c_str(),0u);
+        p.Set((prefix+"Width").c_str(),extent.width);p.Set((prefix+"Height").c_str(),extent.height);
+    }
+    return {};
+}
 template<class Parameters>Result<void> WriteDirectCreationParameters(Parameters& p,const DirectCreationContract& c){
     bool known=false;for(const auto& profile:RuntimeCatalog())known|=profile.id==c.profileId;
-    if(!known || !c.colorExtent.width || !c.colorExtent.height || c.colorExtent.width>16384 ||
-        c.colorExtent.height>16384 || c.guideExtent!=c.colorExtent || c.preset>1)
-        return std::unexpected(Error{ErrorKind::InvalidInput,0,"NR direct profile/preset/native guide extent invalid"});
+    if(!known || !ValidDirectExtents(c.colorExtent,c.guideExtent) || c.preset>1)
+        return std::unexpected(Error{ErrorKind::InvalidInput,0,"NR direct profile/preset/color guide extent invalid"});
     for(const char* k:{"Width","OutWidth","DLSSNR.Width","DLSSNR.InputWidth","DLSSNR.OutputWidth","DLSSNR.Output.Width"})p.Set(k,c.colorExtent.width);
     for(const char* k:{"Height","OutHeight","DLSSNR.Height","DLSSNR.InputHeight","DLSSNR.OutputHeight","DLSSNR.Output.Height"})p.Set(k,c.colorExtent.height);
     p.Set("DLSSNR.ScalingRatio",1.f);p.Set("DLSSNR.Scale",1.f);

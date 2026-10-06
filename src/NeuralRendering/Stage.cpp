@@ -137,7 +137,7 @@ Stage::~Stage(){
 Result<void> Stage::Initialize(std::shared_ptr<RuntimeOwner> owner,const StageContract& c,unsigned preset,PerformanceMetrics* metrics,unsigned passes){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR stage initialization already attempted");s.attempted=true;
     if(!owner||!owner->Ready()||!c.device||!c.queue||!c.adapterLuid.Valid()||preset>1||passes<1||passes>3||
-        c.colorExtent!=c.guideExtent||!c.colorExtent.width||!c.colorExtent.height||c.colorExtent.width>16384||c.colorExtent.height>16384)
+        !ValidDirectExtents(c.colorExtent,c.guideExtent))
         return Fail(ErrorKind::InvalidInput,"NR stage runtime/native extent/device contract invalid");
     auto r=owner->CheckClientDevice(c.device.Get());if(!r)return r;const auto luid=c.device->GetAdapterLuid();
     if(luid.LowPart!=c.adapterLuid.low||luid.HighPart!=c.adapterLuid.high||!OnDevice(c.queue.Get(),c.device.Get())||c.queue->GetDesc().Type!=D3D12_COMMAND_LIST_TYPE_DIRECT)
@@ -243,7 +243,7 @@ Result<EvaluationTicket> Stage::RecordInternal(ID3D12GraphicsCommandList* list,c
     D3D12_UNORDERED_ACCESS_VIEW_DESC uav{};uav.Format=srv.Format;uav.ViewDimension=D3D12_UAV_DIMENSION_TEXTURE2D;s.contract.device->CreateUnorderedAccessView(output,nullptr,&uav,cpu);
     auto& p=*pass.parameters;p.Set("DLSSNR.Color",color);p.Set("DLSSNR.MVec",packet.motion.Get());p.Set("DLSSNR.Depth",packet.depth.Get());p.Set("DLSSNR.Output",output);
     p.Set("DLSSNR.UI",static_cast<ID3D12Resource*>(nullptr));p.Set("DLSSNR.UIAlpha",static_cast<ID3D12Resource*>(nullptr));
-    for(const char* plane:{"Color","MVec","Depth","Output"}){const auto prefix=std::string("DLSSNR.")+plane+"Subrect";p.Set((prefix+"BaseX").c_str(),0u);p.Set((prefix+"BaseY").c_str(),0u);p.Set((prefix+"Width").c_str(),packet.colorExtent.width);p.Set((prefix+"Height").c_str(),packet.colorExtent.height);}
+    r=WriteDirectSubrectParameters(p,packet.colorExtent,packet.guideExtent);if(!r){s.terminal=true;return std::unexpected(r.error());}
     p.Set("DLSSNR.MVecScaleX",packet.motionScaleX);p.Set("DLSSNR.MVecScaleY",packet.motionScaleY);auto tuning=SanitizeBuild14Tuning(PassTuning(settings,i));tuning.uiCorrection=false;
     const bool reset=history->Reset()||!feature.recordedStyle||*feature.recordedStyle!=tuning.style;
     WriteTuningParameters(p,tuning,reset,packet.depthInverted,RuntimeBuild::Build14);

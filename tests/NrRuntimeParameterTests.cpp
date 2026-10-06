@@ -19,6 +19,14 @@ int main(){
     check(typed("DLSS.Feature.Create.Flags",0x42),"DirectFlagsAreSignedInt");
     check(typed("DLSSNR.ScalingRatio",1.f),"DirectScaleUsesMeasuredNativePolicy");
     check(typed("DLSSNR.Output.Width",640u)&&typed("DLSSNR.InputHeight",360u),"AllObservedCreationExtentAliasesWritten");
+    c.guideExtent={320,180};
+    check(bool(WriteDirectCreationParameters(p,c)),"DisplayColorAndSmallerGuidesCreationAccepted");
+    check(typed("DLSSNR.InputWidth",640u)&&typed("DLSSNR.ScalingRatio",1.f)&&typed("DLSSNR.Upscaling",0),"SmallerGuidesDoNotEnableNrUpscaling");
+    check(bool(WriteDirectSubrectParameters(p,c.colorExtent,c.guideExtent)),"SeparateColorAndGuideSubrectsAccepted");
+    check(typed("DLSSNR.ColorSubrectWidth",640u)&&typed("DLSSNR.OutputSubrectHeight",360u)&&
+        typed("DLSSNR.DepthSubrectWidth",320u)&&typed("DLSSNR.MVecSubrectHeight",180u),"IndependentTypedPlaneBounds");
+    Parameters invalidSubrect;
+    check(!WriteDirectSubrectParameters(invalidSubrect,{640,360},{641,180})&&invalidSubrect.values.empty(),"OversizedGuidesRejectedBeforeSubrectMutation");
     auto bad=c;bad.profileId="legacy";Parameters untouched;check(!WriteDirectCreationParameters(untouched,bad)&&untouched.values.empty(),"LegacyNameCannotSelectCommunityDirectPolicy");
     bad=c;bad.preset=99;check(!WriteDirectCreationParameters(untouched,bad)&&untouched.values.empty(),"BadPresetRejectedBeforeParameterMutation");
     bad=c;bad.guideExtent.width=0;check(!WriteDirectCreationParameters(untouched,bad)&&untouched.values.empty(),"MissingGuideExtentRejectedBeforeMutation");

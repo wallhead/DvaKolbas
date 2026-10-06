@@ -4,6 +4,8 @@
 #include <cmath>
 
 namespace TheosRenderPipeline::NeuralRendering {
+// Units after multiplying sampled texture motion by the declared scale.
+enum class MotionScaleDomain { RenderPixels, DisplayPixels };
 // Metadata admission only; this does not prove texture ownership, GPU producer
 // order or that FG consumed the enhanced source. Those remain adapter gates.
 struct PostSrSourceContract {
@@ -19,6 +21,7 @@ struct PostSrSourceContract {
     GuideOrigin guideOrigin{GuideOrigin::Unknown};
     bool depthInverted{};
     Upscaling::MotionConvention motion;
+    MotionScaleDomain motionScaleDomain{MotionScaleDomain::RenderPixels};
 };
 struct PostSrGuidePlan {
     ImageExtent extent;
@@ -43,8 +46,8 @@ inline Result<PostSrGuidePlan> ValidatePostSrSourceContract(const PostSrSourceCo
         extent.width<=16384 && extent.height<=16384;};
     if(!valid(source.render) || !valid(source.display) || source.color!=source.display || source.guides!=source.render)
         return fail(ErrorKind::InvalidInput,"NR post-SR real color/guide extent invalid");
-    if(source.render!=source.display)
-        return fail(ErrorKind::Unsupported,"NR post-SR reduced-resolution guide recipe is unqualified; use Native AA");
+    if(source.render.width>source.display.width || source.render.height>source.display.height)
+        return fail(ErrorKind::InvalidInput,"NR post-SR guides exceed display extent");
     if(NrColorFormat(source.colorDomain)==DXGI_FORMAT_UNKNOWN || source.colorFormat!=NrColorFormat(source.colorDomain) ||
         (source.colorDomain==ColorDomain::Linear && source.encoding!=Upscaling::ColorEncoding::Linear) ||
         (source.colorDomain==ColorDomain::SdrBytes && source.encoding!=Upscaling::ColorEncoding::Gamma22 &&
@@ -55,6 +58,13 @@ inline Result<PostSrGuidePlan> ValidatePostSrSourceContract(const PostSrSourceCo
         !std::isfinite(source.motion.scaleX) || !std::isfinite(source.motion.scaleY) ||
         source.motion.scaleX<=0 || source.motion.scaleY<=0)
         return fail(ErrorKind::InvalidInput,"NR post-SR real guide formats/direction/jitter/units invalid");
-    return PostSrGuidePlan{source.display, source.motion.scaleX, source.motion.scaleY};
+    if(source.motionScaleDomain!=MotionScaleDomain::RenderPixels && source.motionScaleDomain!=MotionScaleDomain::DisplayPixels)
+        return fail(ErrorKind::InvalidInput,"NR post-SR motion scale domain invalid");
+    const bool renderPixels=source.motionScaleDomain==MotionScaleDomain::RenderPixels;
+    const float scaleX=source.motion.scaleX*(renderPixels?float(source.display.width)/source.render.width:1.f);
+    const float scaleY=source.motion.scaleY*(renderPixels?float(source.display.height)/source.render.height:1.f);
+    if(!std::isfinite(scaleX) || !std::isfinite(scaleY))
+        return fail(ErrorKind::InvalidInput,"NR post-SR display motion scale overflow");
+    return PostSrGuidePlan{source.guides,scaleX,scaleY};
 }
 }

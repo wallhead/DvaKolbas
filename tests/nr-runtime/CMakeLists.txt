@@ -245,6 +245,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         set_tests_properties(NrStage-${mode} PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 30 RUN_SERIAL TRUE LABELS GPU)
     endforeach()
     set(nrProbeSources tests/nr-runtime/RuntimeProbe.cpp tests/nr-runtime/RuntimeProbeReport.cpp
+        tests/nr-postfg/SyntheticScene.h src/NeuralRendering/PostSrContract.h
         tests/nr-runtime/ObservedQueue.h tests/NrStageTests.cpp tests/NrFrameSlotTests.cpp tests/NrDeferredDeliveryTests.cpp
         tests/nr-runtime/PerformanceProbe.cpp tests/NrStableColorTests.cpp
         src/NeuralRendering/StableColorResolve.h src/NeuralRendering/StableColorResolve.cpp
@@ -368,6 +369,23 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     target_compile_definitions(TRPNrRuntimeProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPNrRuntimeProbe PRIVATE "${nrRoot}/src" "${TRP_NR_NGX_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
     target_link_libraries(TRPNrRuntimeProbe PRIVATE TRPNeuralRuntime)
+    foreach(guideCase IN ITEMS native half nonintegral)
+        if(guideCase STREQUAL native)
+            set(guideWidth 640)
+            set(guideHeight 360)
+        elseif(guideCase STREQUAL half)
+            set(guideWidth 320)
+            set(guideHeight 180)
+        else()
+            set(guideWidth 427)
+            set(guideHeight 203)
+        endif()
+        add_test(NAME NrScaledContractGpu-${guideCase} COMMAND TRPNrRuntimeProbe
+            --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}" --profile rtx40
+            --caller-shim on --frames 30 --moving-scene on --guide-width ${guideWidth} --guide-height ${guideHeight}
+            --output "${CMAKE_CURRENT_BINARY_DIR}/scaled-contract-${guideCase}.json")
+        set_tests_properties(NrScaledContractGpu-${guideCase} PROPERTIES TIMEOUT 90 RUN_SERIAL TRUE LABELS GPU)
+    endforeach()
     add_test(NAME NrPendingProducerOutput COMMAND TRPNrRuntimeProbe
         --dll "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}" --profile rtx40
         --caller-shim on --frames 6 --queued-producer on --output "${CMAKE_CURRENT_BINARY_DIR}/pending-producer.json")
