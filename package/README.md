@@ -1,12 +1,16 @@
 # RaZkolbaS — DLSS, FSR, FG and NR
 
-## Current development MO2 archive
+## Version 1.0 MO2 archive
 
-`RaZkolbas DLSS FSR FG NR.zip` contains `SKSE/` and `meta.ini` at its root,
+`RaZKolbaS DLSS FSR FG NR v1.0.zip` contains `SKSE/` and `meta.ini` at its root,
 with the validated DLSS/Streamline, FSR SR/FG and community NR payloads bundled.
 Install and enable it through MO2, with other upscaler/FG mods disabled. Use
 windowed or borderless Skyrim and launch SKSE. Close Skyrim and MO2 before
 replacing the installed package.
+
+The release defaults to DLAA on NVIDIA, with FSR Native AA selected for the FSR
+route. Only one upscaler runs at a time. Portable NR paths remain blank for
+runtime discovery. Some full-tone NR camera drift remains under investigation.
 
 Disable the old TheosRenderPipeline plugin when upgrading; startup checks both
 the loaded modules and MO2's virtual plugin directory before installing hooks.

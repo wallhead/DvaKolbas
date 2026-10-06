@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(
 	RaZkolbaS
-	VERSION 0.3.5
+	VERSION 1.0.0
 	LANGUAGES C CXX
 )
 
