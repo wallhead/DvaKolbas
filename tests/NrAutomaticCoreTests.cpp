@@ -15,6 +15,19 @@ int main(int argc,char** argv) {
     if(!result){std::printf("FAIL BlankCoreUsesActiveNvidiaDriver: %s\n",result.error().message.c_str());return 1;}
     if(!automatic.Available())return 1;
     std::puts("PASS BlankCoreUsesActiveNvidiaDriver");
+    startup.driverCore=automatic.DriverCorePath().parent_path().parent_path()/
+        (L"raz-missing-"+std::to_wstring(GetCurrentProcessId()))/L"_nvngx.dll";
+    if(std::filesystem::exists(startup.driverCore))return 1;
+    BeforeHost recovered;
+    const auto fallback=recovered.Inspect(device.Get(),startup,std::filesystem::absolute("nr-auto-core-cache"));
+    if(!fallback||!recovered.Available()||recovered.DriverCorePath()!=automatic.DriverCorePath()) {
+        std::printf("FAIL MissingDriverStoreOverrideRecoversQualifiedActiveCore: %s\n",fallback?"wrong core":fallback.error().message.c_str());return 1;
+    }
+    std::puts("PASS MissingDriverStoreOverrideRecoversQualifiedActiveCore");
+    startup.driverCore=automatic.DriverCorePath();
+    const auto existing=startup.ResolveDriverCore();
+    if(!existing||*existing!=startup.driverCore)return 1;
+    std::puts("PASS ExistingDriverStoreOverrideIsPreserved");
     startup.driverCore=std::filesystem::absolute("deliberately-missing-driver/_nvngx.dll");
     BeforeHost explicitOverride;
     const auto missing=explicitOverride.Inspect(device.Get(),startup,std::filesystem::absolute("nr-auto-core-cache"));

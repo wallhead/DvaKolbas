@@ -56,6 +56,16 @@ namespace TheosRenderPipeline
         const std::filesystem::path& configured, const std::filesystem::path& pluginDirectory)
     {
         if (configured.empty() || configured.is_absolute()) { return configured; }
-        return (pluginDirectory / configured).lexically_normal();
+        const auto relative=configured.lexically_normal();
+        const auto resolved=(pluginDirectory/relative).lexically_normal();
+        auto component=relative.begin();
+        if(component==relative.end()||component->wstring()!=L"TheosRenderPipeline")return resolved;
+        std::error_code error;
+        if(std::filesystem::exists(resolved,error)||error)return resolved;
+        auto renamed=pluginDirectory/L"RaZkolbaS";
+        for(++component;component!=relative.end();++component)renamed/=*component;
+        // Migrated INIs keep their original spelling. Use renamed resources
+        // only when the old relative target is missing and the new one exists.
+        return std::filesystem::exists(renamed,error)&&!error?renamed.lexically_normal():resolved;
     }
 }

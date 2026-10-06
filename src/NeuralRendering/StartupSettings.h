@@ -11,7 +11,9 @@ struct StartupSettings {
     std::string profile{"Auto"};
     std::filesystem::path runtimeRoot,driverCore;
     Upscaling::ColorEncoding sourceEncoding{Upscaling::ColorEncoding::Unknown};
-    // Called after rendering-device creation. Never scan installed driver versions.
+    // Called after rendering-device creation. Missing OS DriverStore overrides
+    // from older packages use the active driver; custom/existing overrides stay
+    // explicit. Discovery never skips the subsequent pinned-file qualification.
     Result<std::filesystem::path> ResolveDriverCore() const;
     StartupSettings Resolve(const std::filesystem::path& pluginRoot)const{
         auto result=*this;result.runtimeRoot=runtimeRoot.empty()?pluginRoot:runtimeRoot.is_absolute()?runtimeRoot:pluginRoot/runtimeRoot;

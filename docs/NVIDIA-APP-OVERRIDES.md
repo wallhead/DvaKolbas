@@ -69,6 +69,13 @@ in research receipts for validation, and the MO2 metadata contains only the ZIP
 basename. Probe wrappers require explicit local model/core inputs instead of
 assuming a developer's Downloads directory or DriverStore folder.
 
+Missing `_nvngx.dll` overrides directly inside the current Windows DriverStore's
+`FileRepository/<driver>` layout recover using the loaded rendering driver's
+core. Startup logs the original override and recovered path; the saved INI stays
+unchanged. Existing overrides, access errors and missing custom paths retain
+explicit-override behavior. The recovered file still passes the same exact
+core qualification checks.
+
 **Discovery is not driver-version qualification.** NR still accepts the exact
 qualified core identity in `RuntimeOwner.cpp`; an unfamiliar core returns the
 observed and expected size/hash with its path. Supporting it requires a validated

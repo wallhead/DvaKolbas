@@ -8,6 +8,15 @@ Install and enable it through MO2, with other upscaler/FG mods disabled. Use
 windowed or borderless Skyrim and launch SKSE. Close Skyrim and MO2 before
 replacing the installed package.
 
+Disable the old TheosRenderPipeline plugin when upgrading; startup checks both
+the loaded modules and MO2's virtual plugin directory before installing hooks.
+If `RaZkolbaS.ini` is absent, an existing `TheosRenderPipeline.ini` is copied once
+without changing the original. An existing new INI always takes priority; merge
+old choices manually if the newly installed package already supplies one. Old
+relative resource paths use the renamed files only when their old targets are
+missing and the corresponding new files exist. Explicit absolute paths stay as
+configured.
+
 Press **End** for settings. Live NR/FG controls apply automatically; **Save as
 default** persists them. Startup/provider changes marked in the menu require a
 restart. NR After keeps the order **DLSS/FSR → NR → FG → UI**. AMD's supported
@@ -21,12 +30,19 @@ the NVIDIA rendering driver loaded by Skyrim. Discovery does not qualify a new
 driver core: unsupported hashes are reported with the actual path and expected
 identity. The RTX 40/50 profiles share one model file; RTX 20/30 use a separate
 model. Hardware eligibility and validation remain separate from selecting a file.
+Missing `_nvngx.dll` overrides inside the current Windows DriverStore from older
+packages recover through the active driver, with the old/new paths logged. This
+does not change the INI or bypass core qualification. Existing files, custom
+paths and access failures do not use this recovery.
 
 The log is in Skyrim's SKSE log directory, normally
 `Documents/My Games/Skyrim Special Edition/SKSE/RaZkolbaS.log`; redirected Documents
 folders can change its location. `[NVIDIA App Settings]` records actual override
-suppression separately from read-only observations of driver effects. Smooth
-Motion is outside the NGX filter. Disable it in NVIDIA App's **Skyrim Program
+suppression separately from read-only observations of driver effects.
+NVIDIA App DLSS/NR/FG overrides are filtered in the mod's runtime modules so the
+RaZkolbaS menu/INI takes priority. Startup rejects a filter installation failure
+instead of accepting different driver-controlled settings silently.
+Smooth Motion is outside the NGX filter. Disable it in NVIDIA App's **Skyrim Program
 settings** before launch when using RaZkolbaS FG; the mod does not write driver
 profiles. See [driver settings behavior](../docs/NVIDIA-APP-OVERRIDES.md).
 

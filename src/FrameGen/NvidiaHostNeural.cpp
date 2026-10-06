@@ -120,9 +120,13 @@ void NvidiaHost::InspectCommunityNeural()
     const auto inspected=presenter?communityNeural_->Inspect(device_.Get(),startup,cache,presenter):
         NR::Result<void>{std::unexpected(NR::Error{NR::ErrorKind::Unsupported,0,"NR waiting for presenter D3D12 device"})};
     communityLastStatus_=inspected?communityNeural_->Status():inspected.error().message;
+    const auto& corePath=communityNeural_->DriverCorePath();
+    const bool recoveredCore=!startup.driverCore.empty()&&!corePath.empty()&&
+        _wcsicmp(corePath.lexically_normal().c_str(),startup.driverCore.lexically_normal().c_str())!=0;
+    if(recoveredCore)logger::warn("[Community NR startup] Missing DriverStore override {} recovered through active rendering driver: {}; INI unchanged and core qualification still required",startup.driverCore.string(),corePath.string());
     logger::info("[Community NR startup] available={} profile={} encoding={} sdrBytesTrial={} root={} core={} coreOrigin={} presenterDevice={} native={} status={}",
         bool(inspected),communityNeural_->ProfileId(),Upscaling::ColorEncodingName(startup.sourceEncoding),startup.sdrBytesTrial,
-        startup.runtimeRoot.string(),communityNeural_->DriverCorePath().string(),startup.driverCore.empty()?"active-render-driver":"INI",
+        startup.runtimeRoot.string(),corePath.string(),startup.driverCore.empty()?"active-render-driver":recoveredCore?"active-render-driver (missing DriverStore override)":"INI",
         fmt::ptr(presenter),inspected?0:inspected.error().nativeCode,communityLastStatus_);
 }
 bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Texture2D* depth,

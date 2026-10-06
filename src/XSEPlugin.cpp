@@ -1,5 +1,6 @@
 #include <PCH.h>
 #include "PluginPaths.h"
+#include "RendererUpgrade.h"
 #include "SkyrimRuntime.h"
 #include "GameHookValidation.h"
 #include "OverlayGameInput.h"
@@ -182,6 +183,20 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 		TheosRenderPipeline::PluginPaths::ModulePath(renderer).string());
 	logger::info("[Renderer build] {}", Plugin::BUILD_IDENTITY);
 	logger::info("[Runtime] Skyrim {}", a_skse->RuntimeVersion().string());
+	// Check the virtual Data tree too: SKSE may call us before the old plugin's
+	// load callback. Reject both versions before either can share renderer hooks.
+	const auto upgrade=TheosRenderPipeline::RendererUpgrade::Prepare(GetPluginDirectory(),
+		::GetModuleHandleW(L"TheosRenderPipeline.dll")!=nullptr);
+	using UpgradeStatus=TheosRenderPipeline::RendererUpgrade::Status;
+	if(upgrade.status==UpgradeStatus::Conflict) {
+		util::report_and_fail("RaZkolbaS and the old TheosRenderPipeline plugin are both enabled. Disable the old mod in MO2 or remove Data/SKSE/Plugins/TheosRenderPipeline.dll, leaving RaZkolbaS.dll enabled, then restart Skyrim.");
+	}
+	if(upgrade.status==UpgradeStatus::Failed) {
+		util::report_and_fail(std::format("RaZkolbaS could not check or migrate the old installation.\nPath: {}\nWindows error: {}\nClose Skyrim and check the enabled mod files and their permissions. Existing settings have been preserved.",upgrade.path.string(),upgrade.native));
+	}
+	if(upgrade.status==UpgradeStatus::Migrated) {
+		logger::info("[Upgrade] Copied TheosRenderPipeline.ini to {}; legacy file retained",upgrade.path.string());
+	}
 	// CommonLib's default logger would truncate our startup banner and replace
 	// the rotating sink. Keep the renderer-owned logger throughout this session.
 	SKSE::Init(a_skse, SKSE::InitInfo{.log = false});

@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <cstdio>
+#include <Windows.h>
 struct Ini {std::map<std::string,std::string> v;
 const char* GetValue(const char*,const char* key,const char* fallback)const{auto i=v.find(key);return i==v.end()?fallback:i->second.c_str();}
 bool GetBoolValue(const char*,const char* key,bool fallback)const{auto i=v.find(key);return i==v.end()?fallback:i->second=="true";}
@@ -21,5 +22,13 @@ auto automatic=s;automatic.driverCore.clear();core=automatic.ResolveDriverCore()
 check(!core&&core.error().nativeCode!=0,"DiscoveryWithoutLoadedNvidiaDriverReportsNativeError");
 automatic.driverCore="relative/_nvngx.dll";core=automatic.ResolveDriverCore();
 check(!core&&core.error().kind==ErrorKind::InvalidInput,"UnresolvedRelativeCoreOverrideCannotReachLoader");
+std::wstring windows(32768,L'\0');auto length=GetWindowsDirectoryW(windows.data(),static_cast<UINT>(windows.size()));
+check(length&&length<windows.size(),"WindowsDirectoryAvailableForMissingDriverStoreFixture");windows.resize(length);
+automatic.driverCore=std::filesystem::path(windows)/L"System32/DriverStore/FileRepository"/
+    (L"raz-missing-"+std::to_wstring(GetCurrentProcessId()))/L"_nvngx.dll";
+check(!std::filesystem::exists(automatic.driverCore),"MissingDriverStoreFixtureIsAbsent");
+core=automatic.ResolveDriverCore();
+check(!core&&core.error().kind==ErrorKind::Unsupported&&core.error().message.find("missing DriverStore override")!=std::string::npos,
+    "MissingDriverStoreOverrideUsesDiscoveryAndReportsRecoveryContext");
 i.v["SourceColorEncoding"]="garbage";check(LoadStartupSettings(i).sourceEncoding==TheosRenderPipeline::Upscaling::ColorEncoding::Unknown,"InvalidEncodingCannotGuessGamma");
 return failed?1:0;}

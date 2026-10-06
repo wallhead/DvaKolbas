@@ -102,6 +102,7 @@ set(ARP_BASELINE_SOURCES
     src/ScreenshotWorker.h
     src/IniLayout.h
     src/SettingsFile.h
+    src/RendererUpgrade.h
     src/PluginPaths.h
     src/SkyrimRuntime.h
     src/UpscaleType.h
