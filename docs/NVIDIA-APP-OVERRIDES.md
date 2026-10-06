@@ -36,7 +36,14 @@ The Smooth Motion/HDR/vibrance/profile-selection keys are not a published NVIDIA
 runtime opt-out contract. In particular, do not infer that the absence of a
 Smooth Motion setting means the driver effect is disabled.
 
-Smooth Motion configured for DX11 produces a startup log warning. NVIDIA provides
+Smooth Motion configured for DX11 produces a startup log warning and a notice at
+the top of the Frame generation tab, including on the NVIDIA FSR path. The notice
+says to disable Smooth Motion for Skyrim, gives the NVIDIA App navigation and asks
+the player to restart. It is outside collapsed status/developer sections. Unknown
+or disabled configurations do not show an enabled-conflict notice. If rendering
+startup fails with Smooth Motion configured, the error dialog includes the same
+instruction alongside the actual startup error/HRESULT; it does not claim that
+Smooth Motion caused every failure. NVIDIA provides
 a [per-program control in NVIDIA App](https://nvidia.custhelp.com/app/answers/detail/a_id/5621):
 Graphics → Skyrim Program settings → Driver Settings → Smooth Motion → Off.
 Change it before launching Skyrim when using RaZkolbaS frame generation. This

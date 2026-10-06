@@ -34,6 +34,13 @@ struct DriverSettingsSnapshot {
     }};
 };
 enum class DriverConflict { Unknown,Disabled,Enabled };
+inline const char* SmoothMotionNotice(DriverConflict status) noexcept {
+    if(status!=DriverConflict::Enabled)return nullptr;
+    return "Disable NVIDIA Smooth Motion for Skyrim.\n"
+        "Smooth Motion is configured for DX11 and can interfere with DLSS or FSR frame generation.\n"
+        "NVIDIA App -> Graphics -> Program settings -> Skyrim -> Driver Settings -> Smooth Motion: Off.\n"
+        "Then restart Skyrim. RaZkolbaS has not changed this driver setting.";
+}
 inline DriverSettingsSnapshot InspectDriverSettings(const DriverSettingsApi& api,std::wstring_view application) {
     DriverSettingsSnapshot result;
     if(!api.create||!api.destroy||!api.load||!api.find||!api.global||!api.read||application.empty()||application.size()>=2048)

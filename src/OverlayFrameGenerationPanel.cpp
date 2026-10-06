@@ -3,6 +3,7 @@
 #include "OverlayFrameView.h"
 #include "OverlayFsrGenerationControls.h"
 #include "CommunityShaderIntegration.h"
+#include "NvidiaAppSettings.h"
 
 #include "FrameGen/NvidiaHost.h"
 #include "FrameGen/SourceDLSSGBackend.h"
@@ -23,8 +24,20 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                             requestedPage == SettingsPage::FrameGeneration ? ImGuiTabItemFlags_SetSelected
                                                                            : ImGuiTabItemFlags_None))
     {
+        const auto drawSmoothMotionNotice=[] {
+            if(const auto* notice=TheosRenderPipeline::NvidiaAppSettings::SmoothMotionNotice(
+                TheosRenderPipeline::NvidiaAppSettings::SmoothMotionStatus())) {
+                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(1.0f,0.75f,0.25f,1.0f));
+                ImGui::TextWrapped("%s",notice);
+                ImGui::PopStyleColor();
+                ImGui::Separator();
+            }
+        };
         if(view.fsrActive) {
-            BeginSettingsColumns("generation", tabCardHeight, view);
+            if(!BeginSettingsColumns("generation", tabCardHeight, view)) {
+                ImGui::EndTabItem();return;
+            }
+            drawSmoothMotionNotice();
             auto status=nvidiaHost->FsrFgStatus();
             ImGui::TextWrapped("%s",status.text.c_str());
             constexpr bool built=
@@ -62,6 +75,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             ImGui::EndTabItem();
             return;
         }
+        drawSmoothMotionNotice();
         if (ImGui::CollapsingHeader("Status and measurements"))
         {
         DrawStatusLabel(frameGenerationRuntimeActive ? "DLSS-G active" : "Frame generation inactive",

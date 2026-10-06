@@ -26,6 +26,9 @@ int main(){try{
     Need(s.values[1].status==-160,"missing API mask stays missing, not incorrectly off");
     Need(requested.size()==s.values.size(),"each diagnostic read exactly once");
     Need(SmoothMotionDx11Configured(s)==DriverConflict::Enabled,"missing Smooth Motion API mask means all APIs when enabled");
+    Need(SmoothMotionNotice(DriverConflict::Enabled)!=nullptr,"configured Smooth Motion needs an actionable player-facing notice");
+    Need(SmoothMotionNotice(DriverConflict::Disabled)==nullptr&&SmoothMotionNotice(DriverConflict::Unknown)==nullptr,
+        "disabled and unknown settings must not falsely tell the player Smooth Motion is enabled");
     s.values[1].status=0;s.values[1].value=1;
     Need(SmoothMotionDx11Configured(s)==DriverConflict::Disabled,"DX12-only mask does not enable DX11");
     s.values[1].value=2;

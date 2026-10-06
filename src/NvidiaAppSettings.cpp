@@ -26,6 +26,7 @@ struct State {
     std::atomic<Log> log{};
     HMODULE nvapi{},self{};
     std::atomic<unsigned> reports{};
+    std::atomic<DriverConflict> smoothMotion{DriverConflict::Unknown};
 };
 State& Get(){static auto* state=new State;return *state;}
 void Report(const char* message) noexcept {
@@ -76,6 +77,7 @@ std::uintptr_t* ResolverSlot(HMODULE module) {
 }
 }
 void SetLog(Log log) noexcept {Get().log.store(log);}
+DriverConflict SmoothMotionStatus() noexcept {return Get().smoothMotion.load();}
 void ReportDriverSettings() {
     static std::once_flag once;
     std::call_once(once,[]{try {
@@ -109,8 +111,9 @@ void ReportDriverSettings() {
             Report(text);
         }
         const auto configured=SmoothMotionDx11Configured(snapshot);
-        if(configured==DriverConflict::Enabled)
-            Report("Smooth Motion is configured for DX11 and is outside our NGX/Streamline filter. Disable Smooth Motion in NVIDIA App's Skyrim Program settings before launch when using RaZkolbaS FG; no automatic profile write was made.");
+        Get().smoothMotion.store(configured);
+        if(const auto* notice=SmoothMotionNotice(configured))
+            Report(notice);
         else if(configured==DriverConflict::Unknown)
             Report("Smooth Motion DX11 configuration is unknown; this snapshot does not establish that driver interpolation is off.");
         const auto present=GetModuleHandleW(L"NvPresent64.dll");
