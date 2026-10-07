@@ -1,0 +1,25 @@
+{
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "8eef4da5230a",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "archives": [
+    {
+      "bytes": 17192349,
+      "name": "RaZKolbaS FSR4 AMD validation kit.zip",
+      "sha256": "d67c3d7ffc678c3862c5ff48eb83129d2897823fbe67d392a57fb7d5dbe5b75c"
+    },
+    {
+      "bytes": 1435287,
+      "name": "RaZKolbaS v1.1 FSR4 preview update.zip",
+      "sha256": "70fe8c7989a845189bf29b554f7f92be7977a918e0fb4e965dc2c988de1c5251"
+    }
+  ],
+  "unchangedStableRuntimePins": true,
+  "installed": false,
+  "amdFsr4Qualified": false
+}

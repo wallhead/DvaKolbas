@@ -1,0 +1,12 @@
+{
+"sharpnessComparison":false,
+"sharpnessOutputHashes":[0,0,0,0],
+"result":"PASS",
+"frames":128,"recreations":4,"readbacks":8,"changingSamples":7,"inflightContexts":4,
+"productionFrameAdapter":true,"nativeUiSentinelChecked":true,"spatialFrames":4,"invalidInputAttempts":4,"historyResetFrames":12,
+"requestedPolicy":1,"adapterVendorId":4318,"adapterDeviceId":9986,"providerId":17700776140660019205,"providerName":"3.1.5","adapterLuidHigh":0,"adapterLuidLow":66328,
+"d3d11DebugValidated":false,"d3d12DebugValidated":false,
+"sdkCommittedResourcesCreated":104,"sdkHeapsCreated":0,"peakSdkCommittedResources":26,"peakSdkHeaps":0,"remainingSdkCommittedResources":0,"remainingSdkHeaps":0,
+"initialLocalGpuBytes":22507520,"peakLocalGpuBytes":58892288,"minRetiredLocalGpuBytes":23306240,"maxRetiredLocalGpuBytes":25337856,
+"skyrimGameplayTested":false,"crossVendorTested":false,"frameGenerationTested":false
+}
