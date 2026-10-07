@@ -122,7 +122,20 @@
     "sm86PublicationVerified": true,
     "sm86RollbackVerified": true,
     "auditDispatchesGpu": false,
-    "gpuGameplayTestedOnRtx3050": false
+    "fullGpuGameplayMatrixQualifiedOnRtx3050": false
   },
-  "retainedStandardArchiveSha256": "81e1965fd10658012c21fe3a1643d1a07b347be5fd9853f47ceff70c8d405692"
+  "retainedStandardArchiveSha256": "81e1965fd10658012c21fe3a1643d1a07b347be5fd9853f47ceff70c8d405692",
+  "testerReports": {
+    "date": "2026-10-07",
+    "source": "Owner relayed tester feedback in chat",
+    "ownerStatement": "tester said that is working, also amd tester said its working",
+    "rtx3050WorkingReported": true,
+    "amdWorkingReported": true,
+    "amdModel": null,
+    "exactRenderingPathsReported": false,
+    "newTesterLogsProvided": false,
+    "detailedNrFgLifecycleChecksReported": false,
+    "startupFixMilestonesCompleted": 4,
+    "startupFixMilestonesTotal": 4
+  }
 }
