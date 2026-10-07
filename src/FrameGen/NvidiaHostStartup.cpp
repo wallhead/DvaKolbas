@@ -53,7 +53,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,false);
 #endif
     if (FsrFgActive() && (TheosRenderPipeline::CommunityShaders::Active() || !upscalerSettings->mNativeUI || generation.nativeUICompositionMode != 0)) {
-        status_ = "FSR FG requires TRP-owned upscaling and dedicated NativeUI=true, composition mode 0";
+        status_ = "FSR FG requires RaZkolbaS-owned upscaling and [Interface] NativeUI=true, UIComposition=Dedicated";
         return E_INVALIDARG;
     }
     if(!backendDecision_.valid){status_=backendDecision_.diagnostic;return E_INVALIDARG;}

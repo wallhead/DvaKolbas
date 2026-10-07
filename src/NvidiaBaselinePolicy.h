@@ -19,7 +19,7 @@ namespace TheosRenderPipeline
         if (ini.GetLongValue("Experimental", "X3PresentationMode", 0) != 0 ||
             ini.GetBoolValue("Experimental", "EnableX3Presentation", false) ||
             ini.GetLongValue("Experimental", "NeuralRenderingStartupMode", 0) != 0) {
-            return "Legacy presentation experiments are unavailable; use the SourceDLSSG settings for MFG and Neural Rendering.";
+            return "Legacy presentation experiments are unavailable; use [FrameGeneration] and [NeuralRendering] for MFG and Neural Rendering.";
         }
         if (ini.GetBoolValue("Experimental", "EnableXessCapabilityProbe", false) ||
             ini.GetBoolValue("Experimental", "EnableNeuralRenderingCapabilityProbe", false) ||

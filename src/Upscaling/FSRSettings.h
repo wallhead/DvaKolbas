@@ -32,17 +32,17 @@ template<class Ini> Result<FsrSettings> ReadFsrSettings(const Ini& ini) {
     const std::string_view quality=ini.GetValue("FSR","Quality","Quality");
     bool found=false;
     for(auto value:{Quality::Quality,Quality::Balanced,Quality::Performance,Quality::NativeAA})if(quality==QualityName(value)){result.quality=value;found=true;break;}
-    if(!found)return invalid("[FSR] Quality must be Quality, Balanced, Performance or NativeAA.");
+    if(!found)return invalid("[FSR] Quality must be Native, Quality, Balanced or Performance.");
     const std::string_view policy=ini.GetValue("FSR","ProviderPolicy","Analytical");
     if(policy=="Analytical")result.providerPolicy=ProviderPolicy::Analytical;
     else if(policy=="Compatible")result.providerPolicy=ProviderPolicy::Compatible;
     else if(policy=="MachineLearning")result.providerPolicy=ProviderPolicy::MachineLearning;
-    else return invalid("[FSR] ProviderPolicy must be Analytical, Compatible (Auto) or MachineLearning (FSR4).");
+    else return invalid("[FSR] Provider must be FSR3, Auto or FSR4.");
     const std::string_view fgPolicy=ini.GetValue("FrameGeneration","FsrProviderPolicy","Analytical");
     if(fgPolicy=="Analytical")result.generationProviderPolicy=ProviderPolicy::Analytical;
     else if(fgPolicy=="Compatible")result.generationProviderPolicy=ProviderPolicy::Compatible;
     else if(fgPolicy=="MachineLearning")result.generationProviderPolicy=ProviderPolicy::MachineLearning;
-    else return invalid("[FrameGeneration] FsrProviderPolicy must be Analytical, Compatible (Auto) or MachineLearning (FSR4 FG).");
+    else return invalid("[FrameGeneration] FsrProvider must be FSR3, Auto or FSR4.");
     const std::string_view sharpness=ini.GetValue("FSR","Sharpness","0");
     const auto parsed=std::from_chars(sharpness.data(),sharpness.data()+sharpness.size(),result.sharpness);
     if(parsed.ec!=std::errc{} || parsed.ptr!=sharpness.data()+sharpness.size() || !ValidFsrSettings(result))return invalid("[FSR] Sharpness must be a finite number from 0 to 1.");

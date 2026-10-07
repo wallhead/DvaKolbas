@@ -8,7 +8,7 @@ namespace TheosRenderPipeline::Upscaling
         bool failed, const FsrGenerationDecision& decision, unsigned callbackCount)
     {
         if (failed) return {"FSR FG failed; restart required.", SettingsStatusKind::Error};
-        if (!owned) return {"FSR FG unavailable on the current presenter; backend 2 requires restart.", SettingsStatusKind::Neutral};
+        if (!owned) return {"FSR FG unavailable on the current presenter; selecting an FSR FG presenter requires restart.", SettingsStatusKind::Neutral};
         if (!requested) return {"FSR FG off; AMD presenter remains active.", SettingsStatusKind::Neutral};
         if (!submitted) return {"FSR FG requested; waiting for a completed temporal source.", SettingsStatusKind::Pending};
         if (decision.generate && callbackCount) return {"FSR FG active (generation callback observed).", SettingsStatusKind::Success};

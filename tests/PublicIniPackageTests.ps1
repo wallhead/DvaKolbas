@@ -16,6 +16,9 @@ $changed=Set-PackageIniValues $lines @{
 }
 $target=Join-Path $Output 'named.ini';[IO.File]::WriteAllLines($target,[string[]]$changed)
 $text=[IO.File]::ReadAllText($target)
+if(([regex]::Matches($text,'(?m)^; Whole numbers only\.\r?$')).Count -ne 12){
+    throw 'All 12 integer controls must document their whole-number restriction on a separate line'
+}
 foreach($choices in @('Values: Native | Quality | Balanced | Performance | UltraPerformance | UltraQuality.',
     'Values: Native | Quality | Balanced | Performance.', 'Values: FSR3 | Auto | FSR4.',
     'Values: Default | E | F | J | K | L | M.', 'Values: Off | On | Boost.',
@@ -56,8 +59,17 @@ foreach($invalid in @(
     @('[Upscaling]','Upscaler=FSR','MipLodBias=banana'),
     @('[Upscaling]','Upscaler=FSR','[FrameGeneration]','Enabled=maybe'),
     @('[Upscaling]','Upscaler=FSR','[Hotkeys]','ToggleOverlay=0'),
+    @('[Upscaling]','Upscaler=DLSS','[NR PASS 1]','Style=1.0'),
+    @('[Upscaling]','Upscaler=DLSS','[FrameGeneration]','NvidiaGeneratedFrames=2.0'),
+    @('[Upscaling]','Upscaler=DLSS','[FSR]','SourceColorEncoding=Gama22'),
+    @('[Upscaling]','Upscaler=DLSS','[NeuralRendering Advanced]','Profile=rtx41'),
+    @('[Upscaling]','Upscaler=DLSS','[Settings]','EnableUpscaler=false'),
     @('[Upscaling]','Upscaler=FSR','[FrameGeneration]','Enabled=true','[Upscaling Advanced]','FsrOrdinaryPresenter=true'))){
     $rejected=$false;try{Set-PackageIniValues $invalid @{} | Out-Null}catch{$rejected=$true}
     if(-not $rejected){throw 'Package decoder must reject the same invalid settings as runtime'}
+}
+foreach($name in @('Home','PageUp','PageDown','Delete','Tab')){
+    $named=Set-PackageIniValues @('[Upscaling]','Upscaler=DLSS','[Hotkeys]',('ToggleOverlay='+$name)) @{}
+    if(-not ($named -contains ('ToggleOverlay = '+$name))){throw "Named hotkey lost: $name"}
 }
 Write-Output 'PASS: packaging and runtime schema agree; Native/ML/derived FG and unknown comments preserved'

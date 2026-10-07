@@ -176,14 +176,13 @@
       "default": "Unknown",
       "comment": "Select the actual FSR source encoding before enabling the feature.",
       "restart": true,
-      "values": {},
-      "type": "Text",
-      "choices": [
-        "Unknown",
-        "Linear",
-        "Gamma22",
-        "SRGB"
-      ]
+      "values": {
+        "Unknown": "Unknown",
+        "Linear": "Linear",
+        "Gamma22": "Gamma22",
+        "SRGB": "SRGB"
+      },
+      "type": "Text"
     },
     {
       "internal_section": "FrameGeneration",
@@ -220,7 +219,7 @@
       "comment": "NVIDIA generated-frame count, excluding the real frame. Effective count is limited by the GPU/runtime. FSR FG generates one frame.",
       "restart": false,
       "values": {},
-      "type": "Number",
+      "type": "Integer",
       "range": "1-5",
       "choices": [
         "1=x2",
@@ -250,7 +249,7 @@
       "comment": "Dynamic MFG target. Zero uses the monitor refresh rate.",
       "restart": false,
       "values": {},
-      "type": "Number",
+      "type": "Integer",
       "range": "0, or 61-1000 output FPS"
     },
     {
@@ -273,7 +272,7 @@
       "comment": "NVIDIA output FPS cap. Zero means unlimited.",
       "restart": false,
       "values": {},
-      "type": "Number",
+      "type": "Integer",
       "range": "0, or 1-1000 FPS"
     },
     {
@@ -361,7 +360,7 @@
       "comment": "Requested NR pass count. Legacy executes at most two and keeps the saved choice.",
       "restart": false,
       "values": {},
-      "type": "Number",
+      "type": "Integer",
       "range": "1-3"
     },
     {
@@ -408,7 +407,7 @@
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number",
+      "type": "Integer",
       "range": "0-7"
     },
     {
@@ -508,7 +507,7 @@
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number",
+      "type": "Integer",
       "range": "0-7"
     },
     {
@@ -608,7 +607,7 @@
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number",
+      "type": "Integer",
       "range": "0-7"
     },
     {
@@ -744,7 +743,7 @@
       "comment": "Program-owned count of saved weather appearance entries.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Integer"
     },
     {
       "internal_section": "Experimental",
@@ -779,14 +778,13 @@
       "default": "Auto",
       "comment": "NR GPU profile. AMD NR is unsupported.",
       "restart": true,
-      "values": {},
-      "type": "Text",
-      "choices": [
-        "Auto",
-        "rtx20-30",
-        "rtx40",
-        "rtx50"
-      ]
+      "values": {
+        "Auto": "Auto",
+        "rtx20-30": "rtx20-30",
+        "rtx40": "rtx40",
+        "rtx50": "rtx50"
+      },
+      "type": "Text"
     },
     {
       "internal_section": "NeuralRendering",
@@ -796,14 +794,13 @@
       "default": "Unknown",
       "comment": "Select the actual NR source encoding before enabling the feature.",
       "restart": true,
-      "values": {},
-      "type": "Text",
-      "choices": [
-        "Unknown",
-        "Linear",
-        "Gamma22",
-        "SRGB"
-      ]
+      "values": {
+        "Unknown": "Unknown",
+        "Linear": "Linear",
+        "Gamma22": "Gamma22",
+        "SRGB": "SRGB"
+      },
+      "type": "Text"
     },
     {
       "internal_section": "NeuralRendering",
@@ -826,7 +823,7 @@
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number",
+      "type": "Integer",
       "choices": [
         "0=default",
         "1=shipping"
@@ -959,7 +956,7 @@
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number",
+      "type": "Integer",
       "choices": [
         "0=default",
         "1=shipping"
@@ -988,7 +985,7 @@
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number",
+      "type": "Integer",
       "choices": [
         "0=default",
         "1=shipping"
@@ -1277,7 +1274,7 @@
       "comment": "Interval used when performance logging is enabled.",
       "restart": false,
       "values": {},
-      "type": "Number",
+      "type": "Integer",
       "range": "1-120 seconds"
     },
     {
@@ -1345,6 +1342,24 @@
       "restart": false,
       "values": {},
       "type": "Number"
+    }
+  ],
+  "retired_inputs": [
+    {
+      "section": "Settings",
+      "key": "EnableUpscaler"
+    },
+    {
+      "section": "Experimental",
+      "key": "PureDarkFullDelegation"
+    },
+    {
+      "section": "Experimental",
+      "key": "SourceDLSSGBackend"
+    },
+    {
+      "section": "Debug",
+      "key": "AutoABTest"
     }
   ]
 }

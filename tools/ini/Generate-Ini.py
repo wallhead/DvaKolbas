@@ -22,7 +22,12 @@ def generate():
               '#pragma once', '#include <array>', '#include <span>', '#include <string_view>',
               'namespace TheosRenderPipeline::PublicIni {',
               'struct EnumValue { std::string_view publicValue, internalValue; };',
-              'struct Field { const char* internalSection; const char* internalKey; const char* section; const char* key; const char* defaultValue; const char* type; const char* codec; bool inherit; std::span<const EnumValue> values; };']
+              'struct Field { const char* internalSection; const char* internalKey; const char* section; const char* key; const char* defaultValue; const char* type; const char* codec; const char* reference; bool inherit; std::span<const EnumValue> values; };',
+              'struct RetiredInput { const char* section; const char* key; };',
+              'inline constexpr std::array RetiredInputs{']
+    for field in schema['retired_inputs']:
+        header.append('    RetiredInput{' + json.dumps(field['section']) + ',' + json.dumps(field['key']) + '},')
+    header.append('};')
     for index, field in enumerate(fields):
         if field["values"]:
             header.append(f'inline constexpr std::array enum{index}{{')
@@ -33,10 +38,14 @@ def generate():
     for index, field in enumerate(fields):
         args = [field[k] for k in ['internal_section', 'internal_key', 'section', 'key', 'default', 'type']]
         args.append(field.get('codec', ''))
+        args.append('[' + field['section'] + '] ' + field['key'])
         header.append('    Field{' + ','.join(json.dumps(s) for s in args) + ',' +
                       str(field.get('inherit', False)).lower() + ',' +
                       (f'enum{index}' if field['values'] else '{}') + '},')
-    header += ['};', '}']
+    header += ['};',
+               'inline constexpr const char* Reference(std::string_view section, std::string_view key) {',
+               '    for (const auto& field : Fields) if (section == field.internalSection && key == field.internalKey) return field.reference;',
+               '    return "[unknown]";', '}', '}']
     outputs = {ROOT / 'src/PublicIniSchema.h': '\n'.join(header) + '\n'}
     for example, overrides in [('package/SKSE/Plugins/RaZkolbaS.ini', {}),
                                ('package/examples/FSR-SR/RaZkolbaS.ini', {
@@ -62,6 +71,7 @@ def generate():
                 note = ('[restart] ' if field['restart'] else '') + field['comment']
                 lines += ['; ' + note]
                 if names: lines += ['; Values: ' + names + '.']
+                if field['type'] == 'Integer': lines += ['; Whole numbers only.']
                 if field.get('range'): lines += ['; Range: ' + field['range'] + '.']
                 lines += [(field['key'] + ' = ' + overrides.get(section + '/' + field['key'], field['default'])).rstrip()]
         outputs[ROOT / example] = '\n'.join(lines) + '\n'
@@ -78,6 +88,7 @@ def generate():
         description = field['comment']
         names = choices(field)
         if names: description += ' Values: ' + ', '.join(names) + '.'
+        if field['type'] == 'Integer': description += ' Whole numbers only.'
         if field.get('range'): description += ' Range: ' + field['range'] + '.'
         docs.append(f"| {field['section']} | {field['key']} | `{field['default']}` | {'Yes' if field['restart'] else 'No'} | {description.replace('|', '/')} |")
     outputs[ROOT / 'package/INI-SETTINGS.md'] = '\n'.join(docs) + '\n'

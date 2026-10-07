@@ -29,22 +29,22 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | FSR | SourceColorEncoding | `Unknown` | Yes | Select the actual FSR source encoding before enabling the feature. Values: Unknown, Linear, Gamma22, SRGB. |
 | FrameGeneration | Enabled | `true` | No | FG toggle. Disabling interpolation retains the selected presentation host. Values: true, false. |
 | FrameGeneration | FsrProvider | `FSR3` | Yes | FG provider, independent of upscaling. FSR4 ML FG is experimental; unsupported devices report an error. Values: FSR3, Auto, FSR4. |
-| FrameGeneration | NvidiaGeneratedFrames | `1` | No | NVIDIA generated-frame count, excluding the real frame. Effective count is limited by the GPU/runtime. FSR FG generates one frame. Values: 1=x2, 2=x3, 3=x4, 4=x5, 5=x6. Range: 1-5. |
+| FrameGeneration | NvidiaGeneratedFrames | `1` | No | NVIDIA generated-frame count, excluding the real frame. Effective count is limited by the GPU/runtime. FSR FG generates one frame. Values: 1=x2, 2=x3, 3=x4, 4=x5, 5=x6. Whole numbers only. Range: 1-5. |
 | FrameGeneration | NvidiaDynamicMFG | `false` | No | NVIDIA dynamic MFG, if supported by the runtime. Values: true, false. |
-| FrameGeneration | DynamicTargetFPS | `0` | No | Dynamic MFG target. Zero uses the monitor refresh rate. Range: 0, or 61-1000 output FPS. |
+| FrameGeneration | DynamicTargetFPS | `0` | No | Dynamic MFG target. Zero uses the monitor refresh rate. Whole numbers only. Range: 0, or 61-1000 output FPS. |
 | FrameGeneration | NvidiaUIRecomposition | `true` | No | NVIDIA: interpolate the HUD-less scene and UI separately. Values: true, false. |
-| Latency | OutputFPSLimit | `0` | No | NVIDIA output FPS cap. Zero means unlimited. Range: 0, or 1-1000 FPS. |
+| Latency | OutputFPSLimit | `0` | No | NVIDIA output FPS cap. Zero means unlimited. Whole numbers only. Range: 0, or 1-1000 FPS. |
 | Latency | Reflex | `On` | No | NVIDIA Reflex mode. Values: Off, On, Boost. |
 | Interface | NativeUI | `true` | No | Keep HUD/menu rendering at the output resolution. Required by community NR/FSR FG. Values: true, false. |
 | Interface | RequestLoadingArtwork | `true` | No | Request loading artwork on eligible cell transitions. Values: true, false. |
 | Interface | UIComposition | `Dedicated` | Yes | FSR FG and community NR require Dedicated. Values: Dedicated, HudlessDetection. |
 | NeuralRendering | Enabled | `false` | No | NR toggle; requires a compatible installed runtime. Values: true, false. |
 | NeuralRendering | Placement | `Before` | No | After order: DLSS/FSR -> NR -> FG -> UI. Values: Before, After. |
-| NeuralRendering | PassCount | `1` | No | Requested NR pass count. Legacy executes at most two and keeps the saved choice. Range: 1-3. |
+| NeuralRendering | PassCount | `1` | No | Requested NR pass count. Legacy executes at most two and keeps the saved choice. Whole numbers only. Range: 1-3. |
 | NeuralRendering | OnePassInCombat | `false` | No | Temporarily reduce two requested passes to one under selected conditions. Values: true, false. |
 | NeuralRendering | OnePassWeaponsDrawn | `false` | No | Temporarily reduce two requested passes to one while weapons or spells are drawn. Values: true, false. |
 | NeuralRendering | PassRecoverySeconds | `5` | No | Recovery delay after the selected one-pass conditions clear, measured in active gameplay. Range: 0-30 seconds. |
-| NR PASS 1 | Style | `0` | No | NR model style. Community game trials have checked styles 0-2. Range: 0-7. |
+| NR PASS 1 | Style | `0` | No | NR model style. Community game trials have checked styles 0-2. Whole numbers only. Range: 0-7. |
 | NR PASS 1 | Intensity | `1.0` | No | NR effect contribution. Zero disables it. Range: 0-2. |
 | NR PASS 1 | Tone | `1.0` | No | NR tone contribution. Zero disables it. Range: 0-2. |
 | NR PASS 1 | Structure | `1.0` | No | NR structure contribution. Zero disables it. Range: 0-2. |
@@ -52,7 +52,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | NR PASS 1 | AutoSkin | `false` | No | Let the NR runtime choose skin structure automatically. Values: true, false. |
 | NR PASS 1 | UICorrection | `false` | No | Keep false for a world-only pass with dedicated UI. Values: true, false. |
 | NR PASS 2 | UseSameSettings | `true` | No | Runs when PassCount is 2 or 3. Linked settings use pass 1. Unlinking restores these independent overrides; relinking does not erase them. Values: true, false. |
-| NR PASS 2 | Style | `0` | No | NR model style. Community game trials have checked styles 0-2. Range: 0-7. |
+| NR PASS 2 | Style | `0` | No | NR model style. Community game trials have checked styles 0-2. Whole numbers only. Range: 0-7. |
 | NR PASS 2 | Intensity | `1.0` | No | NR effect contribution. Zero disables it. Range: 0-2. |
 | NR PASS 2 | Tone | `1.0` | No | NR tone contribution. Zero disables it. Range: 0-2. |
 | NR PASS 2 | Structure | `1.0` | No | NR structure contribution. Zero disables it. Range: 0-2. |
@@ -60,7 +60,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | NR PASS 2 | AutoSkin | `false` | No | Let the NR runtime choose skin structure automatically. Values: true, false. |
 | NR PASS 2 | UICorrection | `false` | No | Keep false for a world-only pass with dedicated UI. Values: true, false. |
 | NR PASS 3 | UseSameSettings | `true` | No | Community NR only. Runs when PassCount=3; linked settings use pass 1. Values: true, false. |
-| NR PASS 3 | Style | `0` | No | NR model style. Community game trials have checked styles 0-2. Range: 0-7. |
+| NR PASS 3 | Style | `0` | No | NR model style. Community game trials have checked styles 0-2. Whole numbers only. Range: 0-7. |
 | NR PASS 3 | Intensity | `1.0` | No | NR effect contribution. Zero disables it. Range: 0-2. |
 | NR PASS 3 | Tone | `1.0` | No | NR tone contribution. Zero disables it. Range: 0-2. |
 | NR PASS 3 | Structure | `1.0` | No | NR structure contribution. Zero disables it. Range: 0-2. |
@@ -71,13 +71,13 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | Hotkeys | EnableNRHotkeys | `false` | Yes | opt-in to [=NR off and ]=NR on, including with the menu closed. Values: true, false. |
 | Appearance | Enabled | `false` | No | Optional weather/time/interior profiles for NR and sharpening. Edit in the Neural Rendering tab; shared profile files remain separate. Values: true, false. |
 | Appearance | SmoothingSeconds | `2.0` | No | Transition time for appearance presets. Range: 0-30 seconds. |
-| Appearance | WeatherCount | `0` | No | Program-owned count of saved weather appearance entries. |
+| Appearance | WeatherCount | `0` | No | Program-owned count of saved weather appearance entries. Whole numbers only. |
 | Upscaling Advanced | FsrOrdinaryPresenter | `false` | Yes | Diagnostic only: ordinary FSR presentation, with FG unavailable. Leave false. Values: true, false. |
 | NeuralRendering Advanced | Runtime | `Legacy` | Yes | Select the installed NR runtime path. Values: Legacy, Community. |
 | NeuralRendering Advanced | Profile | `Auto` | Yes | NR GPU profile. AMD NR is unsupported. Values: Auto, rtx20-30, rtx40, rtx50. |
 | NeuralRendering Advanced | SourceColorEncoding | `Unknown` | Yes | Select the actual NR source encoding before enabling the feature. Values: Unknown, Linear, Gamma22, SRGB. |
 | NeuralRendering Advanced | SdrBytesTrial | `false` | Yes | encoded SDR byte path. Required by the qualified community SDR trial. Values: true, false. |
-| NR PASS 1 Advanced | Preset | `0` | No | NR model preset. Community trial requires default. Values: 0=default, 1=shipping. |
+| NR PASS 1 Advanced | Preset | `0` | No | NR model preset. Community trial requires default. Values: 0=default, 1=shipping. Whole numbers only. |
 | NR PASS 1 Advanced | InputScale | `1.0` | No | NR internal render scale. Community trial requires Native. Range: 0.25-1; 0 or >=1 selects Native. |
 | NR PASS 1 Advanced | ResolveMethod | `Auto` | No | Advanced reconstruction mode; qualified SDR path uses Auto. Values: Auto, Residual, Ratio. |
 | NR PASS 1 Advanced | TransferStrength | `1.0` | No | NR detail transfer contribution. Range: 0-2. |
@@ -87,9 +87,9 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | NR PASS 1 Advanced | ColorIsHDR | `false` | No | Advanced NR colour-domain flag; must match the actual input. Values: true, false. |
 | NR PASS 1 Advanced | PeripheralCompression | `false` | No | Experimental preparation options; retain false for the qualified community trial. Values: true, false. |
 | NR PASS 1 Advanced | FusedPreparation | `false` | No | Experimental combined NR preparation; leave disabled unless testing. Values: true, false. |
-| NR PASS 2 Advanced | Preset | `0` | No | NR model preset. Community trial requires default. Values: 0=default, 1=shipping. |
+| NR PASS 2 Advanced | Preset | `0` | No | NR model preset. Community trial requires default. Values: 0=default, 1=shipping. Whole numbers only. |
 | NR PASS 2 Advanced | InputScale | `1.0` | No | NR internal render scale. Community trial requires Native. Range: 0.25-1; 0 or >=1 selects Native. |
-| NR PASS 3 Advanced | Preset | `0` | No | NR model preset. Community trial requires default. Values: 0=default, 1=shipping. |
+| NR PASS 3 Advanced | Preset | `0` | No | NR model preset. Community trial requires default. Values: 0=default, 1=shipping. Whole numbers only. |
 | NR PASS 3 Advanced | InputScale | `1.0` | No | NR internal render scale. Community trial requires Native. Range: 0.25-1; 0 or >=1 selects Native. |
 | HDROutput | Enabled | `false` | Yes | Experimental HDR10 from a finished SDR image. Requires Windows HDR and a restart. FSR does not support this path. With Community Shaders use its HDR Display. Values: true, false. |
 | HDROutput | MatchWindowsSDRBrightness | `true` | No | Use the Windows SDR brightness setting for HDR paper white. Values: true, false. |
@@ -114,7 +114,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | Debug | DirectDLSSOutput | `false` | No | Diagnostic direct DLSS output route; normally disabled. Values: true, false. |
 | Debug | LogFrameDiagnostics | `false` | No | identity and errors are always logged. Detailed samples are opt-in. Values: true, false. |
 | Debug | LogPerformanceMetrics | `false` | No | Write periodic performance measurements to the log. Values: true, false. |
-| Debug | PerformanceLogIntervalSeconds | `10` | No | Interval used when performance logging is enabled. Range: 1-120 seconds. |
+| Debug | PerformanceLogIntervalSeconds | `10` | No | Interval used when performance logging is enabled. Whole numbers only. Range: 1-120 seconds. |
 | Debug | LogMenuMetrics | `false` | No | Write menu/source diagnostics to the log; normally disabled. Values: true, false. |
 | Menu | WindowX | `40` | No | Program-owned menu geometry; saved by the End menu. |
 | Menu | WindowY | `40` | No | Program-owned menu geometry; saved by the End menu. |

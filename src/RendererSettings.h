@@ -195,7 +195,7 @@ inline const char* NeuralSettingsUnavailable(int mode, RendererSettingsCapabilit
     if (!capabilities.neuralOperational) { return "NR is unavailable after a runtime failure; turn NR off or restart Skyrim."; }
     if (!SupportsNeuralRenderingMode(mode, capabilities.externalWorld, capabilities.communityNeural) ||
         (!capabilities.externalWorld && !capabilities.dedicatedUI)) {
-        return "NR requires dedicated UI composition. Turn NR off to apply other changes, or set NativeUICompositionMode=0 in the INI and restart Skyrim.";
+        return "NR requires dedicated UI composition. Turn NR off to apply other changes, or set [Interface] UIComposition=Dedicated in the INI and restart Skyrim.";
     }
     return nullptr;
 }
@@ -217,7 +217,7 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     }
     if (draft.upscaleType != DLSS && draft.upscaleType != DLAA && draft.upscaleType != FSR)
     {
-        return "Choose DLSS, DLAA or FSR.";
+        return "Choose DLSS or FSR; DLSS Quality=Native selects DLAA.";
     }
     if (draft.upscaleType == FSR) {
         if (!capabilities.fsrBuilt) return "FSR is not included in this build.";
@@ -227,7 +227,7 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         else if(draft.generationBackend==2){
             if(!capabilities.fsrFgBuilt)return "FSR frame generation is not included in this build.";
             if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "FSR frame generation requires TRP's dedicated native UI and source ownership.";
-        } else return "FSR requires ordinary presentation (backend 0) or FSR frame generation (backend 2).";
+        } else return "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled.";
         if (draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural) return "Neural Rendering is unavailable with FSR.";
         if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";
         if (draft.dynamicResolution) return "Dynamic resolution is unavailable with FSR.";

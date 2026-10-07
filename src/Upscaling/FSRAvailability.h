@@ -1,5 +1,6 @@
 #pragma once
 #include "UpscalerBackend.h"
+#include "PublicIniSchema.h"
 #include <optional>
 #include <format>
 
@@ -13,10 +14,12 @@ namespace TheosRenderPipeline::Upscaling
         std::string upscaleReason{"FSR4 device support has not been checked; startup will validate it."};
         std::string generationReason{"FSR4 FG device support has not been checked; startup will validate it."};
     };
-    inline constexpr const char* kFsrSrRecovery =
-        "Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FSR] ProviderPolicy=Analytical, then restart.";
-    inline constexpr const char* kFsrFgRecovery =
-        "Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FrameGeneration] FsrProviderPolicy=Analytical, then restart.";
+    inline const std::string kFsrSrRecovery =
+        std::string("Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: ") +
+        PublicIni::Reference("FSR", "ProviderPolicy") + "=FSR3, then restart.";
+    inline const std::string kFsrFgRecovery =
+        std::string("Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: ") +
+        PublicIni::Reference("FrameGeneration", "FsrProviderPolicy") + "=FSR3, then restart.";
 
     inline std::string FsrStartupRecoveryMessage(const RuntimeError& error, ProviderPolicy sr, ProviderPolicy fg)
     {

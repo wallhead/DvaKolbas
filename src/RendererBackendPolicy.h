@@ -26,7 +26,7 @@ namespace TheosRenderPipeline
             if (config.generationBackend == 2) decision.presentation = PresentationKind::Fsr;
             if (!fsrBuilt) { decision.diagnostic = "FSR support is unavailable in this build."; }
             else if (config.generationBackend != 0 && config.generationBackend != 2) {
-                decision.diagnostic = "FSR requires ordinary presentation (backend 0) or the FSR presenter (backend 2).";
+                decision.diagnostic = "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled.";
             } else if (config.generationBackend == 0 && config.generationEnabled) {
                 decision.diagnostic = "Ordinary FSR presentation requires frame generation off.";
             } else if (config.generationBackend == 2 && !fsrFgBuilt) {
@@ -49,7 +49,7 @@ namespace TheosRenderPipeline
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
         if (mode != FSR) { return ValidateNvidiaBaseline(ini); }
         if (!fsrBuilt) { return "FSR support is unavailable in this build."; }
-        if (!ini.GetBoolValue("Settings", "EnableUpscaler", true)) { return "FSR requires EnableUpscaler=true."; }
+        if (!ini.GetBoolValue("Settings", "EnableUpscaler", true)) { return "FSR cannot start with upscaling disabled. Remove the obsolete [Settings] EnableUpscaler key."; }
         if (ini.GetBoolValue("Experimental", "PureDarkFullDelegation", false)) { return "Full renderer delegation is unavailable."; }
         const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
         if (presenter == 0) {
@@ -58,9 +58,9 @@ namespace TheosRenderPipeline
             if (!fsrFgBuilt) { return "FSR frame generation support is unavailable in this build."; }
             if (!ini.GetBoolValue("Settings", "NativeUI", true) ||
                 ini.GetLongValue("Experimental", "NativeUICompositionMode", 0) != 0) {
-                return "FSR frame generation requires NativeUI=true and dedicated NativeUICompositionMode=0.";
+                return "FSR frame generation requires [Interface] NativeUI=true and UIComposition=Dedicated.";
             }
-        } else { return "FSR requires ordinary presentation (backend 0) or FSR frame generation (backend 2)."; }
+        } else { return "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled."; }
         if (ini.GetBoolValue("SourceDLSSG", "NeuralRenderingEnabled", false) &&
 #if !defined(TRP_NO_NEURAL_RENDERING)
             !ini.GetBoolValue("NeuralRendering", "CommunityRuntime", false) &&

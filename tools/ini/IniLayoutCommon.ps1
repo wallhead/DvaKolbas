@@ -13,8 +13,16 @@ function Get-PublicIniSchema {
     }
     return $script:PublicIniSchema
 }
+function Get-NamedIniHotkeys {
+    return [ordered]@{End=35;Insert=45;Home=36;PageUp=33;PageDown=34;Delete=46;Tab=9}
+}
 function ConvertFrom-PublicIniValues([hashtable]$Settings) {
     $schema=Get-PublicIniSchema
+    foreach($input in $schema.retired_inputs){
+        if($Settings.ContainsKey($input.section+'/'+$input.key)){
+            throw "[$($input.section)] $($input.key) is obsolete. Remove this key and configure the named Upscaling, NeuralRendering and FrameGeneration sections."
+        }
+    }
     $result=@{};foreach($key in $Settings.Keys){$result[$key]=$Settings[$key]}
     $converted=@{}
     foreach($field in $schema.fields){
@@ -23,6 +31,11 @@ function ConvertFrom-PublicIniValues([hashtable]$Settings) {
         $value=if($Settings.ContainsKey($public)){[string]$Settings[$public]}else{[string]$field.default}
         $number=0.0
         $numeric=[double]::TryParse($value,[Globalization.NumberStyles]::Float,[Globalization.CultureInfo]::InvariantCulture,[ref]$number) -and [double]::IsFinite($number)
+        $integer=0
+        if($field.type -eq 'Integer' -and ($value -cnotmatch '^-?\d+$' -or
+            -not [int]::TryParse($value,[Globalization.NumberStyles]::AllowLeadingSign,[Globalization.CultureInfo]::InvariantCulture,[ref]$integer))){
+            throw "Invalid [$($field.section)] $($field.key): $value. Use a whole number from -2147483648 to 2147483647; decimals and exponents are not supported."
+        }
         if(($field.type -eq 'Number' -and -not $numeric) -or
            ($field.type -eq 'Bool' -and $value -cne 'true' -and $value -cne 'false')){
             throw "Invalid [$($field.section)] $($field.key): $value"
@@ -31,15 +44,15 @@ function ConvertFrom-PublicIniValues([hashtable]$Settings) {
             if($value -cne 'Auto' -and -not $numeric){throw 'Invalid [Upscaling] MipLodBias'}
             $converted[$internal]=if($value -ceq 'Auto'){'true'}else{'false'}
         }elseif($field.codec -eq 'Hotkey'){
-            $hotkey=@{End=35;Insert=45;Home=36;PageUp=33;PageDown=34;Delete=46;Tab=9}
-            if($hotkey.ContainsKey($value)){$value=[string]$hotkey[$value]}
-            elseif($value -match '^F([1-9]|1[0-2])$'){$value=[string](111+[int]$Matches[1])}
+            $hotkey=Get-NamedIniHotkeys
+            if($value -cin @($hotkey.Keys)){$value=[string]$hotkey[$value]}
+            elseif($value -cmatch '^F([1-9]|1[0-2])$'){$value=[string](111+[int]$Matches[1])}
             elseif($value -match '^0[xX]([0-9a-fA-F]+)$'){$value=[string][Convert]::ToInt32($Matches[1],16)}
             elseif($value -notmatch '^\d+$'){throw "Invalid [$($field.section)] $($field.key)"}
             if([int]$value -lt 1 -or [int]$value -gt 255){throw 'Invalid [Hotkeys] ToggleOverlay'}
             $converted[$internal]=$value
         }elseif($field.values.Count){
-            if(-not $field.values.Contains($value)){throw "Invalid [$($field.section)] $($field.key): $value"}
+            if(-not $field.values.Contains($value)){throw "Invalid [$($field.section)] $($field.key): $value. Use $(@($field.values.Keys) -join ', ')."}
             $converted[$internal]=[string]$field.values[$value]
         }else{$converted[$internal]=$value}
     }
@@ -74,7 +87,8 @@ function ConvertTo-PublicIniValues([hashtable]$Settings) {
         elseif($field.codec -eq 'MipLodBias'){$value=if($value -eq 'true'){'Auto'}else{[string]$Settings['Settings/MipLodBias']}}
         elseif($field.codec -eq 'Hotkey'){
             $code=if($value -match '^0x') {[Convert]::ToInt32($value.Substring(2),16)}else{[int]$value}
-            $value=if($code -eq 35){'End'}elseif($code -eq 45){'Insert'}elseif($code -ge 112 -and $code -le 123){'F'+[string]($code-111)}else{'0x'+$code.ToString('X')}
+            $name=@((Get-NamedIniHotkeys).GetEnumerator() | Where-Object {$_.Value -eq $code}) | Select-Object -First 1
+            $value=if($name){$name.Key}elseif($code -ge 112 -and $code -le 123){'F'+[string]($code-111)}else{'0x'+$code.ToString('X')}
         }elseif($public -eq 'Upscaling Advanced/FsrOrdinaryPresenter'){$value=if($mode -eq '4' -and $Settings['FrameGeneration/Backend'] -eq '0'){'true'}else{'false'}}
         elseif($field.values.Count){
             $found=$false
@@ -142,6 +156,7 @@ function Format-PublicIni([hashtable]$Values,[string[]]$SourceLines) {
                 $guidance='; '+$note+$field.comment
                 $lines.Add($guidance)
                 if($choices){$lines.Add('; Values: '+$choices+'.')}
+                if($field.type -eq 'Integer'){$lines.Add('; Whole numbers only.')}
                 if($field.range){$lines.Add('; Range: '+$field.range+'.')}
             }elseif($comments.ContainsKey($key)){$lines.AddRange([string[]]$comments[$key])}
             $lines.Add($key.Split('/',2)[1]+' = '+[string]$Values[$key])

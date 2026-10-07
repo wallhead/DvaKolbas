@@ -86,8 +86,8 @@ const char* NeuralUnavailableReason(int upscaleType, bool nrRuntimePresent)
     }
     if (!TheosRenderPipeline::CommunityShaders::Active() && !NvidiaHost::GetSingleton()->DedicatedUITextureMode())
     {
-        return "NR requires dedicated UI composition. Set NativeUICompositionMode=0 in the INI and "
-               "restart Skyrim. If it is already 0, check the log for a composition failure.";
+        return "NR requires dedicated UI composition. Set [Interface] UIComposition=Dedicated in the INI and "
+               "restart Skyrim. If it is already Dedicated, check the log for a composition failure.";
     }
     return nullptr;
 }

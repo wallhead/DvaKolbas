@@ -2,8 +2,10 @@
 #include "PublicIniSchema.h"
 #include <charconv>
 #include <cmath>
+#include <cstdint>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 namespace TheosRenderPipeline::PublicIni
 {
@@ -13,10 +15,17 @@ inline bool Number(std::string_view value)
     const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
     return result.ec == std::errc{} && result.ptr == value.data() + value.size() && std::isfinite(parsed);
 }
+inline bool Integer(std::string_view value)
+{
+    std::int32_t parsed{};
+    const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
+    return result.ec == std::errc{} && result.ptr == value.data() + value.size();
+}
+inline constexpr std::array<std::pair<const char*, long>, 7> NamedHotkeys{{{"End", 0x23L}, {"Insert", 0x2DL},
+    {"Home", 0x24L}, {"PageUp", 0x21L}, {"PageDown", 0x22L}, {"Delete", 0x2EL}, {"Tab", 0x09L}}};
 inline std::optional<long> Hotkey(std::string_view name)
 {
-    for (const auto [label, value] : {std::pair{"End", 0x23L}, {"Insert", 0x2DL}, {"Home", 0x24L},
-        {"PageUp", 0x21L}, {"PageDown", 0x22L}, {"Delete", 0x2EL}, {"Tab", 0x09L}}) {
+    for (const auto [label, value] : NamedHotkeys) {
         if (name == label) return value;
     }
     long value{};
@@ -35,8 +44,7 @@ inline std::optional<long> Hotkey(std::string_view name)
 }
 inline std::string HotkeyName(long value)
 {
-    if (value == 0x23) return "End";
-    if (value == 0x2D) return "Insert";
+    for (const auto [label, code] : NamedHotkeys) if (value == code) return label;
     if (value >= 0x70 && value <= 0x7B) return "F" + std::to_string(value - 0x70 + 1);
     char text[16]{};
     const auto encoded = std::to_chars(text, text + sizeof(text), value, 16);
@@ -45,6 +53,8 @@ inline std::string HotkeyName(long value)
 inline std::string Invalid(const Field& field)
 {
     std::string message = "[" + std::string(field.section) + "] " + field.key + " has an invalid value.";
+    if (std::string_view(field.type) == "Integer")
+        message += " Use a whole number from -2147483648 to 2147483647; decimals and exponents are not supported.";
     if (!field.values.empty()) {
         message += " Use ";
         for (std::size_t i = 0; i < field.values.size(); ++i) {
@@ -66,6 +76,11 @@ template<class Ini> std::string Decode(Ini& ini)
 {
     if (!ini.GetValue("Upscaling", "Upscaler", nullptr))
         return "RaZkolbaS.ini uses an obsolete or incomplete layout. Install the matching named INI or run the offline converter. Set [Upscaling] Upscaler=DLSS or FSR; choose Native in the provider's Quality setting.";
+    for (const auto& input : RetiredInputs) {
+        if (ini.GetValue(input.section, input.key, nullptr))
+            return "[" + std::string(input.section) + "] " + input.key +
+                " is obsolete. Remove this key and configure the named Upscaling, NeuralRendering and FrameGeneration sections.";
+    }
     // Snapshot before changing same-named keys such as DLSS/Preset and FSR/Quality.
     std::vector<std::optional<std::string>> decoded;
     decoded.reserve(Fields.size());
@@ -89,6 +104,7 @@ template<class Ini> std::string Decode(Ini& ini)
             }
             if (!found) return Invalid(field);
         } else if (std::string_view(field.type) == "Number" && !Number(value)) return Invalid(field);
+        else if (std::string_view(field.type) == "Integer" && !Integer(value)) return Invalid(field);
         else if (std::string_view(field.type) == "Bool" && value != "true" && value != "false") return Invalid(field);
         decoded.emplace_back(std::move(value));
     }

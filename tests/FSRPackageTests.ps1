@@ -39,9 +39,15 @@ $originalManifest | Set-Content -LiteralPath (Join-Path $package 'manifest.json'
 $config=Join-Path $package 'SKSE/Plugins/RaZkolbaS.ini'
 $configOriginal=[IO.File]::ReadAllText($config)
 foreach($encoding in @('Unknown','Guess','')) {
-    $lines=Set-PackageIniValues ($configOriginal -split '\r?\n') @{'FSR/SourceColorEncoding'=$encoding}
+    # Corrupt the staged file directly: the schema-aware writer now rejects
+    # invalid fixed choices before it could create a validator fixture.
+    $section=''
+    $lines=@($configOriginal -split '\r?\n' | ForEach-Object {
+        if($_ -match '^\[([^\]]+)\]$'){$section=$Matches[1]}
+        if($section -eq 'FSR' -and $_ -match '^\s*SourceColorEncoding\s*='){'SourceColorEncoding = '+$encoding}else{$_}
+    })
     [IO.File]::WriteAllLines($config,$lines)
-    if((Read-PackageIni $config)['FSR/SourceColorEncoding'] -cne $encoding){throw 'Color mutation did not apply'}
+    if((Read-PackageIni $config -Raw)['FSR/SourceColorEncoding'] -cne $encoding){throw 'Color mutation did not apply'}
     $manifest=$originalManifest | ConvertFrom-Json
     foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/RaZkolbaS.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
     $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
@@ -61,7 +67,7 @@ foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/RaZkolbaS.in
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
 Rejected {& $validate -Edition $Edition -PackageDirectory $package} 'InvalidCaseQuality'
 [IO.File]::WriteAllLines($config,(Set-PackageIniValues ($configOriginal -split '\r?\n') @{'Experimental/PureDarkFullDelegation'='true'}))
-if((Read-PackageIni $config)['Experimental/PureDarkFullDelegation'] -ne 'true'){throw 'Delegation mutation did not apply'}
+if((Read-PackageIni $config -Raw)['Experimental/PureDarkFullDelegation'] -ne 'true'){throw 'Delegation mutation did not apply'}
 $manifest=$originalManifest | ConvertFrom-Json
 foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/RaZkolbaS.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
