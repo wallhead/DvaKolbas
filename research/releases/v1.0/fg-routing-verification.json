@@ -1,0 +1,46 @@
+{
+  "archivePath": "C:/Users/user/Downloads/RaZKolbaS DLSS FSR FG NR v1.0.zip",
+  "archiveSha256": "125BA3CC6DE72B2D991BC7DAD005BD602B7936D807D4CE2008791DFDCF05D74A",
+  "archiveBytes": 346190202,
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "ffc1f4ec8169",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "checksPassed": 75,
+  "redGreenVerified": true,
+  "installed": [
+    {
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\fg-routing-ffc1f4e\\rollback\\TESV_EX",
+      "dllSha256": "5D6C3E4F0B8E5C5389DACDF48C0226E4E1FE58E94322EE511335814698CCA72E",
+      "dll": "D:/TESV_EX/MO2/mods/RaZKolbaS DLSS FSR FG NR v1.0/SKSE/Plugins/RaZkolbaS.dll",
+      "iniUnchanged": true,
+      "target": "TESV_EX"
+    },
+    {
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\fg-routing-ffc1f4e\\rollback\\V54",
+      "dllSha256": "5D6C3E4F0B8E5C5389DACDF48C0226E4E1FE58E94322EE511335814698CCA72E",
+      "dll": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/RaZkolbas DLSS FSR FG NR/SKSE/Plugins/RaZkolbaS.dll",
+      "iniUnchanged": true,
+      "target": "V54"
+    },
+    {
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\fg-routing-ffc1f4e\\rollback\\Tester",
+      "dllSha256": "5D6C3E4F0B8E5C5389DACDF48C0226E4E1FE58E94322EE511335814698CCA72E",
+      "dll": "C:/Users/user/Downloads/RaZKolbaS RTX3050 update/RaZkolbaS.dll",
+      "iniUnchanged": true,
+      "target": "Tester"
+    }
+  ],
+  "mo2SettingsChanged": false,
+  "actualSkyrimTestThisUpdate": false,
+  "ordinaryPresenter": "INI and developer controls only",
+  "normalProviderSelection": {
+    "DLSS_DLAA": 1,
+    "FSR": 2
+  },
+  "fgOffRetainsPresenter": true
+}
