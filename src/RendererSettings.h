@@ -63,7 +63,7 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
         draft.sourceDLSSG.hdrOutput.enabled = next.hdrEnabled;
         draft.dynamicResolution = next.dynamicResolution;
     } else if (mode == FSR) {
-        draft.generationBackend = 0;
+        draft.generationBackend = 2;
         draft.generationEnabled = false;
         draft.sourceDLSSG.neuralEnabled = false;
         draft.sourceDLSSG.hdrOutput.enabled = false;

@@ -62,6 +62,7 @@ void ImmediateMenuEdits()
     before = draft;
     SetRendererUpscaleMode(draft, FSR);
     caps.fsrBuilt = true;
+    caps.fsrFgBuilt = true;
     Require(ApplyRendererSettingsEdits(before, draft, apply) && active.upscaleType == FSR,
         "provider changes automatically stage valid startup settings");
     before = draft;
@@ -248,8 +249,8 @@ void DraftModeRoundTrip()
         draft.sourceDLSSG.hdrOutput.enabled=requested;
         draft.dynamicResolution=requested;
         SetRendererUpscaleMode(draft,FSR);
-        Require(!draft.generationEnabled&&!draft.sourceDLSSG.neuralEnabled&&!draft.sourceDLSSG.hdrOutput.enabled&&!draft.dynamicResolution,
-            "FSR mode stages compatible ordinary defaults");
+        Require(draft.generationBackend==2&&!draft.generationEnabled&&!draft.sourceDLSSG.neuralEnabled&&!draft.sourceDLSSG.hdrOutput.enabled&&!draft.dynamicResolution,
+            "FSR mode selects its FG presenter with interpolation off, ready for live toggles");
         SetRendererUpscaleMode(draft,mode);
         Require(draft.generationEnabled==requested&&draft.sourceDLSSG.neuralEnabled==requested&&draft.sourceDLSSG.hdrOutput.enabled==requested&&draft.dynamicResolution==requested,
             "returning to NVIDIA draft restores FG NR and HDR choices");

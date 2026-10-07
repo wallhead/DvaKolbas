@@ -47,7 +47,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
 #endif
             bool requested=frameGen->RuntimeInterpolationRequested();
             const auto previousBackend=settingsDraft.generationBackend;
-            const bool liveChanged=DrawFsrGenerationControls(built,nvidiaHost->FsrFgActive(),settingsDraft.generationBackend,requested);
+            const bool liveChanged=DrawFsrGenerationControls(built,nvidiaHost->FsrFgActive(),settingsDraft.generationBackend,requested,showDeveloperControls);
             if(settingsDraft.generationBackend!=previousBackend) {
                 // A presenter choice stages startup defaults; only the checkbox sends a live request.
                 settingsDraft.generationEnabled=settingsDraft.generationBackend==2 && requested;

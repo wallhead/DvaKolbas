@@ -50,8 +50,11 @@ AMD currently uses **Analytical 3.1.5**. The menu shows this fixed provider and
 does not offer Compatible/ML until that path has been validated. This provider
 policy is not a claim of completed AMD hardware testing.
 
-`[FrameGeneration] Backend=0` selects FSR without FG; `Backend=2` selects the FSR
-FG presenter. Backend changes require restart. With backend 2 already active,
+Normal provider selection uses `[FrameGeneration] Backend=1` for DLSS/DLAA on
+NVIDIA, and `Backend=2` for FSR on NVIDIA or AMD. The FG toggle retains the backend
+when interpolation is off. `Backend=0` is reserved for diagnostic SR-only testing;
+it is available through the INI or developer controls, rather than the normal menu.
+Backend changes require restart. With backend 2 already active,
 the FG checkbox toggles interpolation live. A saved NVIDIA FG request is not
 automatically converted into enabled FSR FG.
 

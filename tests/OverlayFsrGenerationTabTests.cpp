@@ -4,6 +4,45 @@
 #include <stdexcept>
 #include "OverlayFsrGenerationControls.h"
 static void Require(bool value,const char* reason){if(!value)throw std::runtime_error(reason);}
+static void NormalToggleRetainsPresenter()
+{
+    ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
+    unsigned char* pixels;int width,height;io.Fonts->GetTexDataAsRGBA32(&pixels,&width,&height);
+    long backend=2;bool requested=true,changed=false;ImVec2 checkbox{};
+    auto frame=[&]{
+        ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
+        ImGui::Begin("Normal FG interaction");
+        checkbox=ImGui::GetCursorScreenPos();checkbox.x+=8;
+        checkbox.y+=ImGui::GetTextLineHeightWithSpacing()+ImGui::GetFrameHeight()/2;
+        changed|=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,true,backend,requested);
+        ImGui::End();ImGui::Render();
+    };
+    frame();frame();io.AddMousePosEvent(checkbox.x,checkbox.y);io.AddMouseButtonEvent(0,true);frame();
+    io.AddMouseButtonEvent(0,false);frame();
+    Require(!requested&&changed&&backend==2,"normal FG toggle disables interpolation while retaining presenter 2");
+    Require(ImGui::GetCurrentContext()->OpenPopupStack.empty(),"normal menu does not expose ordinary presentation dropdown");
+    changed=false;io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();
+    Require(requested&&changed&&backend==2,"normal FG toggle can resume interpolation without switching presenters");
+    ImGui::DestroyContext();
+}
+static void DiagnosticHostCanStageFg()
+{
+    ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
+    unsigned char* pixels;int width,height;io.Fonts->GetTexDataAsRGBA32(&pixels,&width,&height);
+    long backend=0;bool requested=false,changed=false;ImVec2 button{};
+    auto frame=[&]{
+        ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
+        ImGui::Begin("Diagnostic host to normal FG");
+        button=ImGui::GetCursorScreenPos();button.x+=50;
+        button.y+=ImGui::GetTextLineHeightWithSpacing()+ImGui::GetFrameHeight()/2;
+        changed|=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,false,backend,requested);
+        ImGui::End();ImGui::Render();
+    };
+    frame();frame();Require(backend==0,"opening the normal menu preserves an explicit diagnostic INI choice");
+    io.AddMousePosEvent(button.x,button.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();
+    Require(backend==2&&!requested&&!changed,"diagnostic host can stage normal FSR FG support without activating the old host");
+    ImGui::DestroyContext();
+}
 static void OrdinarySelectionKeepsLiveRequest()
 {
     ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
@@ -13,7 +52,7 @@ static void OrdinarySelectionKeepsLiveRequest()
         ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
         ImGui::Begin("Presenter interaction");
         combo=ImGui::GetCursorScreenPos();combo.x+=100;combo.y+=ImGui::GetTextLineHeightWithSpacing()+ImGui::GetFrameHeight()/2;
-        changed=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,true,backend,requested);
+        changed=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,true,backend,requested,true);
         ImGui::End();ImGui::Render();
     };
     frame();frame();io.AddMousePosEvent(combo.x,combo.y);io.AddMouseButtonEvent(0,true);frame();
@@ -39,7 +78,7 @@ static void PendingOrdinaryKeepsCurrentCheckboxLive()
         ImGui::Begin("Live AMD with ordinary pending");
         checkbox=ImGui::GetCursorScreenPos();checkbox.x+=8;
         checkbox.y+=2*ImGui::GetTextLineHeightWithSpacing()+ImGui::GetFrameHeightWithSpacing()+ImGui::GetFrameHeight()/2;
-        changed|=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,true,backend,requested);
+        changed|=TheosRenderPipeline::Overlay::DrawFsrGenerationControls(true,true,backend,requested,true);
         ImGui::End();ImGui::Render();
     };
     frame();frame();io.AddMousePosEvent(checkbox.x,checkbox.y);io.AddMouseButtonEvent(0,true);frame();
@@ -50,6 +89,8 @@ static void PendingOrdinaryKeepsCurrentCheckboxLive()
 int main()
 {
  try {
+    NormalToggleRetainsPresenter();
+    DiagnosticHostCanStageFg();
     OrdinarySelectionKeepsLiveRequest();
     PendingOrdinaryKeepsCurrentCheckboxLive();
     for(bool built:{false,true})for(bool owned:{false,true}) {

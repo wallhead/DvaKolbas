@@ -88,7 +88,7 @@ int main(int argc,char** argv) {
   fgIni.SetLongValue("FrameGeneration", "UICompositionMode",1);Require(ValidateFgStartup(fgIni,true),"startup requires dedicated UI");
   fgIni.SetLongValue("FrameGeneration", "UICompositionMode",0);fgIni.SetBoolValue("DynamicResolution","Enabled",true);
   Require(ValidateFgStartup(fgIni,true),"startup keeps fixed extent requirement");
-  if(argc==3){CSimpleIniA legacy,example;Require(legacy.LoadFile(argv[1])>=0 && example.LoadFile(argv[2])>=0,"package INIs readable");Require(legacy.GetLongValue("Settings","UpscaleType",-1)==DLAA,"default Native NVIDIA selection preserved");Require(!ValidateRendererConfiguration(example,true) && ReadFsrSettings(example),"example is valid FSR only");}
+  if(argc==3){CSimpleIniA legacy,example;Require(legacy.LoadFile(argv[1])>=0 && example.LoadFile(argv[2])>=0,"package INIs readable");Require(legacy.GetLongValue("Settings","UpscaleType",-1)==DLAA,"default Native NVIDIA selection preserved");Require(!ValidateRendererConfiguration(example,true,true) && ReadFsrSettings(example),"example is valid FSR with its FG-ready presenter");Require(example.GetLongValue("FrameGeneration","Backend",-1)==2&&!example.GetBoolValue("FrameGeneration","Enabled",true),"SR example retains backend 2 with interpolation off");}
   std::cout<<"PASS: SettingsLifecycle UnsupportedCombinationReason RequestedIsNotActive\n";
   return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}
