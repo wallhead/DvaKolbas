@@ -67,10 +67,12 @@ static std::uint64_t Pixels(Rig& rig,ID3D11Texture2D* staging,Extent size)
 }
 int main(int argc,char** argv)
 {
-    unsigned frames=1000,recreate=25;std::filesystem::path runtimeDirectory,report="out/validation/fsr-gpu.json";
+    bool sharpnessCheck=false; unsigned frames=1000,recreate=25;std::filesystem::path runtimeDirectory,report="out/validation/fsr-gpu.json";
     for(int i=1;i<argc;++i){std::string argument=argv[i];Require(i+1<argc,"smoke option needs value");std::string value=argv[++i];
-        if(argument=="--frames")frames=std::stoul(value);else if(argument=="--recreate")recreate=std::stoul(value);else if(argument=="--output")report=value;
+        if(argument=="--sharpness-check"){Require(value=="true","sharpness check expects true");sharpnessCheck=true;}
+        else if(argument=="--frames")frames=std::stoul(value);else if(argument=="--recreate")recreate=std::stoul(value);else if(argument=="--output")report=value;
         else if(argument=="--runtime")runtimeDirectory=std::filesystem::absolute(value);else if(argument=="--debug")Require(value=="auto","debug auto only");else Require(false,"unknown smoke option");}
+    if(sharpnessCheck){frames=128;recreate=4;}
     Require(recreate>0 && frames>=recreate*9,"at least nine temporal frames per context for reentry coverage");
     if(runtimeDirectory.empty()||!std::filesystem::exists(runtimeDirectory/"amd_fidelityfx_loader_dx12.dll")){std::puts("SKIPPED: pinned runtime unavailable");return 77;}
     auto plugin=std::filesystem::absolute(report).parent_path()/"runtime-plugin";std::filesystem::create_directories(plugin/"FSR");
@@ -86,12 +88,15 @@ int main(int argc,char** argv)
     D3D11_BUFFER_DESC cb{};cb.ByteWidth=sizeof(Constants);cb.Usage=D3D11_USAGE_DEFAULT;cb.BindFlags=D3D11_BIND_CONSTANT_BUFFER;
     ComPtr<ID3D11Buffer> constants;Check(rig.device11->CreateBuffer(&cb,nullptr,&constants),"geometry constants");
     unsigned dispatched{},readbacks{},changed{},inflightVerified{},spatialFrames{},invalidFrames{},resetFrames{};std::uint64_t sourceId{},previousHash{};std::size_t firstPeakResources{},firstPeakHeaps{};
+    std::array<std::uint64_t,4> sharpnessHashes{};
     for(unsigned cycle=0;cycle<recreate;++cycle){
+        if(sharpnessCheck)sourceId=0;
         {
             auto bridge=std::make_shared<Interop>();rig.Initialize(*bridge);
             Extent display{cycle%4==0?321u:641u,cycle%4==0?181u:361u};auto quality=static_cast<Quality>(cycle%4);
+            if(sharpnessCheck){display={321,181};quality=cycle<2?Quality::Quality:Quality::NativeAA;}
             auto render=Value(runtime->QueryRenderExtent(rig.device12.Get(),provider,quality,display));
-            FsrUpscaler fsr;Accepted(fsr.SetRetirementBridge(bridge));bool inverted=cycle%2!=0;Accepted(fsr.SetInputPolicy({inverted,false,false,true}));
+            FsrUpscaler fsr;Accepted(fsr.SetRetirementBridge(bridge));bool inverted=!sharpnessCheck && cycle%2!=0;Accepted(fsr.SetInputPolicy({inverted,false,false,true}));
             ffxCreateBackendDX12AllocationCallbacksDesc allocation{};allocation.header.type=FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_DX12_ALLOCATION_CALLBACKS;
             allocation.pfnFfxResourceAllocator=AllocateResource;allocation.pfnFfxResourceDeallocator=FreeResource;allocation.pfnFfxHeapAllocator=AllocateHeap;allocation.pfnFfxHeapDeallocator=FreeHeap;
             Accepted(fsr.SetAllocationCallbacks(allocation));Accepted(fsr.Initialize(runtime,rig.device12.Get(),provider,quality,render,display));Require(Value(fsr.ActualProvider()).id==provider.id,"actual analytical provider retained");
@@ -109,7 +114,7 @@ int main(int argc,char** argv)
             GpuFrameResources gpu{color.texture12.Get(),depth.texture12.Get(),motion.texture12.Get(),output.texture12.Get()};UpscaleFrame frame;frame.backend=BackendKind::Fsr;frame.render=frame.subrect=render;frame.display=display;
             FsrFrameAdapter adapter(fsr,bridge,gpu,color.texture11.Get(),depth.texture11.Get(),motion.texture11.Get(),output.texture11.Get(),ColorEncoding::Linear);
             frame.color=frame.input=color.texture11.Get();frame.depth=depth.texture11.Get();frame.motion=motion.texture11.Get();frame.output=handoff.Get();
-            frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;frame.colorIsLinear=true;frame.deltaMilliseconds=16;frame.sharpness=0.25f;
+            frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;frame.colorIsLinear=true;frame.deltaMilliseconds=16;frame.sharpness=sharpnessCheck?(cycle%2?1.0f:0.0f):0.25f;
             frame.motionConvention={1,1,true,false};frame.camera.identity=1;frame.camera.nearDistance=0.1f;frame.camera.farDistance=100;frame.camera.verticalFovRadians=1;frame.camera.depthInverted=inverted;
             DirectX::XMFLOAT4X4 projection,view;DirectX::XMStoreFloat4x4(&projection,DirectX::XMMatrixPerspectiveFovLH(1,float(display.width)/display.height,0.1f,100));
             if(inverted)for(unsigned row=0;row<4;++row)projection.m[row][2]=projection.m[row][3]-projection.m[row][2];std::memcpy(frame.camera.projection.data(),&projection,sizeof(projection));
@@ -135,8 +140,15 @@ int main(int argc,char** argv)
             }
             peakMemory=std::max(peakMemory,memory());Accepted(fsr.DestroyAfterRetirement());Require(liveResources.empty()&&liveHeaps.empty(),"every instrumented SDK allocation destroyed after retirement");
         }
+        if(sharpnessCheck)sharpnessHashes[cycle]=previousHash;
         auto retired=memory();minRetiredMemory=std::min(minRetiredMemory,retired);maxRetiredMemory=std::max(maxRetiredMemory,retired);
         if(cycle==3){firstPeakResources=peakResources;firstPeakHeaps=peakHeaps;}if(cycle>=4)Require(peakResources<=firstPeakResources&&peakHeaps<=firstPeakHeaps,"SDK resource peaks bounded across recreation");
+    }
+    if(sharpnessCheck){
+        Require(sharpnessHashes[0]!=sharpnessHashes[1],"Quality FSR sharpness 0/1 must change identical-scene pixels");
+        Require(sharpnessHashes[2]!=sharpnessHashes[3],"Native AA FSR sharpness 0/1 must change identical-scene pixels");
+        std::printf("PASS: FSR RCAS changes pixels at Quality and Native AA: %llu/%llu %llu/%llu\n",
+            sharpnessHashes[0],sharpnessHashes[1],sharpnessHashes[2],sharpnessHashes[3]);
     }
     Require(changed>recreate && readbacks>=recreate && inflightVerified==recreate,"changing output and multiple in-flight frames in every context");
     Require(spatialFrames==recreate && invalidFrames==recreate && resetFrames==recreate*3,"one first-frame, invalid-input reentry and loading-exit reset per context");
@@ -144,7 +156,7 @@ int main(int argc,char** argv)
         allocatedResources,allocatedHeaps,peakResources,peakHeaps,static_cast<unsigned long long>(maxRetiredMemory-minRetiredMemory));
     Require(allocatedResources>0||allocatedHeaps>0,"official allocation callbacks observed SDK allocations");Require(maxRetiredMemory-minRetiredMemory<64ull*1024*1024,"retired GPU memory growth bounded");rig.ValidateDebug();
     auto luid=rig.device12->GetAdapterLuid();std::filesystem::create_directories(report.parent_path());std::ofstream json(report);
-    json<<"{\n\"result\":\"PASS\",\n\"frames\":"<<dispatched<<",\"recreations\":"<<recreate<<",\"readbacks\":"<<readbacks<<",\"changingSamples\":"<<changed<<",\"inflightContexts\":"<<inflightVerified
+    json<<"{\n\"sharpnessComparison\":"<<(sharpnessCheck?"true":"false")<<",\n\"sharpnessOutputHashes\":["<<sharpnessHashes[0]<<","<<sharpnessHashes[1]<<","<<sharpnessHashes[2]<<","<<sharpnessHashes[3]<<"],\n\"result\":\"PASS\",\n\"frames\":"<<dispatched<<",\"recreations\":"<<recreate<<",\"readbacks\":"<<readbacks<<",\"changingSamples\":"<<changed<<",\"inflightContexts\":"<<inflightVerified
         <<",\n\"productionFrameAdapter\":true,\"nativeUiSentinelChecked\":true,\"spatialFrames\":"<<spatialFrames<<",\"invalidInputAttempts\":"<<invalidFrames<<",\"historyResetFrames\":"<<resetFrames
         <<",\n\"providerId\":"<<provider.id<<",\"providerName\":\""<<provider.name<<"\",\"adapterLuidHigh\":"<<luid.HighPart<<",\"adapterLuidLow\":"<<luid.LowPart
         <<",\n\"d3d11DebugValidated\":"<<(rig.messages11?"true":"false")<<",\"d3d12DebugValidated\":"<<(rig.messages12?"true":"false")

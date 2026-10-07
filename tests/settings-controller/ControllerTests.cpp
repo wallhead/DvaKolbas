@@ -147,6 +147,16 @@ int main(){try{
     fsrStartup.fsr.sourceColorEncoding=Upscaling::ColorEncoding::Gamma22;
     host.configuration.Initialize(fsrStartup);host.configuration.BeginSubmission();host.configuration.Completed(true);
     host.fsrFg=true;pipeline.saveResult=true;fg.settings.generationBackend=2;fg.RequestRuntimeInterpolation(true);
+    for(const float sharpness : {.8f,0.0f,1.0f}) {
+        const auto before=controller.Capture(true,false);auto after=before;after.fsr.sharpness=sharpness;
+        const auto result=controller.ApplyLiveEdits(before,after);
+        Require(result.applied && !result.error && host.configuration.NeedsLiveChange(),
+            "FSR menu sharpness must queue a live edit");
+        host.ApplySourceUpscalerSettingsAfterPresent();
+        Require(host.configuration.Effective().fsr.sharpness==sharpness && pipeline.mFsrSettings.sharpness==sharpness &&
+                controller.Capture(true,false).fsr.sharpness==sharpness && !host.configuration.NeedsRestart(),
+            "FSR menu sharpness becomes effective after Present without restart");
+    }
     draft=controller.Capture(true,false);draft.generationBackend=0;draft.generationEnabled=false;
     Require(controller.Apply(draft,false).applied&&fg.RuntimeInterpolationRequested(),
         "resolved AMD FG owner remains live while ordinary presenter is staged");

@@ -390,10 +390,10 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         }
         status_=FsrFgActive()?"FSR ready on AMD presenter; FG awaits measured camera and completed UI":"FSR context ready on ordinary D3D11 presenter; waiting for validated source frames";
         const auto& settings=sourceUpscalerSettings_.Effective().fsr;
-        logger::info("[FSR startup] provider={} quality={} policy={} sourceColorEncoding={} render={}x{} output={}x{} presentation={} frameGeneration=context-deferred",
+        logger::info("[FSR startup] provider={} quality={} policy={} sourceColorEncoding={} sharpness={} render={}x{} output={}x{} presentation={} frameGeneration=context-deferred",
             fsrResources_->Provider().name,TheosRenderPipeline::Upscaling::QualityName(settings.quality),
             TheosRenderPipeline::Upscaling::ProviderPolicyName(settings.providerPolicy),
-            TheosRenderPipeline::Upscaling::ColorEncodingName(settings.sourceColorEncoding),
+            TheosRenderPipeline::Upscaling::ColorEncodingName(settings.sourceColorEncoding),settings.sharpness,
             renderWidth_,renderHeight_,outputWidth_,outputHeight_,FsrFgActive()?"AMD-D3D12":"ordinary-D3D11");
         return true;
     }

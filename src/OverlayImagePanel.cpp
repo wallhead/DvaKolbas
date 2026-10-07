@@ -263,7 +263,10 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             if(ImGui::Combo("Source color encoding##fsr",&encoding,encodings,4))settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);
             DrawSettingsHelp("Choose the actual Skyrim/ENB source encoding. Texture format does not determine it. Unknown prevents FSR startup; changing encoding requires Save and restart.");
             ImGui::SliderFloat("Sharpness##fsr",&settingsDraft.fsr.sharpness,0,1,"%.2f");
-            DrawSettingsHelp("FSR uses this sharpness value. DLSS sharpening settings do not affect FSR.");
+            DrawSettingsHelp("0 = off, 1 = maximum. Applies when you release the slider, without restarting. The NR tab's DLSS sharpening does not affect FSR.");
+            const auto* sharpnessHost=NvidiaHost::GetSingleton();
+            if(sharpnessHost->FsrActive())
+                DrawSettingsValue("Active FSR sharpness",std::format("{:.2f}",sharpnessHost->SourceUpscalerSettings().Effective().fsr.sharpness).c_str());
             ImGui::TextWrapped("Reactive and transparency masks are unavailable. Auto exposure is enabled. Camera jitter uses the selected provider.");
         } else {
         ImGui::Separator();

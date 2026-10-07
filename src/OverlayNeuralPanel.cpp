@@ -231,7 +231,7 @@ void DrawNeuralSettings(TheosRenderPipeline::SourceDLSSG::Preferences& draft, bo
         second.linked = false;
     }
 
-    DrawSettingsHeading("Sharpening");
+    DrawSettingsHeading("DLSS sharpening");
     if (BeginSettingRows("sharpening", label))
     {
         SettingRow("Sharpening", "SharpeningEnabled", false, cs, [&] {

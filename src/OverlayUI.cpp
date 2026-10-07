@@ -361,7 +361,7 @@ void OverlayUI::BuildUI()
     }
     ImGui::SetNextWindowSizeConstraints(
         ImVec2((std::min)(MinimumMenuWidth, displaySize.x), (std::min)(MinimumMenuHeight, displaySize.y)), displaySize);
-    if (!ImGui::Begin(Plugin::DISPLAY_NAME.data(), nullptr, ImGuiWindowFlags_NoCollapse))
+    if (!ImGui::Begin("RazKolbaS by WallHeaD###RaZkolbaS", nullptr, ImGuiWindowFlags_NoCollapse))
     {
         ImGui::End();
         return;

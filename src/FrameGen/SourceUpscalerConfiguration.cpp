@@ -32,7 +32,10 @@ void NvidiaHost::ApplySourceUpscalerSettingsAfterPresent()
     if (FsrActive()) {
         // Only dispatch sharpness changes live; fixed allocation/provider stay at startup values.
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);
-        AdoptEffectiveSourceUpscalerSettings();return;
+        AdoptEffectiveSourceUpscalerSettings();
+        logger::info("[FSR] applied live sharpness={:.3f} (0=off, 1=maximum); restartPending={} unsaved={}",
+            sourceUpscalerSettings_.Effective().fsr.sharpness,sourceUpscalerSettings_.NeedsRestart(),sourceUpscalerSettings_.Unsaved());
+        return;
     }
     auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
     auto* dlss = DLSSBackend::GetSingleton();

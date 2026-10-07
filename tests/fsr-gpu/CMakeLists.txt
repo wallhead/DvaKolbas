@@ -16,3 +16,6 @@ else()
 endif()
 add_test(NAME FsrPackage COMMAND "${TRP_PWSH_EXECUTABLE}" -NoProfile -File "${PROJECT_SOURCE_DIR}/tests/FSRPackageTests.ps1" -Edition "${fsrPackageEdition}" -BuildDirectory "${CMAKE_BINARY_DIR}" -RuntimeDirectory "${TRP_FSR_SDK_DIR}/runtime" -ScratchRoot "${CMAKE_BINARY_DIR}/package-tests")
 set_tests_properties(FsrPackage PROPERTIES TIMEOUT 120)
+
+add_test(NAME FsrSharpnessGpu COMMAND TRPFsrGpuSmoke --sharpness-check true --debug auto --runtime "${TRP_FSR_SDK_DIR}/runtime" --output "${CMAKE_BINARY_DIR}/validation/fsr-sharpness.json")
+set_tests_properties(FsrSharpnessGpu PROPERTIES TIMEOUT 120 SKIP_RETURN_CODE 77)

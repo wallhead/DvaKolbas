@@ -64,6 +64,15 @@ int main(int argc,char** argv) {
   Require(configuration.NeedsRestart() && configuration.Effective()==startup,"Apply retains active allocation");
   configuration.Saved();Require(configuration.Persisted()==requested,"Save stores requested allocation");
   requested.fsr.sharpness=.6f;configuration.Request(requested);Require(configuration.LiveCandidate().fsr.quality==startup.fsr.quality,"live candidate retains startup quality");
+  for(const float sharpness : {1.0f,0.0f,.6f}) {
+   requested.fsr.sharpness=sharpness;configuration.Request(requested);
+   Require(configuration.NeedsLiveChange(),"FSR sharpness edit must reach the live submission");
+   configuration.BeginSubmission();configuration.Completed(true);
+   Require(configuration.Effective().fsr.sharpness==sharpness && configuration.Effective().fsr.quality==startup.fsr.quality,
+       "live FSR sharpness changes without changing allocation");
+   Require(configuration.NeedsRestart() && configuration.Requested().fsr.quality==Quality::Performance,
+       "sharpness must preserve a separately staged render scale");
+  }
   configuration.Initialize(startup);configuration.BeginSubmission();configuration.Completed(true);requested=startup;requested.fsr.sourceColorEncoding=ColorEncoding::SRGB;configuration.Request(requested);
   Require(configuration.NeedsRestart() && configuration.LiveCandidate().fsr.sourceColorEncoding==startup.fsr.sourceColorEncoding,
       "encoding changes require restart and cannot alter an active frame adapter");

@@ -90,10 +90,10 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         if(PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails &&
             (host.evaluationCount_<3 || host.evaluationCount_%600==0)) {
             D3D11_TEXTURE2D_DESC motion{},depth{};frame.motion->GetDesc(&motion);frame.depth->GetDesc(&depth);
-            logger::info("[FSR frame] source={} deltaMs={} extent={}x{} jitter=({},{}) camera={} near={} far={} fov={} depthInverted={} unitsToMeters={} motionFormat={} depthFormat={} motionScale=({},{})",
+            logger::info("[FSR frame] source={} deltaMs={} extent={}x{} jitter=({},{}) camera={} near={} far={} fov={} depthInverted={} unitsToMeters={} motionFormat={} depthFormat={} motionScale=({},{}) sharpness={}",
                 frame.sourceId,frame.deltaMilliseconds,frame.render.width,frame.render.height,frame.jitterX,frame.jitterY,frame.camera.identity,
                 frame.camera.nearDistance,frame.camera.farDistance,frame.camera.verticalFovRadians,frame.camera.depthInverted,frame.camera.worldUnitsToMeters,
-                static_cast<unsigned>(motion.Format),static_cast<unsigned>(depth.Format),frame.motionConvention.scaleX,frame.motionConvention.scaleY);
+                static_cast<unsigned>(motion.Format),static_cast<unsigned>(depth.Format),frame.motionConvention.scaleX,frame.motionConvention.scaleY,frame.sharpness);
         }
         // Before-upscale ReShade edits the game-format image, so it retains the
         // encoded P3 route. Direct linear handoff preserves after-upscale effects.
