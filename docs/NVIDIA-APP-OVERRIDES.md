@@ -20,8 +20,13 @@ The game log records `[NVIDIA App Settings]` installation and suppressed values,
 
 On the actual NVIDIA rendering adapter, startup also reads the executable's DRS
 profile, including inherited values. It uses the full executable path to select
-the profile applied to that installation, and uses the current global profile
-only when NVAPI reports that the application is absent. Failed reads remain unknown. The snapshot uses a separate,
+the profile applied to that installation, and separately inspects the current
+global and base profiles. A missing application association starts at the global
+profile; a missing setting (`NVAPI_SETTING_NOT_FOUND`) proceeds to the next
+profile. A successful application result, including its reported inheritance
+location, always takes priority. Access, lookup and malformed-result errors
+remain unknown and do not fall through to a lower-priority Off value.
+The snapshot uses a separate,
 read-only DRS session, destroyed on every exit; NVAPI initialization is balanced
 with unload. Snapshot failure is diagnostic and does not block rendering. AMD
 renderers skip these NVIDIA calls, and NVIDIA renderers get the snapshot when
@@ -35,6 +40,19 @@ metadata](https://github.com/Orbmu2k/nvidiaProfileInspector/blob/master/nvidiaPr
 The Smooth Motion/HDR/vibrance/profile-selection keys are not a published NVIDIA
 runtime opt-out contract. In particular, do not infer that the absence of a
 Smooth Motion setting means the driver effect is disabled.
+
+Startup also uses NVIDIA's read-only
+[DRS enumeration API](https://docs.nvidia.com/nvapi/group__drsapi.html) to check
+whether the installed driver lists each observed setting ID. An unlisted ID
+can still be a readable private setting; enumeration never overrides a valid
+read. Enumeration is bounded to 8,192 IDs and an incomplete or unavailable list
+is reported as unknown. Logs include each profile's lookup/read status with
+NVAPI error text, current and predefined DWORD values, query scope, inheritance
+location and the final On/Off/Unknown Smooth Motion DX11 configuration. An absent
+API mask permits all APIs only when enable is known On and every available
+inheritance level has confirmed the mask is absent. Missing APIs or read errors
+do not establish that default. Configuration does not prove that driver
+interpolation is actively running.
 
 Smooth Motion configured for DX11 produces a startup log warning and a notice at
 the top of the Frame generation tab, including on the NVIDIA FSR path. The notice

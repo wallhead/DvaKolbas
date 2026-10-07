@@ -117,22 +117,54 @@ void ReportDriverSettings() {
         api.find=reinterpret_cast<decltype(api.find)>(query(0xeee566b2));
         api.global=reinterpret_cast<decltype(api.global)>(query(0x617bff9f));
         api.read=reinterpret_cast<decltype(api.read)>(query(0x73bf8338));
+        api.base=reinterpret_cast<decltype(api.base)>(query(0xda8466a0));
+        api.availableIds=reinterpret_cast<decltype(api.availableIds)>(query(0xf020614a));
+        const auto errorMessage=reinterpret_cast<int(__cdecl*)(int,char*)>(query(0x6c2d048c));
+        auto statusText=[errorMessage](int status) {
+            std::array<char,64> name{};
+            if(errorMessage&&errorMessage(status,name.data())==0) {
+                name.back()=0;return std::string(name.data());
+            }
+            return std::string("NVAPI status ")+std::to_string(status);
+        };
         std::array<wchar_t,32768> path{};
         const auto size=GetModuleFileNameW(nullptr,path.data(),static_cast<DWORD>(path.size()));
         const auto snapshot=InspectDriverSettings(api,size&&size<path.size()?std::wstring_view(path.data(),size):std::wstring_view{});
-        char text[320];
+        char text[768];
         std::snprintf(text,sizeof(text),"read-only driver settings snapshot: status=%d scope=%s; saved profiles unchanged",snapshot.status,snapshot.globalProfile?"global fallback":"application");Report(text);
-        if(snapshot.status==0)for(const auto& value:snapshot.values) {
+        for(std::size_t i=0;i<snapshot.profileStatus.size();++i) {
+            const auto status=snapshot.profileStatus[i];
+            std::snprintf(text,sizeof(text),"driver profile lookup: scope=%s status=%d (%s)",
+                DriverProfileName(static_cast<DriverProfile>(i)),status,statusText(status).c_str());Report(text);
+        }
+        std::snprintf(text,sizeof(text),"driver setting ID enumeration: status=%d (%s) count=%u; absent IDs may be private or unavailable, not proof of Off",
+            snapshot.enumerationStatus,statusText(snapshot.enumerationStatus).c_str(),snapshot.availableSettingCount);Report(text);
+        for(const auto& value:snapshot.values) {
+            for(std::size_t i=0;i<value.reads.size();++i) {
+                const auto& read=value.reads[i];
+                if(read.status==0)
+                    std::snprintf(text,sizeof(text),"driver setting %s (0x%08X): query=%s value=0x%08X location=%s predefinedValid=%u predefined=0x%08X currentPredefined=%u",
+                        value.name,value.id,DriverProfileName(static_cast<DriverProfile>(i)),read.value,DriverLocationName(read.location),
+                        static_cast<unsigned>(read.predefinedValid),read.predefined,static_cast<unsigned>(read.currentPredefined));
+                else
+                    std::snprintf(text,sizeof(text),"driver setting %s (0x%08X): query=%s status=%d (%s) value=unknown",
+                        value.name,value.id,DriverProfileName(static_cast<DriverProfile>(i)),read.status,statusText(read.status).c_str());
+                Report(text);
+            }
             if(value.status==0)
-                std::snprintf(text,sizeof(text),"observed %s (0x%08X): value=0x%08X location=%u; diagnostic only, not suppressed",value.name,value.id,value.value,value.location);
+                std::snprintf(text,sizeof(text),"observed %s (0x%08X): value=0x%08X query=%s location=%s public ID=%s; diagnostic only, not suppressed",
+                    value.name,value.id,value.value,DriverProfileName(value.source),DriverLocationName(value.location),DriverSettingSupportName(value.support));
             else
-                std::snprintf(text,sizeof(text),"observed %s (0x%08X): status=%d value=unknown; diagnostic only, not suppressed",value.name,value.id,value.status);
+                std::snprintf(text,sizeof(text),"observed %s (0x%08X): status=%d (%s) value=unknown public ID=%s absenceConfirmed=%u; diagnostic only, not suppressed",
+                    value.name,value.id,value.status,statusText(value.status).c_str(),DriverSettingSupportName(value.support),static_cast<unsigned>(value.absenceConfirmed));
             Report(text);
         }
         const auto configured=SmoothMotionDx11Configured(snapshot);
         Get().smoothMotion.store(configured);
+        std::snprintf(text,sizeof(text),"Smooth Motion DX11 configured=%s; driver configuration does not establish active interpolation",
+            configured==DriverConflict::Enabled?"On":configured==DriverConflict::Disabled?"Off":"Unknown");Report(text);
         if(configured==DriverConflict::Unknown)
-            Report("Smooth Motion DX11 configuration is unknown; this snapshot does not establish that driver interpolation is off.");
+            Report("Smooth Motion DX11 configuration is unknown; this snapshot does not establish that driver interpolation is off. Check NVIDIA App -> Graphics -> Skyrim -> Driver Settings -> Smooth Motion; set Off when using RaZkolbaS FG.");
         const auto present=GetModuleHandleW(L"NvPresent64.dll");
         if(present) {
             path.fill(0);const auto written=GetModuleFileNameW(present,path.data(),static_cast<DWORD>(path.size()));
