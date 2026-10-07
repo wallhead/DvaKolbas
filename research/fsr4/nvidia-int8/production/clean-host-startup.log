@@ -1,0 +1,3 @@
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+PASS: fresh-process plugin load; separate ordinary/FSR helper startup and native pixels; zero NVIDIA runtime modules. Skyrim startup NOT RUN.

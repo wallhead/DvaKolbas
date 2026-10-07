@@ -48,8 +48,8 @@ Files: tests/fsr-gpu/FSRGpuSmoke.cpp, tests/fsr-fg/FSRGenerationGpuSmoke.cpp, to
 Files: src/OverlayImagePanel.cpp, package INI documentation, tools/fsr candidate staging, research/fsr4 receipts.
 
 - [x] Keep explicit FSR3 and FSR4 menu/INI options and explain restart.
-- [ ] Build and stage a separate NVIDIA FSR4 candidate containing both runtime paths; verify payload hashes and portable metadata.
-- [ ] Finish focused review; hand off only when Skyrim start is needed. Keep AMD FSR4 and Skyrim acceptance open until actually tested.
+- [x] Build and stage a separate NVIDIA FSR4 candidate containing both runtime paths; verify payload hashes and portable metadata.
+- [x] Finish focused review; hand off only when Skyrim start is needed. Keep AMD FSR4 and Skyrim acceptance open until actually tested.
 
 ## Verification ledger
 
@@ -60,3 +60,5 @@ Files: src/OverlayImagePanel.cpp, package INI documentation, tools/fsr candidate
 - Leases reject concurrent write opens; contexts and DLL modules unload after host retirement. Private model allocations are uninstrumented; retired-memory range over32 recreations was7MiB, not a zero-allocation claim.
 - Focused independent review found no critical/important issue; per-effect diagnostic reporting was corrected.
 - Ruling: NVIDIA Auto stays on the official runtime; explicit FSR4 selects INT8. This avoids a cross-runtime fallback through the unqualified older analytical resource-query path.
+
+- Candidate archive: RaZKolbaS FSR3-FSR4 NVIDIA preview.zip, SHA256 b0c28c79906476c7bc4eecd9dd7659888342325510a3ae8989b23f087d8e0fb6. Clean Universal build a2147d030716; every archived file verified, both runtime folders retained, Native AA/explicit FSR4, NR and FG initially off. Not installed.
