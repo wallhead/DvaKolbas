@@ -1,3 +1,4 @@
+#include "PublicIni.h"
 #include "FrameGen/SourceFrameGeneration.h"
 #include "FrameGen/SourceDLSSGMFG.h"
 #include <SimpleIni.h>
@@ -28,6 +29,7 @@ int main(int argc, char** argv)
         auto& owner = *SourceFrameGeneration::GetSingleton();
         CSimpleIniA packaged;
         Require(packaged.LoadFile(argv[1]) >= 0, "packaged INI must load");
+        Require(TheosRenderPipeline::PublicIni::Decode(packaged).empty(), "named packaged INI must decode");
         using TheosRenderPipeline::Overlay::LoadNRHotkeysEnabled;
         Require(!LoadNRHotkeysEnabled(packaged), "packaged NR shortcuts default off");
         CSimpleIniA hotkeys;
@@ -68,7 +70,7 @@ int main(int argc, char** argv)
         // followed by Save as default, including a new settings file.
         for (const bool seed : {false, true}) {
             CSimpleIniA savedPaths;
-            if (!seed) { Require(savedPaths.LoadFile(argv[1]) >= 0, "reload packaged settings"); TheosRenderPipeline::IniLayout::PrepareForUpdate(savedPaths); }
+            if (!seed) { Require(savedPaths.LoadFile(argv[1]) >= 0, "reload packaged settings"); Require(TheosRenderPipeline::PublicIni::Decode(savedPaths).empty(), "decode reloaded package"); TheosRenderPipeline::IniLayout::PrepareForUpdate(savedPaths); }
             owner.StoreRuntimePaths(savedPaths);
             TheosRenderPipeline::IniLayout::StoreCanonical(savedPaths);
             std::string serialized;

@@ -2,12 +2,14 @@
 #include <PCH.h>
 #include <SimpleIni.h>
 #include "RendererGpuPolicy.h"
+#include "SettingsFile.h"
 
 void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId)
 {
     CSimpleIniA ini;
     ini.SetUnicode();
-    const auto result = ini.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    const auto [result, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
     TheosRenderPipeline::ApplyRendererGpuPolicy(ini, adapterVendorId,
 #if defined(TRP_ENABLE_FSR_FG)
         true

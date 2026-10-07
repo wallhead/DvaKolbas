@@ -3,6 +3,7 @@
 #include "FrameTrace.h"
 #include "FrameTelemetry.h"
 #include "VideoMemoryTelemetry.h"
+#include "SettingsFile.h"
 
 #include <PCH.h>
 
@@ -55,7 +56,8 @@ void PerformanceTuning::LoadStartupINI()
 {
 	CSimpleIniA ini;
 	ini.SetUnicode();
-	const auto loadResult = ini.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    const auto [loadResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
 	if (loadResult < 0) {
 		logger::warn("[Performance] early INI load failed (rc={}); using default startup telemetry settings",
 			static_cast<int>(loadResult));

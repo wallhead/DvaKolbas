@@ -29,9 +29,8 @@ Copy-Item -LiteralPath (Join-Path $repository ('package/examples/FSR-'+$kind+'/R
 if(-not $FrameGeneration){
     # SR-only diagnostic builds have no FG presenter; normal releases retain backend 2.
     $diagnosticIni=Join-Path $destination 'SKSE/Plugins/RaZkolbaS.ini'
-    $diagnosticText=[IO.File]::ReadAllText($diagnosticIni)
-    $diagnosticText=[regex]::Replace($diagnosticText,'(?m)^Backend[ \t]*=[ \t]*2[ \t]*(?=\r?$)','Backend = 0')
-    [IO.File]::WriteAllText($diagnosticIni,$diagnosticText,[Text.UTF8Encoding]::new($false))
+    $diagnosticLines=Set-PackageIniValues ([IO.File]::ReadAllLines($diagnosticIni)) @{'Upscaling Advanced/FsrOrdinaryPresenter'='true';'FrameGeneration/Backend'='0'}
+    [IO.File]::WriteAllLines($diagnosticIni,$diagnosticLines,[Text.UTF8Encoding]::new($false))
 }
 Copy-Item -LiteralPath (Join-Path $repository 'package/SKSE/Plugins/RaZkolbaSImGui.ini') -Destination (Join-Path $destination 'SKSE/Plugins/RaZkolbaSImGui.ini')
 Copy-Item -LiteralPath (Join-Path $repository 'package/SKSE/Plugins/RaZkolbaS/RCAS.hlsl') -Destination (Join-Path $destination 'SKSE/Plugins/RaZkolbaS/RCAS.hlsl')

@@ -5,6 +5,7 @@
 #include "OverlayUIStyle.h"
 #include "OverlayRenderTarget.h"
 #include "WeatherAppearanceRuntime.h"
+#include "SettingsFile.h"
 #if defined(TRP_ENABLE_RAZKOLBAS_TAB)
 #include "RazkolbasAudio.h"
 #endif
@@ -64,7 +65,9 @@ void OverlayUI::Init(IDXGISwapChain* a_swapChain, ID3D11Device* a_device, ID3D11
     io.ConfigWindowsResizeFromEdges = true;
     CSimpleIniA menuIni;
     menuIni.SetUnicode();
-    if (menuIni.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini") >= 0)
+    const auto [menuResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(menuIni, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
+    if (menuResult >= 0)
         layout = LoadLayout(menuIni);
 	ImGui::StyleColorsDark();
 	ApplyRendererStyle();

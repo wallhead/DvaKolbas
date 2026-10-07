@@ -45,8 +45,8 @@ Auto uses the official runtime's actual device catalog; explicit FSR4 selects
 official ML on AMD or the separate hash-pinned INT8 runtime on NVIDIA (SM6.6).
 SR and FG providers are independent. Known unavailable FSR4 choices are disabled
 with a reason; unverified support is stated explicitly and rechecked at startup.
-If an explicit selection prevents startup, restore `[FSR] ProviderPolicy=Analytical`
-and/or `[FrameGeneration] FsrProviderPolicy=Analytical` in `RaZkolbaS.ini`.
+If an explicit selection prevents startup, restore `[FSR] Provider=FSR3`
+and/or `[FrameGeneration] FsrProvider=FSR3` in `RaZkolbaS.ini`.
 See [AMD setup](package/INI-SETTINGS.md#amd-first-launch).
 
 FSR4 ML FG remains experimental pending real AMD rendering and Skyrim validation.
@@ -58,10 +58,13 @@ is not established, and it can matter on cards with limited VRAM. Revalidate
 the mixed INT8 SR / official FG combination whenever either runtime changes.
 
 The main INI groups upscaling, frame generation, Neural Rendering and individual
-`[NR PASS 1]` / `[NR PASS 2]` controls separately. Runtime paths are in `[Runtime]`
-and menu geometry is in `[Menu]`. Existing INIs remain readable; **Save as default**
-writes the new layout while preserving values and unknown keys. New keys take
-precedence when both layouts are present. See [INI layout and migration](package/INI-SETTINGS.md).
+`[NR PASS 1]` / `[NR PASS 2]` / `[NR PASS 3]` controls separately. Choose
+`[Upscaling] Upscaler=DLSS` or `FSR`, then `Quality=Native` in that provider's
+section. Advanced options and runtime paths are lower down; menu geometry is
+last. Install the named INI with its matching DLL. The game rejects old layouts;
+the explicit offline converter writes a separate file and preserves the source.
+**Save as default** preserves unknown keys and comments. See the
+[INI reference and conversion instructions](package/INI-SETTINGS.md).
 
 With two NR passes selected, optional **One pass in combat** and **One pass while
 weapons/spells are drawn** controls temporarily skip the second pass. The return

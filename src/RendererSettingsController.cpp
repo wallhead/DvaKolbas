@@ -22,6 +22,7 @@ RendererSettingsDraft RendererSettingsController::Capture([[maybe_unused]] bool 
     RendererSettingsDraft settingsDraft;
     settingsDraft.valid = true;
     settingsDraft.upscaleType = upscaler_.mUpscaleType;
+    settingsDraft.nvidiaMode.nativeScale = upscaler_.mDlssNativeScale;
     settingsDraft.fsr = upscaler_.mFsrSettings;
     settingsDraft.generationEnabled = frameGen_.settings.enabled;
     settingsDraft.generationBackend = frameGen_.settings.generationBackend;
@@ -161,6 +162,8 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
             [](const std::string& message) { logger::error("{}", message); });
     }
     upscaler_.mUpscaleType = settingsDraft.upscaleType;
+    upscaler_.mDlssNativeScale = settingsDraft.upscaleType == DLAA ||
+        (settingsDraft.upscaleType == FSR && settingsDraft.nvidiaMode.nativeScale);
     upscaler_.mFsrSettings = settingsDraft.fsr;
     const long actualBackend=host_.FsrActive() ? (host_.FsrFgActive()?2:0) : 1;
     if(!liveOnly)ApplyRendererGeneration(settingsDraft,frameGen_,actualBackend);

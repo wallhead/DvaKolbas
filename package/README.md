@@ -22,12 +22,11 @@ RTX 20/30, including with interpolation disabled. FSR uses its own presenter.
 
 Disable the old TheosRenderPipeline plugin when upgrading; startup checks both
 the loaded modules and MO2's virtual plugin directory before installing hooks.
-If `RaZkolbaS.ini` is absent, an existing `TheosRenderPipeline.ini` is copied once
-without changing the original. An existing new INI always takes priority; merge
-old choices manually if the newly installed package already supplies one. Old
-relative resource paths use the renamed files only when their old targets are
-missing and the corresponding new files exist. Explicit absolute paths stay as
-configured.
+Install the current named `RaZkolbaS.ini` together with its matching DLL.
+Choose `[Upscaling] Upscaler=DLSS` or `FSR`, then `Quality=Native` in the
+provider's section. Old INI layouts are rejected. The explicit converter in the
+[INI reference](INI-SETTINGS.md) writes a separate file without changing the
+source. Explicit runtime paths remain authoritative.
 
 Press **End** for settings. Live NR/FG controls apply automatically; **Save as
 default** persists them. Startup/provider changes marked in the menu require a

@@ -1,6 +1,7 @@
 #include <PCH.h>
 #include "PluginPaths.h"
 #include "ModlistProfiles.h"
+#include "SettingsFile.h"
 #include "RendererUpgrade.h"
 #include "SkyrimRuntime.h"
 #include "GameHookValidation.h"
@@ -225,7 +226,9 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 
 	CSimpleIniA baselineIni;
 	baselineIni.SetUnicode();
-	if (baselineIni.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini") < 0) {
+    const auto [baselineResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(baselineIni, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
+	if (baselineResult < 0) {
 		util::report_and_fail("RaZkolbaS: SKSE/Plugins/RaZkolbaS.ini is missing or unreadable. Install the packaged RaZkolbaS.ini and restart Skyrim.");
 	}
 	// Provider validation runs at device creation, after identifying the actual

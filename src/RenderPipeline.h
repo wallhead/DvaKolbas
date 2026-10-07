@@ -86,6 +86,7 @@ public:
     TheosRenderPipeline::Upscaling::FsrSettings mFsrSettings;
     bool mDynamicResolutionRequested{};
 	int   mQualityLevel{ 2 };
+    bool mDlssNativeScale{true};
 	float mMipLodBias{ 0 };
 
 	// Ultrawide investigation: log stage/viewport/scale metrics for every

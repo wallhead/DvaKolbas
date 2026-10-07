@@ -1,72 +1,29 @@
 param(
     [Parameter(Mandatory)][string]$SourceIni,
-    [Parameter(Mandatory)][string]$OutputIni,
-    [string]$TemplateIni=(Join-Path $PSScriptRoot '../../package/SKSE/Plugins/RaZkolbaS.ini')
+    [Parameter(Mandatory)][string]$OutputIni
 )
-# Writes a separate reviewable file. Never changes the source or fills missing
-# optional settings from the template: absent values must retain reader defaults.
+$ErrorActionPreference='Stop'
+# Explicit offline conversion only. The game accepts the named layout exclusively.
 . (Join-Path $PSScriptRoot '../fsr/PackageCommon.ps1')
 $source=(Resolve-Path -LiteralPath $SourceIni).Path
 $output=[IO.Path]::GetFullPath($OutputIni)
 if($source -eq $output -or (Test-Path -LiteralPath $output)){throw 'Use a new output file; source INI stays untouched'}
 $sourceHash=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
-$values=Read-PackageIni $source -Raw
-foreach($retired in @('SourceDLSSG/NRStableColors','NeuralRendering/StableColors')){
-    $values.Remove($retired)
-}
-foreach($alias in Get-IniLayoutAliases){
-    if($values.ContainsKey($alias.Legacy)){
-        $values.Remove($alias.Legacy)
-    }
-}
-$values.Remove('Settings/ConfigVersion')
-$sections=[ordered]@{};$section='';$comments=[Collections.Generic.List[string]]::new()
-# Template controls order and comments, but never supplies new values.
-foreach($line in [IO.File]::ReadAllLines($TemplateIni)){
-    if($line -match '^\[([^\]]+)\]$'){
-        $section=$Matches[1];if(-not $sections.Contains($section)){$sections[$section]=[Collections.Generic.List[string]]::new()}
-        $comments.Clear();continue
-    }
-    if($line.TrimStart().StartsWith(';')){$comments.Add($line);continue}
-    if($line -match '^\s*([^=]+)=(.*)$'){
-        $name=$Matches[1].Trim();$key=$section+'/'+$name
-        if($values.ContainsKey($key)){
-            $sections[$section].AddRange([string[]]$comments.ToArray())
-            $sections[$section].Add($name+' = '+$values[$key]);$values.Remove($key)
-        }
-        $comments.Clear()
-    }
-}
-# Keep extra profile/unknown keys and their user comments.
-$unknownComments=@{};$comments.Clear();$section=''
-foreach($line in [IO.File]::ReadAllLines($source)){
-    if($line -match '^\[([^\]]+)\]$'){$section=$Matches[1];$comments.Clear();continue}
-    if($line.TrimStart() -match '^[;#]'){$comments.Add($line);continue}
-    if($line -match '^\s*([^=]+)=(.*)$'){
-        $key=$section+'/'+$Matches[1].Trim();$unknownComments[$key]=[string[]]$comments.ToArray();$comments.Clear()
-    }
-}
-foreach($key in @($values.Keys | Sort-Object)){
-    $parts=$key.Split('/',2);$section=$parts[0]
-    if(-not $sections.Contains($section)){$sections[$section]=[Collections.Generic.List[string]]::new()}
-    if($unknownComments.ContainsKey($key)){$sections[$section].AddRange([string[]]$unknownComments[$key])}
-    $sections[$section].Add($parts[1]+' = '+$values[$key])
-}
-$lines=[Collections.Generic.List[string]]::new()
-$lines.Add('; RaZkolbaS settings. Current layout only.')
-$lines.Add('; Backend, quality and runtime paths require a restart. Live controls apply immediately.')
-foreach($entry in $sections.GetEnumerator()){
-    if(-not $entry.Value.Count){continue}
-    $lines.Add('');$lines.Add('['+$entry.Key+']');$lines.AddRange([string[]]$entry.Value.ToArray())
-}
-# Parse and compare before publishing the result. Only names/layout may change.
+$lines=Set-PackageIniValues ([IO.File]::ReadAllLines($source)) @{}
 $temporary=$output+'.tmp-'+[Guid]::NewGuid().ToString('N')
 try {
     [IO.File]::WriteAllLines($temporary,$lines,[Text.UTF8Encoding]::new($false))
     $before=Read-PackageIni $source;$after=Read-PackageIni $temporary
-foreach($key in $before.Keys){
-    if($key -in @('SourceDLSSG/NRStableColors','NeuralRendering/StableColors')){continue}
-        if($key -eq 'Settings/ConfigVersion'){continue}
+    foreach($key in $before.Keys){
+        if($key -in @('Settings/ConfigVersion','/ConfigVersion','SourceDLSSG/NRStableColors','NeuralRendering/StableColors')){continue}
+        # DLAA's dormant numeric quality and disabled sharpening strength are not
+        # effective controls: Native and zero encode those states explicitly.
+        if($before['Settings/UpscaleType'] -eq '3' -and $key -in @('DLSS/QualityLevel','Settings/QualityLevel')){continue}
+        if($before['Settings/Sharpening'] -eq 'false' -and $key -eq 'Settings/Sharpness'){continue}
+        if($before['Settings/UseOptimalMipLodBias'] -eq 'true' -and $key -eq 'Settings/MipLodBias'){continue}
+        if($key -eq 'Hotkeys/ToggleOverlay' -and $before[$key] -match '^0[xX]([0-9a-fA-F]+)$'){
+            if([string][Convert]::ToInt32($Matches[1],16) -ceq $after[$key]){continue}
+        }
         if(-not $after.ContainsKey($key) -or $after[$key] -cne $before[$key]){throw "INI value changed: $key"}
     }
     if((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ne $sourceHash){throw 'Source INI changed during conversion'}
@@ -74,4 +31,4 @@ foreach($key in $before.Keys){
 } finally {
     if(Test-Path -LiteralPath $temporary){Remove-Item -LiteralPath $temporary}
 }
-Write-Output "REORGANIZED ONLY: $output"
+Write-Output "CONVERTED: $output (source preserved)"

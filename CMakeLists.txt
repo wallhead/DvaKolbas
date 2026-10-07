@@ -374,6 +374,14 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     target_include_directories(TRPStartupPreferencesTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src"
         "${TRP_SIMPLEINI_INCLUDE_DIR}")
     add_test(NAME StartupPreferences COMMAND TRPStartupPreferencesTests "${CMAKE_CURRENT_SOURCE_DIR}/package/SKSE/Plugins/RaZkolbaS.ini")
+    add_executable(TRPPublicIniTests tests/PublicIniTests.cpp)
+    target_compile_features(TRPPublicIniTests PRIVATE cxx_std_23)
+    target_compile_definitions(TRPPublicIniTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_include_directories(TRPPublicIniTests PRIVATE src "${TRP_SIMPLEINI_INCLUDE_DIR}")
+    add_test(NAME PublicIni COMMAND TRPPublicIniTests
+        "${CMAKE_CURRENT_SOURCE_DIR}/package/SKSE/Plugins/RaZkolbaS.ini"
+        "${CMAKE_CURRENT_SOURCE_DIR}/package/examples/FSR-SR/RaZkolbaS.ini"
+        "${CMAKE_CURRENT_SOURCE_DIR}/package/examples/FSR-FG/RaZkolbaS.ini")
     add_executable(TRPIniLayoutTests tests/IniLayoutTests.cpp)
     target_compile_features(TRPIniLayoutTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPIniLayoutTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
@@ -384,6 +392,12 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
         "${CMAKE_CURRENT_SOURCE_DIR}/package/examples/FSR-FG/RaZkolbaS.ini")
     add_test(NAME IniPackage COMMAND pwsh.exe -NoProfile -File "${CMAKE_CURRENT_SOURCE_DIR}/tests/IniPackageTests.ps1"
         -Repository "${CMAKE_CURRENT_SOURCE_DIR}" -Output "${CMAKE_CURRENT_BINARY_DIR}/ini-package-tests")
+    add_test(NAME PublicIniPackage COMMAND pwsh.exe -NoProfile -File "${CMAKE_CURRENT_SOURCE_DIR}/tests/PublicIniPackageTests.ps1"
+        -Repository "${CMAKE_CURRENT_SOURCE_DIR}" -Output "${CMAKE_CURRENT_BINARY_DIR}/public-ini-package-tests")
+    find_package(Python3 3.10 QUIET COMPONENTS Interpreter)
+    if(Python3_FOUND)
+        add_test(NAME PublicIniSchema COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/ini/Generate-Ini.py" --check)
+    endif()
     add_executable(TRPRendererSettingsActionTests tests/RendererSettingsActionTests.cpp)
     target_compile_features(TRPRendererSettingsActionTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPRendererSettingsActionTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)

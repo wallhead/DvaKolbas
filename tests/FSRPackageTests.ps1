@@ -47,8 +47,15 @@ foreach($encoding in @('Unknown','Guess','')) {
     $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8
     Rejected {& $validate -Edition $Edition -PackageDirectory $package} "UnspecifiedOrInvalidColor-$encoding"
 }
-[IO.File]::WriteAllLines($config,(Set-PackageIniValues ($configOriginal -split '\r?\n') @{'FSR/Quality'='quality'}))
-if((Read-PackageIni $config)['FSR/Quality'] -cne 'quality'){throw 'Quality mutation did not apply'}
+# Deliberately corrupt the public enum after staging. The schema-aware writer
+# correctly refuses to produce it, so it cannot prepare this validator fixture.
+$section=''
+$badQuality=@($configOriginal -split '\r?\n' | ForEach-Object {
+    if($_ -match '^\[([^\]]+)\]$'){$section=$Matches[1]}
+    if($section -eq 'FSR' -and $_ -match '^\s*Quality\s*='){'Quality = quality'}else{$_}
+})
+[IO.File]::WriteAllLines($config,$badQuality)
+if((Read-PackageIni $config -Raw)['FSR/Quality'] -cne 'quality'){throw 'Quality mutation did not apply'}
 $manifest=$originalManifest | ConvertFrom-Json
 foreach($entry in $manifest.files){if($entry.path -eq 'SKSE/Plugins/RaZkolbaS.ini'){$entry.bytes=(Get-Item -LiteralPath $config).Length;$entry.sha256=(Get-FileHash -LiteralPath $config -Algorithm SHA256).Hash.ToLowerInvariant()}}
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'manifest.json') -Encoding utf8

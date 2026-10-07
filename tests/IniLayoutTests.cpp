@@ -1,3 +1,4 @@
+#include "PublicIni.h"
 #include "FrameGen/SourceFrameGeneration.h"
 #include "RendererBackendPolicy.h"
 #include "OverlayLayout.h"
@@ -164,6 +165,7 @@ FrameGenerationBackend=1
     for (int index = 1; index < argc; ++index) {
         CSimpleIniA current;
         Check(current.LoadFile(argv[index]) >= 0, "load actual INI fixture");
+        Check(PublicIni::Decode(current).empty(), "decode current public INI");
         const auto before = SourceDLSSG::LoadPreferences(current);
         owner.LoadStartupPreferences(current);
         const auto backend = owner.settings.generationBackend;

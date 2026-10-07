@@ -8,6 +8,10 @@ $converted=Join-Path $Output ('converted-'+[Guid]::NewGuid().ToString('N')+'.ini
 [Settings]
 UpscaleType=3
 ConfigVersion=2
+UseOptimalMipLodBias=true
+MipLodBias=-1.000000
+[Hotkeys]
+ToggleOverlay=0x23
 [DLSS]
 QualityLevel=4
 Preset=11
@@ -42,6 +46,12 @@ $hash=(Get-FileHash -LiteralPath $source).Hash
 & (Join-Path $Repository 'tools/ini/Reorganize-Ini.ps1') -SourceIni $source -OutputIni $converted
 $raw=Read-PackageIni $converted -Raw
 if($raw.ContainsKey('Settings/ConfigVersion') -or $raw.ContainsKey('SourceDLSSG/NRStyle') -or $raw.ContainsKey('NR PASS 1/Style')){throw 'Obsolete keys were retained or migrated'}
+if($raw['Upscaling/Upscaler'] -ne 'DLSS' -or $raw['DLSS/Quality'] -ne 'Native' -or
+    $raw['DLSS/Preset'] -ne 'K' -or $raw['NeuralRendering/Placement'] -ne 'After' -or
+    $raw.ContainsKey('FrameGeneration/Backend')){throw 'Converter did not produce the named layout'}
+if($raw['Hotkeys/ToggleOverlay'] -ne 'End' -or $raw['Upscaling/MipLodBias'] -ne 'Auto'){
+    throw 'Equivalent hotkey and automatic mip-bias choices must use their readable names'
+}
 if($raw.ContainsKey('NeuralRendering/StableColors') -or $raw.ContainsKey('SourceDLSSG/NRStableColors')){
     throw 'Retired stable-color setting must not survive conversion'
 }
@@ -64,11 +74,11 @@ if($view['SourceDLSSG/NRBeforeUpscaling'] -ne 'true' -or $view['NeuralRendering/
     throw 'New-layout packaging selectors do not match runtime readers'
 }
 # Obsolete slots must be dropped instead of promoted or synchronized.
-$mixed=@('[SourceDLSSG]','NRBeforeUpscaling=true','[NeuralRendering]','BeforeUpscaling=false')
+$mixed=@('[Settings]','UpscaleType=0','[SourceDLSSG]','NRBeforeUpscaling=true','[NeuralRendering]','BeforeUpscaling=false')
 $mixedPath=Join-Path $Output 'mixed.ini'
 [IO.File]::WriteAllLines($mixedPath,(Set-PackageIniValues $mixed @{'SourceDLSSG/NRBeforeUpscaling'='false'}))
 $mixedRaw=Read-PackageIni $mixedPath -Raw
-if($mixedRaw.ContainsKey('SourceDLSSG/NRBeforeUpscaling') -or $mixedRaw['NeuralRendering/BeforeUpscaling'] -ne 'false'){
+if($mixedRaw.ContainsKey('SourceDLSSG/NRBeforeUpscaling') -or $mixedRaw.ContainsKey('NeuralRendering/BeforeUpscaling') -or $mixedRaw['NeuralRendering/Placement'] -ne 'After'){
     throw 'Package update must discard obsolete slots'
 }
 $rejected=$false

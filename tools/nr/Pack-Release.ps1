@@ -25,20 +25,9 @@ $plugins = Join-Path $stage 'SKSE/Plugins'
 $iniPath = Join-Path $plugins 'RaZkolbaS.ini'
 $baseZip = [IO.Compression.ZipFile]::OpenRead($template)
 try {
-    $iniEntry = $baseZip.GetEntry('SKSE/Plugins/RaZkolbaS.ini')
-    if (-not $iniEntry) { throw 'Template INI missing' }
-    $reader = [IO.StreamReader]::new($iniEntry.Open())
-    try { $iniText = $reader.ReadToEnd() } finally { $reader.Dispose() }
-    $lines = ConvertTo-PortableNrPackageIni ($iniText -split '\r?\n')
-    $lines = @($lines | Where-Object {$_ -notmatch '^\s*ConfigVersion\s*=' -and $_ -notmatch 'Layout version; written automatically'} | ForEach-Object {$_ -replace '^; RaZkolbaS settings\. Existing values preserved; layout version 2\.$','; RaZkolbaS settings. Current layout only.'})
-    $lines = @($lines | ForEach-Object {
-        if ($_ -eq '; Startup: 0=ordinary presentation (FSR with FG off), 1=NVIDIA, 2=FSR.') {
-            '; Startup: 1=NVIDIA for DLSS/DLAA, 2=FSR FG for FSR (including AMD).'
-        } elseif ($_ -eq '; DLSS/DLAA require 1. FSR requires 0 or 2.') {
-            '; Turning FG off retains its backend so it can be enabled live again.'
-            '; 0=ordinary FSR presentation, reserved for diagnostic testing.'
-        } else { $_ }
-    })
+    # The archive supplies qualified runtime assets, never an obsolete INI schema.
+    $currentIni = Join-Path $PSScriptRoot '../../package/SKSE/Plugins/RaZkolbaS.ini'
+    $lines = ConvertTo-PortableNrPackageIni ([IO.File]::ReadAllLines($currentIni))
     $lines = Set-PackageIniValues $lines @{'Settings/UpscaleType'='3';'FSR/Quality'='NativeAA'}
     [IO.File]::WriteAllLines($iniPath, [string[]]$lines, [Text.UTF8Encoding]::new($false))
     Copy-Item -LiteralPath $PluginDll -Destination (Join-Path $plugins 'RaZkolbaS.dll')

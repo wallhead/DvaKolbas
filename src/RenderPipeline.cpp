@@ -28,11 +28,13 @@ void RenderPipeline::LoadINI()
 {
 	CSimpleIniA ini;
 	ini.SetUnicode();
-	const auto loadResult = ini.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    const auto [loadResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
 	if (loadResult < 0) {
 		logger::warn("Could not load Data\\SKSE\\Plugins\\RaZkolbaS.ini (rc={}), using defaults", static_cast<int>(loadResult));
 	}
 	TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
+    mDlssNativeScale = ini.GetBoolValue("Settings", "DLSSNativeScale", true);
     TheosRenderPipeline::ApplyRendererGpuPolicy(ini, mAdapterVendorId,
 #if defined(TRP_ENABLE_FSR_FG)
         true
@@ -107,7 +109,8 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 {
 	CSimpleIniA ini;
 	ini.SetUnicode();
-	const auto loadResult = TheosRenderPipeline::SettingsFile::LoadForUpdate(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    const auto [loadResult, configError] = TheosRenderPipeline::SettingsFile::LoadRendererForUpdate(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    if (!configError.empty()) { logger::error("[Config] Save refused: {}", configError); return false; }
 	if (loadResult < 0) {
 		logger::error("Could not read Data\\SKSE\\Plugins\\RaZkolbaS.ini before saving (rc={}); file left unchanged", static_cast<int>(loadResult));
 		return false;
@@ -157,6 +160,10 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 	ini.SetBoolValue("Debug", "LogMenuMetrics", mLogMenuMetrics);
     if (layout) { TheosRenderPipeline::Overlay::StoreLayout(ini, *layout); }
 	TheosRenderPipeline::IniLayout::StoreCanonical(ini);
+    ini.SetBoolValue("Settings", "DLSSNativeScale", creation.mode == DLAA || (creation.mode == FSR && mDlssNativeScale));
+    if (const auto error = TheosRenderPipeline::PublicIni::Encode(ini); !error.empty()) {
+        logger::error("[Config] Save refused: {}", error); return false;
+    }
 	const auto rc = ini.SaveFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
 	if (rc < 0) {
 		logger::error("Could not save Data\\SKSE\\Plugins\\RaZkolbaS.ini (rc={})", static_cast<int>(rc));

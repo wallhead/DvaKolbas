@@ -13,6 +13,7 @@
 #include "PerformanceTuning.h"
 #include "CommunityShaderIntegration.h"
 #include "HookInstallation.h"
+#include "SettingsFile.h"
 #include "PluginPaths.h"
 #include "NvidiaAppSettings.h"
 #include "RendererGpuPolicy.h"
@@ -108,7 +109,13 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     pipeline->mAdapterVendorId = rendererDesc.VendorId;
     CSimpleIniA startup;
     startup.SetUnicode();
-    if (startup.LoadFile(L"Data\\SKSE\\Plugins\\RaZkolbaS.ini") < 0) {
+    const auto [startupResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(startup, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    if (!configError.empty()) {
+        nvidiaHost->FailLifecycle(E_INVALIDARG, configError.c_str());
+        d3d11Device->Release();
+        return E_INVALIDARG;
+    }
+    if (startupResult < 0) {
         nvidiaHost->FailLifecycle(E_INVALIDARG, "Renderer startup INI is missing or unreadable");
         d3d11Device->Release();
         return E_INVALIDARG;
