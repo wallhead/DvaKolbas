@@ -17,9 +17,9 @@ if($RequireCleanSource -and -not $identity.sourceClean){throw 'Final package req
 if($manifest.schema -ne 2 -or $manifest.edition -ne $Edition -or $manifest.sdkCommit -ne $pin.commit -or $manifest.sdkRelease -ne $pin.release){throw 'Package identity mismatch'}
 $required=@('SKSE/Plugins/RaZkolbaS.dll','SKSE/Plugins/RaZkolbaS.ini','SKSE/Plugins/RaZkolbaSImGui.ini','SKSE/Plugins/RaZkolbaS/RCAS.hlsl','LICENSE','THIRD_PARTY_FSR.md','AMD-FidelityFX-license.md','FSR-API-MIT-NOTICE.txt','FSR_TEST_CHECKLIST.md')
 $required+=@($runtimePins | ForEach-Object {'SKSE/Plugins/FSR/'+$_.filename})
-$required+='SKSE/Plugins/RaZkolbaS/Audio/razkolbas.mp3'
 $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 foreach($entry in $manifest.files) {
+    if($entry.path.Replace('\','/') -match '^SKSE/Plugins/RaZkolbaS/Audio(/|$)'){throw 'Release packages must exclude the private audio easter egg'}
     if([IO.Path]::IsPathRooted($entry.path) -or $entry.path -match '(^|[\\/])\.\.([\\/]|$)|:'){throw 'Unsafe manifest path'}
     $absolute=[IO.Path]::GetFullPath((Join-Path $root $entry.path))
     if(-not $absolute.StartsWith($root+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or -not $seen.Add($entry.path.Replace('\','/'))){throw 'Duplicate or escaping manifest path'}

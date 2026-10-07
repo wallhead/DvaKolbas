@@ -44,6 +44,11 @@ try {
     Copy-Item -LiteralPath $PluginDll -Destination (Join-Path $plugins 'RaZkolbaS.dll')
     Write-PortableModMetadata -Directory $stage -Revision $identity.sourceRevision
     Copy-Item -LiteralPath $template -Destination $output
+    $removedAudio = @($baseZip.Entries | Where-Object {$_.FullName -match '^SKSE/Plugins/RaZkolbaS/Audio(/|$)'} | ForEach-Object {$_.FullName})
+    if ($removedAudio.Count) {
+        & $SevenZip d -tzip $output @removedAudio -bd
+        if ($LASTEXITCODE -ne 0) { throw 'Release audio removal failed' }
+    }
     Push-Location -LiteralPath $stage
     try {
         & $SevenZip u -tzip $output 'meta.ini' 'SKSE/Plugins/RaZkolbaS.ini' 'SKSE/Plugins/RaZkolbaS.dll' -mx=9 -bd
@@ -53,7 +58,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Release archive CRC verification failed' }
     $releaseZip = [IO.Compression.ZipFile]::OpenRead($output)
     try {
-        if ($releaseZip.Entries.Count -ne $baseZip.Entries.Count) { throw 'Release inventory changed unexpectedly' }
+        if ($releaseZip.Entries.Count -ne $baseZip.Entries.Count - $removedAudio.Count) { throw 'Release inventory changed unexpectedly' }
         $replacements = @{
             'meta.ini' = Join-Path $stage 'meta.ini'
             'SKSE/Plugins/RaZkolbaS.ini' = $iniPath
@@ -62,6 +67,7 @@ try {
         $files = @()
         foreach ($entry in $releaseZip.Entries) {
             $name = $entry.FullName
+            if ($name -match '^SKSE/Plugins/RaZkolbaS/Audio(/|$)') { throw 'Release still contains the private audio easter egg' }
             if ($name -match '\\|(^|/)\.\.?(/|$)' -or
                 ($name -ne 'meta.ini' -and -not $name.StartsWith('SKSE/'))) { throw "Unexpected archive path: $name" }
             $sha = [Security.Cryptography.SHA256]::Create()
@@ -92,7 +98,7 @@ $receipt = [ordered]@{
     archiveBytes=(Get-Item -LiteralPath $output).Length; buildIdentity=$identity
     dllVersion='1.0.0.0'; defaults=@{upscaler='DLAA';fsrQuality='NativeAA'}
     rtx20_30CompatibilityCompiled=$true; actualRtx20_30GameplayQualified=$false
-    unchangedRuntimePayloads=$true; crcVerified=$true; files=$files
+    unchangedRuntimePayloads=$true; crcVerified=$true; removedAudio=$removedAudio; files=$files
 }
 $receipt | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $stage 'release-verification.json') -Encoding utf8
 Write-Output "PASS: release 1.0; native defaults; $($files.Count) entries verified; unchanged runtime payloads"

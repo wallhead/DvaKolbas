@@ -27,7 +27,6 @@ foreach($pair in @(@('Settings/UpscaleType','4'),@('FSR/Quality','NativeAA'),@('
 }
 [IO.Directory]::CreateDirectory((Join-Path $root 'SKSE/Plugins/RaZkolbaS'))|Out-Null
 Copy-Item -LiteralPath $dll -Destination (Join-Path $root 'SKSE/Plugins/RaZkolbaS.dll')
-Copy-Item -LiteralPath (Join-Path $repository 'package/SKSE/Plugins/RaZkolbaS/Audio') -Destination (Join-Path $root 'SKSE/Plugins/RaZkolbaS/Audio') -Recurse
 foreach($relative in @('SKSE/Plugins/RaZkolbaSImGui.ini','SKSE/Plugins/RaZkolbaS/RCAS.hlsl')){
     Copy-Item -LiteralPath (Join-Path $repository ('package/'+$relative)) -Destination (Join-Path $root $relative)
 }

@@ -26,9 +26,15 @@ if(Test-Path -LiteralPath $zip){throw "ZIP already exists: $zip"}
 [IO.Directory]::CreateDirectory((Join-Path $destination 'SKSE/Plugins/RaZkolbaS')) | Out-Null
 Copy-Item -LiteralPath (Join-Path $build 'Release/RaZkolbaS.dll') -Destination (Join-Path $destination 'SKSE/Plugins/RaZkolbaS.dll')
 Copy-Item -LiteralPath (Join-Path $repository ('package/examples/FSR-'+$kind+'/RaZkolbaS.ini')) -Destination (Join-Path $destination 'SKSE/Plugins/RaZkolbaS.ini')
+if(-not $FrameGeneration){
+    # SR-only diagnostic builds have no FG presenter; normal releases retain backend 2.
+    $diagnosticIni=Join-Path $destination 'SKSE/Plugins/RaZkolbaS.ini'
+    $diagnosticText=[IO.File]::ReadAllText($diagnosticIni)
+    $diagnosticText=[regex]::Replace($diagnosticText,'(?m)^Backend[ \t]*=[ \t]*2[ \t]*(?=\r?$)','Backend = 0')
+    [IO.File]::WriteAllText($diagnosticIni,$diagnosticText,[Text.UTF8Encoding]::new($false))
+}
 Copy-Item -LiteralPath (Join-Path $repository 'package/SKSE/Plugins/RaZkolbaSImGui.ini') -Destination (Join-Path $destination 'SKSE/Plugins/RaZkolbaSImGui.ini')
 Copy-Item -LiteralPath (Join-Path $repository 'package/SKSE/Plugins/RaZkolbaS/RCAS.hlsl') -Destination (Join-Path $destination 'SKSE/Plugins/RaZkolbaS/RCAS.hlsl')
-Copy-Item -LiteralPath (Join-Path $repository 'package/SKSE/Plugins/RaZkolbaS/Audio') -Destination (Join-Path $destination 'SKSE/Plugins/RaZkolbaS/Audio') -Recurse
 foreach($file in $runtimePins){Copy-Item -LiteralPath (Join-Path $runtimeRoot $file.filename) -Destination (Join-Path $destination 'SKSE/Plugins/FSR')}
 foreach($pair in @(@('LICENSE','LICENSE'),@('package/THIRD_PARTY_FSR.md','THIRD_PARTY_FSR.md'),@('package/FSR-API-MIT-NOTICE.txt','FSR-API-MIT-NOTICE.txt'),@('docs/FSR_TEST_CHECKLIST.md','FSR_TEST_CHECKLIST.md'))) {Copy-Item -LiteralPath (Join-Path $repository $pair[0]) -Destination (Join-Path $destination $pair[1])}
 $description=if($FrameGeneration){'This package enables analytical FSR Super Resolution and AMD frame generation on presenter backend 2. One generated frame is requested per eligible temporal source. Native UI is dedicated; menus, loading, slow sources and FG off retain real frames. Neural Rendering, HDR and dynamic resolution are unavailable. Changing presenter needs restart; FG on/off is live. Automatic-compositor appearance and physical cadence require controlled visible acceptance before a Skyrim trial.'}else{'This package enables FSR Super Resolution with ordinary presentation. Frame generation, Neural Rendering, HDR and dynamic resolution are unavailable in this configuration.'}

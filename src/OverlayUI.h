@@ -54,9 +54,11 @@ private:
     void DrawTextureMemoryPanel(const FrameView& view);
     void DrawAdvancedPanel(float tabCardHeight, const FrameView& view);
     void DrawFrameGenerationAdvanced(const FrameView& view);
+#if defined(TRP_ENABLE_RAZKOLBAS_TAB)
     void DrawRazkolbasPanel();
     // The optional audio worker is process-resident; never join under DllMain.
     TheosRenderPipeline::AudioPlayer* razkolbasPlayer{};
+#endif
     bool BeginSettingsColumns(const char* id, float height, const FrameView& view);
     void NextSettingsColumn(float height);
     void EndSettingsColumns();

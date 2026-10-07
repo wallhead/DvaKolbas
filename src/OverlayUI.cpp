@@ -5,7 +5,9 @@
 #include "OverlayUIStyle.h"
 #include "OverlayRenderTarget.h"
 #include "WeatherAppearanceRuntime.h"
+#if defined(TRP_ENABLE_RAZKOLBAS_TAB)
 #include "RazkolbasAudio.h"
+#endif
 
 #include <imgui_internal.h>
 #include <SimpleIni.h>
@@ -138,8 +140,10 @@ void OverlayUI::SetTextInputCapture(bool a_capture)
 void OverlayUI::SetVisible(bool a_visible)
 {
     if (!a_visible) {
+#if defined(TRP_ENABLE_RAZKOLBAS_TAB)
         if (razkolbasPlayer && razkolbasPlayer->Snapshot().state != TheosRenderPipeline::AudioState::Stopped)
             razkolbasPlayer->Stop();
+#endif
         settingsEdits.Commit(settingsDraft,[this](const auto& before,const auto& after){ApplyLiveSettingsEdits(before,after);});
     }
 	visible = a_visible;
@@ -393,7 +397,9 @@ void OverlayUI::BuildUI()
 #endif
 
             DrawFrameGenerationPanel(0, view);
+#if defined(TRP_ENABLE_RAZKOLBAS_TAB)
             DrawRazkolbasPanel();
+#endif
             ImGui::EndTabBar();
         }
     }
