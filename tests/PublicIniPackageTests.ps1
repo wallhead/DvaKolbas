@@ -15,6 +15,15 @@ $changed=Set-PackageIniValues $lines @{
     'NeuralRendering/BeforeUpscaling'='false';'NeuralRendering/CommunityRuntime'='true'
 }
 $target=Join-Path $Output 'named.ini';[IO.File]::WriteAllLines($target,[string[]]$changed)
+$text=[IO.File]::ReadAllText($target)
+foreach($choices in @('Values: Native | Quality | Balanced | Performance | UltraPerformance | UltraQuality.',
+    'Values: Native | Quality | Balanced | Performance.', 'Values: FSR3 | Auto | FSR4.',
+    'Values: Default | E | F | J | K | L | M.', 'Values: Off | On | Boost.',
+    'Values: Before | After.', 'Values: Legacy | Community.',
+    'Values: Unknown | Linear | Gamma22 | SRGB.', 'Values: Auto | rtx20-30 | rtx40 | rtx50.',
+    'Values: Auto | Residual | Ratio.', 'Values: true | false.')){
+    if(-not $text.Contains($choices)){throw "Converted INI must list allowed choices beside the setting: $choices"}
+}
 $raw=Read-PackageIni $target -Raw
 if($raw['Upscaling/Upscaler'] -ne 'FSR' -or $raw['DLSS/Quality'] -ne 'Native' -or
    $raw['FSR/Provider'] -ne 'FSR4' -or $raw['FrameGeneration/FsrProvider'] -ne 'FSR4' -or

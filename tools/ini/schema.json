@@ -175,7 +175,13 @@
       "comment": "Unknown, Linear, Gamma22 or SRGB. Select the actual source encoding before enabling FSR.",
       "restart": true,
       "values": {},
-      "type": "Text"
+      "type": "Text",
+      "choices": [
+        "Unknown",
+        "Linear",
+        "Gamma22",
+        "SRGB"
+      ]
     },
     {
       "internal_section": "FrameGeneration",
@@ -744,7 +750,13 @@
       "comment": "GPU profile: Auto, rtx20-30, rtx40 or rtx50. AMD NR is not yet supported.",
       "restart": true,
       "values": {},
-      "type": "Text"
+      "type": "Text",
+      "choices": [
+        "Auto",
+        "rtx20-30",
+        "rtx40",
+        "rtx50"
+      ]
     },
     {
       "internal_section": "NeuralRendering",
@@ -755,7 +767,13 @@
       "comment": "NR source encoding: Unknown, Linear, Gamma22 or SRGB.",
       "restart": true,
       "values": {},
-      "type": "Text"
+      "type": "Text",
+      "choices": [
+        "Unknown",
+        "Linear",
+        "Gamma22",
+        "SRGB"
+      ]
     },
     {
       "internal_section": "NeuralRendering",
@@ -814,7 +832,7 @@
       "section": "NR PASS 1 Advanced",
       "key": "TransferStrength",
       "default": "1.0",
-      "comment": "Ratio resolve controls; strengths 0-2.",
+      "comment": "NR detail transfer contribution, 0-2.",
       "restart": false,
       "values": {},
       "inherit": false,
@@ -826,7 +844,7 @@
       "section": "NR PASS 1 Advanced",
       "key": "ColourStrength",
       "default": "1.0",
-      "comment": "NR colour contribution sent to the model.",
+      "comment": "NR colour contribution, 0-2.",
       "restart": false,
       "values": {},
       "inherit": false,
@@ -838,7 +856,7 @@
       "section": "NR PASS 1 Advanced",
       "key": "MaxRatio",
       "default": "2.0",
-      "comment": "Ratio clamp 0.01-16; white point 0.0001-10000.",
+      "comment": "Maximum ratio for reconstruction, 0.01-16.",
       "restart": false,
       "values": {},
       "inherit": false,
@@ -850,7 +868,7 @@
       "section": "NR PASS 1 Advanced",
       "key": "WhitePoint",
       "default": "1.0",
-      "comment": "NR input white-point multiplier.",
+      "comment": "NR input white-point multiplier, 0.0001-10000.",
       "restart": false,
       "values": {},
       "inherit": false,
@@ -968,7 +986,7 @@
       "section": "HDROutput",
       "key": "PaperWhiteNits",
       "default": "200",
-      "comment": "HDR paper-white brightness in nits.",
+      "comment": "HDR paper-white brightness, 80-1000 nits.",
       "restart": false,
       "values": {},
       "type": "Number"
@@ -979,7 +997,7 @@
       "section": "HDROutput",
       "key": "PeakNits",
       "default": "1000",
-      "comment": "HDR peak display brightness in nits.",
+      "comment": "HDR peak display brightness, 80-10000 nits.",
       "restart": false,
       "values": {},
       "type": "Number"
@@ -990,7 +1008,7 @@
       "section": "HDROutput",
       "key": "UIBrightnessNits",
       "default": "200",
-      "comment": "HDR HUD/menu brightness in nits.",
+      "comment": "HDR HUD/menu brightness, 80-1000 nits.",
       "restart": false,
       "values": {},
       "type": "Number"
@@ -1001,7 +1019,7 @@
       "section": "HDROutput",
       "key": "HighlightStrength",
       "default": "1",
-      "comment": "Expansion strength 0-1; expansion start 0.1-0.95.",
+      "comment": "HDR highlight expansion strength, 0-1.",
       "restart": false,
       "values": {},
       "type": "Number"
@@ -1012,7 +1030,7 @@
       "section": "HDROutput",
       "key": "ExpansionStart",
       "default": "0.7",
-      "comment": "Start of SDR-to-HDR highlight expansion, 0-1.",
+      "comment": "Start of SDR-to-HDR highlight expansion, 0.1-0.95.",
       "restart": false,
       "values": {},
       "type": "Number"

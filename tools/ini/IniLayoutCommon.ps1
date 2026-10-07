@@ -134,7 +134,14 @@ function Format-PublicIni([hashtable]$Values,[string[]]$SourceLines) {
             if(-not $Values.ContainsKey($key)){continue}
             if($known.ContainsKey($key)){
                 $field=$known[$key];$note=if($field.restart){'[restart] '}else{''}
-                $lines.Add('; '+$note+$field.comment)
+                $choices=if($field.codec -eq 'MipLodBias'){'Auto | numeric bias'}
+                    elseif($field.codec -eq 'Hotkey'){'End | Insert | Home | PageUp | PageDown | Delete | Tab | F1-F12 | hex/decimal virtual-key code'}
+                    elseif($field.choices){@($field.choices) -join ' | '}
+                    elseif($field.type -eq 'Bool'){'true | false'}
+                    else{@($field.values.Keys) -join ' | '}
+                $guidance='; '+$note+$field.comment
+                if($choices){$guidance+=' Values: '+$choices+'.'}
+                $lines.Add($guidance)
             }elseif($comments.ContainsKey($key)){$lines.AddRange([string[]]$comments[$key])}
             $lines.Add($key.Split('/',2)[1]+' = '+[string]$Values[$key])
         }

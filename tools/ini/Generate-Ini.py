@@ -7,6 +7,14 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def choices(field):
+    if field.get('codec') == 'MipLodBias': return ['Auto', 'numeric bias']
+    if field.get('codec') == 'Hotkey': return ['End', 'Insert', 'Home', 'PageUp', 'PageDown', 'Delete', 'Tab', 'F1-F12', 'hex/decimal virtual-key code']
+    if field.get('choices'): return field['choices']
+    if field['type'] == 'Bool': return ['true', 'false']
+    return list(field['values'])
+
+
 def generate():
     schema = json.loads((ROOT / "tools/ini/schema.json").read_text(encoding="utf-8"))
     fields = schema["fields"]
@@ -50,9 +58,7 @@ def generate():
                 lines += ['', '; ---- Program-owned state ----']
             lines += ['', f'[{section}]']
             for field in (f for f in fields if f['section'] == section):
-                names = ' | '.join(field['values'])
-                if field.get('codec') == 'MipLodBias': names = 'Auto | numeric bias'
-                if field.get('codec') == 'Hotkey': names = 'key name | hex virtual-key code'
+                names = ' | '.join(choices(field))
                 note = ('[restart] ' if field['restart'] else '') + field['comment']
                 if names: note += ' Values: ' + names + '.'
                 lines += ['; ' + note, (field['key'] + ' = ' + overrides.get(section + '/' + field['key'], field['default'])).rstrip()]
@@ -68,9 +74,8 @@ def generate():
             '| Section | Setting | Default | Restart | Meaning |', '|---|---|---|---|---|']
     for field in fields:
         description = field['comment']
-        if field.get('codec') == 'MipLodBias': description += ' Values: Auto, or a numeric bias.'
-        elif field.get('codec') == 'Hotkey': description += ' Values: key name, hex code or decimal virtual-key code.'
-        elif field['values']: description += ' Values: ' + ', '.join(field['values']) + '.'
+        names = choices(field)
+        if names: description += ' Values: ' + ', '.join(names) + '.'
         docs.append(f"| {field['section']} | {field['key']} | `{field['default']}` | {'Yes' if field['restart'] else 'No'} | {description.replace('|', '/')} |")
     outputs[ROOT / 'package/INI-SETTINGS.md'] = '\n'.join(docs) + '\n'
     return outputs
