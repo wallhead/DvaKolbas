@@ -18,6 +18,7 @@ set(ARP_BASELINE_SOURCES
     src/HookSafety.h
     src/HookInstallation.h
     src/RuntimePathSettings.h
+    src/ModlistProfiles.h
     src/CommunityShaderIntegration.cpp
     src/CommunityShaderIntegration.h
     src/CommunityShaderUIBoundary.h

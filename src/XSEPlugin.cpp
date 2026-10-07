@@ -1,5 +1,6 @@
 #include <PCH.h>
 #include "PluginPaths.h"
+#include "ModlistProfiles.h"
 #include "RendererUpgrade.h"
 #include "SkyrimRuntime.h"
 #include "GameHookValidation.h"
@@ -62,6 +63,29 @@ namespace
 	std::filesystem::path GetPluginDirectory()
 	{
 		return TheosRenderPipeline::PluginPaths::Directory();
+	}
+
+	void LogModlistProfiles(const std::filesystem::path& module)
+	{
+		// Diagnostics must not prevent startup on standalone or custom MO2 layouts.
+		try {
+			using namespace TheosRenderPipeline::ModlistProfiles;
+			const auto discovered = Discover(module, GetPluginDirectory());
+			if (discovered.root.empty()) {
+				logger::info("[Modlist profiles] unavailable: no nearby profiles folder; activeProfile=unknown");
+				return;
+			}
+			logger::info("[Modlist profiles] modlist=\"{}\" count={} activeProfile=unknown pathsRelativeTo=modlist-root",
+				Utf8(discovered.root.filename()), discovered.profiles.size());
+			for (const auto& profile : discovered.profiles) {
+				logger::info("[Modlist profile] name=\"{}\" path=\"{}\"", Utf8(profile.filename()), Utf8(profile));
+			}
+			if (discovered.error) {
+				logger::info("[Modlist profiles] discovery incomplete path=\"profiles\" native={}", discovered.error.value());
+			}
+		} catch (...) {
+			logger::info("[Modlist profiles] discovery unavailable; startup continues");
+		}
 	}
 
 	void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
@@ -183,6 +207,7 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 		TheosRenderPipeline::PluginPaths::ModulePath(renderer).string());
 	logger::info("[Renderer build] {}", Plugin::BUILD_IDENTITY);
 	logger::info("[Runtime] Skyrim {}", a_skse->RuntimeVersion().string());
+	LogModlistProfiles(TheosRenderPipeline::PluginPaths::ModulePath(renderer));
 	// Check the virtual Data tree too: SKSE may call us before the old plugin's
 	// load callback. Reject both versions before either can share renderer hooks.
 	const auto upgrade=TheosRenderPipeline::RendererUpgrade::Prepare(GetPluginDirectory(),
