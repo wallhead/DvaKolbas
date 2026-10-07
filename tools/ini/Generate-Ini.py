@@ -60,8 +60,10 @@ def generate():
             for field in (f for f in fields if f['section'] == section):
                 names = ' | '.join(choices(field))
                 note = ('[restart] ' if field['restart'] else '') + field['comment']
-                if names: note += ' Values: ' + names + '.'
-                lines += ['; ' + note, (field['key'] + ' = ' + overrides.get(section + '/' + field['key'], field['default'])).rstrip()]
+                lines += ['; ' + note]
+                if names: lines += ['; Values: ' + names + '.']
+                if field.get('range'): lines += ['; Range: ' + field['range'] + '.']
+                lines += [(field['key'] + ' = ' + overrides.get(section + '/' + field['key'], field['default'])).rstrip()]
         outputs[ROOT / example] = '\n'.join(lines) + '\n'
     docs = ['# INI settings', '',
             'Edit `SKSE/Plugins/RaZkolbaS.ini`. This build reads the current named layout only; old files must be converted explicitly or replaced with the matching packaged INI. No ConfigVersion is needed.', '',
@@ -76,6 +78,7 @@ def generate():
         description = field['comment']
         names = choices(field)
         if names: description += ' Values: ' + ', '.join(names) + '.'
+        if field.get('range'): description += ' Range: ' + field['range'] + '.'
         docs.append(f"| {field['section']} | {field['key']} | `{field['default']}` | {'Yes' if field['restart'] else 'No'} | {description.replace('|', '/')} |")
     outputs[ROOT / 'package/INI-SETTINGS.md'] = '\n'.join(docs) + '\n'
     return outputs

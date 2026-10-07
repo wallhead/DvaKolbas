@@ -31,7 +31,7 @@
       "section": "Upscaling",
       "key": "Upscaler",
       "default": "DLSS",
-      "comment": "DLSS or FSR. Native is selected in the provider quality section.",
+      "comment": "Upscaling provider. Native is selected in the provider quality section.",
       "restart": true,
       "values": {
         "DLSS": "0",
@@ -45,7 +45,7 @@
       "section": "Upscaling",
       "key": "MipLodBias",
       "default": "Auto",
-      "comment": "Auto, or a numeric manual bias such as -1.0.",
+      "comment": "Automatic mip bias, or a manual numeric bias such as -1.0.",
       "restart": false,
       "values": {
         "Auto": "true",
@@ -82,10 +82,11 @@
       "section": "DLSS",
       "key": "Sharpness",
       "default": "0.672",
-      "comment": "DLSS sharpening, 0-1. Zero disables sharpening.",
+      "comment": "Sharpening strength. Zero disables sharpening.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0-1"
     },
     {
       "internal_section": "DLSS",
@@ -161,10 +162,11 @@
       "section": "FSR",
       "key": "Sharpness",
       "default": "0.0",
-      "comment": "FSR sharpening, 0-1; 0 disables it.",
+      "comment": "Sharpening strength. Zero disables sharpening.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0-1"
     },
     {
       "internal_section": "FSR",
@@ -172,7 +174,7 @@
       "section": "FSR",
       "key": "SourceColorEncoding",
       "default": "Unknown",
-      "comment": "Unknown, Linear, Gamma22 or SRGB. Select the actual source encoding before enabling FSR.",
+      "comment": "Select the actual FSR source encoding before enabling the feature.",
       "restart": true,
       "values": {},
       "type": "Text",
@@ -215,10 +217,18 @@
       "section": "FrameGeneration",
       "key": "NvidiaGeneratedFrames",
       "default": "1",
-      "comment": "NVIDIA: generated frames exclude the real frame. 1=x2, 2=x3, ... 5=x6. Effective count is limited by the GPU/runtime. FSR FG currently generates one frame.",
+      "comment": "NVIDIA generated-frame count, excluding the real frame. Effective count is limited by the GPU/runtime. FSR FG generates one frame.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "1-5",
+      "choices": [
+        "1=x2",
+        "2=x3",
+        "3=x4",
+        "4=x5",
+        "5=x6"
+      ]
     },
     {
       "internal_section": "FrameGeneration",
@@ -237,10 +247,11 @@
       "section": "FrameGeneration",
       "key": "DynamicTargetFPS",
       "default": "0",
-      "comment": "0=monitor refresh; otherwise 61-1000 output FPS.",
+      "comment": "Dynamic MFG target. Zero uses the monitor refresh rate.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0, or 61-1000 output FPS"
     },
     {
       "internal_section": "FrameGeneration",
@@ -259,10 +270,11 @@
       "section": "Latency",
       "key": "OutputFPSLimit",
       "default": "0",
-      "comment": "NVIDIA output FPS cap, 0=unlimited; 1-1000.",
+      "comment": "NVIDIA output FPS cap. Zero means unlimited.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0, or 1-1000 FPS"
     },
     {
       "internal_section": "FrameGeneration",
@@ -346,10 +358,11 @@
       "section": "NeuralRendering",
       "key": "PassCount",
       "default": "1",
-      "comment": "Requested passes: 1-3. Legacy executes at most 2 and keeps the saved choice.",
+      "comment": "Requested NR pass count. Legacy executes at most two and keeps the saved choice.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "1-3"
     },
     {
       "internal_section": "NeuralRendering",
@@ -379,10 +392,11 @@
       "section": "NeuralRendering",
       "key": "PassRecoverySeconds",
       "default": "5",
-      "comment": "Recovery delay after conditions clear, 0-30 seconds of active gameplay.",
+      "comment": "Recovery delay after the selected one-pass conditions clear, measured in active gameplay.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0-30 seconds"
     },
     {
       "internal_section": "NR PASS 1",
@@ -390,11 +404,12 @@
       "section": "NR PASS 1",
       "key": "Style",
       "default": "0",
-      "comment": "Style sent to the model, 0-7; community game trials have checked 0-2.",
+      "comment": "NR model style. Community game trials have checked styles 0-2.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-7"
     },
     {
       "internal_section": "NR PASS 1",
@@ -402,11 +417,12 @@
       "section": "NR PASS 1",
       "key": "Intensity",
       "default": "1.0",
-      "comment": "Effect/tone/structure strengths, 0-2. 0 disables the corresponding contribution.",
+      "comment": "NR effect contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 1",
@@ -414,11 +430,12 @@
       "section": "NR PASS 1",
       "key": "Tone",
       "default": "1.0",
-      "comment": "NR tone contribution, 0-2; zero disables it.",
+      "comment": "NR tone contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 1",
@@ -426,11 +443,12 @@
       "section": "NR PASS 1",
       "key": "Structure",
       "default": "1.0",
-      "comment": "NR structure contribution, 0-2; zero disables it.",
+      "comment": "NR structure contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 1",
@@ -438,11 +456,12 @@
       "section": "NR PASS 1",
       "key": "SkinStructure",
       "default": "1.0",
-      "comment": "-1 copies structure automatically when the runtime supports it; otherwise 0-2.",
+      "comment": "Skin structure contribution. -1 copies structure automatically when supported.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "-1, or 0-2"
     },
     {
       "internal_section": "NR PASS 1",
@@ -485,11 +504,12 @@
       "section": "NR PASS 2",
       "key": "Style",
       "default": "0",
-      "comment": "Style sent to the model, 0-7; community game trials have checked 0-2.",
+      "comment": "NR model style. Community game trials have checked styles 0-2.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-7"
     },
     {
       "internal_section": "NR PASS 2",
@@ -497,11 +517,12 @@
       "section": "NR PASS 2",
       "key": "Intensity",
       "default": "1.0",
-      "comment": "Effect/tone/structure strengths, 0-2. 0 disables the corresponding contribution.",
+      "comment": "NR effect contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 2",
@@ -509,11 +530,12 @@
       "section": "NR PASS 2",
       "key": "Tone",
       "default": "1.0",
-      "comment": "NR tone contribution, 0-2; zero disables it.",
+      "comment": "NR tone contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 2",
@@ -521,11 +543,12 @@
       "section": "NR PASS 2",
       "key": "Structure",
       "default": "1.0",
-      "comment": "NR structure contribution, 0-2; zero disables it.",
+      "comment": "NR structure contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 2",
@@ -533,11 +556,12 @@
       "section": "NR PASS 2",
       "key": "SkinStructure",
       "default": "1.0",
-      "comment": "-1 copies structure automatically when the runtime supports it; otherwise 0-2.",
+      "comment": "Skin structure contribution. -1 copies structure automatically when supported.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "-1, or 0-2"
     },
     {
       "internal_section": "NR PASS 2",
@@ -580,11 +604,12 @@
       "section": "NR PASS 3",
       "key": "Style",
       "default": "0",
-      "comment": "Style sent to the model, 0-7; community game trials have checked 0-2.",
+      "comment": "NR model style. Community game trials have checked styles 0-2.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-7"
     },
     {
       "internal_section": "NR PASS 3",
@@ -592,11 +617,12 @@
       "section": "NR PASS 3",
       "key": "Intensity",
       "default": "1.0",
-      "comment": "Effect/tone/structure strengths, 0-2. 0 disables the corresponding contribution.",
+      "comment": "NR effect contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 3",
@@ -604,11 +630,12 @@
       "section": "NR PASS 3",
       "key": "Tone",
       "default": "1.0",
-      "comment": "NR tone contribution, 0-2; zero disables it.",
+      "comment": "NR tone contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 3",
@@ -616,11 +643,12 @@
       "section": "NR PASS 3",
       "key": "Structure",
       "default": "1.0",
-      "comment": "NR structure contribution, 0-2; zero disables it.",
+      "comment": "NR structure contribution. Zero disables it.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 3",
@@ -628,11 +656,12 @@
       "section": "NR PASS 3",
       "key": "SkinStructure",
       "default": "1.0",
-      "comment": "-1 copies structure automatically when the runtime supports it; otherwise 0-2.",
+      "comment": "Skin structure contribution. -1 copies structure automatically when supported.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "-1, or 0-2"
     },
     {
       "internal_section": "NR PASS 3",
@@ -700,10 +729,11 @@
       "section": "Appearance",
       "key": "SmoothingSeconds",
       "default": "2.0",
-      "comment": "Transition time for appearance presets, in seconds.",
+      "comment": "Transition time for appearance presets.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0-30 seconds"
     },
     {
       "internal_section": "Appearance",
@@ -747,7 +777,7 @@
       "section": "NeuralRendering Advanced",
       "key": "Profile",
       "default": "Auto",
-      "comment": "GPU profile: Auto, rtx20-30, rtx40 or rtx50. AMD NR is not yet supported.",
+      "comment": "NR GPU profile. AMD NR is unsupported.",
       "restart": true,
       "values": {},
       "type": "Text",
@@ -764,7 +794,7 @@
       "section": "NeuralRendering Advanced",
       "key": "SourceColorEncoding",
       "default": "Unknown",
-      "comment": "NR source encoding: Unknown, Linear, Gamma22 or SRGB.",
+      "comment": "Select the actual NR source encoding before enabling the feature.",
       "restart": true,
       "values": {},
       "type": "Text",
@@ -792,11 +822,15 @@
       "section": "NR PASS 1 Advanced",
       "key": "Preset",
       "default": "0",
-      "comment": "Model preset: 0=default, 1=shipping. Community trial requires 0.",
+      "comment": "NR model preset. Community trial requires default.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "choices": [
+        "0=default",
+        "1=shipping"
+      ]
     },
     {
       "internal_section": "NR PASS 1",
@@ -804,11 +838,12 @@
       "section": "NR PASS 1 Advanced",
       "key": "InputScale",
       "default": "1.0",
-      "comment": "0 or >=1=native; otherwise 0.25-1. Community trial requires 1.",
+      "comment": "NR internal render scale. Community trial requires Native.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0.25-1; 0 or >=1 selects Native"
     },
     {
       "internal_section": "NR PASS 1",
@@ -832,11 +867,12 @@
       "section": "NR PASS 1 Advanced",
       "key": "TransferStrength",
       "default": "1.0",
-      "comment": "NR detail transfer contribution, 0-2.",
+      "comment": "NR detail transfer contribution.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 1",
@@ -844,11 +880,12 @@
       "section": "NR PASS 1 Advanced",
       "key": "ColourStrength",
       "default": "1.0",
-      "comment": "NR colour contribution, 0-2.",
+      "comment": "NR colour contribution.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0-2"
     },
     {
       "internal_section": "NR PASS 1",
@@ -856,11 +893,12 @@
       "section": "NR PASS 1 Advanced",
       "key": "MaxRatio",
       "default": "2.0",
-      "comment": "Maximum ratio for reconstruction, 0.01-16.",
+      "comment": "Maximum ratio for reconstruction.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0.01-16"
     },
     {
       "internal_section": "NR PASS 1",
@@ -868,11 +906,12 @@
       "section": "NR PASS 1 Advanced",
       "key": "WhitePoint",
       "default": "1.0",
-      "comment": "NR input white-point multiplier, 0.0001-10000.",
+      "comment": "NR input white-point multiplier.",
       "restart": false,
       "values": {},
       "inherit": false,
-      "type": "Number"
+      "type": "Number",
+      "range": "0.0001-10000"
     },
     {
       "internal_section": "NR PASS 1",
@@ -916,11 +955,15 @@
       "section": "NR PASS 2 Advanced",
       "key": "Preset",
       "default": "0",
-      "comment": "Model preset: 0=default, 1=shipping. Community trial requires 0.",
+      "comment": "NR model preset. Community trial requires default.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "choices": [
+        "0=default",
+        "1=shipping"
+      ]
     },
     {
       "internal_section": "NR PASS 2",
@@ -928,11 +971,12 @@
       "section": "NR PASS 2 Advanced",
       "key": "InputScale",
       "default": "1.0",
-      "comment": "0 or >=1=native; otherwise 0.25-1. Community trial requires 1.",
+      "comment": "NR internal render scale. Community trial requires Native.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0.25-1; 0 or >=1 selects Native"
     },
     {
       "internal_section": "NR PASS 3",
@@ -940,11 +984,15 @@
       "section": "NR PASS 3 Advanced",
       "key": "Preset",
       "default": "0",
-      "comment": "Model preset: 0=default, 1=shipping. Community trial requires 0.",
+      "comment": "NR model preset. Community trial requires default.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "choices": [
+        "0=default",
+        "1=shipping"
+      ]
     },
     {
       "internal_section": "NR PASS 3",
@@ -952,11 +1000,12 @@
       "section": "NR PASS 3 Advanced",
       "key": "InputScale",
       "default": "1.0",
-      "comment": "0 or >=1=native; otherwise 0.25-1. Community trial requires 1.",
+      "comment": "NR internal render scale. Community trial requires Native.",
       "restart": false,
       "values": {},
       "inherit": true,
-      "type": "Number"
+      "type": "Number",
+      "range": "0.25-1; 0 or >=1 selects Native"
     },
     {
       "internal_section": "HDROutput",
@@ -986,10 +1035,11 @@
       "section": "HDROutput",
       "key": "PaperWhiteNits",
       "default": "200",
-      "comment": "HDR paper-white brightness, 80-1000 nits.",
+      "comment": "HDR paper-white brightness.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "80-1000 nits"
     },
     {
       "internal_section": "HDROutput",
@@ -997,10 +1047,11 @@
       "section": "HDROutput",
       "key": "PeakNits",
       "default": "1000",
-      "comment": "HDR peak display brightness, 80-10000 nits.",
+      "comment": "HDR peak display brightness.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "80-10000 nits"
     },
     {
       "internal_section": "HDROutput",
@@ -1008,10 +1059,11 @@
       "section": "HDROutput",
       "key": "UIBrightnessNits",
       "default": "200",
-      "comment": "HDR HUD/menu brightness, 80-1000 nits.",
+      "comment": "HDR HUD/menu brightness.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "80-1000 nits"
     },
     {
       "internal_section": "HDROutput",
@@ -1019,10 +1071,11 @@
       "section": "HDROutput",
       "key": "HighlightStrength",
       "default": "1",
-      "comment": "HDR highlight expansion strength, 0-1.",
+      "comment": "HDR highlight expansion strength.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0-1"
     },
     {
       "internal_section": "HDROutput",
@@ -1030,10 +1083,11 @@
       "section": "HDROutput",
       "key": "ExpansionStart",
       "default": "0.7",
-      "comment": "Start of SDR-to-HDR highlight expansion, 0.1-0.95.",
+      "comment": "Start of SDR-to-HDR highlight expansion.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "0.1-0.95"
     },
     {
       "internal_section": "HDROutput",
@@ -1220,10 +1274,11 @@
       "section": "Debug",
       "key": "PerformanceLogIntervalSeconds",
       "default": "10",
-      "comment": "Interval 1-120 seconds, used only with performance logging enabled.",
+      "comment": "Interval used when performance logging is enabled.",
       "restart": false,
       "values": {},
-      "type": "Number"
+      "type": "Number",
+      "range": "1-120 seconds"
     },
     {
       "internal_section": "Debug",

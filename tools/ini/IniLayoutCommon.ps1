@@ -140,8 +140,9 @@ function Format-PublicIni([hashtable]$Values,[string[]]$SourceLines) {
                     elseif($field.type -eq 'Bool'){'true | false'}
                     else{@($field.values.Keys) -join ' | '}
                 $guidance='; '+$note+$field.comment
-                if($choices){$guidance+=' Values: '+$choices+'.'}
                 $lines.Add($guidance)
+                if($choices){$lines.Add('; Values: '+$choices+'.')}
+                if($field.range){$lines.Add('; Range: '+$field.range+'.')}
             }elseif($comments.ContainsKey($key)){$lines.AddRange([string[]]$comments[$key])}
             $lines.Add($key.Split('/',2)[1]+' = '+[string]$Values[$key])
         }
