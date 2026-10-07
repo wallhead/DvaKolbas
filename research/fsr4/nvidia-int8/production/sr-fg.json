@@ -1,0 +1,8 @@
+{
+"result":"PASS","failure":"","int8SrTested":true,"srActualProvider":"4.0.2b","srTemporalSources":720,
+"sourceRevision":"96f05a545ee45b21aa58f2502b9fafcc3b1de61e","fixtureSourceSha256":"bedae64b2ed6724b4a3c6a6070a90219fe541d80940c041bdc083d320257089d","sdkCommit":"60f4ea81909200d8542eca14dccb2628b763a9a3","fgModuleSha256":"02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18","observerSourceSha256":"c8fd00d322a2c49b0df7a12d665e66fa932601ddf40974d282a48cc21e5d656f",
+"requestedSourcesPerMode":360,"requestedRecreationsPerMode":5,"validationModes":2,"submittedSources":720,"prepareSubmissions":700,"generationCallbacks":700,"generatedPixelReadbacks":345,"presentCallbackObservations":700,"suppressedSources":20,"resetReentries":20,"retiredContexts":10,"automaticModeSources":360,"observerModeSources":360,"renderedPixelReadbacks":355,"changingGeneratedSamples":340,"callbackModeUiSentinels":700,
+"nvidiaRuntimeAbsent":true,"d3d11DebugAvailable":false,"d3d12DebugAvailable":false,"sdkDebugMessages":0,"fgContextDebugCheckingEnabled":true,"srGlobalDebugEnabled":false,"fgGlobalDebugEnabled":true,"automaticUiAppearance":"pending visible acceptance","physicalCadence":"pending visible acceptance","visibleRun":false,"stoppedEarly":false,"initialMonitorRefreshHz":0,"retiredMemoryRangeBytes":184320,
+"messages":[],
+"nativeFrameStatistics":[]
+}

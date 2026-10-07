@@ -1,5 +1,6 @@
 #pragma once
 #include "UpscalerBackend.h"
+#include "FSRRuntimeProfile.h"
 #include <span>
 #include <cctype>
 #include <charconv>
@@ -29,16 +30,18 @@ namespace TheosRenderPipeline::Upscaling
     { const auto version=FsrProviderVersion(provider);return version && (*version)[0]==4; }
 
     inline Result<ProviderInfo> SelectProvider(std::span<const ProviderInfo> providers, ProviderPolicy policy,
-        std::uint32_t adapterVendorId=0)
+        std::uint32_t adapterVendorId=0, FsrRuntimeProfile profile=FsrRuntimeProfile::Official)
     {
         if(!ValidProviderPolicy(policy))return std::unexpected(RuntimeError{ErrorKind::InvalidInput,0,"Invalid FSR provider policy"});
+        if(profile==FsrRuntimeProfile::Int8 && policy!=ProviderPolicy::MachineLearning)
+            return std::unexpected(RuntimeError{ErrorKind::NoProvider,0,"INT8 is explicit FSR4 only; select FSR3 and restart for the official analytical runtime"});
         const ProviderInfo* analytical{};const ProviderInfo* ml{};
         std::array<unsigned,3> newest{};
         for(const auto& provider:providers) {
             if(!provider.id)continue;
             const auto version=FsrProviderVersion(provider);if(!version)continue;
             if(*version==std::array<unsigned,3>{3,1,5} && !analytical)analytical=&provider;
-            if((*version)[0]==4 && (!adapterVendorId || adapterVendorId==0x1002) && (!ml || *version>newest)) {
+            if((*version)[0]==4 && FsrMlProfileAdmits(profile,adapterVendorId,provider) && (!ml || *version>newest)) {
                 ml=&provider;newest=*version;
             }
         }

@@ -1,5 +1,8 @@
 #include "FrameGen/FSRPresentation.h"
 #include "Upscaling/FSRPreparedResources.h"
+#include "Upscaling/FSRUpscaler.h"
+#include "Upscaling/FSRFrameAdapter.h"
+#include "Upscaling/FSRProviderPolicy.h"
 #include "InteropTestRig.h"
 #include "PresentationObserver.h"
 #include <bcrypt.h>
@@ -65,10 +68,10 @@ namespace
     {
         BCRYPT_ALG_HANDLE algorithm{};BCRYPT_HASH_HANDLE hash{};
         Need(BCRYPT_SUCCESS(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)),"SHA256 algorithm");
-        struct Cleanup{BCRYPT_ALG_HANDLE& algorithm;BCRYPT_HASH_HANDLE& hash;~Cleanup(){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);}}cleanup{algorithm,hash};
+        struct Cleanup{BCRYPT_ALG_HANDLE& algorithm;BCRYPT_HASH_HANDLE& hash;std::vector<unsigned char> object;~Cleanup(){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);}}cleanup{algorithm,hash};
         DWORD bytes{},objectSize{};Need(BCRYPT_SUCCESS(BCryptGetProperty(algorithm,BCRYPT_OBJECT_LENGTH,reinterpret_cast<PUCHAR>(&objectSize),sizeof(objectSize),&bytes,0)),"SHA256 object size");
-        std::vector<unsigned char> object(objectSize);std::array<unsigned char,32> digest{};std::array<unsigned char,65536> chunk{};
-        Need(BCRYPT_SUCCESS(BCryptCreateHash(algorithm,&hash,object.data(),objectSize,nullptr,0,0)),"SHA256 create");
+        cleanup.object.resize(objectSize);std::array<unsigned char,32> digest{};std::array<unsigned char,65536> chunk{};
+        Need(BCRYPT_SUCCESS(BCryptCreateHash(algorithm,&hash,cleanup.object.data(),objectSize,nullptr,0,0)),"SHA256 create");
         std::ifstream file(path,std::ios::binary);Need(bool(file),"hash input exists");while(file){file.read(reinterpret_cast<char*>(chunk.data()),chunk.size());const auto count=file.gcount();
             if(count)Need(BCRYPT_SUCCESS(BCryptHashData(hash,chunk.data(),static_cast<ULONG>(count),0)),"SHA256 update");}
         Need(file.eof() && BCRYPT_SUCCESS(BCryptFinishHash(hash,digest.data(),digest.size(),0)),"SHA256 finish");
@@ -84,6 +87,7 @@ namespace
         unsigned sources{},callbacks{},prepared{},suppressed{},reentries{},retired{},generatedPixels{},presentObservations{};
         bool debug11{},debug12{},nvidiaFree{},automaticUiPending{true},physicalCadencePending{true};
         UINT64 memoryMin{UINT64_MAX},memoryMax{};std::string failure,sourceHash;
+        bool int8{},srGlobalDebug{},fgGlobalDebug{};std::string srProvider;unsigned srTemporal{};
         std::string observerHash;unsigned automaticSources{},observerSources{},renderedReadbacks{},changingGenerated{},uiSentinels{};
         bool visible{},stoppedEarly{};DWORD refreshHz{};std::vector<VisibleSample> visibleSamples;
     };
@@ -91,6 +95,7 @@ namespace
     {
         std::filesystem::create_directories(std::filesystem::absolute(path).parent_path());std::ofstream out(path);
         out<<"{\n\"result\":"<<JsonString(e.failure.empty()?(e.visible?"MEASURED":"PASS"):"FAIL")<<",\"failure\":"<<JsonString(e.failure)
+            <<",\"int8SrTested\":"<<(e.int8?"true":"false")<<",\"srActualProvider\":"<<JsonString(e.srProvider)<<",\"srTemporalSources\":"<<e.srTemporal
             <<",\n\"sourceRevision\":\""<<TRP_FG_VALIDATION_REVISION<<"\",\"fixtureSourceSha256\":"<<std::quoted(e.sourceHash)
             <<",\"sdkCommit\":\"60f4ea81909200d8542eca14dccb2628b763a9a3\",\"fgModuleSha256\":\""<<TRP_FG_MODULE_SHA<<"\""
             <<",\"observerSourceSha256\":"<<std::quoted(e.observerHash)
@@ -99,7 +104,9 @@ namespace
             <<",\"presentCallbackObservations\":"<<e.presentObservations<<",\"suppressedSources\":"<<e.suppressed<<",\"resetReentries\":"<<e.reentries<<",\"retiredContexts\":"<<e.retired
             <<",\"automaticModeSources\":"<<e.automaticSources<<",\"observerModeSources\":"<<e.observerSources<<",\"renderedPixelReadbacks\":"<<e.renderedReadbacks<<",\"changingGeneratedSamples\":"<<e.changingGenerated<<",\"callbackModeUiSentinels\":"<<e.uiSentinels
             <<",\n\"nvidiaRuntimeAbsent\":"<<(e.nvidiaFree?"true":"false")<<",\"d3d11DebugAvailable\":"<<(e.debug11?"true":"false")<<",\"d3d12DebugAvailable\":"<<(e.debug12?"true":"false")
-            <<",\"sdkDebugMessages\":"<<collector.count.load()<<",\"sdkDebugCheckingEnabled\":true,\"automaticUiAppearance\":\"pending visible acceptance\",\"physicalCadence\":\"pending visible acceptance\""
+            <<",\"sdkDebugMessages\":"<<collector.count.load()<<",\"fgContextDebugCheckingEnabled\":true"
+            <<",\"srGlobalDebugEnabled\":"<<(e.srGlobalDebug?"true":"false")<<",\"fgGlobalDebugEnabled\":"<<(e.fgGlobalDebug?"true":"false")
+            <<",\"automaticUiAppearance\":\"pending visible acceptance\",\"physicalCadence\":\"pending visible acceptance\""
             <<",\"visibleRun\":"<<(e.visible?"true":"false")<<",\"stoppedEarly\":"<<(e.stoppedEarly?"true":"false")<<",\"initialMonitorRefreshHz\":"<<e.refreshHz
             <<",\"retiredMemoryRangeBytes\":"<<(e.memoryMin==UINT64_MAX?0:e.memoryMax-e.memoryMin)<<",\n\"messages\":[";
         const auto count=std::min(collector.count.load(),unsigned(collector.messages.size()));for(unsigned i=0;i<count;++i){if(i)out<<',';std::string message;
@@ -116,10 +123,11 @@ namespace
 }
 int main(int argc,char** argv)
 {
-    unsigned frames=1000,cycles=25;std::filesystem::path runtimeDirectory,report="fsr-fg-gpu.json";Evidence evidence;static Collector collector;Collector::active=&collector;
+    unsigned frames=1000,cycles=25;std::filesystem::path runtimeDirectory,int8Directory,report="fsr-fg-gpu.json";Evidence evidence;static Collector collector;Collector::active=&collector;
     try{
         for(int i=1;i<argc;++i){Need(i+1<argc,"option needs value");std::string key=argv[i],value=argv[++i];
             if(key=="--frames")frames=std::stoul(value);else if(key=="--recreate")cycles=std::stoul(value);else if(key=="--runtime")runtimeDirectory=std::filesystem::absolute(value);else if(key=="--output")report=value;
+            else if(key=="--int8-runtime"){int8Directory=std::filesystem::absolute(value);evidence.int8=true;}
             else if(key=="--visible"){Need(value=="true" || value=="false","visible requires true/false");evidence.visible=value=="true";}
             else if(key=="--debug")Need(value=="auto","only debug auto supported");else Need(false,"unknown option");}
         Need(cycles && frames>=cycles*36,"at least 36 sources per cycle for suppression/reentry");
@@ -132,7 +140,8 @@ int main(int argc,char** argv)
         const std::array<const char*,3> files{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll","amd_fidelityfx_framegeneration_dx12.dll"};
         const std::array<const char*,3> hashes{TRP_FG_LOADER_SHA,TRP_FG_UPSCALER_SHA,TRP_FG_MODULE_SHA};
         for(unsigned i=0;i<files.size();++i){Need(Sha256(runtimeDirectory/files[i])==hashes[i],"runtime SHA256 differs from pinned SDK");std::filesystem::copy_file(runtimeDirectory/files[i],plugin/"FSR"/files[i],std::filesystem::copy_options::overwrite_existing);}
-        auto runtime=std::make_shared<FsrRuntime>();Accepted(runtime->Load(plugin));Accepted(runtime->LoadFrameGeneration(plugin));
+        if(evidence.int8){std::filesystem::create_directories(plugin/"FSR/INT8");for(unsigned i=0;i<2;++i)std::filesystem::copy_file(int8Directory/files[i],plugin/"FSR/INT8"/files[i],std::filesystem::copy_options::overwrite_existing);}
+        auto runtime=std::make_shared<FsrRuntime>();Accepted(runtime->Load(plugin,evidence.int8?FsrRuntimeProfile::Int8:FsrRuntimeProfile::Official));Accepted(runtime->LoadFrameGeneration(plugin));
         ffxConfigureDescGlobalDebug1 debug{{FFX_API_CONFIGURE_DESC_TYPE_GLOBALDEBUG1,nullptr},Collector::Message,FFX_API_CONFIGURE_GLOBALDEBUG_LEVEL_ERRORS|FFX_API_CONFIGURE_GLOBALDEBUG_LEVEL_WARNINGS};
         const auto loaderDebug=runtime->Functions().Configure(nullptr,&debug.header);
         std::printf("GlobalDebug1 loader return=%u\n",unsigned(loaderDebug));
@@ -141,8 +150,12 @@ int main(int argc,char** argv)
         for(auto moduleName:{L"amd_fidelityfx_upscaler_dx12.dll",L"amd_fidelityfx_framegeneration_dx12.dll"}){
             auto configure=reinterpret_cast<PfnFfxConfigure>(GetProcAddress(GetModuleHandleW(moduleName),"ffxConfigure"));Need(configure!=nullptr,"effect public Configure export");
             const auto result=configure(nullptr,&debug.header);std::printf("GlobalDebug1 effect return=%u\n",unsigned(result));
-            Need(result==FFX_API_RETURN_OK,"effect SDK global debug collector enabled");}
+            if(moduleName==std::wstring_view(L"amd_fidelityfx_upscaler_dx12.dll"))evidence.srGlobalDebug=result==FFX_API_RETURN_OK;
+            else evidence.fgGlobalDebug=result==FFX_API_RETURN_OK;
+            Need(result==FFX_API_RETURN_OK || (evidence.int8 && moduleName==std::wstring_view(L"amd_fidelityfx_upscaler_dx12.dll")),"effect SDK global debug collector enabled");}
         InteropFixture::Rig rig(true);evidence.debug11=bool(rig.messages11);evidence.debug12=bool(rig.messages12);
+        ProviderInfo srProvider{};
+        if(evidence.int8){DXGI_ADAPTER_DESC adapter{};Gpu(rig.adapter->GetDesc(&adapter),"actual SR adapter");srProvider=Value(SelectProvider(Value(runtime->Enumerate(rig.device12.Get())),ProviderPolicy::MachineLearning,adapter.VendorId,FsrRuntimeProfile::Int8));evidence.srProvider=srProvider.name;}
         auto fg=Value(SelectFsrEffectProvider(Value(runtime->EnumerateForEffect(rig.device12.Get(),FsrEffect::FrameGeneration)),FsrEffect::FrameGeneration));
         auto sw=Value(SelectFsrEffectProvider(Value(runtime->EnumerateForEffect(rig.device12.Get(),FsrEffect::FrameGenerationSwapChain)),FsrEffect::FrameGenerationSwapChain));
         ComPtr<IDXGIAdapter3> memoryAdapter;Gpu(rig.adapter.As(&memoryAdapter),"GPU memory adapter");
@@ -163,6 +176,7 @@ int main(int argc,char** argv)
         for(unsigned cycle=0;cycle<cycles;++cycle){
             {
                 auto bridge=std::make_shared<Graphics::D3D11D3D12Interop>();rig.Initialize(*bridge);FsrGenerationLimits limits;limits.render={320,180};limits.display={640,360};limits.debugChecking=true;
+                if(evidence.int8)limits.render=Value(runtime->QueryRenderExtent(rig.device12.Get(),srProvider,Quality::NativeAA,limits.display));
                 auto d=FsrPreparedTextureDesc(FsrResourceRole::Depth,limits.render);
                 Graphics::SharedTexture depth,motion;Gpu(bridge->CreateSharedTexture(d,depth),"controlled depth");d=FsrPreparedTextureDesc(FsrResourceRole::Motion,limits.render);Gpu(bridge->CreateSharedTexture(d,motion),"controlled motion");
                 d.Width=limits.display.width;d.Height=limits.display.height;d.Format=DXGI_FORMAT_R8G8B8A8_UNORM;d.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;
@@ -177,6 +191,15 @@ int main(int argc,char** argv)
                 std::vector<DirectX::PackedVector::HALF> motions(depths.size()*2);
                 FsrPresentation presenter;DXGI_SWAP_CHAIN_DESC desc{};desc.OutputWindow=window;desc.Windowed=TRUE;desc.BufferDesc.Width=d.Width;desc.BufferDesc.Height=d.Height;desc.BufferDesc.Format=d.Format;desc.SampleDesc.Count=1;desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.BufferCount=1;
                 Accepted(presenter.Create(rig.factory.Get(),runtime,bridge,desc,sw));Gpu(presenter.Present({},UpscaleOutcome::SkippedInvalidInput,{},nullptr,ColorEncoding::Unknown,nullptr,nullptr,false,false,false,0,0),"feature-less startup Present");Accepted(presenter.CompleteStartup(limits,fg));
+                FsrUpscaler sr;std::unique_ptr<FsrFrameAdapter> srAdapter;Graphics::SharedTexture srColor,srOutput;ComPtr<ID3D11Texture2D> srInput;
+                if(evidence.int8){
+                    Accepted(sr.SetRetirementBridge(bridge));Accepted(sr.Initialize(runtime,rig.device12.Get(),srProvider,Quality::NativeAA,limits.render,limits.display));
+                    auto actual=Value(sr.ActualProvider());Need(actual.id==srProvider.id && actual.name==srProvider.name,"SR actual ML identity before FG");
+                    auto prepared=FsrPreparedTextureDesc(FsrResourceRole::Color,limits.render);Gpu(bridge->CreateSharedTexture(prepared,srColor),"SR shared color");
+                    prepared=FsrPreparedTextureDesc(FsrResourceRole::Output,limits.display);Gpu(bridge->CreateSharedTexture(prepared,srOutput),"SR shared output");
+                    D3D11_TEXTURE2D_DESC input{};presenter.SceneTarget11()->GetDesc(&input);input.MiscFlags=0;Gpu(rig.device11->CreateTexture2D(&input,nullptr,&srInput),"separate SR source");
+                    srAdapter=std::make_unique<FsrFrameAdapter>(sr,bridge,GpuFrameResources{srColor.texture12.Get(),depth.texture12.Get(),motion.texture12.Get(),srOutput.texture12.Get()},srColor.texture11.Get(),depth.texture11.Get(),motion.texture11.Get(),srOutput.texture11.Get(),ColorEncoding::SRGB);
+                }
                 const auto count=frames/cycles+(cycle<frames%cycles?1:0);std::unique_ptr<FgObservation::Capture> capture;
                 if(observationMode){capture=std::make_unique<FgObservation::Capture>(rig.device12.Get(),count*2+8,limits.display.width,limits.display.height);FgObservation::activeCapture=capture.get();}
                 std::unordered_set<uint64_t> sourceIds,eligibleIds;
@@ -202,16 +225,20 @@ int main(int argc,char** argv)
                     for(UINT y=0;y<limits.display.height;++y)for(UINT x=0;x<limits.display.width;++x){const float u=(float(x)+.5f)/limits.display.width;
                         const bool foreground=std::abs(u-(.4f+objectShift))<.04f && y>100 && y<260;scenePixels[y*limits.display.width+x]=foreground?0xff0d26cc:0xff40261a;}
                     for(UINT y=0;y<limits.render.height;++y)for(UINT x=0;x<limits.render.width;++x){const float u=(float(x)+.5f)/limits.render.width;const bool foreground=std::abs(u-(.4f+objectShift))<.04f && y>50 && y<130;
-                        const float z=foreground?1.5f:3.f;const auto index=y*limits.render.width+x;
+                        const bool srForeground=evidence.int8?std::abs(u-(.4f+objectShift))<.04f && y>100 && y<260:foreground;
+                        const float z=srForeground?1.5f:3.f;const auto index=y*limits.render.width+x;
                         depths[index]=100.f/99.9f-(100.f*.1f/99.9f)/z;
-                        motions[index*2]=DirectX::PackedVector::XMConvertFloatToHalf(foreground?previousShift-objectShift:0);motions[index*2+1]=0;}
-                    rig.context11->UpdateSubresource(presenter.SceneTarget11(),0,nullptr,scenePixels.data(),limits.display.width*4,0);
+                        motions[index*2]=DirectX::PackedVector::XMConvertFloatToHalf(srForeground?previousShift-objectShift:0);motions[index*2+1]=0;}
+                    rig.context11->UpdateSubresource(evidence.int8?srInput.Get():presenter.SceneTarget11(),0,nullptr,scenePixels.data(),limits.display.width*4,0);
                     rig.context11->UpdateSubresource(depth.texture11.Get(),0,nullptr,depths.data(),limits.render.width*4,0);
                     rig.context11->UpdateSubresource(motion.texture11.Get(),0,nullptr,motions.data(),limits.render.width*4,0);Gpu(bridge->SignalD3D11(Graphics::InteropWork::FrameGeneration),"guide producer submission");
+                    UpscaleOutcome srOutcome=UpscaleOutcome::Temporal;
+                    if(evidence.int8){frame.input=frame.color=srInput.Get();frame.output=presenter.SceneTarget11();frame.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;frame.colorIsLinear=false;frame.depth=depth.texture11.Get();frame.camera.reset=false;frame.reset=local==0;
+                        const auto jitter=Value(sr.QueryJitter(frame.sourceId));frame.jitterX=jitter[0];frame.jitterY=jitter[1];srOutcome=Value(srAdapter->Evaluate(frame));if(srOutcome==UpscaleOutcome::Temporal)++evidence.srTemporal;}
                     bool requested=true,menu=false;frame.camera.reset=false;frame.depth=depth.texture11.Get();frame.deltaMilliseconds=1000.f/72;
                     if(evidence.visible){requested=visibleRequested && elapsed>=10;menu=visibleMenu || (elapsed>=20 && elapsed<25);frame.deltaMilliseconds=float(measuredDelta);}
                     else if(local==19){switch(cycle%5){case 0:requested=false;break;case 1:menu=true;break;case 2:frame.depth=nullptr;break;case 3:frame.camera.reset=true;break;case 4:frame.deltaMilliseconds=100;break;}}
-                    Gpu(presenter.Present(frame,UpscaleOutcome::Temporal,guides,presenter.SceneTarget11(),ColorEncoding::SRGB,ui.Get(),nullptr,true,menu,requested,0,0),"production FG source handoff");
+                    Gpu(presenter.Present(frame,srOutcome,guides,presenter.SceneTarget11(),ColorEncoding::SRGB,ui.Get(),nullptr,true,menu,requested,0,0),"production FG source handoff");
                     const auto status=presenter.Status();Need(status.sourceId==frame.sourceId && status.submitted,"source ID and submission observed");
                     Need(status.callback.invocations==(status.decision.generate?1u:0u),"one SDK generation callback exactly on eligible sources");
                     ++evidence.sources;evidence.callbacks+=status.callback.invocations;if(status.decision.prepare)++evidence.prepared;else ++evidence.suppressed;
@@ -223,6 +250,7 @@ int main(int argc,char** argv)
                         wchar_t title[256]{};swprintf_s(title,L"TRP FSR: requested=%u menu=%u callback=%u source=%.1f Hz | Space FG, M menu, Esc finish",requested,menu,sample.generated,1000/measuredDelta);SetWindowTextW(window,title);}
                 }
                 const auto retirement=presenter.Retire();if(!retirement){(void)capture.release();Accepted(retirement);}++evidence.retired;FgObservation::activeCapture=nullptr;
+                if(evidence.int8){Accepted(sr.DestroyAfterRetirement());srAdapter.reset();}
                 if(capture){
                     Need(!capture->Failed(),"public Present observer rejected a descriptor or recording");unsigned generatedThisCycle{},changingThisCycle{};uint64_t previous{};
                     std::unordered_set<uint64_t> renderedIds,generatedIds;
@@ -250,6 +278,7 @@ int main(int argc,char** argv)
         evidence.nvidiaFree=NvidiaAbsent();Need(evidence.nvidiaFree,"NVIDIA runtime appeared during FSR-only generation");rig.ValidateDebug();
         Need(!collector.count.load(),"unexpected SDK debug warning/error (see report)");
         if(!evidence.visible){Need(evidence.automaticSources==frames && evidence.observerSources==frames && evidence.retired==cycles*2,"all automatic/observer source submissions and context retirements observed");
+            if(evidence.int8)Need(evidence.srTemporal==evidence.sources,"every combined source passed actual INT8 temporal SR before FG");
             Need(evidence.callbacks>cycles*2 && evidence.reentries>=cycles*4,"actual production generation callbacks and suppression/reentry exercised");
             Need(evidence.generatedPixels>cycles && evidence.changingGenerated>=cycles,"actual generated image readbacks change");}
         Need(evidence.memoryMax-evidence.memoryMin<64ull*1024*1024,"retired GPU memory growth bounded across both modes");

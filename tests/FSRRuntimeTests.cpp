@@ -13,6 +13,14 @@ static void Require(bool value, const char* why) { if (!value) { std::fprintf(st
 static bool Loaded(const fs::path& p) { return GetModuleHandleW((p / "FSR/amd_fidelityfx_loader_dx12.dll").c_str()) || GetModuleHandleW((p / "FSR/amd_fidelityfx_upscaler_dx12.dll").c_str()); }
 int main(int argc, char** argv)
 {
+    Require(SelectFsrRuntimeProfile(ProviderPolicy::Analytical,0x10de)==FsrRuntimeProfile::Official,"NVIDIA FSR3 retains official runtime");
+    Require(SelectFsrRuntimeProfile(ProviderPolicy::MachineLearning,0x10de)==FsrRuntimeProfile::Int8,"NVIDIA explicit FSR4 selects separately pinned INT8 runtime");
+    Require(SelectFsrRuntimeProfile(ProviderPolicy::Compatible,0x10de)==FsrRuntimeProfile::Official,"NVIDIA Auto retains official fallback behavior");
+    Require(SelectFsrRuntimeProfile(ProviderPolicy::MachineLearning,0x1002)==FsrRuntimeProfile::Official,"AMD explicit FSR4 retains official runtime");
+    std::vector<ProviderInfo> int8Catalog{{17,"3.1.5"},{23,"4.0.2b"},{24,"4.1.1"}};
+    Require(SelectProvider(int8Catalog,ProviderPolicy::MachineLearning,0x10de,FsrRuntimeProfile::Int8)->id==23,"INT8 admits only its verified ML version on NVIDIA");
+    Require(!SelectProvider(int8Catalog,ProviderPolicy::Analytical,0x10de,FsrRuntimeProfile::Int8),"INT8 cannot substitute its older analytical implementation for official FSR3");
+    Require(!SelectProvider(int8Catalog,ProviderPolicy::MachineLearning,0x1002,FsrRuntimeProfile::Int8),"unqualified AMD INT8 profile is not admitted");
     // Vendor creation is the boundary double. Exercise cleanup ordering and
     // the already-published game-buffer constraint without spoofing an adapter.
     for(unsigned scenario=0;scenario<9;++scenario) {
@@ -46,6 +54,17 @@ int main(int argc, char** argv)
     FsrRuntime absent; auto missing = absent.Load(base / "absent");
     Require(!missing && missing.error().kind == ErrorKind::MissingRuntime, "missing runtime is explicit");
     Require(!absent.Load("relative"), "relative module root rejected");
+    Require(!absent.Load(base,static_cast<FsrRuntimeProfile>(99)),"invalid runtime profile rejected");
+    Require(FsrUpscaleApiVersion(FsrRuntimeProfile::Int8)==FFX_UPSCALER_MAKE_VERSION(4,0,3),"INT8 sizing and creation bind independently verified API 4.0.3");
+    auto tampered=base/"tampered/FSR/INT8";fs::create_directories(tampered);
+    fs::copy_file(base/"good/FSR/amd_fidelityfx_upscaler_dx12.dll",tampered/"amd_fidelityfx_upscaler_dx12.dll",fs::copy_options::overwrite_existing);
+    FsrRuntime pinned;auto rejected=pinned.Load(base/"tampered",FsrRuntimeProfile::Int8);
+    Require(!rejected && rejected.error().kind==ErrorKind::IncompatibleAbi,"unverified INT8 runtime rejected before execution");
+    Require(!pinned.Functions().Query,"failed INT8 verification leaves no loaded function table");
+    fs::resize_file(tampered/"amd_fidelityfx_upscaler_dx12.dll",41036800);
+    auto digestRejected=pinned.Load(base/"tampered",FsrRuntimeProfile::Int8);
+    Require(!digestRejected && digestRejected.error().message.find("SHA256")!=std::string::npos,"right-sized but wrong-digest INT8 file cannot execute");
+    fs::remove(tampered/"amd_fidelityfx_upscaler_dx12.dll");
     TheosRenderPipeline::Upscaling::BackendConfiguration dlss;
     Require(TheosRenderPipeline::ResolveBackend(dlss, false).valid, "missing FSR leaves DLSS usable");
     auto wrong = base / "wrong/FSR"; fs::create_directories(wrong);

@@ -391,6 +391,10 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         status_=FsrFgActive()?"FSR ready on AMD presenter; FG awaits measured camera and completed UI":"FSR context ready on ordinary D3D11 presenter; waiting for validated source frames";
         const auto& settings=sourceUpscalerSettings_.Effective().fsr;
         const auto& limits=fsrResources_->Upscaler()->Limits();
+        logger::info("[FSR runtime] profile={} upscaleApiVersion=0x{:X} directory={}",
+            fsrResources_->Runtime()->Profile()==TheosRenderPipeline::Upscaling::FsrRuntimeProfile::Int8?"INT8":"Official",
+            fsrResources_->Runtime()->UpscaleApiVersion(),
+            fsrResources_->Runtime()->Profile()==TheosRenderPipeline::Upscaling::FsrRuntimeProfile::Int8?"SKSE/Plugins/FSR/INT8":"SKSE/Plugins/FSR");
         logger::info("[FSR provider] actualId={} requiredInputs=0x{:X} optionalInputs=0x{:X} selection={}",
             fsrResources_->Provider().id,limits.requiredResources,limits.optionalResources,
             fsrResources_->ProviderDiagnostic().empty()?"requested provider":fsrResources_->ProviderDiagnostic());

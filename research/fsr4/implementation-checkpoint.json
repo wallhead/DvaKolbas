@@ -1,29 +1,71 @@
 {
   "date": "2026-10-07",
-  "scope": "Official SDK 2.3.0 FSR4.1.1 SR; analytical FG3.1.6 and swapchain3.1.7 retained",
+  "scope": "Official SDK2.3.0 FSR3.1.5/AMD FSR4.1.1, plus explicit NVIDIA INT8 FSR4.0.2b; existing analytical FG3.1.6/swapchain3.1.7 retained",
   "order": "DLSS/FSR -> NR where supported -> FG -> UI",
   "milestones": [
-    {"id": 1, "task": "Validate AIO19 evidence against original bytes", "status": "complete"},
-    {"id": 2, "task": "Provider policy, INI/menu and independent SR/FG admission", "status": "complete"},
-    {"id": 3, "task": "Shader/input contracts and cleanup-safe startup Auto fallback", "status": "complete"},
-    {"id": 4, "task": "Build and local lifecycle/FG/GPU integration checks", "status": "complete"},
-    {"id": 5, "task": "Actual AMD FSR4 execution and Skyrim acceptance", "status": "pending external GPU"},
-    {"id": 6, "task": "Promote qualified build into release package", "status": "pending milestone 5"}
+    {
+      "id": 1,
+      "task": "Validate AIO19 evidence against original bytes",
+      "status": "complete"
+    },
+    {
+      "id": 2,
+      "task": "Provider policy, INI/menu and independent SR/FG admission",
+      "status": "complete"
+    },
+    {
+      "id": 3,
+      "task": "Shader/input contracts and cleanup-safe startup Auto fallback",
+      "status": "complete"
+    },
+    {
+      "id": 4,
+      "task": "Build and local lifecycle/FG/GPU integration checks",
+      "status": "complete"
+    },
+    {
+      "id": 5,
+      "task": "NVIDIA INT8 and AMD ML qualification, then Skyrim acceptance",
+      "status": "NVIDIA standalone qualified; Skyrim and AMD pending"
+    },
+    {
+      "id": 6,
+      "task": "Promote qualified build into release package",
+      "status": "pending milestone 5"
+    }
   ],
   "localVerification": {
     "adapter": "NVIDIA RTX 4080 SUPER",
-    "selectedSuite": {"passed": 31, "failed": 0, "skipped": 1},
-    "skipped": "Explicit FSR4 unavailable on local NVIDIA adapter",
+    "selectedSuite": {
+      "passed": 27,
+      "failed": 0,
+      "skipped": 1
+    },
+    "skipped": "Official AMD-only FSR4 unavailable on local NVIDIA; separately pinned INT8 passes explicit production tests",
     "autoActualProvider": "3.1.5",
     "sharpness": "Real-runtime pixels differ at Quality and Native AA",
     "debugLayersAvailable": false,
     "fallbackCoverage": "Boundary-double orchestration tests; actual ML-to-analytical creation failure not GPU-qualified",
-    "review": "Independent focused review; resize fallback latch and auto-exposure bitmap corrected"
+    "review": "Independent focused review; resize fallback latch and auto-exposure bitmap corrected",
+    "nvidiaInt8": {
+      "provider": "4.0.2b",
+      "frames": 1600,
+      "recreations": 32,
+      "sharpness": "Quality and Native AA pixels differ at 0/1",
+      "srFgSources": 720,
+      "generationCallbacks": 700,
+      "generatedReadbacks": 345,
+      "hostStartupTemporalFrames": 12,
+      "privateAllocationCallbacksObserved": false,
+      "retiredMemoryRangeBytes": 7340032,
+      "review": "No critical/important findings; separate SR/FG diagnostic availability recorded"
+    }
   },
   "pending": [
-    "RX9070 tester: standalone MachineLearning Native/Quality/Balanced/Performance, recreation and sharpening",
-    "Skyrim: explicit FSR4 actual provider 4.x, Native then scaled; FG off/on; HUD and lifecycle acceptance",
-    "No AIO19 INT8 runtime integration or official ML FG4 qualification in this phase"
+    "Skyrim NVIDIA INT8 Native AA, then scaled modes; FSR3/FSR4 selection across restarts; NR/FG/UI/lifecycle acceptance",
+    "RX9070 tester: official FSR4 standalone and Skyrim qualification",
+    "Other NVIDIA cards remain unqualified for INT8 despite the SM6.6 admission contract",
+    "Separate candidate package; stable v1.1 and installed mod remain unchanged until trial installation"
   ],
   "sources": [
     "https://gpuopen.com/manuals/fsr_sdk/techniques/super-resolution-ml/",

@@ -68,9 +68,11 @@ static std::uint64_t Pixels(Rig& rig,ID3D11Texture2D* staging,Extent size)
 int main(int argc,char** argv)
 {
     ProviderPolicy requestedPolicy=ProviderPolicy::Analytical;
+    FsrRuntimeProfile runtimeProfile=FsrRuntimeProfile::Official;
     bool sharpnessCheck=false; unsigned frames=1000,recreate=25;std::filesystem::path runtimeDirectory,report="out/validation/fsr-gpu.json";
     for(int i=1;i<argc;++i){std::string argument=argv[i];Require(i+1<argc,"smoke option needs value");std::string value=argv[++i];
-        if(argument=="--sharpness-check"){Require(value=="true","sharpness check expects true");sharpnessCheck=true;}
+        if(argument=="--profile"){Require(value=="Official" || value=="INT8","known runtime profile");runtimeProfile=value=="INT8"?FsrRuntimeProfile::Int8:FsrRuntimeProfile::Official;}
+        else if(argument=="--sharpness-check"){Require(value=="true","sharpness check expects true");sharpnessCheck=true;}
         else if(argument=="--provider") {
             if(value=="Analytical")requestedPolicy=ProviderPolicy::Analytical;
             else if(value=="Compatible")requestedPolicy=ProviderPolicy::Compatible;
@@ -81,13 +83,21 @@ int main(int argc,char** argv)
     if(sharpnessCheck){frames=128;recreate=4;}
     Require(recreate>0 && frames>=recreate*9,"at least nine temporal frames per context for reentry coverage");
     if(runtimeDirectory.empty()||!std::filesystem::exists(runtimeDirectory/"amd_fidelityfx_loader_dx12.dll")){std::puts("SKIPPED: pinned runtime unavailable");return 77;}
-    auto plugin=std::filesystem::absolute(report).parent_path()/"runtime-plugin";std::filesystem::create_directories(plugin/"FSR");
-    for(auto name:{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll"})std::filesystem::copy_file(runtimeDirectory/name,plugin/"FSR"/name,std::filesystem::copy_options::overwrite_existing);
-    auto runtime=std::make_shared<FsrRuntime>();Accepted(runtime->Load(plugin));Rig rig(true);allocatorDevice=rig.device12.Get();
+    auto plugin=std::filesystem::absolute(report).parent_path()/"runtime-plugin";
+    const auto profileRoot=plugin/(runtimeProfile==FsrRuntimeProfile::Int8?"FSR/INT8":"FSR");std::filesystem::create_directories(profileRoot);
+    for(auto name:{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll"})std::filesystem::copy_file(runtimeDirectory/name,profileRoot/name,std::filesystem::copy_options::overwrite_existing);
+    auto runtime=std::make_shared<FsrRuntime>();Accepted(runtime->Load(plugin,runtimeProfile));Rig rig(true);allocatorDevice=rig.device12.Get();
+    if(runtimeProfile==FsrRuntimeProfile::Int8) {
+        for(auto name:{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll"}) {
+            HANDLE write=CreateFileW((profileRoot/name).c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+            const auto error=GetLastError();if(write!=INVALID_HANDLE_VALUE)CloseHandle(write);
+            Require(write==INVALID_HANDLE_VALUE && error==ERROR_SHARING_VIOLATION,"verified INT8 files held against writes for runtime lifetime");
+        }
+    }
     DXGI_ADAPTER_DESC adapterDescription{};Check(rig.adapter->GetDesc(&adapterDescription),"actual adapter description");
     auto providers=Value(runtime->Enumerate(rig.device12.Get()));
     for(const auto& candidate:providers)std::printf("Discovered provider id=%llu name=%s\n",candidate.id,candidate.name.c_str());
-    auto selection=SelectProvider(providers,requestedPolicy,adapterDescription.VendorId);
+    auto selection=SelectProvider(providers,requestedPolicy,adapterDescription.VendorId,runtimeProfile);
     if(!selection && requestedPolicy==ProviderPolicy::MachineLearning && selection.error().kind==ErrorKind::NoProvider) {
         std::filesystem::create_directories(report.parent_path());std::ofstream json(report);
         json<<"{\"result\":\"NOT QUALIFIED\",\"requestedPolicy\":\"MachineLearning\",\"adapterVendorId\":"<<adapterDescription.VendorId
@@ -171,10 +181,14 @@ int main(int argc,char** argv)
     Require(spatialFrames==recreate && invalidFrames==recreate && resetFrames==recreate*3,"one first-frame, invalid-input reentry and loading-exit reset per context");
     std::printf("Allocation observations: resources=%zu heaps=%zu peakResources=%zu peakHeaps=%zu retiredMemoryRange=%llu\n",
         allocatedResources,allocatedHeaps,peakResources,peakHeaps,static_cast<unsigned long long>(maxRetiredMemory-minRetiredMemory));
-    Require(allocatedResources>0||allocatedHeaps>0,"official allocation callbacks observed SDK allocations");Require(maxRetiredMemory-minRetiredMemory<64ull*1024*1024,"retired GPU memory growth bounded");rig.ValidateDebug();
+    if(runtimeProfile==FsrRuntimeProfile::Official)Require(allocatedResources>0||allocatedHeaps>0,"official allocation callbacks observed SDK allocations");
+    else std::puts("LIMITATION: INT8 model allocations are private; SDK callback counts do not prove their retirement");
+    Require(maxRetiredMemory-minRetiredMemory<64ull*1024*1024,"retired GPU memory growth bounded");rig.ValidateDebug();
     auto luid=rig.device12->GetAdapterLuid();std::filesystem::create_directories(report.parent_path());std::ofstream json(report);
     json<<"{\n\"sharpnessComparison\":"<<(sharpnessCheck?"true":"false")<<",\n\"sharpnessOutputHashes\":["<<sharpnessHashes[0]<<","<<sharpnessHashes[1]<<","<<sharpnessHashes[2]<<","<<sharpnessHashes[3]<<"],\n\"result\":\"PASS\",\n\"frames\":"<<dispatched<<",\"recreations\":"<<recreate<<",\"readbacks\":"<<readbacks<<",\"changingSamples\":"<<changed<<",\"inflightContexts\":"<<inflightVerified
         <<",\n\"productionFrameAdapter\":true,\"nativeUiSentinelChecked\":true,\"spatialFrames\":"<<spatialFrames<<",\"invalidInputAttempts\":"<<invalidFrames<<",\"historyResetFrames\":"<<resetFrames
+        <<",\n\"runtimeProfile\":\""<<(runtimeProfile==FsrRuntimeProfile::Int8?"INT8":"Official")<<"\",\"upscaleApiVersion\":"<<runtime->UpscaleApiVersion()
+        <<",\"sdkAllocationCallbacksObserved\":"<<((allocatedResources||allocatedHeaps)?"true":"false")
         <<",\n\"requestedPolicy\":"<<unsigned(requestedPolicy)<<",\"adapterVendorId\":"<<adapterDescription.VendorId<<",\"adapterDeviceId\":"<<adapterDescription.DeviceId
         <<",\"providerId\":"<<provider.id<<",\"providerName\":\""<<provider.name<<"\",\"adapterLuidHigh\":"<<luid.HighPart<<",\"adapterLuidLow\":"<<luid.LowPart
         <<",\n\"d3d11DebugValidated\":"<<(rig.messages11?"true":"false")<<",\"d3d12DebugValidated\":"<<(rig.messages12?"true":"false")
@@ -182,5 +196,5 @@ int main(int argc,char** argv)
         <<",\"remainingSdkCommittedResources\":"<<liveResources.size()<<",\"remainingSdkHeaps\":"<<liveHeaps.size()
         <<",\n\"initialLocalGpuBytes\":"<<initialMemory<<",\"peakLocalGpuBytes\":"<<peakMemory<<",\"minRetiredLocalGpuBytes\":"<<minRetiredMemory<<",\"maxRetiredLocalGpuBytes\":"<<maxRetiredMemory
         <<",\n\"skyrimGameplayTested\":false,\"crossVendorTested\":false,\"frameGenerationTested\":false\n}\n";
-    Require(bool(json),"write validation report");std::printf("PASS: real FSR %u frames, %u recreations, %u changing samples; SDK live resources/heaps zero\n",dispatched,recreate,changed);
+    Require(bool(json),"write validation report");std::printf("PASS: real FSR %u frames, %u recreations, %u changing samples; observed SDK live resources/heaps zero\n",dispatched,recreate,changed);
 }

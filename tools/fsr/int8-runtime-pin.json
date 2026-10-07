@@ -1,0 +1,13 @@
+{
+  "profile": "INT8",
+  "source": "SkyrimUpscalerAIOBuild19-Hotfix1.7z/UpscalerBasePlugin",
+  "archiveSha256": "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439",
+  "directory": "SKSE/Plugins/FSR/INT8",
+  "upscaleApiVersion": "4.0.3",
+  "expectedProviderName": "4.0.2b",
+  "runtime": [
+    {"filename": "amd_fidelityfx_loader_dx12.dll", "bytes": 25864, "sha256": "2f36843c3bb8c059621c10574e586a883ef337f2a549c67ecf3a82b3959ac238"},
+    {"filename": "amd_fidelityfx_upscaler_dx12.dll", "bytes": 41036800, "sha256": "2604c0b392072d715b400b2f89434274de31995a4b6e68ce38250ebbd3f6c5fc"}
+  ],
+  "scope": "Explicit NVIDIA FSR4; SM6.6 required. FSR3 and Auto retain the official SDK runtime. No DLL byte patches."
+}

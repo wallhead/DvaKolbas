@@ -254,7 +254,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             const char* policies[]{"FSR3 (3.1.5)","Auto (FSR4 / FSR3)","FSR4 (ML)"};
             int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);
             if(ImGui::Combo("Provider##fsr",&policy,policies,3))settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
-            DrawSettingsHelp("Save and restart after changing provider. Official FSR4 requires supported AMD hardware. Auto uses FSR3 if FSR4 is unavailable; the status shows the actual provider. FSR frame generation is selected independently.");
+            DrawSettingsHelp("Save and restart after changing provider. FSR3 keeps the official 3.1.5 runtime. FSR4 uses the separate INT8 runtime on NVIDIA (SM6.6 required), or official ML on supported AMD hardware. Auto uses the official runtime and may select FSR3. The status shows the actual provider. Frame generation is selected independently.");
             const char* encodings[]{"Unknown (choose before enabling FSR)","Linear SDR","Gamma 2.2 SDR","sRGB SDR"};
             int encoding=static_cast<int>(settingsDraft.fsr.sourceColorEncoding);
             if(ImGui::Combo("Source color encoding##fsr",&encoding,encodings,4))settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);

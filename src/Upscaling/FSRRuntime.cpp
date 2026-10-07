@@ -3,6 +3,8 @@
 #include <dx12/ffx_api_dx12.h>
 #include <fstream>
 #include <optional>
+#include <bcrypt.h>
+#pragma comment(lib, "bcrypt.lib")
 #ifdef TRP_ENABLE_FSR_FG
 #include <ffx_framegeneration.h>
 #include <dx12/ffx_api_framegeneration_dx12.h>
@@ -20,6 +22,43 @@ namespace TheosRenderPipeline::Upscaling
                 code == FFX_API_RETURN_ERROR_UNKNOWN_DESCTYPE || code == FFX_API_RETURN_PROVIDER_NO_SUPPORT_NEW_DESCTYPE ?
                     ErrorKind::IncompatibleAbi : ErrorKind::UnsupportedDevice;
             return Error(kind, code, "FidelityFX provider query failed");
+        }
+        // Hold the verified file open without write/delete sharing until every
+        // context and module reader has retired. Hash and load the same file.
+        Result<HANDLE> LockPinnedFile(const std::filesystem::path& path, uint64_t bytes, std::string_view expected)
+        {
+            HANDLE file=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+            if(file==INVALID_HANDLE_VALUE)
+                return std::unexpected(Error(ErrorKind::MissingRuntime,GetLastError(),"Cannot open/lock pinned FSR4 INT8 runtime: "+path.string()));
+            struct HashOwner {
+                HANDLE file; BCRYPT_ALG_HANDLE algorithm{}; BCRYPT_HASH_HANDLE hash{}; std::vector<UCHAR> object;
+                ~HashOwner(){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);if(file!=INVALID_HANDLE_VALUE)CloseHandle(file);}
+            } owner{file};
+            LARGE_INTEGER size{};
+            if(!GetFileSizeEx(file,&size) || size.QuadPart<0 || uint64_t(size.QuadPart)!=bytes)
+                return std::unexpected(Error(ErrorKind::IncompatibleAbi,0,"Pinned FSR4 INT8 runtime size differs: "+path.string()));
+            NTSTATUS status=BCryptOpenAlgorithmProvider(&owner.algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0);
+            DWORD length{},copied{};
+            if(status>=0)status=BCryptGetProperty(owner.algorithm,BCRYPT_OBJECT_LENGTH,reinterpret_cast<PUCHAR>(&length),sizeof(length),&copied,0);
+            if(status<0 || !length || length>1024*1024)
+                return std::unexpected(Error(ErrorKind::IncompatibleAbi,status,"Cannot initialize FSR4 runtime hash"));
+            owner.object.resize(length);
+            status=BCryptCreateHash(owner.algorithm,&owner.hash,owner.object.data(),length,nullptr,0,0);
+            std::array<UCHAR,64*1024> buffer{}; DWORD read{};
+            uint64_t total{};
+            while(status>=0) {
+                if(!ReadFile(file,buffer.data(),static_cast<DWORD>(buffer.size()),&read,nullptr))
+                    return std::unexpected(Error(ErrorKind::IncompatibleAbi,GetLastError(),"Cannot read held FSR4 runtime"));
+                if(!read)break;
+                total+=read;status=BCryptHashData(owner.hash,buffer.data(),read,0);
+            }
+            std::array<UCHAR,32> digest{};
+            if(status>=0)status=BCryptFinishHash(owner.hash,digest.data(),static_cast<ULONG>(digest.size()),0);
+            std::string actual;actual.reserve(64);constexpr char hex[]="0123456789abcdef";
+            for(auto byte:digest){actual+=hex[byte>>4];actual+=hex[byte&15];}
+            if(status<0 || total!=bytes || actual!=expected)
+                return std::unexpected(Error(ErrorKind::IncompatibleAbi,status,"Pinned FSR4 INT8 runtime SHA256 differs: "+path.string()));
+            owner.file=INVALID_HANDLE_VALUE;return file;
         }
         Result<void> CheckModuleFile(const std::filesystem::path& path)
         {
@@ -91,18 +130,30 @@ namespace TheosRenderPipeline::Upscaling
         if (loader_) { FreeLibrary(loader_); loader_ = nullptr; }
         if (frameGeneration_) { FreeLibrary(frameGeneration_); frameGeneration_ = nullptr; }
         if (upscaler_) { FreeLibrary(upscaler_); upscaler_ = nullptr; }
+        for(auto& file:pinnedFiles_)if(file!=INVALID_HANDLE_VALUE){CloseHandle(file);file=INVALID_HANDLE_VALUE;}
+        profile_=FsrRuntimeProfile::Official;
     }
-    Result<void> FsrRuntime::Load(const std::filesystem::path& pluginDirectory)
+    Result<void> FsrRuntime::Load(const std::filesystem::path& pluginDirectory, FsrRuntimeProfile profile)
     {
         if (loader_ || upscaler_ || !pluginDirectory.is_absolute())
             return std::unexpected(Error(ErrorKind::InvalidInput, 0, "FSR requires an absolute plugin directory and an unloaded runtime"));
+        if(profile!=FsrRuntimeProfile::Official && profile!=FsrRuntimeProfile::Int8)
+            return std::unexpected(Error(ErrorKind::InvalidInput,0,"Invalid FSR runtime profile"));
         std::error_code ec;
-        const auto root = std::filesystem::weakly_canonical(pluginDirectory / "FSR", ec);
+        const auto root = std::filesystem::weakly_canonical(pluginDirectory / (profile==FsrRuntimeProfile::Int8?"FSR/INT8":"FSR"), ec);
         if (ec) return std::unexpected(Error(ErrorKind::MissingRuntime, ec.value(), "Cannot resolve FSR runtime directory"));
         const auto upscaler = root / "amd_fidelityfx_upscaler_dx12.dll";
         const auto loader = root / "amd_fidelityfx_loader_dx12.dll";
+        if(profile==FsrRuntimeProfile::Int8) {
+            auto effect=LockPinnedFile(upscaler,41036800,"2604c0b392072d715b400b2f89434274de31995a4b6e68ce38250ebbd3f6c5fc");
+            if(!effect)return std::unexpected(effect.error());
+            pinnedFiles_[0]=*effect;
+            auto routing=LockPinnedFile(loader,25864,"2f36843c3bb8c059621c10574e586a883ef337f2a549c67ecf3a82b3959ac238");
+            if(!routing){Unload();return std::unexpected(routing.error());}
+            pinnedFiles_[1]=*routing;
+        }
         for (const auto& path : {upscaler, loader}) {
-            if (auto checked = CheckModuleFile(path); !checked) return checked;
+            if (auto checked = CheckModuleFile(path); !checked) {Unload();return checked;}
         }
         constexpr DWORD flags = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32;
         // Preload the exact effect DLL before the loader resolves its basename.
@@ -121,6 +172,7 @@ namespace TheosRenderPipeline::Upscaling
         if (!functions_.CreateContext || !functions_.DestroyContext || !functions_.Configure || !functions_.Query || !functions_.Dispatch) {
             Unload(); return std::unexpected(Error(ErrorKind::MissingExport, ERROR_PROC_NOT_FOUND, "FSR requires all five FidelityFX C exports"));
         }
+        profile_=profile;
         return {};
     }
 
@@ -207,7 +259,7 @@ namespace TheosRenderPipeline::Upscaling
         if (!functions_.Query || !device || !mode || !display.width || !display.height)
             return std::unexpected(Error(ErrorKind::InvalidInput, 0, "Invalid FSR sizing input"));
         ffxCreateBackendDX12Desc backend{{FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_DX12, nullptr}, device};
-        ffxCreateContextDescUpscaleVersion version{{FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE_VERSION, nullptr}, FFX_UPSCALER_VERSION};
+        ffxCreateContextDescUpscaleVersion version{{FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE_VERSION, nullptr}, UpscaleApiVersion()};
         ffxOverrideVersion override{{FFX_API_DESC_TYPE_OVERRIDE_VERSION, nullptr}, provider.id};
         backend.header.pNext = &version.header; version.header.pNext = &override.header;
         Extent render{};

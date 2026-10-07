@@ -25,7 +25,8 @@ std::vector<std::string> Modules() {
 }
 int main(int argc,char** argv) {
     std::filesystem::path plugin,runtime,report;
-    for(int i=1;i+1<argc;i+=2){std::string key=argv[i];if(key=="--plugin")plugin=argv[i+1];else if(key=="--runtime")runtime=argv[i+1];else if(key=="--output")report=argv[i+1];else Require(false,"known argument");}
+    bool int8=false;
+    for(int i=1;i+1<argc;i+=2){std::string key=argv[i];if(key=="--plugin")plugin=argv[i+1];else if(key=="--runtime")runtime=argv[i+1];else if(key=="--output")report=argv[i+1];else if(key=="--profile"){Require(std::string(argv[i+1])=="INT8","known profile");int8=true;}else Require(false,"known argument");}
     Require(plugin.is_absolute() && runtime.is_absolute() && report.is_absolute(),"absolute plugin/runtime/report paths");
     Modules();
     HMODULE pluginModule=LoadLibraryExW(plugin.c_str(),nullptr,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -37,8 +38,8 @@ int main(int argc,char** argv) {
     auto oldWorking=std::filesystem::current_path();std::filesystem::current_path(runtime);
     FsrRuntime missing;auto rejected=missing.Load(staging/"missing");std::filesystem::current_path(oldWorking);
     Require(!rejected && !GetModuleHandleW(L"amd_fidelityfx_loader_dx12.dll"),"missing optional runtime fails without working-directory fallback");
-    std::filesystem::create_directories(staging/"FSR");
-    for(auto name:{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll"})std::filesystem::copy_file(runtime/name,staging/"FSR"/name,std::filesystem::copy_options::overwrite_existing);
+    const auto profileRoot=staging/(int8?"FSR/INT8":"FSR");std::filesystem::create_directories(profileRoot);
+    for(auto name:{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll"})std::filesystem::copy_file(runtime/name,profileRoot/name,std::filesystem::copy_options::overwrite_existing);
     Rig rig(true);
     ComPtr<ID3D11DeviceContext1> context1;Check(rig.context11.As(&context1),"native UI rectangle context");
     HWND window=CreateWindowExW(0,L"STATIC",L"FSR clean-process helper",WS_OVERLAPPEDWINDOW,0,0,800,600,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);Require(window!=nullptr,"hidden window");
@@ -51,7 +52,10 @@ int main(int argc,char** argv) {
     PresentationTargets indexedPresentation;
     Require(indexedPresentation.BufferIndex(0)==0 && indexedPresentation.BufferIndex(1)==1,"NVIDIA indexed selection remains unchanged");
     FsrHostResources fsr(staging);BackendConfiguration configuration;configuration.backend=BackendKind::Fsr;configuration.generationEnabled=false;configuration.generationBackend=0;
+    if(int8){configuration.providerPolicy=ProviderPolicy::MachineLearning;configuration.quality=Quality::NativeAA;}
+    const auto expectedProfile=int8?FsrRuntimeProfile::Int8:FsrRuntimeProfile::Official;
     auto render=Value(fsr.PrepareSizing(rig.device11.Get(),configuration,{321,181},DXGI_FORMAT_R8G8B8A8_UNORM,ColorEncoding::Gamma22));Require(!fsr.FeatureReady(),"sizing before temporal context");
+    Require(fsr.Runtime()->Profile()==expectedProfile,"actual host routes INI policy to expected runtime profile before target publication");
     Check(chain->Present(0,0),"ordinary early startup Present without feature");Accepted(fsr.CompleteStartup());Require(fsr.FeatureReady(),"deferred production FSR startup");auto provider=fsr.Provider();
     auto sourceDesc=rig.Description();sourceDesc.Width=render.width;sourceDesc.Height=render.height;ComPtr<ID3D11Texture2D> source;Check(rig.device11->CreateTexture2D(&sourceDesc,nullptr,&source),"source texture");
     ComPtr<ID3D11RenderTargetView> sourceRTV,depthRTV,motionRTV;Check(rig.device11->CreateRenderTargetView(source.Get(),nullptr,&sourceRTV),"source RTV");Check(rig.device11->CreateRenderTargetView(fsr.Depth11(),nullptr,&depthRTV),"depth RTV");Check(rig.device11->CreateRenderTargetView(fsr.Motion11(),nullptr,&motionRTV),"motion RTV");

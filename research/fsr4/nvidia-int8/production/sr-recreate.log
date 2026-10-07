@@ -1,0 +1,8 @@
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+Discovered provider id=17700776140664209410 name=4.0.2b
+Discovered provider id=17700776140660019205 name=3.1.5
+Discovered provider id=17700776140655833092 name=2.3.4
+Allocation observations: resources=0 heaps=0 peakResources=0 peakHeaps=0 retiredMemoryRange=7340032
+LIMITATION: INT8 model allocations are private; SDK callback counts do not prove their retirement
+PASS: real FSR 1600 frames, 32 recreations, 127 changing samples; observed SDK live resources/heaps zero

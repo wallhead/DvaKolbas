@@ -49,6 +49,12 @@ startup stops with instructions rather than processing incorrectly encoded color
 `ProviderPolicy=Analytical` selects FSR3.1.5. `Compatible` selects official FSR4
 when the actual AMD adapter advertises it, otherwise FSR3. `MachineLearning`
 requires FSR4 and reports an error if unavailable. Changes require a restart.
+On NVIDIA, explicit `MachineLearning` selects the separately pinned INT8 4.0.2b
+runtime in `SKSE/Plugins/FSR/INT8`, using its verified 4.0.3 API contract.
+`Analytical` and `Compatible` retain the official runtime in `SKSE/Plugins/FSR`;
+there is no live runtime swap and no silent FSR3 fallback from explicit FSR4.
+The INT8 path requires shader model 6.6. It has standalone qualification on the
+RTX4080 SUPER; other NVIDIA cards and Skyrim gameplay remain to be qualified.
 Official FSR4 requires shader model 6.6; the SDK's device catalog determines
 availability. The bundled SDK2.3.0 contains FSR4.1.1. Positive FSR4 GPU/gameplay
 qualification is still pending on AMD hardware for this preview.

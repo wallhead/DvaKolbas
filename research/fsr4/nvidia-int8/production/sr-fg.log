@@ -1,0 +1,6 @@
+GlobalDebug1 loader return=6
+GlobalDebug1 effect return=6
+GlobalDebug1 effect return=0
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+sources=720 callbacks=700 retired=10 generatedPixelReadbacks=345 SDKMessages=0

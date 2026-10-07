@@ -56,6 +56,8 @@ namespace TheosRenderPipeline::Upscaling
     {
         if(state_->context || !runtime || !runtime->Functions().CreateContext || !device || (state_->bridge && state_->bridge->Device12()!=device))
             return Error(ErrorKind::InvalidInput,0,"FSR creation requires a loaded runtime and matching actual device");
+        if(runtime->Profile()==FsrRuntimeProfile::Int8 && provider.name!="4.0.2b")
+            return Error(ErrorKind::NoProvider,0,"INT8 profile is FSR4 only; select FSR3 and restart to use the official analytical runtime");
         auto extent=runtime->QueryRenderExtent(device,provider,quality,output);
         if(!extent) return std::unexpected(extent.error());
         if(*extent!=render) return Error(ErrorKind::InvalidInput,0,"FSR render dimensions differ from selected provider query");
@@ -68,8 +70,8 @@ namespace TheosRenderPipeline::Upscaling
             ComPtr<IDXGIFactory4> factory;ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 description{};
             if(FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory))) ||
                 FAILED(factory->EnumAdapterByLuid(device->GetAdapterLuid(),IID_PPV_ARGS(&adapter))) ||
-                FAILED(adapter->GetDesc1(&description)) || description.VendorId!=0x1002)
-                return Error(ErrorKind::UnsupportedDevice,0,"Official FSR4 requires a supported AMD adapter; use Auto or FSR3 on other GPUs");
+                FAILED(adapter->GetDesc1(&description)) || !FsrMlProfileAdmits(runtime->Profile(),description.VendorId,provider))
+                return Error(ErrorKind::UnsupportedDevice,0,"FSR4 runtime profile does not support this actual adapter/provider; choose FSR3 and restart");
         }
         for(auto format:{state_->limits.colorFormat,state_->limits.depthFormat,state_->limits.motionFormat}) {
             D3D12_FEATURE_DATA_FORMAT_SUPPORT support{format};
@@ -91,7 +93,7 @@ namespace TheosRenderPipeline::Upscaling
             (policy.motionIncludesJitter?FFX_UPSCALE_ENABLE_MOTION_VECTORS_JITTER_CANCELLATION:0);
         create.maxRenderSize={render.width,render.height}; create.maxUpscaleSize={output.width,output.height};
         ffxCreateBackendDX12Desc backend{{FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_DX12,nullptr},device};
-        ffxCreateContextDescUpscaleVersion version{{FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE_VERSION,nullptr},FFX_UPSCALER_VERSION};
+        ffxCreateContextDescUpscaleVersion version{{FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE_VERSION,nullptr},state_->runtime->UpscaleApiVersion()};
         ffxOverrideVersion override{{FFX_API_DESC_TYPE_OVERRIDE_VERSION,nullptr},provider.id};
         create.header.pNext=&backend.header; backend.header.pNext=&version.header; version.header.pNext=&override.header;
         if(state_->allocation.header.type) { backend.header.pNext=&state_->allocation.header; state_->allocation.header.pNext=&version.header; }

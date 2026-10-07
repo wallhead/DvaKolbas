@@ -67,11 +67,12 @@ namespace TheosRenderPipeline::Upscaling
             if(FAILED(hr=state_->device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT,&support,sizeof(support))) ||
                 !FsrPreparedFormatSupported(role,support))return fail(hr,"FSR prepared format lacks its required shader/UAV capability");
         }
-        state_->runtime=std::make_shared<FsrRuntime>();auto loaded=state_->runtime->Load(pluginDirectory_);if(!loaded)return std::unexpected(loaded.error());
-        auto providers=state_->runtime->Enumerate(state_->device.Get());if(!providers)return std::unexpected(providers.error());
         DXGI_ADAPTER_DESC description{};
         if(FAILED(hr=adapter->GetDesc(&description)))return fail(hr,"FSR actual adapter description unavailable");
-        auto provider=SelectProvider(*providers,config.providerPolicy,description.VendorId);if(!provider)return std::unexpected(provider.error());
+        const auto profile=SelectFsrRuntimeProfile(config.providerPolicy,description.VendorId);
+        state_->runtime=std::make_shared<FsrRuntime>();auto loaded=state_->runtime->Load(pluginDirectory_,profile);if(!loaded)return std::unexpected(loaded.error());
+        auto providers=state_->runtime->Enumerate(state_->device.Get());if(!providers)return std::unexpected(providers.error());
+        auto provider=SelectProvider(*providers,config.providerPolicy,description.VendorId,profile);if(!provider)return std::unexpected(provider.error());
         if(IsFsr4Provider(*provider)) {
             D3D12_FEATURE_DATA_SHADER_MODEL mlModel{D3D_SHADER_MODEL_6_6};
             if(FAILED(state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&mlModel,sizeof(mlModel))) || mlModel.HighestShaderModel<D3D_SHADER_MODEL_6_6) {
@@ -103,7 +104,8 @@ namespace TheosRenderPipeline::Upscaling
         const auto selected=state_->provider;
         std::string initialError;
         auto created=CreateFsrWithStartupFallback(selected,
-            state_->firstStartupCompleted?ProviderPolicy::Analytical:state_->config.providerPolicy,state_->render,
+            state_->firstStartupCompleted || state_->runtime->Profile()==FsrRuntimeProfile::Int8?
+                ProviderPolicy::Analytical:state_->config.providerPolicy,state_->render,
             [&](const ProviderInfo& provider) {
                 auto result=state_->upscaler->Initialize(state_->runtime,state_->device.Get(),provider,state_->config.quality,state_->render,state_->output);
                 if(!result && initialError.empty())initialError=result.error().message;

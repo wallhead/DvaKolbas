@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-07",
+  "adapter": "NVIDIA GeForce RTX 4080 SUPER",
+  "driver": "617.14",
+  "scope": "Isolated AIO19 INT8 4.0.2b SR; production renderer and installed mods unchanged",
+  "runtimePins": {
+    "loader": "2f36843c3bb8c059621c10574e586a883ef337f2a549c67ecf3a82b3959ac238",
+    "upscaler": "2604c0b392072d715b400b2f89434274de31995a4b6e68ce38250ebbd3f6c5fc"
+  },
+  "upscalerApi": "4.0.3",
+  "descriptorLayoutChecks": {
+    "dispatchBytes": "0x1b0",
+    "flagsOffset": "0x1ac"
+  },
+  "researchChanges": [
+    "Use recovered API4.0.3 for creation and sizing",
+    "Permit advertised 4.0.2b on the real NVIDIA device only in hash-pinned research probe",
+    "Enable runtime diagnostic callback",
+    "Report absent allocator instrumentation without claiming private SDK allocation counts"
+  ],
+  "passed": [
+    "1000 frames, eight recreations, four quality modes, completed nonempty finite changing output",
+    "Actual created provider ID and name 4.0.2b verified",
+    "In-flight fences, invalid-input rejection, loading reentry/reset and native UI sentinel",
+    "Sharpness0/1 changes pixels at Quality and NativeAA"
+  ],
+  "analyticalControl": "BLOCKED: old AIO analytical resource query returns required=optional=UINT64_MAX despite OK; keep official SDK3.1.5 fallback contract",
+  "comparisonWithOfficialFsr3": {
+    "sharpnessHashesDiffer": true,
+    "scope": "Output fingerprints differ; this is not shader-level execution tracing or a performance comparison"
+  },
+  "limitations": [
+    "No Direct3D debug layers available",
+    "Private allocations do not invoke SDK allocation callbacks",
+    "About665MiB local GPU allocation remains after context destruction and attempted runtime unload; retention must be understood before production integration",
+    "Only standalone SR tested; Skyrim, NR and FG combination not tested"
+  ],
+  "pending": [
+    "Define runtime/API profile and loading ownership before adding INT8 to the Skyrim renderer",
+    "Check retained model/module allocations and recreation bounds",
+    "Validate FSR4 INT8 with existing FG and NR handoff; then prepare Skyrim trial"
+  ],
+  "baseSourceHashes": {
+    "src/Upscaling/FSRRuntime.cpp": "9e2af03068be49d76360fc458ab2df8be5c457cea41d7aac0f7936635ec915d2",
+    "src/Upscaling/FSRUpscaler.cpp": "6f9b501c302a5b6fa059207cebd2dc7f87f390841c0accc9b8ff5849622683a5",
+    "tests/fsr-gpu/FSRGpuSmoke.cpp": "c206dbc60467ba1ef2bf0220e76fa75c2361ce8724061a41a0f858fb43257ae5"
+  },
+  "sources": [
+    "AIO19_FSR4_Final_Pack_Passes_1-5.zip",
+    "https://github.com/optiscaler/OptiScaler/releases/tag/v0.9.4"
+  ]
+}
