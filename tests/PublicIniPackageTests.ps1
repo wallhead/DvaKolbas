@@ -4,6 +4,18 @@ $ErrorActionPreference='Stop'
 [IO.Directory]::CreateDirectory($Output)|Out-Null
 $template=Join-Path $Repository 'package/SKSE/Plugins/RaZkolbaS.ini'
 $view=Read-PackageIni $template
+foreach($upscaler in @('DLSS','FSR')) {
+    foreach($backend in @('Auto','NVIDIA','FSR')) {
+        $roundtrip = Set-PackageIniValues @('[Upscaling]',('Upscaler='+$upscaler),'[FrameGeneration]',('Backend='+$backend)) @{}
+        $roundtripPath = Join-Path $Output ($upscaler+'-'+$backend+'.ini')
+        [IO.File]::WriteAllLines($roundtripPath,[string[]]$roundtrip)
+        $expected = if($backend -eq 'FSR'){'2'}elseif($backend -eq 'NVIDIA'){'1'}elseif($upscaler -eq 'FSR'){'2'}else{'1'}
+        if((Read-PackageIni $roundtripPath -Raw)['FrameGeneration/Backend'] -ne $backend -or
+           (Read-PackageIni $roundtripPath)['Experimental/FrameGenerationBackend'] -ne $expected) {
+            throw 'Package round-trip must preserve independent FG preference, including Auto'
+        }
+    }
+}
 if($view['Settings/UpscaleType'] -ne '3' -or $view['Settings/DLSSPreset'] -ne '11' -or
    $view['Experimental/FrameGenerationBackend'] -ne '1' -or $view['FSR/Quality'] -ne 'NativeAA'){
     throw 'Package decoder must match runtime Native DLSS/FSR and derived presenter'
@@ -31,8 +43,8 @@ $raw=Read-PackageIni $target -Raw
 if($raw['Upscaling/Upscaler'] -ne 'FSR' -or $raw['DLSS/Quality'] -ne 'Native' -or
    $raw['FSR/Provider'] -ne 'FSR4' -or $raw['FrameGeneration/FsrProvider'] -ne 'FSR4' -or
    $raw['NeuralRendering/Placement'] -ne 'After' -or $raw['NeuralRendering Advanced/Runtime'] -ne 'Community' -or
-   $raw.ContainsKey('Settings/UpscaleType') -or $raw.ContainsKey('FrameGeneration/Backend')){
-    throw 'Packaging must emit only named settings, explicit ML and no derived backend'
+   $raw.ContainsKey('Settings/UpscaleType') -or $raw['FrameGeneration/Backend'] -ne 'Auto'){
+    throw 'Packaging must emit only named settings, explicit ML and configured Auto backend'
 }
 $loaded=Read-PackageIni $target
 if($loaded['Settings/UpscaleType'] -ne '4' -or $loaded['Experimental/FrameGenerationBackend'] -ne '2' -or
@@ -56,6 +68,7 @@ if((Read-PackageIni $nativePath -Raw)['DLSS/Quality'] -ne 'Native'){
     throw 'Public Native selector must update the independent DLSS Native preference'
 }
 foreach($invalid in @(
+    @('[Upscaling]','Upscaler=DLSS','[FrameGeneration]','Backend=Ordinary'),
     @('[Upscaling]','Upscaler=FSR','MipLodBias=banana'),
     @('[Upscaling]','Upscaler=FSR','[FrameGeneration]','Enabled=maybe'),
     @('[Upscaling]','Upscaler=FSR','[Hotkeys]','ToggleOverlay=0'),

@@ -58,6 +58,19 @@ static void StartupNeuralPassLimit()
 int main()
 {
     using namespace TheosRenderPipeline;
+    for (auto kind : {Upscaling::BackendKind::Dlss, Upscaling::BackendKind::Dlaa}) {
+        Upscaling::BackendConfiguration mixed;
+        mixed.backend = kind; mixed.generationBackend = 2; mixed.adapterVendorId = 0x10de;
+        auto decision = ResolveBackend(mixed, false, true);
+        Require(decision.valid && decision.presentation == Upscaling::PresentationKind::Fsr,
+            "DLSS/DLAA select FSR FG without requiring an FSR SR build");
+        mixed.hdr = true;
+        Require(!ResolveBackend(mixed, true, true).valid, "FSR presentation rejects HDR even with DLSS SR");
+        mixed.hdr = false; mixed.dynamicResolution = true;
+        Require(!ResolveBackend(mixed, true, true).valid, "FSR presentation requires fixed DLSS sizing");
+        mixed.dynamicResolution = false;
+        Require(!ResolveBackend(mixed, true, false).valid, "mixed route requires an actual FSR FG build");
+    }
     for (const long mode : {0L, 3L, 4L}) {
         CSimpleIniA amd;
         amd.SetLongValue("Settings", "UpscaleType", mode);

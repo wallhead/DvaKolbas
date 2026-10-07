@@ -19,7 +19,15 @@ namespace TheosRenderPipeline
         }
         else if (!config.enabled) { decision.diagnostic = "This renderer requires an enabled temporal upscaler."; }
         else if (config.backend == BackendKind::Dlss || config.backend == BackendKind::Dlaa) {
-            if (config.generationBackend != 1) { decision.diagnostic = "DLSS/DLAA requires the NVIDIA presentation backend."; }
+            if (config.generationBackend == 2) {
+                decision.presentation = PresentationKind::Fsr;
+                if (!fsrFgBuilt) decision.diagnostic = "FSR frame generation support is unavailable in this build.";
+                else if (config.hdr) decision.diagnostic = "FSR frame generation requires SDR output. Disable HDR and restart.";
+                else if (config.dynamicResolution) decision.diagnostic = "FSR frame generation requires fixed render dimensions. Disable dynamic resolution and restart.";
+                else if (config.neuralRendering && !config.communityNeural) decision.diagnostic = "FSR presentation requires the community NR runtime.";
+                else decision.valid = true;
+            }
+            else if (config.generationBackend != 1) { decision.diagnostic = "DLSS/DLAA requires NVIDIA or FSR presentation."; }
             else { decision.valid = true; }
         } else if (config.backend == BackendKind::Fsr) {
             decision.presentation = PresentationKind::Ordinary;
@@ -47,11 +55,12 @@ namespace TheosRenderPipeline
         // Pass count is a saved preference shared with the community runtime.
         // Legacy execution caps it at two without erasing the third-pass setup.
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
-        if (mode != FSR) { return ValidateNvidiaBaseline(ini); }
-        if (!fsrBuilt) { return "FSR support is unavailable in this build."; }
+        const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
+        if (mode != FSR && presenter != 2) { return ValidateNvidiaBaseline(ini); }
+        if (mode != FSR && mode != DLSS && mode != DLAA) return "Choose DLSS or FSR upscaling.";
+        if (mode == FSR && !fsrBuilt) { return "FSR support is unavailable in this build."; }
         if (!ini.GetBoolValue("Settings", "EnableUpscaler", true)) { return "FSR cannot start with upscaling disabled. Remove the obsolete [Settings] EnableUpscaler key."; }
         if (ini.GetBoolValue("Experimental", "PureDarkFullDelegation", false)) { return "Full renderer delegation is unavailable."; }
-        const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
         if (presenter == 0) {
             if (ini.GetBoolValue("FrameGeneration", "Enabled", false)) { return "Ordinary FSR requires frame generation off."; }
         } else if (presenter == 2) {

@@ -1,5 +1,6 @@
 #pragma once
 #include "PublicIniSchema.h"
+#include "FrameGen/GenerationBackendPreference.h"
 #include <charconv>
 #include <cmath>
 #include <cstdint>
@@ -123,7 +124,9 @@ template<class Ini> std::string Decode(Ini& ini)
     ini.SetValue("Settings", "MipLodBias", automaticBias ? "0.0" : bias.c_str());
     ini.SetBoolValue("Settings", "Sharpening", ini.GetDoubleValue("Settings", "Sharpness", 0) > 0);
     const bool ordinary = ini.GetBoolValue("Experimental", "FsrOrdinaryPresenter", false);
-    ini.SetLongValue("FrameGeneration", "Backend", mode == 4 ? ordinary ? 0 : 2 : 1);
+    ini.SetLongValue("FrameGeneration", "Backend", ResolveGenerationBackend(
+        static_cast<GenerationBackendPreference>(ini.GetLongValue("FrameGeneration", "BackendPreference", 0)),
+        mode == 4 ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss, ordinary));
     if (mode == 4 && ordinary && ini.GetBoolValue("FrameGeneration", "Enabled", false))
         return "[Upscaling Advanced] FsrOrdinaryPresenter requires [FrameGeneration] Enabled=false.";
     RemoveRetired(ini);

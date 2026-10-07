@@ -6,6 +6,7 @@
 #include "NeuralRenderingMode.h"
 #include "NeuralRendering/BeforeSettings.h"
 #include "FrameGen/SourceDLSSGSettings.h"
+#include "FrameGen/GenerationBackendPreference.h"
 #include "WeatherAppearance.h"
 #include "Upscaling/FSRSettings.h"
 #include <array>
@@ -26,6 +27,7 @@ struct RendererSettingsDraft
     Upscaling::FsrSettings fsr;
     bool generationEnabled{true}, dynamicResolution{};
     long generationBackend{1};
+    GenerationBackendPreference generationBackendPreference{};
     bool enableJitter{true};
     bool nativeUI{true};
     bool requestLoadingArtwork{true};
@@ -71,6 +73,9 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     } else {
         draft.generationBackend = 1;
     }
+    if (draft.generationBackend != 0)
+        draft.generationBackend = ResolveGenerationBackend(draft.generationBackendPreference,
+            mode == FSR ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss);
 }
 
 inline void SetRendererUpscaleProvider(RendererSettingsDraft& draft, bool fsr)
@@ -120,6 +125,7 @@ inline int CountRendererSettingsChanges(const RendererSettingsDraft& draft, cons
     count += draft.fsr != current.fsr;
     count += draft.generationEnabled != current.generationEnabled;
     count += draft.generationBackend != current.generationBackend;
+    count += draft.generationBackendPreference != current.generationBackendPreference;
     count += draft.dynamicResolution != current.dynamicResolution;
     count += draft.sourceDLSSG != current.sourceDLSSG;
     count += draft.appearance != current.appearance;
@@ -173,6 +179,7 @@ template<class Generation>
 inline void ApplyRendererGeneration(const RendererSettingsDraft& draft, Generation& generation, long actualBackend)
 {
     generation.settings.generationBackend=draft.generationBackend;
+    generation.settings.generationBackendPreference=draft.generationBackendPreference;
     generation.settings.enabled=draft.generationEnabled;
     if(draft.generationBackend==actualBackend) generation.RequestRuntimeInterpolation(draft.generationEnabled);
 }
@@ -231,7 +238,15 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if (draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural) return "Neural Rendering is unavailable with FSR.";
         if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";
         if (draft.dynamicResolution) return "Dynamic resolution is unavailable with FSR.";
-    } else if (draft.generationBackend!=1) return "DLSS/DLAA require the NVIDIA presentation backend; choose backend 1.";
+    } else if (draft.generationBackend==2) {
+        if (!capabilities.fsrFgBuilt) return "FSR frame generation is not included in this build.";
+        if (!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)
+            return "FSR frame generation requires dedicated native UI and source ownership.";
+        if (draft.sourceDLSSG.hdrOutput.enabled) return "FSR frame generation requires SDR output; disable HDR and restart.";
+        if (draft.dynamicResolution) return "FSR frame generation requires fixed render dimensions; disable dynamic resolution and restart.";
+        if (draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural)
+            return "FSR presentation requires the community NR runtime.";
+    } else if (draft.generationBackend!=1) return "DLSS/DLAA require NVIDIA or FSR presentation.";
     if (!Appearance::ValidHours(draft.appearance.hours)) {
         return "Preset times must increase from Night to Dusk and stay between 0 and 24 hours.";
     }

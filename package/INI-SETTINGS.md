@@ -2,7 +2,7 @@
 
 Edit `SKSE/Plugins/RaZkolbaS.ini`. This build reads the current named layout only; old files must be converted explicitly or replaced with the matching packaged INI. No ConfigVersion is needed.
 
-`[Upscaling] Upscaler` chooses DLSS or FSR. Both provider sections use `Quality=Native`. DLSS Native selects DLAA internally. Each provider retains its own quality and sharpness. FG on/off is live and keeps its presenter available; the normal presenter is derived from the upscaler.
+`[Upscaling] Upscaler` chooses DLSS or FSR. Both provider sections use `Quality=Native`. DLSS Native selects DLAA internally. Each provider retains its own quality and sharpness. FG on/off is live and keeps its presenter available. `[FrameGeneration] Backend=Auto` follows the upscaler; `FSR` also pairs DLSS/DLAA with FSR FG. Changing Backend requires Save and restart. FSR upscaling cannot use the NVIDIA presenter.
 
 FSR providers are independent: `[FSR] Provider=FSR4` requires ML upscaling, while `[FrameGeneration] FsrProvider=FSR4` requires ML frame generation. `Auto` allows the qualified analytical fallback. Explicit FSR4 reports an error when unavailable. FSR4 FG remains experimental. API versions in the log are not algorithm versions.
 
@@ -27,6 +27,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | FSR | Provider | `FSR3` | Yes | FSR3 keeps the analytical runtime; Auto allows fallback; FSR4 requires ML. Values: FSR3, Auto, FSR4. |
 | FSR | Sharpness | `0.0` | No | Sharpening strength. Zero disables sharpening. Range: 0-1. |
 | FSR | SourceColorEncoding | `Unknown` | Yes | Select the actual FSR source encoding before enabling the feature. Values: Unknown, Linear, Gamma22, SRGB. |
+| FrameGeneration | Backend | `Auto` | Yes | Presentation backend. Auto uses NVIDIA with DLSS and FSR with FSR upscaling. DLSS can also use FSR FG; FSR upscaling cannot use NVIDIA FG. Values: Auto, NVIDIA, FSR. |
 | FrameGeneration | Enabled | `true` | No | FG toggle. Disabling interpolation retains the selected presentation host. Values: true, false. |
 | FrameGeneration | FsrProvider | `FSR3` | Yes | FG provider, independent of upscaling. FSR4 ML FG is experimental; unsupported devices report an error. Values: FSR3, Auto, FSR4. |
 | FrameGeneration | NvidiaGeneratedFrames | `1` | No | NVIDIA generated-frame count, excluding the real frame. Effective count is limited by the GPU/runtime. FSR FG generates one frame. Values: 1=x2, 2=x3, 3=x4, 4=x5, 5=x6. Whole numbers only. Range: 1-5. |

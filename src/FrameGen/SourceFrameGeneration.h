@@ -1,5 +1,6 @@
 #pragma once
 #include "IniLayout.h"
+#include "GenerationBackendPreference.h"
 #include "SourceDLSSGSettings.h"
 #include "RuntimePathSettings.h"
 #include "NeuralRendering/StartupSettings.h"
@@ -20,6 +21,7 @@ class SourceFrameGeneration
     {
         bool enabled{true}; // Next-launch preference; the live presenter request can differ while a restart is staged.
         long generationBackend{1};
+        TheosRenderPipeline::GenerationBackendPreference generationBackendPreference{};
         bool sourceDLSSGMFGUnlock{true}; // Matches the packaged default; explicit false is preserved.
         bool sourceDLSSGMFGUnlockPresent{};
         std::string sourceDLSSGStreamlineDirectory;
@@ -39,6 +41,8 @@ class SourceFrameGeneration
         const TheosRenderPipeline::IniLayout::ReadView ini(source);
         settings.neuralStartup = settings.configuredNeuralStartup = TheosRenderPipeline::NeuralRendering::LoadStartupSettings(ini);
         settings.generationBackend = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
+        settings.generationBackendPreference = static_cast<TheosRenderPipeline::GenerationBackendPreference>(
+            ini.GetLongValue("FrameGeneration", "BackendPreference", 0));
         settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", settings.generationBackend != 0);
         RequestRuntimeInterpolation(settings.enabled);
         settings.sourceDLSSGMFGUnlockPresent = ini.GetValue("Experimental", "SourceDLSSGMFGUnlock", nullptr) != nullptr;
@@ -80,7 +84,10 @@ class SourceFrameGeneration
     static double GetRefreshRate(HWND window);
     void RequestRuntimeInterpolation(bool enabled) { settings.enabled=enabled; requested_.store(enabled, std::memory_order_release); }
     template<class Ini> void StoreInterpolationPreference(Ini& ini) const
-    { ini.SetBoolValue("FrameGeneration", "Enabled", settings.enabled); }
+    {
+        ini.SetBoolValue("FrameGeneration", "Enabled", settings.enabled);
+        ini.SetLongValue("FrameGeneration", "BackendPreference", static_cast<long>(settings.generationBackendPreference));
+    }
     bool RuntimeInterpolationRequested() const { return requested_.load(std::memory_order_acquire); }
     double refreshRate{};
 

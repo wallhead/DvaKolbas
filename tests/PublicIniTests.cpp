@@ -12,9 +12,41 @@ void Check(bool value, const char* message)
 {
     if (!value) { std::fprintf(stderr, "FAIL: %s\n", message); std::exit(1); }
 }
+void IndependentGenerationPreference()
+{
+    using namespace TheosRenderPipeline;
+    for (const char* upscaler : {"DLSS", "FSR"}) {
+        for (const char* preference : {"Auto", "NVIDIA", "FSR"}) {
+            CSimpleIniA configured;
+            configured.SetValue("Upscaling", "Upscaler", upscaler);
+            configured.SetValue("FrameGeneration", "Backend", preference);
+            Check(PublicIni::Decode(configured).empty(), "independent FG preference decodes");
+            const long expected = std::string_view(preference) == "FSR" ? 2 :
+                std::string_view(preference) == "NVIDIA" ? 1 : std::string_view(upscaler) == "FSR" ? 2 : 1;
+            Check(configured.GetLongValue("FrameGeneration", "Backend", -1) == expected,
+                "explicit FG choice overrides automatic upscaler selection");
+            auto* owner = SourceFrameGeneration::GetSingleton();
+            owner->LoadStartupPreferences(configured);
+            owner->StoreInterpolationPreference(configured);
+            Check(owner->settings.generationBackend == expected,
+                "startup runtime readers retain independent presentation selection");
+            Check(PublicIni::Encode(configured).empty() &&
+                std::string_view(configured.GetValue("FrameGeneration", "Backend", "")) == preference,
+                "saving preserves configured Auto or explicit backend rather than its effective value");
+            Check(PublicIni::Decode(configured).empty() &&
+                configured.GetLongValue("FrameGeneration", "Backend", -1) == expected,
+                "independent backend survives restart");
+        }
+    }
+    CSimpleIniA invalid;
+    invalid.SetValue("Upscaling", "Upscaler", "DLSS");
+    invalid.SetValue("FrameGeneration", "Backend", "Ordinary");
+    Check(!PublicIni::Decode(invalid).empty(), "backend zero has no public normal choice");
+}
 int main(int argc, char** argv)
 {
     using namespace TheosRenderPipeline;
+    IndependentGenerationPreference();
     CSimpleIniA ini;
     ini.LoadData(R"ini(
 [Upscaling]
@@ -77,11 +109,11 @@ MySetting=custom
     IniLayout::StoreCanonical(ini);
     Check(PublicIni::Encode(ini).empty(), "runtime values encode back to the public layout");
     Check(!ini.GetValue("Settings", "UpscaleType", nullptr) &&
-        !ini.GetValue("FrameGeneration", "Backend", nullptr) &&
+        std::string_view(ini.GetValue("FrameGeneration", "Backend", "")) == "Auto" &&
         std::string(ini.GetValue("DLSS", "Preset", "")) == "K" &&
         std::string(ini.GetValue("DLSS", "Quality", "")) == "Native" &&
         std::string(ini.GetValue("FrameGeneration", "FsrProvider", "")) == "FSR4",
-        "Save persists only named choices and does not add derived backend or layout version");
+        "Save persists configured Auto, not a derived backend or layout version");
     std::string saved;
     Check(ini.Save(saved) >= 0 && saved.find("Preserve this note") != std::string::npos,
         "unknown user setting comments survive save");

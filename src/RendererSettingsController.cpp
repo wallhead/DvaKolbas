@@ -26,6 +26,7 @@ RendererSettingsDraft RendererSettingsController::Capture([[maybe_unused]] bool 
     settingsDraft.fsr = upscaler_.mFsrSettings;
     settingsDraft.generationEnabled = frameGen_.settings.enabled;
     settingsDraft.generationBackend = frameGen_.settings.generationBackend;
+    settingsDraft.generationBackendPreference = frameGen_.settings.generationBackendPreference;
     settingsDraft.dynamicResolution = upscaler_.mDynamicResolutionRequested;
     settingsDraft.qualityLevel = upscaler_.mQualityLevel;
     settingsDraft.dlssPreset = upscaler_.mDLSSPreset;

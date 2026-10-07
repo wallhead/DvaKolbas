@@ -57,7 +57,7 @@ def generate():
         lines = ['; RaZkolbaS settings. Current named layout only.',
                  '; [restart] marks settings that require Save and a Skyrim restart.',
                  '; Native in [DLSS] selects DLAA; Native in [FSR] selects FSR Native AA.',
-                 '; Normal FG presenter follows the upscaler, even with FG disabled.',
+                 '; FG Backend=Auto follows the upscaler; choose FSR to pair DLSS with FSR FG.',
                  '; NR After order: DLSS/FSR -> NR -> FG -> UI. AMD uses only FSR and optional FSR FG.',
                  '; Advanced and program-owned settings are grouped below ordinary options.']
         for section in schema['sections']:
@@ -77,7 +77,7 @@ def generate():
         outputs[ROOT / example] = '\n'.join(lines) + '\n'
     docs = ['# INI settings', '',
             'Edit `SKSE/Plugins/RaZkolbaS.ini`. This build reads the current named layout only; old files must be converted explicitly or replaced with the matching packaged INI. No ConfigVersion is needed.', '',
-            '`[Upscaling] Upscaler` chooses DLSS or FSR. Both provider sections use `Quality=Native`. DLSS Native selects DLAA internally. Each provider retains its own quality and sharpness. FG on/off is live and keeps its presenter available; the normal presenter is derived from the upscaler.', '',
+            '`[Upscaling] Upscaler` chooses DLSS or FSR. Both provider sections use `Quality=Native`. DLSS Native selects DLAA internally. Each provider retains its own quality and sharpness. FG on/off is live and keeps its presenter available. `[FrameGeneration] Backend=Auto` follows the upscaler; `FSR` also pairs DLSS/DLAA with FSR FG. Changing Backend requires Save and restart. FSR upscaling cannot use the NVIDIA presenter.', '',
             'FSR providers are independent: `[FSR] Provider=FSR4` requires ML upscaling, while `[FrameGeneration] FsrProvider=FSR4` requires ML frame generation. `Auto` allows the qualified analytical fallback. Explicit FSR4 reports an error when unavailable. FSR4 FG remains experimental. API versions in the log are not algorithm versions.', '',
             'FSR and NR source color encoding remain independent because they can process different pipeline formats. Do not infer encoding from texture format. Unknown prevents the corresponding feature from starting. Provider, runtime, encoding, quality and keys marked restart require Save and restart.', '',
             'The file stays organized as one INI: ordinary controls first, advanced settings below, program-owned menu geometry last. Linked NR passes retain their independent saved overrides so unlinking after a restart restores them. Unknown user keys and comments survive menu saves.', '',

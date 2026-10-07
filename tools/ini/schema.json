@@ -186,6 +186,17 @@
     },
     {
       "internal_section": "FrameGeneration",
+      "internal_key": "BackendPreference",
+      "section": "FrameGeneration",
+      "key": "Backend",
+      "default": "Auto",
+      "comment": "Presentation backend. Auto uses NVIDIA with DLSS and FSR with FSR upscaling. DLSS can also use FSR FG; FSR upscaling cannot use NVIDIA FG.",
+      "restart": true,
+      "values": {"Auto": "0", "NVIDIA": "1", "FSR": "2"},
+      "type": "Enum"
+    },
+    {
+      "internal_section": "FrameGeneration",
       "internal_key": "Enabled",
       "section": "FrameGeneration",
       "key": "Enabled",
