@@ -208,6 +208,20 @@ struct SuppliedFrameOperations
     }
 };
 
+struct ExternalOperations : Operations
+{
+    unsigned externalPreparations{};
+    TheosRenderPipeline::Upscaling::GenerationPreparationStatus PrepareGeneration(
+        const SourceNvidiaFrameInputs& frame, const TheosRenderPipeline::Upscaling::UpscaleFrame& completed)
+    {
+        ++externalPreparations;
+        Require(upscales==1 && !cameras && !prepares && !decisions, "DLSS FSR owner does not prepare Streamline");
+        Require(completed.output==frame.output && Pixel(context,completed.output)==neuralScene,
+            "After NR is the FSR generation scene, without native HUD");
+        Require(completed.reset==frame.reset, "post NR reset reaches external generation");
+        return TheosRenderPipeline::Upscaling::GenerationPreparationStatus::Succeeded;
+    }
+};
 static void TestExtent(bool nativeResolution)
 {
     ComPtr<ID3D11Device> device; ComPtr<ID3D11DeviceContext> context;
@@ -246,6 +260,20 @@ static void TestExtent(bool nativeResolution)
         Require(frame.reset == reset, "per-frame NR resets do not mutate the caller's input snapshot");
         Require(ops.generation == (dlss && camera && prepare && requested && !blocked && !warming), "generation gate with preparation independent of checkbox");
         Require(Pixel(context.Get(), output.texture.Get()) == (dlss ? ops.ExpectedOutput() : std::array<float, 4>{0, 0, 0, 0}), "real output survives preparation failure");
+    }
+    {
+        world.Paint(context.Get(), {0.25f,0.5f,0.75f,1});
+        SourceNvidiaFrameInputs frame{};
+        frame.color=world.texture.Get();frame.input=input.texture.Get();frame.output=output.texture.Get();
+        frame.motion=motion.texture.Get();frame.depth=depth.texture.Get();
+        frame.renderWidth=12;frame.renderHeight=8;frame.outputWidth=outputWidth;frame.outputHeight=outputHeight;
+        frame.sharpness=.25f;frame.jitterX=-.375f;frame.jitterY=.125f;
+        frame.motionScaleX=12;frame.motionScaleY=8;frame.jitterEnabled=true;
+        ExternalOperations ops{{context.Get(),world,output,frame,true,true,true,true,false,0}};
+        ops.lateNR=true;
+        auto result=SourceNvidiaFrameEvaluator::Evaluate(context.Get(),frame,ops);
+        Require(result.upscaled && result.prepared && ops.externalPreparations==1 && !ops.cameras && !ops.prepares,
+            "external owner preparation is selected independently of DLSS source");
     }
     for (unsigned mask = 0; mask < 256; ++mask) {
         SourceNvidiaFrameGuides frame{};

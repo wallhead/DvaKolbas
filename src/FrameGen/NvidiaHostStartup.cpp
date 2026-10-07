@@ -120,7 +120,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     nativeUIContexts_.ResetAfterRetirement();
     device_.Reset();
     context_.Reset();
-    const auto deviceResult = TheosRenderPipeline::AcquirePresentationDevice(innerSwapChain_,a_device,FsrActive(),device_);
+    const auto deviceResult = TheosRenderPipeline::AcquirePresentationDevice(innerSwapChain_,a_device,FsrActive() || FsrFgActive(),device_);
     if (FAILED(deviceResult) || !device_)
     {
         status_ = std::format("Renderer source D3D11 device selection failed (0x{:08X})", static_cast<std::uint32_t>(deviceResult));
@@ -331,7 +331,7 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
                   "contract";
         return false;
     }
-    if(FsrActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
+    if(FsrActive() || FsrFgActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
     TheosRenderPipeline::ReShadeIntegration::Get().Configure(device_.Get(), context_.Get(), {outputWidth_, outputHeight_});
     logger::info("[NvidiaHost] source upscaler initialized after D3D11 startup Present");
 #if !defined(TRP_NO_NEURAL_RENDERING)
@@ -440,7 +440,10 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         logger::warn("[NvidiaHost] explicit native UI extraction unavailable on "
                      "split source; retaining HUD-less-only fallback");
     }
-    status_ = "Source DLSS and NVIDIA frame-generation path ready";
+    if(FsrFgActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
+        status_="DLSS + FSR FG requires dedicated native UI resources";return false;
+    }
+    status_ = FsrFgActive()?"Source DLSS and FSR frame-generation path ready":"Source DLSS and NVIDIA frame-generation path ready";
     logger::info("[NvidiaHost] split source initialized owner=RaZkolbaS-DLSS render={}x{} "
                  "output={}x{} format={} quality={} evaluator=SourceNvidiaFrameEvaluator",
                  renderWidth_, renderHeight_, a_outputDesc.Width, a_outputDesc.Height, static_cast<std::uint32_t>(a_outputDesc.Format),
@@ -461,7 +464,17 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
             return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
         });
     fsrPresentation_=std::make_unique<FsrHostPresentation>();
-    auto extent=fsrPresentation_->Create(factory,producer,fsrResources_,descriptor,sourceUpscalerSettings_.Startup().fsr);
+    Upscaling::Result<Upscaling::Extent> extent;
+    if(FsrActive())extent=fsrPresentation_->Create(factory,producer,fsrResources_,descriptor,sourceUpscalerSettings_.Startup().fsr);
+    else {
+        int width{},height{};
+        if(!SourceDLSSG::QueryRenderSize(descriptor.BufferDesc.Width,descriptor.BufferDesc.Height,
+            sourceUpscalerSettings_.Startup().AllocationQuality(),&width,&height))return E_INVALIDARG;
+        // Encoding is a shared, explicitly configured SDR producer contract.
+        // Inactive FSR SR quality/model policy never participates in this owner.
+        extent=fsrPresentation_->CreateExternal(factory,producer,fsrResources_,descriptor,
+            sourceUpscalerSettings_.Startup().fsr,{UINT(width),UINT(height)},{});
+    }
     if (!extent) {
         const auto& fsr=sourceUpscalerSettings_.Startup().fsr;
         status_=Upscaling::FsrStartupRecoveryMessage(extent.error(),fsr.providerPolicy,fsr.generationProviderPolicy);
@@ -514,7 +527,14 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
     resetNextEvaluation_=true;
     EndNativeUIPass();context_->ClearState();context_->Flush();
     gameTargets_.ResetGameFacingAfterRetirement();ReleaseSourceUpscaler(true);presentation_.ResetAfterRetirement();
-    auto resized=fsrPresentation_->Resize(**translated);
+    TheosRenderPipeline::Upscaling::Result<TheosRenderPipeline::FsrHostResize> resized;
+    if(FsrActive())resized=fsrPresentation_->Resize(**translated);
+    else {
+        int renderWidth{},renderHeight{};
+        if(!TheosRenderPipeline::SourceDLSSG::QueryRenderSize((*translated)->BufferDesc.Width,(*translated)->BufferDesc.Height,
+            sourceUpscalerSettings_.Startup().AllocationQuality(),&renderWidth,&renderHeight))return E_INVALIDARG;
+        resized=fsrPresentation_->ResizeExternal(**translated,{UINT(renderWidth),UINT(renderHeight)});
+    }
     if(!resized){status_=resized.error().message;return FailLifecycle(E_FAIL,"AMD resize reconstruction");}
     renderWidth_=resized->render.width;renderHeight_=resized->render.height;
     auto hr=innerSwapChain_->GetDesc(&fsrDescriptor_);

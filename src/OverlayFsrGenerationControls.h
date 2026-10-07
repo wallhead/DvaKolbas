@@ -1,8 +1,24 @@
 #pragma once
 #include <imgui.h>
+#include "FrameGen/GenerationBackendPreference.h"
 
 namespace TheosRenderPipeline::Overlay
 {
+    inline bool DrawGenerationBackendChoice(GenerationBackendPreference& preference,bool nvidiaSupported)
+    {
+        const char* labels[]{"Auto", "NVIDIA FG", "FSR FG"};
+        const int current=static_cast<int>(preference);bool changed{};
+        ImGui::SetNextItemWidth(-1.0f);
+        if(ImGui::BeginCombo("Backend##generation",labels[current>=0 && current<3?current:0])) {
+            for(int i=0;i<3;++i) {
+                ImGui::BeginDisabled(i==1 && !nvidiaSupported);
+                if(ImGui::Selectable(labels[i],current==i)){preference=static_cast<GenerationBackendPreference>(i);changed=true;}
+                ImGui::EndDisabled();
+            }
+            ImGui::EndCombo();
+        }
+        return changed;
+    }
     inline bool DrawFsrProviderChoice(const char* label, int& selected, const char* const* names,
                                      bool mlAvailable, const char* reason)
     {

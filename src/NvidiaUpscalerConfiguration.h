@@ -47,6 +47,8 @@ namespace TheosRenderPipeline::Upscaler
         bool NeedsRestart() const
         {
             return requested_.mode != startup_.mode ||
+                requested_.fsr.generationProviderPolicy != startup_.fsr.generationProviderPolicy ||
+                requested_.fsr.sourceColorEncoding != startup_.fsr.sourceColorEncoding ||
                 (requested_.mode == 4 ? requested_.fsr.quality != startup_.fsr.quality || requested_.fsr.providerPolicy != startup_.fsr.providerPolicy ||
                 requested_.fsr.sourceColorEncoding != startup_.fsr.sourceColorEncoding ||
                 requested_.fsr.generationProviderPolicy != startup_.fsr.generationProviderPolicy :

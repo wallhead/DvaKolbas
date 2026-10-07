@@ -137,7 +137,7 @@ void NvidiaHost::InspectCommunityNeural()
         fmt::ptr(presenter),inspected?0:inspected.error().nativeCode,communityLastStatus_);
 }
 bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Texture2D* depth,
-    ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible,NR::PreparedFsrInput* linearOutput,const Upscaling::UpscaleFrame* post,Upscaling::UpscaleOutcome outcome)
+    ID3D11Texture2D* motion,UINT width,UINT height,uint64_t sourceId,bool& reset,bool eligible,NR::PreparedFsrInput* linearOutput,const Upscaling::UpscaleFrame* post,Upscaling::UpscaleOutcome outcome,const Upscaling::CameraMeasurements* sourceCamera)
 {
     const auto& startup=SourceFrameGeneration::GetSingleton()->settings.neuralStartup;
     if (!startup.community) return true;
@@ -186,10 +186,12 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
 #endif
     if(post && outcome!=Upscaling::UpscaleOutcome::Temporal)eligible=false;
     if (CommunityShaders::Active() || !nativeUI_.Dedicated() || !pipeline->mNativeUI) eligible=false;
-    auto camera=eligible && snapshot.enabled && communityNeural_->Available() && !unavailable?
+    auto camera=sourceCamera ? Upscaling::Result<Upscaling::CameraMeasurements>{*sourceCamera} :
+        post && (post->camera.identity || FsrFgActive()) ? Upscaling::Result<Upscaling::CameraMeasurements>{post->camera} :
+        eligible && snapshot.enabled && communityNeural_->Available() && !unavailable?
         CaptureGameCameraMeasurements(pipeline->mGraphicsState,{guideExtent.width,guideExtent.height},pipeline->mEnableJitter,reset):
         Upscaling::Result<Upscaling::CameraMeasurements>{std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::InvalidInput,0,"NR waiting for world camera"})};
-    if (camera) {
+    if (camera && camera->identity) {
         const auto decision=communityCameraHistory_.Accept(sourceId,*camera,{guideExtent.width,guideExtent.height});
         eligible=decision.valid;
         input.depthInverted=camera->depthInverted;

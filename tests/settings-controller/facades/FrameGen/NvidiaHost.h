@@ -2,6 +2,7 @@
 #include "NvidiaUpscalerConfiguration.h"
 #include "RenderPipeline.h"
 #include <d3d11.h>
+#include "FrameGen/SourceDLSSGBackend.h"
 class NvidiaHost {
 public:
     static NvidiaHost* GetSingleton(){static NvidiaHost v;return &v;}
@@ -24,10 +25,20 @@ public:
     bool CommunityNeuralAvailable()const{return available;}
     bool CommunityNeuralTerminal()const{return terminal;}
     bool FsrActive()const{return StartupConfigured()&&configuration.Startup().mode==FSR;}
-    bool FsrFgActive()const{return FsrActive()&&fsrFg;}
+    bool FsrFgActive()const{return StartupConfigured()&&fsrFg;}
     const auto& SourceUpscalerSettings()const{return configuration;}
     HRESULT FailureResult()const{return failure;}
     void FailLifecycle(HRESULT value,const char*){failure=value;++lifecycleFailures;}
+    TheosRenderPipeline::Upscaling::Result<void> QuiesceActivePresentation(){
+        if(FsrFgActive())return {};
+        if(TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce())return {};
+        return std::unexpected(TheosRenderPipeline::Upscaling::RuntimeError{});
+    }
+    TheosRenderPipeline::Upscaling::Result<void> ResumeActivePresentation(){
+        if(FsrFgActive())return {};
+        if(TheosRenderPipeline::SourceDLSSG::Backend::Get().ResumeAfterResize())return {};
+        return std::unexpected(TheosRenderPipeline::Upscaling::RuntimeError{});
+    }
     // All three implementations are copied unchanged from production.
     void AdoptEffectiveSourceUpscalerSettings() const;
     void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request);

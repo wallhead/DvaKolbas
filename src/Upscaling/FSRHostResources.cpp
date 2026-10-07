@@ -214,6 +214,10 @@ namespace TheosRenderPipeline::Upscaling
     }
     Result<void> FsrHostResources::EnsureInputPolicy(FsrInputPolicy policy)
     {
+        if(state_->external) {
+            if(!state_->bridge || !state_->bridge->Ready())return Failure(ErrorKind::ContextFailure,0,"External guide bridge unavailable");
+            state_->externalInput=policy;return {};
+        }
         if(!FeatureReady())return Failure(ErrorKind::ContextFailure,0,"FSR context unavailable for measured input conventions");
         if(state_->upscaler->Limits().input==policy)return {};
         // Flags are immutable per context. Retire the actual output readers,

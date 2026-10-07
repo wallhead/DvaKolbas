@@ -44,7 +44,7 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     view.nvidiaHostActive = nvidiaHost->ProxyActive();
     view.fsrActive = nvidiaHost->FsrActive();
     view.fsrStatus = nvidiaHost->FsrStatus();
-    view.sourceDLSSGActive = view.nvidiaHostActive && nvidiaHost->StartupConfigured() && !view.fsrActive;
+    view.sourceDLSSGActive = view.nvidiaHostActive && nvidiaHost->StartupConfigured() && !view.fsrActive && !nvidiaHost->FsrFgActive();
     const bool dlssgEnabled = view.sourceDLSSGActive && TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().GenerationActive();
     view.fsrFgActive=nvidiaHost->FsrFgActive() && nvidiaHost->FsrFgStatus().kind==TheosRenderPipeline::SettingsStatusKind::Success;
     view.frameGenerationRuntimeActive = dlssgEnabled || view.fsrFgActive;
@@ -152,7 +152,7 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
                       neural.beforeUpscaling ? "Before" : "After", TheosRenderPipeline::CommunityShaders::Active() ? "CS" : view.fsrActive?"FSR":"DLSS", view.sourceNeural.effectivePasses,
                       view.sourceNeural.effectivePasses == 1 ? "pass" : "passes");
     }
-    if(view.fsrActive) {
+    if(nvidiaHost->FsrFgActive()) {
         std::snprintf(view.generationTitle,sizeof(view.generationTitle),"%s",view.fsrFgActive?"FSR FG active":"FSR FG inactive");
     }
     else if (view.frameGenerationRuntimeActive)
@@ -169,6 +169,7 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     view.outputLabel = "Runtime output";
     view.activeUpscaleStage = view.sourceDLSSGActive ? (view.sourceNeural.active ? "TRP DLSS NR" : "TRP DLSS")
                                                      : "NVIDIA host unavailable";
+    if(nvidiaHost->FsrFgActive() && !view.fsrActive)view.activeUpscaleStage="TRP DLSS + FSR FG";
     if (TheosRenderPipeline::CommunityShaders::Active()) {
         view.activeUpscaleStage = view.sourceNeural.active ? "CS upscaling + TRP NR" : "CS upscaling";
     }
@@ -176,7 +177,7 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     if(view.fsrActive) {
         view.activeUpscaleStage=view.fsrStatus.kind==TheosRenderPipeline::SettingsStatusKind::Success?"TRP FSR":"FSR pending / spatial recovery";
         std::snprintf(view.upscaleDetail,sizeof(view.upscaleDetail),"%.0f%% | %s",view.proxyScale*100.0f,TheosRenderPipeline::Upscaling::QualityName(effective.fsr.quality));
-        std::snprintf(view.generationTitle,sizeof(view.generationTitle),"Unavailable with FSR");
+
         if(!TheosRenderPipeline::CommunityShaders::Active() && view.fsrStatus.kind!=TheosRenderPipeline::SettingsStatusKind::Success) {
             view.upscaleHealth=view.fsrStatus.kind==TheosRenderPipeline::SettingsStatusKind::Error?UIHealth::kError:UIHealth::kWarning;
             view.pipelineHealth=view.upscaleHealth;view.pipelineLabel="Attention required";

@@ -92,7 +92,7 @@ class NvidiaHost
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
     bool FsrTemporalActive() const { return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult()); }
-    bool FsrFgActive() const { return FsrActive() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
+    bool FsrFgActive() const { return StartupConfigured() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
     bool FsrPresentSuspended()const;
     HRESULT UpdateFsrSuspension();
     HRESULT PresentFsrSource(UINT interval, UINT flags);
@@ -152,7 +152,7 @@ class NvidiaHost
 #if !defined(TRP_NO_NEURAL_RENDERING)
     void InspectCommunityNeural();
     bool RetireCommunityNeural();
-    bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,UINT,UINT,uint64_t,bool&,bool,TheosRenderPipeline::NeuralRendering::PreparedFsrInput* linearOutput=nullptr,const TheosRenderPipeline::Upscaling::UpscaleFrame* post=nullptr,TheosRenderPipeline::Upscaling::UpscaleOutcome outcome=TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal);
+    bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,UINT,UINT,uint64_t,bool&,bool,TheosRenderPipeline::NeuralRendering::PreparedFsrInput* linearOutput=nullptr,const TheosRenderPipeline::Upscaling::UpscaleFrame* post=nullptr,TheosRenderPipeline::Upscaling::UpscaleOutcome outcome=TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal,const TheosRenderPipeline::Upscaling::CameraMeasurements* camera=nullptr);
     bool EvaluateCommunityNeuralAfter(TheosRenderPipeline::Upscaling::UpscaleFrame&,TheosRenderPipeline::Upscaling::UpscaleOutcome,bool);
     std::unique_ptr<TheosRenderPipeline::NeuralRendering::BeforeHost> communityNeural_;
     TheosRenderPipeline::NeuralRendering::SettingsSnapshot communitySnapshot_;
@@ -178,6 +178,9 @@ class NvidiaHost
     struct SourceFrameOperations;
     struct SourceNvidiaEvaluationOperations;
     bool EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHistory);
+    TheosRenderPipeline::Upscaling::Result<void> PrepareExternalGeneration(const TheosRenderPipeline::Upscaling::UpscaleFrame&, TheosRenderPipeline::Upscaling::UpscaleOutcome);
+    TheosRenderPipeline::Upscaling::Result<void> QuiesceActivePresentation();
+    TheosRenderPipeline::Upscaling::Result<void> ResumeActivePresentation();
     bool EvaluateFsrFrame(IDXGISwapChain*,bool nativeUIHandoff);
     struct SourceFsrEvaluationOperations;
     bool FinishSourceFrameForPresent();

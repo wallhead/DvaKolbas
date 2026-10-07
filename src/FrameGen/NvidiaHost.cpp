@@ -18,6 +18,14 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
     {
         return false;
     }
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        if(UpdateFsrSuspension()!=S_OK)return false;
+        const auto waited=fsrPresentation_->WaitBeforeProducer();
+        if(FAILED(waited)){FailLifecycle(waited,"DLSS FSR producer ownership");return false;}
+        fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
+    }
+#endif
     auto* upscaler = RenderPipeline::GetSingleton();
     if (!upscaler->mMotionVectors.mImage || !upscaler->mDepthBuffer.mImage)
     {
@@ -82,8 +90,12 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
         ScopedD3D11PerformanceStage timer{context_.Get(), PerformanceTuning::D3D11Stage::kPresentationCopy};
         context_->CopyResource(presentation_.Buffers()[currentIndex].Get(), gameTargets_.UpscaleOutput());
     }
+#if defined(TRP_ENABLE_FSR_FG)
+    resetNextEvaluation_ = FsrFgActive() && fsrGenerationOutcome_!=TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal;
+#else
     resetNextEvaluation_ = false;
-    if (upscaler->mPendingHistoryResets > 0)
+#endif
+    if (!resetNextEvaluation_ && upscaler->mPendingHistoryResets > 0)
     {
         --upscaler->mPendingHistoryResets;
     }
@@ -91,9 +103,8 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
     evaluationFailureLogged_ = false;
     if (StartupConfigured())
     {
-        status_ = std::format("RaZkolbaS source DLSS + Streamline DLSS-G; camera/input "
-                              "valid={} warm-up={}",
-                              !splitSourceRuntimeFailureLogged_, warmupPresentsRemaining_);
+        status_ = std::format("RaZkolbaS source DLSS + {}; camera/input valid={} warm-up={}",
+            FsrFgActive()?"FSR FG":"Streamline DLSS-G", !splitSourceRuntimeFailureLogged_, warmupPresentsRemaining_);
     }
     if (evaluationCount_ == 1 || (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails &&
         (evaluationCount_ <= 3 || evaluationCount_ % 600 == 0)))

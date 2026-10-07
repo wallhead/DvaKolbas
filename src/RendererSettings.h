@@ -239,6 +239,7 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";
         if (draft.dynamicResolution) return "Dynamic resolution is unavailable with FSR.";
     } else if (draft.generationBackend==2) {
+        if(!Upscaling::IsKnownColorEncoding(draft.fsr.sourceColorEncoding))return "FSR FG requires explicit SDR source encoding in [FSR Advanced] SourceColorEncoding (Linear, Gamma22 or SRGB).";
         if (!capabilities.fsrFgBuilt) return "FSR frame generation is not included in this build.";
         if (!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)
             return "FSR frame generation requires dedicated native UI and source ownership.";

@@ -178,5 +178,18 @@ int main(){try{
     draft.upscaleType=DLAA;draft.generationBackend=1;draft.generationEnabled=false;
     Require(controller.Apply(draft,false).applied&&fg.RuntimeInterpolationRequested(),
         "staging NVIDIA cannot disable the current AMD owner");
+    auto mixedStartup=Upscaler::Creation{DLAA,4,11,false,true};mixedStartup.fsr.sourceColorEncoding=Upscaling::ColorEncoding::Gamma22;
+    host.configuration.Initialize(mixedStartup);host.configuration.BeginSubmission();host.configuration.Completed(true);
+    fg.settings.generationBackend=1;fg.settings.generationBackendPreference=GenerationBackendPreference::Nvidia;
+    fg.settings.enabled=true;fg.RequestRuntimeInterpolation(true);
+    auto mixedBefore=controller.Capture(true,false);auto mixedAfter=mixedBefore;mixedAfter.generationEnabled=false;
+    Require(controller.ApplyLiveEdits(mixedBefore,mixedAfter).applied && !fg.RuntimeInterpolationRequested(),
+        "staged NVIDIA backend cannot redirect the running DLAA FSR owner toggle");
+    Require(fg.settings.generationBackend==1 && fg.settings.generationBackendPreference==GenerationBackendPreference::Nvidia,
+        "live toggle retains the configured preference for Save");
+    Require(fg.settings.enabled,"mixed live toggle preserves pending NVIDIA enabled default");
+    draft=controller.Capture(true,false);draft.fsr.generationProviderPolicy=Upscaling::ProviderPolicy::MachineLearning;
+    Require(controller.Apply(draft,false).applied && host.configuration.NeedsRestart(),
+        "DLSS FSR FG provider choice is staged for restart independently of SR");
     std::cout<<"PASS production RendererSettingsController Apply/Save/staging/rejection\n";return 0;
 }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}

@@ -9,6 +9,7 @@
 #include "FrameGen/SourceDLSSGBackend.h"
 #include "FrameGen/SourceFrameGeneration.h"
 #include <PCH.h>
+#include "RenderPipeline.h"
 
 using namespace TheosRenderPipeline::Overlay;
 
@@ -32,11 +33,25 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 ImGui::Separator();
             }
         };
-        if(view.fsrActive) {
-            if(!BeginSettingsColumns("generation", tabCardHeight, view)) {
-                ImGui::EndTabItem();return;
-            }
-            drawSmoothMotionNotice();
+        if(!BeginSettingsColumns("generation",tabCardHeight,view)){ImGui::EndTabItem();return;}
+        drawSmoothMotionNotice();
+        const bool nvidiaSupported=settingsDraft.upscaleType!=FSR &&
+            (RenderPipeline::GetSingleton()->mAdapterVendorId==0 || RenderPipeline::GetSingleton()->mAdapterVendorId==0x10de);
+        if(DrawGenerationBackendChoice(settingsDraft.generationBackendPreference,nvidiaSupported)) {
+            const auto kind=settingsDraft.upscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
+                settingsDraft.upscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
+            settingsDraft.generationBackend=TheosRenderPipeline::ResolveGenerationBackend(settingsDraft.generationBackendPreference,kind);
+        }
+        const long actualBackend=nvidiaHost->FsrFgActive()?2:nvidiaHost->FsrActive()?0:1;
+        ImGui::Text("Running backend: %s",actualBackend==2?"FSR FG":actualBackend==1?"NVIDIA FG":"Ordinary (diagnostic)");
+        DrawSettingsHelp("Backend selection requires Save as default and restart. Auto selects NVIDIA FG for DLSS, and FSR FG for FSR upscaling.");
+        if(settingsDraft.generationBackend!=actualBackend)ImGui::TextWrapped("Selected backend is pending restart. The on/off switch controls the running backend.");
+        bool requested=frameGen->RuntimeInterpolationRequested();
+        ImGui::BeginDisabled(actualBackend==0);
+        if(ImGui::Checkbox("Frame generation##runtime",&requested))
+            TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,requested,actualBackend);
+        ImGui::EndDisabled();
+        if(nvidiaHost->FsrFgActive() || settingsDraft.generationBackend==2 || view.fsrActive) {
             int fgPolicy=static_cast<int>(settingsDraft.fsr.generationProviderPolicy);
             const char* fgProviders[]{"FSR3 FG (3.1.6)","Auto (FSR4 / FSR3 FG)","FSR4 FG (ML, experimental)"};
             const auto availability=nvidiaHost->FsrMlChoices();
@@ -45,21 +60,13 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             DrawSettingsHelp("Provider changes require Save as default and restart. Official ML FG requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. Auto uses FSR3 FG when ML FG is unavailable. Upscaling and FG providers are independent.");
             auto status=nvidiaHost->FsrFgStatus();
             ImGui::TextWrapped("%s",status.text.c_str());
-            constexpr bool built=
-#if defined(TRP_ENABLE_FSR_FG)
-                true;
-#else
-                false;
-#endif
-            bool requested=frameGen->RuntimeInterpolationRequested();
-            const auto previousBackend=settingsDraft.generationBackend;
-            const bool liveChanged=DrawFsrGenerationControls(built,nvidiaHost->FsrFgActive(),settingsDraft.generationBackend,requested,showDeveloperControls);
-            if(settingsDraft.generationBackend!=previousBackend) {
-                // A presenter choice stages startup defaults; only the checkbox sends a live request.
-                settingsDraft.generationEnabled=settingsDraft.generationBackend==2 && requested;
-            }
-            if(liveChanged) {
-                TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,requested,nvidiaHost->FsrFgActive()?2:0);
+            if(!nvidiaHost->FsrFgActive())ImGui::TextWrapped("FSR provider is staged for the next launch; the current backend stays active.");
+            if(!view.fsrActive) {
+                int encoding=static_cast<int>(settingsDraft.fsr.sourceColorEncoding);
+                const char* encodings[]{"Unknown", "Linear", "Gamma 2.2 SDR", "sRGB"};
+                if(ImGui::Combo("Source encoding##fsr-fg",&encoding,encodings,4))
+                    settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);
+                DrawSettingsHelp("Explicit SDR producer encoding used by FSR FG presentation. Save and restart; independent of FSR upscaling quality/model.");
             }
             if(showDeveloperControls)ImGui::TextWrapped("%s",nvidiaHost->Status().c_str());
             DrawFrameGenerationAdvanced(view);
@@ -75,12 +82,6 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                                          unlock.UsesCompatibilityUnlock(), unlock.Ready(),
                                          sourceState.state.bIsDynamicMFGSupported == sl::eTrue) &&
                                      sourceState.state.numFramesToGenerateMax > 1;
-        if (!BeginSettingsColumns("generation", tabCardHeight, view))
-        {
-            ImGui::EndTabItem();
-            return;
-        }
-        drawSmoothMotionNotice();
         if (ImGui::CollapsingHeader("Status and measurements"))
         {
         DrawStatusLabel(frameGenerationRuntimeActive ? "DLSS-G active" : "Frame generation inactive",
@@ -138,12 +139,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         DrawStageMeasurements(SettingsPage::FrameGeneration);
         }
         NextSettingsColumn(tabCardHeight);
-        bool runtimeInterpolationRequested = frameGen->RuntimeInterpolationRequested();
-        if (ImGui::Checkbox("Frame generation##runtime", &runtimeInterpolationRequested))
-        {
-            TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,runtimeInterpolationRequested,1);
-        }
-        DrawSettingsHelp("Takes effect immediately. Save as default to keep this choice for the next launch.");
+        const bool runtimeInterpolationRequested=frameGen->RuntimeInterpolationRequested();
         if (runtimeInterpolationRequested != nvidiaHost->FrameGenerationEnabled())
         {
             ImGui::TextDisabled("Waiting for the current GPU frame to retire...");

@@ -26,7 +26,6 @@ struct NvidiaHost::LifecycleOperations
 #if !defined(TRP_NO_NEURAL_RENDERING)
         if (!host.RetireCommunityNeural()) return false;
 #endif
-        if (!host.FsrActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
 #if defined(TRP_ENABLE_FSR_FG)
         if (host.FsrFgActive()) {
             auto retired=host.fsrPresentation_->Retire();
@@ -34,6 +33,7 @@ struct NvidiaHost::LifecycleOperations
             return true;
         }
 #endif
+        if (!host.FsrActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
         const auto result = host.ordinaryPresentation_.Retire();
         if (FAILED(result)) { host.FailLifecycle(result, "FSR presentation retirement"); return false; }
 #if defined(TRP_ENABLE_FSR)
@@ -191,7 +191,7 @@ void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
     if (!RetireCommunityNeural()) return;
 #endif
 #if defined(TRP_ENABLE_FSR)
-    if (FsrActive() && fsrResources_) {
+    if ((FsrActive() || FsrFgActive()) && fsrResources_) {
         if(!retainFsrDevice){
             const auto retired = fsrResources_->Retire();
             if (!retired) { status_ = retired.error().message; FailLifecycle(E_FAIL, "FSR feature release"); return; }
@@ -263,7 +263,7 @@ void NvidiaHost::OnPresentCompleted(HRESULT a_result)
 
     // Consume the session snapshot after Present; querying Streamline again
     // here would consume its output-count delta a second time.
-    if (!FsrActive()) {
+    if (!FsrActive() && !FsrFgActive()) {
         const auto& state = TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().state;
         UpdateRuntimeDLSSGState(static_cast<std::uint32_t>(state.status), state.numFramesActuallyPresented, state.minWidthOrHeight,
                                 state.numFramesToGenerateMax);
@@ -348,4 +348,28 @@ void NvidiaHost::UpdateRuntimeDLSSGState(std::uint32_t a_status, std::uint32_t a
                      "status={} actuallyPresented={} maxGenerated={} minDimension={}",
                      observationCount, a_status, a_framesActuallyPresented, a_maxGeneratedFrames, a_minWidthOrHeight);
     }
+}
+
+TheosRenderPipeline::Upscaling::Result<void> NvidiaHost::QuiesceActivePresentation()
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        if(!fsrPresentation_)return std::unexpected(TheosRenderPipeline::Upscaling::RuntimeError{TheosRenderPipeline::Upscaling::ErrorKind::RetirementFailure,E_UNEXPECTED,"FSR presenter unavailable"});
+        return fsrPresentation_->Suspend();
+    }
+#endif
+    if(TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce())return {};
+    return std::unexpected(TheosRenderPipeline::Upscaling::RuntimeError{TheosRenderPipeline::Upscaling::ErrorKind::RetirementFailure,E_FAIL,"NVIDIA presenter retirement failed"});
+}
+TheosRenderPipeline::Upscaling::Result<void> NvidiaHost::ResumeActivePresentation()
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        auto resumed=fsrPresentation_->Resume();
+        if(resumed){resetNextEvaluation_=true;fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();}
+        return resumed;
+    }
+#endif
+    if(TheosRenderPipeline::SourceDLSSG::Backend::Get().ResumeAfterResize())return {};
+    return std::unexpected(TheosRenderPipeline::Upscaling::RuntimeError{TheosRenderPipeline::Upscaling::ErrorKind::RetirementFailure,E_FAIL,"NVIDIA presenter restoration failed"});
 }

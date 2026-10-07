@@ -13,6 +13,7 @@ namespace TheosRenderPipeline
         ID3D11Texture2D* input{};
         ID3D11Texture2D* output{};
         float sharpness{}, motionScaleX{}, motionScaleY{};
+        Upscaling::UpscaleFrame sourceSnapshot{};
     };
 
     struct SourceNvidiaFrameResult
@@ -41,8 +42,17 @@ namespace TheosRenderPipeline
             bool EvaluateOptionalPostUpscale(Upscaling::UpscaleFrame&, Upscaling::UpscaleOutcome outcome)
             { return operations.EvaluateNeuralAfterDLSS(frame, outcome); }
             void UpscaleSucceeded() { operations.UpscaleSucceeded(); }
-            Upscaling::GenerationPreparationStatus PrepareGeneration(const Upscaling::UpscaleFrame&)
+            Upscaling::GenerationPreparationStatus PrepareGeneration(const Upscaling::UpscaleFrame& completed)
             {
+                if constexpr (requires { operations.PrepareGeneration(frame, completed); }) {
+                    auto snapshot = frame.sourceSnapshot;
+                    snapshot.output = frame.output; snapshot.depth = frame.depth; snapshot.motion = frame.motion;
+                    snapshot.render = {frame.renderWidth, frame.renderHeight};
+                    snapshot.display = {frame.outputWidth, frame.outputHeight}; snapshot.reset |= frame.reset;
+                    const auto status = operations.PrepareGeneration(frame, snapshot);
+                    cameraValid = status == Upscaling::GenerationPreparationStatus::Succeeded;
+                    return status;
+                }
                 // NVIDIA preparation also serves after-upscale NR with FG off.
                 const auto result = SourceNvidiaFramePreparation::PrepareCompletedFrame(frame, operations);
                 cameraValid = result.cameraValid;
@@ -55,7 +65,7 @@ namespace TheosRenderPipeline
             SourceNvidiaFrameInputs frame, Operations& operations)
         {
             Adapter<Operations> adapter{frame, operations};
-            Upscaling::UpscaleFrame common{};
+            Upscaling::UpscaleFrame common = frame.sourceSnapshot;
             common.color = frame.color; common.input = frame.input; common.output = frame.output;
             common.depth = frame.depth; common.motion = frame.motion;
             common.render = {frame.renderWidth, frame.renderHeight};

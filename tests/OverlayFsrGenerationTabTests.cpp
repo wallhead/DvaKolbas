@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <array>
 #include "OverlayFsrGenerationControls.h"
+#include "FrameGen/GenerationBackendPreference.h"
 static void Require(bool value,const char* reason){if(!value)throw std::runtime_error(reason);}
 template<class Labels> static void MlChoiceAvailability(const Labels& labels)
 {
@@ -117,9 +118,30 @@ static void PendingOrdinaryKeepsCurrentCheckboxLive()
     Require(requested&&changed&&backend==0,"pending ordinary presenter keeps actual AMD FG checkbox live");
     ImGui::DestroyContext();
 }
+using namespace TheosRenderPipeline::Overlay;
+template<class Preference> static void FsrControlsVisibleWithDlss(Preference preference)
+{
+    if constexpr(requires { DrawGenerationBackendChoice(preference,true); }) {
+        ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
+        unsigned char* pixels;int w,h;io.Fonts->GetTexDataAsRGBA32(&pixels,&w,&h);ImVec2 combo{};
+        auto frame=[&] {
+            ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
+            ImGui::Begin("DLSS owner independent FG choice");combo=ImGui::GetCursorScreenPos();combo.x+=80;combo.y+=ImGui::GetFrameHeight()/2;
+            DrawGenerationBackendChoice(preference,true);ImGui::End();ImGui::Render();
+        };
+        frame();frame();io.AddMousePosEvent(combo.x,combo.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();frame();
+        auto& context=*ImGui::GetCurrentContext();Require(!context.OpenPopupStack.empty(),"DLSS FG backend choice opens");
+        auto* popup=context.OpenPopupStack.back().Window;
+        ImVec2 fsr{popup->Pos.x+40,popup->Pos.y+ImGui::GetStyle().WindowPadding.y+2*ImGui::GetTextLineHeightWithSpacing()+ImGui::GetTextLineHeight()/2};
+        io.AddMousePosEvent(fsr.x,fsr.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();
+        Require(preference==Preference::Fsr,"DLSS can select FSR independently, as a saved restart preference");
+        Require(context.DisabledStackSize==0,"backend picker balances disabled stack");ImGui::DestroyContext();
+    } else Require(false,"independent FG backend picker is missing");
+}
 int main()
 {
  try {
+    FsrControlsVisibleWithDlss(TheosRenderPipeline::GenerationBackendPreference::Auto);
     MlChoiceAvailability(std::array<const char*,3>{"FSR3","Auto","FSR4"});
     NormalToggleRetainsPresenter();
     DiagnosticHostCanStageFg();

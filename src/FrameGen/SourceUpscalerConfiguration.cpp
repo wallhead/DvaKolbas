@@ -37,17 +37,16 @@ void NvidiaHost::ApplySourceUpscalerSettingsAfterPresent()
             sourceUpscalerSettings_.Effective().fsr.sharpness,sourceUpscalerSettings_.NeedsRestart(),sourceUpscalerSettings_.Unsaved());
         return;
     }
-    auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
     auto* dlss = DLSSBackend::GetSingleton();
     D3D11_TEXTURE2D_DESC inputDesc{};
     gameTargets_.UpscaleInput()->GetDesc(&inputDesc);
     const bool applied = TheosRenderPipeline::Upscaler::ApplyLive(sourceUpscalerSettings_,
-        [&] { return backend.Quiesce(); },
+        [&] { return bool(QuiesceActivePresentation()); },
         [&](const TheosRenderPipeline::Upscaler::Creation& request) {
             return dlss->InitUpscale(renderWidth_, renderHeight_, outputWidth_, outputHeight_, inputDesc.Format,
                 request.sharpening, request.autoExposure, request.preset, request.AllocationQuality());
         },
-        [&] { return backend.ResumeAfterResize(); });
+        [&] { return bool(ResumeActivePresentation()); });
     if (!applied) {
         FailLifecycle(E_FAIL, "Source DLSS live settings");
         return;

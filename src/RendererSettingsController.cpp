@@ -58,7 +58,7 @@ RendererSettingsDraft RendererSettingsController::Capture([[maybe_unused]] bool 
 #if !defined(TRP_NO_NEURAL_RENDERING)
     // A saved NR request must not strand unrelated settings behind disabled controls.
     if (!frameGen_.settings.neuralStartup.community) {
-        if (host_.StartupConfigured() && !host_.FsrActive() && settingsDraft.upscaleType == FSR)
+        if (host_.StartupConfigured() && !host_.FsrActive() && !host_.FsrFgActive() && settingsDraft.upscaleType == FSR)
             settingsDraft.sourceDLSSG.neuralEnabled = SourceDLSSG::Backend::Get().NeuralConfiguration().enabled;
         settingsDraft.sourceDLSSG.neuralEnabled &= nrRuntimePresent;
     }
@@ -107,9 +107,9 @@ RendererSettingsResult RendererSettingsController::ApplyLiveEdits(const Renderer
         // Use effective allocation fields without losing that pending live value.
         current.fsr.sharpness=requestedSharpness;
     }
-    current.generationBackend=host_.FsrActive()?(host_.FsrFgActive()?2:0):1;
+    current.generationBackend=host_.FsrFgActive()?2:host_.FsrActive()?0:1;
     current.generationEnabled=frameGen_.RuntimeInterpolationRequested();
-    if (host_.StartupConfigured() && !host_.FsrActive() && !frameGen_.settings.neuralStartup.community)
+    if (host_.StartupConfigured() && !host_.FsrActive() && !host_.FsrFgActive() && !frameGen_.settings.neuralStartup.community)
         current.sourceDLSSG.neuralEnabled = SourceDLSSG::Backend::Get().NeuralConfiguration().enabled;
     const auto live=ProjectRendererLiveEdits(before,after,current);
     if(CountRendererSettingsChanges(live,current)==0 && live.sharpness==current.sharpness)
@@ -137,7 +137,7 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
         capabilities.communityNeural=true;
         capabilities.neuralRuntime=host_.CommunityNeuralAvailable();
         capabilities.neuralOperational=!host_.CommunityNeuralTerminal();
-    } else if (!host_.FsrActive()) {
+    } else if (!host_.FsrActive() && !host_.FsrFgActive()) {
     capabilities.neuralRuntime =
         TheosRenderPipeline::SourceDLSSG::NeuralRuntimePresent(frameGen_.settings.neuralRenderingRuntimePath);
     capabilities.neuralOperational = SourceDLSSG::Backend::Get().Ready() && !SourceDLSSG::Backend::Get().NeuralState().failed;
@@ -166,7 +166,7 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
     upscaler_.mDlssNativeScale = settingsDraft.upscaleType == DLAA ||
         (settingsDraft.upscaleType == FSR && settingsDraft.nvidiaMode.nativeScale);
     upscaler_.mFsrSettings = settingsDraft.fsr;
-    const long actualBackend=host_.FsrActive() ? (host_.FsrFgActive()?2:0) : 1;
+    const long actualBackend=host_.FsrFgActive()?2:host_.FsrActive()?0:1;
     if(!liveOnly)ApplyRendererGeneration(settingsDraft,frameGen_,actualBackend);
     else if(actualBackend!=0 && settingsDraft.generationEnabled!=frameGen_.RuntimeInterpolationRequested()){
         const auto pendingBackend=frameGen_.settings.generationBackend;
@@ -202,12 +202,12 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
     performanceSettings.directDLSSOutput = settingsDraft.directDLSSOutput;
     performance_.ApplySettings(performanceSettings);
     const auto runtimePreferences = TheosRenderPipeline::SourceDLSSG::SanitizePreferences(settingsDraft.sourceDLSSG);
-    const bool legacyNeuralOwner = host_.StartupConfigured() && !host_.FsrActive() && !frameGen_.settings.neuralStartup.community;
+    const bool legacyNeuralOwner = host_.StartupConfigured() && !host_.FsrActive() && !host_.FsrFgActive() && !frameGen_.settings.neuralStartup.community;
     const bool fsrPending = legacyNeuralOwner && host_.SourceUpscalerSettings().Requested().mode == FSR;
     const bool startupNeuralEnabled = frameGen_.settings.sourceDLSSG.neuralEnabled;
     frameGen_.settings.sourceDLSSG = runtimePreferences;
     if (liveOnly && fsrPending) frameGen_.settings.sourceDLSSG.neuralEnabled = startupNeuralEnabled;
-    if (host_.StartupConfigured() && !host_.FsrActive())
+    if (host_.StartupConfigured() && !host_.FsrActive() && !host_.FsrFgActive())
     {
         auto& source = TheosRenderPipeline::SourceDLSSG::Backend::Get();
         source.ConfigureReflex(static_cast<sl::ReflexMode>(frameGen_.settings.sourceDLSSG.reflexMode));
@@ -257,8 +257,7 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
             actionMessage = "Source DLSS configuration failed; restart required.";
             actionMessageIsError = true;
         }
-        else if (configuration.NeedsRestart() || (settingsDraft.upscaleType==FSR &&
-            (settingsDraft.generationBackend==2)!=host_.FsrFgActive()))
+        else if (configuration.NeedsRestart() || settingsDraft.generationBackend!=actualBackend)
         {
             actionMessage =
                 a_saveAsDefault
