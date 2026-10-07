@@ -1,0 +1,9 @@
+Adapter=NVIDIA GeForce RTX 4080 SUPER LUID=00000000:00010318
+Effect=0 id=17700776140660019205 name=3.1.5
+Effect=0 id=17700776140655833092 name=2.3.4
+Effect=1 id=17726168133342859270 name=3.1.6
+Effect=2 id=17752306900579389447 name=3.1.7
+Selected FG provider id=17726168133342859270 name=3.1.6 (algorithm version, independent of SR)
+Actual FG provider id=17726168133342859270 name=3.1.6 ABI=4.0.1 swapchainABI=3.1.7 GPU memory bytes=23592960
+PASS: real selected FG context create, identity, memory query and destruction; no Prepare/generation/presentation tested
+PASS: real effect catalogs queried; no generation or presentation tested

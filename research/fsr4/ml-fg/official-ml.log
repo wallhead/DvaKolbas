@@ -1,0 +1,6 @@
+FAIL kind=4 native=0: FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11 and Radeon RX 9000 or later. FSR4 upscaling does not enable ML FG. Select FSR3 FG or Auto and restart.
+Adapter=NVIDIA GeForce RTX 4080 SUPER LUID=00000000:00010318
+Effect=0 id=17700776140660019205 name=3.1.5
+Effect=0 id=17700776140655833092 name=2.3.4
+Effect=1 id=17726168133342859270 name=3.1.6
+Effect=2 id=17752306900579389447 name=3.1.7

@@ -1,0 +1,71 @@
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+      Start   1: BackendSelection
+ 1/31 Test   #1: BackendSelection .................   Passed    0.02 sec
+      Start   5: FsrRuntime
+ 2/31 Test   #5: FsrRuntime .......................   Passed    0.13 sec
+      Start   6: FsrGenerationRuntime
+ 3/31 Test   #6: FsrGenerationRuntime .............   Passed    0.04 sec
+      Start   7: FsrGenerationPolicy
+ 4/31 Test   #7: FsrGenerationPolicy ..............   Passed    0.02 sec
+      Start   8: FsrGenerationParameters
+ 5/31 Test   #8: FsrGenerationParameters ..........   Passed    0.25 sec
+      Start   9: FsrGenerationContext
+ 6/31 Test   #9: FsrGenerationContext .............   Passed    0.36 sec
+      Start  10: FsrGenerationTransport
+ 7/31 Test  #10: FsrGenerationTransport ...........   Passed    0.44 sec
+      Start  11: FsrGenerationColor
+ 8/31 Test  #11: FsrGenerationColor ...............   Passed    0.05 sec
+      Start  12: FsrGenerationPresentation
+ 9/31 Test  #12: FsrGenerationPresentation ........   Passed    0.43 sec
+      Start  13: FsrGenerationLifecycle
+10/31 Test  #13: FsrGenerationLifecycle ...........   Passed    0.98 sec
+      Start  14: FsrGenerationHost
+11/31 Test  #14: FsrGenerationHost ................   Passed    0.29 sec
+      Start  15: FsrGenerationHostOwner
+12/31 Test  #15: FsrGenerationHostOwner ...........   Passed    0.73 sec
+      Start  16: FsrGenerationPackage
+13/31 Test  #16: FsrGenerationPackage .............   Passed    8.37 sec
+      Start  17: FsrParameters
+14/31 Test  #17: FsrParameters ....................   Passed    0.57 sec
+      Start  18: FsrStartup
+15/31 Test  #18: FsrStartup .......................   Passed    0.30 sec
+      Start  19: FsrLifecycle
+16/31 Test  #19: FsrLifecycle .....................   Passed    0.58 sec
+      Start  20: FsrHistory
+17/31 Test  #20: FsrHistory .......................   Passed    0.02 sec
+      Start  21: FsrColorContract
+18/31 Test  #21: FsrColorContract .................   Passed    0.25 sec
+      Start  22: FsrFrameIntegration
+19/31 Test  #22: FsrFrameIntegration ..............   Passed    0.44 sec
+      Start  36: OverlayFsrGenerationTab
+20/31 Test  #36: OverlayFsrGenerationTab ..........   Passed    0.02 sec
+      Start  42: FsrSettings
+21/31 Test  #42: FsrSettings ......................   Passed    0.01 sec
+      Start  90: FsrGenerationGpuSmoke
+22/31 Test  #90: FsrGenerationGpuSmoke ............   Passed   30.23 sec
+      Start  91: FsrGpuSmoke
+23/31 Test  #91: FsrGpuSmoke ......................   Passed    1.80 sec
+      Start  92: FsrNvidiaFreeStartup
+24/31 Test  #92: FsrNvidiaFreeStartup .............   Passed    0.48 sec
+      Start  93: FsrPackage
+25/31 Test  #93: FsrPackage .......................   Passed    4.93 sec
+      Start  94: FsrSharpnessGpu
+26/31 Test  #94: FsrSharpnessGpu ..................   Passed    0.55 sec
+      Start  95: FsrAutoGpu
+27/31 Test  #95: FsrAutoGpu .......................   Passed    0.53 sec
+      Start  96: FsrMlGpu
+28/31 Test  #96: FsrMlGpu .........................***Skipped   0.29 sec
+      Start 163: RendererSettingsController
+29/31 Test #163: RendererSettingsController .......   Passed    0.03 sec
+      Start 166: SourceUpscalerDeferred
+30/31 Test #166: SourceUpscalerDeferred ...........   Passed    0.02 sec
+      Start 169: FsrHostResizeOwnership
+31/31 Test #169: FsrHostResizeOwnership ...........   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 31
+
+Total Test time (real) =  53.19 sec
+
+The following tests did not run:
+	 96 - FsrMlGpu (Skipped)

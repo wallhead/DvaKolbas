@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-07",
+  "sourceRevision": "4645dac8fd59eee9ae61e1fbe1d3d814870da80b",
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "4645dac8fd59",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "milestonesDone": 4,
+  "milestonesTotal": 5,
+  "qualification": "experimental ML FG integration; AMD actual generated pixels pending",
+  "actualLocalFg": "3.1.6",
+  "regression": {
+    "passed": 30,
+    "skipped": 1,
+    "failed": 0
+  },
+  "portableAuto": {
+    "retiredContexts": 10,
+    "debugLayersAvailable": false,
+    "callbacks": 710,
+    "generatedReadbacks": 350,
+    "sources": 720,
+    "algorithm": "3.1.6"
+  },
+  "negativeNvidiaMlProbe": "Expected exit 1; no ML context created; kit stops before GPU scene",
+  "stableReleaseSha256": "00b20ade87944cf70cf2bd3a54009885a7c4c5a0e6d5cd88196a6c07404c9326",
+  "installed": false,
+  "kit": {
+    "bytes": 47109536,
+    "name": "RaZKolbaS FSR4 FG AMD validation kit.zip",
+    "sha256": "19c3220f26655f344e544f02e11e35a83a1fbe525dfe44ebc857066fa726ee30"
+  },
+  "trial": {
+    "bytes": 357946693,
+    "name": "RaZKolbaS FSR4 FG AMD preview.zip",
+    "sha256": "1b7a6957ba57a469a95f743c4f032fa90cfcca5be5429a674b76a5d431d839b8"
+  },
+  "pending": [
+    "RX9070 catalog/context/presenter using native D3D12; Agility deployment if its runtime rejects ML creation",
+    "ML generated pixel, HUD and lifecycle qualification",
+    "Visible cadence acceptance and Skyrim NR/FG/UI/lifecycle trial"
+  ]
+}
