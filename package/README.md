@@ -1,12 +1,16 @@
 # RaZkolbaS — DLSS, FSR, FG and NR
 
-## Version 1.0 MO2 archive
+## Version 1.2 MO2 archive
 
-`RaZKolbaS DLSS FSR FG NR v1.0.zip` contains `SKSE/` and `meta.ini` at its root,
+`RaZKolbaS DLSS FSR FG NR v1.2.zip` contains `SKSE/` and `meta.ini` at its root,
 with the validated DLSS/Streamline, FSR SR/FG and community NR payloads bundled.
 Install and enable it through MO2, with other upscaler/FG mods disabled. Use
 windowed or borderless Skyrim and launch SKSE. Close Skyrim and MO2 before
 replacing the installed package.
+
+Version 1.2 includes the current named INI, clearer validation/recovery messages,
+FSR 3.1.5/FSR4 selection and the optional INT8 runtime path. Its DLL and INI must
+be installed together. Existing settings can be converted with the offline tool.
 
 The release defaults to DLAA on NVIDIA, with FSR Native AA selected for the FSR
 route. Only one upscaler runs at a time. Portable NR paths remain blank for

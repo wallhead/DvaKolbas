@@ -13,13 +13,13 @@ $output = [IO.Path]::GetFullPath($OutputArchive)
 $stage = [IO.Path]::GetFullPath($StagingDirectory)
 if (Test-Path -LiteralPath $output) { throw 'Release archive already exists' }
 if (Test-Path -LiteralPath $stage) { throw 'Release staging directory already exists' }
-if ([IO.Path]::GetFileName($output) -cne 'RaZKolbaS DLSS FSR FG NR v1.1.zip') { throw 'Release archive name mismatch' }
+if ([IO.Path]::GetFileName($output) -cne 'RaZKolbaS DLSS FSR FG NR v1.2.zip') { throw 'Release archive name mismatch' }
 $identity = Get-EmbeddedBuildIdentity $PluginDll
 if ($identity.edition -ne 'Universal') { throw 'Universal renderer required for RTX 20/30 compatibility in the all-GPU release' }
 if (-not $identity.sourceClean -or
     -not $identity.fsrCompiled -or -not $identity.frameGenerationCompiled -or
     -not $identity.neuralRenderingCompiled) { throw 'Expected a clean Universal build with FSR/FG/NR' }
-if ([Diagnostics.FileVersionInfo]::GetVersionInfo($PluginDll).FileVersion -ne '1.1.0.0') { throw 'Plugin version must be 1.1.0.0' }
+if ([Diagnostics.FileVersionInfo]::GetVersionInfo($PluginDll).FileVersion -ne '1.2.0.0') { throw 'Plugin version must be 1.2.0.0' }
 $plugins = Join-Path $stage 'SKSE/Plugins'
 [IO.Directory]::CreateDirectory($plugins) | Out-Null
 $iniPath = Join-Path $plugins 'RaZkolbaS.ini'
@@ -82,12 +82,12 @@ $ini = Read-PortableNrPackageIni $iniPath
 if ($ini['Settings/UpscaleType'] -ne '3' -or $ini['FSR/Quality'] -ne 'NativeAA') { throw 'Native defaults verification failed' }
 if ($ini['Experimental/SourceDLSSGMFGUnlock'] -ne 'true') { throw 'Release INI must enable RTX 20/30 compatibility' }
 $receipt = [ordered]@{
-    release='1.1'; archiveName=[IO.Path]::GetFileName($output)
+    release='1.2'; archiveName=[IO.Path]::GetFileName($output)
     archiveSha256=(Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
     archiveBytes=(Get-Item -LiteralPath $output).Length; buildIdentity=$identity
-    dllVersion='1.1.0.0'; defaults=@{upscaler='DLAA';fsrQuality='NativeAA'}
+    dllVersion='1.2.0.0'; defaults=@{upscaler='DLSS';dlssQuality='Native';fsrQuality='Native'}
     rtx20_30CompatibilityCompiled=$true; actualRtx20_30GameplayQualified=$false
     unchangedRuntimePayloads=$true; crcVerified=$true; removedAudio=$removedAudio; files=$files
 }
 $receipt | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $stage 'release-verification.json') -Encoding utf8
-Write-Output "PASS: release 1.1; native defaults; $($files.Count) entries verified; unchanged runtime payloads"
+Write-Output "PASS: release 1.2; native defaults; $($files.Count) entries verified; unchanged runtime payloads"

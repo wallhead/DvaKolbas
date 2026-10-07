@@ -41,8 +41,8 @@ try {
     Write-PortableModMetadata -Directory $root -Revision 'test-revision'
     $metadata=[IO.File]::ReadAllText((Join-Path $root 'meta.ini'))
     if($metadata -match '(?im)^installationFile\s*=\s*[A-Za-z]:'){throw 'Metadata contains a machine-specific archive path'}
-    if($metadata -notmatch 'installationFile=RaZKolbaS DLSS FSR FG NR v1\.0\.zip'){throw 'Archive basename missing'}
-    if($metadata -notmatch '(?m)^version=1\.0\r?$'){throw 'Release version missing'}
+    if($metadata -notmatch 'installationFile=RaZKolbaS DLSS FSR FG NR v1\.2\.zip'){throw 'Archive basename missing'}
+    if($metadata -notmatch '(?m)^version=1\.2\r?$'){throw 'Release version missing'}
     Write-Output 'PASS: portable package clears current NR paths and removes obsolete keys, preserves settings, and writes portable MO2 metadata'
 } finally {
     $full=[IO.Path]::GetFullPath($root)
