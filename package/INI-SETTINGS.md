@@ -1,6 +1,6 @@
 # INI settings
 
-`SKSE/Plugins/RaZkolbaS.ini` uses layout version 2. Comments beside each
+`SKSE/Plugins/RaZkolbaS.ini` uses the current section layout. Comments beside each
 key describe its range, backend and restart requirements. The layout resembles
 AIO19's grouped settings, but values retain DvaKolbas's meanings: DLSS preset
 numbers, FG backend numbers and generated-frame counts are not AIO19 indexes.

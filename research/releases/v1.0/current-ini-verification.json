@@ -1,0 +1,50 @@
+{
+  "release": "1.0",
+  "archiveName": "RaZKolbaS DLSS FSR FG NR v1.0.zip",
+  "archiveSha256": "abb844317a1e1216eb40d31307c9d0319a758a9a66f618af90524a9359e6ba3e",
+  "archiveBytes": 346190621,
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "e9bc73fe19f4",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "dllVersion": "1.0.0.0",
+  "defaults": {
+    "fsrQuality": "NativeAA",
+    "upscaler": "DLAA"
+  },
+  "unchangedRuntimePayloads": true,
+  "crcVerified": true,
+  "change": "Current INI layout only; no ConfigVersion or old filename/resource redirection",
+  "tests": {
+    "focusedSettingsAndCompatibilityChecksPassed": 70,
+    "newSkyrimGameplayRun": false
+  },
+  "plugin": {
+    "path": "SKSE/Plugins/RaZkolbaS.dll",
+    "bytes": 3213312,
+    "sha256": "2d6ff8c91e2956332eb9e1f4b315252e50e9bafc87ddedab4b59d47faf9433aa"
+  },
+  "installed": [
+    {
+      "plugins": "D:/TESV_EX/MO2/mods/RaZKolbaS DLSS FSR FG NR v1.0/SKSE/Plugins",
+      "settingsPreserved": true,
+      "target": "TESV_EX",
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\current-ini-e9bc73f\\rollback-20261007-111110\\TESV_EX",
+      "iniSha256": "DE035EBBFAA75F5F83977EAB4AF7DC47C7AA61CA6DCD1976AE507C9064DFB47A",
+      "dllSha256": "2D6FF8C91E2956332EB9E1F4B315252E50E9BAFC87DDEDAB4B59D47FAF9433AA"
+    },
+    {
+      "plugins": "D:/TESV54BETA/BETA_TRUEAE_V54/mods/RaZkolbas DLSS FSR FG NR/SKSE/Plugins",
+      "settingsPreserved": true,
+      "target": "V54",
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\current-ini-e9bc73f\\rollback-20261007-111110\\V54",
+      "iniSha256": "DCF4E79A32A71B90F4DA6C935F10A27EDD7C2BC7817C76091E8D91B603A66FB1",
+      "dllSha256": "2D6FF8C91E2956332EB9E1F4B315252E50E9BAFC87DDEDAB4B59D47FAF9433AA"
+    }
+  ],
+  "mo2ProfilesChanged": false
+}

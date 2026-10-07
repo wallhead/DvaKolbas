@@ -30,7 +30,7 @@ try {
     $reader = [IO.StreamReader]::new($iniEntry.Open())
     try { $iniText = $reader.ReadToEnd() } finally { $reader.Dispose() }
     $lines = ConvertTo-PortableNrPackageIni ($iniText -split '\r?\n')
-    $lines = @($lines | Where-Object {$_ -notmatch '^\s*ConfigVersion\s*=' -and $_ -notmatch 'Layout version; written automatically'})
+    $lines = @($lines | Where-Object {$_ -notmatch '^\s*ConfigVersion\s*=' -and $_ -notmatch 'Layout version; written automatically'} | ForEach-Object {$_ -replace '^; RaZkolbaS settings\. Existing values preserved; layout version 2\.$','; RaZkolbaS settings. Current layout only.'})
     $lines = Set-PackageIniValues $lines @{'Settings/UpscaleType'='3';'FSR/Quality'='NativeAA'}
     [IO.File]::WriteAllLines($iniPath, [string[]]$lines, [Text.UTF8Encoding]::new($false))
     Copy-Item -LiteralPath $PluginDll -Destination (Join-Path $plugins 'RaZkolbaS.dll')
