@@ -90,21 +90,22 @@ private:
     std::pair<const char*, const char*> Select(const char* section, const char* key) const
     {
         for (const auto& entry : keys) {
-            if (std::string_view(section) == entry.legacySection && std::string_view(key) == entry.legacyKey &&
-                source_.GetValue(entry.section, entry.key, nullptr)) return {entry.section, entry.key};
+            if (std::string_view(section) == entry.legacySection && std::string_view(key) == entry.legacyKey)
+                return {entry.section, entry.key};
         }
         return {section, key};
     }
     const Ini& source_;
 };
 
-// Populate internal legacy slots before existing menu writers run. Canonical
-// values win, including false, zero and explicitly empty runtime paths.
+// Populate internal writer slots only from the current public layout. Never
+// promote obsolete external keys, including when their replacements are absent.
 template<class Ini> void PrepareForUpdate(Ini& ini)
 {
     ini.Delete("SourceDLSSG", "NRStableColors");
     ini.Delete("NeuralRendering", "StableColors");
     for (const auto& entry : keys) {
+        ini.Delete(entry.legacySection, entry.legacyKey);
         if (const auto value = ini.GetValue(entry.section, entry.key, nullptr)) {
             const std::string copy(value);
             ini.SetValue(entry.legacySection, entry.legacyKey, copy.c_str());
@@ -128,6 +129,6 @@ template<class Ini> void StoreCanonical(Ini& ini)
     for (const auto section : {"SourceDLSSG", "Experimental", "Overlay"}) {
         if (ini.GetSectionSize(section) == 0) ini.Delete(section, nullptr);
     }
-    ini.SetLongValue("Settings", "ConfigVersion", 2);
+    ini.Delete("Settings", "ConfigVersion");
 }
 }

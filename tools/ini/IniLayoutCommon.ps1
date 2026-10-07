@@ -1,14 +1,15 @@
-# Package tooling consumes the same migration table as the C++ settings reader.
+# Package tooling consumes the same internal key mapping as the C++ settings writer.
 function Get-IniLayoutAliases {
     $header=Join-Path $PSScriptRoot '../../src/IniLayout.h'
     $table=[regex]::Matches([IO.File]::ReadAllText($header),'Key\{"([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)"\}')
-    if(-not $table.Count){throw 'INI migration table is missing'}
+    if(-not $table.Count){throw 'INI key mapping is missing'}
     foreach($row in $table){
         [pscustomobject]@{Legacy=$row.Groups[1].Value+'/'+$row.Groups[2].Value;Canonical=$row.Groups[3].Value+'/'+$row.Groups[4].Value}
     }
 }
 function ConvertTo-IniReadView([hashtable]$Settings) {
     foreach($alias in Get-IniLayoutAliases){
+        $Settings.Remove($alias.Legacy)
         if($Settings.ContainsKey($alias.Canonical)){$Settings[$alias.Legacy]=$Settings[$alias.Canonical]}
     }
     return $Settings
@@ -23,7 +24,8 @@ function Set-PackageIniValues([string[]]$Lines,[hashtable]$Values) {
     foreach($line in $Lines){
         if($line.Trim() -match '^\[([^\]]+)\]$'){$section=$Matches[1]}
         elseif($line -match '^\s*([^=]+)=(.*)$' -and $line.TrimStart() -notmatch '^[;#]'){
-            $name=$Matches[1].Trim();$key=Get-IniCanonicalKey ($section+'/'+$name)
+            $name=$Matches[1].Trim();$key=$section+'/'+$name
+            if($key -eq 'Settings/ConfigVersion' -or (Get-IniCanonicalKey $key) -ne $key){continue}
             if($wanted.ContainsKey($key)){$line=$name+' = '+$wanted[$key];$found[$key]=$true}
         }
         $result.Add($line)

@@ -137,7 +137,7 @@ int main()
     }
     ini.SetLongValue("Settings", "UpscaleType", 4);
     ini.SetBoolValue("FrameGeneration", "Enabled", false);
-    ini.SetLongValue("Experimental", "FrameGenerationBackend", 0);
+    ini.SetLongValue("FrameGeneration", "Backend", 0);
     ini.SetBoolValue("Experimental", "SourceDLSSGBackend", false);
     Require(!validate(), "ordinary FSR needs no NVIDIA owner");
     ini.Delete("FrameGeneration", "Enabled");
@@ -153,8 +153,8 @@ int main()
         Require(validate(), "obsolete experiments stay rejected for FSR");
         ini.SetBoolValue("Experimental", key, false);
     }
-    for (auto section : {"SourceDLSSG", "HDROutput", "DynamicResolution"}) {
-        const char* key = std::string_view(section) == "SourceDLSSG" ? "NeuralRenderingEnabled" : "Enabled";
+    for (auto section : {"NeuralRendering", "HDROutput", "DynamicResolution"}) {
+        const char* key = "Enabled";
         ini.SetBoolValue(section, key, true);
         Require(validate(), "unsupported FSR NR/HDR/dynamic resolution rejected");
         ini.SetBoolValue(section, key, false);
@@ -180,7 +180,7 @@ int main()
     Require(TheosRenderPipeline::ResolveBackend(config,true,true).valid,"community NR can precede FSR FG");
     config.communityNeural=false;
     Require(!TheosRenderPipeline::ResolveBackend(config,true,true).valid,"legacy FSR NR remains unavailable");
-    ini.SetBoolValue("SourceDLSSG","NeuralRenderingEnabled",true);
+    ini.SetBoolValue("NeuralRendering","Enabled",true);
     ini.SetBoolValue("NeuralRendering","CommunityRuntime",true);
 #if !defined(TRP_NO_NEURAL_RENDERING)
     Require(!validate(),"community FSR NR survives startup configuration validation");

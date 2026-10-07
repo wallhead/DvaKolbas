@@ -14,7 +14,7 @@ $route['Settings/UpscaleType']='0';$route['Experimental/FrameGenerationBackend']
 if(Test-PostSrTrialRoute $route){throw 'DLSS with FSR presenter accepted'}
 $route['Experimental/FrameGenerationBackend']='1';$route['Settings/QualityLevel']='999'
 if(Test-PostSrTrialRoute $route){throw 'Invalid fixed DLSS quality accepted'}
-$lines=@('[Runtime]','NRRuntimeRoot = C:/Machine/NR','NRDriverCore = C:/Machine/Driver/_nvngx.dll','[NeuralRendering]','DriverCore = D:/Old/_nvngx.dll','RuntimeRoot = D:/Old/NR','[SourceDLSSG]','NRStyle = 2')
+$lines=@('[Runtime]','NRRuntimeRoot = C:/Machine/NR','NRDriverCore = C:/Machine/Driver/_nvngx.dll','[NeuralRendering]','DriverCore = D:/Old/_nvngx.dll','RuntimeRoot = D:/Old/NR','[NR PASS 1]','Style = 2')
 $converted=ConvertTo-PortableNrPackageIni $lines
 $root=Join-Path ([IO.Path]::GetTempPath()) ('raz-portable-'+[guid]::NewGuid())
 [IO.Directory]::CreateDirectory($root)|Out-Null
@@ -23,7 +23,6 @@ try {
     $ini=Read-PortableNrPackageIni (Join-Path $root 'RaZkolbaS.ini')
     if($ini['SourceDLSSG/NRStyle'] -ne '2'){throw 'Portable conversion changed the user style'}
     foreach($layout in @(
-        @{Name='legacy';Lines=@('[NeuralRendering]','RuntimeRoot = D:/Old/NR','DriverCore = D:/Old/_nvngx.dll')},
         @{Name='current';Lines=@('[Runtime]','NRRuntimeRoot = D:/Current/NR','NRDriverCore = D:/Current/_nvngx.dll')}
     )){
         $path=Join-Path $root ($layout.Name+'.ini')
@@ -44,7 +43,7 @@ try {
     if($metadata -match '(?im)^installationFile\s*=\s*[A-Za-z]:'){throw 'Metadata contains a machine-specific archive path'}
     if($metadata -notmatch 'installationFile=RaZKolbaS DLSS FSR FG NR v1\.0\.zip'){throw 'Archive basename missing'}
     if($metadata -notmatch '(?m)^version=1\.0\r?$'){throw 'Release version missing'}
-    Write-Output 'PASS: portable package clears current/legacy NR paths, preserves settings, and writes portable MO2 metadata'
+    Write-Output 'PASS: portable package clears current NR paths and removes obsolete keys, preserves settings, and writes portable MO2 metadata'
 } finally {
     $full=[IO.Path]::GetFullPath($root)
     if(-not $full.StartsWith([IO.Path]::GetFullPath([IO.Path]::GetTempPath()),[StringComparison]::OrdinalIgnoreCase)){throw 'Unsafe cleanup'}

@@ -29,11 +29,11 @@ namespace TheosRenderPipeline
         {
             // No menu control edits these startup paths. Retain an on-disk
             // edit made during this session; only seed missing values.
-            if (!ini.GetValue("Experimental", "SourceDLSSGStreamlineDirectory", nullptr)) {
-                ini.SetValue("Experimental", "SourceDLSSGStreamlineDirectory", streamline.c_str());
+            if (!ini.GetValue("Runtime", "StreamlineDirectory", nullptr)) {
+                ini.SetValue("Runtime", "StreamlineDirectory", streamline.c_str());
             }
-            if (!ini.GetValue("Experimental", "NeuralRenderingRuntimePath", nullptr)) {
-                ini.SetValue("Experimental", "NeuralRenderingRuntimePath", neural.c_str());
+            if (!ini.GetValue("Runtime", "NRRuntimePath", nullptr)) {
+                ini.SetValue("Runtime", "NRRuntimePath", neural.c_str());
             }
         }
     };

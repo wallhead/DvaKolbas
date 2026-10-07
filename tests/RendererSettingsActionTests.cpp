@@ -113,8 +113,8 @@ void Generation()
             Require(ValidGenerationRequest(request) == (!dynamic || target == 0 || (target >= 61 && target <= 1000)),
                 "only active dynamic targets block validation");
             Preferences preferences; preferences.generation = request;
-            CSimpleIniA ini; StorePreferences(ini, preferences);
-            ini.SetLongValue("SourceDLSSG", "DynamicTargetFPS", target); // Also cover manually edited invalid INIs.
+            CSimpleIniA ini; StorePreferences(ini, preferences); IniLayout::StoreCanonical(ini);
+            ini.SetLongValue("FrameGeneration", "DynamicTargetFPS", target); // Also cover manually edited invalid INIs.
             const auto loaded = LoadPreferences(ini).generation;
             Require(loaded.generatedFrames == count && loaded.dynamic == dynamic, "invalid target cannot discard multiplier or dynamic selection");
             Require(loaded.dynamicTargetFPS == (ValidDynamicTarget(target) ? target : 0), "invalid target recovers to display refresh");
@@ -127,7 +127,7 @@ void Generation()
         CSimpleIniA ini;
         Require(LoadPreferences(ini).uiRecomposition, "existing INIs without the key get UI recomposition on");
         Preferences preferences; preferences.uiRecomposition = false;
-        StorePreferences(ini, preferences);
+        StorePreferences(ini, preferences); IniLayout::StoreCanonical(ini);
         Require(!LoadPreferences(ini).uiRecomposition, "a saved opt-out round trips");
         RendererSettingsDraft current; current.valid = true;
         auto draft = current; draft.sourceDLSSG.uiRecomposition = false;
@@ -273,7 +273,7 @@ void StagedGenerationDefaults()
     generation.StoreInterpolationPreference(defaults);
     Require(defaults.GetBoolValue("FrameGeneration","Enabled",false),"explicit live toggles update the default preference");
     for(long backend:{0L,1L,2L}) {
-        CSimpleIniA missing;missing.SetLongValue("Experimental","FrameGenerationBackend",backend);
+        CSimpleIniA missing;missing.SetLongValue("FrameGeneration","Backend",backend);
         generation.LoadStartupPreferences(missing);
         Require(generation.RuntimeInterpolationRequested()==(backend!=0),"missing Enabled defaults off only for ordinary presenter");
         missing.SetBoolValue("FrameGeneration","Enabled",true);generation.LoadStartupPreferences(missing);

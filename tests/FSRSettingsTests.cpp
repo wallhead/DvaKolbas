@@ -69,17 +69,17 @@ int main(int argc,char** argv) {
       "encoding changes require restart and cannot alter an active frame adapter");
   CSimpleIniA fgIni;
   fgIni.SetLongValue("Settings","UpscaleType",FSR);
-  fgIni.SetLongValue("Experimental","FrameGenerationBackend",2);
+  fgIni.SetLongValue("FrameGeneration", "Backend",2);
   fgIni.SetBoolValue("FrameGeneration","Enabled",true);
   Require(!ValidateFgStartup(fgIni,true),"compiled FG startup accepted with dedicated native UI");
   Require(ValidateFgStartup(fgIni,false),"SR-only startup cannot admit AMD presentation");
   fgIni.SetValue("FSR","ProviderPolicy","Compatible");Require(ValidateFgStartup(fgIni,true),"startup rejects incompatible FG provider");
   fgIni.SetValue("FSR","ProviderPolicy","Analytical");fgIni.SetBoolValue("Settings","NativeUI",false);
   Require(ValidateFgStartup(fgIni,true),"startup requires native UI");fgIni.SetBoolValue("Settings","NativeUI",true);
-  fgIni.SetLongValue("Experimental","NativeUICompositionMode",1);Require(ValidateFgStartup(fgIni,true),"startup requires dedicated UI");
-  fgIni.SetLongValue("Experimental","NativeUICompositionMode",0);fgIni.SetBoolValue("DynamicResolution","Enabled",true);
+  fgIni.SetLongValue("FrameGeneration", "UICompositionMode",1);Require(ValidateFgStartup(fgIni,true),"startup requires dedicated UI");
+  fgIni.SetLongValue("FrameGeneration", "UICompositionMode",0);fgIni.SetBoolValue("DynamicResolution","Enabled",true);
   Require(ValidateFgStartup(fgIni,true),"startup keeps fixed extent requirement");
-  if(argc==3){CSimpleIniA legacy,example;Require(legacy.LoadFile(argv[1])>=0 && example.LoadFile(argv[2])>=0,"package INIs readable");Require(legacy.GetLongValue("Settings","UpscaleType",-1)==0,"default NVIDIA selection preserved");Require(!ValidateRendererConfiguration(example,true) && ReadFsrSettings(example),"example is valid FSR only");}
+  if(argc==3){CSimpleIniA legacy,example;Require(legacy.LoadFile(argv[1])>=0 && example.LoadFile(argv[2])>=0,"package INIs readable");Require(legacy.GetLongValue("Settings","UpscaleType",-1)==DLAA,"default Native NVIDIA selection preserved");Require(!ValidateRendererConfiguration(example,true) && ReadFsrSettings(example),"example is valid FSR only");}
   std::cout<<"PASS: SettingsLifecycle UnsupportedCombinationReason RequestedIsNotActive\n";
   return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}

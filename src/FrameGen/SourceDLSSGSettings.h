@@ -50,10 +50,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		constexpr auto section = "SourceDLSSG";
 		Preferences value;
 		value.reflexMode = static_cast<int>(ini.GetLongValue(section, "ReflexMode", 1));
-		// The original label said raster FPS, but the pinned runtime caps total
-		// output. Preserve the old numeric value; never silently multiply it.
-		value.outputFPSLimit = static_cast<int>(ini.GetLongValue(section, "OutputFPSLimit",
-			ini.GetLongValue(section, "RasterFPSLimit", 0)));
+		value.outputFPSLimit = static_cast<int>(ini.GetLongValue(section, "OutputFPSLimit", 0));
 		value.generation.generatedFrames = static_cast<std::uint32_t>(ini.GetLongValue(section, "GeneratedFrames", 1));
 		value.generation.dynamic = ini.GetBoolValue(section, "DynamicMFG", false);
 		value.generation.dynamicTargetFPS = static_cast<std::uint32_t>(ini.GetLongValue(section, "DynamicTargetFPS", 0));

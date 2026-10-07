@@ -12,7 +12,7 @@ int main(){using namespace TheosRenderPipeline::NeuralRendering;Ini i;auto s=Loa
 auto check=[&](bool v,const char* n){std::printf("%s %s\n",v?"PASS":"FAIL",n);failed+=!v;};
 check(!s.community&&s.profile=="Auto"&&s.sourceEncoding==TheosRenderPipeline::Upscaling::ColorEncoding::Unknown,"OldIniKeepsLegacyNrAndUnknownDomain");
 check(!s.sdrBytesTrial,"SdrByteTrialIsOptIn");
-i.v={{"CommunityRuntime","true"},{"Profile","rtx40"},{"DriverCore","C:/pinned/_nvngx.dll"},{"SourceColorEncoding","Gamma22"}};s=LoadStartupSettings(i);
+i.v={{"CommunityRuntime","true"},{"Profile","rtx40"},{"NRDriverCore","C:/pinned/_nvngx.dll"},{"SourceColorEncoding","Gamma22"}};s=LoadStartupSettings(i);
 check(s.community&&s.profile=="rtx40"&&s.sourceEncoding==TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,"ExplicitCommunityStartupParsed");
 i.v["SdrBytesTrial"]="true";check(LoadStartupSettings(i).sdrBytesTrial,"ExplicitSdrByteTrialParsed");
 check(s.Resolve("C:/plugin").runtimeRoot==std::filesystem::path("C:/plugin"),"CatalogPathsResolveFromControlledPluginRoot");
@@ -35,11 +35,11 @@ const auto fixture=std::filesystem::temp_directory_path()/(L"RazNrRoot-"+std::to
 const auto renamed=fixture/L"RaZkolbaS";
 std::filesystem::create_directories(renamed/L"NR");
 StartupSettings legacy;legacy.runtimeRoot="TheosRenderPipeline";
-check(legacy.Resolve(renamed).runtimeRoot==renamed,"LegacyCommunityRootRecoversRenamedResources");
+check(legacy.Resolve(renamed).runtimeRoot==renamed/L"TheosRenderPipeline","OldRootDoesNotRedirect");
 legacy.runtimeRoot="TheosRenderPipeline/NR";
-check(legacy.Resolve(renamed).runtimeRoot==renamed/L"NR","LegacyCommunitySubdirectoryRecoversRenamedResources");
+check(legacy.Resolve(renamed).runtimeRoot==renamed/L"TheosRenderPipeline/NR","OldSubdirectoryDoesNotRedirect");
 std::filesystem::create_directories(fixture/L"TheosRenderPipeline/NR");
-check(legacy.Resolve(renamed).runtimeRoot==fixture/L"TheosRenderPipeline/NR","ExistingLegacyCommunityRootIsPreserved");
+check(legacy.Resolve(renamed).runtimeRoot==renamed/L"TheosRenderPipeline/NR","SiblingOldRootDoesNotChangeResolution");
 legacy.runtimeRoot=fixture/L"TheosRenderPipeline";
 check(legacy.Resolve(renamed).runtimeRoot==legacy.runtimeRoot,"AbsoluteCommunityOverrideIsPreserved");
 legacy.runtimeRoot="custom";

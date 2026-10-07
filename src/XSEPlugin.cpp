@@ -192,10 +192,7 @@ extern "C" DLLEXPORT bool __cdecl SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 		util::report_and_fail("RaZkolbaS and the old TheosRenderPipeline plugin are both enabled. Disable the old mod in MO2 or remove Data/SKSE/Plugins/TheosRenderPipeline.dll, leaving RaZkolbaS.dll enabled, then restart Skyrim.");
 	}
 	if(upgrade.status==UpgradeStatus::Failed) {
-		util::report_and_fail(std::format("RaZkolbaS could not check or migrate the old installation.\nPath: {}\nWindows error: {}\nClose Skyrim and check the enabled mod files and their permissions. Existing settings have been preserved.",upgrade.path.string(),upgrade.native));
-	}
-	if(upgrade.status==UpgradeStatus::Migrated) {
-		logger::info("[Upgrade] Copied TheosRenderPipeline.ini to {}; legacy file retained",upgrade.path.string());
+		util::report_and_fail(std::format("RaZkolbaS could not check the renderer installation.\nPath: {}\nWindows error: {}\nClose Skyrim and check the enabled mod files and their permissions. Existing settings have been preserved.",upgrade.path.string(),upgrade.native));
 	}
 	// CommonLib's default logger would truncate our startup banner and replace
 	// the rotating sink. Keep the renderer-owned logger throughout this session.

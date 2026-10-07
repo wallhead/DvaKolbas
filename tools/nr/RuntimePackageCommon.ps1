@@ -20,18 +20,16 @@ function ConvertTo-PortableNrPackageIni([string[]]$Lines) {
     }
 }
 function Assert-PortableNrPackageIni([hashtable]$Ini) {
-    foreach($pair in @(
-        @{Current='Runtime/NRRuntimeRoot';Legacy='NeuralRendering/RuntimeRoot'},
-        @{Current='Runtime/NRDriverCore';Legacy='NeuralRendering/DriverCore'}
-    )){
-        if(-not $Ini.ContainsKey($pair.Current) -and -not $Ini.ContainsKey($pair.Legacy)){throw "Packaged NR path key is missing: $($pair.Current)"}
-        foreach($key in @($pair.Current,$pair.Legacy)){
-            if($Ini.ContainsKey($key) -and $Ini[$key]){throw "Packaged NR path is not portable: $key"}
-        }
+    foreach($key in @('Runtime/NRRuntimeRoot','Runtime/NRDriverCore')){
+        if(-not $Ini.ContainsKey($key)){throw "Packaged NR path key is missing: $key"}
+        if($Ini[$key]){throw "Packaged NR path is not portable: $key"}
+    }
+    foreach($alias in Get-IniLayoutAliases){
+        if($Ini.ContainsKey($alias.Legacy)){throw "Obsolete packaged INI key: $($alias.Legacy)"}
     }
 }
 function Read-PortableNrPackageIni([string]$Path) {
-    # Check raw aliases before normalization hides stale legacy values.
+    # Require the current layout before constructing the internal reader view.
     $ini=Read-PackageIni $Path -Raw
     Assert-PortableNrPackageIni $ini
     return ConvertTo-IniReadView $ini

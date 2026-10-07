@@ -27,13 +27,15 @@ bool Near(float a, float b)
 void Settings()
 {
     CSimpleIniA ini;
-    Require(ini.LoadData("[Settings]\nQualityLevel=4\n[SourceDLSSG]\nNRPasses=2\n[Unrecognized]\nKeep=hello\n") >= 0,
-            "legacy settings load");
+    Require(ini.LoadData("[DLSS]\nQualityLevel=4\n[NeuralRendering]\nPassCount=2\n[Unrecognized]\nKeep=hello\n") >= 0,
+            "current settings load");
     const auto defaults = LoadLayout(ini);
     Require(defaults.width == 640 && defaults.height == 720 && defaults.leftFraction == 0.5f,
             "missing layout keys keep the ordinary menu defaults");
     const Layout edited{152, 86, 1450, 920, 0.62f};
+    TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
     StoreLayout(ini, edited);
+    TheosRenderPipeline::IniLayout::StoreCanonical(ini);
     std::string serialized;
     Require(ini.Save(serialized) >= 0, "serialize INI with layout");
     CSimpleIniA restart;
@@ -42,14 +44,14 @@ void Settings()
     Require(loaded.x == edited.x && loaded.y == edited.y && loaded.width == edited.width &&
                 loaded.height == edited.height && Near(loaded.leftFraction, edited.leftFraction),
             "geometry and shared divider survive serialization");
-    Require(restart.GetLongValue("Settings", "QualityLevel") == 4 &&
-                restart.GetLongValue("SourceDLSSG", "NRPasses") == 2 &&
+    Require(restart.GetLongValue("DLSS", "QualityLevel") == 4 &&
+                restart.GetLongValue("NeuralRendering", "PassCount") == 2 &&
                 std::string(restart.GetValue("Unrecognized", "Keep", "")) == "hello",
             "layout save preserves rendering and unknown keys");
 
-    restart.SetValue("Overlay", "WindowWidth", "nan");
-    restart.SetValue("Overlay", "WindowHeight", "-700");
-    restart.SetValue("Overlay", "LeftColumnFraction", "garbage");
+    restart.SetValue("Menu", "WindowWidth", "nan");
+    restart.SetValue("Menu", "WindowHeight", "-700");
+    restart.SetValue("Menu", "LeftColumnFraction", "garbage");
     const auto corrupt = LoadLayout(restart);
     Require(corrupt.width == 640 && corrupt.height == 720 && corrupt.leftFraction == 0.5f,
             "malformed geometry and divider use valid defaults");

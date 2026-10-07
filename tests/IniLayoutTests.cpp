@@ -14,6 +14,19 @@ static void Check(bool value, const char* message)
 int main(int argc, char** argv)
 {
     using namespace TheosRenderPipeline;
+    CSimpleIniA obsolete;
+    obsolete.LoadData("[Settings]\nQualityLevel=4\nDLSSPreset=5\nConfigVersion=1\n[SourceDLSSG]\nNeuralRenderingEnabled=true\nNRStyle=7\nGeneratedFrames=5\n[Experimental]\nFrameGenerationBackend=2\nNeuralRenderingRuntimePath=Old/NR.dll\n[NeuralRendering]\nDriverCore=Old/core.dll\n");
+    const auto ignored = SourceDLSSG::LoadPreferences(obsolete);
+    Check(!ignored.neuralEnabled && ignored.neuralTuning.style == 0 && ignored.generation.generatedFrames == 1,
+        "obsolete NR and FG keys must not configure the current renderer");
+    RuntimePathSettings obsoletePaths;
+    obsoletePaths.Load(obsolete);
+    Check(obsoletePaths.neural.empty(), "obsolete runtime path must not be loaded");
+    IniLayout::PrepareForUpdate(obsolete);
+    IniLayout::StoreCanonical(obsolete);
+    Check(!obsolete.GetValue("Settings", "ConfigVersion", nullptr) &&
+        !obsolete.GetValue("NR PASS 1", "Style", nullptr),
+        "save must not migrate obsolete keys or write a layout version");
     CSimpleIniA ini;
     Check(ini.LoadData(R"ini(
 [Settings]
@@ -107,6 +120,7 @@ FrameGenerationBackend=1
     owner.StoreInterpolationPreference(ini);
     Overlay::StoreLayout(ini, layout);
     IniLayout::StoreCanonical(ini);
+    Check(!ini.GetValue("Settings", "ConfigVersion", nullptr), "current save does not write ConfigVersion");
     Check(!ini.GetValue("SourceDLSSG", "NRStyle", nullptr) &&
         !ini.GetValue("Experimental", "FrameGenerationBackend", nullptr),
         "save removes migrated keys so edits cannot conflict");

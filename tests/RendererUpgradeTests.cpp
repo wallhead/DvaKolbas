@@ -38,12 +38,12 @@ int main(){try {
     Need(Prepare(f.root,false).status==Status::Conflict,"enabled old DLL must block even before its SKSE load callback");
     std::filesystem::remove(f.root/L"TheosRenderPipeline.dll");
     const auto migration=Prepare(f.root,false);
-    Need(migration.status==Status::Migrated,"missing renamed INI must recover existing legacy settings");
-    Need(Read(current)==content&&Read(old)==content,"migration preserves exact legacy bytes and leaves original available");
+    Need(migration.status==Status::Ready,"old INI must not trigger migration");
+    Need(!std::filesystem::exists(current)&&Read(old)==content,"old INI is ignored and left untouched");
     const auto renamed=f.root/L"RaZkolbaS/runtime.dll",oldResource=f.root/L"TheosRenderPipeline/runtime.dll";
     std::filesystem::create_directory(renamed.parent_path());Write(renamed,"new resources");
-    Need(TheosRenderPipeline::ResolveRuntimePath("TheosRenderPipeline/runtime.dll",f.root)==renamed,
-        "migrated relative paths resolve existing renamed resources");
+    Need(TheosRenderPipeline::ResolveRuntimePath("TheosRenderPipeline/runtime.dll",f.root)==oldResource,
+        "old resource paths must not redirect to renamed resources");
     std::filesystem::create_directory(oldResource.parent_path());Write(oldResource,"separate user runtime");
     Need(TheosRenderPipeline::ResolveRuntimePath("TheosRenderPipeline/runtime.dll",f.root)==oldResource,
         "existing separate legacy runtime still takes priority");
@@ -57,7 +57,7 @@ int main(){try {
     const auto held=CreateFileW(old.c_str(),GENERIC_READ,0,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
     Need(held!=INVALID_HANDLE_VALUE,"hold unreadable legacy INI fixture");
     const auto denied=Prepare(f.root,false);CloseHandle(held);
-    Need(denied.status==Status::Failed&&denied.native!=0,"unreadable legacy settings report migration failure");
+    Need(denied.status==Status::Ready,"unreadable old settings are ignored");
     Need(Read(old)==content,"migration failure never changes old settings");
     Need(!std::filesystem::exists(current),"failed migration never publishes partial settings");
     std::puts("PASS RendererUpgrade");return 0;

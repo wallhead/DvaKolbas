@@ -28,7 +28,6 @@ int main(int argc, char** argv)
         auto& owner = *SourceFrameGeneration::GetSingleton();
         CSimpleIniA packaged;
         Require(packaged.LoadFile(argv[1]) >= 0, "packaged INI must load");
-        TheosRenderPipeline::IniLayout::PrepareForUpdate(packaged);
         using TheosRenderPipeline::Overlay::LoadNRHotkeysEnabled;
         Require(!LoadNRHotkeysEnabled(packaged), "packaged NR shortcuts default off");
         CSimpleIniA hotkeys;
@@ -48,16 +47,17 @@ int main(int argc, char** argv)
         reconstruction.fusedPreparation=true;
         reconstruction.peripheralCompression=true; reconstruction.inputScale=.5f;
         StoreReconstruction(spatial,"SourceDLSSG",reconstruction);
+        TheosRenderPipeline::IniLayout::StoreCanonical(spatial);
         Require(LoadReconstruction(spatial,"SourceDLSSG")==reconstruction,"peripheral layout survives save/load");
         auto separate=reconstruction; separate.fusedPreparation=false;
         Require(!SameReconstructionResources(reconstruction,separate),"preparation toggle requires retired recreation");
-        spatial.SetBoolValue("SourceDLSSG","NRFusedPreparation",false);
+        spatial.SetBoolValue("NR PASS 1","FusedPreparation",false);
         Require(!LoadReconstruction(spatial,"SourceDLSSG").fusedPreparation,"explicit preparation opt-out wins");
-        spatial.SetBoolValue("SourceDLSSG","NRPeripheralCompression",false);
+        spatial.SetBoolValue("NR PASS 1","PeripheralCompression",false);
         Require(!LoadReconstruction(spatial,"SourceDLSSG").peripheralCompression,"explicit spatial opt-out wins");
         owner.LoadStartupPreferences(packaged);
-        const std::string configuredStreamline = packaged.GetValue("Experimental", "SourceDLSSGStreamlineDirectory", "");
-        const std::string configuredNeural = packaged.GetValue("Experimental", "NeuralRenderingRuntimePath", "");
+        const std::string configuredStreamline = packaged.GetValue("Runtime", "StreamlineDirectory", "");
+        const std::string configuredNeural = packaged.GetValue("Runtime", "NRRuntimePath", "");
         const std::filesystem::path firstRoot = "C:/First Game/Data/SKSE/Plugins";
         const std::filesystem::path movedRoot = "D:/Moved Game/Data/SKSE/Plugins";
         Require(!configuredStreamline.empty() && !configuredNeural.empty(), "packaged runtime paths present");
@@ -70,12 +70,13 @@ int main(int argc, char** argv)
             CSimpleIniA savedPaths;
             if (!seed) { Require(savedPaths.LoadFile(argv[1]) >= 0, "reload packaged settings"); TheosRenderPipeline::IniLayout::PrepareForUpdate(savedPaths); }
             owner.StoreRuntimePaths(savedPaths);
+            TheosRenderPipeline::IniLayout::StoreCanonical(savedPaths);
             std::string serialized;
             Require(savedPaths.Save(serialized) >= 0, "save runtime paths");
             CSimpleIniA pathsReloaded;
             Require(pathsReloaded.LoadData(serialized.c_str()) >= 0, "reload saved paths");
-            Require(std::string(pathsReloaded.GetValue("Experimental", "SourceDLSSGStreamlineDirectory")) == configuredStreamline &&
-                std::string(pathsReloaded.GetValue("Experimental", "NeuralRenderingRuntimePath")) == configuredNeural,
+            Require(std::string(pathsReloaded.GetValue("Runtime", "StreamlineDirectory")) == configuredStreamline &&
+                std::string(pathsReloaded.GetValue("Runtime", "NRRuntimePath")) == configuredNeural,
                 "saving must preserve packaged relative spellings");
             owner.LoadStartupPreferences(pathsReloaded);
             owner.ResolveRuntimePaths(movedRoot);
@@ -85,44 +86,44 @@ int main(int argc, char** argv)
         }
         CSimpleIniA communityPaths;
         communityPaths.SetBoolValue("NeuralRendering","CommunityRuntime",true);
-        communityPaths.SetValue("NeuralRendering","DriverCore","drivers/_nvngx.dll");
+        communityPaths.SetValue("Runtime","NRDriverCore","drivers/_nvngx.dll");
         communityPaths.SetValue("NeuralRendering","SourceColorEncoding","Gamma22");
         owner.LoadStartupPreferences(communityPaths);owner.ResolveRuntimePaths(firstRoot);owner.ResolveRuntimePaths(movedRoot);
         Require(owner.settings.neuralStartup.runtimeRoot==movedRoot/"RaZkolbaS" &&
             owner.settings.neuralStartup.driverCore==movedRoot/"RaZkolbaS/drivers/_nvngx.dll",
             "community profile root follows the controlled runtime directory on repeated resolution");
         CSimpleIniA absolutePaths;
-        absolutePaths.SetValue("Experimental", "SourceDLSSGStreamlineDirectory", "E:/Custom/Streamline");
-        absolutePaths.SetValue("Experimental", "NeuralRenderingRuntimePath", "E:/Custom/nvngx_dlssnr.dll");
+        absolutePaths.SetValue("Runtime", "StreamlineDirectory", "E:/Custom/Streamline");
+        absolutePaths.SetValue("Runtime", "NRRuntimePath", "E:/Custom/nvngx_dlssnr.dll");
         owner.LoadStartupPreferences(absolutePaths);
         owner.ResolveRuntimePaths(firstRoot);
         CSimpleIniA absoluteSaved;
         owner.StoreRuntimePaths(absoluteSaved);
         Require(owner.settings.sourceDLSSGStreamlineDirectory == "E:/Custom/Streamline" &&
-            std::string(absoluteSaved.GetValue("Experimental", "NeuralRenderingRuntimePath")) == "E:/Custom/nvngx_dlssnr.dll",
+            std::string(absoluteSaved.GetValue("Runtime", "NRRuntimePath")) == "E:/Custom/nvngx_dlssnr.dll",
             "intentional absolute runtime paths preserved");
-        absoluteSaved.SetValue("Experimental", "NeuralRenderingRuntimePath", "F:/Edited/nvngx_dlssnr.dll");
+        absoluteSaved.SetValue("Runtime", "NRRuntimePath", "F:/Edited/nvngx_dlssnr.dll");
         owner.StoreRuntimePaths(absoluteSaved);
-        Require(std::string(absoluteSaved.GetValue("Experimental", "NeuralRenderingRuntimePath")) == "F:/Edited/nvngx_dlssnr.dll",
+        Require(std::string(absoluteSaved.GetValue("Runtime", "NRRuntimePath")) == "F:/Edited/nvngx_dlssnr.dll",
             "menu save must not undo a startup path edited on disk");
         owner.LoadStartupPreferences(packaged);
         Require(owner.settings.sourceDLSSGMFGUnlock && owner.settings.sourceDLSSGMFGUnlockPresent,
             "package must explicitly enable compatibility");
 
         CSimpleIniA composition;
-        composition.SetLongValue("Experimental", "NativeUICompositionMode", 1);
+        composition.SetLongValue("FrameGeneration", "UICompositionMode", 1);
         owner.StoreUIComposition(composition);
-        Require(composition.GetLongValue("Experimental", "NativeUICompositionMode", -1) == 1,
+        Require(composition.GetLongValue("FrameGeneration", "UICompositionMode", -1) == 1,
             "menu save preserves explicit composition edit made after startup");
-        composition.Delete("Experimental", "NativeUICompositionMode");
+        composition.Delete("FrameGeneration", "UICompositionMode");
         composition.SetLongValue("Experimental", "PureDarkHUDFixMethod", 1);
         owner.StoreUIComposition(composition);
-        Require(composition.GetLongValue("Experimental", "NativeUICompositionMode", -1) == 1 &&
+        Require(composition.GetLongValue("FrameGeneration", "UICompositionMode", -1) == owner.settings.nativeUICompositionMode &&
             !composition.GetValue("Experimental", "PureDarkHUDFixMethod", nullptr),
-            "migrate legacy on-disk composition choice before removing old key");
-        composition.Delete("Experimental", "NativeUICompositionMode");
+            "ignore obsolete composition choice and remove old key");
+        composition.Delete("FrameGeneration", "UICompositionMode");
         owner.StoreUIComposition(composition);
-        Require(composition.GetLongValue("Experimental", "NativeUICompositionMode", -1) == owner.settings.nativeUICompositionMode,
+        Require(composition.GetLongValue("FrameGeneration", "UICompositionMode", -1) == owner.settings.nativeUICompositionMode,
             "seed missing composition choice from startup snapshot");
 
         CSimpleIniA older;
@@ -133,8 +134,8 @@ int main(int argc, char** argv)
         Require(owner.settings.sourceDLSSGMFGUnlock && !owner.settings.sourceDLSSGMFGUnlockPresent,
             "missing key must use packaged true default");
         Require(!owner.RuntimeInterpolationRequested(), "compatibility must not enable interpolation");
-        Require(owner.settings.sourceDLSSG.generation.generatedFrames == 3 && owner.settings.sourceDLSSG.neuralEnabled,
-            "compatibility migration must retain MFG and NR preferences");
+        Require(owner.settings.sourceDLSSG.generation.generatedFrames == 1 && !owner.settings.sourceDLSSG.neuralEnabled,
+            "obsolete MFG and NR keys must be ignored");
         owner.StoreCompatibilityPreference(older);
         std::string saved;
         Require(older.Save(saved) >= 0, "serialize migrated INI");
@@ -146,20 +147,20 @@ int main(int argc, char** argv)
 
         for (const char* value : {"false", "0", "off", "true", "1", "on"}) {
             CSimpleIniA explicitIni;
-            explicitIni.SetValue("Experimental", "SourceDLSSGMFGUnlock", value);
-            const bool expected = explicitIni.GetBoolValue("Experimental", "SourceDLSSGMFGUnlock", true);
+            explicitIni.SetValue("Compatibility", "NvidiaMFGUnlock", value);
+            const bool expected = explicitIni.GetBoolValue("Compatibility", "NvidiaMFGUnlock", true);
             owner.LoadStartupPreferences(explicitIni);
             Require(owner.settings.sourceDLSSGMFGUnlock == expected && owner.settings.sourceDLSSGMFGUnlockPresent,
                 "explicit startup preference must be respected");
             owner.StoreCompatibilityPreference(explicitIni);
-            Require(std::string(explicitIni.GetValue("Experimental", "SourceDLSSGMFGUnlock")) == value,
+            Require(std::string(explicitIni.GetValue("Compatibility", "NvidiaMFGUnlock")) == value,
                 "save must retain explicit preference spelling/value");
         }
-        reloaded.SetBoolValue("Experimental", "SourceDLSSGMFGUnlock", true);
+        reloaded.SetBoolValue("Compatibility", "NvidiaMFGUnlock", true);
         owner.LoadStartupPreferences(reloaded);
-        reloaded.SetBoolValue("Experimental", "SourceDLSSGMFGUnlock", false);
+        reloaded.SetBoolValue("Compatibility", "NvidiaMFGUnlock", false);
         owner.StoreCompatibilityPreference(reloaded);
-        Require(!reloaded.GetBoolValue("Experimental", "SourceDLSSGMFGUnlock", true),
+        Require(!reloaded.GetBoolValue("Compatibility", "NvidiaMFGUnlock", true),
             "save must not replace an on-disk opt-out edited during this session");
 
         using enum midpoint_fix::AdapterKind;

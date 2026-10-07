@@ -17,25 +17,6 @@ struct StartupSettings {
     Result<std::filesystem::path> ResolveDriverCore() const;
     StartupSettings Resolve(const std::filesystem::path& pluginRoot)const{
         auto result=*this;result.runtimeRoot=runtimeRoot.empty()?pluginRoot:runtimeRoot.is_absolute()?runtimeRoot:pluginRoot/runtimeRoot;
-        // Legacy INIs named the resource folder relative to SKSE/Plugins.
-        // The community path base is now the RaZkolbaS resource folder itself.
-        // Preserve existing custom targets and absolute overrides first.
-        if(!runtimeRoot.empty()&&!runtimeRoot.is_absolute()&&pluginRoot.filename()==L"RaZkolbaS") {
-            const auto relative=runtimeRoot.lexically_normal();auto part=relative.begin();
-            if(part!=relative.end()&&part->wstring()==L"TheosRenderPipeline") {
-                std::error_code error;
-                const bool existing=std::filesystem::exists(result.runtimeRoot,error);
-                if(!existing&&!error) {
-                    const auto legacy=pluginRoot.parent_path()/relative;
-                    if(std::filesystem::exists(legacy,error)||error)result.runtimeRoot=legacy;
-                    else {
-                        auto renamed=pluginRoot;
-                        for(++part;part!=relative.end();++part)renamed/=*part;
-                        if(std::filesystem::exists(renamed,error)&&!error)result.runtimeRoot=renamed;
-                    }
-                }
-            }
-        }
         if(!result.driverCore.empty()&&!result.driverCore.is_absolute())result.driverCore=pluginRoot/result.driverCore;
         return result;
     }

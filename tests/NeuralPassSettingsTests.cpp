@@ -15,7 +15,7 @@ int main()
 	using namespace SourceDLSSG;
 	CSimpleIniA ini;
 	Require(LoadPreferences(ini).neuralPasses == 1, "missing pass count keeps the original one-pass default");
-	Require(ini.LoadData("[SourceDLSSG]\nNRPasses=2\nNRInputScale=0.75\nNRPreset=1\nNRIntensity=0.4\n") >= 0, "old INI");
+	Require(ini.LoadData("[NeuralRendering]\nPassCount=2\n[NR PASS 1]\nInputScale=0.75\nPreset=1\nIntensity=0.4\n") >= 0, "old INI");
 	auto old = LoadPreferences(ini);
 	Require(old.neuralPasses == 2, "old two-pass preference is preserved");
 	Require(!old.neuralCombat.Enabled() && old.neuralCombat.recoverySeconds == 5, "old INI keeps combat policy off");
@@ -30,19 +30,25 @@ int main()
 	old.neuralSecondPass.tuning = { 7, .25f, 1.5f, .3f, -1, true, true };
 	old.neuralPasses = 3;
 	old.neuralThirdPass = { false, .5f, 1, { 2, .7f, .6f, .8f, .2f, false, true } };
+	IniLayout::PrepareForUpdate(ini);
 	StorePreferences(ini, old);
+	IniLayout::StoreCanonical(ini);
 	Require(LoadPreferences(ini) == old && LoadPreferences(ini).neuralPasses == 3,
 		"three requested passes and all custom settings round trip independently");
 	NeuralOptions legacy; legacy.passes = old.neuralPasses;
 	const auto bounded = SanitizeNeuralOptions(legacy);
 	Require(bounded.passes == 2 && bounded.EffectivePasses() == 2,
 		"legacy execution never creates a third pass for a saved community request");
+	IniLayout::PrepareForUpdate(ini);
 	StorePreferences(ini, old);
+	IniLayout::StoreCanonical(ini);
 	Require(LoadPreferences(ini) == old,
 		"saving after legacy execution keeps all three requested passes and custom overrides");
 	old.neuralSecondPass.linked = true;
 	old.neuralThirdPass.linked = true;
+	IniLayout::PrepareForUpdate(ini);
 	StorePreferences(ini, old);
+	IniLayout::StoreCanonical(ini);
 	auto linked = LoadPreferences(ini);
 	Require(linked == old, "relink preserves saved overrides");
 	const auto effective = NeuralRendering::EffectiveSecondPass(linked.neuralSecondPass, linked.neuralReconstruction, linked.neuralTuning);
@@ -51,7 +57,9 @@ int main()
 	Require(third.inputScale == .75f && third.preset == 1 && third.tuning == linked.neuralTuning,
 		"pass-three link follows first pass while retaining its independent stored overrides");
 	linked.neuralThirdPass.linked = false;
+	IniLayout::PrepareForUpdate(ini);
 	StorePreferences(ini, linked);
+	IniLayout::StoreCanonical(ini);
 	Require(LoadPreferences(ini).neuralThirdPass == linked.neuralThirdPass &&
 		LoadPreferences(ini).neuralThirdPass.tuning.intensity == .7f, "unlink restores the saved third-pass overrides");
 	NeuralOptions options; options.enabled = true; options.passes = 2; options.secondPass = old.neuralSecondPass;
@@ -71,7 +79,9 @@ int main()
 	Require(!history.ResetFor(options, true, false), "reason-only changes preserve temporal history");
 	options.passOverride = NeuralRendering::PassOverride::Recovery;
 	Require(!history.ResetFor(options, true, false), "cooldown preserves temporal history");
+	IniLayout::PrepareForUpdate(ini);
 	StorePreferences(ini, old);
+	IniLayout::StoreCanonical(ini);
 	Require(LoadPreferences(ini) == old && LoadPreferences(ini).neuralPasses == 3,
 		"saving while overridden preserves requested passes and independent tuning");
 	options.passOverride = NeuralRendering::PassOverride::None;

@@ -16,11 +16,10 @@ foreach($retired in @('SourceDLSSG/NRStableColors','NeuralRendering/StableColors
 }
 foreach($alias in Get-IniLayoutAliases){
     if($values.ContainsKey($alias.Legacy)){
-        if(-not $values.ContainsKey($alias.Canonical)){$values[$alias.Canonical]=$values[$alias.Legacy]}
         $values.Remove($alias.Legacy)
     }
 }
-$values['Settings/ConfigVersion']='2'
+$values.Remove('Settings/ConfigVersion')
 $sections=[ordered]@{};$section='';$comments=[Collections.Generic.List[string]]::new()
 # Template controls order and comments, but never supplies new values.
 foreach($line in [IO.File]::ReadAllLines($TemplateIni)){
@@ -54,8 +53,8 @@ foreach($key in @($values.Keys | Sort-Object)){
     $sections[$section].Add($parts[1]+' = '+$values[$key])
 }
 $lines=[Collections.Generic.List[string]]::new()
-$lines.Add('; DvaKolbas settings. Existing values preserved; layout version 2.')
-$lines.Add('; Backend, quality and runtime paths require a restart. Live controls use Apply.')
+$lines.Add('; RaZkolbaS settings. Current layout only.')
+$lines.Add('; Backend, quality and runtime paths require a restart. Live controls apply immediately.')
 foreach($entry in $sections.GetEnumerator()){
     if(-not $entry.Value.Count){continue}
     $lines.Add('');$lines.Add('['+$entry.Key+']');$lines.AddRange([string[]]$entry.Value.ToArray())

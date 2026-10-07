@@ -47,7 +47,7 @@ class SourceFrameGeneration
         settings.sourceDLSSGStreamlineDirectory = settings.configuredRuntimePaths.streamline;
         settings.sourceDLSSG = TheosRenderPipeline::SourceDLSSG::LoadPreferences(ini);
         settings.nativeUICompositionMode = std::clamp(static_cast<int>(ini.GetLongValue(
-            "Experimental", "NativeUICompositionMode", ini.GetLongValue("Experimental", "PureDarkHUDFixMethod", 0))), 0, 1);
+            "Experimental", "NativeUICompositionMode", 0)), 0, 1);
         settings.neuralRenderingRuntimePath = settings.configuredRuntimePaths.neural;
     }
     void ResolveRuntimePaths(const std::filesystem::path& pluginDirectory)
@@ -63,17 +63,17 @@ class SourceFrameGeneration
     }
     template<class Ini> void StoreCompatibilityPreference(Ini& ini) const
     {
-        // Seed older INIs when saving; never overwrite an explicit opt-out or
+        // Seed an absent setting when saving; never overwrite an explicit opt-out or
         // a startup preference edited on disk since this session began.
-        if (!ini.GetValue("Experimental", "SourceDLSSGMFGUnlock", nullptr)) {
-            ini.SetBoolValue("Experimental", "SourceDLSSGMFGUnlock", settings.sourceDLSSGMFGUnlock);
+        if (!ini.GetValue("Compatibility", "NvidiaMFGUnlock", nullptr)) {
+            ini.SetBoolValue("Compatibility", "NvidiaMFGUnlock", settings.sourceDLSSGMFGUnlock);
         }
     }
     template<class Ini> void StoreUIComposition(Ini& ini) const
     {
-        if (!ini.GetValue("Experimental", "NativeUICompositionMode", nullptr)) {
-            ini.SetLongValue("Experimental", "NativeUICompositionMode", std::clamp(static_cast<int>(
-                ini.GetLongValue("Experimental", "PureDarkHUDFixMethod", settings.nativeUICompositionMode)), 0, 1));
+        if (!ini.GetValue("FrameGeneration", "UICompositionMode", nullptr)) {
+            ini.SetLongValue("FrameGeneration", "UICompositionMode", std::clamp(static_cast<int>(
+                settings.nativeUICompositionMode), 0, 1));
         }
         ini.Delete("Experimental", "PureDarkHUDFixMethod");
     }

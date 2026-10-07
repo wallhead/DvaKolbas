@@ -70,25 +70,17 @@ the exact artifact and Windows error code. The existing driver-core size/hash
 qualification still applies: automatic path discovery is not qualification of
 a different driver binary.
 
-Old `[Settings] QualityLevel/DLSSPreset`, `[SourceDLSSG]`, `[Experimental]` runtime
-selectors and `[Overlay]` geometry remain accepted. Canonical new keys take
-precedence individually, including explicit zero, false and empty path values.
-Missing pass-2 overrides keep the existing pass-1 inheritance.
+Only the current layout is supported. Obsolete `[Settings] QualityLevel/DLSSPreset`,
+`[SourceDLSSG]`, `[Experimental]` runtime selectors and `[Overlay]` geometry are
+ignored. There is no `ConfigVersion` marker or automatic copy from
+`TheosRenderPipeline.ini`. Relative runtime overrides resolve exactly as written;
+old resource folder names are not redirected.
 
-**Save as default** migrates recognized old keys to the new sections, removes the
-recognized duplicates and retains unknown settings. Startup paths edited on disk
-since launch are retained. Older DLLs do not understand the new sections: roll
-back the DLL and its matching old INI together.
+**Save as default** writes current sections and removes recognized obsolete keys.
+Unknown settings and current startup paths edited on disk since launch are retained.
+Missing pass-2 and pass-3 overrides inherit pass 1. Install the current packaged
+INI when upgrading from an old layout; retain the matching old DLL/INI for rollback.
 
-For an offline conversion, with Skyrim and MO2 closed before installing the result:
-
-```powershell
-pwsh -NoProfile -File tools/ini/Reorganize-Ini.ps1 `
-  -SourceIni 'path/to/current/RaZkolbaS.ini' `
-  -OutputIni 'path/to/new/RaZkolbaS.ini'
-```
-
-The converter uses the commented packaged template for order and descriptions.
-It writes a new file, checks that existing values are preserved, and never fills
-missing optional settings with template defaults. Unknown keys and their attached
-comments remain. Back up the working DLL and INI before installing a new build.
+The optional `tools/ini/Reorganize-Ini.ps1` formatter writes a separate current-layout
+file with template ordering and comments. It discards obsolete keys without
+converting their values and never fills missing settings from the template.
