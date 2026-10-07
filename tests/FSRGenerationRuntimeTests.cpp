@@ -149,7 +149,7 @@ int main(int argc, char** argv)
     Require(automatic && automatic->identity.id == 42, "Auto prefers supported ML FG");
     const std::vector<FsrEffectProvider> analyticalOnly{mlCatalog.back()};
     auto unavailable=SelectFsrEffectProvider(analyticalOnly,FsrEffect::FrameGeneration,ProviderPolicy::MachineLearning);
-    Require(!unavailable && unavailable.error().message.find("[FrameGeneration] FsrProviderPolicy=Analytical")!=std::string::npos,
+    Require(!unavailable && unavailable.error().message.find("[FrameGeneration] FsrProvider=FSR3")!=std::string::npos,
         "explicit FG4 failure gives an INI recovery route when the menu cannot open");
     Require(!SelectFsrEffectProvider(analyticalOnly, FsrEffect::FrameGeneration, ProviderPolicy::MachineLearning),
         "Explicit ML FG cannot silently become analytical");

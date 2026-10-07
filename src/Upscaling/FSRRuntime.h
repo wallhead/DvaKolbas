@@ -40,6 +40,7 @@ namespace TheosRenderPipeline::Upscaling
         FsrRuntime(const FsrRuntime&) = delete;
         FsrRuntime& operator=(const FsrRuntime&) = delete;
         Result<void> Load(const std::filesystem::path& pluginDirectory, FsrRuntimeProfile profile = FsrRuntimeProfile::Official);
+        Result<void> LoadGenerationOnly(const std::filesystem::path& pluginDirectory);
         // Verify alternate NVIDIA files without executing/loading a second runtime.
         static Result<void> CheckInt8Files(const std::filesystem::path& pluginDirectory);
         Result<void> LoadFrameGeneration(const std::filesystem::path& pluginDirectory);
@@ -54,6 +55,7 @@ namespace TheosRenderPipeline::Upscaling
         uint32_t UpscaleApiVersion() const { return FsrUpscaleApiVersion(profile_); }
     private:
         void Unload();
+        Result<void> LoadModules(const std::filesystem::path&, FsrRuntimeProfile, bool generationOnly);
         Result<std::vector<ProviderInfo>> EnumerateType(ID3D12Device*, uint64_t createDescType);
         HMODULE loader_{}, upscaler_{}, frameGeneration_{};
         std::array<HANDLE,2> pinnedFiles_{INVALID_HANDLE_VALUE,INVALID_HANDLE_VALUE};

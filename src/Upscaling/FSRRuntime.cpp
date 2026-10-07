@@ -162,6 +162,16 @@ namespace TheosRenderPipeline::Upscaling
         profile_=FsrRuntimeProfile::Official;
     }
     Result<void> FsrRuntime::Load(const std::filesystem::path& pluginDirectory, FsrRuntimeProfile profile)
+    { return LoadModules(pluginDirectory, profile, false); }
+    Result<void> FsrRuntime::LoadGenerationOnly(const std::filesystem::path& pluginDirectory)
+    {
+#ifdef TRP_ENABLE_FSR_FG
+        return LoadModules(pluginDirectory, FsrRuntimeProfile::Official, true);
+#else
+        return std::unexpected(Error(ErrorKind::NoProvider,0,"This build does not include FSR frame generation"));
+#endif
+    }
+    Result<void> FsrRuntime::LoadModules(const std::filesystem::path& pluginDirectory, FsrRuntimeProfile profile, bool generationOnly)
     {
         if (loader_ || upscaler_ || !pluginDirectory.is_absolute())
             return std::unexpected(Error(ErrorKind::InvalidInput, 0, "FSR requires an absolute plugin directory and an unloaded runtime"));
@@ -170,7 +180,7 @@ namespace TheosRenderPipeline::Upscaling
         std::error_code ec;
         const auto root = std::filesystem::weakly_canonical(pluginDirectory / (profile==FsrRuntimeProfile::Int8?"FSR/INT8":"FSR"), ec);
         if (ec) return std::unexpected(Error(ErrorKind::MissingRuntime, ec.value(), "Cannot resolve FSR runtime directory"));
-        const auto upscaler = root / "amd_fidelityfx_upscaler_dx12.dll";
+        const auto upscaler = root / (generationOnly ? "amd_fidelityfx_framegeneration_dx12.dll" : "amd_fidelityfx_upscaler_dx12.dll");
         const auto loader = root / "amd_fidelityfx_loader_dx12.dll";
         if(profile==FsrRuntimeProfile::Int8) {
             auto effect=LockPinnedFile(upscaler,41036800,"2604c0b392072d715b400b2f89434274de31995a4b6e68ce38250ebbd3f6c5fc");
@@ -185,8 +195,9 @@ namespace TheosRenderPipeline::Upscaling
         }
         constexpr DWORD flags = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32;
         // Preload the exact effect DLL before the loader resolves its basename.
-        upscaler_ = LoadLibraryExW(upscaler.c_str(), nullptr, flags);
-        if (upscaler_) loader_ = LoadLibraryExW(loader.c_str(), nullptr, flags);
+        auto& effectModule = generationOnly ? frameGeneration_ : upscaler_;
+        effectModule = LoadLibraryExW(upscaler.c_str(), nullptr, flags);
+        if (effectModule) loader_ = LoadLibraryExW(loader.c_str(), nullptr, flags);
         if (!loader_) {
             const auto error = GetLastError(); Unload();
             return std::unexpected(Error(error == ERROR_BAD_EXE_FORMAT ? ErrorKind::IncompatibleAbi : ErrorKind::MissingRuntime,
@@ -230,6 +241,8 @@ namespace TheosRenderPipeline::Upscaling
 
     Result<std::vector<FsrEffectProvider>> FsrRuntime::EnumerateForEffect(ID3D12Device* device, FsrEffect effect)
     {
+        if (effect == FsrEffect::Upscale && !upscaler_)
+            return std::unexpected(Error(ErrorKind::InvalidInput,0,"Generation-only runtime has no SR provider ownership"));
         uint64_t type{};
         switch (effect) {
         case FsrEffect::Upscale: type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE; break;
@@ -249,7 +262,10 @@ namespace TheosRenderPipeline::Upscaling
     }
 
     Result<std::vector<ProviderInfo>> FsrRuntime::Enumerate(ID3D12Device* device)
-    { return EnumerateType(device, FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE); }
+    {
+        if (!upscaler_) return std::unexpected(Error(ErrorKind::InvalidInput,0,"Generation-only runtime has no SR provider ownership"));
+        return EnumerateType(device, FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE);
+    }
 
     Result<std::vector<ProviderInfo>> FsrRuntime::EnumerateType(ID3D12Device* device, uint64_t createDescType)
     {
@@ -284,7 +300,7 @@ namespace TheosRenderPipeline::Upscaling
     Result<Extent> FsrRuntime::QueryRenderExtent(ID3D12Device* device, const ProviderInfo& provider, Quality quality, Extent display)
     {
         const auto mode = QualityMode(quality);
-        if (!functions_.Query || !device || !mode || !display.width || !display.height)
+        if (!upscaler_ || !functions_.Query || !device || !mode || !display.width || !display.height)
             return std::unexpected(Error(ErrorKind::InvalidInput, 0, "Invalid FSR sizing input"));
         ffxCreateBackendDX12Desc backend{{FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_DX12, nullptr}, device};
         ffxCreateContextDescUpscaleVersion version{{FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE_VERSION, nullptr}, UpscaleApiVersion()};

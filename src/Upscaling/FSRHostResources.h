@@ -12,6 +12,13 @@ namespace TheosRenderPipeline::Upscaling
         explicit FsrHostResources(std::filesystem::path pluginDirectory, DeviceCreator = nullptr);~FsrHostResources();
         FsrHostResources(const FsrHostResources&)=delete;FsrHostResources& operator=(const FsrHostResources&)=delete;
         Result<Extent> PrepareSizing(ID3D11Device*,const BackendConfiguration&,Extent output,DXGI_FORMAT handoffFormat,ColorEncoding handoffEncoding);
+        Result<void> PrepareExternalSizing(ID3D11Device*,Extent render,Extent display,DXGI_FORMAT,ColorEncoding,FsrInputPolicy);
+        Result<void> CompleteExternalStartup();
+        Result<void> ResizeExternalSizingAfterRetirement(Extent render,Extent display,DXGI_FORMAT);
+        bool ExternalSource()const;
+        bool GenerationInputsReady()const;
+        FsrInputPolicy GenerationInputPolicy()const;
+        Extent RenderExtent()const;
         Result<void> CompleteStartup();Result<void> Retire();
         Result<void> ReleaseSizedAfterRetirement();
         Result<Extent> ResizeSizingAfterRetirement(Extent,DXGI_FORMAT);
@@ -30,6 +37,7 @@ namespace TheosRenderPipeline::Upscaling
         const FsrMlAvailability& MlAvailability()const;
         ColorEncoding HandoffEncoding()const;
     private:
+        Result<void> InitializeDevice(ID3D11Device*);
         struct State;std::unique_ptr<State> state_;std::filesystem::path pluginDirectory_;DeviceCreator deviceCreator_{};
     };
 }
