@@ -1,0 +1,128 @@
+{
+  "release": "1.0",
+  "archiveName": "RaZKolbaS DLSS FSR FG NR v1.0.zip",
+  "archiveSha256": "685694a528249d5a9df14ce3d944c99617bb7f47a58838ec74ee512e7cc6046e",
+  "archiveBytes": 346193911,
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "8b4353bb0365",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "dllVersion": "1.0.0.0",
+  "defaults": {
+    "fsrQuality": "NativeAA",
+    "upscaler": "DLAA"
+  },
+  "rtx20_30CompatibilityCompiled": true,
+  "actualRtx20_30GameplayQualified": false,
+  "unchangedRuntimePayloads": true,
+  "crcVerified": true,
+  "files": [
+    {
+      "path": "meta.ini",
+      "bytes": 409,
+      "sha256": "8cd698f25df11bca48d5c5c7a9fe6d625ddf4b444eda96a2a24cf2c51962a8ee"
+    },
+    {
+      "path": "SKSE/Plugins/FSR/amd_fidelityfx_framegeneration_dx12.dll",
+      "bytes": 40085776,
+      "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+    },
+    {
+      "path": "SKSE/Plugins/FSR/amd_fidelityfx_loader_dx12.dll",
+      "bytes": 26376,
+      "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+    },
+    {
+      "path": "SKSE/Plugins/FSR/amd_fidelityfx_upscaler_dx12.dll",
+      "bytes": 28761864,
+      "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/Audio/razkolbas.mp3",
+      "bytes": 842381,
+      "sha256": "fdd223287a6aa92eed69192289397981b845b186b6e773170806ab0d0c26470f"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NR/rtx20-30/nvngx_dlssnr.dll",
+      "bytes": 309671536,
+      "sha256": "6dac1b40f0c87af84a8177b18c741e84fb0c914f204c9d87d95916b665ba3af8"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NR/rtx40/nvngx_dlssnr.dll",
+      "bytes": 165840496,
+      "sha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NVIDIA/Streamline/nvngx_dlssg.dll",
+      "bytes": 7453808,
+      "sha256": "5d5cbf14d2727d47f93fd10bf77bd91708ae122482a6f86fd564971641ebd47b"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NVIDIA/Streamline/sl.common.dll",
+      "bytes": 830592,
+      "sha256": "a4b2b5acbe49fbc6d44dd432cac19cd53218f698b2539dc7ed0fb268c72cfc8d"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NVIDIA/Streamline/sl.dlss_g.dll",
+      "bytes": 625792,
+      "sha256": "b8b5effd7debdb750abd216de43385fb653261712bc315d85eba68811fb3ee02"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NVIDIA/Streamline/sl.interposer.dll",
+      "bytes": 651392,
+      "sha256": "27b2190057994c0b287c2c5716953bf1586f6499ac12fbbb2092b9aaf8396570"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NVIDIA/Streamline/sl.pcl.dll",
+      "bytes": 360064,
+      "sha256": "12aa4e76c28a27c735e4ecb3072f44d09428acb107b70ac38e4bd48ddb05f88d"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/NVIDIA/Streamline/sl.reflex.dll",
+      "bytes": 382080,
+      "sha256": "ecf12973cdcec2ffced2ea77b1c7e45f4d387e7c864ddb5531b66a6f947effb3"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/nvngx_dlss.dll",
+      "bytes": 58956400,
+      "sha256": "c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS/RCAS.hlsl",
+      "bytes": 5670,
+      "sha256": "83e7dbdf511f76026b0d8250f7b5f8ccf944cf3b4856fca6536217b7f2a0054a"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS.dll",
+      "bytes": 3221504,
+      "sha256": "4d99d2482e8f91b985d033ede660a7d8a1fb47d95af390de8a7828f4f9f327c1"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaS.ini",
+      "bytes": 7611,
+      "sha256": "6988b05c6f08db7e4502c693d878c4a0066b0500ea10de0141d478c1c75f1eb3"
+    },
+    {
+      "path": "SKSE/Plugins/RaZkolbaSImGui.ini",
+      "bytes": 905,
+      "sha256": "df1efc2eb665385903351866f3303f0633edd57e1fed77edce91db370a28d2a9"
+    }
+  ],
+  "compatibilityTests": {
+    "freshCtestPassed": 63,
+    "freshCtestFailed": 0,
+    "standardReleaseRejectionPassed": true,
+    "sm86AuditPrograms": 70,
+    "sm86AuditTemporalPrograms": 1,
+    "sm86TransactionWrites": 208,
+    "sm86PublicationVerified": true,
+    "sm86RollbackVerified": true,
+    "auditDispatchesGpu": false,
+    "gpuGameplayTestedOnRtx3050": false
+  },
+  "retainedStandardArchiveSha256": "81e1965fd10658012c21fe3a1643d1a07b347be5fd9853f47ceff70c8d405692"
+}
