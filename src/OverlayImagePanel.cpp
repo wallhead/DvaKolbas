@@ -267,6 +267,12 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             const auto* sharpnessHost=NvidiaHost::GetSingleton();
             if(sharpnessHost->FsrActive())
                 DrawSettingsValue("Active FSR sharpness",std::format("{:.2f}",sharpnessHost->SourceUpscalerSettings().Effective().fsr.sharpness).c_str());
+            if (TheosRenderPipeline::CommunityShaders::Active())
+                ImGui::TextWrapped("Sharpness inactive: Community Shaders owns upscaling.");
+            else if (!sharpnessHost->FsrActive())
+                ImGui::TextWrapped("Sharpness inactive: FSR awaits save and restart.");
+            else if (!sharpnessHost->FsrTemporalActive())
+                ImGui::TextWrapped("Sharpness inactive: awaiting a temporal FSR frame. Spatial recovery does not sharpen.");
             ImGui::TextWrapped("Reactive and transparency masks are unavailable. Auto exposure is enabled. Camera jitter uses the selected provider.");
         } else {
         ImGui::Separator();

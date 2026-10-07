@@ -5,6 +5,10 @@
 #include "NvidiaDriverSettings.h"
 
 namespace TheosRenderPipeline::NvidiaAppSettings {
+inline constexpr const char* PreparationFailureNotice =
+    "RaZkolbaS could not establish application-controlled NVIDIA settings. "
+    "See RaZkolbaS.log for the module path and failure. Use a compatible NVIDIA driver, "
+    "or select FSR with FSR FG in RaZkolbaS.ini and restart Skyrim.";
 using Log = void(*)(const char*);
 void SetLog(Log callback) noexcept;
 // Read-only startup snapshot. Call for an actual NVIDIA renderer, including FSR.

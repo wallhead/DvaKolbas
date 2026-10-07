@@ -27,7 +27,7 @@ struct PreparedBeforeUpscale::State {
     ImageExtent extent,guideExtent;unsigned preset{};
     ColorDomain colorDomain{ColorDomain::Linear};
     Placement placement{Placement::Before};
-    bool attempted{},ready{},uncertain{},terminal{};
+    bool attempted{},ready{},uncertain{},terminal{},allocationRolledBack{};
     Slot* Find(const DeliveryTicket& t){if(!deliveryOwner.Owns(t.owner_)||t.slot_>=slots.size())return nullptr;auto& slot=slots[t.slot_];return slot.id&&slot.id==t.id_&&slot.source==t.source_&&slot.epoch==t.epoch_?&slot:nullptr;}
     Result<void> Gpu(HRESULT hr,const char* text){if(FAILED(hr)){terminal=true;return Fail(ErrorKind::Runtime,text,hr);}return {};}
     Result<uint32_t> Collect(){
@@ -68,21 +68,28 @@ PreparedBeforeUpscale::PreparedBeforeUpscale():state_(std::make_shared<State>())
 PreparedBeforeUpscale::~PreparedBeforeUpscale()=default;
 Result<void> PreparedBeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D11Device* device,const StageContract& c,unsigned preset,PerformanceMetrics* metrics,ColorDomain domain,Placement placement,unsigned passes){
     auto& s=*state_;if(s.attempted)return Fail(ErrorKind::Conflict,"NR source preparation initialization already attempted");s.attempted=true;
-    if(!device||!ValidDirectExtents(c.colorExtent,c.guideExtent)||(placement==Placement::Before&&c.colorExtent!=c.guideExtent)||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
+    if(!device||!owner||!c.device||!c.queue||!ValidDirectExtents(c.colorExtent,c.guideExtent)||(placement==Placement::Before&&c.colorExtent!=c.guideExtent)||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
         (placement!=Placement::Before&&placement!=Placement::After))return Fail(ErrorKind::InvalidInput,"NR source preparation native contract invalid");
     s.device=device;s.device12=c.device;device->GetImmediateContext(&s.context);s.extent=c.colorExtent;s.guideExtent=c.guideExtent;s.preset=preset;s.colorDomain=domain;s.placement=placement;
-    auto ready=s.Gpu(s.context.As(&s.context4),"NR preparation requires authoritative context4");if(!ready)return ready;
+    // No bridge/vendor work exists at this allocation boundary. Only a
+    // healthy pair of devices admits source passthrough after failure.
+    auto rollback=[&](Result<void> failed)->Result<void>{
+        auto healthy=s.Gpu(device->GetDeviceRemovedReason(),"NR preparation D3D11 device lost during allocation rollback");if(!healthy)return healthy;
+        healthy=s.Gpu(c.device->GetDeviceRemovedReason(),"NR preparation D3D12 device lost during allocation rollback");if(!healthy)return healthy;
+        s.terminal=false;s.allocationRolledBack=true;return failed;
+    };
+    auto ready=s.Gpu(s.context.As(&s.context4),"NR preparation requires authoritative context4");if(!ready)return rollback(ready);
     if(!c.device)return Fail(ErrorKind::InvalidInput,"NR preparation retained D3D12 device missing");
-    ready=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_SHARED,IID_PPV_ARGS(&s.readerFence)),"NR preparation private reader fence creation failed");if(!ready)return ready;
-    HANDLE shared{};ready=s.Gpu(c.device->CreateSharedHandle(s.readerFence.Get(),nullptr,GENERIC_ALL,nullptr,&shared),"NR preparation reader shared handle failed");if(!ready)return ready;
-    ComPtr<ID3D11Device5> device5;auto query=device->QueryInterface(IID_PPV_ARGS(&device5));HRESULT opened=FAILED(query)?query:device5->OpenSharedFence(shared,IID_PPV_ARGS(&s.reader11));CloseHandle(shared);ready=s.Gpu(opened,"NR preparation private reader fence open failed");if(!ready)return ready;
+    ready=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_SHARED,IID_PPV_ARGS(&s.readerFence)),"NR preparation private reader fence creation failed");if(!ready)return rollback(ready);
+    HANDLE shared{};ready=s.Gpu(c.device->CreateSharedHandle(s.readerFence.Get(),nullptr,GENERIC_ALL,nullptr,&shared),"NR preparation reader shared handle failed");if(!ready)return rollback(ready);
+    ComPtr<ID3D11Device5> device5;auto query=device->QueryInterface(IID_PPV_ARGS(&device5));HRESULT opened=FAILED(query)?query:device5->OpenSharedFence(shared,IID_PPV_ARGS(&s.reader11));CloseHandle(shared);ready=s.Gpu(opened,"NR preparation private reader fence open failed");if(!ready)return rollback(ready);
     if(metrics&&metrics->Enabled()){s.metrics=metrics;s.timing=std::make_unique<PerformanceQueries>(metrics);s.timing->Initialize11(device);}
     auto make=[&](DXGI_FORMAT format,UINT bind,ComPtr<ID3D11Texture2D>& out){const auto extent=format==DXGI_FORMAT_R32_FLOAT||format==DXGI_FORMAT_R16G16_FLOAT?s.guideExtent:s.extent;D3D11_TEXTURE2D_DESC d{};d.Width=extent.width;d.Height=extent.height;d.ArraySize=d.MipLevels=d.SampleDesc.Count=1;d.Format=format;d.Usage=D3D11_USAGE_DEFAULT;d.BindFlags=bind;return s.Gpu(device->CreateTexture2D(&d,nullptr,&out),"NR prepared source allocation failed");};
     Result<void> r;
-    for(auto& slot:s.slots){r=make(NrColorFormat(domain),D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE,slot.color);if(!r)return r;
-        r=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&slot.leaseFence)),"NR prepared lease fence allocation failed");if(!r)return r;
-        r=make(DXGI_FORMAT_R32_FLOAT,D3D11_BIND_UNORDERED_ACCESS|D3D11_BIND_SHADER_RESOURCE,slot.depth);if(!r)return r;
-        r=make(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE,slot.motion);if(!r)return r;
+    for(auto& slot:s.slots){r=make(NrColorFormat(domain),D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE,slot.color);if(!r)return rollback(r);
+        r=s.Gpu(c.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&slot.leaseFence)),"NR prepared lease fence allocation failed");if(!r)return rollback(r);
+        r=make(DXGI_FORMAT_R32_FLOAT,D3D11_BIND_UNORDERED_ACCESS|D3D11_BIND_SHADER_RESOURCE,slot.depth);if(!r)return rollback(r);
+        r=make(DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE,slot.motion);if(!r)return rollback(r);
     }
     s.uncertain=true;s.retainedSelf=state_;r=s.bridge.Initialize(std::move(owner),device,c,preset,s.metrics,s.timing.get(),domain,placement,passes);if(!r){
         if(s.bridge.InitializationRolledBackBeforeCreate()){
@@ -164,6 +171,6 @@ Result<void> PreparedBeforeUpscale::WaitDelivery(const BeforeResult& result){aut
 Result<void> PreparedBeforeUpscale::TrackReader(const DeliveryTicket& delivery,ID3D12Fence* fence,uint64_t value){auto& s=*state_;auto* slot=s.Find(delivery);if(s.terminal||!slot||!slot->busy)return Fail(ErrorKind::InvalidInput,"NR prepared reader delivery expired/foreign");auto result=s.bridge.TrackReader(slot->bridgeDelivery.delivery,fence,value);if(!result){s.terminal=true;return result;}slot->readers.push_back({fence,value});return {};}
 Result<void> PreparedBeforeUpscale::Retire(){auto& s=*state_;if(s.terminal)return Fail(ErrorKind::Retirement,"NR preparation terminal; no teardown retry");if(!s.ready)return {};
     auto drained=s.WaitPending();if(!drained)return drained;if(s.timing)s.timing->Collect11(s.context.Get());auto r=s.bridge.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;s.retainedSelf.reset();return {};}
-bool PreparedBeforeUpscale::InitializationRolledBackBeforeCreate()const noexcept{return !state_->terminal&&!state_->uncertain&&state_->bridge.InitializationRolledBackBeforeCreate();}
+bool PreparedBeforeUpscale::InitializationRolledBackBeforeCreate()const noexcept{return !state_->terminal&&!state_->uncertain&&(state_->allocationRolledBack||state_->bridge.InitializationRolledBackBeforeCreate());}
 StageDiagnostics PreparedBeforeUpscale::Diagnostics()const{auto d=state_->bridge.Diagnostics();d.terminal|=state_->terminal;d.preparedSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->timing){d.gpuTiming11Available=state_->timing->Available11();d.gpuTimingDropped+=state_->timing->Dropped();}return d;}
 }

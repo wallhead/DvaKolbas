@@ -108,7 +108,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		const auto resolverOwner=mfgUnlock_.Snapshot().UsesProviderBackport() ?
 			NvidiaAppSettings::StreamlineResolverOwner::Compatibility : NvidiaAppSettings::StreamlineResolverOwner::Host;
 		if (!NvidiaAppSettings::PrepareStreamline(directory_,resolverOwner)) {
-			return Check(E_FAIL,"prepare application-controlled NVIDIA runtime settings");
+			return Check(E_FAIL,NvidiaAppSettings::PreparationFailureNotice);
 		}
 		logger::info("[SourceDLSSG] startup stage=load-interposer");
 		interposer_ = ::LoadLibraryExW((directory_ / L"sl.interposer.dll").c_str(), nullptr,

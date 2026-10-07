@@ -11,6 +11,20 @@
 #include "NeuralRendering/Stage.h"
 #include "NeuralRendering/BeforeHost.h"
 #undef private
+#include "Graphics/D3D11D3D12Interop.h"
+// Inject failure at the second real texture allocation, after one resource is
+// already held. Production contracts and vendor exports remain unchanged.
+bool failPreparedTexture{},failBridgeTexture{};
+int preparedTextureCalls{},bridgeTextureCalls{};
+D3D11_TEXTURE2D_DESC FailedBridgeDesc(D3D11_TEXTURE2D_DESC desc){
+    if(failBridgeTexture&&++bridgeTextureCalls==2)desc.Format=DXGI_FORMAT_UNKNOWN;
+    return desc;
+}
+const D3D11_TEXTURE2D_DESC* FailedPreparedDesc(const D3D11_TEXTURE2D_DESC* desc){
+    static D3D11_TEXTURE2D_DESC invalid;
+    if(failPreparedTexture&&++preparedTextureCalls==2){invalid=*desc;invalid.Format=DXGI_FORMAT_UNKNOWN;return &invalid;}
+    return desc;
+}
 #include "../src/NeuralRendering/RuntimeOwner.cpp"
 #define Fail StageFail
 #define Transition(...) StageTransition(__VA_ARGS__)
@@ -18,10 +32,14 @@
 #undef Transition
 #undef Fail
 #define Fail BeforeFail
+#define CreateSharedTexture(desc,texture) CreateSharedTexture(FailedBridgeDesc(desc),texture)
 #include "../src/NeuralRendering/BeforeUpscale.cpp"
+#undef CreateSharedTexture
 #undef Fail
 #define Fail PreparedFail
+#define CreateTexture2D(desc,data,out) CreateTexture2D(FailedPreparedDesc(desc),data,out)
 #include "../src/NeuralRendering/PreparedBeforeUpscale.cpp"
+#undef CreateTexture2D
 #undef Fail
 #include "../src/NeuralRendering/PostUpscale.cpp"
 #define Fail HostFail
@@ -113,6 +131,9 @@ int GpuFailure(int argc,char** argv){
     else if(injected=="create")fault=Fault::VendorCreate;
     else if(injected=="second-create")fault=Fault::SecondVendorCreate;
     else if(injected=="null-feature")fault=Fault::NullFeature;
+    else if(injected=="prepared-texture"||injected=="bridge-texture"){
+        fault=Fault::Allocate;failPreparedTexture=injected=="prepared-texture";failBridgeTexture=injected=="bridge-texture";
+    }
     else return 1;
     ComPtr<IDXGIFactory6> factory;if(FAILED(CreateDXGIFactory2(0,IID_PPV_ARGS(&factory))))return 77;
     ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 d{};
@@ -132,6 +153,7 @@ int GpuFailure(int argc,char** argv){
     // init, devices, interop allocations, callback claims and shutdown stay real.
     owner->state_->exports.allocate=AllocateParameters;owner->state_->exports.destroy=DestroyParameters;owner->state_->exports.create=CreateFeature;
     realShutdown=owner->state_->exports.shutdown;owner->state_->exports.shutdown=CountRealShutdown;
+    const bool preBridge=failPreparedTexture||failBridgeTexture;
     const bool safe=fault==Fault::Allocate||fault==Fault::AllocatePartial||fault==Fault::Abi;
     const unsigned passes=fault==Fault::SecondVendorCreate?3:1;
     if(layer=="wrapper"){
@@ -139,6 +161,7 @@ int GpuFailure(int argc,char** argv){
         std::weak_ptr<PreparedBeforeUpscale::State> lifetime=prepared.state_;
         auto failed=prepared.Initialize(owner,device.Get(),c,0,nullptr,ColorDomain::SdrBytes,after?Placement::After:Placement::Before,passes);
         Check(!failed,"Injected wrapper initialization fails");
+        if(preBridge)Check(allocates==0&&creates==0,"Texture failure precedes parameter allocation and vendor creation");
         if(safe){
             Check(!prepared.Diagnostics().terminal&&!prepared.state_->uncertain&&!prepared.state_->retainedSelf,"Safe wrapper rollback releases self-retention and terminal state");
             Check(!prepared.state_->bridge.state_->uncertain&&prepared.InitializationRolledBackBeforeCreate()&&owner->state_->clients==0&&!activeAllocation,"Safe wrapper preserves stage rollback proof and releases bridge retention");
@@ -149,6 +172,16 @@ int GpuFailure(int argc,char** argv){
             Check(!prepared.Retire()&&!owner->Retire(),"Uncertain wrapper failure forbids retirement retry");
         }
         wrapper.reset();Check(lifetime.expired()==safe,"Wrapper destruction frees proven-safe preparation and retains uncertain preparation");
+        if(preBridge){
+            ComPtr<Device> removed;removed.Attach(new Device);removed->removed=true;
+            auto lostContract=c;lostContract.device=removed;
+            PreparedBeforeUpscale lost;
+            auto rejected=lost.Initialize(owner,device.Get(),lostContract,0,nullptr,ColorDomain::SdrBytes,after?Placement::After:Placement::Before);
+            Check(!rejected&&rejected.error().nativeCode==DXGI_ERROR_DEVICE_REMOVED&&lost.Diagnostics().terminal,
+                "Device loss during early allocation remains terminal");
+            Check(!lost.InitializationRolledBackBeforeCreate()&&!lost.Retire(),
+                "Removed device never grants allocation rollback or teardown retry");
+        }
     }else if(layer=="host"){
         host.state_->owner=owner;host.state_->uncertain=true;host.state_->contract=c;
         // Simulate a menu restart after the previous preparation retired safely.
@@ -170,6 +203,7 @@ int GpuFailure(int argc,char** argv){
             Check(!host.state_->HasPreparation()&&!host.state_->owner&&!host.state_->uncertain,"Safe host rollback releases preparations and runtime");
             Check(failedPreparation.expired(),"Safe host destroys the failed preparation without a self-retention cycle");
             if(injected=="allocate"||injected=="partial")Check(host.Status().find("3134193666")!=std::string::npos,"Latched unavailable status retains the vendor native failure code");
+            if(preBridge)Check(allocates==0&&creates==0,"Unavailable host never reaches vendor creation after texture failure");
             const auto allocations=allocates,creationCalls=creates,shutdownCalls=shutdowns;
             for(int i=0;i<3;++i){auto bypass=run();Check(bypass&&!bypass->evaluated&&!bypass->effectiveReset,"Latched unavailable host passes later sources without forced resets");}
             Check(allocates==allocations&&creates==creationCalls&&shutdowns==shutdownCalls,"Latched unavailable host never retries initialization");

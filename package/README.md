@@ -54,6 +54,11 @@ suppression separately from read-only observations of driver effects.
 NVIDIA App DLSS/NR/FG overrides are filtered in the mod's runtime modules so the
 RaZkolbaS menu/INI takes priority. Startup rejects a filter installation failure
 instead of accepting different driver-controlled settings silently.
+The failure dialog points to the affected module in the log. Use a compatible
+NVIDIA driver, or select FSR with the FSR FG backend in the INI and restart.
+An NR preparation allocation failure before vendor work starts disables NR for
+that session while source upscaling continues. Device loss and uncertain vendor
+ownership still stop rendering; no completed GPU work is assumed.
 Smooth Motion is outside the NGX filter. Disable it in NVIDIA App's **Skyrim Program
 settings** before launch when using RaZkolbaS FG; the mod does not write driver
 profiles. See [driver settings behavior](../docs/NVIDIA-APP-OVERRIDES.md).

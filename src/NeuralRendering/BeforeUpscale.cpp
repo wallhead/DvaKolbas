@@ -32,7 +32,7 @@ struct BeforeUpscale::State {
     Placement placement{Placement::Before};
     std::optional<std::array<int,3>> recordedStyles;
     History history;
-    bool attempted{},ready{},uncertain{},terminal{};
+    bool attempted{},ready{},uncertain{},terminal{},allocationRolledBack{};
     Slot* Find(const DeliveryTicket& t){if(!deliveryOwner.Owns(t.owner_)||t.slot_>=slots.size())return nullptr;auto& slot=slots[t.slot_];return slot.id&&slot.id==t.id_&&slot.source==t.source_&&slot.epoch==t.epoch_?&slot:nullptr;}
     Result<void> Gpu(HRESULT hr,const char* text){if(FAILED(hr)){terminal=true;return Fail(ErrorKind::Runtime,text,hr);}return {};}
     Result<uint32_t> Collect(){
@@ -75,19 +75,27 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
     if(!device||!owner||!contract.device||!contract.queue||!contract.colorExtent.width||!contract.colorExtent.height||
         !ValidDirectExtents(contract.colorExtent,contract.guideExtent)||(placement==Placement::Before&&contract.colorExtent!=contract.guideExtent)||preset>1||passes<1||passes>3||NrColorFormat(domain)==DXGI_FORMAT_UNKNOWN||
         (placement!=Placement::Before&&placement!=Placement::After))return Fail(ErrorKind::InvalidInput,"NR native source device/extent/color/placement contract incomplete");
-    auto r=s.Gpu(s.interop.Initialize(device,contract.device.Get(),contract.queue.Get()),"NR Before same-adapter bridge initialization failed");if(!r)return r;
-    s.device11=device;s.contract=contract;s.preset=preset;s.passes=passes;s.colorDomain=domain;s.placement=placement;device->GetImmediateContext(&s.context);
+    s.device11=device;s.contract=contract;
+    // Until Stage is entered, these allocations have no vendor recordings or
+    // submitted readers. Device loss still forbids a healthy fallback.
+    auto rollback=[&](Result<void> failed)->Result<void>{
+        auto healthy=s.Gpu(device->GetDeviceRemovedReason(),"NR Before D3D11 device lost during allocation rollback");if(!healthy)return healthy;
+        healthy=s.Gpu(contract.device->GetDeviceRemovedReason(),"NR Before D3D12 device lost during allocation rollback");if(!healthy)return healthy;
+        s.terminal=false;s.allocationRolledBack=true;return failed;
+    };
+    auto r=s.Gpu(s.interop.Initialize(device,contract.device.Get(),contract.queue.Get()),"NR Before same-adapter bridge initialization failed");if(!r)return rollback(r);
+    s.preset=preset;s.passes=passes;s.colorDomain=domain;s.placement=placement;device->GetImmediateContext(&s.context);
     if(metrics&&metrics->Enabled()){
         s.metrics=metrics;s.queries11=queries11;
         if(!queries11){s.ownTiming11=std::make_unique<PerformanceQueries>(metrics);s.ownTiming11->Initialize11(device);s.queries11=s.ownTiming11.get();}
         s.interop.SetPerformanceSink({metrics,[](void* p,bool blocked,uint64_t ns){static_cast<PerformanceMetrics*>(p)->RecordWait(CpuPhase::InteropWait,blocked,ns);},[](void* p){static_cast<PerformanceMetrics*>(p)->RecordFlush();}});
     }
-    r=s.Gpu(contract.device->CreateFence(0,D3D12_FENCE_FLAG_SHARED,IID_PPV_ARGS(&s.handoffFence)),"NR Before shared handoff fence creation failed");if(!r)return r;
-    ComPtr<ID3D11Device5> device5;r=s.Gpu(device->QueryInterface(IID_PPV_ARGS(&device5)),"NR Before requires D3D11 shared-fence device");if(!r)return r;
-    HANDLE shared{};r=s.Gpu(contract.device->CreateSharedHandle(s.handoffFence.Get(),nullptr,GENERIC_ALL,nullptr,&shared),"NR Before shared fence handle failed");if(!r)return r;
+    r=s.Gpu(contract.device->CreateFence(0,D3D12_FENCE_FLAG_SHARED,IID_PPV_ARGS(&s.handoffFence)),"NR Before shared handoff fence creation failed");if(!r)return rollback(r);
+    ComPtr<ID3D11Device5> device5;r=s.Gpu(device->QueryInterface(IID_PPV_ARGS(&device5)),"NR Before requires D3D11 shared-fence device");if(!r)return rollback(r);
+    HANDLE shared{};r=s.Gpu(contract.device->CreateSharedHandle(s.handoffFence.Get(),nullptr,GENERIC_ALL,nullptr,&shared),"NR Before shared fence handle failed");if(!r)return rollback(r);
     const auto opened=device5->OpenSharedFence(shared,IID_PPV_ARGS(&s.handoff11));CloseHandle(shared);
-    r=s.Gpu(opened,"NR Before D3D11 fence open failed");if(!r)return r;
-    r=s.Gpu(contract.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&s.completionFence)),"NR Before completion fence creation failed");if(!r)return r;
+    r=s.Gpu(opened,"NR Before D3D11 fence open failed");if(!r)return rollback(r);
+    r=s.Gpu(contract.device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&s.completionFence)),"NR Before completion fence creation failed");if(!r)return rollback(r);
     auto make=[&](DXGI_FORMAT format,Graphics::SharedTexture& texture,bool uav){
         const auto extent=format==DXGI_FORMAT_R32_FLOAT||format==DXGI_FORMAT_R16G16_FLOAT?contract.guideExtent:contract.colorExtent;
         D3D11_TEXTURE2D_DESC d{};d.Width=extent.width;d.Height=extent.height;
@@ -100,7 +108,7 @@ Result<void> BeforeUpscale::Initialize(std::shared_ptr<RuntimeOwner> owner,ID3D1
         return Result<void>{};};
     for(auto& slot:s.slots)for(auto [format,texture,uav]:{std::tuple{NrColorFormat(domain),&slot.color,false},
         std::tuple{DXGI_FORMAT_R32_FLOAT,&slot.depth,false},std::tuple{DXGI_FORMAT_R16G16_FLOAT,&slot.motion,false},
-        std::tuple{NrColorFormat(domain),&slot.output,true}}){r=make(format,*texture,uav);if(!r)return r;}
+        std::tuple{NrColorFormat(domain),&slot.output,true}}){r=make(format,*texture,uav);if(!r)return rollback(r);}
     // Stage initialization can submit feature creation; never destroy this
     // bridge's retained devices/queue after an uncertain result.
     s.uncertain=true;r=s.stage.Initialize(std::move(owner),contract,preset,s.metrics,passes);if(!r){
@@ -197,6 +205,6 @@ Result<void> BeforeUpscale::Retire(){
     if(s.ownTiming11)s.queries11->Collect11(s.context.Get());
     r=s.stage.Retire();if(!r){s.terminal=true;return r;}s.ready=false;s.uncertain=false;return {};
 }
-bool BeforeUpscale::InitializationRolledBackBeforeCreate()const noexcept{return !state_->terminal&&!state_->uncertain&&state_->stage.InitializationRolledBackBeforeCreate();}
+bool BeforeUpscale::InitializationRolledBackBeforeCreate()const noexcept{return !state_->terminal&&!state_->uncertain&&(state_->allocationRolledBack||state_->stage.InitializationRolledBackBeforeCreate());}
 StageDiagnostics BeforeUpscale::Diagnostics()const{auto d=state_->stage.Diagnostics();d.terminal|=state_->terminal;d.bridgeSlots=state_->ready?uint32_t(state_->slots.size()):0;if(state_->ownTiming11){d.gpuTiming11Available=state_->queries11->Available11();d.gpuTimingDropped+=state_->queries11->Dropped();}return d;}
 }

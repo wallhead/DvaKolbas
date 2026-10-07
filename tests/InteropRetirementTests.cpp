@@ -1,4 +1,5 @@
 #include "InteropTestRig.h"
+#include "nr-runtime/NrTestComStubs.h"
 #include <atomic>
 #include <thread>
 using namespace InteropFixture;
@@ -50,9 +51,45 @@ public:
 };
 static void EmptyFrame(Interop& interop)
 {ID3D12GraphicsCommandList* list{};Check(interop.SignalProducer(),"signal producer");Check(interop.Begin(&list),"begin source work");Check(interop.Submit(),"submit source work");Check(interop.WaitConsumer(),"queue consumer dependency");}
+class DiscardProbe : public Interop
+{
+public:
+    void ReplaceWithFailingClose(Work kind)
+    {
+        auto* work=Get(kind);
+        // Close the real, unsubmitted fixture list before replacing its Close
+        // boundary with a double; no GPU submission is fabricated.
+        InteropFixture::Check(work->lists[work->slot]->Close(),"close fixture list");
+        work->lists[work->slot].Attach(new NrTestGraphicsCommandListStub);
+    }
+    bool Recording(Work kind){return Get(kind)->recording;}
+};
 int main()
 {
     Rig rig;
+    for(auto kind:{Work::Upscaling,Work::FrameGeneration,Work::SwapChain}) {
+        DiscardProbe interop;rig.Initialize(interop);ID3D12GraphicsCommandList* list{};
+        if(kind==Work::Upscaling){Check(interop.SignalProducer(),"discard producer");Check(interop.Begin(&list),"discard begin");}
+        else Check(interop.Begin(kind,&list),"auxiliary discard begin");
+        const auto value=interop.LastValue(kind);const auto slot=interop.CurrentSlot(kind);
+        interop.ReplaceWithFailingClose(kind);
+        Require(interop.DiscardUnsubmitted(kind)==E_NOTIMPL,"discard reports original Close failure");
+        Require(!interop.Recording(kind),"failed Close ends an unsubmitted recording");
+        Require(!interop.Ready()&&interop.Fault()==E_NOTIMPL,"failed discard remains a latched fault");
+        Require(interop.LastValue(kind)==value&&interop.CurrentSlot(kind)==slot,"failed discard submits no work or fake progress");
+        Check(interop.Drain(),"failed discard permits retirement of actual submissions");
+    }
+    {
+        DiscardProbe interop;rig.Initialize(interop);ID3D12GraphicsCommandList* list{};
+        Check(interop.SignalProducer(),"multiple-discard producer");Check(interop.Begin(&list),"multiple-discard source");
+        Check(interop.Begin(Work::FrameGeneration,&list),"multiple-discard FG");
+        Check(interop.Begin(Work::SwapChain,&list),"multiple-discard presentation");
+        for(auto kind:{Work::Upscaling,Work::FrameGeneration,Work::SwapChain})interop.ReplaceWithFailingClose(kind);
+        for(auto kind:{Work::Upscaling,Work::FrameGeneration,Work::SwapChain})
+            Require(interop.DiscardUnsubmitted(kind)==E_NOTIMPL&&!interop.Recording(kind),
+                "a prior fault must still permit discarding other unsubmitted lists");
+        Check(interop.Drain(),"all failed unsubmitted lists permit actual retirement");
+    }
     {
         Interop interop;rig.Initialize(interop);EmptyFrame(interop);
         ComPtr<ID3D12Fence> gate12;ComPtr<ID3D11Fence> gate11;rig.SharedGate(gate12,gate11);

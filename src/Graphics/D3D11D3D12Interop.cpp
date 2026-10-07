@@ -391,10 +391,14 @@ namespace TheosRenderPipeline::Graphics
     HRESULT D3D11D3D12Interop::DiscardRecording()
     {
         auto* work=Get(InteropWork::Upscaling);
-        if(!Ready() || !srProducerSubmitted_ || srDispatchSubmitted_ || !work || !work->recording)return E_UNEXPECTED;
+        // Cancellation is still allowed after another work kind faults. New
+        // recordings/submissions remain guarded by Ready().
+        if(!ready_ || !srProducerSubmitted_ || srDispatchSubmitted_ || !work || !work->recording)return E_UNEXPECTED;
         const auto hr=work->lists[work->slot]->Close();
-        if(FAILED(hr))return Check(hr);
+        // Discard never submits this list. Close failure faults future work,
+        // but must not prevent Drain from retiring earlier real submissions.
         work->recording=false;
+        if(FAILED(hr))return Check(hr);
         // The next Begin resets this closed list after the slot's previous real
         // submission retires. Current producer work still needs a normal Drain.
         return S_OK;
@@ -409,9 +413,11 @@ namespace TheosRenderPipeline::Graphics
     HRESULT D3D11D3D12Interop::DiscardUnsubmitted(InteropWork kind)
     {
         if(kind==InteropWork::Upscaling)return DiscardRecording();
-        auto* work=Get(kind);if(!Ready() || !work || !work->recording)return E_UNEXPECTED;
-        const auto hr=work->lists[work->slot]->Close();if(FAILED(hr))return Check(hr);
-        work->recording=false;return S_OK;
+        auto* work=Get(kind);if(!ready_ || !work || !work->recording)return E_UNEXPECTED;
+        const auto hr=work->lists[work->slot]->Close();
+        work->recording=false;
+        if(FAILED(hr))return Check(hr);
+        return S_OK;
     }
 
 	std::size_t D3D11D3D12Interop::CurrentSlot(InteropWork a_work) const

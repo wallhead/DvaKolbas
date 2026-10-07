@@ -101,7 +101,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
     if(TRP_NR_TEST_RUNTIME_ROOT AND TRP_NR_DRIVER_CORE)
         foreach(layer IN ITEMS wrapper host)
             foreach(placement IN ITEMS before after)
-                foreach(fault IN ITEMS allocate partial abi destroy create second-create null-feature)
+                foreach(fault IN ITEMS prepared-texture bridge-texture allocate partial abi destroy create second-create null-feature)
                     add_test(NAME NrInitializationFailure-${layer}-${placement}-${fault} COMMAND TRPNrInitializationFailureTests
                         "${TRP_NR_TEST_RUNTIME_ROOT}" "${TRP_NR_DRIVER_CORE}" ${layer} ${placement} ${fault})
                     set_tests_properties(NrInitializationFailure-${layer}-${placement}-${fault} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 45 SKIP_RETURN_CODE 77)

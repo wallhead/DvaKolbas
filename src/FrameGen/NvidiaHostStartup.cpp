@@ -406,7 +406,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
                            creation.AllocationQuality()))
     {
         sourceUpscalerSettings_.Completed(false);
-        status_ = "RaZkolbaS direct DLSS feature initialization failed";
+        status_ = dlss->StartupFailure() ? dlss->StartupFailure() : "RaZkolbaS direct DLSS feature initialization failed";
         gameTargets_.ResetUpscaleOutputAfterRetirement();
         return false;
     }

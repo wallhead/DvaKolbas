@@ -90,6 +90,7 @@ class NvidiaHost
     bool UpscalerReady() const { return upscalerReady_ && SUCCEEDED(FailureResult()); }
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
+    bool FsrTemporalActive() const { return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult()); }
     bool FsrFgActive() const { return FsrActive() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
     bool FsrPresentSuspended()const;
     HRESULT UpdateFsrSuspension();

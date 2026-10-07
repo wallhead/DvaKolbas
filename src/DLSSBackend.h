@@ -60,6 +60,7 @@ public:
 	uint64_t EvalFailCount() const { return evalFailCount; }
 	uint32_t LastEvalResult() const { return lastEvalResult; }
 	bool HasFeature() const { return dlssHandle != nullptr; }
+	const char* StartupFailure() const { return startupFailure; }
 	int InputFormat() const { return static_cast<int>(observedInputFormat); }
 	int OutputFormat() const { return static_cast<int>(observedOutputFormat); }
 	bool IsHDRInput() const;
@@ -88,6 +89,7 @@ private:
 
 	bool ngxInitAttempted{ false };
 	bool ngxInitialized{ false };
+	const char* startupFailure{ nullptr };
 	bool dlssAvailable{ false };
 
 	struct NVSDK_NGX_Parameter* capabilityParams{ nullptr };
