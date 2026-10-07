@@ -1,6 +1,6 @@
-# Independent FSR frame generation — proposed design
+# Independent FSR frame generation — approved design
 
-Status: proposal for user review; no renderer changes made.
+Status: approved by the user on 2026-10-07; implementation pending.
 
 ## Intended result
 
