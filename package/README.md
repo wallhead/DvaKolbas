@@ -12,6 +12,12 @@ The release defaults to DLAA on NVIDIA, with FSR Native AA selected for the FSR
 route. Only one upscaler runs at a time. Portable NR paths remain blank for
 runtime discovery. Some full-tone NR camera drift remains under investigation.
 
+The all-GPU archive requires the Universal renderer and
+`[Compatibility] NvidiaMFGUnlock=true`. Its RTX 20/30 NVIDIA presentation path
+uses experimental compatibility code; actual RTX 3050 gameplay acceptance is
+pending. The Standard renderer cannot start its DLAA/DLSS presentation host on
+RTX 20/30, including with interpolation disabled. FSR uses its own presenter.
+
 Disable the old TheosRenderPipeline plugin when upgrading; startup checks both
 the loaded modules and MO2's virtual plugin directory before installing hooks.
 If `RaZkolbaS.ini` is absent, an existing `TheosRenderPipeline.ini` is copied once
