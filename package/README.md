@@ -15,8 +15,8 @@ runtime discovery. Some full-tone NR camera drift remains under investigation.
 The all-GPU archive requires the Universal renderer and
 `[Compatibility] NvidiaMFGUnlock=true`. Its RTX 20/30 NVIDIA presentation path
 uses experimental compatibility code. On 2026-10-07 the owner reported working
-startup from the RTX 3050 tester and an AMD tester; detailed NR/FG and lifecycle
-coverage and the AMD model have not been reported. The Standard renderer cannot
+startup from the RTX 3050 tester and a Radeon RX 9070 tester; detailed NR/FG and
+lifecycle coverage has not been reported. The Standard renderer cannot
 start its DLAA/DLSS presentation host on
 RTX 20/30, including with interpolation disabled. FSR uses its own presenter.
 

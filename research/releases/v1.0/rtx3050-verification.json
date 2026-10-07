@@ -131,11 +131,12 @@
     "ownerStatement": "tester said that is working, also amd tester said its working",
     "rtx3050WorkingReported": true,
     "amdWorkingReported": true,
-    "amdModel": null,
+    "amdModel": "Radeon RX 9070",
     "exactRenderingPathsReported": false,
     "newTesterLogsProvided": false,
     "detailedNrFgLifecycleChecksReported": false,
     "startupFixMilestonesCompleted": 4,
-    "startupFixMilestonesTotal": 4
+    "startupFixMilestonesTotal": 4,
+    "amdModelAsReported": "9070"
   }
 }
