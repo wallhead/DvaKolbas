@@ -1,0 +1,50 @@
+{
+  "archiveName": "RaZKolbaS DLSS FSR FG NR v1.0.zip",
+  "archiveSha256": "1a904ad9e5f7997b4c6ecb3898cd3168d05eabed7923aa521157349b4bce14fe",
+  "archiveBytes": 346191374,
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "03086b9442ba",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "dllVersion": "1.0.0.0",
+  "unchangedRuntimePayloads": true,
+  "crcVerified": true,
+  "change": "End menu credit, FSR sharpness display/logging and verification",
+  "checksPassed": 75,
+  "actualSkyrimTestThisUpdate": false,
+  "testerReportedFailureReproduced": false,
+  "localGpu": "RTX 4080 SUPER",
+  "plugin": {
+    "path": "SKSE/Plugins/RaZkolbaS.dll",
+    "bytes": 3214336,
+    "sha256": "a0f18f4d5319eea4d732abab5a7169f6f4f31c311f9a9f1ac436cdaebd1f7a22"
+  },
+  "installed": [
+    {
+      "dll": "D:\\TESV_EX\\MO2\\mods\\RaZKolbaS DLSS FSR FG NR v1.0\\SKSE\\Plugins\\RaZkolbaS.dll",
+      "dllSha256": "A0F18F4D5319EEA4D732ABAB5A7169F6F4F31C311F9A9F1AC436CDAEBD1F7A22",
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\menu-credit-03086b9\\rollback\\TESV_EX",
+      "iniUnchanged": true,
+      "target": "TESV_EX"
+    },
+    {
+      "dll": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZkolbas DLSS FSR FG NR\\SKSE\\Plugins\\RaZkolbaS.dll",
+      "dllSha256": "A0F18F4D5319EEA4D732ABAB5A7169F6F4F31C311F9A9F1AC436CDAEBD1F7A22",
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\menu-credit-03086b9\\rollback\\V54",
+      "iniUnchanged": true,
+      "target": "V54"
+    },
+    {
+      "dll": "C:\\Users\\user\\Downloads\\RaZKolbaS RTX3050 update\\RaZkolbaS.dll",
+      "dllSha256": "A0F18F4D5319EEA4D732ABAB5A7169F6F4F31C311F9A9F1AC436CDAEBD1F7A22",
+      "backup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\packages\\menu-credit-03086b9\\rollback\\Tester",
+      "iniUnchanged": true,
+      "target": "Tester"
+    }
+  ],
+  "mo2ProfilesChanged": false
+}
