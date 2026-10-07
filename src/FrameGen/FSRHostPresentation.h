@@ -15,11 +15,15 @@ namespace TheosRenderPipeline
         FsrHostPresentation& operator=(const FsrHostPresentation&)=delete;
         Upscaling::Result<Upscaling::Extent> Create(IDXGIFactory*,ID3D11Device*,
             std::shared_ptr<Upscaling::FsrHostResources>,const DXGI_SWAP_CHAIN_DESC&,const Upscaling::FsrSettings&);
+        Upscaling::Result<Upscaling::Extent> CreateExternal(IDXGIFactory*,ID3D11Device*,
+            std::shared_ptr<Upscaling::FsrHostResources>,const DXGI_SWAP_CHAIN_DESC&,const Upscaling::FsrSettings&,
+            Upscaling::Extent render,Upscaling::FsrInputPolicy);
         HRESULT StartupPresent(UINT interval,UINT flags);
         HRESULT WaitBeforeProducer();
         Upscaling::Result<void> BeforeResize();
         Upscaling::Result<void> Suspend();Upscaling::Result<void> Resume();
         Upscaling::Result<FsrHostResize> Resize(const DXGI_SWAP_CHAIN_DESC&);
+        Upscaling::Result<FsrHostResize> ResizeExternal(const DXGI_SWAP_CHAIN_DESC&,Upscaling::Extent render);
         bool Suspended()const;
         HRESULT Present(const Upscaling::UpscaleFrame&,Upscaling::UpscaleOutcome,
             ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool uiComplete,bool menu,bool requested,UINT interval,UINT flags);
@@ -28,6 +32,10 @@ namespace TheosRenderPipeline
         bool FeatureReady()const;FsrPresentationStatus Status()const;
         const Upscaling::FsrEffectProvider& GenerationProvider()const;
     private:
+        Upscaling::Result<Upscaling::Extent> CreateInternal(IDXGIFactory*,ID3D11Device*,
+            std::shared_ptr<Upscaling::FsrHostResources>,const DXGI_SWAP_CHAIN_DESC&,const Upscaling::FsrSettings&,
+            bool external,Upscaling::Extent render,Upscaling::FsrInputPolicy);
+        Upscaling::Result<FsrHostResize> ResizeInternal(const DXGI_SWAP_CHAIN_DESC&,Upscaling::Extent render);
         struct State;std::unique_ptr<State> state_;
     };
 }

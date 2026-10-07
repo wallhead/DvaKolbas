@@ -1,6 +1,8 @@
 #include "Upscaling/FSRHostResources.h"
 #include "Upscaling/FSRGenerationGuideAdapter.h"
 #include "InteropTestRig.h"
+#include "fsr-fg/GenerationTestRig.h"
+#include "FrameGen/FSRHostPresentation.h"
 #include <filesystem>
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
@@ -62,9 +64,54 @@ static void Guides(const std::filesystem::path& root)
     Require(!resources.Upscaler() && !GetModuleHandleW(L"amd_fidelityfx_upscaler_dx12.dll"),"no hidden second upscaler after resize");
     Require(bool(resources.Retire()),"external owner fully retired");rig.ValidateDebug();
 }
+static void ExternalPresentation(const std::filesystem::path& root)
+{
+    GenerationFixture::Rig rig;
+    HWND window=CreateWindowExW(0,L"STATIC",L"External FG fixture",WS_OVERLAPPEDWINDOW,0,0,160,160,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);
+    Require(window!=nullptr,"external presenter hidden HWND");
+    DXGI_SWAP_CHAIN_DESC desc{};desc.BufferDesc.Width=desc.BufferDesc.Height=128;desc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count=1;desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.BufferCount=1;desc.OutputWindow=window;desc.Windowed=TRUE;desc.SwapEffect=DXGI_SWAP_EFFECT_DISCARD;
+    auto resources=std::make_shared<FsrHostResources>(root);FsrHostPresentation host;FsrSettings settings;
+    settings.providerPolicy=ProviderPolicy::MachineLearning;settings.sourceColorEncoding=ColorEncoding::Gamma22;
+    auto created=host.CreateExternal(rig.factory.Get(),rig.device11.Get(),resources,desc,settings,{64,64},{});
+    Require(created && *created==Extent{64,64},"ExternalPresenterRequiresNoSrFeature: explicit DLSS sizing used");
+    Require(!resources->Upscaler() && !GetModuleHandleW(L"amd_fidelityfx_upscaler_dx12.dll"),"inactive FSR4 SR preferences do not load an SR module");
+    auto module=GetModuleHandleW(L"amd_fidelityfx_loader_dx12.dll");
+    auto mode=reinterpret_cast<void(*)(unsigned)>(GetProcAddress(module,"FixtureMode"));Require(mode!=nullptr,"external callback fixture mode");
+    ComPtr<ID3D11Texture2D> depth,motion,ui;
+    auto tex=rig.Description();tex.Width=tex.Height=64;tex.Format=DXGI_FORMAT_R32_FLOAT;
+    Check(rig.device11->CreateTexture2D(&tex,nullptr,&depth),"external presenter depth");tex.Format=DXGI_FORMAT_R16G16_FLOAT;
+    Check(rig.device11->CreateTexture2D(&tex,nullptr,&motion),"external presenter motion");tex.Width=tex.Height=128;tex.Format=DXGI_FORMAT_R8G8B8A8_UNORM;
+    Check(rig.device11->CreateTexture2D(&tex,nullptr,&ui),"external presenter HUD");
+    auto frame=rig.frame;frame.backend=BackendKind::Dlaa;frame.depth=depth.Get();frame.motion=motion.Get();frame.sourceId=0;
+    auto present=[&](UpscaleOutcome outcome=UpscaleOutcome::Temporal,bool requested=true,bool menu=false){
+        ++frame.sourceId;Check(host.WaitBeforeProducer(),"external presenter producer wait");
+        Check(host.Present(frame,outcome,ui.Get(),nullptr,true,menu,requested,0,0),"external presenter source");
+    };
+    for(unsigned i=0;i<18;++i)present();
+    Require(host.FeatureReady() && host.Status().decision.generate && host.Status().callback.invocations==1,"external NGX-source classification actually generates a callback");
+    present(UpscaleOutcome::SkippedInvalidInput);Require(!host.Status().decision.generate,"failed DLSS suppresses generation");
+    present();Require(host.Status().decision.generate && host.Status().decision.reset,"valid source resets after failed DLSS");
+    auto* validDepth=frame.depth;frame.depth=nullptr;present();Require(!host.Status().decision.generate,"missing guides suppress instead of reusing prior guides");frame.depth=validDepth;
+    present();Require(host.Status().decision.generate && host.Status().decision.reset,"guide recovery resets temporal history");
+    present(UpscaleOutcome::Temporal,false);Require(!host.Status().decision.generate,"live interpolation off");
+    present();Require(host.Status().decision.generate && host.Status().decision.reset,"live interpolation on resets");
+    present(UpscaleOutcome::Temporal,true,true);Require(!host.Status().decision.generate,"menu suppresses external generation");
+    Require(bool(host.Suspend()),"external owner suspension");Require(bool(host.Resume()),"external owner restoration");present();
+    Require(host.Status().decision.generate && host.Status().decision.reset,"ResumeResetsGeneration");
+    auto* chain=host.SwapChain();auto* retainedDepth=resources->Depth11();mode(23);
+    Require(!host.BeforeResize() && host.SwapChain()==chain && resources->Depth11()==retainedDepth,"ExternalResizeRetainsAllReaders: failed retirement preserves resource owner");mode(0);
+    Require(bool(host.BeforeResize()),"external retirement retry");
+    auto next=desc;next.BufferDesc.Width=144;next.BufferDesc.Height=96;
+    auto resized=host.ResizeExternal(next,{72,48});Require(resized && SUCCEEDED(resized->result) && resized->render==Extent{72,48},"external resize uses measured DLSS render extent");
+    Require(host.SwapChain()==chain && !resources->Upscaler(),"resize preserves presenter and does not introduce SR");
+    Require(bool(host.Retire()),"external SDK and guide owners retire in order");DestroyWindow(window);rig.ValidateDebug();
+}
 int main(int argc,char** argv)
 {
     Require(argc>=2,"runtime root required");const auto root=std::filesystem::absolute(argv[1]);
-    if(argc==3 && std::string_view(argv[2])=="--gpu")Guides(root);else GenerationOnlyRuntime(root);
+    if(argc==3 && std::string_view(argv[2])=="--gpu")Guides(root);
+    else if(argc==3 && std::string_view(argv[2])=="--host")ExternalPresentation(root);
+    else GenerationOnlyRuntime(root);
     std::puts("PASS: generation-only official runtime and external guide ownership");
 }

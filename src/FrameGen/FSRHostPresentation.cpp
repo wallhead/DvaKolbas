@@ -1,5 +1,6 @@
 #include "FSRHostPresentation.h"
 #include "FSRSwapChainPolicy.h"
+#include "Upscaling/FSRGenerationGuideAdapter.h"
 namespace TheosRenderPipeline
 {
     using namespace Upscaling;
@@ -7,6 +8,7 @@ namespace TheosRenderPipeline
     {
         FsrPresentation presenter;
         std::shared_ptr<FsrHostResources> resources;
+        std::unique_ptr<FsrGenerationGuideAdapter> externalGuides;
         FsrEffectProvider provider{FsrEffect::FrameGeneration,{}};
         FsrGenerationLimits limits{};ColorEncoding encoding{ColorEncoding::Unknown};
         bool created{},feature{},closing{},resizing{},resizeReady{},suspended{},suspendReady{};
@@ -15,9 +17,18 @@ namespace TheosRenderPipeline
     FsrHostPresentation::~FsrHostPresentation(){if(!Retire())(void)state_.release();}
     Result<Extent> FsrHostPresentation::Create(IDXGIFactory* factory,ID3D11Device* device,
         std::shared_ptr<FsrHostResources> resources,const DXGI_SWAP_CHAIN_DESC& input,const FsrSettings& settings)
+    {return CreateInternal(factory,device,std::move(resources),input,settings,false,{},{});}
+    Result<Extent> FsrHostPresentation::CreateExternal(IDXGIFactory* factory,ID3D11Device* device,
+        std::shared_ptr<FsrHostResources> resources,const DXGI_SWAP_CHAIN_DESC& input,const FsrSettings& settings,
+        Extent render,FsrInputPolicy policy)
+    {return CreateInternal(factory,device,std::move(resources),input,settings,true,render,policy);}
+    Result<Extent> FsrHostPresentation::CreateInternal(IDXGIFactory* factory,ID3D11Device* device,
+        std::shared_ptr<FsrHostResources> resources,const DXGI_SWAP_CHAIN_DESC& input,const FsrSettings& settings,
+        bool external,Extent externalRender,FsrInputPolicy policy)
     {
         auto invalid=[](const char* text)->Result<Extent>{return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,text});};
-        if(state_->created || state_->closing || !factory || !device || !resources || !ValidFsrSettings(settings) ||
+        if(state_->created || state_->closing || !factory || !device || !resources ||
+            (!external && !ValidFsrSettings(settings)) || !ValidProviderPolicy(settings.generationProviderPolicy) ||
             !IsKnownColorEncoding(settings.sourceColorEncoding))
             return invalid("AMD host requires a fresh owner, valid SR provider policy and explicit native SDR encoding");
         auto descriptor=FsrPresentation::TranslateDescriptor(input);if(!descriptor)return std::unexpected(descriptor.error());
@@ -25,7 +36,11 @@ namespace TheosRenderPipeline
         config.quality=settings.quality;config.providerPolicy=settings.providerPolicy;config.sharpness=settings.sharpness;
         state_->resources=std::move(resources);state_->encoding=settings.sourceColorEncoding;
         const Extent output{descriptor->BufferDesc.Width,descriptor->BufferDesc.Height};
-        auto render=state_->resources->PrepareSizing(device,config,output,descriptor->BufferDesc.Format,state_->encoding);
+        Result<Extent> render=externalRender;
+        if(external){
+            auto sized=state_->resources->PrepareExternalSizing(device,externalRender,output,descriptor->BufferDesc.Format,state_->encoding,policy);
+            if(!sized)return std::unexpected(sized.error());
+        }else render=state_->resources->PrepareSizing(device,config,output,descriptor->BufferDesc.Format,state_->encoding);
         if(!render)return std::unexpected(render.error());
         auto runtime=state_->resources->Runtime();
         // The absolute plugin directory belongs to the SR owner; it performs
@@ -77,20 +92,33 @@ namespace TheosRenderPipeline
         state_->feature=false;state_->resizeReady=true;state_->suspended=state_->suspendReady=false;return {};
     }
     Result<FsrHostResize> FsrHostPresentation::Resize(const DXGI_SWAP_CHAIN_DESC& input)
+    {return ResizeInternal(input,{});}
+    Result<FsrHostResize> FsrHostPresentation::ResizeExternal(const DXGI_SWAP_CHAIN_DESC& input,Extent render)
+    {return ResizeInternal(input,render);}
+    Result<FsrHostResize> FsrHostPresentation::ResizeInternal(const DXGI_SWAP_CHAIN_DESC& input,Extent externalRender)
     {
+        if(!state_->resources || (state_->resources->ExternalSource() && (!externalRender.width || !externalRender.height)))
+            return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,"External FSR FG resize requires measured render dimensions"});
         auto descriptor=FsrPresentation::TranslateDescriptor(input);if(!descriptor)return std::unexpected(descriptor.error());
         DXGI_SWAP_CHAIN_DESC previous{};auto* chain=state_->presenter.SwapChain();
         if(!chain || FAILED(chain->GetDesc(&previous)) || FAILED(ValidateFsrResizeFlags(previous.Flags,descriptor->Flags)))
             return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,"AMD immutable swapchain flags cannot change during resize"});
         auto before=BeforeResize();if(!before)return std::unexpected(before.error());
         auto retired=state_->resources->ReleaseSizedAfterRetirement();if(!retired)return std::unexpected(retired.error());
+        state_->externalGuides.reset();
         const auto result=chain->ResizeBuffers(2,descriptor->BufferDesc.Width,descriptor->BufferDesc.Height,descriptor->BufferDesc.Format,descriptor->Flags);
         auto after=state_->presenter.AfterResize(result);if(!after)return std::unexpected(after.error());
         state_->resizeReady=false;
         DXGI_SWAP_CHAIN_DESC actual{};auto hr=chain->GetDesc(&actual);
         if(FAILED(hr))return std::unexpected(RuntimeError{ErrorKind::ContextFailure,hr,"AMD resized descriptor query failed"});
         const Extent output{actual.BufferDesc.Width,actual.BufferDesc.Height};
-        auto render=state_->resources->ResizeSizingAfterRetirement(output,actual.BufferDesc.Format);if(!render)return std::unexpected(render.error());
+        Result<Extent> render=externalRender;
+        if(state_->resources->ExternalSource()){
+            if(FAILED(result))externalRender=state_->resources->RenderExtent();
+            auto sized=state_->resources->ResizeExternalSizingAfterRetirement(externalRender,output,actual.BufferDesc.Format);
+            if(!sized)return std::unexpected(sized.error());render=externalRender;
+        }else render=state_->resources->ResizeSizingAfterRetirement(output,actual.BufferDesc.Format);
+        if(!render)return std::unexpected(render.error());
         state_->limits={};state_->limits.render=*render;state_->limits.display=output;state_->limits.format=actual.BufferDesc.Format;
         state_->resizing=false;state_->resizeReady=false;return FsrHostResize{*render,result};
     }
@@ -99,9 +127,22 @@ namespace TheosRenderPipeline
         ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags)
     {
         if(flags&DXGI_PRESENT_TEST)return StartupPresent(interval,flags);
-        if(!state_->created || state_->closing || Suspended() || !state_->resources->FeatureReady())return E_UNEXPECTED;
+        if(!state_->created || state_->closing || Suspended())return E_UNEXPECTED;
+        if(state_->resources->ExternalSource()){
+            auto ready=state_->resources->CompleteExternalStartup();if(!ready)return E_FAIL;
+            if(!state_->externalGuides)state_->externalGuides=std::make_unique<FsrGenerationGuideAdapter>(
+                state_->resources->Bridge(),state_->resources->Resources(),state_->resources->Depth11(),state_->resources->Motion11());
+            if(outcome==UpscaleOutcome::Temporal){
+                auto prepared=state_->externalGuides->Prepare(frame);
+                if(!prepared){
+                    if(prepared.error().kind!=ErrorKind::InvalidInput)return E_FAIL;
+                    outcome=UpscaleOutcome::SkippedInvalidInput;
+                }
+            }
+        }
+        if(!state_->resources->GenerationInputsReady())return E_UNEXPECTED;
         if(outcome==UpscaleOutcome::Temporal){
-            const auto input=state_->resources->Upscaler()->Limits().input;
+            const auto input=state_->resources->GenerationInputPolicy();
             if(frame.camera.depthInverted!=input.depthInverted || frame.camera.depthInfinite!=input.depthInfinite ||
                 frame.motionConvention.includesJitter!=input.motionIncludesJitter)return E_INVALIDARG;
             if(!state_->feature){state_->limits.input=input;auto started=state_->presenter.CompleteStartup(state_->limits,state_->provider);
@@ -114,6 +155,7 @@ namespace TheosRenderPipeline
     Result<void> FsrHostPresentation::Retire()
     {
         state_->closing=true;auto retired=state_->presenter.Retire();if(!retired)return retired;
+        state_->externalGuides.reset();
         if(state_->resources){retired=state_->resources->Retire();if(!retired)return retired;}
         state_->feature=false;return {};
     }

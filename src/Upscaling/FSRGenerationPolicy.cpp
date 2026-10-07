@@ -56,7 +56,8 @@ namespace TheosRenderPipeline::Upscaling
         if (!uiComplete) return suppress("UI not completed");
         if (!std::isfinite(frame.deltaMilliseconds) || frame.deltaMilliseconds <= 0) return suppress("Invalid source time");
         if (frame.deltaMilliseconds >= 100) return suppress("Source stalled");
-        if (frame.backend != BackendKind::Fsr || !frame.depth || !frame.motion || !frame.render.width || !frame.render.height ||
+        if ((frame.backend != BackendKind::Fsr && frame.backend != BackendKind::Dlss && frame.backend != BackendKind::Dlaa) ||
+            !frame.depth || !frame.motion || !frame.render.width || !frame.render.height ||
             !frame.display.width || !frame.display.height || frame.render != frame.subrect ||
             frame.render.width > frame.display.width || frame.render.height > frame.display.height ||
             !frame.motionConvention.currentToPrevious || !std::isfinite(frame.motionConvention.scaleX) ||

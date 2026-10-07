@@ -42,7 +42,9 @@ static void CheckBackend()
     Require(Resolve(config,true,true).valid,"analytical FG is independent of the ML SR provider");
     config.providerPolicy = ProviderPolicy::Analytical;
     for (auto backend : {BackendKind::Dlss, BackendKind::Dlaa, BackendKind::External}) {
-        config.backend = backend; Require(!Resolve(config, true, true).valid, "UnsupportedCombinationRejected: other upscalers plus FSR FG");
+        config.backend = backend;
+        Require(Resolve(config, true, true).valid == (backend != BackendKind::External),
+            "DLSS/DLAA permit FSR FG; unowned external sources remain rejected");
     }
 }
 #ifdef HAS_FG_POLICY
