@@ -16,8 +16,10 @@ int main(int argc,char** argv) {
   CSimpleIniA ini;
   Require(ReadFsrSettings(ini).has_value(),"absent keys retain defaults");
   Require(ReadFsrSettings(ini)->sourceColorEncoding==ColorEncoding::Unknown,"missing transfer remains unknown instead of guessing");
+  ini.SetValue("FSR","ProviderPolicy","MachineLearning");
+  Require(ReadFsrSettings(ini) && static_cast<int>(ReadFsrSettings(ini)->providerPolicy)==2,"explicit FSR4 INI choice is readable");
   for(auto quality:{Quality::Quality,Quality::Balanced,Quality::Performance,Quality::NativeAA})
-   for(auto policy:{ProviderPolicy::Analytical,ProviderPolicy::Compatible}) {
+   for(auto policy:{ProviderPolicy::Analytical,ProviderPolicy::Compatible,ProviderPolicy::MachineLearning}) {
     FsrSettings settings{quality,policy,0.42f,ColorEncoding::SRGB};StoreFsrSettings(ini,settings);
     const auto loaded=ReadFsrSettings(ini);Require(loaded && *loaded==settings,"FSR settings round trip");
   }
@@ -56,7 +58,8 @@ int main(int argc,char** argv) {
   Require(!ValidateRendererSettings(draft,caps),"compiled analytical FSR FG accepted with completed native UI");
   caps.dedicatedUI=false;Require(ValidateRendererSettings(draft,caps),"FSR FG cannot run without dedicated completed UI");caps.dedicatedUI=true;
   caps.fsrFgBuilt=false;Require(ValidateRendererSettings(draft,caps),"FG-off build rejects AMD presenter");caps.fsrFgBuilt=true;
-  draft.fsr.providerPolicy=ProviderPolicy::Compatible;Require(ValidateRendererSettings(draft,caps),"FG analytical provider required");
+  draft.fsr.providerPolicy=ProviderPolicy::Compatible;Require(!ValidateRendererSettings(draft,caps),"Auto SR can use the independently selected analytical FG presenter");
+  draft.fsr.providerPolicy=ProviderPolicy::MachineLearning;Require(!ValidateRendererSettings(draft,caps),"FSR4 SR can use analytical FG without changing FG provider");
   draft=original;draft.fsr.quality=Quality::Performance;Require(CountRendererSettingsChanges(draft,original)==1,"one draft tracks FSR edits");
   draft=original;Require(CountRendererSettingsChanges(draft,original)==0,"discard restores original draft");
   Upscaler::Configuration configuration;Upscaler::Creation startup{4};configuration.Initialize(startup);configuration.BeginSubmission();configuration.Completed(true);
@@ -82,7 +85,8 @@ int main(int argc,char** argv) {
   fgIni.SetBoolValue("FrameGeneration","Enabled",true);
   Require(!ValidateFgStartup(fgIni,true),"compiled FG startup accepted with dedicated native UI");
   Require(ValidateFgStartup(fgIni,false),"SR-only startup cannot admit AMD presentation");
-  fgIni.SetValue("FSR","ProviderPolicy","Compatible");Require(ValidateFgStartup(fgIni,true),"startup rejects incompatible FG provider");
+  fgIni.SetValue("FSR","ProviderPolicy","Compatible");Require(!ValidateFgStartup(fgIni,true),"startup accepts Auto SR with analytical FG");
+  fgIni.SetValue("FSR","ProviderPolicy","MachineLearning");Require(!ValidateFgStartup(fgIni,true),"startup accepts FSR4 SR with analytical FG");
   fgIni.SetValue("FSR","ProviderPolicy","Analytical");fgIni.SetBoolValue("Settings","NativeUI",false);
   Require(ValidateFgStartup(fgIni,true),"startup requires native UI");fgIni.SetBoolValue("Settings","NativeUI",true);
   fgIni.SetLongValue("FrameGeneration", "UICompositionMode",1);Require(ValidateFgStartup(fgIni,true),"startup requires dedicated UI");

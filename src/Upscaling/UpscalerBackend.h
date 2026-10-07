@@ -13,7 +13,9 @@ namespace TheosRenderPipeline::Upscaling
     struct Extent { std::uint32_t width{}, height{}; bool operator==(const Extent&) const = default; };
     enum class BackendKind { Dlss, Dlaa, Fsr, External };
     enum class Quality { Quality, Balanced, Performance, NativeAA };
-    enum class ProviderPolicy { Analytical, Compatible };
+    enum class ProviderPolicy { Analytical, Compatible, MachineLearning };
+    inline bool ValidProviderPolicy(ProviderPolicy policy)
+    { return policy==ProviderPolicy::Analytical || policy==ProviderPolicy::Compatible || policy==ProviderPolicy::MachineLearning; }
     enum class ColorEncoding { Unknown, Linear, Gamma22, SRGB };
     struct ProviderInfo { std::uint64_t id{}; std::string name; };
     enum class GenerationPreparationStatus { NotRequested, Succeeded, Failed };

@@ -31,7 +31,13 @@ Copy-Item -LiteralPath (Join-Path $RuntimeDirectory (Split-Path $fg -Leaf)) -Des
 Rejected {& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration} 'WrongFgHashRejectedEvenWithUpdatedManifest'
 Copy-Item -LiteralPath (Join-Path $RuntimeDirectory (Split-Path $fg -Leaf)) -Destination $fg
 [IO.File]::WriteAllText($manifestPath,$manifestOriginal)
-foreach($change in @(@('Settings/NativeUI','false'),@('Experimental/NativeUICompositionMode','1'),@('FSR/ProviderPolicy','Compatible'),@('Experimental/FrameGenerationBackend','0'))) {
+foreach($policy in @('Compatible','MachineLearning')) {
+ $lines=Set-PackageIniValues ($configOriginal -split '\r?\n') @{'FSR/ProviderPolicy'=$policy}
+ [IO.File]::WriteAllLines($config,$lines);Update-ManifestFile 'SKSE/Plugins/RaZkolbaS.ini'
+ & $validate -Edition $Edition -PackageDirectory $package -FrameGeneration
+ Require ((Read-PackageIni $config)['FSR/ProviderPolicy'] -eq $policy) ("FgIndependentSrProvider-"+$policy)
+}
+foreach($change in @(@('Settings/NativeUI','false'),@('Experimental/NativeUICompositionMode','1'),@('FSR/ProviderPolicy','Invalid'),@('Experimental/FrameGenerationBackend','0'))) {
  $lines=Set-PackageIniValues ($configOriginal -split '\r?\n') @{$change[0]=$change[1]}
  [IO.File]::WriteAllLines($config,$lines)
  Require ((Read-PackageIni $config)[$change[0]] -eq $change[1]) ("ConfigMutationApplied-"+$change[0])

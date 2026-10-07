@@ -18,10 +18,10 @@ inline const char* QualityName(Quality value) {
     switch(value){case Quality::Quality:return "Quality";case Quality::Balanced:return "Balanced";case Quality::Performance:return "Performance";case Quality::NativeAA:return "NativeAA";}
     return "Invalid";
 }
-inline const char* ProviderPolicyName(ProviderPolicy value){return value==ProviderPolicy::Analytical?"Analytical":value==ProviderPolicy::Compatible?"Compatible":"Invalid";}
+inline const char* ProviderPolicyName(ProviderPolicy value){return value==ProviderPolicy::Analytical?"Analytical":value==ProviderPolicy::Compatible?"Compatible":value==ProviderPolicy::MachineLearning?"MachineLearning":"Invalid";}
 inline bool ValidFsrSettings(const FsrSettings& value) {
     return value.quality>=Quality::Quality && value.quality<=Quality::NativeAA &&
-        (value.providerPolicy==ProviderPolicy::Analytical || value.providerPolicy==ProviderPolicy::Compatible) &&
+        ValidProviderPolicy(value.providerPolicy) &&
         std::isfinite(value.sharpness) && value.sharpness>=0 && value.sharpness<=1 &&
         (value.sourceColorEncoding==ColorEncoding::Unknown || IsKnownColorEncoding(value.sourceColorEncoding));
 }
@@ -35,7 +35,8 @@ template<class Ini> Result<FsrSettings> ReadFsrSettings(const Ini& ini) {
     const std::string_view policy=ini.GetValue("FSR","ProviderPolicy","Analytical");
     if(policy=="Analytical")result.providerPolicy=ProviderPolicy::Analytical;
     else if(policy=="Compatible")result.providerPolicy=ProviderPolicy::Compatible;
-    else return invalid("[FSR] ProviderPolicy must be Analytical or Compatible.");
+    else if(policy=="MachineLearning")result.providerPolicy=ProviderPolicy::MachineLearning;
+    else return invalid("[FSR] ProviderPolicy must be Analytical, Compatible (Auto) or MachineLearning (FSR4).");
     const std::string_view sharpness=ini.GetValue("FSR","Sharpness","0");
     const auto parsed=std::from_chars(sharpness.data(),sharpness.data()+sharpness.size(),result.sharpness);
     if(parsed.ec!=std::errc{} || parsed.ptr!=sharpness.data()+sharpness.size() || !ValidFsrSettings(result))return invalid("[FSR] Sharpness must be a finite number from 0 to 1.");

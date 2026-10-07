@@ -17,9 +17,6 @@ namespace TheosRenderPipeline
                 config.generationBackend, config.neuralRendering)) {
             decision.diagnostic = "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
         }
-        else if (IsAmdRenderer(config.adapterVendorId) && config.providerPolicy != ProviderPolicy::Analytical) {
-            decision.diagnostic = "AMD currently uses the Analytical FSR provider; Compatible/ML is not validated.";
-        }
         else if (!config.enabled) { decision.diagnostic = "This renderer requires an enabled temporal upscaler."; }
         else if (config.backend == BackendKind::Dlss || config.backend == BackendKind::Dlaa) {
             if (config.generationBackend != 1) { decision.diagnostic = "DLSS/DLAA requires the NVIDIA presentation backend."; }
@@ -34,8 +31,8 @@ namespace TheosRenderPipeline
                 decision.diagnostic = "Ordinary FSR presentation requires frame generation off.";
             } else if (config.generationBackend == 2 && !fsrFgBuilt) {
                 decision.diagnostic = "FSR frame generation support is unavailable in this build.";
-            } else if (config.generationBackend == 2 && config.providerPolicy != ProviderPolicy::Analytical) {
-                decision.diagnostic = "FSR frame generation initially requires the analytical SR provider.";
+            } else if (!ValidProviderPolicy(config.providerPolicy)) {
+                decision.diagnostic = "Invalid FSR provider policy.";
             } else if (config.neuralRendering && !config.communityNeural) { decision.diagnostic = "Neural Rendering is unavailable with FSR."; }
             else if (config.hdr) { decision.diagnostic = "HDR output is not validated with FSR."; }
             else if (config.dynamicResolution) { decision.diagnostic = "FSR currently requires fixed render dimensions."; }
@@ -59,9 +56,6 @@ namespace TheosRenderPipeline
             if (ini.GetBoolValue("FrameGeneration", "Enabled", false)) { return "Ordinary FSR requires frame generation off."; }
         } else if (presenter == 2) {
             if (!fsrFgBuilt) { return "FSR frame generation support is unavailable in this build."; }
-            if (std::string_view(ini.GetValue("FSR", "ProviderPolicy", "Analytical")) != "Analytical") {
-                return "FSR frame generation requires the analytical provider.";
-            }
             if (!ini.GetBoolValue("Settings", "NativeUI", true) ||
                 ini.GetLongValue("Experimental", "NativeUICompositionMode", 0) != 0) {
                 return "FSR frame generation requires NativeUI=true and dedicated NativeUICompositionMode=0.";

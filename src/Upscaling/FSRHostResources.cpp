@@ -1,5 +1,6 @@
 #include "FSRHostResources.h"
 #include "FSRProviderPolicy.h"
+#include "FSRCreationFallback.h"
 #include "FSRColorContract.h"
 #include "FSRPreparedResources.h"
 #include "RendererBackendPolicy.h"
@@ -14,6 +15,8 @@ namespace TheosRenderPipeline::Upscaling
         std::unique_ptr<FsrUpscaler> upscaler;ProviderInfo provider;BackendConfiguration config;Extent render{},output{};
         Graphics::SharedTexture color,depth,motion,native;bool contextOwned{};
         ColorEncoding handoffEncoding{ColorEncoding::Unknown};
+        std::string providerDiagnostic;
+        bool firstStartupCompleted{};
     };
     static std::unexpected<RuntimeError> Failure(ErrorKind kind,HRESULT code,const char* text){return std::unexpected(RuntimeError{kind,code,text});}
     FsrHostResources::FsrHostResources(std::filesystem::path plugin,DeviceCreator creator):state_(std::make_unique<State>()),pluginDirectory_(std::move(plugin)),deviceCreator_(creator){}
@@ -34,6 +37,7 @@ namespace TheosRenderPipeline::Upscaling
     ID3D11Texture2D* FsrHostResources::Color11()const{return state_->color.texture11.Get();}ID3D11Texture2D* FsrHostResources::Depth11()const{return state_->depth.texture11.Get();}
     ID3D11Texture2D* FsrHostResources::Motion11()const{return state_->motion.texture11.Get();}ID3D11Texture2D* FsrHostResources::Output11()const{return state_->native.texture11.Get();}
     const ProviderInfo& FsrHostResources::Provider()const{return state_->provider;}
+    const std::string& FsrHostResources::ProviderDiagnostic()const{return state_->providerDiagnostic;}
     ColorEncoding FsrHostResources::HandoffEncoding()const{return state_->handoffEncoding;}
     Result<Extent> FsrHostResources::PrepareSizing(ID3D11Device* device11,const BackendConfiguration& config,Extent output,DXGI_FORMAT handoffFormat,ColorEncoding handoffEncoding)
     {
@@ -48,9 +52,9 @@ namespace TheosRenderPipeline::Upscaling
         hr=deviceCreator_?deviceCreator_(adapter.Get(),D3D_FEATURE_LEVEL_12_0,state_->device.ReleaseAndGetAddressOf()):
             D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&state_->device));
         if(FAILED(hr) || !state_->device)return fail(FAILED(hr)?hr:E_NOINTERFACE,"FSR same-adapter native D3D12 ownership unavailable");
-        D3D12_FEATURE_DATA_SHADER_MODEL model{D3D_SHADER_MODEL_6_0};
-        if(FAILED(hr=state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model))) || model.HighestShaderModel<D3D_SHADER_MODEL_6_0)
-            return fail(hr,"FSR requires shader model 6.0 before reduced target publication");
+        D3D12_FEATURE_DATA_SHADER_MODEL model{D3D_SHADER_MODEL_6_2};
+        if(FAILED(hr=state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model))) || model.HighestShaderModel<D3D_SHADER_MODEL_6_2)
+            return fail(hr,"FSR requires shader model 6.2 before reduced target publication");
         D3D12_COMMAND_QUEUE_DESC queue{};queue.Type=D3D12_COMMAND_LIST_TYPE_DIRECT;
         if(FAILED(hr=state_->device->CreateCommandQueue(&queue,IID_PPV_ARGS(&state_->queue))))return fail(hr,"FSR direct queue creation failed");
         state_->bridge=std::make_shared<Graphics::D3D11D3D12Interop>();
@@ -65,7 +69,21 @@ namespace TheosRenderPipeline::Upscaling
         }
         state_->runtime=std::make_shared<FsrRuntime>();auto loaded=state_->runtime->Load(pluginDirectory_);if(!loaded)return std::unexpected(loaded.error());
         auto providers=state_->runtime->Enumerate(state_->device.Get());if(!providers)return std::unexpected(providers.error());
-        auto provider=SelectProvider(*providers,config.providerPolicy);if(!provider)return std::unexpected(provider.error());state_->provider=*provider;
+        DXGI_ADAPTER_DESC description{};
+        if(FAILED(hr=adapter->GetDesc(&description)))return fail(hr,"FSR actual adapter description unavailable");
+        auto provider=SelectProvider(*providers,config.providerPolicy,description.VendorId);if(!provider)return std::unexpected(provider.error());
+        if(IsFsr4Provider(*provider)) {
+            D3D12_FEATURE_DATA_SHADER_MODEL mlModel{D3D_SHADER_MODEL_6_6};
+            if(FAILED(state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&mlModel,sizeof(mlModel))) || mlModel.HighestShaderModel<D3D_SHADER_MODEL_6_6) {
+                if(config.providerPolicy!=ProviderPolicy::Compatible)return fail(E_NOTIMPL,"FSR4 requires shader model 6.6 before reduced target publication");
+                provider=SelectProvider(*providers,ProviderPolicy::Analytical,description.VendorId);
+                if(!provider)return std::unexpected(provider.error());
+                state_->providerDiagnostic="Auto selected FSR3: shader model 6.6 unavailable";
+            }
+        }
+        state_->provider=*provider;
+        if(config.providerPolicy==ProviderPolicy::Compatible && !IsFsr4Provider(*provider) && state_->providerDiagnostic.empty())
+            state_->providerDiagnostic="Auto selected FSR3: FSR4 unavailable on this adapter";
         auto render=state_->runtime->QueryRenderExtent(state_->device.Get(),*provider,config.quality,output);if(!render)return std::unexpected(render.error());
         state_->render=*render;state_->output=output;state_->config=config;state_->handoffEncoding=handoffEncoding;return *render;
     }
@@ -82,8 +100,29 @@ namespace TheosRenderPipeline::Upscaling
         desc=FsrPreparedTextureDesc(FsrResourceRole::Output,state_->output);
         if(FAILED(hr=state_->bridge->CreateSharedTexture(desc,state_->native)))return Failure(ErrorKind::UnsupportedDevice,hr,"FSR native output allocation failed");
         state_->upscaler=std::make_unique<FsrUpscaler>();auto attached=state_->upscaler->SetRetirementBridge(state_->bridge);if(!attached)return attached;
-        auto created=state_->upscaler->Initialize(state_->runtime,state_->device.Get(),state_->provider,state_->config.quality,state_->render,state_->output);
-        if(!created)return created;state_->contextOwned=true;return {};
+        const auto selected=state_->provider;
+        std::string initialError;
+        auto created=CreateFsrWithStartupFallback(selected,
+            state_->firstStartupCompleted?ProviderPolicy::Analytical:state_->config.providerPolicy,state_->render,
+            [&](const ProviderInfo& provider) {
+                auto result=state_->upscaler->Initialize(state_->runtime,state_->device.Get(),provider,state_->config.quality,state_->render,state_->output);
+                if(!result && initialError.empty())initialError=result.error().message;
+                return result;
+            },
+            [&]{return state_->upscaler->DestroyAfterRetirement();},
+            [&]()->Result<std::pair<ProviderInfo,Extent>> {
+                auto providers=state_->runtime->Enumerate(state_->device.Get());
+                if(!providers)return std::unexpected(providers.error());
+                auto provider=SelectProvider(*providers,ProviderPolicy::Analytical);
+                if(!provider)return std::unexpected(provider.error());
+                auto extent=state_->runtime->QueryRenderExtent(state_->device.Get(),*provider,state_->config.quality,state_->output);
+                if(!extent)return std::unexpected(extent.error());
+                return std::pair{*provider,*extent};
+            });
+        if(!created)return std::unexpected(created.error());
+        state_->provider=*created;
+        if(created->id!=selected.id)state_->providerDiagnostic="Auto selected FSR3 after FSR4 startup failed: "+initialError;
+        state_->contextOwned=true;state_->firstStartupCompleted=true;return {};
     }
     Result<void> FsrHostResources::EnsureInputPolicy(FsrInputPolicy policy)
     {

@@ -45,8 +45,8 @@ $ini=Read-PackageIni (Join-Path $root 'SKSE/Plugins/RaZkolbaS.ini')
 foreach($pair in @(@('Settings/UpscaleType','4'),@('FrameGeneration/Enabled',$(if($FrameGeneration){'true'}else{'false'})),@('Experimental/FrameGenerationBackend',$(if($FrameGeneration){'2'}else{'0'})),@('SourceDLSSG/NeuralRenderingEnabled','false'),@('HDROutput/Enabled','false'),@('DynamicResolution/Enabled','false'),@('DynamicResolution/Oscillate','false'))) {
     if($ini[$pair[0]] -ne $pair[1]){throw "Invalid FSR selector: $($pair[0])"}
 }
-if($FrameGeneration -and ($ini['Settings/NativeUI'] -ne 'true' -or $ini['Experimental/NativeUICompositionMode'] -ne '0' -or $ini['FSR/ProviderPolicy'] -cne 'Analytical')){throw 'FG requires analytical SR and dedicated native UI'}
-if($ini['FSR/Quality'] -cnotin @('Quality','Balanced','Performance','NativeAA') -or $ini['FSR/ProviderPolicy'] -cnotin @('Analytical','Compatible')){throw 'Invalid FSR quality/provider'}
+if($FrameGeneration -and ($ini['Settings/NativeUI'] -ne 'true' -or $ini['Experimental/NativeUICompositionMode'] -ne '0')){throw 'FG requires dedicated native UI'}
+if($ini['FSR/Quality'] -cnotin @('Quality','Balanced','Performance','NativeAA') -or $ini['FSR/ProviderPolicy'] -cnotin @('Analytical','Compatible','MachineLearning')){throw 'Invalid FSR quality/provider'}
 if($ini['FSR/SourceColorEncoding'] -cnotin @('Linear','Gamma22','SRGB')){throw 'FSR package requires an explicit source color encoding'}
 $sharpness=0.0
 if(-not [double]::TryParse($ini['FSR/Sharpness'],[Globalization.NumberStyles]::Float,[Globalization.CultureInfo]::InvariantCulture,[ref]$sharpness) -or -not [double]::IsFinite($sharpness) -or $sharpness -lt 0 -or $sharpness -gt 1){throw 'Invalid FSR sharpness'}

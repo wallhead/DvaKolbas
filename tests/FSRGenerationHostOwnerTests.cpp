@@ -19,6 +19,7 @@ int main(int argc,char** argv)
         Require(argc==2,"fixture runtime root");PresentationFixture::Rig rig(argv[1]);
         auto resources=WithNativeCreator<FsrHostResources>(std::filesystem::absolute(argv[1]),NativeCreator);
         FsrSettings settings;settings.quality=Quality::Performance;settings.sourceColorEncoding=ColorEncoding::SRGB;
+        settings.providerPolicy=ProviderPolicy::Compatible;
         FsrHostPresentation host;auto extent=host.Create(rig.factory.Get(),rig.device11.Get(),resources,rig.desc,settings);
         Require(nativeCreations==1,"pre-query device supplied through native ownership boundary");
         Require(extent && *extent==Extent{64,64},"AMD sizing before outer stable-buffer publication");

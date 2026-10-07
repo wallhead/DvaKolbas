@@ -18,8 +18,8 @@ namespace TheosRenderPipeline
     {
         auto invalid=[](const char* text)->Result<Extent>{return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,text});};
         if(state_->created || state_->closing || !factory || !device || !resources || !ValidFsrSettings(settings) ||
-            settings.providerPolicy!=ProviderPolicy::Analytical || !IsKnownColorEncoding(settings.sourceColorEncoding))
-            return invalid("AMD host requires a fresh owner, analytical SR and explicit native SDR encoding");
+            !IsKnownColorEncoding(settings.sourceColorEncoding))
+            return invalid("AMD host requires a fresh owner, valid SR provider policy and explicit native SDR encoding");
         auto descriptor=FsrPresentation::TranslateDescriptor(input);if(!descriptor)return std::unexpected(descriptor.error());
         BackendConfiguration config;config.backend=BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;
         config.quality=settings.quality;config.providerPolicy=settings.providerPolicy;config.sharpness=settings.sharpness;

@@ -27,7 +27,6 @@ template<class Ini> void ApplyRendererGpuPolicy(Ini& ini, std::uint32_t vendor, 
     ini.SetLongValue("Settings", "UpscaleType", FSR);
     ini.SetBoolValue("Settings", "EnableUpscaler", true);
     ini.SetBoolValue("Settings", "NativeUI", true);
-    ini.SetValue("FSR", "ProviderPolicy", "Analytical");
     ini.SetLongValue("FrameGeneration", "Backend", presenter);
     ini.SetLongValue("Experimental", "FrameGenerationBackend", presenter);
     ini.SetBoolValue("FrameGeneration", "Enabled", enabled);

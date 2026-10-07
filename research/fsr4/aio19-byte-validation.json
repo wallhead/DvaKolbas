@@ -1,0 +1,9 @@
+{
+  "moduleHashes": "PASS",
+  "modules": 9,
+  "effectiveWindowsByteMatched": 91,
+  "instructionWitnessesByteMatched": 11761,
+  "dataWitnessesByteMatched": 144,
+  "historicalBadP4_23Replaced": true,
+  "scope": "Independent original-file byte validation, not instruction redecoding, PDB/LLVM parsing or GPU execution"
+}

@@ -154,7 +154,16 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
         auto& desc = *reinterpret_cast<ffxQueryGetProviderVersion*>(header);
         const auto provider = static_cast<FixtureContext*>(*context)->provider;
         desc.versionId = mode == 4 ? 99 : provider;
-        desc.versionName = mode == 15 ? "4.0.1" : provider == 17 ? name : provider==17752306900579389447ull?"3.1.7":"3.1.6";
+        desc.versionName = mode == 15 ? "4.0.1" : provider == 17 ? "fixture analytical FSR 3.1.5" : provider==17752306900579389447ull?"3.1.7":"3.1.6";
+        return FFX_API_RETURN_OK;
+    }
+    if(header->type==FFX_API_QUERY_DESC_TYPE_UPSCALE_GET_RESOURCE_REQUIREMENTS && context && *context) {
+        if(mode==31)return FFX_API_RETURN_ERROR;
+        auto& desc=*reinterpret_cast<ffxQueryDescUpscaleGetResourceRequirements*>(header);
+        desc.required_resources=FFX_API_QUERY_RESOURCE_INPUT_COLOR|FFX_API_QUERY_RESOURCE_INPUT_DEPTH|FFX_API_QUERY_RESOURCE_INPUT_MV|FFX_API_QUERY_RESOURCE_INPUT_EXPOSURE;
+        if(mode==32)desc.required_resources|=FFX_API_QUERY_RESOURCE_INPUT_REACTIVEMASK;
+        if(mode==33)desc.required_resources|=(1ull<<63);
+        desc.optional_resources=FFX_API_QUERY_RESOURCE_INPUT_REACTIVEMASK|FFX_API_QUERY_RESOURCE_INPUT_TRANSPARENCYCOMPOSITION;
         return FFX_API_RETURN_OK;
     }
     if (header->type == FFX_API_QUERY_DESC_TYPE_UPSCALE_GETJITTERPHASECOUNT && context && *context) {

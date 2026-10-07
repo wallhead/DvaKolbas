@@ -1,5 +1,6 @@
 #include "Upscaling/FSRRuntime.h"
 #include "Upscaling/FSRProviderPolicy.h"
+#include "Upscaling/FSRCreationFallback.h"
 #include "RendererBackendPolicy.h"
 #include <ffx_upscale.h>
 #include <dx12/ffx_api_dx12.h>
@@ -12,6 +13,35 @@ static void Require(bool value, const char* why) { if (!value) { std::fprintf(st
 static bool Loaded(const fs::path& p) { return GetModuleHandleW((p / "FSR/amd_fidelityfx_loader_dx12.dll").c_str()) || GetModuleHandleW((p / "FSR/amd_fidelityfx_upscaler_dx12.dll").c_str()); }
 int main(int argc, char** argv)
 {
+    // Vendor creation is the boundary double. Exercise cleanup ordering and
+    // the already-published game-buffer constraint without spoofing an adapter.
+    for(unsigned scenario=0;scenario<9;++scenario) {
+        std::string events;
+        const ProviderInfo ml{23,"4.1.1"}, analytical{22,"3.1.5"};
+        auto result=CreateFsrWithStartupFallback(ml,
+            scenario==1?ProviderPolicy::MachineLearning:scenario==8?ProviderPolicy::Analytical:ProviderPolicy::Compatible,Extent{960,540},
+            [&](const ProviderInfo& provider)->Result<void> {
+                events+=provider.id==23?'M':'A';
+                if(scenario==7)return {};
+                if(provider.id==22 && scenario!=6)return {};
+                return std::unexpected(RuntimeError{scenario==2?ErrorKind::DeviceLost:ErrorKind::ContextFailure,1,"creation failed"});
+            },
+            [&]()->Result<void> {
+                events+='R';
+                if(scenario==3)return std::unexpected(RuntimeError{ErrorKind::RetirementFailure,2,"still owned"});
+                return {};
+            },
+            [&]()->Result<std::pair<ProviderInfo,Extent>> {
+                events+='Q';
+                if(scenario==4)return std::unexpected(RuntimeError{ErrorKind::NoProvider,0,"missing"});
+                return std::pair{analytical,scenario==5?Extent{961,540}:Extent{960,540}};
+            });
+        const char* expected[]{"MRQA","M","M","MR","MRQ","MRQ","MRQA","M","M"};
+        Require(events==expected[scenario],"Auto fallback respects cleanup and admission order");
+        Require(bool(result)==(scenario==0 || scenario==7),"only first success or safely created same-size analytical fallback succeeds");
+        if(result)Require(result->id==(scenario==7?23:22),"creation publishes the actually created provider");
+        if(scenario==3)Require(result.error().kind==ErrorKind::RetirementFailure,"failed retirement is preserved instead of retrying");
+    }
     Require(argc == 2, "fixture directory supplied"); const auto base = fs::absolute(argv[1]);
     FsrRuntime absent; auto missing = absent.Load(base / "absent");
     Require(!missing && missing.error().kind == ErrorKind::MissingRuntime, "missing runtime is explicit");
@@ -73,7 +103,21 @@ int main(int argc, char** argv)
         Require(!runtime.QueryRenderExtent(device,*selected,static_cast<Quality>(99),{1920,1080}),"unknown quality rejected");
         std::vector<ProviderInfo> otherVersions{{41,"13.1.5"},{42,"3.1.50"},{43,"3.1.5.1"},{44,"4.1.1"}};
         Require(!SelectProvider(otherVersions,ProviderPolicy::Analytical),"analytical policy cannot silently choose a different version");
-        Require(SelectProvider(otherVersions,ProviderPolicy::Compatible)->id == 41,"compatible policy retains discovered provider order");
+        Require(SelectProvider(otherVersions,ProviderPolicy::Compatible)->id == 44,"Auto selects discovered FSR4 instead of unrelated or malformed versions");
+        std::vector<ProviderInfo> ordered{{21,"2.3.4"},{22,"3.1.5"},{23,"4.1.1"}};
+        Require(SelectProvider(ordered,ProviderPolicy::Compatible)->id==23,"Auto prefers FSR4 regardless of enumeration order");
+        Require(SelectProvider(ordered,ProviderPolicy::Compatible,0x10de)->id==22,"official Auto uses analytical FSR on NVIDIA even if catalog contains ML");
+        Require(!SelectProvider(ordered,ProviderPolicy::MachineLearning,0x10de),"official explicit ML does not force AMD-only runtime on NVIDIA");
+        Require(SelectProvider(ordered,ProviderPolicy::MachineLearning)->id==23,"explicit ML selects discovered FSR4");
+        ordered.pop_back();
+        Require(SelectProvider(ordered,ProviderPolicy::Compatible)->id==22,"Auto falls back to FSR3 when ML is unavailable on this device");
+        Require(!SelectProvider(ordered,ProviderPolicy::MachineLearning),"explicit ML cannot silently become FSR3");
+        Require(!SelectProvider(ordered,static_cast<ProviderPolicy>(99)),"invalid policy cannot select a provider");
+        mode(15);
+        ffxContext nameMismatch{};
+        Require(runtime.Functions().CreateContext(&nameMismatch,&create.header,nullptr)==FFX_API_RETURN_OK,"name-mismatch context seam");
+        Require(!runtime.VerifyActualProvider(nameMismatch,*selected),"same ID with a different actual provider name rejects the context");
+        Require(runtime.Functions().DestroyContext(&nameMismatch,nullptr)==FFX_API_RETURN_OK,"name-mismatch context retired");
     }
     Require(!Loaded(base / "good"),"runtime releases both fixture modules");
     std::puts("PASS: runtime loading, unwinding, provider identity, typed queries and lifetime");

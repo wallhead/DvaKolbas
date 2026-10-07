@@ -64,6 +64,14 @@ int main(int argc, char** argv)
     auto queryId=reinterpret_cast<uint64_t(*)()>(GetProcAddress(dll,"FixtureQueryId"));
     auto createId=reinterpret_cast<uint64_t(*)()>(GetProcAddress(dll,"FixtureCreateId"));
     ProviderInfo provider{17,"fixture analytical FSR 3.1.5"};
+    for(unsigned failureMode:{31u,32u,33u}) {
+        mode(failureMode);FsrUpscaler incompatibleResources;
+        Require(!incompatibleResources.Initialize(runtime,rig.device12.Get(),provider,Quality::Performance,frame.render,frame.display),
+            "failed resource query, missing required mask or unknown mandatory input must reject startup");
+        Require(!incompatibleResources.ActualProvider(),"resource-contract failure cannot report an active provider");
+        Require(bool(incompatibleResources.DestroyAfterRetirement()),"failed resource-contract context cleans up before reuse");
+    }
+    mode(0);
     FsrUpscaler fsr; fsr.SetRetirementBridge(bridge);
     Require(bool(fsr.Initialize(runtime,rig.device12.Get(),provider,Quality::Performance,frame.render,frame.display)), "context initialized");
     Require(fsr.RenderExtent() && *fsr.RenderExtent()==Extent{960,540} && queryId()==createId(), "OddResolutionFromProvider: sizing and create agree");

@@ -19,3 +19,8 @@ set_tests_properties(FsrPackage PROPERTIES TIMEOUT 120)
 
 add_test(NAME FsrSharpnessGpu COMMAND TRPFsrGpuSmoke --sharpness-check true --debug auto --runtime "${TRP_FSR_SDK_DIR}/runtime" --output "${CMAKE_BINARY_DIR}/validation/fsr-sharpness.json")
 set_tests_properties(FsrSharpnessGpu PROPERTIES TIMEOUT 120 SKIP_RETURN_CODE 77)
+
+add_test(NAME FsrAutoGpu COMMAND TRPFsrGpuSmoke --provider Compatible --frames 128 --recreate 4 --debug auto --runtime "${TRP_FSR_SDK_DIR}/runtime" --output "${CMAKE_BINARY_DIR}/validation/fsr-auto.json")
+set_tests_properties(FsrAutoGpu PROPERTIES TIMEOUT 120 SKIP_RETURN_CODE 77)
+add_test(NAME FsrMlGpu COMMAND TRPFsrGpuSmoke --provider MachineLearning --frames 128 --recreate 4 --debug auto --runtime "${TRP_FSR_SDK_DIR}/runtime" --output "${CMAKE_BINARY_DIR}/validation/fsr-ml.json")
+set_tests_properties(FsrMlGpu PROPERTIES TIMEOUT 120 SKIP_RETURN_CODE 77)

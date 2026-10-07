@@ -67,9 +67,15 @@ static std::uint64_t Pixels(Rig& rig,ID3D11Texture2D* staging,Extent size)
 }
 int main(int argc,char** argv)
 {
+    ProviderPolicy requestedPolicy=ProviderPolicy::Analytical;
     bool sharpnessCheck=false; unsigned frames=1000,recreate=25;std::filesystem::path runtimeDirectory,report="out/validation/fsr-gpu.json";
     for(int i=1;i<argc;++i){std::string argument=argv[i];Require(i+1<argc,"smoke option needs value");std::string value=argv[++i];
         if(argument=="--sharpness-check"){Require(value=="true","sharpness check expects true");sharpnessCheck=true;}
+        else if(argument=="--provider") {
+            if(value=="Analytical")requestedPolicy=ProviderPolicy::Analytical;
+            else if(value=="Compatible")requestedPolicy=ProviderPolicy::Compatible;
+            else {Require(value=="MachineLearning","provider must be Analytical, Compatible or MachineLearning");requestedPolicy=ProviderPolicy::MachineLearning;}
+        }
         else if(argument=="--frames")frames=std::stoul(value);else if(argument=="--recreate")recreate=std::stoul(value);else if(argument=="--output")report=value;
         else if(argument=="--runtime")runtimeDirectory=std::filesystem::absolute(value);else if(argument=="--debug")Require(value=="auto","debug auto only");else Require(false,"unknown smoke option");}
     if(sharpnessCheck){frames=128;recreate=4;}
@@ -78,7 +84,17 @@ int main(int argc,char** argv)
     auto plugin=std::filesystem::absolute(report).parent_path()/"runtime-plugin";std::filesystem::create_directories(plugin/"FSR");
     for(auto name:{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_upscaler_dx12.dll"})std::filesystem::copy_file(runtimeDirectory/name,plugin/"FSR"/name,std::filesystem::copy_options::overwrite_existing);
     auto runtime=std::make_shared<FsrRuntime>();Accepted(runtime->Load(plugin));Rig rig(true);allocatorDevice=rig.device12.Get();
-    auto provider=Value(SelectProvider(Value(runtime->Enumerate(rig.device12.Get())),ProviderPolicy::Analytical));
+    DXGI_ADAPTER_DESC adapterDescription{};Check(rig.adapter->GetDesc(&adapterDescription),"actual adapter description");
+    auto providers=Value(runtime->Enumerate(rig.device12.Get()));
+    for(const auto& candidate:providers)std::printf("Discovered provider id=%llu name=%s\n",candidate.id,candidate.name.c_str());
+    auto selection=SelectProvider(providers,requestedPolicy,adapterDescription.VendorId);
+    if(!selection && requestedPolicy==ProviderPolicy::MachineLearning && selection.error().kind==ErrorKind::NoProvider) {
+        std::filesystem::create_directories(report.parent_path());std::ofstream json(report);
+        json<<"{\"result\":\"NOT QUALIFIED\",\"requestedPolicy\":\"MachineLearning\",\"adapterVendorId\":"<<adapterDescription.VendorId
+            <<",\"adapterDeviceId\":"<<adapterDescription.DeviceId<<",\"reason\":\"Official FSR4 unavailable on the actual adapter\"}\n";
+        Require(bool(json),"write unsupported ML report");std::puts("SKIPPED: official FSR4 unavailable on this adapter");return 77;
+    }
+    auto provider=Value(std::move(selection));
     ComPtr<IDXGIAdapter3> memoryAdapter;Check(rig.adapter.As(&memoryAdapter),"adapter memory observation");
     auto memory=[&](){DXGI_QUERY_VIDEO_MEMORY_INFO info{};Check(memoryAdapter->QueryVideoMemoryInfo(0,DXGI_MEMORY_SEGMENT_GROUP_LOCAL,&info),"GPU memory observation");return info.CurrentUsage;};
     auto initialMemory=memory();UINT64 peakMemory=initialMemory,minRetiredMemory=UINT64_MAX,maxRetiredMemory{};
@@ -99,7 +115,8 @@ int main(int argc,char** argv)
             FsrUpscaler fsr;Accepted(fsr.SetRetirementBridge(bridge));bool inverted=!sharpnessCheck && cycle%2!=0;Accepted(fsr.SetInputPolicy({inverted,false,false,true}));
             ffxCreateBackendDX12AllocationCallbacksDesc allocation{};allocation.header.type=FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_DX12_ALLOCATION_CALLBACKS;
             allocation.pfnFfxResourceAllocator=AllocateResource;allocation.pfnFfxResourceDeallocator=FreeResource;allocation.pfnFfxHeapAllocator=AllocateHeap;allocation.pfnFfxHeapDeallocator=FreeHeap;
-            Accepted(fsr.SetAllocationCallbacks(allocation));Accepted(fsr.Initialize(runtime,rig.device12.Get(),provider,quality,render,display));Require(Value(fsr.ActualProvider()).id==provider.id,"actual analytical provider retained");
+            Accepted(fsr.SetAllocationCallbacks(allocation));Accepted(fsr.Initialize(runtime,rig.device12.Get(),provider,quality,render,display));
+            auto actual=Value(fsr.ActualProvider());Require(actual.id==provider.id && actual.name==provider.name,"actual selected provider identity retained");
             SharedTexture color,depth,motion,output;auto desc=rig.Description();desc.Width=render.width;desc.Height=render.height;
             // Opening this shared D3D12 UAV on D3D11 requires RT capability on
             // the tested device; shader production still uses only its UAV.
@@ -158,7 +175,8 @@ int main(int argc,char** argv)
     auto luid=rig.device12->GetAdapterLuid();std::filesystem::create_directories(report.parent_path());std::ofstream json(report);
     json<<"{\n\"sharpnessComparison\":"<<(sharpnessCheck?"true":"false")<<",\n\"sharpnessOutputHashes\":["<<sharpnessHashes[0]<<","<<sharpnessHashes[1]<<","<<sharpnessHashes[2]<<","<<sharpnessHashes[3]<<"],\n\"result\":\"PASS\",\n\"frames\":"<<dispatched<<",\"recreations\":"<<recreate<<",\"readbacks\":"<<readbacks<<",\"changingSamples\":"<<changed<<",\"inflightContexts\":"<<inflightVerified
         <<",\n\"productionFrameAdapter\":true,\"nativeUiSentinelChecked\":true,\"spatialFrames\":"<<spatialFrames<<",\"invalidInputAttempts\":"<<invalidFrames<<",\"historyResetFrames\":"<<resetFrames
-        <<",\n\"providerId\":"<<provider.id<<",\"providerName\":\""<<provider.name<<"\",\"adapterLuidHigh\":"<<luid.HighPart<<",\"adapterLuidLow\":"<<luid.LowPart
+        <<",\n\"requestedPolicy\":"<<unsigned(requestedPolicy)<<",\"adapterVendorId\":"<<adapterDescription.VendorId<<",\"adapterDeviceId\":"<<adapterDescription.DeviceId
+        <<",\"providerId\":"<<provider.id<<",\"providerName\":\""<<provider.name<<"\",\"adapterLuidHigh\":"<<luid.HighPart<<",\"adapterLuidLow\":"<<luid.LowPart
         <<",\n\"d3d11DebugValidated\":"<<(rig.messages11?"true":"false")<<",\"d3d12DebugValidated\":"<<(rig.messages12?"true":"false")
         <<",\n\"sdkCommittedResourcesCreated\":"<<allocatedResources<<",\"sdkHeapsCreated\":"<<allocatedHeaps<<",\"peakSdkCommittedResources\":"<<peakResources<<",\"peakSdkHeaps\":"<<peakHeaps
         <<",\"remainingSdkCommittedResources\":"<<liveResources.size()<<",\"remainingSdkHeaps\":"<<liveHeaps.size()

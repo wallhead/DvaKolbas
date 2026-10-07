@@ -16,6 +16,7 @@ TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrStatus() const
     using namespace TheosRenderPipeline;using namespace Upscaling;
     BackendConfiguration requested;
     const auto& creation=sourceUpscalerSettings_.Requested();
+    requested.providerPolicy=creation.fsr.providerPolicy;
     requested.backend=creation.mode==FSR?BackendKind::Fsr:creation.mode==DLAA?BackendKind::Dlaa:BackendKind::Dlss;
     auto active=backendDecision_;active.valid=false;
     const ProviderInfo* provider=nullptr;const RuntimeError* error=nullptr;

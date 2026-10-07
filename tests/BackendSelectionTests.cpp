@@ -85,6 +85,11 @@ int main()
     fsr.SetBoolValue("FrameGeneration", "Enabled", true);
     ApplyRendererGpuPolicy(fsr, 0x1002, true);
     Require(fsr.GetBoolValue("FrameGeneration", "Enabled", false), "AMD keeps an existing FSR FG request");
+    for(const char* provider : {"Compatible","MachineLearning"}) {
+        fsr.SetValue("FSR","ProviderPolicy",provider);
+        ApplyRendererGpuPolicy(fsr,0x1002,true);
+        Require(std::string_view(fsr.GetValue("FSR","ProviderPolicy",""))==provider,"AMD startup preserves explicit FSR4/Auto choice");
+    }
     ApplyRendererGpuPolicy(fsr, 0x1002, false);
     Require(fsr.GetLongValue("FrameGeneration", "Backend", -1) == 0 && !fsr.GetBoolValue("FrameGeneration", "Enabled", true), "AMD without FG build uses ordinary FSR");
     CSimpleIniA nvidia;
@@ -119,7 +124,7 @@ int main()
         amd.generationBackend = 0;
         amd.generationEnabled = false;
         amd.providerPolicy = Upscaling::ProviderPolicy::Compatible;
-        Require(!ResolveBackend(amd, true, true).valid, "AMD rejects unqualified provider selection instead of silently overwriting it");
+        Require(ResolveBackend(amd, true, true).valid, "AMD admits Auto; actual device/provider checks happen before publication");
     }
     StartupNeuralPassLimit();
     // Rejecting a supported ordinary FSR request because it lacks NVIDIA

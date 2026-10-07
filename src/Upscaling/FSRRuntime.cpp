@@ -235,7 +235,7 @@ namespace TheosRenderPipeline::Upscaling
     Result<void> FsrRuntime::VerifyActualProvider(ffxContext& context, const ProviderInfo& expected)
     {
         const auto actual = QueryActualProvider(context); if (!actual) return std::unexpected(actual.error());
-        if (actual->id != expected.id) return std::unexpected(Error(ErrorKind::ContextFailure, 0, "Created FSR provider differs from sizing provider"));
+        if (actual->id != expected.id || actual->name != expected.name) return std::unexpected(Error(ErrorKind::ContextFailure, 0, "Created FSR provider ID/name differs from sizing provider"));
         return {};
     }
     Result<void> FsrRuntime::VerifyActualProvider(ffxContext& context, const FsrEffectProvider& expected)

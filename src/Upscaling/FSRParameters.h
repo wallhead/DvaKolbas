@@ -21,6 +21,7 @@ namespace TheosRenderPipeline::Upscaling
         DXGI_FORMAT colorFormat{DXGI_FORMAT_R16G16B16A16_FLOAT};
         DXGI_FORMAT depthFormat{DXGI_FORMAT_R32_FLOAT}, motionFormat{DXGI_FORMAT_R16G16_FLOAT};
         FsrInputPolicy input{};
+        std::uint64_t requiredResources{}, optionalResources{};
     };
     // Descriptors describe COMPUTE_READ inputs and a UAV output. The owner must
     // transition COMMON -> those states before dispatch and restore COMMON.

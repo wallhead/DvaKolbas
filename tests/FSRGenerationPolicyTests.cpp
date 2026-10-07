@@ -37,7 +37,10 @@ static void CheckBackend()
         config.*flag = true; Require(!Resolve(config, true, true).valid, "UnsupportedCombinationRejected: NR/HDR/dynamic resolution"); config.*flag = false;
     }
     config.providerPolicy = ProviderPolicy::Compatible;
-    Require(!Resolve(config, true, true).valid, "FG initially requires analytical SR"); config.providerPolicy = ProviderPolicy::Analytical;
+    Require(Resolve(config, true, true).valid, "analytical FG is independent of the Auto SR provider");
+    config.providerPolicy=ProviderPolicy::MachineLearning;
+    Require(Resolve(config,true,true).valid,"analytical FG is independent of the ML SR provider");
+    config.providerPolicy = ProviderPolicy::Analytical;
     for (auto backend : {BackendKind::Dlss, BackendKind::Dlaa, BackendKind::External}) {
         config.backend = backend; Require(!Resolve(config, true, true).valid, "UnsupportedCombinationRejected: other upscalers plus FSR FG");
     }

@@ -212,8 +212,6 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         !AmdRendererSelectionAllowed(draft.upscaleType, draft.generationBackend, draft.sourceDLSSG.neuralEnabled)) {
         return "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
     }
-    if (IsAmdRenderer(capabilities.adapterVendorId) && draft.fsr.providerPolicy != Upscaling::ProviderPolicy::Analytical)
-        return "AMD currently uses the Analytical FSR provider; Compatible/ML is not validated.";
     if (capabilities.fsrFgPresenter && !draft.nativeUI) {
         return "Native UI must stay enabled while the AMD FSR presenter is active. Restart with the new presenter before disabling it.";
     }
@@ -228,7 +226,6 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if(draft.generationBackend==0){if(draft.generationEnabled)return "Ordinary FSR presentation requires frame generation off.";}
         else if(draft.generationBackend==2){
             if(!capabilities.fsrFgBuilt)return "FSR frame generation is not included in this build.";
-            if(draft.fsr.providerPolicy!=Upscaling::ProviderPolicy::Analytical)return "FSR frame generation requires the analytical provider.";
             if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "FSR frame generation requires TRP's dedicated native UI and source ownership.";
         } else return "FSR requires ordinary presentation (backend 0) or FSR frame generation (backend 2).";
         if (draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural) return "Neural Rendering is unavailable with FSR.";

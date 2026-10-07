@@ -46,9 +46,18 @@ an existing known-working value for the same setup. GPU model and texture format
 do not establish color encoding. If the source is not verified, keep `Unknown`:
 startup stops with instructions rather than processing incorrectly encoded color.
 
-AMD currently uses **Analytical 3.1.5**. The menu shows this fixed provider and
-does not offer Compatible/ML until that path has been validated. This provider
-policy is not a claim of completed AMD hardware testing.
+`ProviderPolicy=Analytical` selects FSR3.1.5. `Compatible` selects official FSR4
+when the actual AMD adapter advertises it, otherwise FSR3. `MachineLearning`
+requires FSR4 and reports an error if unavailable. Changes require a restart.
+Official FSR4 requires shader model 6.6; the SDK's device catalog determines
+availability. The bundled SDK2.3.0 contains FSR4.1.1. Positive FSR4 GPU/gameplay
+qualification is still pending on AMD hardware for this preview.
+
+Auto can retry FSR3 after an FSR4 startup failure only after successful context
+cleanup and only when both providers use the already allocated render size.
+Device loss, failed cleanup and dispatch errors do not trigger a retry.
+FSR FG remains analytical 3.1.6 with swapchain 3.1.7, independently of the SR
+provider. Ordering remains FSR → NR (where supported) → FG → UI.
 
 Normal provider selection uses `[FrameGeneration] Backend=1` for DLSS/DLAA on
 NVIDIA, and `Backend=2` for FSR on NVIDIA or AMD. The FG toggle retains the backend

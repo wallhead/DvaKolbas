@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-07",
+  "scope": "Official SDK 2.3.0 FSR4.1.1 SR; analytical FG3.1.6 and swapchain3.1.7 retained",
+  "order": "DLSS/FSR -> NR where supported -> FG -> UI",
+  "milestones": [
+    {"id": 1, "task": "Validate AIO19 evidence against original bytes", "status": "complete"},
+    {"id": 2, "task": "Provider policy, INI/menu and independent SR/FG admission", "status": "complete"},
+    {"id": 3, "task": "Shader/input contracts and cleanup-safe startup Auto fallback", "status": "complete"},
+    {"id": 4, "task": "Build and local lifecycle/FG/GPU integration checks", "status": "complete"},
+    {"id": 5, "task": "Actual AMD FSR4 execution and Skyrim acceptance", "status": "pending external GPU"},
+    {"id": 6, "task": "Promote qualified build into release package", "status": "pending milestone 5"}
+  ],
+  "localVerification": {
+    "adapter": "NVIDIA RTX 4080 SUPER",
+    "selectedSuite": {"passed": 31, "failed": 0, "skipped": 1},
+    "skipped": "Explicit FSR4 unavailable on local NVIDIA adapter",
+    "autoActualProvider": "3.1.5",
+    "sharpness": "Real-runtime pixels differ at Quality and Native AA",
+    "debugLayersAvailable": false,
+    "fallbackCoverage": "Boundary-double orchestration tests; actual ML-to-analytical creation failure not GPU-qualified",
+    "review": "Independent focused review; resize fallback latch and auto-exposure bitmap corrected"
+  },
+  "pending": [
+    "RX9070 tester: standalone MachineLearning Native/Quality/Balanced/Performance, recreation and sharpening",
+    "Skyrim: explicit FSR4 actual provider 4.x, Native then scaled; FG off/on; HUD and lifecycle acceptance",
+    "No AIO19 INT8 runtime integration or official ML FG4 qualification in this phase"
+  ],
+  "sources": [
+    "https://gpuopen.com/manuals/fsr_sdk/techniques/super-resolution-ml/",
+    "tools/fsr/runtime-pin.json",
+    "research/fsr4/aio19-byte-validation.json"
+  ]
+}

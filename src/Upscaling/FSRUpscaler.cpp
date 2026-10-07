@@ -1,5 +1,7 @@
 #include "FSRUpscaler.h"
+#include "FSRProviderPolicy.h"
 #include <dx12/ffx_api_dx12.h>
+#include <dxgi1_4.h>
 #include <cmath>
 #include <format>
 
@@ -58,9 +60,17 @@ namespace TheosRenderPipeline::Upscaling
         if(!extent) return std::unexpected(extent.error());
         if(*extent!=render) return Error(ErrorKind::InvalidInput,0,"FSR render dimensions differ from selected provider query");
         auto hr=device->GetDeviceRemovedReason(); if(FAILED(hr)) return Error(ErrorKind::DeviceLost,hr,"FSR device removed before creation");
-        D3D12_FEATURE_DATA_SHADER_MODEL model{D3D_SHADER_MODEL_6_0};
-        if(FAILED(device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model))) || model.HighestShaderModel<D3D_SHADER_MODEL_6_0)
-            return Error(ErrorKind::UnsupportedDevice,0,"FSR analytical provider requires shader model 6.0");
+        const auto minimum=IsFsr4Provider(provider)?D3D_SHADER_MODEL_6_6:D3D_SHADER_MODEL_6_2;
+        D3D12_FEATURE_DATA_SHADER_MODEL model{minimum};
+        if(FAILED(device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model))) || model.HighestShaderModel<minimum)
+            return Error(ErrorKind::UnsupportedDevice,0,"FSR provider shader model unavailable (FSR3 requires 6.2; FSR4 requires 6.6)");
+        if(IsFsr4Provider(provider)) {
+            ComPtr<IDXGIFactory4> factory;ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 description{};
+            if(FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory))) ||
+                FAILED(factory->EnumAdapterByLuid(device->GetAdapterLuid(),IID_PPV_ARGS(&adapter))) ||
+                FAILED(adapter->GetDesc1(&description)) || description.VendorId!=0x1002)
+                return Error(ErrorKind::UnsupportedDevice,0,"Official FSR4 requires a supported AMD adapter; use Auto or FSR3 on other GPUs");
+        }
         for(auto format:{state_->limits.colorFormat,state_->limits.depthFormat,state_->limits.motionFormat}) {
             D3D12_FEATURE_DATA_FORMAT_SUPPORT support{format};
             if(FAILED(device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT,&support,sizeof(support))) ||
@@ -94,6 +104,23 @@ namespace TheosRenderPipeline::Upscaling
             state_->poisoned=true; (void)DestroyAfterRetirement(); return std::unexpected(error);
         }
         state_->actual=*actual;
+        ffxQueryDescUpscaleGetResourceRequirements requirements{};
+        requirements.header.type=FFX_API_QUERY_DESC_TYPE_UPSCALE_GET_RESOURCE_REQUIREMENTS;
+        result=state_->runtime->Functions().Query(&state_->context,&requirements.header);
+        // The producer supplies color/depth/motion and uses SDK auto exposure.
+        // Required masks or new unknown inputs cannot be silently omitted.
+        // The pinned header defines EXPOSURE as a texture OR the auto-exposure
+        // creation flag. FSR3 reports it as required even with that flag set.
+        const std::uint64_t supplied=FFX_API_QUERY_RESOURCE_INPUT_COLOR|FFX_API_QUERY_RESOURCE_INPUT_DEPTH|FFX_API_QUERY_RESOURCE_INPUT_MV |
+            ((create.flags&FFX_UPSCALE_ENABLE_AUTO_EXPOSURE)?FFX_API_QUERY_RESOURCE_INPUT_EXPOSURE:0);
+        if(result!=FFX_API_RETURN_OK || (requirements.required_resources&~supplied)) {
+            (void)DestroyAfterRetirement();
+            return std::unexpected(RuntimeError{ErrorKind::IncompatibleAbi,result,std::format(
+                "FSR provider resource requirements unavailable or unsupported: required=0x{:X} optional=0x{:X} supplied=0x{:X}",
+                requirements.required_resources,requirements.optional_resources,supplied)});
+        }
+        state_->limits.requiredResources=requirements.required_resources;
+        state_->limits.optionalResources=requirements.optional_resources;
         ffxQueryDescUpscaleGetJitterPhaseCount phase{{FFX_API_QUERY_DESC_TYPE_UPSCALE_GETJITTERPHASECOUNT,nullptr},render.width,output.width,&state_->phaseCount};
         result=state_->runtime->Functions().Query(&state_->context,&phase.header);
         if(result!=FFX_API_RETURN_OK || state_->phaseCount<=0 || state_->phaseCount>1048576) {

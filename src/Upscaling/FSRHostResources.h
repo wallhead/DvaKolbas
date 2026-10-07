@@ -25,6 +25,7 @@ namespace TheosRenderPipeline::Upscaling
         FsrUpscaler* Upscaler()const;
         ID3D11Texture2D* Color11()const;ID3D11Texture2D* Depth11()const;ID3D11Texture2D* Motion11()const;ID3D11Texture2D* Output11()const;
         const ProviderInfo& Provider()const;
+        const std::string& ProviderDiagnostic()const;
         ColorEncoding HandoffEncoding()const;
     private:
         struct State;std::unique_ptr<State> state_;std::filesystem::path pluginDirectory_;DeviceCreator deviceCreator_{};
