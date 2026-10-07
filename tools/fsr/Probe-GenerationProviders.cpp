@@ -13,7 +13,20 @@ static int Fail(const RuntimeError& error)
 { std::fprintf(stderr, "FAIL kind=%u native=%lld: %s\n", unsigned(error.kind), static_cast<long long>(error.nativeResult), error.message.c_str()); return 1; }
 int main(int argc, char** argv)
 {
-    if (argc != 2 && (argc != 3 || (std::strcmp(argv[2], "--create-context") && std::strcmp(argv[2], "--create-presenter")))) { std::fprintf(stderr, "Usage: TRPFsrGenerationProviderProbe <absolute plugin directory with FSR subfolder> [--create-context|--create-presenter]\n"); return 2; }
+    if(argc<2){std::fprintf(stderr,"Usage: TRPFsrGenerationProviderProbe <absolute plugin directory> [--provider Analytical|Compatible|MachineLearning] [--create-context|--create-presenter]\n");return 2;}
+    ProviderPolicy policy=ProviderPolicy::Analytical;bool createContext{},createPresenter{},checkPolicy{};
+    for(int i=2;i<argc;++i){
+        if(!std::strcmp(argv[i],"--create-context"))createContext=true;
+        else if(!std::strcmp(argv[i],"--create-presenter"))createPresenter=true;
+        else if(!std::strcmp(argv[i],"--provider") && i+1<argc){
+            const std::string_view value=argv[++i];checkPolicy=true;
+            if(value=="Analytical")policy=ProviderPolicy::Analytical;
+            else if(value=="Compatible")policy=ProviderPolicy::Compatible;
+            else if(value=="MachineLearning")policy=ProviderPolicy::MachineLearning;
+            else return 2;
+        }else return 2;
+    }
+    if(createContext && createPresenter)return 2;
     auto runtime = std::make_shared<FsrRuntime>();
     if (auto loaded = runtime->Load(std::filesystem::path(argv[1])); !loaded) return Fail(loaded.error());
     if (auto loaded = runtime->LoadFrameGeneration(std::filesystem::path(argv[1])); !loaded) return Fail(loaded.error());
@@ -31,7 +44,13 @@ int main(int argc, char** argv)
         for (const auto& provider : *providers)
             std::printf("Effect=%u id=%llu name=%s\n", unsigned(provider.effect), static_cast<unsigned long long>(provider.identity.id), provider.identity.name.c_str());
     }
-    if(argc==3 && !std::strcmp(argv[2],"--create-presenter")){
+    if(checkPolicy){
+        auto catalog=runtime->EnumerateForEffect(device.Get(),FsrEffect::FrameGeneration);if(!catalog)return Fail(catalog.error());
+        auto selected=SelectFsrEffectProvider(*catalog,FsrEffect::FrameGeneration,policy);if(!selected)return Fail(selected.error());
+        std::printf("Selected FG provider id=%llu name=%s (algorithm version, independent of SR)\n",
+            static_cast<unsigned long long>(selected->identity.id),selected->identity.name.c_str());
+    }
+    if(createPresenter){
         ComPtr<ID3D12CommandQueue> queue;D3D12_COMMAND_QUEUE_DESC queueDesc{};queueDesc.Type=D3D12_COMMAND_LIST_TYPE_DIRECT;
         if(FAILED(device->CreateCommandQueue(&queueDesc,IID_PPV_ARGS(&queue))))return 1;
         auto bridge=std::make_shared<TheosRenderPipeline::Graphics::D3D11D3D12Interop>();
@@ -49,7 +68,7 @@ int main(int argc, char** argv)
             if(auto result=presenter.Create(factory.Get(),runtime,bridge,desc,*selected);!result)failure=Fail(result.error());
             if(!failure && FAILED(presenter.Present({},UpscaleOutcome::SkippedInvalidInput,{},nullptr,ColorEncoding::Unknown,nullptr,nullptr,false,false,false,0,0)))failure=1;
             auto fgCatalog=runtime->EnumerateForEffect(device.Get(),FsrEffect::FrameGeneration);if(!fgCatalog)return Fail(fgCatalog.error());
-            auto fg=SelectFsrEffectProvider(*fgCatalog,FsrEffect::FrameGeneration);if(!fg)return Fail(fg.error());
+            auto fg=SelectFsrEffectProvider(*fgCatalog,FsrEffect::FrameGeneration,policy);if(!fg)return Fail(fg.error());
             FsrGenerationLimits limits;limits.render={640,360};limits.display={1280,720};
             if(!failure){if(auto result=presenter.CompleteStartup(limits,*fg);!result)failure=Fail(result.error());}
             if(auto result=presenter.Retire();!result)failure=Fail(result.error());
@@ -57,10 +76,10 @@ int main(int argc, char** argv)
         DestroyWindow(window);if(failure)return failure;
         std::puts("PASS: real AMD NewDX12 create/identity, feature-less startup Present, deferred FG create, unregister/WaitForPresents and ordered destruction; generated pixels not tested");return 0;
     }
-    if (argc == 3) {
+    if (createContext) {
         auto session = std::make_shared<FsrSdkSession>(); FsrFrameGeneration generation(session); auto lock = session->Lock();
         auto catalog = runtime->EnumerateForEffect(device.Get(), FsrEffect::FrameGeneration); if (!catalog) return Fail(catalog.error());
-        auto selected = SelectFsrEffectProvider(*catalog, FsrEffect::FrameGeneration); if (!selected) return Fail(selected.error());
+        auto selected = SelectFsrEffectProvider(*catalog, FsrEffect::FrameGeneration,policy); if (!selected) return Fail(selected.error());
         FsrGenerationLimits limits; limits.render = {640,360}; limits.display = {1280,720};
         if (auto created = generation.Create(lock, runtime, device.Get(), *selected, limits); !created) return Fail(created.error());
         auto memory = generation.QueryMemoryUsage(lock);
@@ -72,7 +91,7 @@ int main(int argc, char** argv)
             static_cast<unsigned long long>(selected->identity.id), selected->identity.name.c_str(),
             FFX_FRAMEGENERATION_VERSION_MAJOR, FFX_FRAMEGENERATION_VERSION_MINOR, FFX_FRAMEGENERATION_VERSION_PATCH,
             static_cast<unsigned long long>(memory->totalUsageInBytes));
-        std::puts("PASS: real analytical FG context create, identity, memory query and destruction; no Prepare/generation/presentation tested");
+        std::puts("PASS: real selected FG context create, identity, memory query and destruction; no Prepare/generation/presentation tested");
     }
     std::puts("PASS: real effect catalogs queried; no generation or presentation tested");
 }

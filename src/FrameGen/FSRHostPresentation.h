@@ -26,6 +26,7 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> Retire();
         IDXGISwapChain4* SwapChain()const;ID3D11Texture2D* SceneTarget11()const;
         bool FeatureReady()const;FsrPresentationStatus Status()const;
+        const Upscaling::FsrEffectProvider& GenerationProvider()const;
     private:
         struct State;std::unique_ptr<State> state_;
     };

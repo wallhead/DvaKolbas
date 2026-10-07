@@ -262,12 +262,12 @@ HRESULT NvidiaHost::PresentFsrSource(UINT interval,UINT flags)
     const bool changed=before.decision.reason!=status.decision.reason || before.decision.generate!=status.decision.generate;
     if(FAILED(result) || presentCount_<3 || (changed && fsrGenerationTransitionLogs_++<24) ||
         (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && presentCount_%600==0)) {
-        logger::info("[FSR FG] source={} presentCount={} renderedAtCapture={} renderedNow={} camera={} guideCapture={} temporalGuides={} configuredId={} preparedId={} requested={} prepare={} generate={} reason={} callbackCount={} callbackResult={} submitted={} apiResult=0x{:08X}",
+        logger::info("[FSR FG] source={} presentCount={} renderedAtCapture={} renderedNow={} camera={} guideCapture={} temporalGuides={} configuredId={} preparedId={} requested={} prepare={} generate={} reason={} callbackCount={} callbackResult={} submitted={} apiResult=0x{:08X} provider={} featureReady={}",
             status.sourceId,presentCount_,fsrSourceRenderedCount_,RenderPipeline::GetSingleton()->mRenderedFrameCount,
             fsrGenerationFrame_.camera.identity,fsrGuideCaptureCount_,fsrGenerationOutcome_==UpscaleOutcome::Temporal,
             status.callback.configuredId,status.callback.preparedId,SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),status.decision.prepare,
             status.decision.generate,status.decision.reason,status.callback.invocations,status.callback.result,
-            status.submitted,static_cast<std::uint32_t>(result));
+            status.submitted,static_cast<std::uint32_t>(result),fsrPresentation_->GenerationProvider().identity.name,fsrPresentation_->FeatureReady());
     }
     if(FAILED(result))return FailLifecycle(result,"AMD source Present");
     return result;
@@ -280,9 +280,13 @@ TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrFgStatus() const
 {
 #if defined(TRP_ENABLE_FSR_FG)
     auto state=fsrPresentation_?fsrPresentation_->Status():TheosRenderPipeline::FsrPresentationStatus{};
-    return TheosRenderPipeline::Upscaling::DescribeFsrGenerationStatus(FsrFgActive(),
+    auto status=TheosRenderPipeline::Upscaling::DescribeFsrGenerationStatus(FsrFgActive(),
         SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested(),state.submitted,
         FAILED(FailureResult()) || FAILED(state.result),state.decision,state.callback.invocations);
+    if(fsrPresentation_ && fsrPresentation_->GenerationProvider().identity.id)
+        status.text += " | " + std::string(fsrPresentation_->FeatureReady()?"Actual FG provider: ":"Selected FG provider: ") +
+            fsrPresentation_->GenerationProvider().identity.name;
+    return status;
 #else
     return {"FSR frame generation is unavailable in this build.",TheosRenderPipeline::SettingsStatusKind::Neutral};
 #endif

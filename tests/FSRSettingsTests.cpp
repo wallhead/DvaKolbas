@@ -18,6 +18,14 @@ int main(int argc,char** argv) {
   Require(ReadFsrSettings(ini)->sourceColorEncoding==ColorEncoding::Unknown,"missing transfer remains unknown instead of guessing");
   ini.SetValue("FSR","ProviderPolicy","MachineLearning");
   Require(ReadFsrSettings(ini) && static_cast<int>(ReadFsrSettings(ini)->providerPolicy)==2,"explicit FSR4 INI choice is readable");
+  for(auto fgPolicy:{ProviderPolicy::Analytical,ProviderPolicy::Compatible,ProviderPolicy::MachineLearning}) {
+    FsrSettings settings;settings.providerPolicy=ProviderPolicy::MachineLearning;settings.generationProviderPolicy=fgPolicy;
+    StoreFsrSettings(ini,settings);
+    Require(ReadFsrSettings(ini) && *ReadFsrSettings(ini)==settings,"independent SR/FG policies round trip");
+  }
+  ini.SetValue("FrameGeneration","FsrProviderPolicy","Unknown");
+  Require(!ReadFsrSettings(ini),"invalid FG policy is rejected");
+  ini.Delete("FrameGeneration","FsrProviderPolicy");
   for(auto quality:{Quality::Quality,Quality::Balanced,Quality::Performance,Quality::NativeAA})
    for(auto policy:{ProviderPolicy::Analytical,ProviderPolicy::Compatible,ProviderPolicy::MachineLearning}) {
     FsrSettings settings{quality,policy,0.42f,ColorEncoding::SRGB};StoreFsrSettings(ini,settings);
@@ -80,6 +88,10 @@ int main(int argc,char** argv) {
   Require(configuration.NeedsRestart() && configuration.LiveCandidate().fsr.sourceColorEncoding==startup.fsr.sourceColorEncoding,
       "encoding changes require restart and cannot alter an active frame adapter");
   CSimpleIniA fgIni;
+  configuration.Initialize(startup);requested=startup;requested.fsr.generationProviderPolicy=ProviderPolicy::MachineLearning;
+  configuration.Request(requested);
+  Require(configuration.NeedsRestart() && configuration.LiveCandidate().fsr.generationProviderPolicy==startup.fsr.generationProviderPolicy,
+      "FG provider changes are staged and cannot reconfigure live allocations");
   fgIni.SetLongValue("Settings","UpscaleType",FSR);
   fgIni.SetLongValue("FrameGeneration", "Backend",2);
   fgIni.SetBoolValue("FrameGeneration","Enabled",true);

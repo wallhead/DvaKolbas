@@ -37,6 +37,12 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 ImGui::EndTabItem();return;
             }
             drawSmoothMotionNotice();
+            int fgPolicy=static_cast<int>(settingsDraft.fsr.generationProviderPolicy);
+            const char* fgProviders[]{"FSR3 FG (3.1.6)","Auto (FSR4 / FSR3 FG)","FSR4 FG (ML, experimental)"};
+            ImGui::SetNextItemWidth(-1.0f);
+            if(ImGui::Combo("Provider##fsr-fg",&fgPolicy,fgProviders,3))
+                settingsDraft.fsr.generationProviderPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(fgPolicy);
+            DrawSettingsHelp("Provider changes require Save as default and restart. Official ML FG requires Windows 11 and Radeon RX 9000 or later; Auto uses FSR3 FG when ML FG is unavailable. Upscaling and FG providers are independent.");
             auto status=nvidiaHost->FsrFgStatus();
             ImGui::TextWrapped("%s",status.text.c_str());
             constexpr bool built=

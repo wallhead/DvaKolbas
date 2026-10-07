@@ -28,8 +28,10 @@ int main(int argc, char** argv)
     auto dll = GetModuleHandleW(L"amd_fidelityfx_loader_dx12.dll");
     auto mode = reinterpret_cast<void (*)(unsigned)>(GetProcAddress(dll, "FixtureMode")); Require(mode != nullptr, "fixture mode");
     auto stat = reinterpret_cast<unsigned (*)(unsigned)>(GetProcAddress(dll,"FixturePresentationStat"));Require(stat!=nullptr,"callback dispatch observation");
+    for(unsigned testMode:{0u,36u}) {
+    mode(testMode);
     auto session = std::make_shared<FsrSdkSession>(); FsrFrameGeneration generation(session);
-    FsrEffectProvider selected{FsrEffect::FrameGeneration, {17726168133342859270ull, "3.1.6"}};
+    FsrEffectProvider selected{FsrEffect::FrameGeneration, testMode==36?ProviderInfo{42,"4.0.1"}:ProviderInfo{17726168133342859270ull,"3.1.6"}};
     auto foreignSession = std::make_shared<FsrSdkSession>();
     { auto foreign = foreignSession->Lock(); Require(!generation.Create(foreign, runtime, rig.device12.Get(), selected, rig.limits), "foreign-session lock token rejected"); }
     {
@@ -87,6 +89,7 @@ int main(int argc, char** argv)
     Require(bool(generation.DestroyAfterRetirement(lock)), "no GPU work recorded by vendor double; safe context destruction");
     Require(bool(session->ResumeAfterFeatureRetirement(lock)),"SuccessfulDestroyClearsCallerContextEvenWhenSdkDoesNot");mode(0);
     chain.Reset(); base.Reset(); DestroyWindow(window); rig.ValidateDebug();
+    }
     }
     CheckDestructorSerialization();
     std::puts("PASS: FG context, source configuration, inherited callback lock and diagnostics");

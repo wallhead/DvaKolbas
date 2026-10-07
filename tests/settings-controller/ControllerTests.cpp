@@ -157,6 +157,15 @@ int main(){try{
                 controller.Capture(true,false).fsr.sharpness==sharpness && !host.configuration.NeedsRestart(),
             "FSR menu sharpness becomes effective after Present without restart");
     }
+    draft=controller.Capture(true,false);draft.fsr.generationProviderPolicy=Upscaling::ProviderPolicy::MachineLearning;
+    Require(controller.Apply(draft,false).applied && host.configuration.NeedsRestart(),"FG provider is staged through the settings controller");
+    const auto beforeFgEdit=controller.Capture(true,false);auto afterFgEdit=beforeFgEdit;afterFgEdit.fsr.sharpness=.65f;
+    Require(controller.ApplyLiveEdits(beforeFgEdit,afterFgEdit).applied,"sharpness remains live with a pending FG provider");
+    host.ApplySourceUpscalerSettingsAfterPresent();
+    Require(host.configuration.Requested().fsr.generationProviderPolicy==Upscaling::ProviderPolicy::MachineLearning &&
+        host.configuration.Effective().fsr.generationProviderPolicy==Upscaling::ProviderPolicy::Analytical &&
+        host.configuration.Effective().fsr.sharpness==.65f,"live edits preserve pending FG policy without applying it");
+    host.configuration.Initialize(fsrStartup);host.configuration.BeginSubmission();host.configuration.Completed(true);pipeline.mFsrSettings=fsrStartup.fsr;
     draft=controller.Capture(true,false);draft.generationBackend=0;draft.generationEnabled=false;
     Require(controller.Apply(draft,false).applied&&fg.RuntimeInterpolationRequested(),
         "resolved AMD FG owner remains live while ordinary presenter is staged");

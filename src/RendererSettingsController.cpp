@@ -188,6 +188,7 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
         sourceRequest.mode=pending.mode;sourceRequest.quality=pending.quality;
         sourceRequest.fsr.quality=pending.fsr.quality;sourceRequest.fsr.providerPolicy=pending.fsr.providerPolicy;
         sourceRequest.fsr.sourceColorEncoding=pending.fsr.sourceColorEncoding;
+        sourceRequest.fsr.generationProviderPolicy=pending.fsr.generationProviderPolicy;
     }
     host_.RequestSourceUpscalerSettings(sourceRequest);
     auto performanceSettings = performance_.settings;

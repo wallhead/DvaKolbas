@@ -36,7 +36,7 @@ namespace TheosRenderPipeline
             auto lock=state_->presenter.Session()->Lock();
             if(!lock.Owns(*state_->presenter.Session()))return invalid("AMD provider discovery session unavailable");
             auto catalog=runtime->EnumerateForEffect(state_->resources->Bridge()->Device12(),FsrEffect::FrameGeneration);
-            if(!catalog)return std::unexpected(catalog.error());auto selected=SelectFsrEffectProvider(*catalog,FsrEffect::FrameGeneration);
+            if(!catalog)return std::unexpected(catalog.error());auto selected=SelectFsrEffectProvider(*catalog,FsrEffect::FrameGeneration,settings.generationProviderPolicy);
             if(!selected)return std::unexpected(selected.error());state_->provider=*selected;
             catalog=runtime->EnumerateForEffect(state_->resources->Bridge()->Device12(),FsrEffect::FrameGenerationSwapChain);
             if(!catalog)return std::unexpected(catalog.error());selected=SelectFsrEffectProvider(*catalog,FsrEffect::FrameGenerationSwapChain);
@@ -121,4 +121,5 @@ namespace TheosRenderPipeline
     ID3D11Texture2D* FsrHostPresentation::SceneTarget11()const{return state_->presenter.SceneTarget11();}
     bool FsrHostPresentation::FeatureReady()const{return state_->feature && !state_->closing && !Suspended();}
     FsrPresentationStatus FsrHostPresentation::Status()const{return state_->presenter.Status();}
+    const FsrEffectProvider& FsrHostPresentation::GenerationProvider()const{return state_->provider;}
 }

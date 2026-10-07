@@ -115,6 +115,17 @@ static void CheckQueriesAndContext(const fs::path& base)
     Require(runtime.Functions().CreateContext(&context, &create.header, nullptr) == FFX_API_RETURN_OK, "FG vendor context created with separate ABI and override");
     CheckActual(runtime, context, fg->front(), mode);
     Require(runtime.Functions().DestroyContext(&context, nullptr) == FFX_API_RETURN_OK, "destroy before runtime unload");
+    mode(36);
+    const auto mlCatalog=runtime.EnumerateForEffect(device,FsrEffect::FrameGeneration);
+    Require(bool(mlCatalog),"ML catalog fixture enumerates separately from SR");
+    const auto ml=SelectFsrEffectProvider(*mlCatalog,FsrEffect::FrameGeneration,ProviderPolicy::MachineLearning);
+    Require(ml && ml->identity.id==42,"use discovered ML override, not a fabricated version ID");
+    override.versionId=ml->identity.id;
+    Require(runtime.Functions().CreateContext(&context,&create.header,nullptr)==FFX_API_RETURN_OK,"ML FG override and current ABI reach creation");
+    Require(bool(runtime.VerifyActualProvider(context,*ml)),"ML actual identity is verified after creation");
+    mode(4);
+    Require(!runtime.VerifyActualProvider(context,*ml),"ML actual provider substitution rejected");
+    Require(runtime.Functions().DestroyContext(&context,nullptr)==FFX_API_RETURN_OK,"ML fixture retired before unload");mode(0);
 }
 int main(int argc, char** argv)
 {
@@ -129,6 +140,24 @@ int main(int argc, char** argv)
         {FsrEffect::FrameGeneration, {17726168133342859270ull, "3.1.6"}},
         {FsrEffect::FrameGenerationSwapChain, {17752306900579389447ull, "3.1.7"}}});
     CheckQueriesAndContext(base);
+    const std::vector<FsrEffectProvider> mlCatalog{
+        {FsrEffect::FrameGeneration, {42, "4.0.1"}},
+        {FsrEffect::FrameGeneration, {17726168133342859270ull, "3.1.6"}}};
+    const auto ml = SelectFsrEffectProvider(mlCatalog, FsrEffect::FrameGeneration, ProviderPolicy::MachineLearning);
+    Require(ml && ml->identity.id == 42, "ML FG retains the opaque catalog ID");
+    const auto automatic = SelectFsrEffectProvider(mlCatalog, FsrEffect::FrameGeneration, ProviderPolicy::Compatible);
+    Require(automatic && automatic->identity.id == 42, "Auto prefers supported ML FG");
+    const std::vector<FsrEffectProvider> analyticalOnly{mlCatalog.back()};
+    Require(!SelectFsrEffectProvider(analyticalOnly, FsrEffect::FrameGeneration, ProviderPolicy::MachineLearning),
+        "Explicit ML FG cannot silently become analytical");
+    const auto fallback = SelectFsrEffectProvider(analyticalOnly, FsrEffect::FrameGeneration, ProviderPolicy::Compatible);
+    Require(fallback && fallback->identity.name == "3.1.6", "Auto keeps analytical FG on unsupported devices");
+    Require(!SelectFsrEffectProvider({{FsrEffect::Upscale, {42, "4.0.1"}}}, FsrEffect::FrameGeneration, ProviderPolicy::MachineLearning),
+        "SR4 cannot establish FG4 availability");
+    Require(!SelectFsrEffectProvider({{FsrEffect::FrameGeneration, {42, "4.0.2b"}}}, FsrEffect::FrameGeneration, ProviderPolicy::MachineLearning),
+        "Unqualified ML FG revisions are not admitted");
+    Require(!SelectFsrEffectProvider({{FsrEffect::FrameGeneration, {17726168133342859270ull, "4.0.1"}}}, FsrEffect::FrameGeneration, ProviderPolicy::MachineLearning),
+        "Analytical identity cannot be relabelled as ML");
     std::wstring after(searchLength + 1, L'\0');
     Require(GetDllDirectoryW(static_cast<DWORD>(after.size()), after.data()) == filledLength && search == after, "no global DLL search-path changes");
     Require(!GetModuleHandleW(L"amd_fidelityfx_framegeneration_dx12.dll"), "runtime destruction unloads FG");

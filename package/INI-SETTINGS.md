@@ -62,8 +62,18 @@ qualification is still pending on AMD hardware for this preview.
 Auto can retry FSR3 after an FSR4 startup failure only after successful context
 cleanup and only when both providers use the already allocated render size.
 Device loss, failed cleanup and dispatch errors do not trigger a retry.
-FSR FG remains analytical 3.1.6 with swapchain 3.1.7, independently of the SR
-provider. Ordering remains FSR → NR (where supported) → FG → UI.
+`[FrameGeneration] FsrProviderPolicy` selects FG independently of SR:
+`Analytical` keeps FG 3.1.6 (the default), `Compatible` prefers device-catalog
+ML FG 4.0.1 and otherwise selects 3.1.6, and `MachineLearning` requires ML FG
+4.0.1 without an implicit analytical fallback. Save and restart to change the
+provider; interpolation off/on remains live. Swapchain 3.1.7 is retained.
+ML FG is experimental pending RX 9070 qualification. AMD documents Windows 11,
+RX 9000 or later, and DirectX 12 Agility SDK 1.4.9 or later as requirements:
+https://gpuopen.com/manuals/fsr_sdk/techniques/frame-interpolation-ml/ .
+The RTX 4080 SUPER catalogs expose only analytical FG; the NVIDIA INT8 SR
+runtime supplies FSR4 upscaling, not ML FG. Logs/menu report the selected and
+created FG algorithm separately from the API 4.0.1 version.
+Ordering remains FSR → NR (where supported) → FG → UI.
 
 Normal provider selection uses `[FrameGeneration] Backend=1` for DLSS/DLAA on
 NVIDIA, and `Backend=2` for FSR on NVIDIA or AMD. The FG toggle retains the backend

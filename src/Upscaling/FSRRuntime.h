@@ -13,7 +13,14 @@ namespace TheosRenderPipeline::Upscaling
 {
     enum class FsrEffect { Upscale, FrameGeneration, FrameGenerationSwapChain };
     struct FsrEffectProvider { FsrEffect effect; ProviderInfo identity; };
-    Result<FsrEffectProvider> SelectFsrEffectProvider(const std::vector<FsrEffectProvider>&, FsrEffect);
+    inline bool IsFsrGenerationMlProvider(const FsrEffectProvider& provider)
+    {
+        return provider.effect == FsrEffect::FrameGeneration && provider.identity.id &&
+            provider.identity.id != 17726168133342859270ull && provider.identity.id != 17752306900579389447ull &&
+            provider.identity.name == "4.0.1";
+    }
+    Result<FsrEffectProvider> SelectFsrEffectProvider(const std::vector<FsrEffectProvider>&, FsrEffect,
+        ProviderPolicy = ProviderPolicy::Analytical);
     struct FsrFunctions
     {
         PfnFfxCreateContext CreateContext{};

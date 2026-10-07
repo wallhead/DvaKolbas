@@ -12,6 +12,7 @@ struct FsrSettings {
     ProviderPolicy providerPolicy{ProviderPolicy::Analytical};
     float sharpness{};
     ColorEncoding sourceColorEncoding{ColorEncoding::Unknown};
+    ProviderPolicy generationProviderPolicy{ProviderPolicy::Analytical};
     bool operator==(const FsrSettings&) const = default;
 };
 inline const char* QualityName(Quality value) {
@@ -21,7 +22,7 @@ inline const char* QualityName(Quality value) {
 inline const char* ProviderPolicyName(ProviderPolicy value){return value==ProviderPolicy::Analytical?"Analytical":value==ProviderPolicy::Compatible?"Compatible":value==ProviderPolicy::MachineLearning?"MachineLearning":"Invalid";}
 inline bool ValidFsrSettings(const FsrSettings& value) {
     return value.quality>=Quality::Quality && value.quality<=Quality::NativeAA &&
-        ValidProviderPolicy(value.providerPolicy) &&
+        ValidProviderPolicy(value.providerPolicy) && ValidProviderPolicy(value.generationProviderPolicy) &&
         std::isfinite(value.sharpness) && value.sharpness>=0 && value.sharpness<=1 &&
         (value.sourceColorEncoding==ColorEncoding::Unknown || IsKnownColorEncoding(value.sourceColorEncoding));
 }
@@ -37,6 +38,11 @@ template<class Ini> Result<FsrSettings> ReadFsrSettings(const Ini& ini) {
     else if(policy=="Compatible")result.providerPolicy=ProviderPolicy::Compatible;
     else if(policy=="MachineLearning")result.providerPolicy=ProviderPolicy::MachineLearning;
     else return invalid("[FSR] ProviderPolicy must be Analytical, Compatible (Auto) or MachineLearning (FSR4).");
+    const std::string_view fgPolicy=ini.GetValue("FrameGeneration","FsrProviderPolicy","Analytical");
+    if(fgPolicy=="Analytical")result.generationProviderPolicy=ProviderPolicy::Analytical;
+    else if(fgPolicy=="Compatible")result.generationProviderPolicy=ProviderPolicy::Compatible;
+    else if(fgPolicy=="MachineLearning")result.generationProviderPolicy=ProviderPolicy::MachineLearning;
+    else return invalid("[FrameGeneration] FsrProviderPolicy must be Analytical, Compatible (Auto) or MachineLearning (FSR4 FG).");
     const std::string_view sharpness=ini.GetValue("FSR","Sharpness","0");
     const auto parsed=std::from_chars(sharpness.data(),sharpness.data()+sharpness.size(),result.sharpness);
     if(parsed.ec!=std::errc{} || parsed.ptr!=sharpness.data()+sharpness.size() || !ValidFsrSettings(result))return invalid("[FSR] Sharpness must be a finite number from 0 to 1.");
@@ -50,6 +56,7 @@ template<class Ini> Result<FsrSettings> ReadFsrSettings(const Ini& ini) {
 template<class Ini> void StoreFsrSettings(Ini& ini,const FsrSettings& value) {
     ini.SetValue("FSR","Quality",QualityName(value.quality));
     ini.SetValue("FSR","ProviderPolicy",ProviderPolicyName(value.providerPolicy));
+    ini.SetValue("FrameGeneration","FsrProviderPolicy",ProviderPolicyName(value.generationProviderPolicy));
     ini.SetDoubleValue("FSR","Sharpness",value.sharpness);
     ini.SetValue("FSR","SourceColorEncoding",ColorEncodingName(value.sourceColorEncoding));
 }

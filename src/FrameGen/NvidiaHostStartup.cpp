@@ -465,6 +465,10 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
         return E_FAIL;
     }
     fsrFactory_=factory;fsrDescriptor_=descriptor;
+    const auto& fgProvider=fsrPresentation_->GenerationProvider();
+    logger::info("[FSR FG provider] selectedId={} selectedVersion={} policy={} API=4.0.1 (API version is not algorithm version)",
+        fgProvider.identity.id,fgProvider.identity.name,
+        Upscaling::ProviderPolicyName(sourceUpscalerSettings_.Startup().fsr.generationProviderPolicy));
     fsrDescriptor_.BufferCount=2;
     renderWidth_=extent->width;renderHeight_=extent->height;
     *output=fsrPresentation_->SwapChain();(*output)->AddRef();

@@ -84,6 +84,18 @@ int main(int argc,char** argv)
         Require(!retryHost.BeforeResize() && retryHost.SwapChain()==retryChain && retryResources->Runtime(),"failed resize retirement retains all owners");
         rig.mode(0);Require(bool(retryHost.BeforeResize()),"failed retirement must actually retry quiescence");
         Require(bool(retryHost.Resize(rig.desc)),"successful retirement retry permits resize");Require(bool(retryHost.Retire()),"retry host retirement");
+        rig.mode(36);settings.generationProviderPolicy=ProviderPolicy::MachineLearning;
+        auto mlResources=WithNativeCreator<FsrHostResources>(std::filesystem::absolute(argv[1]),NativeCreator);
+        FsrHostPresentation mlHost;auto mlExtent=mlHost.Create(rig.factory.Get(),rig.device11.Get(),mlResources,rig.desc,settings);
+        Require(bool(mlExtent) && mlHost.GenerationProvider().identity.name=="4.0.1","host routes independent ML FG policy");
+        Require(bool(mlResources->CompleteStartup()),"ML host SR startup stays independent");
+        resizedUi.Width=resizedUi.Height=128;rig.ui.Reset();
+        Check(rig.device11->CreateTexture2D(&resizedUi,nullptr,&rig.ui),"ML fixture UI");
+        frame=rig.frame;
+        for(unsigned id=1;id<=18;++id){frame.sourceId=id;Check(mlHost.WaitBeforeProducer(),"ML host producer wait");
+            Check(mlHost.Present(frame,UpscaleOutcome::Temporal,rig.ui.Get(),nullptr,true,false,true,0,0),"ML fixture source transaction");}
+        Require(mlHost.FeatureReady() && mlHost.Status().callback.invocations==1,"ML host creates verified feature and routes callback");
+        Require(bool(mlHost.Retire()),"ML fixture host ordered retirement");rig.mode(0);
         std::puts("PASS: host sizing, stable D3D11 publication, deferred camera feature, complete UI, live toggle and ordered retirement");return 0;
     }catch(const std::exception& e){std::fprintf(stderr,"FAIL: %s\n",e.what());return 1;}
 }

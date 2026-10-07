@@ -4,6 +4,7 @@ param(
     [Parameter(Mandatory)][string]$Int8RuntimeDirectory,
     [Parameter(Mandatory)][string]$StagingDirectory,
     [Parameter(Mandatory)][string]$OutputArchive,
+    [switch]$MlFgTrial,
     [string]$SevenZip='C:/Program Files/7-Zip/7z.exe'
 )
 $ErrorActionPreference='Stop'
@@ -37,8 +38,10 @@ foreach($file in $int8Pin.runtime){Copy-Item -LiteralPath (Join-Path $Int8Runtim
 Copy-Item -LiteralPath $PluginDll -Destination (Join-Path $plugins 'RaZkolbaS.dll')
 $iniPath=Join-Path $plugins 'RaZkolbaS.ini'
 $lines=ConvertTo-PortableNrPackageIni ([IO.File]::ReadAllLines($iniPath))
-$lines=Set-PackageIniValues $lines @{'Settings/UpscaleType'='4';'FSR/Quality'='NativeAA';'FSR/ProviderPolicy'='MachineLearning';
-    'FrameGeneration/Backend'='2';'FrameGeneration/Enabled'='false';'NeuralRendering/Enabled'='false'}
+$srPolicy=if($MlFgTrial){'Compatible'}else{'MachineLearning'}
+$fgPolicy=if($MlFgTrial){'MachineLearning'}else{'Analytical'}
+$lines=Set-PackageIniValues $lines @{'Settings/UpscaleType'='4';'FSR/Quality'='NativeAA';'FSR/ProviderPolicy'=$srPolicy;
+    'FrameGeneration/FsrProviderPolicy'=$fgPolicy;'FrameGeneration/Backend'='2';'FrameGeneration/Enabled'='false';'NeuralRendering/Enabled'='false'}
 $lines=@($lines | ForEach-Object {
     if($_ -match '^; (FSR4|Official FSR4|Startup:.*Analytical).*') {
         '; Provider: Analytical=FSR 3.1.5; MachineLearning=FSR4; save and restart to switch.'
@@ -48,13 +51,15 @@ $lines=@($lines | ForEach-Object {
 [IO.File]::WriteAllLines($iniPath,[string[]]$lines,[Text.UTF8Encoding]::new($false))
 $ini=Read-PortableNrPackageIni $iniPath
 if($ini['Settings/UpscaleType'] -ne '4' -or $ini['FSR/Quality'] -ne 'NativeAA' -or
-   $ini['FSR/ProviderPolicy'] -ne 'MachineLearning' -or $ini['Experimental/FrameGenerationBackend'] -ne '2' -or
+   $ini['FSR/ProviderPolicy'] -ne $srPolicy -or $ini['FrameGeneration/FsrProviderPolicy'] -ne $fgPolicy -or $ini['Experimental/FrameGenerationBackend'] -ne '2' -or
    $ini['FrameGeneration/Enabled'] -ne 'false' -or $ini['NeuralRendering/Enabled'] -ne 'false'){throw 'Trial defaults differ from intended first-launch settings'}
 Write-PortableModMetadata -Directory $stage -Revision $identity.sourceRevision
 $meta=Join-Path $stage 'meta.ini'
-$metaText=[IO.File]::ReadAllText($meta) -replace '(?m)^version=.*$','version=1.1-fsr4-preview'
+$previewVersion=if($MlFgTrial){'1.1-fsr4-fg-preview'}else{'1.1-fsr4-preview'}
+$previewNote=if($MlFgTrial){'Experimental FSR4 FG; RX9000 standalone and Skyrim qualification pending.'}else{'FSR4 NVIDIA preview; Skyrim acceptance pending.'}
+$metaText=[regex]::Replace([IO.File]::ReadAllText($meta),'(?m)^version=.*$',('version='+$previewVersion))
 $metaText=[regex]::Replace($metaText,'(?m)^installationFile=.*$',('installationFile='+[IO.Path]::GetFileName($archive)))
-$metaText=[regex]::Replace($metaText,'(?m)^notes=.*$',('notes=FSR4 NVIDIA preview; Build '+$identity.sourceRevision+'; Skyrim acceptance pending.'))
+$metaText=[regex]::Replace($metaText,'(?m)^notes=.*$',('notes=Build '+$identity.sourceRevision+'; '+$previewNote))
 [IO.File]::WriteAllText($meta,$metaText,[Text.UTF8Encoding]::new($false))
 Push-Location -LiteralPath $stage
 try {& $SevenZip a -tzip $archive 'meta.ini' 'SKSE' -mx=5 -bd | Out-Null;if($LASTEXITCODE -ne 0){throw 'Candidate archive creation failed'}}
@@ -78,7 +83,7 @@ try {
 } finally {$packed.Dispose()}
 [ordered]@{result='PASS';buildIdentity=$identity;archiveName=[IO.Path]::GetFileName($archive);
     archiveSha256=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant();files=$files;
-    defaults=@{mode='FSR';quality='NativeAA';provider='MachineLearning';fgBackend=2;fgEnabled=$false;nrEnabled=$false};
+    defaults=@{mode='FSR';quality='NativeAA';provider=$srPolicy;fgProvider=$fgPolicy;fgBackend=2;fgEnabled=$false;nrEnabled=$false};
     retainsOfficialFsr3=$true;separatePinnedInt8=$true;skyrimQualified=$false;installed=$false} |
     ConvertTo-Json -Depth 8 | Set-Content -LiteralPath ($archive+'.verification.json') -Encoding utf8
 Write-Output 'PASS: separate MO2 FSR4 trial; official FSR3 retained; archive payloads and defaults verified. Not installed.'

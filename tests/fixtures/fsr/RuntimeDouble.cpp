@@ -74,7 +74,7 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxCreateContext(ffxContext* co
             if (next->type == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION_VERSION) version = reinterpret_cast<const ffxCreateContextDescFrameGenerationVersion*>(next)->version == FFX_FRAMEGENERATION_VERSION;
             if (next->type == FFX_API_DESC_TYPE_OVERRIDE_VERSION) identity = reinterpret_cast<const ffxOverrideVersion*>(next)->versionId;
         }
-        if (!backend || !version || identity != 17726168133342859270ull) return FFX_API_RETURN_ERROR_PARAMETER;
+        if (!backend || !version || (identity != 17726168133342859270ull && !(mode==36 && identity==42))) return FFX_API_RETURN_ERROR_PARAMETER;
         auto* created = new FixtureContext; created->provider = identity; *context = created; return FFX_API_RETURN_OK;
     }
 #endif
@@ -96,7 +96,9 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxConfigure(ffxContext* contex
 {
 #ifdef TRP_ENABLE_FSR_FG
     if (header->type == FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION) {
-        if (!context || !*context || static_cast<FixtureContext*>(*context)->provider != 17726168133342859270ull) return FFX_API_RETURN_ERROR_PARAMETER;
+        if (!context || !*context) return FFX_API_RETURN_ERROR_PARAMETER;
+        const auto identity=static_cast<FixtureContext*>(*context)->provider;
+        if(identity!=17726168133342859270ull && identity!=42)return FFX_API_RETURN_ERROR_PARAMETER;
         const auto& config = *reinterpret_cast<const ffxConfigureDescFrameGeneration*>(header);
         if (!config.swapChain || config.allowAsyncWorkloads || config.presentCallback || config.HUDLessColor.resource) return FFX_API_RETURN_ERROR_PARAMETER;
         if(config.frameGenerationCallback)++presentationStats[2];
@@ -127,7 +129,7 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
         uint64_t providerId = 17; const char* providerName = name;
         if (desc.createDescType != FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE) {
 #ifdef TRP_ENABLE_FSR_FG
-            if (desc.createDescType == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION) { providerId = 17726168133342859270ull; providerName = "3.1.6"; }
+            if (desc.createDescType == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION) { providerId = mode==36?42:17726168133342859270ull; providerName = mode==36?"4.0.1":"3.1.6"; }
             else if (desc.createDescType == FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATIONSWAPCHAIN_NEW_DX12) { providerId = 17752306900579389447ull; providerName = "3.1.7"; }
             else
 #endif
@@ -154,7 +156,7 @@ extern "C" __declspec(dllexport) ffxReturnCode_t ffxQuery(ffxContext* context, f
         auto& desc = *reinterpret_cast<ffxQueryGetProviderVersion*>(header);
         const auto provider = static_cast<FixtureContext*>(*context)->provider;
         desc.versionId = mode == 4 ? 99 : provider;
-        desc.versionName = mode == 15 ? "4.0.1" : provider == 17 ? "fixture analytical FSR 3.1.5" : provider==17752306900579389447ull?"3.1.7":"3.1.6";
+        desc.versionName = mode == 15 || provider==42 ? "4.0.1" : provider == 17 ? "fixture analytical FSR 3.1.5" : provider==17752306900579389447ull?"3.1.7":"3.1.6";
         return FFX_API_RETURN_OK;
     }
     if(header->type==FFX_API_QUERY_DESC_TYPE_UPSCALE_GET_RESOURCE_REQUIREMENTS && context && *context) {

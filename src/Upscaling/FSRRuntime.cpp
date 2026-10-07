@@ -106,8 +106,10 @@ namespace TheosRenderPipeline::Upscaling
         }
     }
 
-    Result<FsrEffectProvider> SelectFsrEffectProvider(const std::vector<FsrEffectProvider>& providers, FsrEffect effect)
+    Result<FsrEffectProvider> SelectFsrEffectProvider(const std::vector<FsrEffectProvider>& providers, FsrEffect effect, ProviderPolicy policy)
     {
+        if (!ValidProviderPolicy(policy))
+            return std::unexpected(Error(ErrorKind::InvalidInput, 0, "Invalid FSR FG provider policy"));
         // Observed using the verified v2.3.0 binaries on the matching adapter.
         // Opaque IDs are compared as identities, never decoded into versions.
         const ProviderInfo* expected{};
@@ -116,6 +118,19 @@ namespace TheosRenderPipeline::Upscaling
         if (effect == FsrEffect::FrameGeneration) expected = &generation;
         if (effect == FsrEffect::FrameGenerationSwapChain) expected = &swapchain;
         if (!expected) return std::unexpected(Error(ErrorKind::InvalidInput, 0, "FG selection requires an FG or swapchain effect; SR uses its existing provider policy"));
+        if (effect == FsrEffect::FrameGeneration && policy != ProviderPolicy::Analytical) {
+            const FsrEffectProvider* ml{};
+            for (const auto& provider : providers) {
+                if (!IsFsrGenerationMlProvider(provider)) continue;
+                if (ml && ml->identity.id != provider.identity.id)
+                    return std::unexpected(Error(ErrorKind::IncompatibleAbi, 0, "Ambiguous ML FG catalog identities"));
+                ml = &provider;
+            }
+            if (ml) return *ml;
+            if (policy == ProviderPolicy::MachineLearning)
+                return std::unexpected(Error(ErrorKind::NoProvider, 0,
+                    "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11 and Radeon RX 9000 or later. FSR4 upscaling does not enable ML FG. Select FSR3 FG or Auto and restart."));
+        }
         for (const auto& provider : providers) {
             if (provider.effect == effect && provider.identity.id == expected->id && provider.identity.name == expected->name)
                 return provider;
@@ -292,7 +307,8 @@ namespace TheosRenderPipeline::Upscaling
     }
     Result<void> FsrRuntime::VerifyActualProvider(ffxContext& context, const FsrEffectProvider& expected)
     {
-        if (auto valid = SelectFsrEffectProvider({expected}, expected.effect); !valid)
+        if (auto valid = SelectFsrEffectProvider({expected}, expected.effect,
+            IsFsrGenerationMlProvider(expected) ? ProviderPolicy::MachineLearning : ProviderPolicy::Analytical); !valid)
             return std::unexpected(valid.error());
         auto actual = QueryActualProvider(context);
         if (!actual) return std::unexpected(actual.error());

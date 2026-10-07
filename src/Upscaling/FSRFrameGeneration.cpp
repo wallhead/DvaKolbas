@@ -103,10 +103,11 @@ namespace TheosRenderPipeline::Upscaling
             return Error(ErrorKind::InvalidInput, 0, "FG creation requires its own SDK lock, verified runtime and supported fixed SDR limits");
         auto available = runtime->EnumerateForEffect(device, FsrEffect::FrameGeneration);
         if (!available) return std::unexpected(available.error());
-        auto selected = SelectFsrEffectProvider(*available, FsrEffect::FrameGeneration);
+        auto selected = SelectFsrEffectProvider(*available, FsrEffect::FrameGeneration,
+            IsFsrGenerationMlProvider(provider) ? ProviderPolicy::MachineLearning : ProviderPolicy::Analytical);
         if (!selected) return std::unexpected(selected.error());
         if (selected->identity.id != provider.identity.id || selected->identity.name != provider.identity.name)
-            return Error(ErrorKind::NoProvider, 0, "FG request differs from the discovered pinned analytical provider");
+            return Error(ErrorKind::NoProvider, 0, "FG request differs from the discovered device FG provider");
         const auto removed = device->GetDeviceRemovedReason();
         if (FAILED(removed)) return Error(ErrorKind::DeviceLost, removed, "FG device removed before creation");
         state_->device = device; state_->limits = limits; state_->provider = provider;
