@@ -18,6 +18,21 @@ struct Spy
     bool OrdinaryReady(){return ordinary.Ready();}bool NvidiaReady(){++nvidiaCalls;return false;}
     HRESULT RetireOrdinary(){return ordinary.Retire();}HRESULT RetireNvidia(){++nvidiaCalls;return E_FAIL;}
 };
+template<class Host> static void CheckMlAvailability(Host& host)
+{
+    if constexpr(requires { host.MlAvailability(); }) {
+        const auto availability=host.MlAvailability();
+        Require(availability.upscale.has_value() && !*availability.upscale,
+            "analytical-only fixture or missing INT8 files disables explicit ML SR");
+        Require(!availability.upscaleReason.empty(),"disabled ML SR explains its reason");
+#if defined(TRP_ENABLE_FSR_FG)
+        Require(bool(host.LoadFrameGeneration()),"availability catalog loads through the existing runtime");
+        const auto fg=host.MlAvailability();
+        Require(fg.generation.has_value() && !*fg.generation && !fg.generationReason.empty(),
+            "analytical-only FG catalog disables ML FG independently of SR");
+#endif
+    } else Require(false,"ML availability is missing from the running FSR owner");
+}
 int main(int argc,char** argv)
 {
     Require(argc==2,"fixture root supplied");Rig rig;
@@ -55,6 +70,7 @@ int main(int argc,char** argv)
     D3D11_TEXTURE2D_DESC published{};targets.GameFacing()->GetDesc(&published);Require(published.Width==960 && published.Height==540,"stable target published before original return");
     Check(chain->Present(0,0),"StartupPresentWithoutFeature");Require(!fsr.FeatureReady(),"startup Present does not create a temporal feature");
     Require(bool(fsr.CompleteStartup()) && fsr.FeatureReady(),"DeferredFeatureCreation: context created after original return");
+    CheckMlAvailability(fsr);
     auto* fixedColor=fsr.Resources().color;
     D3D11_TEXTURE2D_DESC actualMotion{};fsr.Motion11()->GetDesc(&actualMotion);
     Require(!(actualMotion.BindFlags&D3D11_BIND_UNORDERED_ACCESS),"real shared motion allocation has no UAV");

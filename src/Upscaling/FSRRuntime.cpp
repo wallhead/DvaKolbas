@@ -1,4 +1,5 @@
 #include "FSRRuntime.h"
+#include "FSRAvailability.h"
 #include <ffx_upscale.h>
 #include <dx12/ffx_api_dx12.h>
 #include <fstream>
@@ -129,7 +130,7 @@ namespace TheosRenderPipeline::Upscaling
             if (ml) return *ml;
             if (policy == ProviderPolicy::MachineLearning)
                 return std::unexpected(Error(ErrorKind::NoProvider, 0,
-                    "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11 and Radeon RX 9000 or later. FSR4 upscaling does not enable ML FG. Select FSR3 FG or Auto and restart."));
+                    std::string("FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. FSR4 upscaling does not enable ML FG. ")+kFsrFgRecovery));
         }
         for (const auto& provider : providers) {
             if (provider.effect == effect && provider.identity.id == expected->id && provider.identity.name == expected->name)
@@ -138,6 +139,18 @@ namespace TheosRenderPipeline::Upscaling
         return std::unexpected(Error(ErrorKind::NoProvider, 0, "Pinned analytical FG/swapchain provider identity is absent; no implicit fallback"));
     }
 
+    Result<void> FsrRuntime::CheckInt8Files(const std::filesystem::path& pluginDirectory)
+    {
+        if(!pluginDirectory.is_absolute())
+            return std::unexpected(Error(ErrorKind::InvalidInput,0,"INT8 preflight requires an absolute plugin directory"));
+        const auto root=pluginDirectory/"FSR/INT8";
+        auto effect=LockPinnedFile(root/"amd_fidelityfx_upscaler_dx12.dll",41036800,"2604c0b392072d715b400b2f89434274de31995a4b6e68ce38250ebbd3f6c5fc");
+        if(!effect)return std::unexpected(effect.error());
+        auto routing=LockPinnedFile(root/"amd_fidelityfx_loader_dx12.dll",25864,"2f36843c3bb8c059621c10574e586a883ef337f2a549c67ecf3a82b3959ac238");
+        CloseHandle(*effect);
+        if(!routing)return std::unexpected(routing.error());
+        CloseHandle(*routing);return {};
+    }
     FsrRuntime::~FsrRuntime() { Unload(); }
     void FsrRuntime::Unload()
     {

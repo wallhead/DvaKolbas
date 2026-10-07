@@ -6,11 +6,40 @@
 #include "PerformanceTuning.h"
 #include "SourceFrameGeneration.h"
 #include "CommunityShaderIntegration.h"
+#include "PluginPaths.h"
 #if defined(TRP_ENABLE_FSR_FG)
 #include "Upscaling/FSRGenerationStatus.h"
 #endif
 #include <optional>
 #include <utility>
+TheosRenderPipeline::Upscaling::FsrMlAvailability NvidiaHost::FsrMlChoices() const
+{
+    using namespace TheosRenderPipeline;using namespace Upscaling;
+    FsrMlAvailability choices;
+#if defined(TRP_ENABLE_FSR)
+    if(fsrResources_)choices=fsrResources_->MlAvailability();
+    const auto vendor=RenderPipeline::GetSingleton()->mAdapterVendorId;
+    if(vendor==0x10de) {
+        if(!fsrResources_) {
+            // One file-only preflight per process. No extra device, context or
+            // alternate loader is created from the render/menu path.
+            static const auto files=FsrRuntime::CheckInt8Files(PluginPaths::Directory());
+            if(!files) {choices.upscale=false;choices.upscaleReason=files.error().message;}
+            else choices.upscaleReason="INT8 files verified; device SM6.6 and context support will be checked at startup.";
+        }
+        if(!choices.generation.has_value()) {
+            choices.generation=false;
+            choices.generationReason="Official FSR4 ML FG is unavailable on NVIDIA; use FSR3 FG or Auto.";
+        }
+    }
+#else
+    choices.upscale=false;choices.upscaleReason="FSR is unavailable in this build.";
+#endif
+#if !defined(TRP_ENABLE_FSR_FG)
+    choices.generation=false;choices.generationReason="FSR frame generation is unavailable in this build.";
+#endif
+    return choices;
+}
 TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrStatus() const
 {
     using namespace TheosRenderPipeline;using namespace Upscaling;

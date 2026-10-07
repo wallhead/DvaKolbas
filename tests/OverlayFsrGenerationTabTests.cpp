@@ -2,8 +2,39 @@
 #include <imgui_internal.h>
 #include <iostream>
 #include <stdexcept>
+#include <array>
 #include "OverlayFsrGenerationControls.h"
 static void Require(bool value,const char* reason){if(!value)throw std::runtime_error(reason);}
+template<class Labels> static void MlChoiceAvailability(const Labels& labels)
+{
+    using namespace TheosRenderPipeline::Overlay;
+    if constexpr(requires(int& choice) { DrawFsrProviderChoice("Provider",choice,labels.data(),false,"Unavailable"); }) {
+        for(bool available:{false,true}) {
+            ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
+            unsigned char* pixels;int width,height;io.Fonts->GetTexDataAsRGBA32(&pixels,&width,&height);
+            int choice=0;ImVec2 combo{};
+            auto frame=[&] {
+                ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
+                ImGui::Begin("Provider availability");combo=ImGui::GetCursorScreenPos();combo.x+=80;combo.y+=ImGui::GetFrameHeight()/2;
+                DrawFsrProviderChoice("Provider",choice,labels.data(),available,"Catalog check");
+                ImGui::End();ImGui::Render();
+            };
+            frame();frame();io.AddMousePosEvent(combo.x,combo.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();frame();
+            auto& context=*ImGui::GetCurrentContext();Require(context.OpenPopupStack.Size>0,"provider dropdown opens");
+            auto* popup=context.OpenPopupStack.back().Window;Require(popup!=nullptr,"provider popup rendered");
+            const ImVec2 ml{popup->Pos.x+40,popup->Pos.y+ImGui::GetStyle().WindowPadding.y+2*ImGui::GetTextLineHeightWithSpacing()+ImGui::GetTextLineHeight()/2};
+            io.AddMousePosEvent(ml.x,ml.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();
+            Require(choice==(available?2:0),"known unavailable ML choice cannot be selected; available ML can");
+            if(context.OpenPopupStack.Size>0) {
+                const ImVec2 automatic{popup->Pos.x+40,popup->Pos.y+ImGui::GetStyle().WindowPadding.y+ImGui::GetTextLineHeightWithSpacing()+ImGui::GetTextLineHeight()/2};
+                io.AddMousePosEvent(automatic.x,automatic.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();
+                Require(choice==1,"Auto remains selectable when explicit ML is unavailable");
+            }
+            Require(context.DisabledStackSize==0,"provider choice balances the disabled UI stack");
+            ImGui::DestroyContext();
+        }
+    } else Require(false,"provider choices do not gate unavailable ML");
+}
 static void NormalToggleRetainsPresenter()
 {
     ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
@@ -89,6 +120,7 @@ static void PendingOrdinaryKeepsCurrentCheckboxLive()
 int main()
 {
  try {
+    MlChoiceAvailability(std::array<const char*,3>{"FSR3","Auto","FSR4"});
     NormalToggleRetainsPresenter();
     DiagnosticHostCanStageFg();
     OrdinarySelectionKeepsLiveRequest();

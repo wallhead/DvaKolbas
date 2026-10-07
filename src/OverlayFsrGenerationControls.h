@@ -3,6 +3,22 @@
 
 namespace TheosRenderPipeline::Overlay
 {
+    inline bool DrawFsrProviderChoice(const char* label, int& selected, const char* const* names,
+                                     bool mlAvailable, const char* reason)
+    {
+        bool changed{};
+        ImGui::SetNextItemWidth(-1.0f);
+        if(ImGui::BeginCombo(label,names[selected>=0 && selected<3?selected:0])) {
+            for(int i=0;i<3;++i) {
+                ImGui::BeginDisabled(i==2 && !mlAvailable);
+                if(ImGui::Selectable(names[i],selected==i)) {selected=i;changed=true;}
+                ImGui::EndDisabled();
+            }
+            ImGui::EndCombo();
+        }
+        if(reason && *reason)ImGui::TextWrapped("%s",reason);
+        return changed;
+    }
     // The enclosing tab belongs to the caller. Every temporary UI stack opened
     // here closes here; this branch performs no NVIDIA runtime queries.
     inline bool DrawFsrGenerationControls(bool built, bool owned, long& backend, bool& requested,

@@ -40,8 +40,22 @@ AMD renderers use FSR upscaling and optional FSR frame generation; DLSS, DLAA,
 NVIDIA FG and NR are unavailable. Before the first AMD launch, set `[FSR]
 SourceColorEncoding` in `SKSE/Plugins/RaZkolbaS.ini` to match the verified
 Skyrim/ENB source. The packaged value `Unknown` intentionally stops startup with
-setup instructions. AMD currently uses the Analytical 3.1.5 provider;
-Compatible/ML is not validated. See [AMD setup](package/INI-SETTINGS.md#amd-first-launch).
+setup instructions. FSR3 (3.1.5) remains available alongside experimental FSR4.
+Auto uses the official runtime's actual device catalog; explicit FSR4 selects
+official ML on AMD or the separate hash-pinned INT8 runtime on NVIDIA (SM6.6).
+SR and FG providers are independent. Known unavailable FSR4 choices are disabled
+with a reason; unverified support is stated explicitly and rechecked at startup.
+If an explicit selection prevents startup, restore `[FSR] ProviderPolicy=Analytical`
+and/or `[FrameGeneration] FsrProviderPolicy=Analytical` in `RaZkolbaS.ini`.
+See [AMD setup](package/INI-SETTINGS.md#amd-first-launch).
+
+FSR4 ML FG remains experimental pending real AMD rendering and Skyrim validation.
+AMD documents Windows 11, RX9000+ and DirectX 12 Agility SDK 1.4.9+ for ML FG;
+this branch does not claim Agility deployment. The NVIDIA INT8 SR qualification
+measured about 665 MiB of process-local GPU memory after retirement, with a 7 MiB
+range across 32 recreations. This is bounded in that test; its ownership/cause
+is not established, and it can matter on cards with limited VRAM. Revalidate
+the mixed INT8 SR / official FG combination whenever either runtime changes.
 
 The main INI groups upscaling, frame generation, Neural Rendering and individual
 `[NR PASS 1]` / `[NR PASS 2]` controls separately. Runtime paths are in `[Runtime]`

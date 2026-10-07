@@ -1,5 +1,6 @@
 #pragma once
 #include "FSRUpscaler.h"
+#include "FSRAvailability.h"
 namespace TheosRenderPipeline::Upscaling
 {
     // Owns the pre-query device and deferred temporal feature. It contains no
@@ -26,6 +27,7 @@ namespace TheosRenderPipeline::Upscaling
         ID3D11Texture2D* Color11()const;ID3D11Texture2D* Depth11()const;ID3D11Texture2D* Motion11()const;ID3D11Texture2D* Output11()const;
         const ProviderInfo& Provider()const;
         const std::string& ProviderDiagnostic()const;
+        const FsrMlAvailability& MlAvailability()const;
         ColorEncoding HandoffEncoding()const;
     private:
         struct State;std::unique_ptr<State> state_;std::filesystem::path pluginDirectory_;DeviceCreator deviceCreator_{};

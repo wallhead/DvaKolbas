@@ -11,8 +11,35 @@ using namespace TheosRenderPipeline::Upscaling;
 namespace fs = std::filesystem;
 static void Require(bool value, const char* why) { if (!value) { std::fprintf(stderr, "FAIL: %s\n", why); std::exit(1); } }
 static bool Loaded(const fs::path& p) { return GetModuleHandleW((p / "FSR/amd_fidelityfx_loader_dx12.dll").c_str()) || GetModuleHandleW((p / "FSR/amd_fidelityfx_upscaler_dx12.dll").c_str()); }
+template<class Runtime> static void CheckInt8Preflight(const fs::path& root)
+{
+    if constexpr(requires { Runtime::CheckInt8Files(root); }) {
+        const auto result=Runtime::CheckInt8Files(root);
+        Require(!result && result.error().kind==ErrorKind::MissingRuntime,"missing INT8 files disable the preview choice");
+        Require(!Loaded(root),"INT8 menu preflight never loads modules");
+    } else Require(false,"non-executing INT8 preflight is missing");
+}
+template<class Availability> static void CheckObservedMlCreationFailure(Availability& availability)
+{
+    const ProviderInfo ml{23,"4.1.1"},analytical{17,"3.1.5"};
+    const auto create=[&](const ProviderInfo& provider)->Result<void> {
+        if(provider.id==ml.id)return std::unexpected(RuntimeError{ErrorKind::IncompatibleAbi,1,"unsupported resource contract"});
+        return {};
+    };
+    const auto retire=[]()->Result<void>{return {};};
+    const auto query=[&]()->Result<std::pair<ProviderInfo,Extent>>{return std::pair{analytical,Extent{960,540}};};
+    if constexpr(requires {CreateFsrWithStartupFallback(ml,ProviderPolicy::Compatible,Extent{960,540},create,retire,query,&availability);}) {
+        availability.upscale=true;
+        const auto result=CreateFsrWithStartupFallback(ml,ProviderPolicy::Compatible,Extent{960,540},create,retire,query,&availability);
+        Require(result && result->id==17 && availability.upscale.has_value() && !*availability.upscale,
+            "successful Auto recovery disables explicit ML after its actual startup creation failed");
+        Require(availability.upscaleReason.find("unsupported resource contract")!=std::string::npos,
+            "observed ML creation failure explains the disabled menu choice");
+    } else Require(false,"startup fallback does not record observed ML unavailability");
+}
 int main(int argc, char** argv)
 {
+    FsrMlAvailability availability;CheckObservedMlCreationFailure(availability);
     Require(SelectFsrRuntimeProfile(ProviderPolicy::Analytical,0x10de)==FsrRuntimeProfile::Official,"NVIDIA FSR3 retains official runtime");
     Require(SelectFsrRuntimeProfile(ProviderPolicy::MachineLearning,0x10de)==FsrRuntimeProfile::Int8,"NVIDIA explicit FSR4 selects separately pinned INT8 runtime");
     Require(SelectFsrRuntimeProfile(ProviderPolicy::Compatible,0x10de)==FsrRuntimeProfile::Official,"NVIDIA Auto retains official fallback behavior");
@@ -20,6 +47,20 @@ int main(int argc, char** argv)
     std::vector<ProviderInfo> int8Catalog{{17,"3.1.5"},{23,"4.0.2b"},{24,"4.1.1"}};
     Require(SelectProvider(int8Catalog,ProviderPolicy::MachineLearning,0x10de,FsrRuntimeProfile::Int8)->id==23,"INT8 admits only its verified ML version on NVIDIA");
     Require(!SelectProvider(int8Catalog,ProviderPolicy::Analytical,0x10de,FsrRuntimeProfile::Int8),"INT8 cannot substitute its older analytical implementation for official FSR3");
+    auto unavailable=SelectProvider({},ProviderPolicy::MachineLearning,0x1002);
+    Require(!unavailable && unavailable.error().message.find("[FSR] ProviderPolicy=Analytical")!=std::string::npos,
+        "explicit SR4 failure gives an INI recovery route when the menu cannot open");
+    const RuntimeError startup{ErrorKind::MissingRuntime,2,"Missing INT8 module"};
+    const auto recovery=FsrStartupRecoveryMessage(startup,ProviderPolicy::MachineLearning,ProviderPolicy::MachineLearning);
+    Require(recovery.find("Missing INT8 module")!=std::string::npos &&
+        recovery.find("[FSR] ProviderPolicy=Analytical")!=std::string::npos &&
+        recovery.find("[FrameGeneration] FsrProviderPolicy=Analytical")!=std::string::npos,
+        "host startup keeps the original cause and both independent recovery keys");
+    Require(FsrStartupRecoveryMessage(startup,ProviderPolicy::Analytical,ProviderPolicy::Analytical)==startup.message,
+        "analytical startup errors are not relabelled as ML recovery");
+    Require(FsrShaderModelFailure(0x66,0x62,0).find("device reports 6.2")!=std::string::npos &&
+        FsrShaderModelFailure(0x66,0x66,static_cast<std::int32_t>(0x80070057)).find("support unknown")!=std::string::npos,
+        "shader diagnostic distinguishes an actual reported limit from a failed query retaining the request");
     Require(!SelectProvider(int8Catalog,ProviderPolicy::MachineLearning,0x1002,FsrRuntimeProfile::Int8),"unqualified AMD INT8 profile is not admitted");
     // Vendor creation is the boundary double. Exercise cleanup ordering and
     // the already-published game-buffer constraint without spoofing an adapter.
@@ -52,6 +93,7 @@ int main(int argc, char** argv)
     }
     Require(argc == 2, "fixture directory supplied"); const auto base = fs::absolute(argv[1]);
     FsrRuntime absent; auto missing = absent.Load(base / "absent");
+    CheckInt8Preflight<FsrRuntime>(base/"absent");
     Require(!missing && missing.error().kind == ErrorKind::MissingRuntime, "missing runtime is explicit");
     Require(!absent.Load("relative"), "relative module root rejected");
     Require(!absent.Load(base,static_cast<FsrRuntimeProfile>(99)),"invalid runtime profile rejected");
@@ -60,6 +102,9 @@ int main(int argc, char** argv)
     fs::copy_file(base/"good/FSR/amd_fidelityfx_upscaler_dx12.dll",tampered/"amd_fidelityfx_upscaler_dx12.dll",fs::copy_options::overwrite_existing);
     FsrRuntime pinned;auto rejected=pinned.Load(base/"tampered",FsrRuntimeProfile::Int8);
     Require(!rejected && rejected.error().kind==ErrorKind::IncompatibleAbi,"unverified INT8 runtime rejected before execution");
+    auto preflight=FsrRuntime::CheckInt8Files(base/"tampered");
+    Require(!preflight && preflight.error().kind==ErrorKind::IncompatibleAbi && !Loaded(base/"tampered"),
+        "menu preflight rejects tampered INT8 bytes without executing them");
     Require(!pinned.Functions().Query,"failed INT8 verification leaves no loaded function table");
     fs::resize_file(tampered/"amd_fidelityfx_upscaler_dx12.dll",41036800);
     auto digestRejected=pinned.Load(base/"tampered",FsrRuntimeProfile::Int8);

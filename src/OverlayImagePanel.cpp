@@ -3,6 +3,7 @@
 #include "FrameGen/NvidiaHost.h"
 #include "FrameGen/SourceDLSSGBackend.h"
 #include "OverlayFrameView.h"
+#include "OverlayFsrGenerationControls.h"
 #include "OverlayUI.h"
 #include "OverlayUIStyle.h"
 #include "RenderPipeline.h"
@@ -253,7 +254,9 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"FSR3 (3.1.5)","Auto (FSR4 / FSR3)","FSR4 (ML)"};
             int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);
-            if(ImGui::Combo("Provider##fsr",&policy,policies,3))settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
+            const auto availability=host->FsrMlChoices();
+            if(DrawFsrProviderChoice("Provider##fsr",policy,policies,availability.upscale.value_or(true),availability.upscaleReason.c_str()))
+                settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
             DrawSettingsHelp("Save and restart after changing provider. FSR3 keeps the official 3.1.5 runtime. FSR4 uses the separate INT8 runtime on NVIDIA (SM6.6 required), or official ML on supported AMD hardware. Auto uses the official runtime and may select FSR3. The status shows the actual provider. Frame generation is selected independently.");
             const char* encodings[]{"Unknown (choose before enabling FSR)","Linear SDR","Gamma 2.2 SDR","sRGB SDR"};
             int encoding=static_cast<int>(settingsDraft.fsr.sourceColorEncoding);

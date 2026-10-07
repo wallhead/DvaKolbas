@@ -64,8 +64,9 @@ namespace TheosRenderPipeline::Upscaling
         auto hr=device->GetDeviceRemovedReason(); if(FAILED(hr)) return Error(ErrorKind::DeviceLost,hr,"FSR device removed before creation");
         const auto minimum=IsFsr4Provider(provider)?D3D_SHADER_MODEL_6_6:D3D_SHADER_MODEL_6_2;
         D3D12_FEATURE_DATA_SHADER_MODEL model{minimum};
-        if(FAILED(device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model))) || model.HighestShaderModel<minimum)
-            return Error(ErrorKind::UnsupportedDevice,0,"FSR provider shader model unavailable (FSR3 requires 6.2; FSR4 requires 6.6)");
+        hr=device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model));
+        if(FAILED(hr) || model.HighestShaderModel<minimum)
+            return std::unexpected(RuntimeError{ErrorKind::UnsupportedDevice,hr,FsrShaderModelFailure(minimum,model.HighestShaderModel,hr)});
         if(IsFsr4Provider(provider)) {
             ComPtr<IDXGIFactory4> factory;ComPtr<IDXGIAdapter1> adapter;DXGI_ADAPTER_DESC1 description{};
             if(FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory))) ||

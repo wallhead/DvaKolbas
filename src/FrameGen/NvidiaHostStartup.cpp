@@ -129,8 +129,12 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     device_->GetImmediateContext(&context_);
     if (!CreateGameFacingResources(*a_swapChain))
     {
-        status_ = FsrActive() ? "FSR ordinary presentation game-facing buffer creation failed" :
-            "NVIDIA DLSS-G stable game-facing buffer creation failed";
+        if(FsrActive()) {
+            const auto& fsr=sourceUpscalerSettings_.Startup().fsr;
+            status_=TheosRenderPipeline::Upscaling::FsrStartupRecoveryMessage(
+                {TheosRenderPipeline::Upscaling::ErrorKind::ContextFailure,0,
+                 "FSR game-facing buffer creation failed: "+status_},fsr.providerPolicy,fsr.generationProviderPolicy);
+        } else status_="NVIDIA DLSS-G stable game-facing buffer creation failed";
         (*a_swapChain)->Release();
         *a_swapChain = nullptr;
         return E_FAIL;
@@ -223,7 +227,7 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
         auto render=fsrSizingRetainedForResize_ ?
             fsrResources_->ResizeSizingAfterRetirement({outputWidth_,outputHeight_},outputDesc.Format) :
             fsrResources_->PrepareSizing(device_.Get(),config,{outputWidth_,outputHeight_},outputDesc.Format,encoding);
-        if(!render){status_=render.error().message;logger::error("[FSR] {}",status_);return false;}
+        if(!render){const auto& fsr=sourceUpscalerSettings_.Startup().fsr;status_=TheosRenderPipeline::Upscaling::FsrStartupRecoveryMessage(render.error(),fsr.providerPolicy,fsr.generationProviderPolicy);logger::error("[FSR] {}",status_);return false;}
         logger::info("[FSR startup] source/output format={} sourceColorEncoding={} SDR-only contract; installed producer calibration required",
             static_cast<unsigned>(outputDesc.Format),TheosRenderPipeline::Upscaling::ColorEncodingName(encoding));
         queriedRenderWidth=render->width;queriedRenderHeight=render->height;sized=true;
@@ -311,7 +315,7 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
     const auto expectedRenderHeight = renderHeight_;
     if (!InitializeSourceUpscaler(outputDesc))
     {
-        status_ = std::format("Source DLSS startup failed: {}", status_);
+        status_ = std::format("Source {} startup failed: {}", FsrActive()?"FSR":"DLSS", status_);
         logger::error("[NvidiaHost] {}", status_);
         return false;
     }
@@ -381,7 +385,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
 #if defined(TRP_ENABLE_FSR)
     if(FsrActive()) {
         auto created=fsrResources_->CompleteStartup();
-        if(!created){status_=created.error().message;return false;}
+        if(!created){const auto& fsr=sourceUpscalerSettings_.Startup().fsr;status_=TheosRenderPipeline::Upscaling::FsrStartupRecoveryMessage(created.error(),fsr.providerPolicy,fsr.generationProviderPolicy);return false;}
         upscalerReady_=true;splitSourceDLSSActive_=false;
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
         if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="FSR native UI resource creation failed";return false;}
@@ -459,7 +463,8 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
     fsrPresentation_=std::make_unique<FsrHostPresentation>();
     auto extent=fsrPresentation_->Create(factory,producer,fsrResources_,descriptor,sourceUpscalerSettings_.Startup().fsr);
     if (!extent) {
-        status_=extent.error().message;
+        const auto& fsr=sourceUpscalerSettings_.Startup().fsr;
+        status_=Upscaling::FsrStartupRecoveryMessage(extent.error(),fsr.providerPolicy,fsr.generationProviderPolicy);
         logger::error("[FSR startup] rejected flags=0x{:08X} native=0x{:08X} reason={}",descriptor.Flags,
             static_cast<std::uint32_t>(extent.error().nativeResult),status_);
         return E_FAIL;

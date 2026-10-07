@@ -17,6 +17,9 @@ namespace TheosRenderPipeline::Upscaling
         ColorEncoding handoffEncoding{ColorEncoding::Unknown};
         std::string providerDiagnostic;
         bool firstStartupCompleted{};
+        FsrMlAvailability mlAvailability;
+        bool mlShaderSupport{};
+        std::string mlShaderDiagnostic;
     };
     static std::unexpected<RuntimeError> Failure(ErrorKind kind,HRESULT code,const char* text){return std::unexpected(RuntimeError{kind,code,text});}
     FsrHostResources::FsrHostResources(std::filesystem::path plugin,DeviceCreator creator):state_(std::make_unique<State>()),pluginDirectory_(std::move(plugin)),deviceCreator_(creator){}
@@ -29,7 +32,20 @@ namespace TheosRenderPipeline::Upscaling
     Result<void> FsrHostResources::LoadFrameGeneration()
     {
         if(!state_->runtime)return Failure(ErrorKind::ContextFailure,0,"FG runtime requires completed SR pre-query");
-        return state_->runtime->LoadFrameGeneration(pluginDirectory_);
+        auto loaded=state_->runtime->LoadFrameGeneration(pluginDirectory_);
+        if(!loaded)return loaded;
+        auto catalog=state_->runtime->EnumerateForEffect(state_->device.Get(),FsrEffect::FrameGeneration);
+        if(!catalog) {
+            state_->mlAvailability.generation.reset();
+            state_->mlAvailability.generationReason="ML FG catalog could not be checked: "+catalog.error().message;
+            return {};
+        }
+        auto selected=SelectFsrEffectProvider(*catalog,FsrEffect::FrameGeneration,ProviderPolicy::MachineLearning);
+        state_->mlAvailability.generation=bool(selected) && state_->mlShaderSupport;
+        state_->mlAvailability.generationReason=!selected?"ML FG is unavailable in this device's qualified FG catalog; use FSR3 FG or Auto.":
+            !state_->mlShaderSupport?state_->mlShaderDiagnostic:
+            "ML FG provider is present; real AMD rendering remains experimental.";
+        return {};
     }
 #endif
     FsrUpscaler* FsrHostResources::Upscaler()const{return state_->upscaler.get();}
@@ -38,6 +54,7 @@ namespace TheosRenderPipeline::Upscaling
     ID3D11Texture2D* FsrHostResources::Motion11()const{return state_->motion.texture11.Get();}ID3D11Texture2D* FsrHostResources::Output11()const{return state_->native.texture11.Get();}
     const ProviderInfo& FsrHostResources::Provider()const{return state_->provider;}
     const std::string& FsrHostResources::ProviderDiagnostic()const{return state_->providerDiagnostic;}
+    const FsrMlAvailability& FsrHostResources::MlAvailability()const{return state_->mlAvailability;}
     ColorEncoding FsrHostResources::HandoffEncoding()const{return state_->handoffEncoding;}
     Result<Extent> FsrHostResources::PrepareSizing(ID3D11Device* device11,const BackendConfiguration& config,Extent output,DXGI_FORMAT handoffFormat,ColorEncoding handoffEncoding)
     {
@@ -54,7 +71,8 @@ namespace TheosRenderPipeline::Upscaling
         if(FAILED(hr) || !state_->device)return fail(FAILED(hr)?hr:E_NOINTERFACE,"FSR same-adapter native D3D12 ownership unavailable");
         D3D12_FEATURE_DATA_SHADER_MODEL model{D3D_SHADER_MODEL_6_2};
         if(FAILED(hr=state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&model,sizeof(model))) || model.HighestShaderModel<D3D_SHADER_MODEL_6_2)
-            return fail(hr,"FSR requires shader model 6.2 before reduced target publication");
+            return std::unexpected(RuntimeError{ErrorKind::UnsupportedDevice,hr,
+                FsrShaderModelFailure(D3D_SHADER_MODEL_6_2,model.HighestShaderModel,hr)+" before reduced target publication"});
         D3D12_COMMAND_QUEUE_DESC queue{};queue.Type=D3D12_COMMAND_LIST_TYPE_DIRECT;
         if(FAILED(hr=state_->device->CreateCommandQueue(&queue,IID_PPV_ARGS(&state_->queue))))return fail(hr,"FSR direct queue creation failed");
         state_->bridge=std::make_shared<Graphics::D3D11D3D12Interop>();
@@ -72,11 +90,27 @@ namespace TheosRenderPipeline::Upscaling
         const auto profile=SelectFsrRuntimeProfile(config.providerPolicy,description.VendorId);
         state_->runtime=std::make_shared<FsrRuntime>();auto loaded=state_->runtime->Load(pluginDirectory_,profile);if(!loaded)return std::unexpected(loaded.error());
         auto providers=state_->runtime->Enumerate(state_->device.Get());if(!providers)return std::unexpected(providers.error());
+        D3D12_FEATURE_DATA_SHADER_MODEL mlModel{D3D_SHADER_MODEL_6_6};
+        const auto mlHr=state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&mlModel,sizeof(mlModel));
+        state_->mlShaderSupport=SUCCEEDED(mlHr) && mlModel.HighestShaderModel>=D3D_SHADER_MODEL_6_6;
+        state_->mlShaderDiagnostic=state_->mlShaderSupport?std::string{}:FsrShaderModelFailure(D3D_SHADER_MODEL_6_6,mlModel.HighestShaderModel,mlHr);
+        if(!state_->mlShaderSupport) {
+            state_->mlAvailability.upscale=false;
+            state_->mlAvailability.upscaleReason=state_->mlShaderDiagnostic;
+        } else if(description.VendorId==0x10de && profile!=FsrRuntimeProfile::Int8) {
+            auto files=FsrRuntime::CheckInt8Files(pluginDirectory_);
+            state_->mlAvailability.upscale=bool(files);
+            state_->mlAvailability.upscaleReason=files?"INT8 files verified and SM6.6 available; startup still validates the actual provider/context.":files.error().message;
+        } else {
+            auto ml=SelectProvider(*providers,ProviderPolicy::MachineLearning,description.VendorId,profile);
+            state_->mlAvailability.upscale=bool(ml);
+            state_->mlAvailability.upscaleReason=ml?"ML SR provider is present; startup still validates context creation.":
+                "ML SR is unavailable in this device's qualified SR catalog; use FSR3 or Auto.";
+        }
         auto provider=SelectProvider(*providers,config.providerPolicy,description.VendorId,profile);if(!provider)return std::unexpected(provider.error());
         if(IsFsr4Provider(*provider)) {
-            D3D12_FEATURE_DATA_SHADER_MODEL mlModel{D3D_SHADER_MODEL_6_6};
-            if(FAILED(state_->device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,&mlModel,sizeof(mlModel))) || mlModel.HighestShaderModel<D3D_SHADER_MODEL_6_6) {
-                if(config.providerPolicy!=ProviderPolicy::Compatible)return fail(E_NOTIMPL,"FSR4 requires shader model 6.6 before reduced target publication");
+            if(!state_->mlShaderSupport) {
+                if(config.providerPolicy!=ProviderPolicy::Compatible)return std::unexpected(RuntimeError{ErrorKind::UnsupportedDevice,mlHr,state_->mlShaderDiagnostic+" before reduced target publication"});
                 provider=SelectProvider(*providers,ProviderPolicy::Analytical,description.VendorId);
                 if(!provider)return std::unexpected(provider.error());
                 state_->providerDiagnostic="Auto selected FSR3: shader model 6.6 unavailable";
@@ -120,7 +154,7 @@ namespace TheosRenderPipeline::Upscaling
                 auto extent=state_->runtime->QueryRenderExtent(state_->device.Get(),*provider,state_->config.quality,state_->output);
                 if(!extent)return std::unexpected(extent.error());
                 return std::pair{*provider,*extent};
-            });
+            },&state_->mlAvailability);
         if(!created)return std::unexpected(created.error());
         state_->provider=*created;
         if(created->id!=selected.id)state_->providerDiagnostic="Auto selected FSR3 after FSR4 startup failed: "+initialError;

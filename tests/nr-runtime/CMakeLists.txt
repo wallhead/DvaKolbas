@@ -277,7 +277,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
         src/NeuralRendering/StartupSettings.h src/NeuralRendering/SourcePolicy.h tests/NrPreparedBeforeTests.cpp
         tests/NrBeforeHostFramesTests.cpp tests/NrBeforeHostTests.cpp tests/NrSourcePolicyTests.cpp
         src/Upscaling/FSRColorConversion.h src/Upscaling/FSRColorConversion.cpp src/Upscaling/FSRColorContract.h
-        src/Upscaling/FSRHistoryPolicy.h src/FrameGen/NvidiaHostNeural.cpp src/FrameGen/NvidiaHost.h
+        src/Upscaling/FSRHistoryPolicy.h src/Upscaling/FSRAvailability.h src/FrameGen/NvidiaHostNeural.cpp src/FrameGen/NvidiaHost.h
         src/FrameGen/NvidiaHostStartup.cpp src/FrameGen/NvidiaHostLifecycle.cpp src/FrameGen/SourceFsrEvaluation.cpp
         src/FrameGen/SourceNvidiaEvaluation.cpp src/FrameGen/SourceFrameGeneration.h
         src/RendererSettings.h src/RendererSettingsController.cpp src/RendererBackendPolicy.h
@@ -301,7 +301,7 @@ if(TRP_NR_NGX_INCLUDE_DIR)
             src/Upscaling/FSRHostResources.cpp src/Upscaling/FSRFrameAdapter.h src/Upscaling/FSRFrameAdapter.cpp
             src/Upscaling/FSRParameters.h
             src/Upscaling/UpscalerBackend.h src/Upscaling/FSRPreparedResources.h
-            src/Upscaling/FSRProviderPolicy.h src/RendererBackendPolicy.h tools/fsr/runtime-pin.json)
+            src/Upscaling/FSRProviderPolicy.h src/Upscaling/FSRCreationFallback.h src/RendererBackendPolicy.h tools/fsr/runtime-pin.json)
         list(REMOVE_DUPLICATES nrProbeSources)
         file(READ "${nrRoot}/tools/fsr/runtime-pin.json" fsrPin)
         foreach(index RANGE 0 3)

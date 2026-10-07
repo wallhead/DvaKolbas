@@ -40,6 +40,8 @@ namespace TheosRenderPipeline::Upscaling
         FsrRuntime(const FsrRuntime&) = delete;
         FsrRuntime& operator=(const FsrRuntime&) = delete;
         Result<void> Load(const std::filesystem::path& pluginDirectory, FsrRuntimeProfile profile = FsrRuntimeProfile::Official);
+        // Verify alternate NVIDIA files without executing/loading a second runtime.
+        static Result<void> CheckInt8Files(const std::filesystem::path& pluginDirectory);
         Result<void> LoadFrameGeneration(const std::filesystem::path& pluginDirectory);
         Result<std::vector<ProviderInfo>> Enumerate(ID3D12Device*);
         Result<std::vector<FsrEffectProvider>> EnumerateForEffect(ID3D12Device*, FsrEffect);

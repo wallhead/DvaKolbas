@@ -9,7 +9,7 @@ namespace TheosRenderPipeline::Upscaling
     template<class Create, class Retire, class Analytical>
     Result<ProviderInfo> CreateFsrWithStartupFallback(const ProviderInfo& selected,
         ProviderPolicy policy, Extent publishedRender, Create&& create,
-        Retire&& retire, Analytical&& analytical)
+        Retire&& retire, Analytical&& analytical, FsrMlAvailability* availability=nullptr)
     {
         auto created=create(selected);
         if(created)return selected;
@@ -27,6 +27,10 @@ namespace TheosRenderPipeline::Upscaling
                 "FSR4 Auto fallback needs different render dimensions; select FSR3 and restart"});
         auto retried=create(fallback->first);
         if(!retried)return std::unexpected(retried.error());
+        if(availability) {
+            availability->upscale=false;
+            availability->upscaleReason="FSR4 startup failed; Auto recovered with FSR3: "+created.error().message;
+        }
         return fallback->first;
     }
 }

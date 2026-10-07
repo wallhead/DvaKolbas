@@ -28,6 +28,7 @@
 #include "OrdinaryPresentation.h"
 #include "UpscaleType.h"
 #include "Upscaling/UpscalerBackend.h"
+#include "Upscaling/FSRAvailability.h"
 #if defined(TRP_ENABLE_FSR)
 #include "Upscaling/FSRHostResources.h"
 #include "Upscaling/FSRFrameAdapter.h"
@@ -101,6 +102,7 @@ class NvidiaHost
     bool QueryFsrJitter(std::uint64_t sourceId,float& x,float& y);
     TheosRenderPipeline::SettingsActionStatus FsrStatus() const;
     TheosRenderPipeline::SettingsActionStatus FsrFgStatus() const;
+    TheosRenderPipeline::Upscaling::FsrMlAvailability FsrMlChoices() const;
     bool StartupConfigured() const { return sourceUpscalerSettings_.Initialized(); }
     const TheosRenderPipeline::Upscaler::Configuration& SourceUpscalerSettings() const { return sourceUpscalerSettings_; }
     void RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request);

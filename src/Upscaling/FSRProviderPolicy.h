@@ -1,6 +1,7 @@
 #pragma once
 #include "UpscalerBackend.h"
 #include "FSRRuntimeProfile.h"
+#include "FSRAvailability.h"
 #include <span>
 #include <cctype>
 #include <charconv>
@@ -47,6 +48,7 @@ namespace TheosRenderPipeline::Upscaling
         }
         if(policy!=ProviderPolicy::Analytical && ml)return *ml;
         if(policy!=ProviderPolicy::MachineLearning && analytical)return *analytical;
-        return std::unexpected(RuntimeError{ErrorKind::NoProvider, 0, "Requested FSR provider is unavailable; no version ID was fabricated"});
+        return std::unexpected(RuntimeError{ErrorKind::NoProvider, 0,
+            std::string("Requested FSR provider is unavailable; no version ID was fabricated. ")+kFsrSrRecovery});
     }
 }
