@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-07",
+  "sourceRevision": "3d3255ed4bbc9896a8125ffbf1387cb9d19b35eb",
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "3d3255ed4bbc",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true
+  },
+  "dllSha256": "5990e685e9602be4127837eeaeee98dd81625e3902d0b0f704d83e7076c6a28e",
+  "regression": {
+    "failed": 0,
+    "skipped": 1,
+    "skip": "Official ML SR requires AMD hardware",
+    "passed": 31
+  },
+  "srOnly": {
+    "failed": 0,
+    "frameGenerationCompiled": false,
+    "compiled": true,
+    "passed": 1
+  },
+  "cleanPlugin": {
+    "loadedNvidiaRuntimeModules": 0,
+    "startupPassed": true,
+    "packagePassed": true,
+    "temporalFrames": 12
+  },
+  "debugLayersAvailable": false,
+  "skyrimTested": false,
+  "installed": false,
+  "amdMlFgQualified": false
+}

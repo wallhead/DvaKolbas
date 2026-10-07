@@ -1,0 +1,10 @@
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+    Start 92: FsrNvidiaFreeStartup
+1/2 Test #92: FsrNvidiaFreeStartup .............   Passed    0.47 sec
+    Start 93: FsrPackage
+2/2 Test #93: FsrPackage .......................   Passed    4.68 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   5.17 sec
