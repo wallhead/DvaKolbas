@@ -2,7 +2,7 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot '../tools/nr/RuntimePackageCommon.ps1')
 foreach($mode in @('0','3','4')) {
     foreach($quality in @('Quality','Balanced','Performance','NativeAA')) {
-        $route=@{'Settings/UpscaleType'=$mode;'Experimental/FrameGenerationBackend'=$(if($mode -eq '4'){'2'}else{'1'});'FSR/Quality'=$quality;'FSR/SourceColorEncoding'='Gamma22';'NeuralRendering/SourceColorEncoding'='Gamma22'}
+        $route=@{'Settings/UpscaleType'=$mode;'FrameGeneration/Backend'='2';'FSR/Quality'=$quality;'FSR/SourceColorEncoding'='Gamma22';'NeuralRendering/SourceColorEncoding'='Gamma22'}
         if(-not (Test-PostSrTrialRoute $route)){throw "Supported fixed After route rejected: $mode/$quality"}
     }
 }
@@ -10,9 +10,9 @@ $route['FSR/Quality']='Unknown'
 if(Test-PostSrTrialRoute $route){throw 'Unknown FSR quality accepted'}
 $route['FSR/Quality']='Quality';$route['FSR/SourceColorEncoding']='Linear'
 if(Test-PostSrTrialRoute $route){throw 'Unqualified SDR route accepted'}
-$route['Settings/UpscaleType']='0';$route['Experimental/FrameGenerationBackend']='2'
-if(Test-PostSrTrialRoute $route){throw 'DLSS with FSR presenter accepted'}
-$route['Experimental/FrameGenerationBackend']='1';$route['Settings/QualityLevel']='999'
+$route['Settings/UpscaleType']='4';$route['FrameGeneration/Backend']='1'
+if(Test-PostSrTrialRoute $route){throw 'FSR with NVIDIA presenter accepted'}
+$route['Settings/UpscaleType']='0';$route['FrameGeneration/Backend']='1';$route['Settings/QualityLevel']='999'
 if(Test-PostSrTrialRoute $route){throw 'Invalid fixed DLSS quality accepted'}
 $lines=@('[Runtime]','NRRuntimeRoot = C:/Machine/NR','NRDriverCore = C:/Machine/Driver/_nvngx.dll','[NeuralRendering]','DriverCore = D:/Old/_nvngx.dll','RuntimeRoot = D:/Old/NR','[NR PASS 1]','Style = 2')
 $converted=ConvertTo-PortableNrPackageIni $lines

@@ -2,6 +2,7 @@
 
 #include "SourceNvidiaFramePreparation.h"
 #include "SourceFrameEvaluator.h"
+#include "D3D11FrameCopy.h"
 
 namespace TheosRenderPipeline
 {
@@ -53,10 +54,10 @@ namespace TheosRenderPipeline
                     cameraValid = status == Upscaling::GenerationPreparationStatus::Succeeded;
                     return status;
                 } else {
-                // NVIDIA preparation also serves after-upscale NR with FG off.
-                const auto result = SourceNvidiaFramePreparation::PrepareCompletedFrame(frame, operations);
-                cameraValid = result.cameraValid;
-                return result.prepared ? Upscaling::GenerationPreparationStatus::Succeeded : Upscaling::GenerationPreparationStatus::Failed;
+                    // NVIDIA preparation also serves after-upscale NR with FG off.
+                    const auto result = SourceNvidiaFramePreparation::PrepareCompletedFrame(frame, operations);
+                    cameraValid = result.cameraValid;
+                    return result.prepared ? Upscaling::GenerationPreparationStatus::Succeeded : Upscaling::GenerationPreparationStatus::Failed;
                 }
             }
         };
@@ -65,6 +66,19 @@ namespace TheosRenderPipeline
         static SourceNvidiaFrameResult Evaluate(ID3D11DeviceContext* context,
             SourceNvidiaFrameInputs frame, Operations& operations)
         {
+            if constexpr (requires { operations.ExternalGuideRecoveryEnabled(); operations.RecoverInvalidSourceGuides(frame); }) {
+                const auto matches=[&](ID3D11Texture2D* guide,DXGI_FORMAT format){
+                    if(!guide)return false;D3D11_TEXTURE2D_DESC desc{};guide->GetDesc(&desc);
+                    Microsoft::WRL::ComPtr<ID3D11Device> expected,actual;context->GetDevice(&expected);guide->GetDevice(&actual);
+                    return desc.Width==frame.renderWidth && desc.Height==frame.renderHeight && desc.Format==format && desc.SampleDesc.Count==1 &&
+                        D3D11FrameCopy::SameObject(expected.Get(),actual.Get());
+                };
+                if(context && operations.ExternalGuideRecoveryEnabled() && (!matches(frame.depth,DXGI_FORMAT_R32_FLOAT) || !matches(frame.motion,DXGI_FORMAT_R16G16_FLOAT))) {
+                    context->OMSetRenderTargets(0,nullptr,nullptr);operations.CopyInput(context,frame);
+                    const auto recovered=operations.RecoverInvalidSourceGuides(frame);
+                    return {recovered,false,recovered};
+                }
+            }
             Adapter<Operations> adapter{frame, operations};
             Upscaling::UpscaleFrame common = frame.sourceSnapshot;
             common.color = frame.color; common.input = frame.input; common.output = frame.output;

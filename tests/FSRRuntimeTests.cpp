@@ -48,13 +48,13 @@ int main(int argc, char** argv)
     Require(SelectProvider(int8Catalog,ProviderPolicy::MachineLearning,0x10de,FsrRuntimeProfile::Int8)->id==23,"INT8 admits only its verified ML version on NVIDIA");
     Require(!SelectProvider(int8Catalog,ProviderPolicy::Analytical,0x10de,FsrRuntimeProfile::Int8),"INT8 cannot substitute its older analytical implementation for official FSR3");
     auto unavailable=SelectProvider({},ProviderPolicy::MachineLearning,0x1002);
-    Require(!unavailable && unavailable.error().message.find("[FSR] ProviderPolicy=Analytical")!=std::string::npos,
+    Require(!unavailable && unavailable.error().message.find("[FSR] Provider=FSR3")!=std::string::npos,
         "explicit SR4 failure gives an INI recovery route when the menu cannot open");
     const RuntimeError startup{ErrorKind::MissingRuntime,2,"Missing INT8 module"};
     const auto recovery=FsrStartupRecoveryMessage(startup,ProviderPolicy::MachineLearning,ProviderPolicy::MachineLearning);
     Require(recovery.find("Missing INT8 module")!=std::string::npos &&
-        recovery.find("[FSR] ProviderPolicy=Analytical")!=std::string::npos &&
-        recovery.find("[FrameGeneration] FsrProviderPolicy=Analytical")!=std::string::npos,
+        recovery.find("[FSR] Provider=FSR3")!=std::string::npos &&
+        recovery.find("[FrameGeneration] FsrProvider=FSR3")!=std::string::npos,
         "host startup keeps the original cause and both independent recovery keys");
     Require(FsrStartupRecoveryMessage(startup,ProviderPolicy::Analytical,ProviderPolicy::Analytical)==startup.message,
         "analytical startup errors are not relabelled as ML recovery");

@@ -37,7 +37,7 @@ foreach($policy in @('Compatible','MachineLearning')) {
  & $validate -Edition $Edition -PackageDirectory $package -FrameGeneration
  Require ((Read-PackageIni $config)['FSR/ProviderPolicy'] -eq $policy) ("FgIndependentSrProvider-"+$policy)
 }
-foreach($change in @(@('Settings/NativeUI','false'),@('Experimental/NativeUICompositionMode','1'),@('FSR/ProviderPolicy','Invalid'),@('Experimental/FrameGenerationBackend','0'))) {
+foreach($change in @(@('Settings/NativeUI','false'),@('Experimental/NativeUICompositionMode','1'),@('FSR/ProviderPolicy','Invalid'),@('Upscaling Advanced/FsrOrdinaryPresenter','true'))) {
  if($change[0] -eq 'FSR/ProviderPolicy'){
   # The writer refuses invalid enums; corrupt the public fixture directly.
   $lines=@($configOriginal -split '\r?\n' | ForEach-Object {
@@ -47,7 +47,7 @@ foreach($change in @(@('Settings/NativeUI','false'),@('Experimental/NativeUIComp
  [IO.File]::WriteAllLines($config,$lines)
  if($change[0] -eq 'FSR/ProviderPolicy'){
   Require ((Read-PackageIni $config -Raw)['FSR/Provider'] -eq 'Invalid') 'Invalid public provider fixture applied'
- }elseif($change[0] -eq 'Experimental/FrameGenerationBackend'){
+ }elseif($change[0] -eq 'Upscaling Advanced/FsrOrdinaryPresenter'){
   Require ((Read-PackageIni $config -Raw)['Upscaling Advanced/FsrOrdinaryPresenter'] -eq 'true') 'Invalid ordinary presenter fixture applied'
  }else{Require ((Read-PackageIni $config)[$change[0]] -eq $change[1]) ("ConfigMutationApplied-"+$change[0])}
  Update-ManifestFile 'SKSE/Plugins/RaZkolbaS.ini'

@@ -42,7 +42,7 @@ foreach ($quality in @('native','quality','performance','negative-control')) {
         $receipt.nrDispatches -eq 0 -or $receipt.fsrSrCreates -ne 0 -or $receipt.fsrSrDispatches -ne 0 -or
         $receipt.generatedCallbacks -le 20 -or $receipt.generatedPixelReadbacks -le 20 -or
         $receipt.uiFailures -ne 0 -or $receipt.retirementFailures -ne 0 -or
-        $receipt.pendingReaderRetirements -ne 2 -or $receipt.resetReentries -ne $(if ($quality -eq 'negative-control') {10} else {12})) {
+        $receipt.pendingReaderRetirements -ne 2 -or $receipt.resetReentries -ne $(if ($quality -eq 'negative-control') {12} else {14})) {
         throw "NOT QUALIFIED: $quality failed the mixed-route evidence contract"
     }
 }

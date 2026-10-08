@@ -192,8 +192,8 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
         CaptureGameCameraMeasurements(pipeline->mGraphicsState,{guideExtent.width,guideExtent.height},pipeline->mEnableJitter,reset):
         Upscaling::Result<Upscaling::CameraMeasurements>{std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::InvalidInput,0,"NR waiting for world camera"})};
     if (camera && camera->identity) {
-        const auto decision=communityCameraHistory_.Accept(sourceId,*camera,{guideExtent.width,guideExtent.height});
-        eligible=decision.valid;
+        const auto decision=communityCameraHistory_.Accept(sourceId,*camera,{guideExtent.width,guideExtent.height},eligible);
+        eligible=eligible && decision.valid;
         input.depthInverted=camera->depthInverted;
         input.reset|=decision.reset;
     } else eligible=false;

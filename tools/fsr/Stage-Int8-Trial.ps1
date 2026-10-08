@@ -51,7 +51,7 @@ $lines=@($lines | ForEach-Object {
 [IO.File]::WriteAllLines($iniPath,[string[]]$lines,[Text.UTF8Encoding]::new($false))
 $ini=Read-PortableNrPackageIni $iniPath
 if($ini['Settings/UpscaleType'] -ne '4' -or $ini['FSR/Quality'] -ne 'NativeAA' -or
-   $ini['FSR/ProviderPolicy'] -ne $srPolicy -or $ini['FrameGeneration/FsrProviderPolicy'] -ne $fgPolicy -or $ini['Experimental/FrameGenerationBackend'] -ne '2' -or
+   $ini['FSR/ProviderPolicy'] -ne $srPolicy -or $ini['FrameGeneration/FsrProviderPolicy'] -ne $fgPolicy -or $ini['FrameGeneration/Backend'] -ne '2' -or
    $ini['FrameGeneration/Enabled'] -ne 'false' -or $ini['NeuralRendering/Enabled'] -ne 'false'){throw 'Trial defaults differ from intended first-launch settings'}
 Write-PortableModMetadata -Directory $stage -Revision $identity.sourceRevision
 $meta=Join-Path $stage 'meta.ini'

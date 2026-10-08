@@ -13,8 +13,8 @@ HRESULT RetireBeforeSourceResize(RetireNeural neural,RetirePresentation presenta
 { const HRESULT result=neural(); return FAILED(result)?result:presentation(); }
 class SourceCameraHistory {
 public:
-    Upscaling::HistoryDecision Accept(uint64_t source,const Upscaling::CameraMeasurements& camera,Upscaling::Extent extent)
-    {return history_.Accept(source,camera,extent,false,false);}
+    Upscaling::HistoryDecision Accept(uint64_t source,const Upscaling::CameraMeasurements& camera,Upscaling::Extent extent,bool eligible=true)
+    {return history_.Accept(source,camera,extent,false,!eligible);}
     void Invalidate(){history_.Invalidate();}
 private:Upscaling::FsrHistoryPolicy history_;
 };

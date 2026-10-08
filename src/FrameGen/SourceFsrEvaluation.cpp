@@ -92,7 +92,7 @@ struct NvidiaHost::SourceFsrEvaluationOperations
             {frame.render.width,frame.render.height},before);
         if(FAILED(hr) && effects.Snapshot().failures<=3)logger::warn("[FSR/ReShade] {}",effects.Status());
     }
-    Result<UpscaleOutcome> EvaluateUpscaler(UpscaleFrame frame)
+    Result<UpscaleOutcome> EvaluateUpscaler(UpscaleFrame& frame)
     {
         frame.sharpness=host.sourceUpscalerSettings_.Effective().fsr.sharpness;
         auto makeAdapter=[&]{
@@ -157,6 +157,9 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         (void)frame;(void)outcome;return true;
 #endif
     }
+    static_assert(std::is_same_v<decltype(&SourceFsrEvaluationOperations::EvaluateUpscaler),
+        Result<UpscaleOutcome>(SourceFsrEvaluationOperations::*)(UpscaleFrame&)>,
+        "FSR must publish its measured camera into the shared source snapshot used by After NR and FG");
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
 };

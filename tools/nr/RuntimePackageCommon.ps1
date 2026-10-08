@@ -1,10 +1,10 @@
 # Logical hardware profiles may share one physical runtime. Validate/copy it once.
 . (Join-Path $PSScriptRoot '../fsr/PackageCommon.ps1')
 function Test-PostSrTrialRoute([hashtable]$Ini) {
-    $mode=$Ini['Settings/UpscaleType'];$presenter=$Ini['Experimental/FrameGenerationBackend']
-    if($mode -eq '3') { return $presenter -eq '1' }
+    $mode=$Ini['Settings/UpscaleType'];$presenter=$Ini['FrameGeneration/Backend']
+    if($mode -eq '3') { return $presenter -in @('1','2') }
     if($mode -eq '0') {
-        return $presenter -eq '1' -and (-not $Ini.ContainsKey('Settings/QualityLevel') -or
+        return $presenter -in @('1','2') -and (-not $Ini.ContainsKey('Settings/QualityLevel') -or
             $Ini['Settings/QualityLevel'] -in @('0','1','2','3','4'))
     }
     return $mode -eq '4' -and $presenter -in @('0','2') -and

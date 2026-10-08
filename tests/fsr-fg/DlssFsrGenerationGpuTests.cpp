@@ -1,4 +1,5 @@
 #include "DLSSBackend.h"
+#include "FrameGen/LoadingScreenUpscaler.h"
 #include "FrameGen/SourceNvidiaFrameEvaluator.h"
 #include "FrameGen/FSRHostPresentation.h"
 #include "NeuralRendering/PostUpscale.h"
@@ -62,18 +63,23 @@ struct State {
     std::shared_ptr<NR::RuntimeOwner> nrOwner;
     std::unique_ptr<NR::PostUpscale> post;
     ComPtr<ID3D11Texture2D> world,input,output,depth,motion,ui;
+    LoadingScreenUpscaler spatial;
     std::unique_ptr<FgObservation::Capture> capture;
     std::map<uint64_t,std::vector<uint8_t>> enhancedRows;
     std::set<uint64_t> eligible;
-    FsrFunctions* functions{};
+    FsrFunctions* functions{};std::weak_ptr<FsrRuntime> observerRuntime;
     PfnFfxConfigure configure{};
     bool created{},retired{};
     explicit State(const std::filesystem::path& plugin):resources(std::make_shared<FsrHostResources>(plugin)){}
     bool Retire(){
         if(retired)return true;
+        // The host retires/releases its runtime; keep the observer's hook table
+        // alive through reader retirement and restoration.
+        const auto retainedRuntime=observerRuntime.lock();
         if(created && !presenter.Retire())return false;
         if(post && !post->Retire())return false;
         if(nrOwner && !nrOwner->Retire())return false;
+        if(functions && observerRuntime.expired())return false;
         if(functions){functions->CreateContext=originalCreate;functions->Dispatch=originalDispatch;functions->Configure=configure;functions=nullptr;}
         FgObservation::activeCapture=nullptr;DLSSBackend::GetSingleton()->ReleaseFeature();retired=true;return true;
     }
@@ -82,6 +88,12 @@ struct State {
 struct Operations {
     State& state;Evidence& evidence;UpscaleFrame snapshot;NR::SettingsSnapshot settings;bool omitNr{};
     std::vector<uint8_t> final;
+    bool ExternalGuideRecoveryEnabled() const { return true; }
+    bool RecoverInvalidSourceGuides(const SourceNvidiaFrameInputs& frame) {
+        Gpu(state.spatial.Evaluate(state.rig.context11.Get(),frame.input,frame.output));
+        snapshot.output=frame.output;snapshot.depth=snapshot.motion=nullptr;snapshot.reset=true;
+        final=Read(state.rig.context11.Get(),frame.output);return true;
+    }
     void CopyInput(ID3D11DeviceContext* context,const SourceNvidiaFrameInputs& frame){context->CopyResource(frame.input,frame.color);}
     bool EvaluateNeuralBeforeDLSS(SourceNvidiaFrameInputs&){return true;}
     void RenderReShade(const SourceNvidiaFrameInputs&,bool){}
@@ -227,7 +239,7 @@ int wmain(int argc,wchar_t** argv){
         const auto ml=SelectFsrEffectProvider(catalog,FsrEffect::FrameGeneration,ProviderPolicy::MachineLearning);
         mlFgAvailability=ml?ml->identity.name:ml.error().message;
         Need(!GetModuleHandleW(L"amd_fidelityfx_upscaler_dx12.dll") && !state->resources->ContextOwned(),"generation-only path loaded/created FSR SR");
-        auto& functions=const_cast<FsrFunctions&>(state->resources->Runtime()->Functions());state->functions=&functions;
+        auto& functions=const_cast<FsrFunctions&>(state->resources->Runtime()->Functions());state->functions=&functions;state->observerRuntime=state->resources->Runtime();
         originalCreate=functions.CreateContext;originalDispatch=functions.Dispatch;state->configure=functions.Configure;
         FgObservation::originalConfigure=functions.Configure;functions.CreateContext=Create;functions.Dispatch=Dispatch;functions.Configure=FgObservation::Configure;
         NR::StageContract contract;contract.device=state->resources->Bridge()->Device12();contract.queue=state->resources->Bridge()->Queue();
@@ -239,6 +251,7 @@ int wmain(int argc,wchar_t** argv){
         for(unsigned epoch=0;epoch<2;++epoch){
             if(epoch){
                 Accept(state->presenter.BeforeResize());Neural(state->post->Retire());state->post.reset();VerifyCapture(*state,evidence);FgObservation::activeCapture=nullptr;
+                state->spatial.ResetAfterRetirement();
                 ++evidence.retirements;display={768,432};render=renderFor(display);descriptor.BufferDesc.Width=display.width;descriptor.BufferDesc.Height=display.height;
                 Value(state->presenter.ResizeExternal(descriptor,render));Need(originalChain==state->presenter.SwapChain(),"resize replaced the presenter");++evidence.resizes;
             }
@@ -255,9 +268,9 @@ int wmain(int argc,wchar_t** argv){
             std::vector<uint32_t> colors(size_t(render.width)*render.height);std::vector<float> depths(colors.size(),.5f);
             std::vector<DirectX::PackedVector::HALF> velocities(colors.size()*2);
             
-            for(unsigned local=0;local<80;++local){
+            for(unsigned local=0;local<82;++local){
                 Gpu(state->presenter.WaitBeforeProducer());
-                const auto source=uint64_t(epoch)*80+local+1;
+                const auto source=uint64_t(epoch)*82+local+1;
                 for(UINT y=0;y<render.height;++y)for(UINT x=0;x<render.width;++x){const auto i=size_t(y)*render.width+x;
                     const bool object=x>render.width/4+local*2%80 && x<render.width/4+local*2%80+render.width/10;
                     colors[i]=object?0xff1940d0:0xff704025;depths[i]=object?.3f:.6f;
@@ -275,6 +288,8 @@ int wmain(int argc,wchar_t** argv){
                 inputs.motionScaleX=float(render.width);inputs.motionScaleY=float(render.height);inputs.reset=local==0;
                 Operations operations{*state,evidence,snapshot,{},omitNr};operations.settings.enabled=local<6||local>=10;operations.settings.placement=NR::Placement::After;
                 operations.settings.passes=epoch?3:1;operations.settings.revision=local<32?1:2;operations.settings.tuning.style=local<32?0:1;
+                if(local==78)inputs.depth=nullptr;
+                if(local==79)inputs.motion=state->output.Get();
                 const auto result=SourceNvidiaFrameEvaluator::Evaluate(context,inputs,operations);Need(result.upscaled&&result.prepared,"actual NGX NR source handoff incomplete");
                 snapshot=operations.snapshot;
                 state->enhancedRows[source]=std::vector<uint8_t>(operations.final.begin()+size_t(display.height/2)*display.width*4,operations.final.begin()+size_t(display.height/2+1)*display.width*4);
@@ -283,14 +298,17 @@ int wmain(int argc,wchar_t** argv){
                 if(local==20)snapshot.depth=nullptr;
                 if(local==21)snapshot.depth=state->world.Get(); // a fresh source with stale/malformed guides
                 if(local==23)--snapshot.sourceId; // duplicate guide/source identity must not be admitted
-                const auto outcome=local==28?UpscaleOutcome::SpatialRecovery:UpscaleOutcome::Temporal;
+                const auto outcome=(local==28 || local>=78 && local<=79)?UpscaleOutcome::SpatialRecovery:UpscaleOutcome::Temporal;
                 const auto hr=state->presenter.Present(snapshot,outcome,state->ui.Get(),nullptr,true,menu,requested,0,0);
                 if(local==23){Need(hr==DXGI_ERROR_INVALID_CALL,"duplicate source identity was admitted");++evidence.suppressed;continue;}Gpu(hr);
                 const auto status=state->presenter.Status();evidence.callbacks+=status.callback.invocations;
-                if(!requested || menu || local==20 || local==21 || local==28)Need(!status.decision.generate,"ineligible mixed source generated a frame");
+                if(!requested || menu || local==20 || local==21 || local==28 || local==78 || local==79)Need(!status.decision.generate,"ineligible mixed source generated a frame");
                 if(!status.decision.generate)++evidence.suppressed;
                 if(status.decision.reset)++evidence.resets;
-                if(local==18 || local==22 || local==25 || local==29 || (local==33 && !omitNr) || local==41){Need(status.decision.generate && status.decision.reset,"resume did not generate with reset history");++evidence.resetReentries;}
+                // NR requests its own reset on the first valid source after the
+                // guide gap; FG suppresses that reset source, then resumes.
+                if(local==80 && !omitNr)Need(!status.decision.generate,"NR recovery reset source generated");
+                if(local==18 || local==22 || local==25 || local==29 || local==(omitNr?80:81) || (local==33 && !omitNr) || local==41){Need(status.decision.generate && status.decision.reset,"resume did not generate with reset history");++evidence.resetReentries;}
                 if(local==32)++evidence.styleReentries;
                 if(status.decision.generate)state->eligible.insert(source);
                 Need(!state->resources->ContextOwned() && !GetModuleHandleW(L"amd_fidelityfx_upscaler_dx12.dll"),"inactive ML SR preference created an upscaler");
@@ -302,7 +320,7 @@ int wmain(int argc,wchar_t** argv){
         Need(evidence.nr>0 && evidence.changed>0,"no actual NR enhancement observed");
         Need(srCreates==0 && srDispatches==0,"mixed route used FSR SR");
         Need(evidence.callbacks>20 && evidence.generatedPixels>20 && evidence.uiChecks>100,"actual generation/pixel/HUD observations incomplete");
-        Need(evidence.resizes==1 && evidence.suspensions==2 && evidence.resetReentries==12 && evidence.pendingReaders==2 && waits>0,"mixed lifecycle observations incomplete");
+        Need(evidence.resizes==1 && evidence.suspensions==2 && evidence.resetReentries==14 && evidence.pendingReaders==2 && waits>0,"mixed lifecycle observations incomplete");
         if(!state->Retire()){++evidence.retirementFailures;throw std::runtime_error("final readers/runtime retirement failed");}++evidence.retirements;state->rig.ValidateDebug();
         std::printf("PASS mixed route quality=%s SR=%u NR=%u FG=%u generatedPixels=%u HUD=%u waits=%u\n",quality.c_str(),evidence.sources,evidence.nr,evidence.callbacks,evidence.generatedPixels,evidence.uiChecks,waits);
     }catch(const std::exception& error){failure=error.what();std::printf("NOT QUALIFIED: %s\n",failure.c_str());if(state&&!state->Retire()){++evidence.retirementFailures;state.release();failure+="; owners quarantined after retirement failure";}}

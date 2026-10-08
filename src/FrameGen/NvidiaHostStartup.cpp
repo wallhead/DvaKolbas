@@ -467,13 +467,14 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
     Upscaling::Result<Upscaling::Extent> extent;
     if(FsrActive())extent=fsrPresentation_->Create(factory,producer,fsrResources_,descriptor,sourceUpscalerSettings_.Startup().fsr);
     else {
-        int width{},height{};
-        if(!SourceDLSSG::QueryRenderSize(descriptor.BufferDesc.Width,descriptor.BufferDesc.Height,
-            sourceUpscalerSettings_.Startup().AllocationQuality(),&width,&height))return E_INVALIDARG;
+        auto render=FsrHostPresentation::ResolveExternalRenderExtent(descriptor,[&](UINT width,UINT height,int* renderWidth,int* renderHeight){
+            return SourceDLSSG::QueryRenderSize(width,height,sourceUpscalerSettings_.Startup().AllocationQuality(),renderWidth,renderHeight);
+        });
+        if(!render){status_=render.error().message;return E_INVALIDARG;}
         // Encoding is a shared, explicitly configured SDR producer contract.
         // Inactive FSR SR quality/model policy never participates in this owner.
         extent=fsrPresentation_->CreateExternal(factory,producer,fsrResources_,descriptor,
-            sourceUpscalerSettings_.Startup().fsr,{UINT(width),UINT(height)},{});
+            sourceUpscalerSettings_.Startup().fsr,*render,{});
     }
     if (!extent) {
         const auto& fsr=sourceUpscalerSettings_.Startup().fsr;

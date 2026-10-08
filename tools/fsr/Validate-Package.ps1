@@ -42,7 +42,7 @@ foreach($runtime in $runtimePins){Assert-PinnedFile (Join-Path $root ('SKSE/Plug
 $license=$pin.headers | Where-Object {$_.path -eq 'Kits/FidelityFX/docs/license.md'}
 Assert-PinnedFile (Join-Path $root 'AMD-FidelityFX-license.md') $license.sha256
 $ini=Read-PackageIni (Join-Path $root 'SKSE/Plugins/RaZkolbaS.ini')
-foreach($pair in @(@('Settings/UpscaleType','4'),@('FrameGeneration/Enabled',$(if($FrameGeneration){'true'}else{'false'})),@('Experimental/FrameGenerationBackend',$(if($FrameGeneration){'2'}else{'0'})),@('SourceDLSSG/NeuralRenderingEnabled','false'),@('HDROutput/Enabled','false'),@('DynamicResolution/Enabled','false'),@('DynamicResolution/Oscillate','false'))) {
+foreach($pair in @(@('Settings/UpscaleType','4'),@('FrameGeneration/Enabled',$(if($FrameGeneration){'true'}else{'false'})),@('FrameGeneration/Backend',$(if($FrameGeneration){'2'}else{'0'})),@('SourceDLSSG/NeuralRenderingEnabled','false'),@('HDROutput/Enabled','false'),@('DynamicResolution/Enabled','false'),@('DynamicResolution/Oscillate','false'))) {
     if($ini[$pair[0]] -ne $pair[1]){throw "Invalid FSR selector: $($pair[0])"}
 }
 if($FrameGeneration -and ($ini['Settings/NativeUI'] -ne 'true' -or $ini['Experimental/NativeUICompositionMode'] -ne '0')){throw 'FG requires dedicated native UI'}

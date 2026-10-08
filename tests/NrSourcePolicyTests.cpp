@@ -26,5 +26,7 @@ int main(){int failures{};auto check=[&](bool v,const char* n){std::printf("%s %
     c.verticalFovRadians=1.2f;check(history.Accept(4,c,{320,180}).reset,"SameCameraFovChangeResetsBeforeNr");
     c.view[0]=-1;check(history.Accept(5,c,{320,180}).reset,"SameCameraLargeRotationResetsBeforeNr");
     history.Invalidate();check(history.Accept(6,c,{320,180}).reset,"InvalidWorldReentryResetsBeforeNr");
+    check(!history.Accept(7,c,{320,180},false).valid,"ValidCameraCannotOverrideSourceExclusion");
+    check(history.Accept(8,c,{320,180},true).reset,"RejectedSourceInvalidatesCameraHistoryForReentry");
     return failures?1:0;
 }

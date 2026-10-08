@@ -22,7 +22,7 @@ foreach($p in @(Get-NrPhysicalModels $pin.profiles)){Assert-PinnedFile $models[$
 $accepted=[IO.Path]::GetFullPath($AcceptedModDirectory)
 $iniSource=Join-Path $accepted 'SKSE/Plugins/RaZkolbaS.ini'
 $ini=Read-PackageIni $iniSource
-foreach($pair in @(@('Settings/UpscaleType','4'),@('FSR/Quality','NativeAA'),@('FSR/ProviderPolicy','Analytical'),@('FSR/SourceColorEncoding','Gamma22'),@('HDROutput/Enabled','false'),@('DynamicResolution/Enabled','false'),@('Experimental/FrameGenerationBackend','2'),@('Settings/NativeUI','true'),@('Experimental/NativeUICompositionMode','0'))){
+foreach($pair in @(@('Settings/UpscaleType','4'),@('FSR/Quality','NativeAA'),@('FSR/ProviderPolicy','Analytical'),@('FSR/SourceColorEncoding','Gamma22'),@('HDROutput/Enabled','false'),@('DynamicResolution/Enabled','false'),@('FrameGeneration/Backend','2'),@('Settings/NativeUI','true'),@('Experimental/NativeUICompositionMode','0'))){
     if($ini[$pair[0]] -ne $pair[1]){throw "Reference trial setting differs: $($pair[0])"}
 }
 [IO.Directory]::CreateDirectory((Join-Path $root 'SKSE/Plugins/RaZkolbaS'))|Out-Null

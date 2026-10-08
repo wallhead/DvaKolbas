@@ -138,6 +138,19 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
         const auto result=SourceNvidiaFramePreparation::PrepareCompletedFrame(frame,*this);
         return result.prepared?Upscaling::GenerationPreparationStatus::Succeeded:Upscaling::GenerationPreparationStatus::Failed;
     }
+    bool ExternalGuideRecoveryEnabled() const { return host.FsrFgActive(); }
+    bool RecoverInvalidSourceGuides(const TheosRenderPipeline::SourceNvidiaFrameInputs& frame)
+    {
+        // The common admission gate already froze this real source into input.
+        // No NR/vendor temporal call may consume missing/stale guides.
+        const auto scaled=host.loadingScreenUpscaler_.Evaluate(host.context_.Get(),frame.input,frame.output);
+        if(FAILED(scaled)){host.FailLifecycle(scaled,"DLSS spatial guide recovery");return false;}
+        auto recovery=frame.sourceSnapshot;recovery.output=frame.output;recovery.depth=recovery.motion=nullptr;recovery.reset=true;
+        auto prepared=host.PrepareExternalGeneration(recovery,TheosRenderPipeline::Upscaling::UpscaleOutcome::SpatialRecovery);
+        host.resetNextEvaluation_=true;
+        host.status_="DLSS guides unavailable; spatial real frame, NR and FSR FG suppressed";
+        return bool(prepared);
+    }
     bool CaptureCamera(const TheosRenderPipeline::SourceNvidiaFrameGuides& frame)
     {
         return TheosRenderPipeline::SourceDLSSG::CaptureCameraConstants(upscaler.mGraphicsState,

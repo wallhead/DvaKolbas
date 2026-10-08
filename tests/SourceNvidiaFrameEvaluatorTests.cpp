@@ -210,7 +210,9 @@ struct SuppliedFrameOperations
 
 struct ExternalOperations : Operations
 {
-    unsigned externalPreparations{};
+    unsigned externalPreparations{},recoveries{};bool guideAdmission{};
+    bool ExternalGuideRecoveryEnabled() const { return guideAdmission; }
+    bool RecoverInvalidSourceGuides(const SourceNvidiaFrameInputs&) { ++recoveries; output.Paint(context,scene); return true; }
     TheosRenderPipeline::Upscaling::GenerationPreparationStatus PrepareGeneration(
         const SourceNvidiaFrameInputs& frame, const TheosRenderPipeline::Upscaling::UpscaleFrame& completed)
     {
@@ -274,6 +276,18 @@ static void TestExtent(bool nativeResolution)
         auto result=SourceNvidiaFrameEvaluator::Evaluate(context.Get(),frame,ops);
         Require(result.upscaled && result.prepared && ops.externalPreparations==1 && !ops.cameras && !ops.prepares,
             "external owner preparation is selected independently of DLSS source");
+    }
+    for (bool stale : {false,true}) {
+        SourceNvidiaFrameInputs frame{};frame.color=world.texture.Get();frame.input=input.texture.Get();frame.output=output.texture.Get();
+        frame.depth=stale?output.texture.Get():nullptr;frame.motion=motion.texture.Get();
+        frame.renderWidth=12;frame.renderHeight=8;frame.outputWidth=outputWidth;frame.outputHeight=outputHeight;
+        world.Paint(context.Get(),{.25f,.5f,.75f,1});
+        ExternalOperations ops{{context.Get(),world,output,frame,true,true,true,true,false,0}};ops.neuralOK=false;ops.guideAdmission=true;
+        if(stale && nativeResolution)continue;
+        const auto recovered=SourceNvidiaFrameEvaluator::Evaluate(context.Get(),frame,ops);
+        Require(recovered.upscaled && recovered.prepared && ops.recoveries==1 && !ops.neuralCalls && !ops.dlssCalls && !ops.externalPreparations,
+            "MissingOrStaleExternalGuidesPublishSpatialSourceWithoutNrNgxOrStreamline");
+        Require(Pixel(context.Get(),output.texture.Get())==ops.scene,"guide outage retains real scene pixels");
     }
     for (unsigned mask = 0; mask < 256; ++mask) {
         SourceNvidiaFrameGuides frame{};

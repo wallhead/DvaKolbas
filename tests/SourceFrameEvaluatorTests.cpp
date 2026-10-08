@@ -37,6 +37,16 @@ struct Operations
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&) { events.push_back("prepare"); return preparation; }
 };
 
+struct CameraSnapshotOperations : Operations {
+    Result<UpscaleOutcome> EvaluateUpscaler(UpscaleFrame& frame) { frame.camera.identity=42;return Operations::EvaluateUpscaler(frame); }
+    bool EvaluateOptionalPostUpscale(UpscaleFrame& frame,UpscaleOutcome outcome) {
+        Require(frame.camera.identity==42,"FSR After NR receives the measured source camera");return Operations::EvaluateOptionalPostUpscale(frame,outcome);
+    }
+    GenerationPreparationStatus PrepareGeneration(const UpscaleFrame& frame) {
+        Require(frame.camera.identity==42,"FSR FG shares After NR's measured camera");return Operations::PrepareGeneration(frame);
+    }
+};
+
 int main()
 {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
@@ -90,5 +100,6 @@ int main()
     Operations fgOff;
     SourceFrameEvaluator::Evaluate(context.Get(),frame,fgOff);
     Require(fgOff.events[fgOff.events.size()-2]=="post","post stage runs even with FG off");
+    CameraSnapshotOperations camera;SourceFrameEvaluator::Evaluate(context.Get(),frame,camera);
     std::puts("PASS: common source-frame ordering, ownership, and independent generation outcomes");
 }

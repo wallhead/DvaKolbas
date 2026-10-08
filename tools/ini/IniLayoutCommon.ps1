@@ -191,6 +191,10 @@ function Set-PackageIniValues([string[]]$Lines,[hashtable]$Values) {
         }
     }
     if(-not $settings.ContainsKey('Experimental/FsrOrdinaryPresenter')){$settings['Experimental/FsrOrdinaryPresenter']='false'}
+    # Re-resolve after edits; the effective backend is not a saved preference.
+    $settings['FrameGeneration/Backend']=if($settings['Settings/UpscaleType'] -eq '4' -and $settings['Experimental/FsrOrdinaryPresenter'] -eq 'true'){'0'}
+        elseif($settings['FrameGeneration/BackendPreference'] -eq '1'){'1'}
+        elseif($settings['FrameGeneration/BackendPreference'] -eq '2' -or $settings['Settings/UpscaleType'] -eq '4'){'2'}else{'1'}
     $public=ConvertTo-PublicIniValues $settings
     return ,(Format-PublicIni $public $Lines)
 }

@@ -71,6 +71,11 @@ static void ExternalPresentation(const std::filesystem::path& root)
     Require(window!=nullptr,"external presenter hidden HWND");
     DXGI_SWAP_CHAIN_DESC desc{};desc.BufferDesc.Width=desc.BufferDesc.Height=128;desc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.SampleDesc.Count=1;desc.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;desc.BufferCount=1;desc.OutputWindow=window;desc.Windowed=TRUE;desc.SwapEffect=DXGI_SWAP_EFFECT_DISCARD;
+    auto windowSized=desc;windowSized.BufferDesc.Width=windowSized.BufferDesc.Height=0;
+    auto resolved=FsrHostPresentation::ResolveExternalRenderExtent(windowSized,[](UINT width,UINT height,int* renderWidth,int* renderHeight){
+        *renderWidth=int(width/2);*renderHeight=int(height/2);return width>0 && height>0;
+    });
+    Require(resolved && resolved->width && resolved->height,"ExternalQueryResolvesClientSizeBeforeNgxQuery");
     auto resources=std::make_shared<FsrHostResources>(root);FsrHostPresentation host;FsrSettings settings;
     settings.providerPolicy=ProviderPolicy::MachineLearning;settings.sourceColorEncoding=ColorEncoding::Gamma22;
     auto created=host.CreateExternal(rig.factory.Get(),rig.device11.Get(),resources,desc,settings,{64,64},{});

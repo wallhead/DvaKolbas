@@ -10,8 +10,13 @@ static void Require(bool ok,const char* why){if(!ok){std::fprintf(stderr,"FAIL: 
 static void Check(HRESULT hr,const char* why){Require(SUCCEEDED(hr),why);}
 int main(){
     ComPtr<ID3D11Device> d;ComPtr<ID3D11DeviceContext> c;
-    Check(D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_WARP,nullptr,D3D11_CREATE_DEVICE_DEBUG,nullptr,0,D3D11_SDK_VERSION,&d,nullptr,&c),"device");
-    ComPtr<ID3D11InfoQueue> info;Check(d.As(&info),"info");
+    auto created=D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_WARP,nullptr,D3D11_CREATE_DEVICE_DEBUG,nullptr,0,D3D11_SDK_VERSION,&d,nullptr,&c);
+    if(created==DXGI_ERROR_SDK_COMPONENT_MISSING){
+        std::puts("Graphics debug layers unavailable; retaining WARP pixel/state qualification");
+        created=D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_WARP,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&d,nullptr,&c);
+    }
+    Check(created,"WARP device");
+    ComPtr<ID3D11InfoQueue> info;d.As(&info);
     D3D11_TEXTURE2D_DESC desc{};desc.Width=19;desc.Height=13;desc.MipLevels=desc.ArraySize=desc.SampleDesc.Count=1;
     desc.Format=DXGI_FORMAT_R32G32B32A32_FLOAT;desc.BindFlags=D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_UNORDERED_ACCESS;
     auto texture=[&]{ComPtr<ID3D11Texture2D> t;Check(d->CreateTexture2D(&desc,nullptr,&t),"texture");return t;};
@@ -55,7 +60,7 @@ int main(){
     // Readback retires the last draw before owner reset.
     c->CopyResource(staging.Get(),output.Get());Check(c->Map(staging.Get(),0,D3D11_MAP_READ,0,&mapped),"retire");c->Unmap(staging.Get(),0);blend.ResetAfterRetirement();
     Require(!blend.Initialize(d.Get(),c.Get(),DXGI_FORMAT_R8G8B8A8_UNORM_SRGB),"sRGB fallback");
-    for(UINT64 i=0;i<info->GetNumStoredMessages();++i){SIZE_T size{};info->GetMessage(i,nullptr,&size);std::vector<char> bytes(size);
+    for(UINT64 i=0;info && i<info->GetNumStoredMessages();++i){SIZE_T size{};info->GetMessage(i,nullptr,&size);std::vector<char> bytes(size);
         auto* message=reinterpret_cast<D3D11_MESSAGE*>(bytes.data());info->GetMessage(i,message,&size);Require(message->Severity>D3D11_MESSAGE_SEVERITY_ERROR,message->pDescription);}
     std::puts("UI blend pixel/binding-alias/OM-UAV/CS-UAV/stream-output/viewport/scissor/predicate/fallback PASS");
 }

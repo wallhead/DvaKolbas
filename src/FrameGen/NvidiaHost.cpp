@@ -27,6 +27,7 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
     }
 #endif
     auto* upscaler = RenderPipeline::GetSingleton();
+    if(!FsrFgActive()) {
     if (!upscaler->mMotionVectors.mImage || !upscaler->mDepthBuffer.mImage)
     {
         SetRuntimeEnabled(false);
@@ -50,6 +51,7 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
                           motionDesc.Width, motionDesc.Height, depthDesc.Width, depthDesc.Height, renderWidth_, renderHeight_);
         }
         return false;
+    }
     }
     if (!PresentationBackendReadyForEvaluation())
     {

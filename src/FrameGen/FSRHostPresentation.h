@@ -18,6 +18,15 @@ namespace TheosRenderPipeline
         Upscaling::Result<Upscaling::Extent> CreateExternal(IDXGIFactory*,ID3D11Device*,
             std::shared_ptr<Upscaling::FsrHostResources>,const DXGI_SWAP_CHAIN_DESC&,const Upscaling::FsrSettings&,
             Upscaling::Extent render,Upscaling::FsrInputPolicy);
+        template<class Query> static Upscaling::Result<Upscaling::Extent> ResolveExternalRenderExtent(const DXGI_SWAP_CHAIN_DESC& descriptor,Query&& query)
+        {
+            auto normalized=FsrPresentation::TranslateDescriptor(descriptor);
+            if(!normalized)return std::unexpected(normalized.error());
+            int width{},height{};
+            if(!query(normalized->BufferDesc.Width,normalized->BufferDesc.Height,&width,&height) || width<=0 || height<=0)
+                return std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::InvalidInput,E_INVALIDARG,"External NGX render-size query failed for normalized client extent"});
+            return Upscaling::Extent{UINT(width),UINT(height)};
+        }
         HRESULT StartupPresent(UINT interval,UINT flags);
         HRESULT WaitBeforeProducer();
         Upscaling::Result<void> BeforeResize();
