@@ -1,4 +1,5 @@
 #pragma once
+#include "../DiagnosticLogging.h"
 
 #include "SourceDLSSGInterop.h"
 #include "D3D11FrameCopy.h"
@@ -73,6 +74,8 @@ namespace TheosRenderPipeline::SourceDLSSG
 			std::scoped_lock lock(hdrMutex_); hdrSettings_ = HDROutput::Sanitize(a_settings);
 		}
 		HDROutput::Settings HDROutputConfiguration() const { std::scoped_lock lock(hdrMutex_); return hdrSettings_; }
+		void ConfigureHDRCalibrationPattern(bool enabled) { hdrCalibrationPattern_.store(enabled, std::memory_order_relaxed); }
+		bool HDRCalibrationPattern() const { return hdrCalibrationPattern_.load(std::memory_order_relaxed); }
 		HDROutputState HDRState() const { std::scoped_lock lock(hdrMutex_); return hdrState_; }
 		// Native swapchain format for a game-facing format. Renderer-owned HDR
 		// keeps 8-bit producers unchanged and presents RGB10A2 underneath.
@@ -191,6 +194,13 @@ namespace TheosRenderPipeline::SourceDLSSG
 		float hdrSDRWhiteNits_{};
 		std::uint32_t hdrSDRPolls_{};
 		bool hdrNative_{}, hdrDisplay_{}, hdrFrameTagged_{}, hdrColorSpaceApplied_{};
+		Diagnostics::PeriodicLogGate hdrCalibrationLogGate_, hdrSampleLogGate_;
+		std::optional<HDROutput::Settings> hdrLoggedCalibration_;
+		int hdrLoggedMode_{-1};
+		std::uint64_t hdrOutputSequence_{};
+		bool hdrSamplingRejected_{};
+		std::atomic_bool hdrCalibrationPattern_{false}; // Diagnostic only; never persisted.
+		bool hdrLoggedPattern_{};
 		// Replaces a ReShade screenshot of the UI-only source runtime with the
 		// final real frame. Failures keep ReShade's file and never fault rendering.
 		FinalFrameCapture screenshotCapture_;

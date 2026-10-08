@@ -14,7 +14,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 cbuffer Output : register(b0) {
     float4 Red; float4 Green; float4 Blue;
     float4 Scale; // paper nits, UI nits, expansion start, maximum scale
-    float4 Mode;  // transfer (0 = 2.2, 1 = sRGB), passthrough, expand whole frame
+    float4 Mode;  // transfer (0 = 2.2, 1 = sRGB), passthrough, expand whole frame, calibration patches
 };
 Texture2D<float4> composite : register(t0);
 Texture2D<float4> ui : register(t1);
@@ -48,6 +48,17 @@ float3 EncodeHDR10(float3 nits709) {
 }
 float3 EncodeScene(float3 c) { return EncodeHDR10(Expand(Decode(c)) * Scale.x); }
 float3 EncodeUI(float3 c) { return EncodeHDR10(Decode(c) * Scale.y); }
+// Optional diagnostic foreground. Known absolute values bypass the scene
+// curve, so the same patches can check the desktop HDR transport in HDRScopes.
+bool CalibrationPatch(int2 p, out float3 pq) {
+    uint width, height; composite.GetDimensions(width, height);
+    pq = 0;
+    if (Mode.w < 0.5 || p.x >= width / 2 || p.y >= max(height / 8, 1)) { return false; }
+    uint index = min(uint(p.x) * 8 / width, 3);
+    float nits = index == 0 ? 100 : index == 1 ? 200 : index == 2 ? 500 : 1000;
+    pq = EncodeHDR10(nits.xxx);
+    return true;
+}
 // Premultiplied UI: the part covered by alpha is encoded at UI brightness and
 // premultiplied again; light beyond alpha (additive glows) is added separately.
 float3 EncodeUIPremultiplied(float3 rgb, float a) {
@@ -59,6 +70,7 @@ float3 EncodeUIPremultiplied(float3 rgb, float a) {
 float4 PSEncode(Vertex v) : SV_Target {
     float4 c = composite.Load(int3(v.position.xy, 0));
     if (Mode.y > 0.5) { return float4(c.rgb, 1.0); }
+    float3 patch; if (CalibrationPatch(int2(v.position.xy), patch)) { return float4(patch, 1); }
     // World frames without a separate UI layer still expand; menus stay at UI brightness.
     return float4(Mode.z > 0.5 ? EncodeScene(c.rgb) : EncodeUI(c.rgb), 1.0);
 }
@@ -90,6 +102,7 @@ Targets PSCompose(Vertex v) {
         a = opacity + (1.0 - opacity) * a;
     }
     float3 scenePQ = EncodeScene(s.rgb);
+    float3 patch; if (CalibrationPatch(p.xy, patch)) { uiPQ = patch; a = 1; }
     Targets t;
     t.backbuffer = float4(saturate(uiPQ + (1.0 - a) * scenePQ), 1.0);
     t.hudless = float4(scenePQ, 1.0);
@@ -288,20 +301,21 @@ Targets PSCompose(Vertex v) {
 
 	HRESULT HDROutputPass::RecordCompose(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
 		const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* ui,
-		ID3D12Resource* scene, ID3D12Resource* backbuffer)
+		ID3D12Resource* scene, ID3D12Resource* backbuffer, std::uint64_t diagnosticFrame, bool generationRequested)
 	{
-		return Record(device, list, slot, constants, composite, ui, scene, backbuffer, true);
+		return Record(device, list, slot, constants, composite, ui, scene, backbuffer, true, diagnosticFrame, generationRequested);
 	}
 
 	HRESULT HDROutputPass::RecordEncode(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
-		const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* backbuffer)
+		const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* backbuffer,
+		std::uint64_t diagnosticFrame, bool generationRequested)
 	{
-		return Record(device, list, slot, constants, composite, nullptr, nullptr, backbuffer, false);
+		return Record(device, list, slot, constants, composite, nullptr, nullptr, backbuffer, false, diagnosticFrame, generationRequested);
 	}
 
 	HRESULT HDROutputPass::Record(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
 		const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* ui,
-		ID3D12Resource* scene, ID3D12Resource* backbuffer, bool compose)
+		ID3D12Resource* scene, ID3D12Resource* backbuffer, bool compose, std::uint64_t diagnosticFrame, bool generationRequested)
 	{
 		if (!device || !list || !composite || !backbuffer || slot >= kCommandSlots) { return E_INVALIDARG; }
 		const auto out = backbuffer->GetDesc();
@@ -313,6 +327,7 @@ Targets PSCompose(Vertex v) {
 		// The owner has retired this command-ring slot before updating its views,
 		// so its previous timestamp pair is complete.
 		HarvestTiming(slot);
+		HarvestDiagnostics(slot);
 		retained_[slot] = { composite, ui, scene, backbuffer };
 		const auto first = static_cast<UINT>(2 * slot);
 		if (timestamps_) { list->EndQuery(timestamps_.Get(), D3D12_QUERY_TYPE_TIMESTAMP, first); }
@@ -362,6 +377,103 @@ Targets PSCompose(Vertex v) {
 				timestampReadback_.Get(), first * sizeof(std::uint64_t));
 			timingPending_[slot] = true;
 		}
+		if (diagnosticFrame) {
+			const auto hr = RecordDiagnostics(device, list, slot, constants, composite, ui, scene, backbuffer, compose, diagnosticFrame, generationRequested);
+			if (FAILED(hr)) { diagnosticFailure_ = hr; }
+		}
 		return S_OK;
+	}
+
+	HRESULT HDROutputPass::RecordDiagnostics(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
+		const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* ui,
+		ID3D12Resource* scene, ID3D12Resource* backbuffer, bool compose, std::uint64_t frame, bool generationRequested)
+	{
+		constexpr UINT count = 144, stride = D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
+		if (constants.mode[1] > 0.5f) { return E_INVALIDARG; } // SDR codes cannot be measured as PQ.
+		std::array<ID3D12Resource*, 6> surfaces{compose ? scene : composite, composite,
+			compose ? hudless_.Get() : nullptr, backbuffer, compose ? ui : nullptr, compose ? ui_.Get() : nullptr};
+		auto& capture = diagnosticSlots_[slot];
+		for (std::size_t i = 0; i < surfaces.size(); ++i) {
+			const auto format = surfaces[i] ? surfaces[i]->GetDesc().Format : DXGI_FORMAT_UNKNOWN;
+			if (surfaces[i] && format != DXGI_FORMAT_R8G8B8A8_UNORM && format != DXGI_FORMAT_B8G8R8A8_UNORM &&
+				format != kOutputFormat && format != kUIFormat) { return E_NOTIMPL; }
+			capture.formats[i] = format;
+		}
+		if (!capture.readback) {
+			D3D12_HEAP_PROPERTIES heap{}; heap.Type = D3D12_HEAP_TYPE_READBACK;
+			D3D12_RESOURCE_DESC desc{}; desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+			desc.Width = surfaces.size() * count * stride; desc.Height = desc.DepthOrArraySize = desc.MipLevels = 1;
+			desc.SampleDesc.Count = 1; desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+			const auto hr = device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &desc,
+				D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&capture.readback));
+			if (FAILED(hr)) { return hr; }
+		}
+		const auto extent = backbuffer->GetDesc();
+		for (std::size_t surface = 0; surface < surfaces.size(); ++surface) {
+			auto* texture = surfaces[surface]; if (!texture) { continue; }
+			Transition(list, texture, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_SOURCE);
+			D3D12_TEXTURE_COPY_LOCATION from{}; from.pResource = texture; from.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+			D3D12_TEXTURE_COPY_LOCATION to{}; to.pResource = capture.readback.Get(); to.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+			to.PlacedFootprint.Footprint = {capture.formats[surface], 1, 1, 1, D3D12_TEXTURE_DATA_PITCH_ALIGNMENT};
+			for (UINT y = 0; y < 9; ++y) { for (UINT x = 0; x < 16; ++x) {
+				const UINT px = static_cast<UINT>((2 * x + 1) * extent.Width / 32), py = (2 * y + 1) * extent.Height / 18;
+				const D3D12_BOX box{px, py, 0, px + 1, py + 1, 1};
+				to.PlacedFootprint.Offset = (surface * count + y * 16 + x) * stride;
+				list->CopyTextureRegion(&to, 0, 0, 0, &from, &box);
+			} }
+			Transition(list, texture, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COMMON);
+		}
+		capture.report = {}; capture.report.frame = frame; capture.report.samples = count;
+		capture.report.composed = compose; capture.report.constants = constants; capture.pending = true;
+		capture.report.generationRequested = generationRequested;
+		return S_OK;
+	}
+
+	void HDROutputPass::HarvestDiagnostics(std::size_t slot)
+	{
+		auto& capture = diagnosticSlots_[slot];
+		if (!capture.pending) { return; }
+		capture.pending = false;
+		const D3D12_RANGE range{0, static_cast<SIZE_T>(capture.readback->GetDesc().Width)};
+		void* mapped{}; const auto hr = capture.readback->Map(0, &range, &mapped);
+		if (FAILED(hr)) { diagnosticFailure_ = hr; return; }
+		auto pixel = [&](std::size_t surface, std::size_t index) {
+			std::array<float, 4> result{};
+			const auto* p = static_cast<const std::uint8_t*>(mapped) + (surface * 144 + index) * D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
+			const auto format = capture.formats[surface];
+			if (format == kUIFormat) {
+				std::array<std::uint16_t, 4> v{}; std::memcpy(v.data(), p, 8);
+				for (unsigned c = 0; c < 4; ++c) { result[c] = v[c] / 65535.0f; }
+			} else if (format == kOutputFormat) {
+				std::uint32_t v{}; std::memcpy(&v, p, 4);
+				result = {(v & 1023) / 1023.0f, ((v >> 10) & 1023) / 1023.0f, ((v >> 20) & 1023) / 1023.0f, (v >> 30) / 3.0f};
+			} else if (format != DXGI_FORMAT_UNKNOWN) {
+				const bool bgra = format == DXGI_FORMAT_B8G8R8A8_UNORM;
+				result = {p[bgra ? 2 : 0] / 255.0f, p[1] / 255.0f, p[bgra ? 0 : 2] / 255.0f, p[3] / 255.0f};
+			}
+			return result;
+		};
+		std::array<std::array<float, 144>, 7> values{};
+		const auto& c = capture.report.constants;
+		const auto transfer = static_cast<HDROutput::Transfer>(static_cast<int>(c.mode[0]));
+		for (std::size_t i = 0; i < 144; ++i) {
+			const auto s = pixel(0, i), composite = pixel(1, i), world = pixel(2, i), output = pixel(3, i);
+			HDROutput::RGB decoded{HDROutput::Decode(s[0], transfer), HDROutput::Decode(s[1], transfer), HDROutput::Decode(s[2], transfer)};
+			values[0][i] = HDROutput::Luminance709(decoded) * c.scale[0];
+			values[1][i] = HDROutput::Luminance709({HDROutput::Decode(composite[0], transfer),
+				HDROutput::Decode(composite[1], transfer), HDROutput::Decode(composite[2], transfer)}) * c.scale[0];
+			const bool expand = capture.report.composed || c.mode[2] > 0.5f;
+			values[2][i] = HDROutput::Luminance709(expand ? HDROutput::Expand(decoded, c.scale[2], c.scale[3]) : decoded) *
+				(expand ? c.scale[0] : c.scale[1]);
+			values[3][i] = capture.report.composed ? HDROutput::LuminancePQ2020({world[0], world[1], world[2]}) : 0;
+			values[4][i] = HDROutput::LuminancePQ2020({output[0], output[1], output[2]});
+			values[5][i] = pixel(4, i)[3]; values[6][i] = pixel(5, i)[3];
+		}
+		const D3D12_RANGE noWrites{0, 0}; capture.readback->Unmap(0, &noWrites);
+		auto& report = capture.report;
+		report.scene = HDROutput::Summarize(values[0]); report.composite = HDROutput::Summarize(values[1]);
+		report.expectedWorld = HDROutput::Summarize(values[2]); report.hudless = HDROutput::Summarize(values[3]);
+		report.output = HDROutput::Summarize(values[4]); report.inputUICoverage = HDROutput::Summarize(values[5]);
+		report.uiCoverage = HDROutput::Summarize(values[6]); diagnosticReport_ = report;
 	}
 }

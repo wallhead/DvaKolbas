@@ -279,6 +279,27 @@ int main()
     const HDROutput::Settings settings{ .enabled = true, .matchWindowsSDR = false, .paperWhiteNits = 200.0f, .peakNits = 1000.0f,
         .uiNits = 150.0f, .highlightStrength = 1.0f, .expansionStart = 0.6f, .transfer = HDROutput::Transfer::Gamma22 };
     const auto constants = HDROutput::MakeShaderConstants(settings, false);
+    // Diagnostics must measure retired GPU pixels, not predict them from settings.
+    // Recording alone must never expose an unfinished readback.
+    Check(pass.RecordCompose(gpu.device.Get(), gpu.list.Get(), 0, constants, compositeTexture.Get(), uiTexture.Get(),
+        sceneTexture.Get(), backbuffer.Get(), 42, true), "record diagnostic sample");
+    Require(!pass.TakeDiagnostics(), "unfinished diagnostic sample is not published");
+    gpu.Submit();
+    Check(pass.RecordCompose(gpu.device.Get(), gpu.list.Get(), 0, constants, compositeTexture.Get(), uiTexture.Get(),
+        sceneTexture.Get(), backbuffer.Get()), "reuse retired diagnostic slot");
+    auto measured = pass.TakeDiagnostics();
+    Require(measured && measured->frame == 42 && measured->composed && measured->samples == 144,
+        "retired diagnostic report retains frame identity and grid size");
+    Require(measured->generationRequested && measured->constants.scale[0] == settings.paperWhiteNits,
+        "diagnostics retain recorded FG request and calibration");
+    Require(measured->scene.maximum > 150 && measured->hudless.maximum > measured->scene.maximum,
+        "diagnostics distinguish source brightness from expanded world pixels");
+    Require(measured->output.maximum > 500 && measured->uiCoverage.maximum > 0.9f,
+        "diagnostics measure actual output highlights and UI coverage");
+    Require(std::fabs(measured->hudless.maximum - measured->expectedWorld.maximum) < 20,
+        "measured world agrees with the production reference in nits");
+    Require(!pass.TakeDiagnostics(), "diagnostic report is consumed once");
+    gpu.Submit();
     Check(pass.RecordCompose(gpu.device.Get(), gpu.list.Get(), 1, constants, compositeTexture.Get(), uiTexture.Get(),
         sceneTexture.Get(), backbuffer.Get()), "record compose");
     gpu.Submit();
@@ -328,6 +349,23 @@ int main()
     Require(worstIdentity <= 1.5f * code10, "backbuffer satisfies DLSS-G UI + (1 - a) * HUD-less");
     Require(worstOverlay <= 1.5f * code10, "content outside the tagged layers is retained");
 
+    // Known PQ patches bypass inverse tone mapping. They test output transport
+    // independently of the scene curve while staying in the foreground tag.
+    auto calibrationConstants = constants; calibrationConstants.mode[3] = 1;
+    Check(pass.RecordCompose(gpu.device.Get(), gpu.list.Get(), 0, calibrationConstants, compositeTexture.Get(), uiTexture.Get(),
+        sceneTexture.Get(), backbuffer.Get()), "record calibration patches");
+    gpu.Submit();
+    const auto patches = gpu.Read(backbuffer.Get(), 4), patchUI = gpu.Read(pass.UITarget(), 8);
+    for (unsigned patch = 0; patch < 4; ++patch) {
+        const UINT i = 4 * W + patch * 8 + 4;
+        const float nits[]{100, 200, 500, 1000};
+        const auto rgb = Unpack10(patches, i);
+        const auto tag = Unpack16(patchUI, i);
+        Require(std::fabs(HDROutput::LuminancePQ2020(rgb) - nits[patch]) < nits[patch] * 0.01f,
+            "known calibration patch reaches the native output in nits");
+        Require(tag[3] == 1, "calibration patch is opaque foreground for FG");
+    }
+
     CheckLateOverlays(gpu, pass, settings);
 
     // Encode: SDR passthrough is exact; UI-brightness encoding matches the reference.
@@ -351,6 +389,25 @@ int main()
     std::printf("max error: passthrough=%.2f codes encode=%.2f codes\n", worstPassthrough / code10, worstEncoded / code10);
     Require(worstPassthrough <= 0.5f * code10 + 1e-6f, "SDR passthrough");
     Require(worstEncoded <= 1.5f * code10, "UI-brightness encode matches CPU reference");
+
+    Check(pass.RecordEncode(gpu.device.Get(), gpu.list.Get(), 0, constants,
+        compositeTexture.Get(), backbuffer.Get(), 77), "sample encode-only fallback");
+    gpu.Submit();
+    auto changed = constants; changed.scale[1] = 80;
+    Check(pass.RecordEncode(gpu.device.Get(), gpu.list.Get(), 0, changed,
+        compositeTexture.Get(), backbuffer.Get()), "retire fallback sample with new live calibration");
+    const auto fallback = pass.TakeDiagnostics();
+    Require(fallback && !fallback->composed && fallback->frame == 77 && !fallback->generationRequested &&
+        fallback->constants.scale[1] == settings.uiNits && fallback->hudless.maximum == 0,
+        "fallback sample retains its own calibration and does not invent a world tag");
+    Require(fallback->output.maximum > 140 && fallback->output.maximum < 155 && fallback->uiCoverage.maximum == 0,
+        "fallback diagnostics measure UI-brightness output without layers");
+    gpu.Submit();
+    Check(pass.RecordEncode(gpu.device.Get(), gpu.list.Get(), 0, HDROutput::MakeShaderConstants(settings, true),
+        compositeTexture.Get(), backbuffer.Get(), 88), "diagnostic rejection preserves SDR rendering");
+    Require(pass.TakeDiagnosticFailure() == E_INVALIDARG && !pass.TakeDiagnostics(),
+        "SDR passthrough cannot be mislabeled as PQ sample data");
+    gpu.Submit();
 
     // A world frame without separate layers still expands the whole frame.
     Check(pass.RecordEncode(gpu.device.Get(), gpu.list.Get(), 1, HDROutput::MakeShaderConstants(settings, false, true),

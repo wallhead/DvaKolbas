@@ -7,6 +7,7 @@
 #include "../PluginPaths.h"
 #include "../NvidiaAppSettings.h"
 #include "../ScreenshotFile.h"
+#include "../PerformanceTuning.h"
 #include <d3dcompiler.h>
 #include <chrono>
 
@@ -851,12 +852,43 @@ namespace TheosRenderPipeline::SourceDLSSG
 		// A prepared world frame without both layers (for example native UI off)
 		// still expands; menus and loading without generation stay at UI brightness.
 		const bool expandWholeFrame = hdr && !compose && a_prepared;
-		const auto constants = HDROutput::MakeShaderConstants(HDROutput::Effective(HDROutputConfiguration(), hdrSDRWhiteNits_),
-			!hdr, expandWholeFrame);
+		const auto configured = HDROutputConfiguration();
+		const auto effective = HDROutput::Effective(configured, hdrSDRWhiteNits_);
+		auto constants = HDROutput::MakeShaderConstants(effective, !hdr, expandWholeFrame);
+		const bool frameDetails = PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails;
+		const bool calibrationPattern = hdr && frameDetails && HDRCalibrationPattern();
+		constants.mode[3] = calibrationPattern ? 1.0f : 0.0f;
+		const int mode = !hdr ? 0 : compose ? 1 : expandWholeFrame ? 2 : 3;
+		constexpr const char* modes[]{"SDR passthrough", "HDR scene+UI", "HDR whole-frame", "HDR UI-brightness fallback"};
+		const auto now = GetTickCount64();
+		if ((!hdrLoggedCalibration_ || *hdrLoggedCalibration_ != effective || hdrLoggedMode_ != mode || hdrLoggedPattern_ != calibrationPattern) &&
+			hdrCalibrationLogGate_.Accept(true, now, 1000)) {
+			logger::info("[HDROutput calibration] mode={} prepared={} fgRequested={} paperWhiteNits={:.1f} peakNits={:.1f} uiNits={:.1f} strength={:.3f} expansionStartLinear={:.3f} transfer={} matchWindows={} maximumScale={:.3f} calibrationPatches={}",
+				modes[mode], a_prepared, enabled_, effective.paperWhiteNits, effective.peakNits, effective.uiNits,
+				effective.highlightStrength, effective.expansionStart, effective.transfer == HDROutput::Transfer::SRGB ? "sRGB" : "Gamma22",
+				configured.matchWindowsSDR, constants.scale[3], calibrationPattern);
+			hdrLoggedCalibration_ = effective; hdrLoggedMode_ = mode; hdrLoggedPattern_ = calibrationPattern;
+		}
+		const auto frame = ++hdrOutputSequence_;
+		const bool sample = hdr && !hdrSamplingRejected_ && hdrSampleLogGate_.Accept(
+			frameDetails, now, 2000);
 		const auto slot = interop_.CurrentSlot(Work::SwapChain);
 		const auto result = compose ?
-			hdrOutputPass_->RecordCompose(device12_.Get(), a_list, slot, constants, a_source, ui_.texture12.Get(), hudless_.texture12.Get(), a_destination) :
-			hdrOutputPass_->RecordEncode(device12_.Get(), a_list, slot, constants, a_source, a_destination);
+			hdrOutputPass_->RecordCompose(device12_.Get(), a_list, slot, constants, a_source, ui_.texture12.Get(), hudless_.texture12.Get(), a_destination, sample ? frame : 0, enabled_) :
+			hdrOutputPass_->RecordEncode(device12_.Get(), a_list, slot, constants, a_source, a_destination, sample ? frame : 0, enabled_);
+		if (const auto failure = hdrOutputPass_->TakeDiagnosticFailure(); FAILED(failure)) {
+			hdrSamplingRejected_ = true;
+			logger::warn("[HDROutput samples] readback unavailable (0x{:08X}); sampling disabled, rendering continues", static_cast<std::uint32_t>(failure));
+		}
+		if (const auto report = hdrOutputPass_->TakeDiagnostics()) {
+			const auto& r = *report;
+			logger::info("[HDROutput samples] frame={} grid=16x9 sampledPixels={} composed={} fgRequested={} paperWhiteNits={:.1f} uiNits={:.1f} expansionStartLinear={:.3f} maximumScale={:.3f} transfer={} sourceSceneNits(mean/p95/max)={:.1f}/{:.1f}/{:.1f} sourceCompositeNits={:.1f}/{:.1f}/{:.1f} expectedWorldNits={:.1f}/{:.1f}/{:.1f} actualHudlessNits={:.1f}/{:.1f}/{:.1f} actualOutputNits={:.1f}/{:.1f}/{:.1f} inputUIAlpha(mean/max)={:.3f}/{:.3f} outputUIAlpha={:.3f}/{:.3f} calibrationPatches={}",
+				r.frame, r.samples, r.composed, r.generationRequested, r.constants.scale[0], r.constants.scale[1], r.constants.scale[2], r.constants.scale[3],
+				r.constants.mode[0] > 0.5f ? "sRGB" : "Gamma22", r.scene.mean, r.scene.p95, r.scene.maximum,
+				r.composite.mean, r.composite.p95, r.composite.maximum, r.expectedWorld.mean, r.expectedWorld.p95, r.expectedWorld.maximum,
+				r.hudless.mean, r.hudless.p95, r.hudless.maximum, r.output.mean, r.output.p95, r.output.maximum,
+				r.inputUICoverage.mean, r.inputUICoverage.maximum, r.uiCoverage.mean, r.uiCoverage.maximum, r.constants.mode[3] > 0.5f);
+		}
 		a_colorSpace = hdr ? DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 : DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
 		if (SUCCEEDED(result)) {
 			std::scoped_lock lock(hdrMutex_);

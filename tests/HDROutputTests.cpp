@@ -1,4 +1,5 @@
 #include "FrameGen/SourceDLSSGSettings.h"
+#include "FrameGen/HDROutputDiagnostics.h"
 #include <SimpleIni.h>
 #include <cmath>
 #include <cstdio>
@@ -23,6 +24,11 @@ int main()
     Require(Near(EncodePQ(100.0f), 0.5081f, 5e-4f), "PQ 100 nits");
     Require(Near(EncodePQ(1000.0f), 0.7518f, 5e-4f), "PQ 1000 nits");
     Require(EncodePQ(-5.0f) == EncodePQ(0.0f) && Near(EncodePQ(20000.0f), 1.0f, 1e-6f), "PQ clamps");
+    for (float nits : {0.0f, 100.0f, 200.0f, 500.0f, 1000.0f, 4000.0f, 10000.0f}) {
+        Require(Near(DecodePQ(EncodePQ(nits)), nits, (std::max)(0.1f, nits * 0.001f)), "diagnostic PQ inverse in nits");
+        const auto encoded = EncodeHDR10({nits, nits, nits});
+        Require(Near(LuminancePQ2020(encoded), nits, (std::max)(0.1f, nits * 0.001f)), "diagnostic BT.2020 luminance");
+    }
 
     Require(Decode(0.0f, Transfer::Gamma22) == 0.0f && Near(Decode(1.0f, Transfer::Gamma22), 1.0f, 1e-6f), "2.2 endpoints");
     Require(Near(Decode(0.5f, Transfer::Gamma22), 0.21764f, 1e-4f), "2.2 mid grey");

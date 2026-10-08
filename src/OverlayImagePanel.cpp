@@ -131,6 +131,13 @@ void OverlayUI::DrawHDROutputSettings()
     DrawSettingsHelp("0 keeps the SDR range at paper white; 1 expands the brightest pixels to peak brightness.");
     ImGui::SliderFloat("Expansion start##hdr", &hdr.expansionStart, 0.1f, 0.95f, "%.2f");
     DrawSettingsHelp("SDR brightness where expansion begins. Higher values boost only the brightest areas.");
+    if (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails)
+    {
+        auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
+        bool patches = backend.HDRCalibrationPattern();
+        if (ImGui::Checkbox("HDR calibration patches##hdr", &patches)) { backend.ConfigureHDRCalibrationPattern(patches); }
+        DrawSettingsHelp("Diagnostic only. Top-left patches: 100, 200, 500, 1000 nits from left to right. They bypass highlight expansion and use opaque foreground tags for FG. Compare with HDRScopes. Sampling and patches require frame diagnostics; patches reset on restart.");
+    }
     const char* transfers[]{"Gamma 2.2", "sRGB"};
     int transfer = static_cast<int>(hdr.transfer);
     ImGui::SetNextItemWidth(-1);

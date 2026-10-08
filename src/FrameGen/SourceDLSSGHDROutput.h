@@ -1,11 +1,13 @@
 #pragma once
 #include "HDROutput.h"
+#include "HDROutputDiagnostics.h"
 #include "SourceDLSSGInterop.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <algorithm>
 #include <array>
 #include <utility>
+#include <optional>
 
 namespace TheosRenderPipeline::SourceDLSSG
 {
@@ -88,9 +90,14 @@ namespace TheosRenderPipeline::SourceDLSSG
 
 		HRESULT RecordCompose(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
 			const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* ui,
-			ID3D12Resource* scene, ID3D12Resource* backbuffer);
+			ID3D12Resource* scene, ID3D12Resource* backbuffer, std::uint64_t diagnosticFrame = 0, bool generationRequested = false);
 		HRESULT RecordEncode(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
-			const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* backbuffer);
+			const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* backbuffer,
+			std::uint64_t diagnosticFrame = 0, bool generationRequested = false);
+		// Optional 16x9 pixel readback, harvested on retired slot reuse. No fence
+		// wait or full-frame copy. Diagnostics failure never fails rendering.
+		std::optional<HDROutput::SampleReport> TakeDiagnostics() { return std::exchange(diagnosticReport_, {}); }
+		HRESULT TakeDiagnosticFailure() { return std::exchange(diagnosticFailure_, S_OK); }
 
 		bool TargetsMatch(UINT width, UINT height) const;
 		HRESULT CreateTargets(ID3D12Device* device, UINT width, UINT height); // Caller has drained.
@@ -105,7 +112,21 @@ namespace TheosRenderPipeline::SourceDLSSG
 		HRESULT Initialize(ID3D12Device* device);
 		HRESULT Record(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
 			const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* ui,
-			ID3D12Resource* scene, ID3D12Resource* backbuffer, bool compose);
+			ID3D12Resource* scene, ID3D12Resource* backbuffer, bool compose, std::uint64_t diagnosticFrame, bool generationRequested);
+		HRESULT RecordDiagnostics(ID3D12Device* device, ID3D12GraphicsCommandList* list, std::size_t slot,
+			const HDROutput::ShaderConstants& constants, ID3D12Resource* composite, ID3D12Resource* ui,
+			ID3D12Resource* scene, ID3D12Resource* backbuffer, bool compose, std::uint64_t frame, bool generationRequested);
+		void HarvestDiagnostics(std::size_t slot);
+		struct DiagnosticSlot
+		{
+			Microsoft::WRL::ComPtr<ID3D12Resource> readback;
+			std::array<DXGI_FORMAT, 6> formats{};
+			HDROutput::SampleReport report{};
+			bool pending{};
+		};
+		std::array<DiagnosticSlot, kCommandSlots> diagnosticSlots_;
+		std::optional<HDROutput::SampleReport> diagnosticReport_;
+		HRESULT diagnosticFailure_{S_OK};
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> root_;
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> compose_, encode_;
 		std::array<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>, kCommandSlots> srv_, rtv_;
