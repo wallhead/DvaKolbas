@@ -346,9 +346,27 @@ void EffectivePresenterUi()
         Require(!ValidateRendererSettings(draft,inactive),"ordinary/NVIDIA presenter retains native UI opt-out");
     }
 }
+void MixedBackendValidation()
+{
+    RendererSettingsCapabilities caps{true,true,true,false};
+    caps.fsrBuilt=caps.fsrFgBuilt=caps.communityNeural=true;
+    RendererSettingsDraft draft;draft.valid=true;draft.upscaleType=DLSS;draft.generationBackend=2;
+    const auto* encodingError=ValidateRendererSettings(draft,caps);
+    Require(encodingError && std::string_view(encodingError).find("[FSR] SourceColorEncoding")!=std::string_view::npos,
+        "mixed presenter validation must name the real public encoding key");
+    draft.upscaleType=FSR;draft.generationBackend=1;
+    draft.fsr.sourceColorEncoding=TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22;
+    const auto* backendError=ValidateRendererSettings(draft,caps);
+    Require(backendError && std::string_view(backendError).find("Backend=NVIDIA")!=std::string_view::npos,
+        "explicit unsupported backend must identify the conflicting INI choice");
+    draft.upscaleType=DLSS;draft.generationBackendPreference=GenerationBackendPreference::Nvidia;
+    SetRendererUpscaleMode(draft,FSR);
+    Require(draft.generationBackendPreference==GenerationBackendPreference::Auto && draft.generationBackend==2,
+        "switching to FSR must clear an unavailable staged NVIDIA preference");
+}
 }
 int main()
 {
-    try { ImmediateMenuEdits(); NativeRenderScale(); Feedback(); Generation(); Neural(); LiveGenerationActions(); DraftModeRoundTrip(); StagedGenerationDefaults(); ActualPresenterGenerationGate(); LiveGenerationWithOrdinaryDraft(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: automatic menu edits, Native render scale, visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
+    try { MixedBackendValidation(); ImmediateMenuEdits(); NativeRenderScale(); Feedback(); Generation(); Neural(); LiveGenerationActions(); DraftModeRoundTrip(); StagedGenerationDefaults(); ActualPresenterGenerationGate(); LiveGenerationWithOrdinaryDraft(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: automatic menu edits, Native render scale, visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

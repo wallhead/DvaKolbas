@@ -137,6 +137,7 @@ class NvidiaHost
     std::uint32_t RuntimeMinWidthOrHeight() const { return runtimeMinWidthOrHeight_; }
     std::uint32_t RuntimeMaxGeneratedFrames() const { return runtimeMaxGeneratedFrames_; }
     const std::string& Status() const { return status_; }
+    bool SourceRecoveryActive() const { return sourceRecoveryActive_; }
 #if !defined(TRP_NO_NEURAL_RENDERING)
     bool CommunityNeuralAvailable() const {return communityNeural_ && communityNeural_->Available();}
     bool CommunityNeuralTerminal() const {return communityNeural_ && communityNeural_->Terminal();}
@@ -255,6 +256,8 @@ class NvidiaHost
     bool frameGenerationStateKnown_{false};
     bool frameGenerationEnabled_{false};
     bool resetNextEvaluation_{true};
+    bool sourceRecoveryActive_{};
+    std::uint64_t sourceRecoveryFailures_{};
     bool evaluationFailureLogged_{false};
     bool nativeUIExtractionFailureLogged_{false};
     std::int32_t warmupPresentsRemaining_{0};

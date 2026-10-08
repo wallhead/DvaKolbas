@@ -280,7 +280,7 @@
       "section": "Latency",
       "key": "OutputFPSLimit",
       "default": "0",
-      "comment": "NVIDIA output FPS cap. Zero means unlimited.",
+      "comment": "NVIDIA presentation output FPS cap. Unavailable with FSR FG, including DLSS to FSR FG. Zero means unlimited.",
       "restart": false,
       "values": {},
       "type": "Integer",
@@ -292,7 +292,7 @@
       "section": "Latency",
       "key": "Reflex",
       "default": "On",
-      "comment": "NVIDIA Reflex mode.",
+      "comment": "NVIDIA presentation Reflex mode. Unavailable with FSR FG, including DLSS to FSR FG.",
       "restart": false,
       "values": {
         "Off": "0",

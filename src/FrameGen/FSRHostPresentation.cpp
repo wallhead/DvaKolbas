@@ -1,6 +1,7 @@
 #include "FSRHostPresentation.h"
 #include "FSRSwapChainPolicy.h"
 #include "Upscaling/FSRGenerationGuideAdapter.h"
+#include "PublicIniSchema.h"
 namespace TheosRenderPipeline
 {
     using namespace Upscaling;
@@ -27,10 +28,15 @@ namespace TheosRenderPipeline
         bool external,Extent externalRender,FsrInputPolicy policy)
     {
         auto invalid=[](const char* text)->Result<Extent>{return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,text});};
-        if(state_->created || state_->closing || !factory || !device || !resources ||
-            (!external && !ValidFsrSettings(settings)) || !ValidProviderPolicy(settings.generationProviderPolicy) ||
-            !IsKnownColorEncoding(settings.sourceColorEncoding))
-            return invalid("AMD host requires a fresh owner, valid SR provider policy and explicit native SDR encoding");
+        if(state_->created || state_->closing || !factory || !device || !resources)
+            return invalid("FSR FG creation requires a fresh presentation owner, factory, producer device and resources");
+        if((!external && !ValidFsrSettings(settings)) || !ValidProviderPolicy(settings.generationProviderPolicy))
+            return invalid("FSR FG creation rejected invalid provider settings; check [FrameGeneration] FsrProvider");
+        if(!IsKnownColorEncoding(settings.sourceColorEncoding)) {
+            return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,
+                std::string(external?"DLSS to FSR FG":"FSR upscaling to FSR FG")+" requires explicit SDR encoding in "+
+                PublicIni::Reference("FSR","SourceColorEncoding")+" (Linear, Gamma22 or SRGB)"});
+        }
         auto descriptor=FsrPresentation::TranslateDescriptor(input);if(!descriptor)return std::unexpected(descriptor.error());
         BackendConfiguration config;config.backend=BackendKind::Fsr;config.generationEnabled=false;config.generationBackend=0;
         config.quality=settings.quality;config.providerPolicy=settings.providerPolicy;config.sharpness=settings.sharpness;
@@ -128,6 +134,14 @@ namespace TheosRenderPipeline
     {
         if(flags&DXGI_PRESENT_TEST)return StartupPresent(interval,flags);
         if(!state_->created || state_->closing || Suspended())return E_UNEXPECTED;
+        if(outcome==UpscaleOutcome::Temporal && state_->feature && state_->limits.input!=state_->resources->GenerationInputPolicy()) {
+            const auto input=state_->resources->GenerationInputPolicy();
+            if(frame.camera.depthInverted!=input.depthInverted || frame.camera.depthInfinite!=input.depthInfinite ||
+                frame.motionConvention.includesJitter!=input.motionIncludesJitter)return E_INVALIDARG;
+            auto changed=state_->presenter.ReconfigureInputPolicy(input,state_->provider);
+            if(!changed)return E_FAIL;
+            state_->limits.input=input;
+        }
         if(state_->resources->ExternalSource()){
             auto ready=state_->resources->CompleteExternalStartup();if(!ready)return E_FAIL;
             if(!state_->externalGuides)state_->externalGuides=std::make_unique<FsrGenerationGuideAdapter>(
@@ -147,7 +161,7 @@ namespace TheosRenderPipeline
                 frame.motionConvention.includesJitter!=input.motionIncludesJitter)return E_INVALIDARG;
             if(!state_->feature){state_->limits.input=input;auto started=state_->presenter.CompleteStartup(state_->limits,state_->provider);
                 if(!started)return E_FAIL;state_->feature=true;}
-            else if(state_->limits.input!=input)return E_INVALIDARG; // An immutable convention change needs a new owner.
+            else if(state_->limits.input!=input)return E_INVALIDARG;
         }
         return state_->presenter.Present(frame,outcome,state_->resources->Resources(),state_->presenter.SceneTarget11(),
             state_->encoding,ui,overlay,complete,menu,requested,interval,flags);

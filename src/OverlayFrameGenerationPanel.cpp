@@ -58,9 +58,11 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             if(DrawFsrProviderChoice("Provider##fsr-fg",fgPolicy,fgProviders,availability.generation.value_or(true),availability.generationReason.c_str()))
                 settingsDraft.fsr.generationProviderPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(fgPolicy);
             DrawSettingsHelp("Provider changes require Save as default and restart. Official ML FG requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. Auto uses FSR3 FG when ML FG is unavailable. Upscaling and FG providers are independent.");
-            auto status=nvidiaHost->FsrFgStatus();
-            ImGui::TextWrapped("%s",status.text.c_str());
-            if(!nvidiaHost->FsrFgActive())ImGui::TextWrapped("FSR provider is staged for the next launch; the current backend stays active.");
+            if(nvidiaHost->FsrFgActive()) {
+                auto status=nvidiaHost->FsrFgStatus();
+                ImGui::TextWrapped("%s",status.text.c_str());
+                ImGui::TextWrapped("Reflex and NVIDIA output FPS cap are unavailable with FSR FG. Saved values apply to NVIDIA presentation.");
+            }else ImGui::TextWrapped("FSR provider is staged for the next launch; the current backend stays active.");
             if(!view.fsrActive) {
                 int encoding=static_cast<int>(settingsDraft.fsr.sourceColorEncoding);
                 const char* encodings[]{"Unknown", "Linear", "Gamma 2.2 SDR", "sRGB"};
@@ -68,10 +70,14 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                     settingsDraft.fsr.sourceColorEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding);
                 DrawSettingsHelp("Explicit SDR producer encoding used by FSR FG presentation. Save and restart; independent of FSR upscaling quality/model.");
             }
-            if(showDeveloperControls)ImGui::TextWrapped("%s",nvidiaHost->Status().c_str());
-            DrawFrameGenerationAdvanced(view);
-            EndSettingsColumns();
-            ImGui::EndTabItem();return;
+            if(showDeveloperControls || nvidiaHost->SourceRecoveryActive())ImGui::TextWrapped("%s",nvidiaHost->Status().c_str());
+            if(actualBackend!=1) {
+                DrawFrameGenerationAdvanced(view);
+                EndSettingsColumns();
+                ImGui::EndTabItem();return;
+            }
+            ImGui::Separator();
+            ImGui::TextUnformatted("Running NVIDIA presentation");
         }
         auto& sourceBackend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
         const auto& sourceState = sourceBackend.Snapshot();

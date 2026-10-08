@@ -64,7 +64,7 @@ static void Guides(const std::filesystem::path& root)
     Require(!resources.Upscaler() && !GetModuleHandleW(L"amd_fidelityfx_upscaler_dx12.dll"),"no hidden second upscaler after resize");
     Require(bool(resources.Retire()),"external owner fully retired");rig.ValidateDebug();
 }
-static void ExternalPresentation(const std::filesystem::path& root)
+static void ExternalPresentation(const std::filesystem::path& root,bool failPolicyRetirement=false)
 {
     GenerationFixture::Rig rig;
     HWND window=CreateWindowExW(0,L"STATIC",L"External FG fixture",WS_OVERLAPPEDWINDOW,0,0,160,160,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);
@@ -104,6 +104,28 @@ static void ExternalPresentation(const std::filesystem::path& root)
     present(UpscaleOutcome::Temporal,true,true);Require(!host.Status().decision.generate,"menu suppresses external generation");
     Require(bool(host.Suspend()),"external owner suspension");Require(bool(host.Resume()),"external owner restoration");present();
     Require(host.Status().decision.generate && host.Status().decision.reset,"ResumeResetsGeneration");
+    auto* policyChain=host.SwapChain();auto* policyDepth=resources->Depth11();auto* policyScene=host.SceneTarget11();
+    auto policy=resources->GenerationInputPolicy();policy.depthInverted=!policy.depthInverted;
+    Require(bool(resources->EnsureInputPolicy(policy)),"measured external policy update");frame.camera.depthInverted=policy.depthInverted;
+    present();
+    Require(host.Status().decision.generate && host.Status().decision.reset,"changed convention recreates FG and resets only FG history");
+    Require(host.SwapChain()==policyChain && resources->Depth11()==policyDepth && host.SceneTarget11()==policyScene && !resources->Upscaler(),
+        "input policy change preserves chain, guides and scene without creating SR");
+    policy.depthInverted=!policy.depthInverted;Require(bool(resources->EnsureInputPolicy(policy)),"restored external policy");
+    frame.camera.depthInverted=policy.depthInverted;present();
+    Require(host.Status().decision.generate && host.Status().decision.reset,"restored convention resumes generation");
+    if(failPolicyRetirement) {
+        policy.depthInfinite=!policy.depthInfinite;
+        Require(bool(resources->EnsureInputPolicy(policy)),"policy retirement failure setup");frame.camera.depthInfinite=policy.depthInfinite;
+        mode(23);++frame.sourceId;Check(host.WaitBeforeProducer(),"policy failure producer wait");
+        Require(FAILED(host.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0)),
+            "failed SDK reader retirement rejects policy reentry");
+        Require(host.SwapChain()==policyChain && resources->Depth11()==policyDepth && host.SceneTarget11()==policyScene,
+            "failed policy retirement retains all reader-owned buffers");
+        Require(FAILED(host.WaitBeforeProducer()),"failed policy reentry stops new source admissions");
+        mode(0);Require(bool(host.Retire()),"policy retirement failure can retry final cleanup");
+        DestroyWindow(window);rig.ValidateDebug();return;
+    }
     auto* chain=host.SwapChain();auto* retainedDepth=resources->Depth11();mode(23);
     Require(!host.BeforeResize() && host.SwapChain()==chain && resources->Depth11()==retainedDepth,"ExternalResizeRetainsAllReaders: failed retirement preserves resource owner");mode(0);
     Require(bool(host.BeforeResize()),"external retirement retry");
@@ -116,7 +138,7 @@ int main(int argc,char** argv)
 {
     Require(argc>=2,"runtime root required");const auto root=std::filesystem::absolute(argv[1]);
     if(argc==3 && std::string_view(argv[2])=="--gpu")Guides(root);
-    else if(argc==3 && std::string_view(argv[2])=="--host")ExternalPresentation(root);
+    else if(argc==3 && std::string_view(argv[2])=="--host"){ExternalPresentation(root);ExternalPresentation(root,true);}
     else GenerationOnlyRuntime(root);
     std::puts("PASS: generation-only official runtime and external guide ownership");
 }

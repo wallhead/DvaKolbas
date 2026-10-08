@@ -514,6 +514,18 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
         if(!wasSuspended)logger::info("[FSR resize] suspended empty client extent; AMD chain and game buffers retained");
         return S_OK;
     }
+    // Resolve external source sizing before retiring any live reader or buffer.
+    // A rejected query leaves the running chain and source fully usable.
+    TheosRenderPipeline::Upscaling::Extent externalRender{};
+    if(!FsrActive()) {
+        int renderWidth{},renderHeight{};
+        if(!TheosRenderPipeline::SourceDLSSG::QueryRenderSize((*translated)->BufferDesc.Width,(*translated)->BufferDesc.Height,
+            sourceUpscalerSettings_.Startup().AllocationQuality(),&renderWidth,&renderHeight) || renderWidth<=0 || renderHeight<=0) {
+            status_="DLSS render-size query rejected resize; running source and FSR presenter retained";
+            return E_INVALIDARG;
+        }
+        externalRender={UINT(renderWidth),UINT(renderHeight)};
+    }
     const auto admission=TheosRenderPipeline::NeuralRendering::RetireBeforeSourceResize(
         [&]()->HRESULT {
 #if !defined(TRP_NO_NEURAL_RENDERING)
@@ -530,12 +542,7 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
     gameTargets_.ResetGameFacingAfterRetirement();ReleaseSourceUpscaler(true);presentation_.ResetAfterRetirement();
     TheosRenderPipeline::Upscaling::Result<TheosRenderPipeline::FsrHostResize> resized;
     if(FsrActive())resized=fsrPresentation_->Resize(**translated);
-    else {
-        int renderWidth{},renderHeight{};
-        if(!TheosRenderPipeline::SourceDLSSG::QueryRenderSize((*translated)->BufferDesc.Width,(*translated)->BufferDesc.Height,
-            sourceUpscalerSettings_.Startup().AllocationQuality(),&renderWidth,&renderHeight))return E_INVALIDARG;
-        resized=fsrPresentation_->ResizeExternal(**translated,{UINT(renderWidth),UINT(renderHeight)});
-    }
+    else resized=fsrPresentation_->ResizeExternal(**translated,externalRender);
     if(!resized){status_=resized.error().message;return FailLifecycle(E_FAIL,"AMD resize reconstruction");}
     renderWidth_=resized->render.width;renderHeight_=resized->render.height;
     auto hr=innerSwapChain_->GetDesc(&fsrDescriptor_);

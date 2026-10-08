@@ -82,9 +82,14 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
     }
 
     bool resetHistory = resetNextEvaluation_ || upscaler->mPendingHistoryResets > 0;
+    // Consume the source reset before evaluating. Source recovery may arm it
+    // again; FG skips already invalidate their own FsrGenerationHistory.
+    resetNextEvaluation_ = false;
+    sourceRecoveryActive_ = false;
 
     if (!EvaluateSourceNvidiaFrame(a_nativeUIHandoff, resetHistory))
     {
+        resetNextEvaluation_ = true;
         return false;
     }
 
@@ -92,18 +97,13 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
         ScopedD3D11PerformanceStage timer{context_.Get(), PerformanceTuning::D3D11Stage::kPresentationCopy};
         context_->CopyResource(presentation_.Buffers()[currentIndex].Get(), gameTargets_.UpscaleOutput());
     }
-#if defined(TRP_ENABLE_FSR_FG)
-    resetNextEvaluation_ = FsrFgActive() && fsrGenerationOutcome_!=TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal;
-#else
-    resetNextEvaluation_ = false;
-#endif
     if (!resetNextEvaluation_ && upscaler->mPendingHistoryResets > 0)
     {
         --upscaler->mPendingHistoryResets;
     }
     ++evaluationCount_;
     evaluationFailureLogged_ = false;
-    if (StartupConfigured())
+    if (StartupConfigured() && !sourceRecoveryActive_)
     {
         status_ = std::format("RaZkolbaS source DLSS + {}; camera/input valid={} warm-up={}",
             FsrFgActive()?"FSR FG":"Streamline DLSS-G", !splitSourceRuntimeFailureLogged_, warmupPresentsRemaining_);

@@ -54,7 +54,7 @@ std::vector<uint8_t> Read(ID3D11DeviceContext* context,ID3D11Texture2D* texture)
     for(UINT y=0;y<height;++y)std::memcpy(bytes.data()+size_t(y)*width*4,static_cast<const uint8_t*>(mapped.pData)+size_t(y)*mapped.RowPitch,width*4);
     context->Unmap(stage.Get(),0);return bytes;
 }
-struct Evidence {unsigned sources{},nr{},callbacks{},generatedPixels{},changingGenerated{},uiChecks{},uiFailures{},colorChecks{},changed{},retirements{},retirementFailures{},pendingReaders{},suppressed{},resets{},resetReentries{},styleReentries{},suspensions{},resizes{};};
+struct Evidence {unsigned sources{},nr{},callbacks{},generatedPixels{},changingGenerated{},uiChecks{},uiFailures{},colorChecks{},changed{},retirements{},retirementFailures{},pendingReaders{},suppressed{},resets{},resetReentries{},styleReentries{},suspensions{},resizes{},policyReentries{};};
 struct State {
     InteropFixture::Rig rig;
     HWND window{};
@@ -292,6 +292,13 @@ int wmain(int argc,wchar_t** argv){
                 if(local==79)inputs.motion=state->output.Get();
                 const auto result=SourceNvidiaFrameEvaluator::Evaluate(context,inputs,operations);Need(result.upscaled&&result.prepared,"actual NGX NR source handoff incomplete");
                 snapshot=operations.snapshot;
+                // Jitter is zero in this scene, so either convention describes
+                // the same guides. Exercise actual SDK flag recreation without
+                // changing source reconstruction or the NR image.
+                snapshot.motionConvention.includesJitter=local==46 || local==47;
+                auto policy=state->resources->GenerationInputPolicy();policy.motionIncludesJitter=snapshot.motionConvention.includesJitter;
+                Accept(state->resources->EnsureInputPolicy(policy));
+                auto* policyDepth=state->resources->Depth11();auto* policyScene=state->presenter.SceneTarget11();
                 state->enhancedRows[source]=std::vector<uint8_t>(operations.final.begin()+size_t(display.height/2)*display.width*4,operations.final.begin()+size_t(display.height/2+1)*display.width*4);
                 context->CopyResource(state->presenter.SceneTarget11(),state->output.Get());
                 const bool requested=local!=16 && local!=17;const bool menu=local==24;
@@ -302,6 +309,12 @@ int wmain(int argc,wchar_t** argv){
                 const auto hr=state->presenter.Present(snapshot,outcome,state->ui.Get(),nullptr,true,menu,requested,0,0);
                 if(local==23){Need(hr==DXGI_ERROR_INVALID_CALL,"duplicate source identity was admitted");++evidence.suppressed;continue;}Gpu(hr);
                 const auto status=state->presenter.Status();evidence.callbacks+=status.callback.invocations;
+                if(local==46 || local==48) {
+                    Need(status.decision.generate && status.decision.reset,"actual guide-policy recreation did not resume with FG reset");
+                    Need(state->presenter.SwapChain()==originalChain && state->resources->Depth11()==policyDepth &&
+                        state->presenter.SceneTarget11()==policyScene,"actual guide-policy recreation replaced retained buffers");
+                    ++evidence.policyReentries;
+                }
                 if(!requested || menu || local==20 || local==21 || local==28 || local==78 || local==79)Need(!status.decision.generate,"ineligible mixed source generated a frame");
                 if(!status.decision.generate)++evidence.suppressed;
                 if(status.decision.reset)++evidence.resets;
@@ -321,11 +334,13 @@ int wmain(int argc,wchar_t** argv){
         Need(srCreates==0 && srDispatches==0,"mixed route used FSR SR");
         Need(evidence.callbacks>20 && evidence.generatedPixels>20 && evidence.uiChecks>100,"actual generation/pixel/HUD observations incomplete");
         Need(evidence.resizes==1 && evidence.suspensions==2 && evidence.resetReentries==14 && evidence.pendingReaders==2 && waits>0,"mixed lifecycle observations incomplete");
+        Need(evidence.policyReentries==4,"actual FG guide-policy change/restore observations incomplete");
         if(!state->Retire()){++evidence.retirementFailures;throw std::runtime_error("final readers/runtime retirement failed");}++evidence.retirements;state->rig.ValidateDebug();
         std::printf("PASS mixed route quality=%s SR=%u NR=%u FG=%u generatedPixels=%u HUD=%u waits=%u\n",quality.c_str(),evidence.sources,evidence.nr,evidence.callbacks,evidence.generatedPixels,evidence.uiChecks,waits);
     }catch(const std::exception& error){failure=error.what();std::printf("NOT QUALIFIED: %s\n",failure.c_str());if(state&&!state->Retire()){++evidence.retirementFailures;state.release();failure+="; owners quarantined after retirement failure";}}
     std::ofstream out(report);
     out<<"{\"qualified\":"<<(failure.empty()?"true":"false")<<",\"revision\":"<<JsonString(TRP_FG_VALIDATION_REVISION)<<",\"quality\":"<<JsonString(quality)<<",\"device\":"<<JsonString(deviceName)<<",\"fgProvider\":"<<JsonString(fgProvider)<<",\"mlFgAvailability\":"<<JsonString(mlFgAvailability);
+    out<<",\"inputPolicyReentries\":"<<evidence.policyReentries;
     out<<",\"dlssDispatches\":"<<evidence.sources<<",\"nrDispatches\":"<<evidence.nr<<",\"fsrSrCreates\":"<<srCreates<<",\"fsrSrDispatches\":"<<srDispatches<<",\"generatedCallbacks\":"<<evidence.callbacks<<",\"generatedPixelReadbacks\":"<<evidence.generatedPixels<<",\"changingGeneratedReadbacks\":"<<evidence.changingGenerated<<",\"uiChecks\":"<<evidence.uiChecks<<",\"uiFailures\":"<<evidence.uiFailures<<",\"colorChecks\":"<<evidence.colorChecks<<",\"readerRetirements\":"<<evidence.retirements<<",\"retirementFailures\":"<<evidence.retirementFailures<<",\"pendingReaderRetirements\":"<<evidence.pendingReaders<<",\"resetReentries\":"<<evidence.resetReentries<<",\"sdkWaits\":"<<waits<<",\"resizes\":"<<evidence.resizes<<",\"suspensions\":"<<evidence.suspensions<<",\"failure\":"<<JsonString(failure)<<",\"hashes\":{";
     bool first=true;for(const auto& [key,value]:hashes){if(!first)out<<',';first=false;out<<JsonString(key)<<':'<<JsonString(value);}out<<"}}\n";out.flush();
     if(!out){std::puts("NOT QUALIFIED: report could not be saved");return 1;}

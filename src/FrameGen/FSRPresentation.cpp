@@ -140,6 +140,27 @@ namespace TheosRenderPipeline
         auto result=state_->generation.Create(lock,state_->runtime,state_->bridge->Device12(),provider,limits);
         if(!result){state_->Fail(E_FAIL);return result;}state_->limits=limits;state_->started=true;return {};
     }
+    Result<void> FsrPresentation::ReconfigureInputPolicy(FsrInputPolicy input,const FsrEffectProvider& provider)
+    {
+        auto lock=state_->session->Lock();
+        if(!lock.Owns(*state_->session) || !state_->started || state_->closing || state_->resizing ||
+            state_->suspended || FAILED(state_->fault))
+            return Error(ErrorKind::InvalidInput,E_UNEXPECTED,"FSR guide-policy change requires a live idle FG feature");
+        if(state_->limits.input==input)return {};
+        // Admissions remain stopped on any failure. Keep all owners available
+        // for retirement; a failed reader wait never permits destruction.
+        auto fail=[&](Result<void> result)->Result<void>{if(!result)state_->Fail(E_FAIL);return result;};
+        auto retired=state_->QuiesceReaders(lock);if(!retired)return fail(std::move(retired));
+        auto destroyed=state_->generation.DestroyAfterRetirement(lock);if(!destroyed)return fail(std::move(destroyed));
+        state_->started=false;
+        auto hr=state_->transport.ResumeAfterSdkRetirement();
+        if(FAILED(hr)){state_->Fail(hr);return GraphicsResult(hr,"FSR guide-policy transport reentry failed");}
+        auto resumed=state_->session->ResumeAfterFeatureRetirement(lock);if(!resumed)return fail(std::move(resumed));
+        auto limits=state_->limits;limits.input=input;
+        auto created=state_->generation.Create(lock,state_->runtime,state_->bridge->Device12(),provider,limits);
+        if(!created)return fail(std::move(created));
+        state_->limits=limits;state_->started=true;state_->history.Invalidate();state_->status={};return {};
+    }
     HRESULT FsrPresentation::WaitBeforeProducer()
     {auto lock=state_->session->Lock();if(!lock.Owns(*state_->session) || state_->closing || FAILED(state_->fault))return E_UNEXPECTED;return state_->transport.WaitBeforeProducer();}
     HRESULT FsrPresentation::Present(const UpscaleFrame& frame,UpscaleOutcome outcome,const GpuFrameResources& guides,

@@ -148,6 +148,7 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
         auto recovery=frame.sourceSnapshot;recovery.output=frame.output;recovery.depth=recovery.motion=nullptr;recovery.reset=true;
         auto prepared=host.PrepareExternalGeneration(recovery,TheosRenderPipeline::Upscaling::UpscaleOutcome::SpatialRecovery);
         host.resetNextEvaluation_=true;
+        host.sourceRecoveryActive_=true;
         host.status_="DLSS guides unavailable; spatial real frame, NR and FSR FG suppressed";
         return bool(prepared);
     }
@@ -234,7 +235,12 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
             auto recovery=frame.sourceSnapshot;recovery.output=frame.output;recovery.depth=frame.depth;recovery.motion=frame.motion;
             recovery.reset=true;
             if(PrepareExternalGeneration(recovery,TheosRenderPipeline::Upscaling::UpscaleOutcome::SpatialRecovery)) {
-                resetNextEvaluation_=true;status_="DLSS source failed; spatial real frame, FSR FG suppressed";return true;
+                resetNextEvaluation_=sourceRecoveryActive_=true;++sourceRecoveryFailures_;
+                status_=std::format("DLSS/NR source recovery for {} frames; last NGX result=0x{:08X}; spatial image, FSR FG inactive",
+                    sourceRecoveryFailures_,DLSSBackend::GetSingleton()->LastEvalResult());
+                if(sourceRecoveryFailures_==1)logger::warn("[Source recovery] {}",status_);
+                else if(sourceRecoveryFailures_%120==0)logger::error("[Source recovery] {}",status_);
+                return true;
             }
         }
 #endif
@@ -254,9 +260,10 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
         }
         return false;
     }
-#if defined(TRP_ENABLE_FSR_FG)
-    if(FsrFgActive() && !result.upscaled) {fsrSourcePending_=false;fsrGenerationOutcome_=TheosRenderPipeline::Upscaling::UpscaleOutcome::SkippedInvalidInput;}
-#endif
+    if(!sourceRecoveryActive_ && sourceRecoveryFailures_) {
+        logger::info("[Source recovery] temporal DLSS source resumed after {} recovery frames",sourceRecoveryFailures_);
+        sourceRecoveryFailures_=0;
+    }
     if (!FsrFgActive() && !result.prepared && !splitSourceRuntimeFailureLogged_) {
         logger::warn("[SourceDLSSG] generation held off cameraValid={} backend={}", result.cameraValid,
             TheosRenderPipeline::SourceDLSSG::Backend::Get().Status());
@@ -279,11 +286,13 @@ TheosRenderPipeline::Upscaling::Result<void> NvidiaHost::PrepareExternalGenerati
     const FsrInputPolicy input{frame.camera.depthInverted,frame.camera.depthInfinite,frame.motionConvention.includesJitter,true};
     const bool valid=outcome==UpscaleOutcome::Temporal && frame.camera.identity && !fsrMenu_;
     if(valid) {
-        if(fsrPresentation_->FeatureReady() && fsrResources_->GenerationInputPolicy()!=input)fsrGenerationOutcome_=UpscaleOutcome::SkippedInvalidInput;
-        else {
-            auto configured=fsrResources_->EnsureInputPolicy(input);if(!configured)return configured;
-            ++fsrGuideCaptureCount_;
+        if(fsrResources_->GenerationInputPolicy()!=input) {
+            const auto old=fsrResources_->GenerationInputPolicy();
+            logger::info("[FSR FG] guide convention changed inverted={}->{} infinite={}->{} jitter={}->{}; retire/recreate FG feature at Present",
+                old.depthInverted,input.depthInverted,old.depthInfinite,input.depthInfinite,old.motionIncludesJitter,input.motionIncludesJitter);
         }
+        auto configured=fsrResources_->EnsureInputPolicy(input);if(!configured)return configured;
+        ++fsrGuideCaptureCount_;
     }else fsrGenerationOutcome_=UpscaleOutcome::SkippedInvalidInput;
     fsrSourcePending_=true;
     return {};

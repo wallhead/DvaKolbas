@@ -8,12 +8,14 @@ root = Path(__file__).resolve().parents[1]
 files = ['Upscaling/FSRAvailability.h', 'Upscaling/FSRSettings.h',
          'Upscaling/FSRGenerationStatus.h', 'RendererBackendPolicy.h',
          'RendererSettings.h', 'FrameGen/NvidiaHostStartup.cpp',
+         'FrameGen/FSRHostPresentation.cpp',
          'OverlayNeuralPanel.cpp', 'NvidiaBaselinePolicy.h']
 obsolete = [r'\[FSR\]\s+ProviderPolicy', r'\[FrameGeneration\]\s+FsrProviderPolicy',
             r'NativeUICompositionMode=0', r'backend [02]', r'use the SourceDLSSG settings',
             r'FSR requires EnableUpscaler=true']
 failures = []
 schema = json.loads((root / 'tools/ini/schema.json').read_text(encoding='utf-8-sig'))
+sections = {field['section'] for field in schema['fields']}
 integer_count = sum(field['type'] == 'Integer' for field in schema['fields'])
 for name in ['SKSE/Plugins/RaZkolbaS.ini', 'examples/FSR-SR/RaZkolbaS.ini', 'examples/FSR-FG/RaZkolbaS.ini']:
     text = (root / 'package' / name).read_text(encoding='utf-8-sig')
@@ -25,6 +27,13 @@ for name in files:
         # These patterns concern instructions, rather than internal key reads.
         if any(re.search(pattern, text) for pattern in obsolete):
             failures.append(f'{name}:{line}: {text.strip()}')
+        # Public guidance must not introduce a made-up INI section.
+        # Log prefixes such as [NvidiaHost] are deliberately outside this scan.
+        for section, key in re.findall(r'\[([A-Za-z][\w ]*)\]\s+([A-Z]\w*)', text):
+            log_prefix = section == 'NvidiaHost' and 'logger::' in text
+            retired = 'obsolete' in text.lower() and any(item['section'] == section and item['key'] == key for item in schema['retired_inputs'])
+            if section not in sections and not retired and not log_prefix:
+                failures.append(f'{name}:{line}: unknown public INI section [{section}]')
 if failures:
     print('\n'.join(failures), file=sys.stderr)
     sys.exit(1)

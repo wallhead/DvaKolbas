@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TextureProviderBridge.h"
+#include "PublicIniSchema.h"
 #include "UpscaleType.h"
 #include "RendererGpuPolicy.h"
 #include "NeuralRenderingMode.h"
@@ -12,6 +13,7 @@
 #include <array>
 #include <cmath>
 #include <utility>
+#include <string>
 
 namespace TheosRenderPipeline
 {
@@ -73,9 +75,13 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     } else {
         draft.generationBackend = 1;
     }
+    if(mode==FSR && draft.generationBackendPreference==GenerationBackendPreference::Nvidia)
+        draft.generationBackendPreference=GenerationBackendPreference::Auto;
     if (draft.generationBackend != 0)
+    {
         draft.generationBackend = ResolveGenerationBackend(draft.generationBackendPreference,
             mode == FSR ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss);
+    }
 }
 
 inline void SetRendererUpscaleProvider(RendererSettingsDraft& draft, bool fsr)
@@ -234,12 +240,17 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         else if(draft.generationBackend==2){
             if(!capabilities.fsrFgBuilt)return "FSR frame generation is not included in this build.";
             if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "FSR frame generation requires TRP's dedicated native UI and source ownership.";
-        } else return "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled.";
+        } else if(draft.generationBackend==1) return "[FrameGeneration] Backend=NVIDIA requires [Upscaling] Upscaler=DLSS; use Auto or FSR.";
+        else return "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled.";
         if (draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural) return "Neural Rendering is unavailable with FSR.";
         if (draft.sourceDLSSG.hdrOutput.enabled) return "HDR output is unavailable with FSR.";
         if (draft.dynamicResolution) return "Dynamic resolution is unavailable with FSR.";
     } else if (draft.generationBackend==2) {
-        if(!Upscaling::IsKnownColorEncoding(draft.fsr.sourceColorEncoding))return "FSR FG requires explicit SDR source encoding in [FSR Advanced] SourceColorEncoding (Linear, Gamma22 or SRGB).";
+        if(!Upscaling::IsKnownColorEncoding(draft.fsr.sourceColorEncoding)) {
+            static const std::string encodingMessage=std::string("FSR FG requires explicit SDR source encoding in ")+
+                PublicIni::Reference("FSR","SourceColorEncoding")+" (Linear, Gamma22 or SRGB).";
+            return encodingMessage.c_str();
+        }
         if (!capabilities.fsrFgBuilt) return "FSR frame generation is not included in this build.";
         if (!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)
             return "FSR frame generation requires dedicated native UI and source ownership.";

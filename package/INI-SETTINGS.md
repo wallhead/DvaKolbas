@@ -34,8 +34,8 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | FrameGeneration | NvidiaDynamicMFG | `false` | No | NVIDIA dynamic MFG, if supported by the runtime. Values: true, false. |
 | FrameGeneration | DynamicTargetFPS | `0` | No | Dynamic MFG target. Zero uses the monitor refresh rate. Whole numbers only. Range: 0, or 61-1000 output FPS. |
 | FrameGeneration | NvidiaUIRecomposition | `true` | No | NVIDIA: interpolate the HUD-less scene and UI separately. Values: true, false. |
-| Latency | OutputFPSLimit | `0` | No | NVIDIA output FPS cap. Zero means unlimited. Whole numbers only. Range: 0, or 1-1000 FPS. |
-| Latency | Reflex | `On` | No | NVIDIA Reflex mode. Values: Off, On, Boost. |
+| Latency | OutputFPSLimit | `0` | No | NVIDIA presentation output FPS cap. Unavailable with FSR FG, including DLSS to FSR FG. Zero means unlimited. Whole numbers only. Range: 0, or 1-1000 FPS. |
+| Latency | Reflex | `On` | No | NVIDIA presentation Reflex mode. Unavailable with FSR FG, including DLSS to FSR FG. Values: Off, On, Boost. |
 | Interface | NativeUI | `true` | No | Keep HUD/menu rendering at the output resolution. Required by community NR/FSR FG. Values: true, false. |
 | Interface | RequestLoadingArtwork | `true` | No | Request loading artwork on eligible cell transitions. Values: true, false. |
 | Interface | UIComposition | `Dedicated` | Yes | FSR FG and community NR require Dedicated. Values: Dedicated, HudlessDetection. |

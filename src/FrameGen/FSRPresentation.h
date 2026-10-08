@@ -23,6 +23,9 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> Create(IDXGIFactory*,std::shared_ptr<Upscaling::FsrRuntime>,
             std::shared_ptr<Graphics::D3D11D3D12Interop>,const DXGI_SWAP_CHAIN_DESC&,const Upscaling::FsrEffectProvider&);
         Upscaling::Result<void> CompleteStartup(const Upscaling::FsrGenerationLimits&,const Upscaling::FsrEffectProvider&);
+        // Guide conventions are immutable SDK flags. Retire readers and rebuild
+        // only the FG feature, preserving fixed-size scene/UI transport.
+        Upscaling::Result<void> ReconfigureInputPolicy(Upscaling::FsrInputPolicy,const Upscaling::FsrEffectProvider&);
         HRESULT Present(const Upscaling::UpscaleFrame&,Upscaling::UpscaleOutcome,const Upscaling::GpuFrameResources&,
             ID3D11Texture2D* scene,Upscaling::ColorEncoding,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,
             bool uiComplete,bool menu,bool requested,UINT syncInterval,UINT flags);

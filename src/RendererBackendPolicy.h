@@ -33,7 +33,9 @@ namespace TheosRenderPipeline
             decision.presentation = PresentationKind::Ordinary;
             if (config.generationBackend == 2) decision.presentation = PresentationKind::Fsr;
             if (!fsrBuilt) { decision.diagnostic = "FSR support is unavailable in this build."; }
-            else if (config.generationBackend != 0 && config.generationBackend != 2) {
+            else if (config.generationBackend == 1) {
+                decision.diagnostic = "[FrameGeneration] Backend=NVIDIA requires [Upscaling] Upscaler=DLSS; use Auto or FSR.";
+            } else if (config.generationBackend != 0 && config.generationBackend != 2) {
                 decision.diagnostic = "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled.";
             } else if (config.generationBackend == 0 && config.generationEnabled) {
                 decision.diagnostic = "Ordinary FSR presentation requires frame generation off.";
@@ -69,7 +71,8 @@ namespace TheosRenderPipeline
                 ini.GetLongValue("Experimental", "NativeUICompositionMode", 0) != 0) {
                 return "FSR frame generation requires [Interface] NativeUI=true and UIComposition=Dedicated.";
             }
-        } else { return "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled."; }
+        } else if(mode==FSR && presenter==1) { return "[FrameGeneration] Backend=NVIDIA requires [Upscaling] Upscaler=DLSS; use Auto or FSR."; }
+        else { return "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled."; }
         if (ini.GetBoolValue("SourceDLSSG", "NeuralRenderingEnabled", false) &&
 #if !defined(TRP_NO_NEURAL_RENDERING)
             !ini.GetBoolValue("NeuralRendering", "CommunityRuntime", false) &&
