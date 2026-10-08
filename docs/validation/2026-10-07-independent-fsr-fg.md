@@ -23,3 +23,9 @@ The whole-change review found five issues, now addressed: invalid-guide recovery
 The broad run selected 216 tests: 214 passed, the official FSR ML GPU case skipped, and one obsolete portable-package assertion failed. That assertion and its route validator were updated to the current independent backend contract; the affected 10 configuration/package tests then all passed. Final coverage is 215 passing tests and one hardware/runtime skip. Existing FSR-only automatic presentation, NR Before/After, scaled sources, three-pass/style changes, reader errors, UI pixels/state, sharpening and suspension/resize lifecycle checks remain passing. Graphics debug-layer validation is unavailable on this host.
 
 Skyrim gameplay qualification is pending. Check DLAA/DLSS with FSR FG, then the existing FSR SR + FSR FG route; exercise NR/FG live toggles, camera/HUD, inventory/map, save/reload and alt-tab/minimize. Backend changes require Save as default and restart. User INI choices, MO2 profile and launch settings must be preserved during installation.
+
+## Prepared delivery
+
+Clean Universal build **9705ba2f4488**, version 1.2.0.0, was packed into the separate `RaZKolbaS DLSS FSR FG NR v1.2 - independent FSR FG test.zip`. Archive SHA256: `b7699a94b76f136984a8722fc47ccc10e7894d2b7991be82729b63a5bfb89443`. All 19 entries passed CRC and content verification; runtime payloads match the original v1.2 archive, which remains unchanged. Portable defaults are Backend Auto, DLSS Native and FSR Native.
+
+The V5.4 NO-LORE v1.2 mod received the verified DLL, current metadata and its existing INI with Backend Auto added. All 112 prior setting values, the mod-list hash and MO2 launch settings were preserved and a rollback backup retained. Auto preserves the current NVIDIA presenter with DLSS. To exercise the new route, select **End → Frame generation → Backend FSR → Save as default**, then restart. This is **6 of 6 prepared**, with Skyrim gameplay still pending.
