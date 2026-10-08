@@ -61,3 +61,24 @@ or GPU execution qualification.
 
 The installed ENB HDR trial and MO2 settings are not updated by packaging.
 Final build and archive identity are recorded in the separate delivery receipt.
+
+## Delivered package
+
+Clean Universal plugin build succeeded: v1.3.0.0, source `bade88e7787d`,
+FSR/FG/NR compiled. The final 11 focused checks passed after review fixes.
+The updated trial stager parsed successfully; its full historical GPU/payload
+staging workflow was not rerun. Independent archive verification checked CRC,
+19-entry inventory, 23 default settings and every payload hash against the
+original qualified v1.3 archive. Only plugin DLL, INI and metadata differ;
+all vendor runtime payloads are unchanged. The production INI decoder test
+also accepted the actual ZIP-readback INI and the previously generated tester
+INI containing the retired selector.
+
+Delivery: `C:/Users/user/Downloads/RaZKolbaS DLSS FSR FG NR v1.3.zip`.
+Size: **367,377,445 bytes**.
+SHA256: `5178e492eb7526c7fb1a6411aa9c5fa3acb4f9d4c926335dddbc2e8f0087826d`.
+[Full package receipt](release-1.3/automatic-nr-verification.json).
+
+The new DLL is required for this automatic-selection behavior. Updating only
+the INI while retaining the previous DLL leaves the old implementation chooser
+in place. Actual RTX 5060 gameplay with the new package remains a tester check.
