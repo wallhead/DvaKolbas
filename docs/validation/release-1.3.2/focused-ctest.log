@@ -1,0 +1,38 @@
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+      Start   2: BackendSelection
+ 1/16 Test   #2: BackendSelection .................   Passed    0.01 sec
+      Start   3: RendererGpuMatrix
+ 2/16 Test   #3: RendererGpuMatrix ................   Passed    0.08 sec
+      Start  40: OverlayNeuralTab
+ 3/16 Test  #40: OverlayNeuralTab .................   Passed    0.01 sec
+      Start  41: OverlayFsrGenerationTab
+ 4/16 Test  #41: OverlayFsrGenerationTab ..........   Passed    0.02 sec
+      Start  42: StartupPreferences
+ 5/16 Test  #42: StartupPreferences ...............   Passed    0.01 sec
+      Start  43: PublicIni
+ 6/16 Test  #43: PublicIni ........................   Passed    0.01 sec
+      Start  45: IniLayout
+ 7/16 Test  #45: IniLayout ........................   Passed    0.01 sec
+      Start  48: PublicIniSchema
+ 8/16 Test  #48: PublicIniSchema ..................   Passed    0.05 sec
+      Start  49: IniMessages
+ 9/16 Test  #49: IniMessages ......................   Passed    0.04 sec
+      Start  50: RendererSettingsActions
+10/16 Test  #50: RendererSettingsActions ..........   Passed    0.01 sec
+      Start  52: FsrSettings
+11/16 Test  #52: FsrSettings ......................   Passed    0.01 sec
+      Start  54: NvidiaAppSettings
+12/16 Test  #54: NvidiaAppSettings ................   Passed    0.01 sec
+      Start  56: NvidiaDriverSettings
+13/16 Test  #56: NvidiaDriverSettings .............   Passed    0.01 sec
+      Start  57: RendererUpgrade
+14/16 Test  #57: RendererUpgrade ..................   Passed    0.01 sec
+      Start  59: NrPortablePackage
+15/16 Test  #59: NrPortablePackage ................   Passed    0.53 sec
+      Start 189: NrGpuArchitecture
+16/16 Test #189: NrGpuArchitecture ................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 16
+
+Total Test time (real) =   0.85 sec
