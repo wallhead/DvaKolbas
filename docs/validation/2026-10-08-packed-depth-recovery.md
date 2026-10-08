@@ -86,3 +86,28 @@ original v1.2 archive and earlier test packages remain intact.
 rotate the camera with FG off and on, then inspect the game log for successful
 NGX evaluation and generation rather than spatial recovery before recording
 gameplay completion.
+
+## Skyrim follow-up
+
+The user reported the image looked fine after starting the corrected build.
+The 2026-10-08 session starting at 10:03:54 identifies installed source
+d15ffdc4c1e5. Unlike the previous session, NGX evaluation succeeded at render
+1707x960 and output 2560x1440. No source-recovery or error/critical entries were
+present in the observation captured through 10:14:21.
+
+FSR FG provider 3.1.6 logged successful generation with matching configured and
+prepared source IDs, callbackCount=1, callbackResult=0 and apiResult=0. Off/on
+transitions resumed generation. NR After toggles also resumed evaluation; the
+last sampled NR counter was 13,200 evaluated frames. These are logged samples,
+not exhaustive per-frame counters or performance measurements.
+
+This confirms the packed-depth repair reaches temporal reconstruction in Skyrim
+and records the user's positive visual result. The running route is DLSS
+Quality -> NR After -> FSR FG -> UI. At 10:13:06 the user saved FSR upscaling for
+the next launch; the log distinguishes requestedMode=4 from running mode=0.
+That saved preference does not switch the running source without a restart.
+
+The complete milestone-6 lifecycle/second-route checklist is not newly claimed:
+save/reload, alt-tab/minimize and the next FSR-source session still need explicit
+acceptance for this delivery. Raw observed logs and a compact summary remain
+local under `out/research/packed-depth-skyrim-2026-10-08`.
