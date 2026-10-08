@@ -353,7 +353,7 @@ int main()
     // independently of the scene curve while staying in the foreground tag.
     auto calibrationConstants = constants; calibrationConstants.mode[3] = 1;
     Check(pass.RecordCompose(gpu.device.Get(), gpu.list.Get(), 0, calibrationConstants, compositeTexture.Get(), uiTexture.Get(),
-        sceneTexture.Get(), backbuffer.Get()), "record calibration patches");
+        sceneTexture.Get(), backbuffer.Get(), 43), "record calibration patches");
     gpu.Submit();
     const auto patches = gpu.Read(backbuffer.Get(), 4), patchUI = gpu.Read(pass.UITarget(), 8);
     for (unsigned patch = 0; patch < 4; ++patch) {
@@ -365,6 +365,30 @@ int main()
             "known calibration patch reaches the native output in nits");
         Require(tag[3] == 1, "calibration patch is opaque foreground for FG");
     }
+
+    Check(pass.RecordCompose(gpu.device.Get(), gpu.list.Get(), 0, constants, compositeTexture.Get(), uiTexture.Get(),
+        sceneTexture.Get(), backbuffer.Get()), "retire calibration sample");
+    const auto patchStats = pass.TakeDiagnostics();
+    Require(patchStats && patchStats->frame == 43 && patchStats->samples == 136,
+        "calibration pixels are excluded from scene statistics");
+    Require(patchStats->excludedCalibrationPixels == 8, "eight grid pixels belong to calibration patches");
+    for (unsigned p = 0; p < 4; ++p) {
+        const auto& patch = patchStats->patches[p];
+        Require(patch.samples == 2 && patch.expectedNits == calibrationConstants.patchNits[p] &&
+            patch.maximumErrorNits < patch.expectedNits * 0.01f,
+            "each calibration reference has a separate measured GPU result");
+    }
+    std::vector<float> ordinaryOutput;
+    for (UINT y = 0; y < 9; ++y) { for (UINT x = 0; x < 16; ++x) {
+        const UINT px = (2 * x + 1) * W / 32, py = (2 * y + 1) * H / 18;
+        if (px < W / 2 && py < H / 8) { continue; }
+        ordinaryOutput.push_back(HDROutput::LuminancePQ2020(Unpack10(patches, py * W + px)));
+    } }
+    const auto expectedStats = HDROutput::Summarize(ordinaryOutput);
+    Require(std::fabs(patchStats->output.maximum - expectedStats.maximum) < 0.1f &&
+        std::fabs(patchStats->output.p95 - expectedStats.p95) < 0.1f,
+        "scene peak and percentile match only the unpatched GPU pixels");
+    gpu.Submit();
 
     CheckLateOverlays(gpu, pass, settings);
 
@@ -442,6 +466,20 @@ int main()
         timing.AverageUs(), timing.maxUs);
     Require(timing.samples == kCommandSlots, "each reused slot yields one GPU sample");
     Require(std::isfinite(timing.AverageUs()) && timing.maxUs >= timing.AverageUs(), "finite GPU timing");
+
+    // Preserve the last submitted sample without another render/slot reuse.
+    auto monitorConstants = calibrationConstants;
+    monitorConstants.patchNits = HDROutput::CalibrationLevels(537);
+    Check(pass.RecordEncode(gpu.device.Get(), gpu.list.Get(), 0, monitorConstants, compositeTexture.Get(), backbuffer.Get(), 101),
+        "record final monitor-specific sample");
+    gpu.Submit(); // Submit waits for completion, satisfying the collection contract.
+    const auto lastReports = pass.CollectDiagnosticsAfterDrain();
+    Require(lastReports.size() == 1 && lastReports[0].frame == 101 && lastReports[0].samples == 136,
+        "final retired sample is collected without slot reuse");
+    Require(lastReports[0].patches[2].expectedNits == monitorConstants.patchNits[2] &&
+        lastReports[0].patches[3].maximumErrorNits < monitorConstants.patchNits[3] * 0.01f,
+        "encode-only output uses the recorded monitor-specific reference levels");
+    Require(pass.CollectDiagnosticsAfterDrain().empty(), "drain collection consumes each report once");
     Require(QuerySDRWhiteNits(L"\\\\.\\TRP-NO-SUCH-DISPLAY") == 0.0f && QuerySDRWhiteNits(nullptr) == 0.0f,
         "unknown display has no SDR white level");
     std::printf("HDR output pass checks passed\n");

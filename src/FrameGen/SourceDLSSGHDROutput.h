@@ -8,6 +8,7 @@
 #include <array>
 #include <utility>
 #include <optional>
+#include <vector>
 
 namespace TheosRenderPipeline::SourceDLSSG
 {
@@ -98,6 +99,8 @@ namespace TheosRenderPipeline::SourceDLSSG
 		// wait or full-frame copy. Diagnostics failure never fails rendering.
 		std::optional<HDROutput::SampleReport> TakeDiagnostics() { return std::exchange(diagnosticReport_, {}); }
 		HRESULT TakeDiagnosticFailure() { return std::exchange(diagnosticFailure_, S_OK); }
+		// Caller must have successfully drained all submitted command slots.
+		std::vector<HDROutput::SampleReport> CollectDiagnosticsAfterDrain();
 
 		bool TargetsMatch(UINT width, UINT height) const;
 		HRESULT CreateTargets(ID3D12Device* device, UINT width, UINT height); // Caller has drained.
@@ -121,6 +124,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		{
 			Microsoft::WRL::ComPtr<ID3D12Resource> readback;
 			std::array<DXGI_FORMAT, 6> formats{};
+			std::array<int, 144> patchIndices{};
 			HDROutput::SampleReport report{};
 			bool pending{};
 		};

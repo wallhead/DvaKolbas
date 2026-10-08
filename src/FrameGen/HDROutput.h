@@ -171,14 +171,15 @@ namespace TheosRenderPipeline::HDROutput
             std::clamp(body[2] * alpha + glow[2], 0.0f, 1.0f)};
     }
 
-    // Constants consumed by the output shader: five float4 rows.
+    // Constants consumed by the output shader: six float4 rows.
     struct ShaderConstants
     {
         std::array<float, 4> red, green, blue; // BT.709 -> BT.2020 rows; w unused.
         std::array<float, 4> scale;            // paper nits, UI nits, expansion start, maximum scale.
         std::array<float, 4> mode;             // transfer, passthrough, expand whole frame, calibration patches.
+        std::array<float, 4> patchNits{100, 200, 500, 1000}; // Absolute diagnostic levels, independent of the curve.
     };
-    static_assert(sizeof(ShaderConstants) == 20 * sizeof(float));
+    static_assert(sizeof(ShaderConstants) == 24 * sizeof(float));
 
     inline ShaderConstants MakeShaderConstants(Settings s, bool passthrough, bool expandWholeFrame = false)
     {

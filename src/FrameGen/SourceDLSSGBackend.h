@@ -76,6 +76,11 @@ namespace TheosRenderPipeline::SourceDLSSG
 		HDROutput::Settings HDROutputConfiguration() const { std::scoped_lock lock(hdrMutex_); return hdrSettings_; }
 		void ConfigureHDRCalibrationPattern(bool enabled) { hdrCalibrationPattern_.store(enabled, std::memory_order_relaxed); }
 		bool HDRCalibrationPattern() const { return hdrCalibrationPattern_.load(std::memory_order_relaxed); }
+		void ConfigureHDRDiagnosticCapture(bool enabled) {
+			hdrDiagnosticCapture_.store(enabled, std::memory_order_relaxed);
+			if (!enabled) { ConfigureHDRCalibrationPattern(false); }
+		}
+		bool HDRDiagnosticCapture() const { return hdrDiagnosticCapture_.load(std::memory_order_relaxed); }
 		HDROutputState HDRState() const { std::scoped_lock lock(hdrMutex_); return hdrState_; }
 		// Native swapchain format for a game-facing format. Renderer-owned HDR
 		// keeps 8-bit producers unchanged and presents RGB10A2 underneath.
@@ -136,6 +141,8 @@ namespace TheosRenderPipeline::SourceDLSSG
 		static void StreamlineLogCallback(sl::LogType a_type, const char* a_message);
 		void PollDisplayHDR(bool a_force);
 		void RefreshSDRWhite();
+		void LogHDRDiagnosticReport(const HDROutput::SampleReport& report);
+		void CollectHDRDiagnosticsAfterDrain();
 		bool EnsureHDRTargets(UINT a_width, UINT a_height);
 		HRESULT RecordOutput(ID3D12GraphicsCommandList* a_list, ID3D12Resource* a_source, ID3D12Resource* a_destination,
 			bool a_prepared, DXGI_COLOR_SPACE_TYPE& a_colorSpace);
@@ -200,6 +207,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 		std::uint64_t hdrOutputSequence_{};
 		bool hdrSamplingRejected_{};
 		std::atomic_bool hdrCalibrationPattern_{false}; // Diagnostic only; never persisted.
+		std::atomic_bool hdrDiagnosticCapture_{false}; // HDR-only capture; does not enable global traces.
 		bool hdrLoggedPattern_{};
 		// Replaces a ReShade screenshot of the UI-only source runtime with the
 		// final real frame. Failures keep ReShade's file and never fault rendering.

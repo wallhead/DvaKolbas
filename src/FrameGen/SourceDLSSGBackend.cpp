@@ -712,10 +712,15 @@ namespace TheosRenderPipeline::SourceDLSSG
 		enabled_ = false;
 		ResetPresentationFeedback();
 		if (FAILED(fault_)) { return false; } // Never destroy a failed, unsubmitted NR recording.
-		if (!ready_) { return SUCCEEDED(interop_.Drain()); }
+		if (!ready_) {
+			if (FAILED(interop_.Drain())) { return false; }
+			CollectHDRDiagnosticsAfterDrain();
+			return true;
+		}
 		if (session_.Snapshot().stage != SessionStage::Stopped && !CheckSession(session_.Stop())) { return false; }
 		if (!Check(interop_.SignalD3D11(Work::SwapChain), "last D3D11 work before resize") ||
 			!Check(interop_.Drain(), "retire before resize")) { return false; }
+		CollectHDRDiagnosticsAfterDrain();
 		ReleaseGuides();
 #if !defined(TRP_NO_NEURAL_RENDERING)
 		if (neuralPass_) {
@@ -831,9 +836,34 @@ namespace TheosRenderPipeline::SourceDLSSG
 	{
 		if (!hdrOutputPass_) { hdrOutputPass_ = std::make_unique<HDROutputPass>(); }
 		if (hdrOutputPass_->TargetsMatch(a_width, a_height)) { return true; }
-		if (hdrOutputPass_->HudlessTarget() && (!Check(interop_.SignalD3D11(Work::FrameGeneration), "retire HDR output targets") ||
-			!Check(interop_.Drain(), "drain HDR output targets"))) { return false; }
+		if (hdrOutputPass_->HudlessTarget()) {
+			if (!Check(interop_.SignalD3D11(Work::FrameGeneration), "retire HDR output targets") ||
+				!Check(interop_.Drain(), "drain HDR output targets")) { return false; }
+			CollectHDRDiagnosticsAfterDrain();
+		}
 		return Check(hdrOutputPass_->CreateTargets(device12_.Get(), a_width, a_height), "HDR output target allocation");
+	}
+	void Backend::LogHDRDiagnosticReport(const HDROutput::SampleReport& r)
+	{
+		logger::info("[HDROutput samples] frame={} grid=16x9 sampledPixels={} composed={} fgRequested={} paperWhiteNits={:.1f} uiNits={:.1f} expansionStartLinear={:.3f} maximumScale={:.3f} transfer={} sourceSceneNits(mean/p95/max)={:.1f}/{:.1f}/{:.1f} sourceCompositeNits={:.1f}/{:.1f}/{:.1f} expectedWorldNits={:.1f}/{:.1f}/{:.1f} actualHudlessNits={:.1f}/{:.1f}/{:.1f} actualOutputNits={:.1f}/{:.1f}/{:.1f} inputUIAlpha(mean/max)={:.3f}/{:.3f} outputUIAlpha={:.3f}/{:.3f} calibrationPatches={}",
+			r.frame, r.samples, r.composed, r.generationRequested, r.constants.scale[0], r.constants.scale[1], r.constants.scale[2], r.constants.scale[3],
+			r.constants.mode[0] > 0.5f ? "sRGB" : "Gamma22", r.scene.mean, r.scene.p95, r.scene.maximum,
+			r.composite.mean, r.composite.p95, r.composite.maximum, r.expectedWorld.mean, r.expectedWorld.p95, r.expectedWorld.maximum,
+			r.hudless.mean, r.hudless.p95, r.hudless.maximum, r.output.mean, r.output.p95, r.output.maximum,
+			r.inputUICoverage.mean, r.inputUICoverage.maximum, r.uiCoverage.mean, r.uiCoverage.maximum, r.constants.mode[3] > 0.5f);
+		logger::info("[HDROutput diagnostics cost] frame={} scenePixels={} excludedCalibrationPixels={} recordCpuUs={:.1f} readbackCpuUs={:.1f}; GPU copy cost is not included", r.frame, r.samples, r.excludedCalibrationPixels, r.recordCpuUs, r.readbackCpuUs);
+		for (unsigned i = 0; i < r.patches.size(); ++i) {
+			const auto& p = r.patches[i]; if (!p.samples) { continue; }
+			logger::info("[HDROutput patch] frame={} patch={} samples={} expectedNits={:.1f} measuredNits(mean/p95/max)={:.1f}/{:.1f}/{:.1f} maximumErrorNits={:.2f} withinOnePercent={}", r.frame, i + 1, p.samples, p.expectedNits, p.measured.mean, p.measured.p95, p.measured.maximum, p.maximumErrorNits, p.maximumErrorNits <= (std::max)(1.0f, p.expectedNits * 0.01f));
+		}
+	}
+	void Backend::CollectHDRDiagnosticsAfterDrain()
+	{
+		if (!hdrOutputPass_) { return; }
+		for (const auto& report : hdrOutputPass_->CollectDiagnosticsAfterDrain()) { LogHDRDiagnosticReport(report); }
+		if (const auto failure = hdrOutputPass_->TakeDiagnosticFailure(); FAILED(failure)) {
+			logger::warn("[HDROutput samples] retired readback unavailable (0x{:08X})", static_cast<std::uint32_t>(failure));
+		}
 	}
 	HRESULT Backend::RecordOutput(ID3D12GraphicsCommandList* a_list, ID3D12Resource* a_source, ID3D12Resource* a_destination,
 		bool a_prepared, DXGI_COLOR_SPACE_TYPE& a_colorSpace)
@@ -855,9 +885,10 @@ namespace TheosRenderPipeline::SourceDLSSG
 		const auto configured = HDROutputConfiguration();
 		const auto effective = HDROutput::Effective(configured, hdrSDRWhiteNits_);
 		auto constants = HDROutput::MakeShaderConstants(effective, !hdr, expandWholeFrame);
-		const bool frameDetails = PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails;
+		const bool frameDetails = HDRDiagnosticCapture();
 		const bool calibrationPattern = hdr && frameDetails && HDRCalibrationPattern();
 		constants.mode[3] = calibrationPattern ? 1.0f : 0.0f;
+		if (calibrationPattern) { constants.patchNits = HDROutput::CalibrationLevels(HDRState().displayMaxNits); }
 		const int mode = !hdr ? 0 : compose ? 1 : expandWholeFrame ? 2 : 3;
 		constexpr const char* modes[]{"SDR passthrough", "HDR scene+UI", "HDR whole-frame", "HDR UI-brightness fallback"};
 		const auto now = GetTickCount64();
@@ -880,15 +911,7 @@ namespace TheosRenderPipeline::SourceDLSSG
 			hdrSamplingRejected_ = true;
 			logger::warn("[HDROutput samples] readback unavailable (0x{:08X}); sampling disabled, rendering continues", static_cast<std::uint32_t>(failure));
 		}
-		if (const auto report = hdrOutputPass_->TakeDiagnostics()) {
-			const auto& r = *report;
-			logger::info("[HDROutput samples] frame={} grid=16x9 sampledPixels={} composed={} fgRequested={} paperWhiteNits={:.1f} uiNits={:.1f} expansionStartLinear={:.3f} maximumScale={:.3f} transfer={} sourceSceneNits(mean/p95/max)={:.1f}/{:.1f}/{:.1f} sourceCompositeNits={:.1f}/{:.1f}/{:.1f} expectedWorldNits={:.1f}/{:.1f}/{:.1f} actualHudlessNits={:.1f}/{:.1f}/{:.1f} actualOutputNits={:.1f}/{:.1f}/{:.1f} inputUIAlpha(mean/max)={:.3f}/{:.3f} outputUIAlpha={:.3f}/{:.3f} calibrationPatches={}",
-				r.frame, r.samples, r.composed, r.generationRequested, r.constants.scale[0], r.constants.scale[1], r.constants.scale[2], r.constants.scale[3],
-				r.constants.mode[0] > 0.5f ? "sRGB" : "Gamma22", r.scene.mean, r.scene.p95, r.scene.maximum,
-				r.composite.mean, r.composite.p95, r.composite.maximum, r.expectedWorld.mean, r.expectedWorld.p95, r.expectedWorld.maximum,
-				r.hudless.mean, r.hudless.p95, r.hudless.maximum, r.output.mean, r.output.p95, r.output.maximum,
-				r.inputUICoverage.mean, r.inputUICoverage.maximum, r.uiCoverage.mean, r.uiCoverage.maximum, r.constants.mode[3] > 0.5f);
-		}
+		if (const auto report = hdrOutputPass_->TakeDiagnostics()) { LogHDRDiagnosticReport(*report); }
 		a_colorSpace = hdr ? DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 : DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
 		if (SUCCEEDED(result)) {
 			std::scoped_lock lock(hdrMutex_);

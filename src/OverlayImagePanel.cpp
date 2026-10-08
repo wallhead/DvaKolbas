@@ -6,7 +6,6 @@
 #include "OverlayFsrGenerationControls.h"
 #include "OverlayUI.h"
 #include "OverlayUIStyle.h"
-#include "PerformanceTuning.h"
 #include "RenderPipeline.h"
 #include "VideoMemoryTelemetry.h"
 #include <PCH.h>
@@ -132,12 +131,17 @@ void OverlayUI::DrawHDROutputSettings()
     DrawSettingsHelp("0 keeps the SDR range at paper white; 1 expands the brightest pixels to peak brightness.");
     ImGui::SliderFloat("Expansion start##hdr", &hdr.expansionStart, 0.1f, 0.95f, "%.2f");
     DrawSettingsHelp("SDR brightness where expansion begins. Higher values boost only the brightest areas.");
-    if (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails)
+    auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
+    bool capture = backend.HDRDiagnosticCapture();
+    if (ImGui::Checkbox("Capture HDR samples##hdr", &capture)) { backend.ConfigureHDRDiagnosticCapture(capture); }
+    DrawSettingsHelp("Temporary HDR-only measurements, once every two seconds. Other debug traces remain unchanged. Resets on restart; small sampling overhead is possible.");
+    if (capture)
     {
-        auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
         bool patches = backend.HDRCalibrationPattern();
         if (ImGui::Checkbox("HDR calibration patches##hdr", &patches)) { backend.ConfigureHDRCalibrationPattern(patches); }
-        DrawSettingsHelp("Diagnostic only. Top-left patches: 100, 200, 500, 1000 nits from left to right. They bypass highlight expansion and use opaque foreground tags for FG. Compare with HDRScopes. Sampling and patches require frame diagnostics; patches reset on restart.");
+        const auto levels = TheosRenderPipeline::HDROutput::CalibrationLevels(state.displayMaxNits);
+        ImGui::TextWrapped("Patches, left to right: %.0f, %.0f, %.0f, %.0f nits", levels[0], levels[1], levels[2], levels[3]);
+        DrawSettingsHelp("Top-left reference patches bypass highlight expansion and use opaque foreground tags for FG. The last two bracket 80%/120% of the reported display peak; unknown displays use 500/1000 nits. Patch measurements are logged separately and excluded from scene statistics. Resets on restart.");
     }
     const char* transfers[]{"Gamma 2.2", "sRGB"};
     int transfer = static_cast<int>(hdr.transfer);

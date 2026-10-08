@@ -50,5 +50,29 @@ namespace TheosRenderPipeline::HDROutput
         ShaderConstants constants{}; // Calibration at recording time, not harvest time.
         SampleMetric scene, composite, expectedWorld, hudless, output;
         SampleMetric inputUICoverage, uiCoverage; // Alpha, not nits.
+        struct PatchSample
+        {
+            unsigned samples{};
+            float expectedNits{};
+            SampleMetric measured;
+            float maximumErrorNits{};
+        };
+        unsigned excludedCalibrationPixels{};
+        std::array<PatchSample, 4> patches{};
+        double recordCpuUs{}, readbackCpuUs{};
     };
+
+    inline std::array<float, 4> CalibrationLevels(float displayPeakNits)
+    {
+        if (!std::isfinite(displayPeakNits) || displayPeakNits <= 0) { return {100, 200, 500, 1000}; }
+        return {100, 200, (std::min)(displayPeakNits * 0.8f, kMaximumNits),
+            (std::min)(displayPeakNits * 1.2f, kMaximumNits)};
+    }
+
+    // Mirrors CalibrationPatch's integer geometry in the output shader.
+    inline int CalibrationPatchIndex(unsigned x, unsigned y, unsigned width, unsigned height)
+    {
+        if (!width || x >= width / 2 || y >= (std::max)(height / 8, 1u)) { return -1; }
+        return static_cast<int>((std::min)(static_cast<std::uint64_t>(x) * 8 / width, std::uint64_t{3}));
+    }
 }

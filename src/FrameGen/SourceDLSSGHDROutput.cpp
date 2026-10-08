@@ -1,6 +1,7 @@
 #include "SourceDLSSGHDROutput.h"
 #include <d3dcompiler.h>
 #include <cstring>
+#include <chrono>
 #include <cwchar>
 #include <vector>
 
@@ -15,6 +16,7 @@ cbuffer Output : register(b0) {
     float4 Red; float4 Green; float4 Blue;
     float4 Scale; // paper nits, UI nits, expansion start, maximum scale
     float4 Mode;  // transfer (0 = 2.2, 1 = sRGB), passthrough, expand whole frame, calibration patches
+    float4 PatchNits;
 };
 Texture2D<float4> composite : register(t0);
 Texture2D<float4> ui : register(t1);
@@ -55,7 +57,7 @@ bool CalibrationPatch(int2 p, out float3 pq) {
     pq = 0;
     if (Mode.w < 0.5 || p.x >= width / 2 || p.y >= max(height / 8, 1)) { return false; }
     uint index = min(uint(p.x) * 8 / width, 3);
-    float nits = index == 0 ? 100 : index == 1 ? 200 : index == 2 ? 500 : 1000;
+    float nits = PatchNits[index];
     pq = EncodeHDR10(nits.xxx);
     return true;
 }
@@ -389,6 +391,7 @@ Targets PSCompose(Vertex v) {
 		ID3D12Resource* scene, ID3D12Resource* backbuffer, bool compose, std::uint64_t frame, bool generationRequested)
 	{
 		constexpr UINT count = 144, stride = D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
+		const auto started = std::chrono::steady_clock::now();
 		if (constants.mode[1] > 0.5f) { return E_INVALIDARG; } // SDR codes cannot be measured as PQ.
 		std::array<ID3D12Resource*, 6> surfaces{compose ? scene : composite, composite,
 			compose ? hudless_.Get() : nullptr, backbuffer, compose ? ui : nullptr, compose ? ui_.Get() : nullptr};
@@ -409,6 +412,11 @@ Targets PSCompose(Vertex v) {
 			if (FAILED(hr)) { return hr; }
 		}
 		const auto extent = backbuffer->GetDesc();
+		for (UINT y = 0; y < 9; ++y) { for (UINT x = 0; x < 16; ++x) {
+			const UINT px = static_cast<UINT>((2 * x + 1) * extent.Width / 32), py = (2 * y + 1) * extent.Height / 18;
+			capture.patchIndices[y * 16 + x] = constants.mode[3] > 0.5f ?
+				HDROutput::CalibrationPatchIndex(px, py, static_cast<UINT>(extent.Width), extent.Height) : -1;
+		} }
 		for (std::size_t surface = 0; surface < surfaces.size(); ++surface) {
 			auto* texture = surfaces[surface]; if (!texture) { continue; }
 			Transition(list, texture, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -426,6 +434,7 @@ Targets PSCompose(Vertex v) {
 		capture.report = {}; capture.report.frame = frame; capture.report.samples = count;
 		capture.report.composed = compose; capture.report.constants = constants; capture.pending = true;
 		capture.report.generationRequested = generationRequested;
+		capture.report.recordCpuUs = std::chrono::duration<double, std::micro>(std::chrono::steady_clock::now() - started).count();
 		return S_OK;
 	}
 
@@ -433,6 +442,7 @@ Targets PSCompose(Vertex v) {
 	{
 		auto& capture = diagnosticSlots_[slot];
 		if (!capture.pending) { return; }
+		const auto started = std::chrono::steady_clock::now();
 		capture.pending = false;
 		const D3D12_RANGE range{0, static_cast<SIZE_T>(capture.readback->GetDesc().Width)};
 		void* mapped{}; const auto hr = capture.readback->Map(0, &range, &mapped);
@@ -454,26 +464,55 @@ Targets PSCompose(Vertex v) {
 			return result;
 		};
 		std::array<std::array<float, 144>, 7> values{};
+		std::array<std::array<float, 144>, 4> patchValues{};
+		std::array<unsigned, 4> patchCounts{};
+		unsigned ordinaryCount = 0;
 		const auto& c = capture.report.constants;
 		const auto transfer = static_cast<HDROutput::Transfer>(static_cast<int>(c.mode[0]));
 		for (std::size_t i = 0; i < 144; ++i) {
 			const auto s = pixel(0, i), composite = pixel(1, i), world = pixel(2, i), output = pixel(3, i);
+			const auto patch = capture.patchIndices[i];
+			if (patch >= 0) {
+				patchValues[patch][patchCounts[patch]++] = HDROutput::LuminancePQ2020({output[0], output[1], output[2]});
+				continue;
+			}
+			const auto index = ordinaryCount++;
 			HDROutput::RGB decoded{HDROutput::Decode(s[0], transfer), HDROutput::Decode(s[1], transfer), HDROutput::Decode(s[2], transfer)};
-			values[0][i] = HDROutput::Luminance709(decoded) * c.scale[0];
-			values[1][i] = HDROutput::Luminance709({HDROutput::Decode(composite[0], transfer),
+			values[0][index] = HDROutput::Luminance709(decoded) * c.scale[0];
+			values[1][index] = HDROutput::Luminance709({HDROutput::Decode(composite[0], transfer),
 				HDROutput::Decode(composite[1], transfer), HDROutput::Decode(composite[2], transfer)}) * c.scale[0];
 			const bool expand = capture.report.composed || c.mode[2] > 0.5f;
-			values[2][i] = HDROutput::Luminance709(expand ? HDROutput::Expand(decoded, c.scale[2], c.scale[3]) : decoded) *
+			values[2][index] = HDROutput::Luminance709(expand ? HDROutput::Expand(decoded, c.scale[2], c.scale[3]) : decoded) *
 				(expand ? c.scale[0] : c.scale[1]);
-			values[3][i] = capture.report.composed ? HDROutput::LuminancePQ2020({world[0], world[1], world[2]}) : 0;
-			values[4][i] = HDROutput::LuminancePQ2020({output[0], output[1], output[2]});
-			values[5][i] = pixel(4, i)[3]; values[6][i] = pixel(5, i)[3];
+			values[3][index] = capture.report.composed ? HDROutput::LuminancePQ2020({world[0], world[1], world[2]}) : 0;
+			values[4][index] = HDROutput::LuminancePQ2020({output[0], output[1], output[2]});
+			values[5][index] = pixel(4, i)[3]; values[6][index] = pixel(5, i)[3];
 		}
 		const D3D12_RANGE noWrites{0, 0}; capture.readback->Unmap(0, &noWrites);
 		auto& report = capture.report;
-		report.scene = HDROutput::Summarize(values[0]); report.composite = HDROutput::Summarize(values[1]);
-		report.expectedWorld = HDROutput::Summarize(values[2]); report.hudless = HDROutput::Summarize(values[3]);
-		report.output = HDROutput::Summarize(values[4]); report.inputUICoverage = HDROutput::Summarize(values[5]);
-		report.uiCoverage = HDROutput::Summarize(values[6]); diagnosticReport_ = report;
+		report.samples = ordinaryCount; report.excludedCalibrationPixels = 144 - ordinaryCount;
+		auto summarize = [&](unsigned channel) { return HDROutput::Summarize(std::span(values[channel]).first(ordinaryCount)); };
+		report.scene = summarize(0); report.composite = summarize(1);
+		report.expectedWorld = summarize(2); report.hudless = summarize(3);
+		report.output = summarize(4); report.inputUICoverage = summarize(5); report.uiCoverage = summarize(6);
+		for (unsigned p = 0; p < 4; ++p) {
+			auto& patch = report.patches[p]; patch.samples = patchCounts[p]; patch.expectedNits = c.patchNits[p];
+			patch.measured = HDROutput::Summarize(std::span(patchValues[p]).first(patchCounts[p]));
+			for (unsigned i = 0; i < patchCounts[p]; ++i) { patch.maximumErrorNits = (std::max)(patch.maximumErrorNits, std::fabs(patchValues[p][i] - patch.expectedNits)); }
+		}
+		report.readbackCpuUs = std::chrono::duration<double, std::micro>(std::chrono::steady_clock::now() - started).count();
+		diagnosticReport_ = report;
+	}
+
+	std::vector<HDROutput::SampleReport> HDROutputPass::CollectDiagnosticsAfterDrain()
+	{
+		std::vector<HDROutput::SampleReport> result;
+		if (const auto previous = TakeDiagnostics()) { result.push_back(*previous); }
+		for (std::size_t slot = 0; slot < kCommandSlots; ++slot) {
+			HarvestDiagnostics(slot);
+			if (const auto report = TakeDiagnostics()) { result.push_back(*report); }
+		}
+		std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) { return a.frame < b.frame; });
+		return result;
 	}
 }

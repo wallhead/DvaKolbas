@@ -18,6 +18,15 @@ static bool Near(float a, float b, float tolerance) { return std::fabs(a - b) <=
 
 int main()
 {
+    const auto levels = CalibrationLevels(537.0f);
+    Require(levels[0] == 100 && levels[1] == 200 && Near(levels[2], 429.6f, 0.01f) && Near(levels[3], 644.4f, 0.01f),
+        "diagnostic patch levels bracket the reported display peak");
+    Require(CalibrationLevels(0) == std::array<float, 4>{100, 200, 500, 1000} &&
+        CalibrationLevels(std::numeric_limits<float>::quiet_NaN()) == CalibrationLevels(0), "unknown display uses fixed references");
+    Require(CalibrationLevels(10000)[3] == 10000, "patch levels respect PQ signal limit");
+    Require(CalibrationPatchIndex(1, 3, 64, 64) == 0 && CalibrationPatchIndex(31, 3, 64, 64) == 3 &&
+        CalibrationPatchIndex(32, 3, 64, 64) == -1 && CalibrationPatchIndex(1, 8, 64, 64) == -1,
+        "patch exclusion geometry matches shader bounds");
     // Published BT.2100 PQ reference points.
     Require(Near(EncodePQ(0.0f), 0.0f, 1e-6f), "PQ black (c1^m2, about 7e-7)");
     Require(Near(EncodePQ(10000.0f), 1.0f, 1e-6f), "PQ 10000 nits");
