@@ -38,11 +38,17 @@ try {
         try{$null=Read-PortableNrPackageIni $path}catch{$rejected=$true}
         if(-not $rejected){throw "Nonportable layout was accepted: $($bad.Name)"}
     }
+    $published=Join-Path $root 'RaZKolbaS DLSS FSR FG NR v1.3.1.zip'
+    [IO.File]::WriteAllText($published,'published artifact')
+    $refused=$false
+    try { & (Join-Path $PSScriptRoot '../tools/nr/Pack-Release.ps1') -TemplateArchive 'unused' -PluginDll 'unused' -OutputArchive $published -StagingDirectory (Join-Path $root 'unused-stage') }
+    catch { $refused=$_.Exception.Message -eq 'Release archive already exists' }
+    if(-not $refused -or [IO.File]::ReadAllText($published) -ne 'published artifact'){throw 'Published release immutability guard failed'}
     Write-PortableModMetadata -Directory $root -Revision 'test-revision'
     $metadata=[IO.File]::ReadAllText((Join-Path $root 'meta.ini'))
     if($metadata -match '(?im)^installationFile\s*=\s*[A-Za-z]:'){throw 'Metadata contains a machine-specific archive path'}
-    if($metadata -notmatch 'installationFile=RaZKolbaS DLSS FSR FG NR v1\.3\.zip'){throw 'Archive basename missing'}
-    if($metadata -notmatch '(?m)^version=1\.3\r?$'){throw 'Release version missing'}
+    if($metadata -notmatch 'installationFile=RaZKolbaS DLSS FSR FG NR v1\.3\.1\.zip'){throw 'Archive basename missing'}
+    if($metadata -notmatch '(?m)^version=1\.3\.1\r?$'){throw 'Release version missing'}
     Write-Output 'PASS: portable package clears current NR paths and removes obsolete keys, preserves settings, and writes portable MO2 metadata'
 } finally {
     $full=[IO.Path]::GetFullPath($root)

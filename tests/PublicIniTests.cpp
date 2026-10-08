@@ -50,6 +50,9 @@ void AutomaticNeuralRuntime()
         CSimpleIniA ini;
         ini.SetValue("Upscaling", "Upscaler", "DLSS");
         ini.SetValue("NeuralRendering Advanced", "Runtime", obsoleteChoice);
+        const auto notice = SettingsFile::LegacyRuntimeNotice(ini);
+        Check(std::string_view(obsoleteChoice) != "Legacy" || notice.find("[Debug] NRLegacyRuntime") != std::string::npos,
+            "retired Legacy preference produces an actionable notice before decoding");
         Check(PublicIni::Decode(ini).empty(), "obsolete NR selector cannot block named startup");
         auto* owner = SourceFrameGeneration::GetSingleton();
         owner->LoadStartupPreferences(ini);
@@ -80,6 +83,21 @@ void AutomaticNeuralRuntime()
 int main(int argc, char** argv)
 {
     using namespace TheosRenderPipeline;
+    const auto absentPath=std::filesystem::temp_directory_path()/L"razkolbas-no-such-startup-ini-fixture.ini";
+    Check(!std::filesystem::exists(absentPath),"missing INI fixture is absent");
+    CSimpleIniA missing;std::string missingNotice="stale";
+    const auto [missingResult,missingError]=SettingsFile::LoadRenderer(missing,absentPath.c_str(),&missingNotice);
+    Check(missingResult<0 && missingError.find("matching INI")!=std::string::npos && missingNotice.empty(),
+        "unreadable INI gives actionable failure without stale migration notice");
+    const auto legacyPath=std::filesystem::temp_directory_path()/L"razkolbas-legacy-notice-fixture.ini";
+    Check(!std::filesystem::exists(legacyPath),"legacy notice fixture is absent");
+    CSimpleIniA previous;previous.SetValue("Upscaling","Upscaler","DLSS");previous.SetValue("NeuralRendering Advanced","Runtime","Legacy");
+    Check(previous.SaveFile(legacyPath.c_str())>=0,"legacy notice fixture saved");
+    CSimpleIniA loaded;std::string notice;
+    const auto [legacyResult,legacyError]=SettingsFile::LoadRenderer(loaded,legacyPath.c_str(),&notice);
+    std::filesystem::remove(legacyPath);
+    Check(legacyResult>=0 && legacyError.empty() && notice.find("[Debug] NRLegacyRuntime")!=std::string::npos &&
+        !loaded.GetValue("NeuralRendering Advanced","Runtime",nullptr),"file loader reports Legacy before decoder removes it");
     IndependentGenerationPreference();
     AutomaticNeuralRuntime();
     CSimpleIniA ini;

@@ -19,7 +19,7 @@ class SourceFrameGeneration
     }
     struct Settings
     {
-        bool enabled{true}; // Next-launch preference; the live presenter request can differ while a restart is staged.
+        bool enabled{false}; // Next-launch preference; the live presenter request can differ while a restart is staged.
         long generationBackend{1};
         TheosRenderPipeline::GenerationBackendPreference generationBackendPreference{};
         bool sourceDLSSGMFGUnlock{true}; // Matches the packaged default; explicit false is preserved.
@@ -43,7 +43,7 @@ class SourceFrameGeneration
         settings.generationBackend = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
         settings.generationBackendPreference = static_cast<TheosRenderPipeline::GenerationBackendPreference>(
             ini.GetLongValue("FrameGeneration", "BackendPreference", 0));
-        settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", settings.generationBackend != 0);
+        settings.enabled = ini.GetBoolValue("FrameGeneration", "Enabled", false);
         RequestRuntimeInterpolation(settings.enabled);
         settings.sourceDLSSGMFGUnlockPresent = ini.GetValue("Experimental", "SourceDLSSGMFGUnlock", nullptr) != nullptr;
         settings.sourceDLSSGMFGUnlock = ini.GetBoolValue("Experimental", "SourceDLSSGMFGUnlock", true);

@@ -70,6 +70,7 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& req
     auto hr=device->QueryInterface(IID_PPV_ARGS(&dxgi));if(FAILED(hr))return stop(ErrorKind::IdentityMismatch,"NR cannot inspect renderer DXGI device",hr);
     if(FAILED(hr=dxgi->GetAdapter(&adapter))||FAILED(hr=adapter.As(&s.dxgiAdapter))||FAILED(hr=s.dxgiAdapter->GetDesc1(&d)))return stop(ErrorKind::IdentityMismatch,"NR renderer adapter unavailable",hr);
     s.adapter={d.VendorId,d.DeviceId,d.SubSysId,{d.AdapterLuid.LowPart,d.AdapterLuid.HighPart},bool(d.Flags&DXGI_ADAPTER_FLAG_SOFTWARE)};
+    DiscoverGpuArchitecture(s.adapter);
     if(presenter){
         const auto luid=presenter->GetAdapterLuid();
         if(AdapterLuid{luid.LowPart,luid.HighPart}!=s.adapter.luid)
@@ -77,7 +78,7 @@ Result<void> BeforeHost::Inspect(ID3D11Device* device,const StartupSettings& req
         if(FAILED(hr=presenter->GetDeviceRemovedReason()))return stop(ErrorKind::IdentityMismatch,"NR presenter device is removed",hr);
         s.contract.device=presenter;
     }
-    const auto family=ClassifyGpu(d.VendorId,d.DeviceId,s.adapter.software);
+    const auto family=ClassifyGpu(s.adapter);
     if(family==GpuFamily::AmdUnsupported||settings.profile=="amd-unsupported")return stop(ErrorKind::Unsupported,"AMD 6000/7000/9000 NR is unsupported");
     for(const auto& p:RuntimeCatalog())if((settings.profile=="Auto"&&(p.primaryFamily==family||(p.includeRtx30&&family==GpuFamily::Rtx30)))||p.id==settings.profile){s.profile=&p;break;}
     if(!s.profile)return stop(ErrorKind::Unsupported,"NR GPU/profile is absent from the reviewed catalog");
@@ -156,6 +157,7 @@ Result<void> BeforeHost::Retire(){auto& s=*state_;if(s.terminal)return Fail(Erro
     if(s.owner){auto r=s.owner->Retire();if(!r){s.MarkTerminal(r.error());return r;}s.owner.reset();}
     s.uncertain=false;s.available=false;s.active=false;s.status="NR retired";return {};
 }
+const AdapterIdentity& BeforeHost::RenderAdapter()const{return state_->adapter;}
 bool BeforeHost::Available()const{return state_->available&&!state_->terminal;}
 bool BeforeHost::Terminal()const{return state_->terminal;}
 bool BeforeHost::Active()const{return state_->active;}

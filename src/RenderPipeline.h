@@ -73,7 +73,7 @@ public:
 	float mJitterIndex{ 0 };
 	float mJitterOffsets[2]{ 0, 0 };
 	bool  mSharpening{ false };
-	float mSharpness{ 0.3f };
+	float mSharpness{ 0.672f };
 	bool  mEnableJitter{ true };
 	int   mDisplaySizeX{ 0 };
 	int   mDisplaySizeY{ 0 };
@@ -81,7 +81,7 @@ public:
 	int   mRenderSizeY{ 0 };
 	float mRenderScale{ 1.0f };
 
-	int   mUpscaleType{ 0 };
+	int   mUpscaleType{ 3 };
     std::uint32_t mAdapterVendorId{};
     TheosRenderPipeline::Upscaling::FsrSettings mFsrSettings;
     bool mDynamicResolutionRequested{};
@@ -100,7 +100,7 @@ public:
 	bool mUseOptimalMipLodBias{ true };
 	bool mAutoExposure{ true };
     bool mReShadeBeforeUpscaling{ false };
-	int  mDLSSPreset{ 0 };  // NGX preset: 0 default, 5/6 E/F, 10/11 J/K, 12/13 L/M
+	int  mDLSSPreset{ 11 };  // NGX preset: 0 default, 5/6 E/F, 10/11 J/K, 12/13 L/M
 	bool mNativeUI{ true };  // scaled mode: rasterize the game's UI pass at native resolution
 	std::atomic_bool mRequestLoadingArtwork{ true };
 	bool mWheelerLateOverlayBridge{ true };  // enables the startup-overlay target handoff

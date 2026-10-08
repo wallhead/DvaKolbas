@@ -13,6 +13,7 @@ public:
     Result<BeforeResult> Evaluate(const BeforeInput&,const SettingsSnapshot&,PreparedFsrInput* linearOutput=nullptr);
     Result<BeforeResult> EvaluatePost(const PostSrInput&,const SettingsSnapshot&);
     Result<void> Retire();
+    const AdapterIdentity& RenderAdapter()const;
     bool Available()const;bool Terminal()const;bool Active()const;
     std::string_view ProfileId()const;const std::string& Status()const;
     const std::filesystem::path& DriverCorePath()const;

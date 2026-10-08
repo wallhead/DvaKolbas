@@ -73,7 +73,8 @@ Result<void> RuntimeOwner::Open(const RuntimeProfile& requested,ID3D12Device* de
     auto hr=CreateDXGIFactory1(IID_PPV_ARGS(&factory));if(FAILED(hr))return Fail(ErrorKind::Io,"Cannot inspect actual NR device adapter",hr);
     ComPtr<IDXGIAdapter1> adapter;hr=factory->EnumAdapterByLuid(luid,IID_PPV_ARGS(&adapter));if(FAILED(hr))return Fail(ErrorKind::IdentityMismatch,"NR device adapter is unavailable",hr);
     DXGI_ADAPTER_DESC1 desc{};hr=adapter->GetDesc1(&desc);if(FAILED(hr))return Fail(ErrorKind::Io,"Cannot describe NR device adapter",hr);
-    const AdapterIdentity actual{desc.VendorId,desc.DeviceId,desc.SubSysId,{luid.LowPart,luid.HighPart},bool(desc.Flags&DXGI_ADAPTER_FLAG_SOFTWARE)};
+    AdapterIdentity actual{desc.VendorId,desc.DeviceId,desc.SubSysId,{luid.LowPart,luid.HighPart},bool(desc.Flags&DXGI_ADAPTER_FLAG_SOFTWARE)};
+    DiscoverGpuArchitecture(actual);
     auto matched=CheckAdapterMatch(renderer,actual);if(!matched)return matched;
     if(activeOwner || (!processProfile.empty() && processProfile!=profile->id))return Fail(ErrorKind::Conflict,"NR process owner/profile already latched; relaunch required");
     const ArtifactIdentity artifact{profile->id,true,true};const auto selection=SelectRuntime(actual,profile->id,{&artifact,1});

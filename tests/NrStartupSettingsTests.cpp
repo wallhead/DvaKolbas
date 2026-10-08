@@ -11,7 +11,7 @@ bool GetBoolValue(const char*,const char* key,bool fallback)const{auto i=v.find(
 int main(){using namespace TheosRenderPipeline::NeuralRendering;Ini i;auto s=LoadStartupSettings(i);int failed{};
 auto check=[&](bool v,const char* n){std::printf("%s %s\n",v?"PASS":"FAIL",n);failed+=!v;};
 check(s.community&&s.profile=="Auto"&&s.sourceEncoding==TheosRenderPipeline::Upscaling::ColorEncoding::Unknown,"AbsentSelectorUsesAutomaticNrWithoutGuessingColorDomain");
-check(!s.sdrBytesTrial,"SdrByteTrialIsOptIn");
+check(s.sdrBytesTrial,"MissingSdrBytesMatchesPackagedDefault");
 i.v={{"CommunityRuntime","true"},{"Profile","rtx40"},{"NRDriverCore","C:/pinned/_nvngx.dll"},{"SourceColorEncoding","Gamma22"}};s=LoadStartupSettings(i);
 check(s.community&&s.profile=="rtx40"&&s.sourceEncoding==TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22,"ExplicitCommunityStartupParsed");
 i.v["SdrBytesTrial"]="true";check(LoadStartupSettings(i).sdrBytesTrial,"ExplicitSdrByteTrialParsed");

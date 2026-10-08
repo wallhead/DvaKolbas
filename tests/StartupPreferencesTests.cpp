@@ -27,6 +27,9 @@ int main(int argc, char** argv)
     try {
         Require(argc == 2, "expected packaged INI path");
         auto& owner = *SourceFrameGeneration::GetSingleton();
+        CSimpleIniA absent;
+        owner.LoadStartupPreferences(absent);
+        Require(!owner.settings.enabled, "missing FG preference defaults off like the schema");
         CSimpleIniA packaged;
         Require(packaged.LoadFile(argv[1]) >= 0, "packaged INI must load");
         Require(TheosRenderPipeline::PublicIni::Decode(packaged).empty(), "named packaged INI must decode");

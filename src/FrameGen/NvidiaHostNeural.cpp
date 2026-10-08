@@ -126,6 +126,11 @@ void NvidiaHost::InspectCommunityNeural()
     logger::info("[Community NR startup] driverCorePolicy=Windows-signature/catalog + NVIDIA NGX metadata; whole-file SHA is diagnostic, not a fixed driver-version pin");
     const auto inspected=presenter?communityNeural_->Inspect(device_.Get(),startup,cache,presenter):
         NR::Result<void>{std::unexpected(NR::Error{NR::ErrorKind::Unsupported,0,"NR waiting for presenter D3D12 device"})};
+    const auto& nrAdapter=communityNeural_->RenderAdapter();
+    logger::info("[NR GPU] vendor=0x{:04X} device=0x{:04X} luid={:08X}:{:08X} detection={} architecture=0x{:X} rtxIdentity={} family={}",
+        nrAdapter.vendorId,nrAdapter.deviceId,static_cast<uint32_t>(nrAdapter.luid.high),nrAdapter.luid.low,
+        nrAdapter.architecture.queried?"NVAPI render-adapter architecture":"reviewed PCI fallback (NVAPI unavailable)",
+        nrAdapter.architecture.id,nrAdapter.architecture.rtxProduct,static_cast<int>(NR::ClassifyGpu(nrAdapter)));
     communityLastStatus_=inspected?communityNeural_->Status():inspected.error().message;
     const auto& corePath=communityNeural_->DriverCorePath();
     const bool recoveredCore=!startup.driverCore.empty()&&!corePath.empty()&&

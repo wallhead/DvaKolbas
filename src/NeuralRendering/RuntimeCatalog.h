@@ -13,10 +13,16 @@ struct AdapterLuid {
     bool operator==(const AdapterLuid&) const = default;
     bool Valid() const noexcept { return low || high; }
 };
+struct GpuArchitecture {
+    AdapterLuid luid;
+    uint32_t id{};
+    bool rtxProduct{}, queried{};
+};
 struct AdapterIdentity {
     uint32_t vendorId{}, deviceId{}, subsystemId{};
     AdapterLuid luid;
     bool software{};
+    GpuArchitecture architecture;
 };
 struct RuntimeProfile {
     std::string_view id, relativePath, sha256;
@@ -33,6 +39,8 @@ struct Selection {
 };
 std::span<const RuntimeProfile> RuntimeCatalog() noexcept;
 GpuFamily ClassifyGpu(uint32_t vendorId, uint32_t deviceId, bool software) noexcept;
+GpuFamily ClassifyGpu(const AdapterIdentity&) noexcept;
+void DiscoverGpuArchitecture(AdapterIdentity&);
 Selection SelectRuntime(const AdapterIdentity&, std::string_view requested, std::span<const ArtifactIdentity>);
 Result<void> CheckAdapterMatch(const AdapterIdentity& renderer, const AdapterIdentity& nr);
 Result<std::filesystem::path> RuntimePath(const std::filesystem::path& absoluteRoot, const RuntimeProfile&);

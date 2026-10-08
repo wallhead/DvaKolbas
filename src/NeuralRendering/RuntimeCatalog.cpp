@@ -3,9 +3,10 @@
 #include <array>
 namespace TheosRenderPipeline::NeuralRendering {
 namespace {
-// Exact desktop PCI IDs independently cross-checked against this host's signed
+// Fallback when NVAPI architecture discovery is unavailable. Exact desktop PCI IDs independently cross-checked against this host's signed
 // driver INF; see research/nr/runtime-catalog/driver-id-evidence.json. No ranges,
-// marketing-string heuristics or laptop-family assumptions.
+// device-ID ranges or laptop-family assumptions. Successful NVAPI observations
+// take precedence and must agree with any known PCI family.
 constexpr std::array rtx20{0x1e04u,0x1e07u,0x1e81u,0x1e82u,0x1e84u,0x1e87u,
     0x1e89u,0x1ec2u,0x1ec7u,0x1f02u,0x1f03u,0x1f06u,0x1f07u,0x1f08u,0x1f42u,0x1f47u};
 constexpr std::array rtx30{0x2203u,0x2204u,0x2206u,0x2207u,0x2208u,0x220au,0x2216u,
@@ -47,9 +48,25 @@ GpuFamily ClassifyGpu(uint32_t vendor, uint32_t device, bool software) noexcept 
     if (std::binary_search(rtx50.begin(),rtx50.end(),device)) return GpuFamily::Rtx50;
     return GpuFamily::Unknown;
 }
+GpuFamily ClassifyGpu(const AdapterIdentity& adapter) noexcept {
+    const auto fallback=ClassifyGpu(adapter.vendorId,adapter.deviceId,adapter.software);
+    if(adapter.software || adapter.vendorId!=0x10de) return fallback;
+    const auto& evidence=adapter.architecture;
+    if(!evidence.queried) return fallback;
+    if(!adapter.luid.Valid() || evidence.luid!=adapter.luid || !evidence.rtxProduct) return GpuFamily::Unknown;
+    GpuFamily family{GpuFamily::Unknown};
+    switch(evidence.id) {
+    case 0x160: family=GpuFamily::Rtx20; break; // Turing (RTX only; excludes GTX 16)
+    case 0x170: family=GpuFamily::Rtx30; break; // Ampere
+    case 0x190: family=GpuFamily::Rtx40; break; // Ada
+    case 0x1b0: family=GpuFamily::Rtx50; break; // Blackwell
+    }
+    if(fallback!=GpuFamily::Unknown && fallback!=family) return GpuFamily::Unknown;
+    return family;
+}
 Selection SelectRuntime(const AdapterIdentity& adapter, std::string_view requested,
     std::span<const ArtifactIdentity> artifacts) {
-    const auto family=ClassifyGpu(adapter.vendorId,adapter.deviceId,adapter.software);
+    const auto family=ClassifyGpu(adapter);
     if (family==GpuFamily::AmdUnsupported || requested=="amd-unsupported")
         return {nullptr,"AMD NR is unsupported"};
     if (family==GpuFamily::Unknown) return {nullptr,"NR renderer GPU ID is unqualified"};

@@ -8,8 +8,10 @@ void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId)
 {
     CSimpleIniA ini;
     ini.SetUnicode();
-    const auto [result, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    std::string migrationNotice;
+    const auto [result, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini", &migrationNotice);
     if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
+    if (!migrationNotice.empty()) logger::warn("[Config] {}", migrationNotice);
     TheosRenderPipeline::ApplyRendererGpuPolicy(ini, adapterVendorId,
 #if defined(TRP_ENABLE_FSR_FG)
         true

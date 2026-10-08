@@ -1,3 +1,11 @@
+# 1.3.1
+
+- Distinct archive, MO2 metadata and DLL version for the automatic NR release; published archives are not replaced.
+- Identify NR families from the actual render adapter public NVAPI architecture, with an RTX identity guard and reviewed PCI fallback. Laptop SKU IDs no longer need individual catalog entries when discovery succeeds.
+- Log a migration notice for retired Legacy NR preferences, pointing to the explicit diagnostic switch.
+- Match fallback FG, NR byte input, DLSS preset and sharpness defaults to the INI schema. A missing/unreadable startup INI gives an actionable error instead of silently guessing settings.
+- Document the ENB Gamma22 preset and encoding requirements for other rendering setups.
+
 # 0.3.5
 
 - Reduce HUD ghosting in generated frames: DLSS-G now interpolates the HUD-less

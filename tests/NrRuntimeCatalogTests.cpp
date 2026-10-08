@@ -18,6 +18,27 @@ void Selected(uint32_t device, const char* expected) {
 }
 }
 int main() {
+    auto mobile=Nvidia(0xdead);
+    for(const auto [arch,family]: {std::pair{0x160u,GpuFamily::Rtx20},std::pair{0x170u,GpuFamily::Rtx30},
+        std::pair{0x190u,GpuFamily::Rtx40},std::pair{0x1b0u,GpuFamily::Rtx50}}) {
+        mobile.architecture={mobile.luid,arch,true,true};
+        Check(ClassifyGpu(mobile)==family,"VerifiedArchitectureRoutesUnlistedMobileSku");
+        const auto route=SelectRuntime(mobile,"Auto",artifacts);
+        Check(route.profile && route.profile->primaryFamily==(family==GpuFamily::Rtx30?GpuFamily::Rtx20:family),
+            "UnlistedSkuUsesCorrectBundledModelWithoutQualificationClaim");
+    }
+    mobile.architecture.luid.low++;
+    Check(ClassifyGpu(mobile)==GpuFamily::Unknown,"ArchitectureOfAnotherGpuRejected");
+    mobile.architecture={mobile.luid,0x160,false,true};
+    Check(ClassifyGpu(mobile)==GpuFamily::Unknown,"TuringGtxWithoutRtxTensorHardwareRejected");
+    mobile=Nvidia(0x2702);mobile.architecture={mobile.luid,0x1b0,true,true};
+    Check(ClassifyGpu(mobile)==GpuFamily::Unknown,"ContradictoryDriverAndPciFamiliesRejected");
+    mobile.architecture={mobile.luid,0x999,true,true};
+    Check(ClassifyGpu(mobile)==GpuFamily::Unknown,"FutureUnsupportedArchitectureDoesNotFallBack");
+    mobile.architecture={};
+    Check(ClassifyGpu(mobile)==GpuFamily::Rtx40,"UnavailableNvApiRetainsReviewedPciFallback");
+    mobile.vendorId=0x1002;mobile.architecture={mobile.luid,0x190,true,true};
+    Check(ClassifyGpu(mobile)==GpuFamily::AmdUnsupported,"NvApiCannotEnableAmdNr");
     Check(RuntimeCatalog().size()==3, "OnlyThreeRequestedNvidiaProfiles");
     struct Expected { const char* id; const char* sha; uint64_t bytes; uint32_t device; };
     const Expected expected[] {

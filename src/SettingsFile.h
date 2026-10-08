@@ -9,10 +9,20 @@
 
 namespace TheosRenderPipeline::SettingsFile
 {
-inline std::pair<SI_Error, std::string> LoadRenderer(CSimpleIniA& ini, const wchar_t* path)
+inline std::string LegacyRuntimeNotice(const CSimpleIniA& ini)
 {
+    const auto* retired=ini.GetValue("NeuralRendering Advanced", "Runtime", "");
+    if (std::string_view(retired) == "Legacy")
+        return "Saved [NeuralRendering Advanced] Runtime=Legacy is retired and ignored; NR selects the bundled model for the render GPU. For intentional Legacy diagnostics use [Debug] NRLegacyRuntime=true.";
+    return {};
+}
+inline std::pair<SI_Error, std::string> LoadRenderer(CSimpleIniA& ini, const wchar_t* path, std::string* notice = nullptr)
+{
+    if (notice) notice->clear();
     const auto result = ini.LoadFile(path);
-    return {result, result < 0 ? std::string{} : PublicIni::Decode(ini)};
+    if (result < 0) return {result, "Cannot read Data/SKSE/Plugins/RaZkolbaS.ini. Install the matching INI from the package; startup will not guess source encoding or feature settings."};
+    if (notice) *notice=LegacyRuntimeNotice(ini);
+    return {result, PublicIni::Decode(ini)};
 }
 inline SI_Error LoadForUpdate(CSimpleIniA& ini, const wchar_t* path)
 {

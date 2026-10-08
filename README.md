@@ -7,16 +7,19 @@ Upgrade with the complete package: disable/remove the old renderer mod first so
 Startup also rejects a leftover `TheosRenderPipeline.dll` in `SKSE/Plugins`,
 even before it loads. Remove that old DLL or disable the mod providing it.
 
-NVIDIA rendering integration for Skyrim: DLSS/DLAA, frame generation, optional
+Rendering integration for Skyrim: DLSS/DLAA, frame generation, optional
 Neural Rendering (NR), and native-resolution menus and HUD. Current version:
-**0.3.5**. See [CHANGELOG.md](CHANGELOG.md) for release changes.
+**1.3.1**. See [CHANGELOG.md](CHANGELOG.md) for release changes.
 
 ## Features
 
 - DLSS Super Resolution, DLAA, model presets and sharpening.
 - Frame generation and multi-frame generation (MFG).
-- NR before or after DLSS/DLAA, one or two independently configured passes,
-  input scaling and tuning, in both editions. NR defaults off.
+- NR before or after DLSS/FSR upscaling, up to three independently configured passes.
+  After placement uses DLSS/FSR -> NR -> FG -> UI. NR defaults off.
+- Bundled NR model selection uses the render adapter NVAPI architecture and RTX
+  identity, including laptop SKUs; reviewed PCI IDs remain a fallback when NVAPI
+  is unavailable. Routing eligibility does not imply every GPU has been tested.
 - Optional peripheral compression and combined NR preparation, both off by default.
 - Optional weather and time presets for any NR setting and sharpening, with smooth
   transitions and separate interior settings. Presets are shareable files. See
@@ -39,15 +42,18 @@ long status messages scroll separately. Existing saved window sizes are retained
 AMD renderers use FSR upscaling and optional FSR frame generation; DLSS, DLAA,
 NVIDIA FG and NR are unavailable. Before the first AMD launch, set `[FSR]
 SourceColorEncoding` in `SKSE/Plugins/RaZkolbaS.ini` to match the verified
-Skyrim/ENB source. The packaged value `Unknown` intentionally stops startup with
-setup instructions. FSR3 (3.1.5) remains available alongside experimental FSR4.
+Skyrim source. The packaged INI targets ENB SDR and sets `Gamma22` for both
+FSR and NR. For other rendering setups, select the actual source encoding:
+`Linear`, `Gamma22` or `SRGB`. The format alone cannot establish the encoding;
+`Unknown` stops the affected feature rather than guessing. This setting does
+not enable NR processing of an HDR source. FSR3 (3.1.5) remains available alongside experimental FSR4.
 Auto uses the official runtime's actual device catalog; explicit FSR4 selects
 official ML on AMD or the separate hash-pinned INT8 runtime on NVIDIA (SM6.6).
 SR and FG providers are independent. Known unavailable FSR4 choices are disabled
 with a reason; unverified support is stated explicitly and rechecked at startup.
 If an explicit selection prevents startup, restore `[FSR] Provider=FSR3`
 and/or `[FrameGeneration] FsrProvider=FSR3` in `RaZkolbaS.ini`.
-See [AMD setup](package/INI-SETTINGS.md#amd-first-launch).
+See [AMD setup](package/INI-SETTINGS.md).
 
 FSR4 ML FG remains experimental pending real AMD rendering and Skyrim validation.
 AMD documents Windows 11, RX9000+ and DirectX 12 Agility SDK 1.4.9+ for ML FG;

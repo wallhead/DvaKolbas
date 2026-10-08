@@ -30,9 +30,6 @@ void RenderPipeline::LoadINI()
 	ini.SetUnicode();
     const auto [loadResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
     if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
-	if (loadResult < 0) {
-		logger::warn("Could not load Data\\SKSE\\Plugins\\RaZkolbaS.ini (rc={}), using defaults", static_cast<int>(loadResult));
-	}
 	TheosRenderPipeline::IniLayout::PrepareForUpdate(ini);
     mDlssNativeScale = ini.GetBoolValue("Settings", "DLSSNativeScale", true);
     TheosRenderPipeline::ApplyRendererGpuPolicy(ini, mAdapterVendorId,
@@ -42,17 +39,17 @@ void RenderPipeline::LoadINI()
         false
 #endif
     );
-	mUpscaleType = (int)ini.GetLongValue("Settings", "UpscaleType", 0);
+	mUpscaleType = (int)ini.GetLongValue("Settings", "UpscaleType", 3);
     if (const auto fsr=TheosRenderPipeline::Upscaling::ReadFsrSettings(ini)) { mFsrSettings=*fsr; }
     else if(mUpscaleType==FSR) { logger::error("[FSR] {}",fsr.error().message); }
 	mQualityLevel = (int)ini.GetLongValue("Settings", "QualityLevel", 2);
 	mUseOptimalMipLodBias = ini.GetBoolValue("Settings", "UseOptimalMipLodBias", true);
 	mMipLodBias = (float)ini.GetDoubleValue("Settings", "MipLodBias", 0.0);
 	mSharpening = ini.GetBoolValue("Settings", "Sharpening", false);
-	mSharpness = (float)ini.GetDoubleValue("Settings", "Sharpness", 0.3);
+	mSharpness = (float)ini.GetDoubleValue("Settings", "Sharpness", 0.672);
 	mEnableJitter = ini.GetBoolValue("Settings", "EnableJitter", true);
 	mAutoExposure = ini.GetBoolValue("Settings", "AutoExposure", true);
-	mDLSSPreset = TheosRenderPipeline::DLSSPreset::Sanitize((int)ini.GetLongValue("Settings", "DLSSPreset", 0));
+	mDLSSPreset = TheosRenderPipeline::DLSSPreset::Sanitize((int)ini.GetLongValue("Settings", "DLSSPreset", 11));
 	mNativeUI = ini.GetBoolValue("Settings", "NativeUI", true);
     mReShadeBeforeUpscaling = ini.GetBoolValue("Compatibility", "ReShadeBeforeUpscaling", false);
 	mRequestLoadingArtwork.store(ini.GetBoolValue("Settings", "RequestLoadingArtwork", true), std::memory_order_relaxed);
