@@ -72,6 +72,9 @@ template<class Ini> void RemoveRetired(Ini& ini)
     ini.Delete("Settings", "ConfigVersion");
     ini.Delete("SourceDLSSG", "NRStableColors");
     ini.Delete("NeuralRendering", "StableColors");
+    // The bundled model catalog is automatic. Old implementation selectors
+    // must not disable it or survive a menu save as misleading instructions.
+    ini.Delete("NeuralRendering Advanced", "Runtime");
 }
 template<class Ini> std::string Decode(Ini& ini)
 {
@@ -118,6 +121,8 @@ template<class Ini> std::string Decode(Ini& ini)
     for (std::size_t i = 0; i < Fields.size(); ++i) {
         if (decoded[i]) ini.SetValue(Fields[i].internalSection, Fields[i].internalKey, decoded[i]->c_str());
     }
+    ini.SetBoolValue("NeuralRendering", "CommunityRuntime",
+        !ini.GetBoolValue("NeuralRendering", "LegacyRuntimeDiagnostic", false));
     const long mode = ini.GetLongValue("Settings", "UpscaleType", 0);
     ini.SetBoolValue("Settings", "DLSSNativeScale", native);
     if (mode == 0 && native) ini.SetLongValue("Settings", "UpscaleType", 3);
@@ -174,6 +179,11 @@ template<class Ini> std::string Encode(Ini& ini)
     ini.Delete("Settings", "MipLodBias");
     ini.Delete("Settings", "Sharpening");
     ini.Delete("FrameGeneration", "Backend");
+    // AMD normalization inserts this internal enable flag. It has no public
+    // choice and must not be saved as an obsolete input for the next launch.
+    ini.Delete("Settings", "EnableUpscaler");
+    // Effective adapter policy is not a saved implementation preference.
+    ini.Delete("NeuralRendering", "CommunityRuntime");
     for (std::size_t i = 0; i < Fields.size(); ++i) {
         if (encoded[i]) ini.SetValue(Fields[i].section, Fields[i].key, encoded[i]->c_str());
     }

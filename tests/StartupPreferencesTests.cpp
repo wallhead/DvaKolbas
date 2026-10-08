@@ -62,10 +62,10 @@ int main(int argc, char** argv)
         const std::string configuredNeural = packaged.GetValue("Runtime", "NRRuntimePath", "");
         const std::filesystem::path firstRoot = "C:/First Game/Data/SKSE/Plugins";
         const std::filesystem::path movedRoot = "D:/Moved Game/Data/SKSE/Plugins";
-        Require(!configuredStreamline.empty() && !configuredNeural.empty(), "packaged runtime paths present");
+        Require(!configuredStreamline.empty() && configuredNeural.empty(), "packaged Streamline is relative; unused Legacy NR override is blank");
         owner.ResolveRuntimePaths(firstRoot);
         Require(std::filesystem::path(owner.settings.sourceDLSSGStreamlineDirectory).is_absolute() &&
-            std::filesystem::path(owner.settings.neuralRenderingRuntimePath).is_absolute(), "runtime uses resolved paths");
+            owner.settings.neuralRenderingRuntimePath.empty(), "runtime resolves Streamline without inventing a Legacy NR path");
         // Exercise the same load -> resolve -> save -> reload sequence as startup
         // followed by Save as default, including a new settings file.
         for (const bool seed : {false, true}) {
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             owner.LoadStartupPreferences(pathsReloaded);
             owner.ResolveRuntimePaths(movedRoot);
             Require(owner.settings.sourceDLSSGStreamlineDirectory == (movedRoot / configuredStreamline).lexically_normal().string() &&
-                owner.settings.neuralRenderingRuntimePath == (movedRoot / configuredNeural).lexically_normal().string(),
+                owner.settings.neuralRenderingRuntimePath.empty(),
                 "saved relative paths follow a moved installation");
         }
         CSimpleIniA communityPaths;

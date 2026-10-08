@@ -75,7 +75,8 @@ namespace TheosRenderPipeline
         else { return "FSR requires its normal presenter, or the diagnostic [Upscaling Advanced] FsrOrdinaryPresenter=true with FG disabled."; }
         if (ini.GetBoolValue("SourceDLSSG", "NeuralRenderingEnabled", false) &&
 #if !defined(TRP_NO_NEURAL_RENDERING)
-            !ini.GetBoolValue("NeuralRendering", "CommunityRuntime", false) &&
+            !ini.GetBoolValue("NeuralRendering", "CommunityRuntime",
+                !ini.GetBoolValue("NeuralRendering", "LegacyRuntimeDiagnostic", false)) &&
 #endif
             true) { return "Neural Rendering is unavailable with FSR."; }
         if (ini.GetBoolValue("HDROutput", "Enabled", false)) { return "HDR output is not validated with FSR."; }

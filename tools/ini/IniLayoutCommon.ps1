@@ -58,6 +58,8 @@ function ConvertFrom-PublicIniValues([hashtable]$Settings) {
     }
     foreach($field in $schema.fields){$result.Remove($field.internal_section+'/'+$field.internal_key)}
     foreach($key in $converted.Keys){$result[$key]=$converted[$key]}
+    $result.Remove('NeuralRendering Advanced/Runtime')
+    $result['NeuralRendering/CommunityRuntime']=if($result['NeuralRendering/LegacyRuntimeDiagnostic'] -eq 'true'){'false'}else{'true'}
     $native=if($Settings.ContainsKey('DLSS/Quality')){$Settings['DLSS/Quality'] -ceq 'Native'}else{$true}
     $result['Settings/DLSSNativeScale']=[string]$native.ToString().ToLowerInvariant()
     if($result['Settings/UpscaleType'] -eq '0' -and $native){$result['Settings/UpscaleType']='3'}
@@ -102,7 +104,7 @@ function ConvertTo-PublicIniValues([hashtable]$Settings) {
     }
     foreach($field in $schema.fields){$result.Remove($field.internal_section+'/'+$field.internal_key)}
     foreach($alias in Get-IniLayoutAliases){$result.Remove($alias.Legacy)}
-    foreach($key in @('Settings/DLSSNativeScale','Settings/Sharpening','Settings/MipLodBias','Settings/ConfigVersion','/ConfigVersion','FrameGeneration/Backend','SourceDLSSG/NRStableColors','NeuralRendering/StableColors')){$result.Remove($key)}
+    foreach($key in @('Settings/DLSSNativeScale','Settings/Sharpening','Settings/MipLodBias','Settings/EnableUpscaler','Settings/ConfigVersion','/ConfigVersion','FrameGeneration/Backend','SourceDLSSG/NRStableColors','NeuralRendering/StableColors','NeuralRendering Advanced/Runtime','NeuralRendering/CommunityRuntime')){$result.Remove($key)}
     foreach($key in $converted.Keys){$result[$key]=$converted[$key]}
     return $result
 }

@@ -29,6 +29,7 @@ int main() {
         Check(selected.profile && selected.profile->bytes==e.bytes && selected.profile->sha256==e.sha,e.id);
     }
     Selected(0x1e04,"rtx20-30"); Selected(0x2203,"rtx20-30"); Selected(0x2702,"rtx40"); Selected(0x2f06,"rtx50");
+    Selected(0x2d05,"rtx50"); // RTX 5060 tester, same shared RTX 40/50 model.
     // Logical hardware profiles survive consolidation; no RTX50 payload is needed.
     const auto fifty=SelectRuntime(Nvidia(0x2b85),"rtx50",artifacts);
     const auto forty=SelectRuntime(Nvidia(0x2702),"rtx40",artifacts);

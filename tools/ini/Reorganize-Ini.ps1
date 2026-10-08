@@ -15,7 +15,8 @@ try {
     [IO.File]::WriteAllLines($temporary,$lines,[Text.UTF8Encoding]::new($false))
     $before=Read-PackageIni $source;$after=Read-PackageIni $temporary
     foreach($key in $before.Keys){
-        if($key -in @('Settings/ConfigVersion','/ConfigVersion','SourceDLSSG/NRStableColors','NeuralRendering/StableColors')){continue}
+        if($key -in @('Settings/ConfigVersion','/ConfigVersion','SourceDLSSG/NRStableColors','NeuralRendering/StableColors',
+            'Settings/EnableUpscaler','NeuralRendering/CommunityRuntime','NeuralRendering Advanced/Runtime')){continue}
         # DLAA's dormant numeric quality and disabled sharpening strength are not
         # effective controls: Native and zero encode those states explicitly.
         if($before['Settings/UpscaleType'] -eq '3' -and $key -in @('DLSS/QualityLevel','Settings/QualityLevel')){continue}

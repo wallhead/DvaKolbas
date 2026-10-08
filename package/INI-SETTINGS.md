@@ -8,6 +8,8 @@ FSR providers are independent: `[FSR] Provider=FSR4` requires ML upscaling, whil
 
 FSR and NR source color encoding remain independent because they can process different pipeline formats. Do not infer encoding from texture format. Unknown prevents the corresponding feature from starting. Provider, runtime, encoding, quality and keys marked restart require Save and restart.
 
+Normal NR automatically selects its bundled model from the actual rendering adapter: RTX 20/30 use the compatibility model; RTX 40/50 share a model; AMD NR is unavailable. The former `[NeuralRendering Advanced] Runtime` selector is ignored and removed on save. `[NeuralRendering Advanced] Profile=Auto` selects the GPU family; explicit profiles, catalog/driver overrides and `[Debug] NRLegacyRuntime=true` are diagnostics. The Legacy implementation requires a separately installed runtime and is never an automatic fallback.
+
 The file stays organized as one INI: ordinary controls first, advanced settings below, program-owned menu geometry last. Linked NR passes retain their independent saved overrides so unlinking after a restart restores them. Unknown user keys and comments survive menu saves.
 
 Defaults and this table are generated from `tools/ini/schema.json` by `tools/ini/Generate-Ini.py`.
@@ -26,9 +28,9 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | FSR | Quality | `Native` | Yes | Render scale for FSR. Values: Native, Quality, Balanced, Performance. |
 | FSR | Provider | `FSR3` | Yes | FSR3 keeps the analytical runtime; Auto allows fallback; FSR4 requires ML. Values: FSR3, Auto, FSR4. |
 | FSR | Sharpness | `0.0` | No | Sharpening strength. Zero disables sharpening. Range: 0-1. |
-| FSR | SourceColorEncoding | `Unknown` | Yes | Select the actual FSR source encoding before enabling the feature. Values: Unknown, Linear, Gamma22, SRGB. |
+| FSR | SourceColorEncoding | `Gamma22` | Yes | Gamma22 is the ENB SDR default. Change this to match other source pipelines. Values: Unknown, Linear, Gamma22, SRGB. |
 | FrameGeneration | Backend | `Auto` | Yes | Presentation backend. Auto uses NVIDIA with DLSS and FSR with FSR upscaling. DLSS can also use FSR FG; FSR upscaling cannot use NVIDIA FG. Values: Auto, NVIDIA, FSR. |
-| FrameGeneration | Enabled | `true` | No | FG toggle. Disabling interpolation retains the selected presentation host. Values: true, false. |
+| FrameGeneration | Enabled | `false` | No | FG toggle. Disabling interpolation retains the selected presentation host. Values: true, false. |
 | FrameGeneration | FsrProvider | `FSR3` | Yes | FG provider, independent of upscaling. FSR4 ML FG is experimental; unsupported devices report an error. Values: FSR3, Auto, FSR4. |
 | FrameGeneration | NvidiaGeneratedFrames | `1` | No | NVIDIA generated-frame count, excluding the real frame. Effective count is limited by the GPU/runtime. FSR FG generates one frame. Values: 1=x2, 2=x3, 3=x4, 4=x5, 5=x6. Whole numbers only. Range: 1-5. |
 | FrameGeneration | NvidiaDynamicMFG | `false` | No | NVIDIA dynamic MFG, if supported by the runtime. Values: true, false. |
@@ -41,7 +43,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | Interface | UIComposition | `Dedicated` | Yes | FSR FG and community NR require Dedicated. Values: Dedicated, HudlessDetection. |
 | NeuralRendering | Enabled | `false` | No | NR toggle; requires a compatible installed runtime. Values: true, false. |
 | NeuralRendering | Placement | `Before` | No | After order: DLSS/FSR -> NR -> FG -> UI. Values: Before, After. |
-| NeuralRendering | PassCount | `1` | No | Requested NR pass count. Legacy executes at most two and keeps the saved choice. Whole numbers only. Range: 1-3. |
+| NeuralRendering | PassCount | `1` | No | Requested NR pass count. Bundled NR supports up to three passes. Whole numbers only. Range: 1-3. |
 | NeuralRendering | OnePassInCombat | `false` | No | Temporarily reduce two requested passes to one under selected conditions. Values: true, false. |
 | NeuralRendering | OnePassWeaponsDrawn | `false` | No | Temporarily reduce two requested passes to one while weapons or spells are drawn. Values: true, false. |
 | NeuralRendering | PassRecoverySeconds | `5` | No | Recovery delay after the selected one-pass conditions clear, measured in active gameplay. Range: 0-30 seconds. |
@@ -74,10 +76,10 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | Appearance | SmoothingSeconds | `2.0` | No | Transition time for appearance presets. Range: 0-30 seconds. |
 | Appearance | WeatherCount | `0` | No | Program-owned count of saved weather appearance entries. Whole numbers only. |
 | Upscaling Advanced | FsrOrdinaryPresenter | `false` | Yes | Diagnostic only: ordinary FSR presentation, with FG unavailable. Leave false. Values: true, false. |
-| NeuralRendering Advanced | Runtime | `Legacy` | Yes | Select the installed NR runtime path. Values: Legacy, Community. |
-| NeuralRendering Advanced | Profile | `Auto` | Yes | NR GPU profile. AMD NR is unsupported. Values: Auto, rtx20-30, rtx40, rtx50. |
-| NeuralRendering Advanced | SourceColorEncoding | `Unknown` | Yes | Select the actual NR source encoding before enabling the feature. Values: Unknown, Linear, Gamma22, SRGB. |
-| NeuralRendering Advanced | SdrBytesTrial | `false` | Yes | encoded SDR byte path. Required by the qualified community SDR trial. Values: true, false. |
+| Debug | NRLegacyRuntime | `false` | Yes | Diagnostic only: force the separately installed Legacy NR implementation. Leave false; normal NR automatically selects the bundled model from the rendering GPU. Values: true, false. |
+| NeuralRendering Advanced | Profile | `Auto` | Yes | Diagnostic GPU-profile override. Auto selects the model from the actual rendering GPU: RTX 20/30 compatibility, shared RTX 40/50. AMD NR is unsupported. Keep Auto for normal use. Values: Auto, rtx20-30, rtx40, rtx50. |
+| NeuralRendering Advanced | SourceColorEncoding | `Gamma22` | Yes | Gamma22 is the ENB SDR default. Change this to match other source pipelines. Values: Unknown, Linear, Gamma22, SRGB. |
+| NeuralRendering Advanced | SdrBytesTrial | `true` | Yes | Encoded SDR byte path used by the bundled NR models. Keep true for normal SDR NR. Values: true, false. |
 | NR PASS 1 Advanced | Preset | `0` | No | NR model preset. Community trial requires default. Values: 0=default, 1=shipping. Whole numbers only. |
 | NR PASS 1 Advanced | InputScale | `1.0` | No | NR internal render scale. Community trial requires Native. Range: 0.25-1; 0 or >=1 selects Native. |
 | NR PASS 1 Advanced | ResolveMethod | `Auto` | No | Advanced reconstruction mode; qualified SDR path uses Auto. Values: Auto, Residual, Ratio. |
@@ -104,7 +106,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | Compatibility | WheelerLateOverlayBridge | `true` | No | Enable the compatibility bridge for Wheeler overlays. Values: true, false. |
 | Compatibility | NvidiaMFGUnlock | `true` | No | Universal-build MFG compatibility; ignored by the Standard build. Values: true, false. |
 | Runtime | StreamlineDirectory | `RaZkolbaS/NVIDIA/Streamline` | Yes | paths relative to virtual Data/SKSE/Plugins, or intentional absolute paths. |
-| Runtime | NRRuntimePath | `RaZkolbaS/NVIDIA/nvngx_dlssnr.dll` | Yes | Legacy NR runtime path, relative to SKSE/Plugins unless absolute. |
+| Runtime | NRRuntimePath | `` | Yes | Diagnostic Legacy NR path, used only with [Debug] NRLegacyRuntime=true. Normal automatic NR ignores it. The separate Legacy runtime is not bundled. |
 | Runtime | NRRuntimeRoot | `` | Yes | Community catalog root and driver core use Data/SKSE/Plugins/RaZkolbaS as base. Empty catalog root selects the packaged root. Empty driver core selects the active rendering driver's NGX core. Keep NRDriverCore blank for portable installs; explicit paths are diagnostic overrides. |
 | Runtime | NRDriverCore | `` | Yes | Optional NVIDIA driver-core override. Blank discovers the active driver core. |
 | DynamicResolution | Enabled | `false` | Yes | Currently unsupported; leave disabled. Values: true, false. |

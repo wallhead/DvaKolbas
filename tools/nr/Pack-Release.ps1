@@ -32,7 +32,7 @@ try {
         'Settings/UpscaleType'='3';'FSR/Quality'='NativeAA';
         'FSR/SourceColorEncoding'='Gamma22';
         'FrameGeneration/Backend'='Auto';'FrameGeneration/Enabled'='false';'NeuralRendering/Enabled'='false';
-        'NeuralRendering/CommunityRuntime'='true';'NeuralRendering/SourceColorEncoding'='Gamma22';
+        'Debug/NRLegacyRuntime'='false';'NeuralRendering/SourceColorEncoding'='Gamma22';
         'NeuralRendering/SdrBytesTrial'='true';'HDROutput/Enabled'='false'
     }
     [IO.File]::WriteAllLines($iniPath, [string[]]$lines, [Text.UTF8Encoding]::new($false))
@@ -93,6 +93,7 @@ if ($ini['FrameGeneration/Backend'] -ne '1' -or $ini['FrameGeneration/Enabled'] 
 if ($ini['Experimental/SourceDLSSGMFGUnlock'] -ne 'true') { throw 'Release INI must enable RTX 20/30 compatibility' }
 if ($ini['FSR/SourceColorEncoding'] -ne 'Gamma22' -or
     $ini['NeuralRendering/CommunityRuntime'] -ne 'true' -or
+    (Read-PackageIni $iniPath -Raw).ContainsKey('NeuralRendering Advanced/Runtime') -or
     $ini['NeuralRendering/SourceColorEncoding'] -ne 'Gamma22' -or
     $ini['NeuralRendering/SdrBytesTrial'] -ne 'true' -or
     $ini['HDROutput/Enabled'] -ne 'false') {
@@ -102,7 +103,7 @@ $receipt = [ordered]@{
     release='1.3'; archiveName=[IO.Path]::GetFileName($output)
     archiveSha256=(Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
     archiveBytes=(Get-Item -LiteralPath $output).Length; buildIdentity=$identity
-    dllVersion='1.3.0.0'; defaults=@{upscaler='DLSS';dlssQuality='Native';fsrQuality='Native';fsrSourceColorEncoding='Gamma22';fgBackend='Auto';fgEnabled=$false;nrEnabled=$false;nrRuntime='Community';nrSourceColorEncoding='Gamma22';nrSdrBytes=$true;hdrEnabled=$false}
+    dllVersion='1.3.0.0'; defaults=@{upscaler='DLSS';dlssQuality='Native';fsrQuality='Native';fsrSourceColorEncoding='Gamma22';fgBackend='Auto';fgEnabled=$false;nrEnabled=$false;nrRuntime='Automatic';nrSourceColorEncoding='Gamma22';nrSdrBytes=$true;hdrEnabled=$false}
     rtx20_30CompatibilityCompiled=$true; actualRtx20_30GameplayQualified=$false
     unchangedRuntimePayloads=$true; crcVerified=$true; removedAudio=$removedAudio; files=$files
 }

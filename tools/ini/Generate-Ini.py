@@ -59,6 +59,7 @@ def generate():
                  '; Native in [DLSS] selects DLAA; Native in [FSR] selects FSR Native AA.',
                  '; FG Backend=Auto follows the upscaler; choose FSR to pair DLSS with FSR FG.',
                  '; NR After order: DLSS/FSR -> NR -> FG -> UI. AMD uses only FSR and optional FSR FG.',
+                 '; NR selects its bundled model from the rendering GPU automatically; manual overrides are diagnostic.',
                  '; Advanced and program-owned settings are grouped below ordinary options.']
         for section in schema['sections']:
             if section == 'Upscaling Advanced':
@@ -80,6 +81,7 @@ def generate():
             '`[Upscaling] Upscaler` chooses DLSS or FSR. Both provider sections use `Quality=Native`. DLSS Native selects DLAA internally. Each provider retains its own quality and sharpness. FG on/off is live and keeps its presenter available. `[FrameGeneration] Backend=Auto` follows the upscaler; `FSR` also pairs DLSS/DLAA with FSR FG. Changing Backend requires Save and restart. FSR upscaling cannot use the NVIDIA presenter.', '',
             'FSR providers are independent: `[FSR] Provider=FSR4` requires ML upscaling, while `[FrameGeneration] FsrProvider=FSR4` requires ML frame generation. `Auto` allows the qualified analytical fallback. Explicit FSR4 reports an error when unavailable. FSR4 FG remains experimental. API versions in the log are not algorithm versions.', '',
             'FSR and NR source color encoding remain independent because they can process different pipeline formats. Do not infer encoding from texture format. Unknown prevents the corresponding feature from starting. Provider, runtime, encoding, quality and keys marked restart require Save and restart.', '',
+            'Normal NR automatically selects its bundled model from the actual rendering adapter: RTX 20/30 use the compatibility model; RTX 40/50 share a model; AMD NR is unavailable. The former `[NeuralRendering Advanced] Runtime` selector is ignored and removed on save. `[NeuralRendering Advanced] Profile=Auto` selects the GPU family; explicit profiles, catalog/driver overrides and `[Debug] NRLegacyRuntime=true` are diagnostics. The Legacy implementation requires a separately installed runtime and is never an automatic fallback.', '',
             'The file stays organized as one INI: ordinary controls first, advanced settings below, program-owned menu geometry last. Linked NR passes retain their independent saved overrides so unlinking after a restart restores them. Unknown user keys and comments survive menu saves.', '',
             'Defaults and this table are generated from `tools/ini/schema.json` by `tools/ini/Generate-Ini.py`.', '',
             'To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorganize-Ini.ps1 -SourceIni "old.ini" -OutputIni "named.ini"` from the source checkout. Choose a new output path; the source is never overwritten. Review the output before installing it with the matching DLL. Obsolete legacy aliases are discarded rather than promoted.', '',

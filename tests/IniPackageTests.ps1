@@ -30,6 +30,7 @@ Keep=unchanged
 NRStyle=7
 [NeuralRendering]
 Enabled=true
+CommunityRuntime=false
 BeforeUpscaling=false
 StableColors=true
 PassCount=1
@@ -54,6 +55,10 @@ if($raw['Hotkeys/ToggleOverlay'] -ne 'End' -or $raw['Upscaling/MipLodBias'] -ne 
 }
 if($raw.ContainsKey('NeuralRendering/StableColors') -or $raw.ContainsKey('SourceDLSSG/NRStableColors')){
     throw 'Retired stable-color setting must not survive conversion'
+}
+if($raw.ContainsKey('NeuralRendering/CommunityRuntime') -or
+    (Read-PackageIni $converted)['NeuralRendering/CommunityRuntime'] -ne 'true'){
+    throw 'Retired Legacy selector must convert to automatic bundled NR'
 }
 if($raw['NR PASS 3/Style'] -ne '4' -or $raw['NR PASS 3/UseSameSettings'] -ne 'false'){
     throw 'Independent third-pass settings must survive conversion'

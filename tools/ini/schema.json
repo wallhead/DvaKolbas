@@ -173,8 +173,8 @@
       "internal_key": "SourceColorEncoding",
       "section": "FSR",
       "key": "SourceColorEncoding",
-      "default": "Unknown",
-      "comment": "Select the actual FSR source encoding before enabling the feature.",
+      "default": "Gamma22",
+      "comment": "Gamma22 is the ENB SDR default. Change this to match other source pipelines.",
       "restart": true,
       "values": {
         "Unknown": "Unknown",
@@ -192,7 +192,11 @@
       "default": "Auto",
       "comment": "Presentation backend. Auto uses NVIDIA with DLSS and FSR with FSR upscaling. DLSS can also use FSR FG; FSR upscaling cannot use NVIDIA FG.",
       "restart": true,
-      "values": {"Auto": "0", "NVIDIA": "1", "FSR": "2"},
+      "values": {
+        "Auto": "0",
+        "NVIDIA": "1",
+        "FSR": "2"
+      },
       "type": "Enum"
     },
     {
@@ -200,7 +204,7 @@
       "internal_key": "Enabled",
       "section": "FrameGeneration",
       "key": "Enabled",
-      "default": "true",
+      "default": "false",
       "comment": "FG toggle. Disabling interpolation retains the selected presentation host.",
       "restart": false,
       "values": {},
@@ -368,7 +372,7 @@
       "section": "NeuralRendering",
       "key": "PassCount",
       "default": "1",
-      "comment": "Requested NR pass count. Legacy executes at most two and keeps the saved choice.",
+      "comment": "Requested NR pass count. Bundled NR supports up to three passes.",
       "restart": false,
       "values": {},
       "type": "Integer",
@@ -769,17 +773,14 @@
     },
     {
       "internal_section": "NeuralRendering",
-      "internal_key": "CommunityRuntime",
-      "section": "NeuralRendering Advanced",
-      "key": "Runtime",
-      "default": "Legacy",
-      "comment": "Select the installed NR runtime path.",
+      "internal_key": "LegacyRuntimeDiagnostic",
+      "section": "Debug",
+      "key": "NRLegacyRuntime",
+      "default": "false",
+      "comment": "Diagnostic only: force the separately installed Legacy NR implementation. Leave false; normal NR automatically selects the bundled model from the rendering GPU.",
       "restart": true,
-      "values": {
-        "Legacy": "false",
-        "Community": "true"
-      },
-      "type": "Enum"
+      "values": {},
+      "type": "Bool"
     },
     {
       "internal_section": "NeuralRendering",
@@ -787,7 +788,7 @@
       "section": "NeuralRendering Advanced",
       "key": "Profile",
       "default": "Auto",
-      "comment": "NR GPU profile. AMD NR is unsupported.",
+      "comment": "Diagnostic GPU-profile override. Auto selects the model from the actual rendering GPU: RTX 20/30 compatibility, shared RTX 40/50. AMD NR is unsupported. Keep Auto for normal use.",
       "restart": true,
       "values": {
         "Auto": "Auto",
@@ -802,8 +803,8 @@
       "internal_key": "SourceColorEncoding",
       "section": "NeuralRendering Advanced",
       "key": "SourceColorEncoding",
-      "default": "Unknown",
-      "comment": "Select the actual NR source encoding before enabling the feature.",
+      "default": "Gamma22",
+      "comment": "Gamma22 is the ENB SDR default. Change this to match other source pipelines.",
       "restart": true,
       "values": {
         "Unknown": "Unknown",
@@ -818,8 +819,8 @@
       "internal_key": "SdrBytesTrial",
       "section": "NeuralRendering Advanced",
       "key": "SdrBytesTrial",
-      "default": "false",
-      "comment": "encoded SDR byte path. Required by the qualified community SDR trial.",
+      "default": "true",
+      "comment": "Encoded SDR byte path used by the bundled NR models. Keep true for normal SDR NR.",
       "restart": true,
       "values": {},
       "type": "Bool"
@@ -1160,8 +1161,8 @@
       "internal_key": "NRRuntimePath",
       "section": "Runtime",
       "key": "NRRuntimePath",
-      "default": "RaZkolbaS/NVIDIA/nvngx_dlssnr.dll",
-      "comment": "Legacy NR runtime path, relative to SKSE/Plugins unless absolute.",
+      "default": "",
+      "comment": "Diagnostic Legacy NR path, used only with [Debug] NRLegacyRuntime=true. Normal automatic NR ignores it. The separate Legacy runtime is not bundled.",
       "restart": true,
       "values": {},
       "type": "Text"

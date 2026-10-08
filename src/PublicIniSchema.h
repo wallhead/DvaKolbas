@@ -81,10 +81,6 @@ inline constexpr std::array enum24{
 inline constexpr std::array enum52{
     EnumValue{"End","0x23"},
 };
-inline constexpr std::array enum58{
-    EnumValue{"Legacy","false"},
-    EnumValue{"Community","true"},
-};
 inline constexpr std::array enum59{
     EnumValue{"Auto","Auto"},
     EnumValue{"rtx20-30","rtx20-30"},
@@ -117,9 +113,9 @@ inline constexpr std::array Fields{
     Field{"FSR","Quality","FSR","Quality","Native","Enum","","[FSR] Quality",false,enum7},
     Field{"FSR","ProviderPolicy","FSR","Provider","FSR3","Enum","","[FSR] Provider",false,enum8},
     Field{"FSR","Sharpness","FSR","Sharpness","0.0","Number","","[FSR] Sharpness",false,{}},
-    Field{"FSR","SourceColorEncoding","FSR","SourceColorEncoding","Unknown","Text","","[FSR] SourceColorEncoding",false,enum10},
+    Field{"FSR","SourceColorEncoding","FSR","SourceColorEncoding","Gamma22","Text","","[FSR] SourceColorEncoding",false,enum10},
     Field{"FrameGeneration","BackendPreference","FrameGeneration","Backend","Auto","Enum","","[FrameGeneration] Backend",false,enum11},
-    Field{"FrameGeneration","Enabled","FrameGeneration","Enabled","true","Bool","","[FrameGeneration] Enabled",false,{}},
+    Field{"FrameGeneration","Enabled","FrameGeneration","Enabled","false","Bool","","[FrameGeneration] Enabled",false,{}},
     Field{"FrameGeneration","FsrProviderPolicy","FrameGeneration","FsrProvider","FSR3","Enum","","[FrameGeneration] FsrProvider",false,enum13},
     Field{"FrameGeneration","GeneratedFrames","FrameGeneration","NvidiaGeneratedFrames","1","Integer","","[FrameGeneration] NvidiaGeneratedFrames",false,{}},
     Field{"FrameGeneration","DynamicMFG","FrameGeneration","NvidiaDynamicMFG","false","Bool","","[FrameGeneration] NvidiaDynamicMFG",false,{}},
@@ -165,10 +161,10 @@ inline constexpr std::array Fields{
     Field{"Appearance","SmoothingSeconds","Appearance","SmoothingSeconds","2.0","Number","","[Appearance] SmoothingSeconds",false,{}},
     Field{"Appearance","WeatherCount","Appearance","WeatherCount","0","Integer","","[Appearance] WeatherCount",false,{}},
     Field{"Experimental","FsrOrdinaryPresenter","Upscaling Advanced","FsrOrdinaryPresenter","false","Bool","","[Upscaling Advanced] FsrOrdinaryPresenter",false,{}},
-    Field{"NeuralRendering","CommunityRuntime","NeuralRendering Advanced","Runtime","Legacy","Enum","","[NeuralRendering Advanced] Runtime",false,enum58},
+    Field{"NeuralRendering","LegacyRuntimeDiagnostic","Debug","NRLegacyRuntime","false","Bool","","[Debug] NRLegacyRuntime",false,{}},
     Field{"NeuralRendering","Profile","NeuralRendering Advanced","Profile","Auto","Text","","[NeuralRendering Advanced] Profile",false,enum59},
-    Field{"NeuralRendering","SourceColorEncoding","NeuralRendering Advanced","SourceColorEncoding","Unknown","Text","","[NeuralRendering Advanced] SourceColorEncoding",false,enum60},
-    Field{"NeuralRendering","SdrBytesTrial","NeuralRendering Advanced","SdrBytesTrial","false","Bool","","[NeuralRendering Advanced] SdrBytesTrial",false,{}},
+    Field{"NeuralRendering","SourceColorEncoding","NeuralRendering Advanced","SourceColorEncoding","Gamma22","Text","","[NeuralRendering Advanced] SourceColorEncoding",false,enum60},
+    Field{"NeuralRendering","SdrBytesTrial","NeuralRendering Advanced","SdrBytesTrial","true","Bool","","[NeuralRendering Advanced] SdrBytesTrial",false,{}},
     Field{"NR PASS 1","Preset","NR PASS 1 Advanced","Preset","0","Integer","","[NR PASS 1 Advanced] Preset",false,{}},
     Field{"NR PASS 1","InputScale","NR PASS 1 Advanced","InputScale","1.0","Number","","[NR PASS 1 Advanced] InputScale",false,{}},
     Field{"NR PASS 1","ResolveMethod","NR PASS 1 Advanced","ResolveMethod","Auto","Enum","","[NR PASS 1 Advanced] ResolveMethod",false,enum64},
@@ -195,7 +191,7 @@ inline constexpr std::array Fields{
     Field{"Compatibility","WheelerLateOverlayBridge","Compatibility","WheelerLateOverlayBridge","true","Bool","","[Compatibility] WheelerLateOverlayBridge",false,{}},
     Field{"Compatibility","NvidiaMFGUnlock","Compatibility","NvidiaMFGUnlock","true","Bool","","[Compatibility] NvidiaMFGUnlock",false,{}},
     Field{"Runtime","StreamlineDirectory","Runtime","StreamlineDirectory","RaZkolbaS/NVIDIA/Streamline","Text","","[Runtime] StreamlineDirectory",false,{}},
-    Field{"Runtime","NRRuntimePath","Runtime","NRRuntimePath","RaZkolbaS/NVIDIA/nvngx_dlssnr.dll","Text","","[Runtime] NRRuntimePath",false,{}},
+    Field{"Runtime","NRRuntimePath","Runtime","NRRuntimePath","","Text","","[Runtime] NRRuntimePath",false,{}},
     Field{"Runtime","NRRuntimeRoot","Runtime","NRRuntimeRoot","","Text","","[Runtime] NRRuntimeRoot",false,{}},
     Field{"Runtime","NRDriverCore","Runtime","NRDriverCore","","Text","","[Runtime] NRDriverCore",false,{}},
     Field{"DynamicResolution","Enabled","DynamicResolution","Enabled","false","Bool","","[DynamicResolution] Enabled",false,{}},

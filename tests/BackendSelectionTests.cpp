@@ -171,12 +171,17 @@ int main()
         Require(validate(), "obsolete experiments stay rejected for FSR");
         ini.SetBoolValue("Experimental", key, false);
     }
+    ini.SetBoolValue("NeuralRendering", "CommunityRuntime", false); // Explicit Legacy diagnostic implementation.
     for (auto section : {"NeuralRendering", "HDROutput", "DynamicResolution"}) {
         const char* key = "Enabled";
         ini.SetBoolValue(section, key, true);
         Require(validate(), "unsupported FSR NR/HDR/dynamic resolution rejected");
         ini.SetBoolValue(section, key, false);
     }
+    ini.Delete("NeuralRendering", "CommunityRuntime");
+    ini.SetBoolValue("NeuralRendering", "Enabled", true);
+    Require(!validate(), "automatic bundled NR is admitted with FSR before runtime/model checks");
+    ini.SetBoolValue("NeuralRendering", "Enabled", false);
     using namespace TheosRenderPipeline::Upscaling;
     BackendConfiguration config;
     config.backend = BackendKind::Fsr; config.generationEnabled = false; config.generationBackend = 0;

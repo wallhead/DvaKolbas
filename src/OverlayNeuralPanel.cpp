@@ -65,7 +65,7 @@ const char* NeuralUnavailableReason(int upscaleType, bool nrRuntimePresent)
     const auto* frameGen = SourceFrameGeneration::GetSingleton();
     if (frameGen->settings.neuralRenderingRuntimePath.empty())
     {
-        return "NR runtime path is empty. Configure NeuralRenderingRuntimePath in RaZkolbaS.ini "
+        return "Diagnostic Legacy NR path is empty. Configure [Runtime] NRRuntimePath in RaZkolbaS.ini "
                "and restart Skyrim.";
     }
     if (!nrRuntimePresent)

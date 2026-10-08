@@ -43,10 +43,45 @@ void IndependentGenerationPreference()
     invalid.SetValue("FrameGeneration", "Backend", "Ordinary");
     Check(!PublicIni::Decode(invalid).empty(), "backend zero has no public normal choice");
 }
+void AutomaticNeuralRuntime()
+{
+    using namespace TheosRenderPipeline;
+    for (const auto obsoleteChoice : {"Legacy", "Community"}) {
+        CSimpleIniA ini;
+        ini.SetValue("Upscaling", "Upscaler", "DLSS");
+        ini.SetValue("NeuralRendering Advanced", "Runtime", obsoleteChoice);
+        Check(PublicIni::Decode(ini).empty(), "obsolete NR selector cannot block named startup");
+        auto* owner = SourceFrameGeneration::GetSingleton();
+        owner->LoadStartupPreferences(ini);
+        Check(owner->settings.neuralStartup.community && owner->settings.neuralStartup.profile == "Auto",
+            "bundled NR automatically uses the rendering GPU catalog even with an old Legacy selector");
+        ApplyRendererGpuPolicy(ini, 0x1002, true);
+        owner->LoadStartupPreferences(ini);
+        Check(!owner->settings.neuralStartup.community && !owner->settings.sourceDLSSG.neuralEnabled,
+            "AMD has neither NR runtime nor NR enabled");
+        Check(PublicIni::Encode(ini).empty() && !ini.GetValue("NeuralRendering Advanced", "Runtime", nullptr) &&
+            !ini.GetValue("NeuralRendering", "CommunityRuntime", nullptr),
+            "saving does not export a Legacy choice from the effective AMD policy");
+        Check(PublicIni::Decode(ini).empty(), "automatic NR configuration survives saving");
+        owner->LoadStartupPreferences(ini);
+        Check(owner->settings.neuralStartup.community,
+            "saved AMD policy cannot select Legacy on the next NVIDIA launch");
+    }
+    CSimpleIniA diagnostic;
+    diagnostic.SetValue("Upscaling", "Upscaler", "DLSS");
+    diagnostic.SetBoolValue("Debug", "NRLegacyRuntime", true);
+    Check(PublicIni::Decode(diagnostic).empty(), "explicit Legacy diagnostic selector decodes");
+    auto* owner = SourceFrameGeneration::GetSingleton();
+    owner->LoadStartupPreferences(diagnostic);
+    Check(!owner->settings.neuralStartup.community, "Legacy is available only through its explicit diagnostic switch");
+    Check(PublicIni::Encode(diagnostic).empty() && diagnostic.GetBoolValue("Debug", "NRLegacyRuntime", false),
+        "manual diagnostic override is retained separately from effective adapter policy");
+}
 int main(int argc, char** argv)
 {
     using namespace TheosRenderPipeline;
     IndependentGenerationPreference();
+    AutomaticNeuralRuntime();
     CSimpleIniA ini;
     ini.LoadData(R"ini(
 [Upscaling]
@@ -156,7 +191,7 @@ MySetting=custom
         "[Upscaling]\nUpscaler=FSR\n[FrameGeneration]\nEnabled=maybe\n",
         "[Upscaling]\nUpscaler=FSR\n[FSR]\nSharpness=nan\n",
         "[Upscaling]\nUpscaler=FSR\n[Hotkeys]\nToggleOverlay=0\n",
-        "[Upscaling]\nUpscaler=FSR\n[Upscaling Advanced]\nFsrOrdinaryPresenter=true\n"}) {
+        "[Upscaling]\nUpscaler=FSR\n[FrameGeneration]\nEnabled=true\n[Upscaling Advanced]\nFsrOrdinaryPresenter=true\n"}) {
         invalid.Reset(); invalid.LoadData(bad);
         Check(!PublicIni::Decode(invalid).empty(), "invalid scalar/hotkey or incompatible ordinary FG is rejected");
     }

@@ -40,7 +40,7 @@ if(([regex]::Matches($text,'(?m)^; Whole numbers only\.\r?$')).Count -ne 12){
 foreach($choices in @('Values: Native | Quality | Balanced | Performance | UltraPerformance | UltraQuality.',
     'Values: Native | Quality | Balanced | Performance.', 'Values: FSR3 | Auto | FSR4.',
     'Values: Default | E | F | J | K | L | M.', 'Values: Off | On | Boost.',
-    'Values: Before | After.', 'Values: Legacy | Community.',
+    'Values: Before | After.',
     'Values: Unknown | Linear | Gamma22 | SRGB.', 'Values: Auto | rtx20-30 | rtx40 | rtx50.',
     'Values: Auto | Residual | Ratio.', 'Values: true | false.')){
     if(-not $text.Contains($choices)){throw "Converted INI must list allowed choices beside the setting: $choices"}
@@ -48,7 +48,8 @@ foreach($choices in @('Values: Native | Quality | Balanced | Performance | Ultra
 $raw=Read-PackageIni $target -Raw
 if($raw['Upscaling/Upscaler'] -ne 'FSR' -or $raw['DLSS/Quality'] -ne 'Native' -or
    $raw['FSR/Provider'] -ne 'FSR4' -or $raw['FrameGeneration/FsrProvider'] -ne 'FSR4' -or
-   $raw['NeuralRendering/Placement'] -ne 'After' -or $raw['NeuralRendering Advanced/Runtime'] -ne 'Community' -or
+   $raw['NeuralRendering/Placement'] -ne 'After' -or $raw['Debug/NRLegacyRuntime'] -ne 'false' -or
+   $raw.ContainsKey('NeuralRendering Advanced/Runtime') -or
    $raw.ContainsKey('Settings/UpscaleType') -or $raw['FrameGeneration/Backend'] -ne 'Auto'){
     throw 'Packaging must emit only named settings, explicit ML and configured Auto backend'
 }

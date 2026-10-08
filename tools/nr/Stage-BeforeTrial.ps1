@@ -42,8 +42,8 @@ $changes=@{
     'SourceDLSSG/NRColorIsHDR'='false';'SourceDLSSG/NRPeripheralCompression'='false';'SourceDLSSG/NRFusedPreparation'='false';
     'SourceDLSSG/NRUICorrection'='false';'FrameGeneration/Enabled'='true';'Hotkeys/EnableNRHotkeys'='true';'Appearance/Enabled'='false'
 }
-if($ini['NeuralRendering/CommunityRuntime'] -eq 'true'){throw 'Reference INI already selects the community trial'}
-$changes['NeuralRendering/CommunityRuntime']='true'
+$changes['Debug/NRLegacyRuntime']='false'
+$changes['NeuralRendering/SdrBytesTrial']='true'
 $changes['NeuralRendering/Profile']='Auto'
 $changes['Runtime/NRRuntimeRoot']=''
 $changes['Runtime/NRDriverCore']=''

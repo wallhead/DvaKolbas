@@ -23,7 +23,8 @@ struct StartupSettings {
 };
 template<class Ini> StartupSettings LoadStartupSettings(const Ini& source){
     const IniLayout::ReadView ini(source);
-    StartupSettings result;result.community=ini.GetBoolValue("NeuralRendering","CommunityRuntime",false);
+    StartupSettings result;result.community=ini.GetBoolValue("NeuralRendering","CommunityRuntime",
+        !ini.GetBoolValue("NeuralRendering","LegacyRuntimeDiagnostic",false));
     result.sdrBytesTrial=ini.GetBoolValue("NeuralRendering","SdrBytesTrial",false);
     result.profile=ini.GetValue("NeuralRendering","Profile","Auto");
     result.runtimeRoot=ini.GetValue("NeuralRendering","RuntimeRoot","");result.driverCore=ini.GetValue("NeuralRendering","DriverCore","");
