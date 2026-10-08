@@ -1,0 +1,458 @@
+{
+  "scope": "Static PE strings, raw bytes and unwind-bounded Capstone instructions; no DLL execution",
+  "archive": {
+    "bytes": 204042400,
+    "sha256": "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439"
+  },
+  "artifacts": {
+    "SKSE/Plugins/SkyrimUpscaler.dll": {
+      "bytes": 15975424,
+      "sha256": "ac699b5883d4deeafdfff81ab041c3f191b1970e68c3408ffdb18068a6f5482a",
+      "strings": {
+        "0x469c28": "mDLSSNRColorIsHdr",
+        "0x45aa58": "Treats the NR input color as HDR when using Ratio resolve.",
+        "0x46a620": "HDR::UiTexture",
+        "0x46a698": "HDR::HdrTexture",
+        "0x46a720": "CS UI route: {} (observed at UI boundary; HDR resources present={})"
+      },
+      "witnesses": [
+        {
+          "rva": "0x2f3596",
+          "interpretation": "INI reader references mDLSSNRColorIsHdr",
+          "unwindFragment": [
+            "0x2efc90",
+            "0x2f401f"
+          ],
+          "instructions": [
+            {
+              "rva": "0x2f358c",
+              "bytes": "c685e001000001",
+              "text": "mov byte ptr [rbp + 0x1e0], 1"
+            },
+            {
+              "rva": "0x2f3593",
+              "bytes": "4533c9",
+              "text": "xor r9d, r9d"
+            },
+            {
+              "rva": "0x2f3596",
+              "bytes": "4c8d058b661700",
+              "text": "lea r8, [rip + 0x17668b]"
+            },
+            {
+              "rva": "0x2f359d",
+              "bytes": "488d15bc111700",
+              "text": "lea rdx, [rip + 0x1711bc]"
+            },
+            {
+              "rva": "0x2f35a4",
+              "bytes": "488d4c2440",
+              "text": "lea rcx, [rsp + 0x40]"
+            },
+            {
+              "rva": "0x2f35a9",
+              "bytes": "e8c233e6ff",
+              "text": "call 0x180156970"
+            }
+          ]
+        },
+        {
+          "rva": "0x2f35ae",
+          "interpretation": "INI boolean return is stored at settings +0x2e4",
+          "unwindFragment": [
+            "0x2efc90",
+            "0x2f401f"
+          ],
+          "instructions": [
+            {
+              "rva": "0x2f35a4",
+              "bytes": "488d4c2440",
+              "text": "lea rcx, [rsp + 0x40]"
+            },
+            {
+              "rva": "0x2f35a9",
+              "bytes": "e8c233e6ff",
+              "text": "call 0x180156970"
+            },
+            {
+              "rva": "0x2f35ae",
+              "bytes": "8886e4020000",
+              "text": "mov byte ptr [rsi + 0x2e4], al"
+            },
+            {
+              "rva": "0x2f35b4",
+              "bytes": "4533c9",
+              "text": "xor r9d, r9d"
+            },
+            {
+              "rva": "0x2f35b7",
+              "bytes": "4c8d056a661700",
+              "text": "lea r8, [rip + 0x17666a]"
+            },
+            {
+              "rva": "0x2f35be",
+              "bytes": "488d159b111700",
+              "text": "lea rdx, [rip + 0x17119b]"
+            }
+          ]
+        },
+        {
+          "rva": "0x2ecd18",
+          "interpretation": "Named HDR UI texture lookup",
+          "unwindFragment": [
+            "0x2ecd00",
+            "0x2ecd5a"
+          ],
+          "instructions": [
+            {
+              "rva": "0x2ecd12",
+              "bytes": "488bf9",
+              "text": "mov rdi, rcx"
+            },
+            {
+              "rva": "0x2ecd15",
+              "bytes": "488bcb",
+              "text": "mov rcx, rbx"
+            },
+            {
+              "rva": "0x2ecd18",
+              "bytes": "488d1501d91700",
+              "text": "lea rdx, [rip + 0x17d901]"
+            },
+            {
+              "rva": "0x2ecd1f",
+              "bytes": "e8ec090000",
+              "text": "call 0x1802ed710"
+            },
+            {
+              "rva": "0x2ecd24",
+              "bytes": "84c0",
+              "text": "test al, al"
+            },
+            {
+              "rva": "0x2ecd26",
+              "bytes": "740a",
+              "text": "je 0x1802ecd32"
+            }
+          ]
+        },
+        {
+          "rva": "0x2ecd2b",
+          "interpretation": "Successful UI texture match retained at host +0x16b0",
+          "unwindFragment": [
+            "0x2ecd00",
+            "0x2ecd5a"
+          ],
+          "instructions": [
+            {
+              "rva": "0x2ecd26",
+              "bytes": "740a",
+              "text": "je 0x1802ecd32"
+            },
+            {
+              "rva": "0x2ecd28",
+              "bytes": "488b07",
+              "text": "mov rax, qword ptr [rdi]"
+            },
+            {
+              "rva": "0x2ecd2b",
+              "bytes": "488998b0160000",
+              "text": "mov qword ptr [rax + 0x16b0], rbx"
+            },
+            {
+              "rva": "0x2ecd32",
+              "bytes": "488d155fd91700",
+              "text": "lea rdx, [rip + 0x17d95f]"
+            },
+            {
+              "rva": "0x2ecd39",
+              "bytes": "488bcb",
+              "text": "mov rcx, rbx"
+            },
+            {
+              "rva": "0x2ecd3c",
+              "bytes": "e8cf090000",
+              "text": "call 0x1802ed710"
+            }
+          ]
+        },
+        {
+          "rva": "0x2ecd32",
+          "interpretation": "Named HDR scene texture lookup",
+          "unwindFragment": [
+            "0x2ecd00",
+            "0x2ecd5a"
+          ],
+          "instructions": [
+            {
+              "rva": "0x2ecd28",
+              "bytes": "488b07",
+              "text": "mov rax, qword ptr [rdi]"
+            },
+            {
+              "rva": "0x2ecd2b",
+              "bytes": "488998b0160000",
+              "text": "mov qword ptr [rax + 0x16b0], rbx"
+            },
+            {
+              "rva": "0x2ecd32",
+              "bytes": "488d155fd91700",
+              "text": "lea rdx, [rip + 0x17d95f]"
+            },
+            {
+              "rva": "0x2ecd39",
+              "bytes": "488bcb",
+              "text": "mov rcx, rbx"
+            },
+            {
+              "rva": "0x2ecd3c",
+              "bytes": "e8cf090000",
+              "text": "call 0x1802ed710"
+            },
+            {
+              "rva": "0x2ecd41",
+              "bytes": "84c0",
+              "text": "test al, al"
+            }
+          ]
+        },
+        {
+          "rva": "0x2ecd48",
+          "interpretation": "Successful HDR texture match retained at host +0x16b8",
+          "unwindFragment": [
+            "0x2ecd00",
+            "0x2ecd5a"
+          ],
+          "instructions": [
+            {
+              "rva": "0x2ecd43",
+              "bytes": "740a",
+              "text": "je 0x1802ecd4f"
+            },
+            {
+              "rva": "0x2ecd45",
+              "bytes": "488b07",
+              "text": "mov rax, qword ptr [rdi]"
+            },
+            {
+              "rva": "0x2ecd48",
+              "bytes": "488998b8160000",
+              "text": "mov qword ptr [rax + 0x16b8], rbx"
+            },
+            {
+              "rva": "0x2ecd4f",
+              "bytes": "488b5c2430",
+              "text": "mov rbx, qword ptr [rsp + 0x30]"
+            },
+            {
+              "rva": "0x2ecd54",
+              "bytes": "4883c420",
+              "text": "add rsp, 0x20"
+            },
+            {
+              "rva": "0x2ecd58",
+              "bytes": "5f",
+              "text": "pop rdi"
+            }
+          ]
+        },
+        {
+          "rva": "0x282f10",
+          "interpretation": "SetColorSpace1 forwards through retained receiver vtable +0x130; method identity inferred from labelled function and DXGI layout",
+          "unwindFragment": [
+            "0x282e50",
+            "0x282f17"
+          ],
+          "instructions": [
+            {
+              "rva": "0x282f08",
+              "bytes": "4881c480000000",
+              "text": "add rsp, 0x80"
+            },
+            {
+              "rva": "0x282f0f",
+              "bytes": "5f",
+              "text": "pop rdi"
+            },
+            {
+              "rva": "0x282f10",
+              "bytes": "48ffa030010000",
+              "text": "jmp qword ptr [rax + 0x130]"
+            }
+          ]
+        }
+      ]
+    },
+    "SKSE/Plugins/SkyrimUpscaler.ini": {
+      "bytes": 15300,
+      "sha256": "ad0b46779903a9fec921a3fedb4f03c84eb393fd646ba889e5875608a6979967",
+      "inputHdrDefault": false
+    },
+    "UpscalerBasePlugin/PDPerfPlugin.dll": {
+      "bytes": 20332032,
+      "sha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+      "strings": {
+        "0x12f7a20": "DXGISwapChainProxy: Creating Fake HDR Buffer DXGI_FORMAT_R16G16B16A16_FLOAT",
+        "0x12f7d00": "DXGISwapChainProxy::ResizeBuffers: Creating Fake HDR Buffer DXGI_FORMAT_R16G16B16A16_FLOAT"
+      },
+      "witnesses": [
+        {
+          "rva": "0xfe474",
+          "interpretation": "Conditional FP16 fake-HDR-buffer branch label",
+          "unwindFragment": [
+            "0xfe36e",
+            "0xfe5be"
+          ],
+          "instructions": [
+            {
+              "rva": "0xfe46a",
+              "bytes": "4c396328",
+              "text": "cmp qword ptr [rbx + 0x28], r12"
+            },
+            {
+              "rva": "0xfe46e",
+              "bytes": "0f8432010000",
+              "text": "je 0x1800fe5a6"
+            },
+            {
+              "rva": "0xfe474",
+              "bytes": "488d0da5951f01",
+              "text": "lea rcx, [rip + 0x11f95a5]"
+            },
+            {
+              "rva": "0xfe47b",
+              "bytes": "e8e0b30100",
+              "text": "call 0x180119860"
+            },
+            {
+              "rva": "0xfe480",
+              "bytes": "488d0d99951f01",
+              "text": "lea rcx, [rip + 0x11f9599]"
+            },
+            {
+              "rva": "0xfe487",
+              "bytes": "e8d4b30100",
+              "text": "call 0x180119860"
+            }
+          ]
+        },
+        {
+          "rva": "0xfe49d",
+          "interpretation": "Descriptor format written as DXGI value 10 (R16G16B16A16_FLOAT)",
+          "unwindFragment": [
+            "0xfe36e",
+            "0xfe5be"
+          ],
+          "instructions": [
+            {
+              "rva": "0xfe497",
+              "bytes": "ff5050",
+              "text": "call qword ptr [rax + 0x50]"
+            },
+            {
+              "rva": "0xfe49a",
+              "bytes": "418bfc",
+              "text": "mov edi, r12d"
+            },
+            {
+              "rva": "0xfe49d",
+              "bytes": "c745c80a000000",
+              "text": "mov dword ptr [rbp - 0x38], 0xa"
+            },
+            {
+              "rva": "0xfe4a4",
+              "bytes": "44396358",
+              "text": "cmp dword ptr [rbx + 0x58], r12d"
+            },
+            {
+              "rva": "0xfe4a8",
+              "bytes": "0f8eeb000000",
+              "text": "jle 0x1800fe599"
+            },
+            {
+              "rva": "0xfe4ae",
+              "bytes": "488d4c2440",
+              "text": "lea rcx, [rsp + 0x40]"
+            }
+          ]
+        },
+        {
+          "rva": "0x101dae",
+          "interpretation": "Resize FP16 fake-HDR-buffer branch label",
+          "unwindFragment": [
+            "0x101cfd",
+            "0x101db5"
+          ],
+          "instructions": [
+            {
+              "rva": "0x101da4",
+              "bytes": "4438635c",
+              "text": "cmp byte ptr [rbx + 0x5c], r12b"
+            },
+            {
+              "rva": "0x101da8",
+              "bytes": "0f8479010000",
+              "text": "je 0x180101f27"
+            },
+            {
+              "rva": "0x101dae",
+              "bytes": "488d0d4b5f1f01",
+              "text": "lea rcx, [rip + 0x11f5f4b]"
+            }
+          ]
+        },
+        {
+          "rva": "0x101e0a",
+          "interpretation": "Resize descriptor format written as DXGI value 10",
+          "unwindFragment": [
+            "0x101db5",
+            "0x101f27"
+          ],
+          "instructions": [
+            {
+              "rva": "0x101e04",
+              "bytes": "ff5010",
+              "text": "call qword ptr [rax + 0x10]"
+            },
+            {
+              "rva": "0x101e07",
+              "bytes": "418bf4",
+              "text": "mov esi, r12d"
+            },
+            {
+              "rva": "0x101e0a",
+              "bytes": "c745d80a000000",
+              "text": "mov dword ptr [rbp - 0x28], 0xa"
+            },
+            {
+              "rva": "0x101e11",
+              "bytes": "44396358",
+              "text": "cmp dword ptr [rbx + 0x58], r12d"
+            },
+            {
+              "rva": "0x101e15",
+              "bytes": "0f8ef3000000",
+              "text": "jle 0x180101f0e"
+            },
+            {
+              "rva": "0x101e1b",
+              "bytes": "488d4c2448",
+              "text": "lea rcx, [rsp + 0x48]"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "pefile": "2024.8.26",
+    "capstone": "5.0.7"
+  },
+  "notEstablished": [
+    "AIO19 ENB SDR-to-HDR10 conversion",
+    "AIO19 live HDR calibration or toggle",
+    "Live HDR swapchain/transfer/luminance values",
+    "HDR correctness with FSR3/FSR4 FG",
+    "Full dataflow of the NR input-HDR flag beyond its INI storage and UI description"
+  ]
+}

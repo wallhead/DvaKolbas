@@ -1,0 +1,67 @@
+{
+  "scope": "Source identity and HDR file comparison; no gameplay HDR qualification",
+  "localRevision": "65c92ff82bafd507a406724efd0860eb885811e3",
+  "upstreamRevision": "b169e29006b94aaab43aeeb22bfbed729a4b9bea",
+  "files": [
+    {
+      "path": "src/FrameGen/HDRColorimetry.h",
+      "localSha256": "d34590cea907f38b2b2d48448c9c2db102fdfb63327f68d05377dd3810a77947",
+      "upstreamSha256": "d34590cea907f38b2b2d48448c9c2db102fdfb63327f68d05377dd3810a77947",
+      "identical": true
+    },
+    {
+      "path": "src/FrameGen/HDROutput.h",
+      "localSha256": "e3e6f2729767a5f216e82bed2a78f90add592cfe1a7134290791219333efbbc5",
+      "upstreamSha256": "e3e6f2729767a5f216e82bed2a78f90add592cfe1a7134290791219333efbbc5",
+      "identical": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGHDR.cpp",
+      "localSha256": "06ad83c5a50b0fe3f46ce6127276313ebb2ebeb8e5569a681c85869a27adabb5",
+      "upstreamSha256": "06ad83c5a50b0fe3f46ce6127276313ebb2ebeb8e5569a681c85869a27adabb5",
+      "identical": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGHDR.h",
+      "localSha256": "b6be38b2a8b46348cff2538cdd9d164c8297cdb44e14cb2a1dee9746e1583e1a",
+      "upstreamSha256": "b6be38b2a8b46348cff2538cdd9d164c8297cdb44e14cb2a1dee9746e1583e1a",
+      "identical": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGHDROutput.cpp",
+      "localSha256": "4dfe57916c48af125802eb0aa2d34e49108649080398f9009f318a492d6bb4d7",
+      "upstreamSha256": "4dfe57916c48af125802eb0aa2d34e49108649080398f9009f318a492d6bb4d7",
+      "identical": true
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGHDROutput.h",
+      "localSha256": "1a6d478e3a5501bd82cfb47494b10c93cf9334568bc15a5e57cd57e242885c05",
+      "upstreamSha256": "1cbc12d804e4348a2c8b367ea6d8a32cb0e02fc09d1a4995075fb9e446ad386d",
+      "identical": false
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGBackend.h",
+      "localSha256": "f55374ddd9445b9fe1ea542631d034516f135b7a3cdb6df9f3ac92cb035ec9b0",
+      "upstreamSha256": "426c9429175a2f6574059e86ae75b52f0ebbb3a3346e465441edd0434dba7f0b",
+      "identical": false
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGBackend.cpp",
+      "localSha256": "32fbdc7f86aeccb8058a34a37369d9635ce6a7287e2095cd749f64705d67af5c",
+      "upstreamSha256": "56958907d1ea3d3f501ae9d819177b6728d79d0d4abcfe90849cfd122246e655",
+      "identical": false
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGSwapChain.cpp",
+      "localSha256": "32eb600859fb31fdd35a6a612cffcbf53293f148a97fe843e4bc9ec1160d4d3d",
+      "upstreamSha256": "60b6a0df9d005ba385ad363b487e492c88f0f3e08ff4895e36f513e7f7d01586",
+      "identical": false
+    },
+    {
+      "path": "src/FrameGen/SourceDLSSGSwapChain.h",
+      "localSha256": "86d08befa9eaa331f036e9db2089351297034554d5486b1abf4a7718ce5c3f0f",
+      "upstreamSha256": "4284b4a1bb6ff757fe2dd004cc3f97f719fb9e7b11adf72f0afc57c04a7c4b1d",
+      "identical": false
+    }
+  ]
+}
