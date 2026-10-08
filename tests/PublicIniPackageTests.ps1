@@ -4,6 +4,12 @@ $ErrorActionPreference='Stop'
 [IO.Directory]::CreateDirectory($Output)|Out-Null
 $template=Join-Path $Repository 'package/SKSE/Plugins/RaZkolbaS.ini'
 $view=Read-PackageIni $template
+$defaults=Read-PackageIni $template -Raw
+if($defaults['FrameGeneration/Backend'] -ne 'Auto' -or
+   $defaults['FrameGeneration/Enabled'] -ne 'false' -or
+   $defaults['NeuralRendering/Enabled'] -ne 'false') {
+    throw 'Release defaults must use Auto presentation with FG and NR disabled'
+}
 foreach($upscaler in @('DLSS','FSR')) {
     foreach($backend in @('Auto','NVIDIA','FSR')) {
         $roundtrip = Set-PackageIniValues @('[Upscaling]',('Upscaler='+$upscaler),'[FrameGeneration]',('Backend='+$backend)) @{}

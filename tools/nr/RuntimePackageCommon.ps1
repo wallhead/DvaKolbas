@@ -36,9 +36,9 @@ function Read-PortableNrPackageIni([string]$Path) {
 }
 function Write-PortableModMetadata([string]$Directory,[string]$Revision) {
     if($Revision -notmatch '^[a-zA-Z0-9._-]+$'){throw 'Invalid metadata revision'}
-    $lines=@('[General]','gameName=SkyrimSE','modid=0','version=1.2','newestVersion=','category=0','nexusFileStatus=1',
-        'installationFile=RaZKolbaS DLSS FSR FG NR v1.2.zip','repository=','ignoredVersion=',
-        'comments=RaZKolbaS DLSS FSR FG NR',"notes=Release v1.2; Build $Revision; DLSS/FSR -> NR -> FG -> UI.",
+    $lines=@('[General]','gameName=SkyrimSE','modid=0','version=1.3','newestVersion=','category=0','nexusFileStatus=1',
+        'installationFile=RaZKolbaS DLSS FSR FG NR v1.3.zip','repository=','ignoredVersion=',
+        'comments=RaZKolbaS DLSS FSR FG NR',"notes=Release v1.3; Build $Revision; DLSS/FSR -> NR -> FG -> UI.",
         'url=https://github.com/wallhead/RaZkolbaS','hasCustomURL=true','converted=false','validated=false','',
         '[installedFiles]','size=0')
     [IO.File]::WriteAllLines((Join-Path $Directory 'meta.ini'),$lines,[Text.UTF8Encoding]::new($false))
