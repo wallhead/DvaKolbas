@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.24)
+project(RaZkolbaSHDRProbe LANGUAGES CXX)
+add_executable(HDRDisplayProbe HDRDisplayProbe.cpp ../../src/FrameGen/SourceDLSSGHDROutput.cpp)
+target_compile_features(HDRDisplayProbe PRIVATE cxx_std_20)
+target_compile_definitions(HDRDisplayProbe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_include_directories(HDRDisplayProbe PRIVATE ../../src)
+target_link_libraries(HDRDisplayProbe PRIVATE d3d12 dxgi d3dcompiler user32)

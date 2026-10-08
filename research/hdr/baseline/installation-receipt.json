@@ -1,0 +1,26 @@
+{
+  "installed": true,
+  "mo2SettingsUnchanged": true,
+  "metadataUnchanged": true,
+  "profile": "V5.4 NO-LORE",
+  "archiveSha256": "b04313d4b874e5131299840b39111b9e40dd38e37dbe35476f5dca8251927afc",
+  "hdrGameplayQualified": false,
+  "modDirectory": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZKolbaS DLSS FSR FG NR v1.2",
+  "backupDirectory": "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/backups/enb-hdr-baseline-2026-10-08",
+  "binarySourceRevision": "70edb4c1fabc",
+  "modlistUnchanged": true,
+  "originals": [
+    {
+      "sha256": "4c27a5f592e9af127a5652d150fe54f2852911601c888dba2a5f63228b6da51f",
+      "path": "SKSE/Plugins/RaZkolbaS.dll"
+    },
+    {
+      "sha256": "abe8db3cab8b2a5b8707b4a69d21bb90b504ec70b3dc75e73321570899132351",
+      "path": "SKSE/Plugins/RaZkolbaS.ini"
+    },
+    {
+      "sha256": "429c38ff1ed9767eeaf27ad4340b4ca520c08780d546910c0c4337464a0d893f",
+      "path": "meta.ini"
+    }
+  ]
+}
