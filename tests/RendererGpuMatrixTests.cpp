@@ -17,6 +17,8 @@ struct Card {const wchar_t* name;uint32_t vendor,device,arch;bool rtx;bool requi
 // are explicit regressions. Architecture and feature support are injected facts,
 // not claims of physical qualification for each named model.
 const Card cards[]{
+ {L"NVIDIA TITAN RTX",0x10de,0x1e02,0x160,true},
+ {L"Quadro RTX 8000",0x10de,0xde10,0x160,true},
  {L"NVIDIA GeForce RTX 2080",0x10de,0x1e82,0x160,true},
  {L"NVIDIA GeForce RTX 2060 Laptop GPU",0x10de,0xde01,0x160,true},
  {L"NVIDIA GeForce RTX 3080",0x10de,0x2206,0x170,true},

@@ -53,7 +53,7 @@ GpuFamily ClassifyGpu(const AdapterIdentity& adapter) noexcept {
     if(adapter.software || adapter.vendorId!=0x10de) return fallback;
     const auto& evidence=adapter.architecture;
     if(!evidence.queried) return fallback;
-    if(!adapter.luid.Valid() || evidence.luid!=adapter.luid || !evidence.rtxProduct) return GpuFamily::Unknown;
+    if(!adapter.luid.Valid() || evidence.luid!=adapter.luid || evidence.mappingAmbiguous || !evidence.rtxProduct) return GpuFamily::Unknown;
     GpuFamily family{GpuFamily::Unknown};
     switch(evidence.id) {
     case 0x160: family=GpuFamily::Rtx20; break; // Turing (RTX only; excludes GTX 16)

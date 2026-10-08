@@ -1,5 +1,6 @@
 #pragma once
 #include "NeuralRendering/RuntimeCatalog.h"
+#include "GpuProductName.h"
 #include <string_view>
 namespace TheosRenderPipeline {
 enum class RendererGpuChoice { NvidiaRtx, FsrOnly, Unsupported };
@@ -13,8 +14,12 @@ inline RendererGpuChoice ClassifyRendererGpu(const NeuralRendering::AdapterIdent
     if (adapter.vendorId != 0x10de) return RendererGpuChoice::FsrOnly;
     if (adapter.architecture.queried) {
         const auto& evidence = adapter.architecture;
-        return evidence.luid == adapter.luid && evidence.rtxProduct && evidence.id >= 0x160
-            ? RendererGpuChoice::NvidiaRtx : RendererGpuChoice::FsrOnly;
+        if (evidence.luid != adapter.luid) return RendererGpuChoice::FsrOnly;
+        if (!evidence.mappingAmbiguous)
+            return evidence.rtxProduct && evidence.id >= 0x160
+                ? RendererGpuChoice::NvidiaRtx : RendererGpuChoice::FsrOnly;
+        // Linked/ambiguous NR mapping is not a negative RTX product report.
+        // Keep NR unavailable, but allow this render adapter's PCI/name proof.
     }
     const auto family = NeuralRendering::ClassifyGpu(adapter.vendorId, adapter.deviceId, false);
     if (family == NeuralRendering::GpuFamily::Rtx20 || family == NeuralRendering::GpuFamily::Rtx30 ||
@@ -22,7 +27,7 @@ inline RendererGpuChoice ClassifyRendererGpu(const NeuralRendering::AdapterIdent
         return RendererGpuChoice::NvidiaRtx;
     // DXGI supplies this name for the same render LUID. Covers laptops and
     // workstation RTX cards when public NVAPI discovery is unavailable.
-    if (name.starts_with(L"RTX ") || name.find(L" RTX ") != std::wstring_view::npos)
+    if (IsRtxProductName(name))
         return RendererGpuChoice::NvidiaRtx;
     return RendererGpuChoice::FsrOnly;
 }

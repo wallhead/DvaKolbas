@@ -35,6 +35,9 @@ int main() {
     Check(ClassifyGpu(mobile)==GpuFamily::Unknown,"ContradictoryDriverAndPciFamiliesRejected");
     mobile.architecture={mobile.luid,0x999,true,true};
     Check(ClassifyGpu(mobile)==GpuFamily::Unknown,"FutureUnsupportedArchitectureDoesNotFallBack");
+    mobile.architecture={mobile.luid,0x190,true,true,true};
+    Check(ClassifyGpu(mobile)==GpuFamily::Unknown && !SelectRuntime(mobile,"Auto",artifacts).profile,
+        "AmbiguousMappingCannotAdmitNrEvenWithPositiveRtxArchitecture");
     mobile.architecture={};
     Check(ClassifyGpu(mobile)==GpuFamily::Rtx40,"UnavailableNvApiRetainsReviewedPciFallback");
     mobile.vendorId=0x1002;mobile.architecture={mobile.luid,0x190,true,true};

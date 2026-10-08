@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(
 	RaZkolbaS
-	VERSION 1.3.2
+	VERSION 1.3.3
 	LANGUAGES C CXX
 )
 
@@ -355,7 +355,7 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     add_test(NAME OverlayHotkeys COMMAND TRPOverlayHotkeysTests)
     set_tests_properties(OverlayHotkeys PROPERTIES TIMEOUT 15)
     add_executable(TRPOverlayLayoutTests tests/OverlayLayoutTests.cpp src/OverlayLayout.cpp src/OverlayPipeline.cpp)
-    target_compile_features(TRPOverlayLayoutTests PRIVATE cxx_std_20)
+    target_compile_features(TRPOverlayLayoutTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPOverlayLayoutTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_include_directories(TRPOverlayLayoutTests PRIVATE src "${TRP_SIMPLEINI_INCLUDE_DIR}")
     target_link_libraries(TRPOverlayLayoutTests PRIVATE imgui::imgui)

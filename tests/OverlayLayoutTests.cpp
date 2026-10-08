@@ -1,4 +1,6 @@
 #include "OverlayLayout.h"
+#include "OverlayLayoutFile.h"
+#include "SettingsFile.h"
 #include "OverlayPipeline.h"
 #include "OverlayUIStyle.h"
 #include <imgui_internal.h>
@@ -10,6 +12,8 @@
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <filesystem>
+#include <Windows.h>
 
 using namespace TheosRenderPipeline::Overlay;
 namespace
@@ -26,6 +30,40 @@ bool Near(float a, float b)
 
 void Settings()
 {
+    const auto fixture=std::filesystem::temp_directory_path()/L"razkolbas-optional-layout-fixture.ini";
+    Require(!std::filesystem::exists(fixture),"layout fixture is absent before test");
+    const auto checkOptional = [](const std::filesystem::path& path) {
+        const auto result=LoadMenuLayout(path.c_str());
+        Require(result.layout.width==Layout{}.width && result.layout.height==Layout{}.height && !result.warning.empty(),
+            "unreadable optional layout returns usable defaults and a warning");
+    };
+    checkOptional(fixture);
+    Require(!std::filesystem::exists(fixture),"optional defaults never create or rewrite the INI");
+    struct FixtureCleanup {
+        std::filesystem::path path;
+        ~FixtureCleanup(){std::error_code error;std::filesystem::remove(path,error);}
+    } cleanup{fixture};
+    CSimpleIniA startup;
+    const auto [missingResult,missingError]=TheosRenderPipeline::SettingsFile::LoadRenderer(startup,fixture.c_str());
+    Require(missingResult<0 && !missingError.empty(),"missing startup renderer INI remains a hard error");
+    CSimpleIniA saved;
+    saved.LoadData("[Upscaling]\nUpscaler=DLSS\n[Menu]\nWindowWidth=800\nWindowHeight=600\n");
+    Require(saved.SaveFile(fixture.c_str())>=0,"write layout fixture");
+    {
+        struct ExclusiveFile {
+            HANDLE handle;
+            ~ExclusiveFile(){if(handle!=INVALID_HANDLE_VALUE)CloseHandle(handle);}
+        } lock{CreateFileW(fixture.c_str(),GENERIC_READ,0,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr)};
+        Require(lock.handle!=INVALID_HANDLE_VALUE,"hold INI exclusively to reproduce sharing failure");
+        checkOptional(fixture);
+        CSimpleIniA lockedStartup;
+        const auto [lockedResult,lockedError]=TheosRenderPipeline::SettingsFile::LoadRenderer(lockedStartup,fixture.c_str());
+        Require(lockedResult<0 && !lockedError.empty(),"startup loader still refuses a locked renderer INI");
+    }
+    const auto readable=LoadMenuLayout(fixture.c_str());
+    Require(readable.layout.width==800 && readable.layout.height==600 && readable.warning.empty(),
+        "optional layout preserves readable geometry");
+    std::filesystem::remove(fixture);
     CSimpleIniA ini;
     Require(ini.LoadData("[DLSS]\nQualityLevel=4\n[NeuralRendering]\nPassCount=2\n[Unrecognized]\nKeep=hello\n") >= 0,
             "current settings load");

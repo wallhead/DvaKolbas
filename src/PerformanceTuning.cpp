@@ -56,13 +56,8 @@ void PerformanceTuning::LoadStartupINI()
 {
 	CSimpleIniA ini;
 	ini.SetUnicode();
-    const auto [loadResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    const auto configError = TheosRenderPipeline::SettingsFile::LoadRenderer(ini, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini").second;
     if (!configError.empty()) { logger::critical("[Config] {}", configError); util::report_and_fail(configError); }
-	if (loadResult < 0) {
-		logger::warn("[Performance] early INI load failed (rc={}); using default startup telemetry settings",
-			static_cast<int>(loadResult));
-		return;
-	}
 	Settings startup{};
 	startup.enableGPUTimings = ini.GetBoolValue("Performance", "EnableGPUTimings", true);
 	startup.enableFrameTrace = ini.GetBoolValue("Performance", "EnableFrameTrace", false);

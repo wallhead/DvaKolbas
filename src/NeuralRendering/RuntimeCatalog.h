@@ -17,6 +17,9 @@ struct GpuArchitecture {
     AdapterLuid luid;
     uint32_t id{};
     bool rtxProduct{}, queried{};
+    // NR needs one physical GPU. Renderer routing may use independent DXGI
+    // evidence when a same-LUID logical mapping is linked or ambiguous.
+    bool mappingAmbiguous{};
 };
 struct AdapterIdentity {
     uint32_t vendorId{}, deviceId{}, subsystemId{};

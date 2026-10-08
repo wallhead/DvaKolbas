@@ -124,10 +124,10 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     char rendererName[512]{};
     const bool named = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, rendererDesc.Description,
         -1,rendererName,sizeof(rendererName),nullptr,nullptr)>0;
-    logger::info("[Renderer GPU] name={} vendor=0x{:04X} device=0x{:04X} LUID={:08X}:{:08X} arch=0x{:X} queried={} RTX={} D3D12-FL12_0=0x{:08X} route={}",
+    logger::info("[Renderer GPU] name={} vendor=0x{:04X} device=0x{:04X} LUID={:08X}:{:08X} arch=0x{:X} queried={} RTX={} NR-mapping-ambiguous={} D3D12-FL12_0=0x{:08X} route={}",
         named?rendererName:"<unknown>",
         identity.vendorId,identity.deviceId,static_cast<unsigned>(identity.luid.high),identity.luid.low,
-        identity.architecture.id,identity.architecture.queried,identity.architecture.rtxProduct,
+        identity.architecture.id,identity.architecture.queried,identity.architecture.rtxProduct,identity.architecture.mappingAmbiguous,
         static_cast<unsigned>(d3d12Support),
         gpuChoice==TheosRenderPipeline::RendererGpuChoice::NvidiaRtx?"NVIDIA-RTX":
         gpuChoice==TheosRenderPipeline::RendererGpuChoice::FsrOnly?"FSR-only":"unsupported");
@@ -140,14 +140,9 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     pipeline->mFsrOnlyRenderer=gpuChoice==TheosRenderPipeline::RendererGpuChoice::FsrOnly;
     CSimpleIniA startup;
     startup.SetUnicode();
-    const auto [startupResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(startup, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
+    const auto configError = TheosRenderPipeline::SettingsFile::LoadRenderer(startup, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini").second;
     if (!configError.empty()) {
         nvidiaHost->FailLifecycle(E_INVALIDARG, configError.c_str());
-        d3d11Device->Release();
-        return E_INVALIDARG;
-    }
-    if (startupResult < 0) {
-        nvidiaHost->FailLifecycle(E_INVALIDARG, "Renderer startup INI is missing or unreadable");
         d3d11Device->Release();
         return E_INVALIDARG;
     }

@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference='Stop'
 $root=Join-Path ([IO.Path]::GetTempPath()) ('raz-release-compat-'+[guid]::NewGuid())
 [IO.Directory]::CreateDirectory($root)|Out-Null
-$archive=Join-Path $root 'RaZKolbaS DLSS FSR FG NR v1.3.2.zip'
+$archive=Join-Path $root 'RaZKolbaS DLSS FSR FG NR v1.3.3.zip'
 $stage=Join-Path $root 'stage'
 try {
     $rejected=$false

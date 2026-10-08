@@ -43,6 +43,12 @@ Startup uses the actual D3D11 render adapter's DXGI LUID, including hybrid
 laptops. Public NVAPI architecture/product evidence is matched to that LUID;
 reviewed PCI IDs and the same adapter's RTX name are fallbacks when NVAPI is
 unavailable. RTX renderers retain DLSS/DLAA and compatible NVIDIA options.
+RTX is matched as a whole word, including TITAN RTX and workstation names.
+A linked or ambiguous same-LUID NVAPI mapping excludes NR; renderer routing
+can still use that render adapter's reviewed PCI ID or RTX name. This does
+not qualify linked-GPU frame generation; vendor capability checks still apply.
+Intel Arc/Iris Xe use the FSR route, with physical rendering untested. Auto
+falls back to FSR3 on Intel; explicit FSR4 is unavailable by vendor policy.
 Non-RTX NVIDIA (GTX/MX/older Quadro) automatically selects FSR3, disables
 NR/HDR/NVIDIA FG and NVIDIA compatibility probing, and blocks incompatible
 menu choices. This normalization stays in memory until Save as default.

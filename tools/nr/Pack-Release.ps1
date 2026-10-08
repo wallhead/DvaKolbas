@@ -13,13 +13,13 @@ $output = [IO.Path]::GetFullPath($OutputArchive)
 $stage = [IO.Path]::GetFullPath($StagingDirectory)
 if (Test-Path -LiteralPath $output) { throw 'Release archive already exists' }
 if (Test-Path -LiteralPath $stage) { throw 'Release staging directory already exists' }
-if ([IO.Path]::GetFileName($output) -cne 'RaZKolbaS DLSS FSR FG NR v1.3.2.zip') { throw 'Release archive name mismatch' }
+if ([IO.Path]::GetFileName($output) -cne 'RaZKolbaS DLSS FSR FG NR v1.3.3.zip') { throw 'Release archive name mismatch' }
 $identity = Get-EmbeddedBuildIdentity $PluginDll
 if ($identity.edition -ne 'Universal') { throw 'Universal renderer required for RTX 20/30 compatibility in the all-GPU release' }
 if (-not $identity.sourceClean -or
     -not $identity.fsrCompiled -or -not $identity.frameGenerationCompiled -or
     -not $identity.neuralRenderingCompiled) { throw 'Expected a clean Universal build with FSR/FG/NR' }
-if ([Diagnostics.FileVersionInfo]::GetVersionInfo($PluginDll).FileVersion -ne '1.3.2.0') { throw 'Plugin version must be 1.3.2.0' }
+if ([Diagnostics.FileVersionInfo]::GetVersionInfo($PluginDll).FileVersion -ne '1.3.3.0') { throw 'Plugin version must be 1.3.3.0' }
 $plugins = Join-Path $stage 'SKSE/Plugins'
 [IO.Directory]::CreateDirectory($plugins) | Out-Null
 $iniPath = Join-Path $plugins 'RaZkolbaS.ini'
@@ -100,12 +100,12 @@ if ($ini['FSR/SourceColorEncoding'] -ne 'Gamma22' -or
     throw 'Release must use ENB SDR encoding, bundled Community NR and disabled HDR'
 }
 $receipt = [ordered]@{
-    release='1.3.2'; archiveName=[IO.Path]::GetFileName($output)
+    release='1.3.3'; archiveName=[IO.Path]::GetFileName($output)
     archiveSha256=(Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
     archiveBytes=(Get-Item -LiteralPath $output).Length; buildIdentity=$identity
-    dllVersion='1.3.2.0'; defaults=@{upscaler='DLSS';dlssQuality='Native';fsrQuality='Native';fsrSourceColorEncoding='Gamma22';fgBackend='Auto';fgEnabled=$false;nrEnabled=$false;nrRuntime='Automatic';nrSourceColorEncoding='Gamma22';nrSdrBytes=$true;hdrEnabled=$false}
+    dllVersion='1.3.3.0'; defaults=@{upscaler='DLSS';dlssQuality='Native';fsrQuality='Native';fsrSourceColorEncoding='Gamma22';fgBackend='Auto';fgEnabled=$false;nrEnabled=$false;nrRuntime='Automatic';nrSourceColorEncoding='Gamma22';nrSdrBytes=$true;hdrEnabled=$false}
     rtx20_30CompatibilityCompiled=$true; actualRtx20_30GameplayQualified=$false
     unchangedRuntimePayloads=$true; crcVerified=$true; removedAudio=$removedAudio; files=$files
 }
 $receipt | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $stage 'release-verification.json') -Encoding utf8
-Write-Output "PASS: release 1.3.2; native defaults; FG Auto/off; NR off; $($files.Count) entries verified; unchanged runtime payloads"
+Write-Output "PASS: release 1.3.3; native defaults; FG Auto/off; NR off; $($files.Count) entries verified; unchanged runtime payloads"

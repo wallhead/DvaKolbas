@@ -1,4 +1,5 @@
 #include "GpuArchitecture.h"
+#include "GpuProductName.h"
 #include <Windows.h>
 #include <algorithm>
 #include <string_view>
@@ -18,7 +19,7 @@ void DiscoverGpuArchitecture(AdapterIdentity& adapter,const GpuArchitectureApi& 
         if(!logicals[i] || api.logicalInfo(logicals[i],&info)!=0 || luid!=adapter.luid) continue;
         // Multi-node or ambiguous mappings have no reviewed single-renderer NR model.
         if(matched || info.physicalGpuCount!=1 || !info.physicalGpus[0]) {
-            adapter.architecture={adapter.luid,0,false,true};return;
+            adapter.architecture={adapter.luid,0,false,true,matched || info.physicalGpuCount>1};return;
         }
         matched=true;
         NvGpuArchInfo arch{sizeof(NvGpuArchInfo)|(2u<<16)};
@@ -33,7 +34,7 @@ void DiscoverGpuArchitecture(AdapterIdentity& adapter,const GpuArchitectureApi& 
         const std::string_view product{name.data()};
         // The name gates RTX hardware only; family comes from the driver's arch ID.
         // This prevents GTX 16 (also Turing) from using the RTX 20 model.
-        const bool rtx=product.starts_with("RTX ") || product.find(" RTX ")!=std::string_view::npos;
+        const bool rtx=IsRtxProductName(product);
         adapter.architecture={adapter.luid,arch.architecture,rtx,true};
     }
 }
