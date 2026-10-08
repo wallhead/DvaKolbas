@@ -39,6 +39,19 @@ The menu starts at 640 pixels wide and can shrink to 480 pixels. Each tab's
 scroll area follows the window size. Save as default stays below the tabs;
 long status messages scroll separately. Existing saved window sizes are retained.
 
+Startup uses the actual D3D11 render adapter's DXGI LUID, including hybrid
+laptops. Public NVAPI architecture/product evidence is matched to that LUID;
+reviewed PCI IDs and the same adapter's RTX name are fallbacks when NVAPI is
+unavailable. RTX renderers retain DLSS/DLAA and compatible NVIDIA options.
+Non-RTX NVIDIA (GTX/MX/older Quadro) automatically selects FSR3, disables
+NR/HDR/NVIDIA FG and NVIDIA compatibility probing, and blocks incompatible
+menu choices. This normalization stays in memory until Save as default.
+An enabled NVIDIA FG request is never converted into enabled FSR FG.
+An explicit FSR FG request is preserved; routing tests do not qualify FG on
+older GPUs. Both hosts require D3D11 feature level 11_0 and D3D12 feature
+level 12_0; software adapters and missing baseline support stop with a clear
+message before vendor backend startup. This excludes some older D3D11 GPUs.
+
 AMD renderers use FSR upscaling and optional FSR frame generation; DLSS, DLAA,
 NVIDIA FG and NR are unavailable. Before the first AMD launch, set `[FSR]
 SourceColorEncoding` in `SKSE/Plugins/RaZkolbaS.ini` to match the verified

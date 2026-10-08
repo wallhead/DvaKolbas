@@ -11,6 +11,7 @@ namespace TheosRenderPipeline::Upscaling
     struct FsrMlAvailability
     {
         std::optional<bool> upscale, generation;
+        bool analyticalOnly{};
         std::string upscaleReason{"FSR4 device support has not been checked; startup will validate it."};
         std::string generationReason{"FSR4 FG device support has not been checked; startup will validate it."};
     };

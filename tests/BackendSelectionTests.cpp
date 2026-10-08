@@ -58,6 +58,9 @@ static void StartupNeuralPassLimit()
 int main()
 {
     using namespace TheosRenderPipeline;
+    Upscaling::BackendConfiguration nonRtx;
+    nonRtx.adapterVendorId=0x10de;nonRtx.fsrOnlyRenderer=true;
+    Require(!ResolveBackend(nonRtx,true,true).valid,"non-RTX cannot reenter NVIDIA presentation through typed settings");
     for (auto kind : {Upscaling::BackendKind::Dlss, Upscaling::BackendKind::Dlaa}) {
         Upscaling::BackendConfiguration mixed;
         mixed.backend = kind; mixed.generationBackend = 2; mixed.adapterVendorId = 0x10de;
@@ -139,6 +142,19 @@ int main()
         amd.providerPolicy = Upscaling::ProviderPolicy::Compatible;
         Require(ResolveBackend(amd, true, true).valid, "AMD admits Auto; actual device/provider checks happen before publication");
     }
+    CSimpleIniA gtx;
+    gtx.SetLongValue("Settings","UpscaleType",DLAA);
+    gtx.SetLongValue("FrameGeneration","Backend",1);
+    gtx.SetBoolValue("FrameGeneration","Enabled",true);
+    gtx.SetBoolValue("NeuralRendering","Enabled",true);
+    gtx.SetValue("FSR","SourceColorEncoding","Gamma22");
+    Require(ValidateRendererStartup(gtx,0x10de,true,true,true).empty(),"GTX fallback startup validation succeeds");
+    const IniLayout::ReadView gtxView(gtx);
+    Require(gtxView.GetLongValue("Settings","UpscaleType",-1)==FSR &&
+        gtxView.GetLongValue("Experimental","FrameGenerationBackend",-1)==2 &&
+        !gtxView.GetBoolValue("FrameGeneration","Enabled",true) &&
+        !gtxView.GetBoolValue("SourceDLSSG","NeuralRenderingEnabled",true),
+        "GTX1070 fallback replaces DLAA/NVIDIA presentation and clears incompatible NR/FG requests");
     StartupNeuralPassLimit();
     // Rejecting a supported ordinary FSR request because it lacks NVIDIA
     // ownership is the production bug this test catches.

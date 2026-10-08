@@ -38,6 +38,7 @@ void RenderPipeline::LoadINI()
 #else
         false
 #endif
+        , mFsrOnlyRenderer
     );
 	mUpscaleType = (int)ini.GetLongValue("Settings", "UpscaleType", 3);
     if (const auto fsr=TheosRenderPipeline::Upscaling::ReadFsrSettings(ini)) { mFsrSettings=*fsr; }

@@ -186,7 +186,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
                 1;
 #endif
             ImGui::SetNextItemWidth(-1);
-            if (TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId)) {
+            if ((RenderPipeline::GetSingleton()->mFsrOnlyRenderer || TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId))) {
                 ImGui::TextUnformatted("FSR");
             }
             else if (ImGui::Combo("##mode", &mode, modes, modeCount))
@@ -255,7 +255,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             const char* policies[]{"FSR3 (3.1.5)","Auto (FSR4 / FSR3)","FSR4 (ML)"};
             int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);
             const auto availability=host->FsrMlChoices();
-            if(DrawFsrProviderChoice("Provider##fsr",policy,policies,availability.upscale.value_or(true),availability.upscaleReason.c_str()))
+            if(DrawFsrProviderChoice("Provider##fsr",policy,policies,availability.upscale.value_or(true),availability.upscaleReason.c_str(),availability.analyticalOnly))
                 settingsDraft.fsr.providerPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(policy);
             DrawSettingsHelp("Save and restart after changing provider. FSR3 keeps the official 3.1.5 runtime. FSR4 uses the separate INT8 runtime on NVIDIA (SM6.6 required), or official ML on supported AMD hardware. Auto uses the official runtime and may select FSR3. The status shows the actual provider. Frame generation is selected independently.");
             const char* encodings[]{"Unknown (choose before enabling FSR)","Linear SDR","Gamma 2.2 SDR","sRGB SDR"};

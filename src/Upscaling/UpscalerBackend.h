@@ -40,6 +40,7 @@ namespace TheosRenderPipeline::Upscaling
         bool communityNeural{};
         float sharpness{};
         std::uint32_t adapterVendorId{};
+        bool fsrOnlyRenderer{};
     };
     struct BackendDecision
     {

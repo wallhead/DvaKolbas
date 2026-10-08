@@ -19,6 +19,12 @@ TheosRenderPipeline::Upscaling::FsrMlAvailability NvidiaHost::FsrMlChoices() con
 #if defined(TRP_ENABLE_FSR)
     if(fsrResources_)choices=fsrResources_->MlAvailability();
     const auto vendor=RenderPipeline::GetSingleton()->mAdapterVendorId;
+    if(vendor==0x10de && RenderPipeline::GetSingleton()->mFsrOnlyRenderer) {
+        choices.upscale=false;choices.generation=false;choices.analyticalOnly=true;
+        choices.upscaleReason="Non-RTX NVIDIA uses the FSR3 baseline.";
+        choices.generationReason="Non-RTX NVIDIA uses the FSR3 baseline.";
+        return choices;
+    }
     if(vendor==0x10de) {
         if(!fsrResources_) {
             // One file-only preflight per process. No extra device, context or

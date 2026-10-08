@@ -17,6 +17,7 @@
 #include "PluginPaths.h"
 #include "NvidiaAppSettings.h"
 #include "RendererGpuPolicy.h"
+#include "RendererGpuSupport.h"
 #include "RendererStartupValidation.h"
 #include <SimpleIni.h>
 
@@ -96,10 +97,12 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     // load its quality/sharpening contract before that one-way size decision.
     Microsoft::WRL::ComPtr<IDXGIDevice> rendererDxgi;
     Microsoft::WRL::ComPtr<IDXGIAdapter> rendererAdapter;
-    DXGI_ADAPTER_DESC rendererDesc{};
+    Microsoft::WRL::ComPtr<IDXGIAdapter1> rendererAdapter1;
+    DXGI_ADAPTER_DESC1 rendererDesc{};
     auto adapterResult = d3d11Device->QueryInterface(IID_PPV_ARGS(&rendererDxgi));
     if (SUCCEEDED(adapterResult)) adapterResult = rendererDxgi->GetAdapter(&rendererAdapter);
-    if (SUCCEEDED(adapterResult)) adapterResult = rendererAdapter->GetDesc(&rendererDesc);
+    if (SUCCEEDED(adapterResult)) adapterResult = rendererAdapter.As(&rendererAdapter1);
+    if (SUCCEEDED(adapterResult)) adapterResult = rendererAdapter1->GetDesc1(&rendererDesc);
     if (FAILED(adapterResult)) {
         logger::critical("[Renderer GPU] actual rendering adapter query failed HRESULT=0x{:08X}", static_cast<unsigned>(adapterResult));
         d3d11Device->Release();
@@ -107,6 +110,34 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
     }
     auto* pipeline = RenderPipeline::GetSingleton();
     pipeline->mAdapterVendorId = rendererDesc.VendorId;
+    TheosRenderPipeline::NeuralRendering::AdapterIdentity identity{
+        rendererDesc.VendorId, rendererDesc.DeviceId, rendererDesc.SubSysId,
+        {rendererDesc.AdapterLuid.LowPart,rendererDesc.AdapterLuid.HighPart},
+        (rendererDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)!=0};
+    TheosRenderPipeline::NeuralRendering::DiscoverGpuArchitecture(identity);
+    // A null output validates device support without creating another device.
+    // S_FALSE is success for this probe; both hosts require feature level 12_0.
+    const auto d3d12Support = D3D12CreateDevice(rendererAdapter.Get(), D3D_FEATURE_LEVEL_12_0,
+        __uuidof(ID3D12Device), nullptr);
+    const auto gpuChoice = TheosRenderPipeline::ClassifyRendererGpu(identity,rendererDesc.Description,
+        d3d11Device->GetFeatureLevel()>=D3D_FEATURE_LEVEL_11_0, SUCCEEDED(d3d12Support));
+    char rendererName[512]{};
+    const bool named = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, rendererDesc.Description,
+        -1,rendererName,sizeof(rendererName),nullptr,nullptr)>0;
+    logger::info("[Renderer GPU] name={} vendor=0x{:04X} device=0x{:04X} LUID={:08X}:{:08X} arch=0x{:X} queried={} RTX={} D3D12-FL12_0=0x{:08X} route={}",
+        named?rendererName:"<unknown>",
+        identity.vendorId,identity.deviceId,static_cast<unsigned>(identity.luid.high),identity.luid.low,
+        identity.architecture.id,identity.architecture.queried,identity.architecture.rtxProduct,
+        static_cast<unsigned>(d3d12Support),
+        gpuChoice==TheosRenderPipeline::RendererGpuChoice::NvidiaRtx?"NVIDIA-RTX":
+        gpuChoice==TheosRenderPipeline::RendererGpuChoice::FsrOnly?"FSR-only":"unsupported");
+    if (gpuChoice==TheosRenderPipeline::RendererGpuChoice::Unsupported) {
+        nvidiaHost->FailLifecycle(DXGI_ERROR_UNSUPPORTED,
+            "Rendering GPU/driver requires a hardware adapter with Direct3D 11 feature level 11_0 and Direct3D 12 feature level 12_0. Update the GPU driver or select a compatible GPU; vendor backends were not started.");
+        d3d11Device->Release();
+        return DXGI_ERROR_UNSUPPORTED;
+    }
+    pipeline->mFsrOnlyRenderer=gpuChoice==TheosRenderPipeline::RendererGpuChoice::FsrOnly;
     CSimpleIniA startup;
     startup.SetUnicode();
     const auto [startupResult, configError] = TheosRenderPipeline::SettingsFile::LoadRenderer(startup, L"Data\\SKSE\\Plugins\\RaZkolbaS.ini");
@@ -131,6 +162,7 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
 #else
         false
 #endif
+        , pipeline->mFsrOnlyRenderer
     );
     if (!startupError.empty()) {
         logger::critical("[Renderer GPU] normalized startup configuration rejected: {}", startupError);
@@ -139,18 +171,18 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
         return E_INVALIDARG;
     }
     pipeline->LoadINI();
-    logger::info("[Renderer GPU] vendor=0x{:04X} device=0x{:04X} LUID={:08X}:{:08X} AMD FSR-only={}",
+    logger::info("[Renderer GPU] vendor=0x{:04X} device=0x{:04X} LUID={:08X}:{:08X} FSR-only={}",
         rendererDesc.VendorId, rendererDesc.DeviceId, static_cast<unsigned>(rendererDesc.AdapterLuid.HighPart),
-        rendererDesc.AdapterLuid.LowPart, TheosRenderPipeline::IsAmdRenderer(rendererDesc.VendorId));
+        rendererDesc.AdapterLuid.LowPart, pipeline->mFsrOnlyRenderer);
     if (rendererDesc.VendorId==0x10DE) {
         TheosRenderPipeline::NvidiaAppSettings::SetLog([](const char* message){logger::info("[NVIDIA App Settings] {}",message);});
         TheosRenderPipeline::NvidiaAppSettings::ReportDriverSettings();
     }
-    if (TheosRenderPipeline::IsAmdRenderer(rendererDesc.VendorId)) {
+    if (pipeline->mFsrOnlyRenderer) {
         auto* generation = SourceFrameGeneration::GetSingleton();
-        generation->LoadINI(rendererDesc.VendorId);
+        generation->LoadINI(rendererDesc.VendorId, pipeline->mFsrOnlyRenderer);
         generation->ResolveRuntimePaths(TheosRenderPipeline::PluginPaths::Directory());
-        logger::info("[Renderer GPU] AMD policy: FSR analytical, presenter={}, FG requested={}, NR disabled; INI unchanged",
+        logger::info("[Renderer GPU] FSR-only policy: presenter={}, FG requested={}, NR/HDR disabled; non-RTX NVIDIA uses FSR3; INI unchanged",
             generation->settings.generationBackend, generation->settings.enabled);
     }
     const auto result = nvidiaHost->CreateSwapChain(This, d3d11Device, pDesc, ppSwapChain, ptrFactoryCreateSwapChain);

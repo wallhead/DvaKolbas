@@ -35,7 +35,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         };
         if(!BeginSettingsColumns("generation",tabCardHeight,view)){ImGui::EndTabItem();return;}
         drawSmoothMotionNotice();
-        const bool nvidiaSupported=settingsDraft.upscaleType!=FSR &&
+        const bool nvidiaSupported=!RenderPipeline::GetSingleton()->mFsrOnlyRenderer && settingsDraft.upscaleType!=FSR &&
             (RenderPipeline::GetSingleton()->mAdapterVendorId==0 || RenderPipeline::GetSingleton()->mAdapterVendorId==0x10de);
         if(DrawGenerationBackendChoice(settingsDraft.generationBackendPreference,nvidiaSupported)) {
             const auto kind=settingsDraft.upscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
@@ -55,7 +55,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
             int fgPolicy=static_cast<int>(settingsDraft.fsr.generationProviderPolicy);
             const char* fgProviders[]{"FSR3 FG (3.1.6)","Auto (FSR4 / FSR3 FG)","FSR4 FG (ML, experimental)"};
             const auto availability=nvidiaHost->FsrMlChoices();
-            if(DrawFsrProviderChoice("Provider##fsr-fg",fgPolicy,fgProviders,availability.generation.value_or(true),availability.generationReason.c_str()))
+            if(DrawFsrProviderChoice("Provider##fsr-fg",fgPolicy,fgProviders,availability.generation.value_or(true),availability.generationReason.c_str(),availability.analyticalOnly))
                 settingsDraft.fsr.generationProviderPolicy=static_cast<TheosRenderPipeline::Upscaling::ProviderPolicy>(fgPolicy);
             DrawSettingsHelp("Provider changes require Save as default and restart. Official ML FG requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. Auto uses FSR3 FG when ML FG is unavailable. Upscaling and FG providers are independent.");
             if(nvidiaHost->FsrFgActive()) {

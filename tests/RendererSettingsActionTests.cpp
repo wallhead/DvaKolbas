@@ -276,7 +276,7 @@ void StagedGenerationDefaults()
     for(long backend:{0L,1L,2L}) {
         CSimpleIniA missing;missing.SetLongValue("FrameGeneration","Backend",backend);
         generation.LoadStartupPreferences(missing);
-        Require(generation.RuntimeInterpolationRequested()==(backend!=0),"missing Enabled defaults off only for ordinary presenter");
+        Require(!generation.RuntimeInterpolationRequested(),"missing Enabled defaults off for every presenter");
         missing.SetBoolValue("FrameGeneration","Enabled",true);generation.LoadStartupPreferences(missing);
         Require(generation.RuntimeInterpolationRequested(),"explicit startup interpolation request remains authoritative");
     }
@@ -367,6 +367,10 @@ void MixedBackendValidation()
 }
 int main()
 {
+    RendererSettingsCapabilities nonRtxCaps{true,true,true,false};
+    nonRtxCaps.adapterVendorId=0x10de;nonRtxCaps.fsrOnlyRenderer=true;
+    RendererSettingsDraft nonRtxDraft;
+    Require(ValidateRendererSettings(nonRtxDraft,nonRtxCaps),"non-RTX menu cannot select DLAA/NVIDIA owner");
     try { MixedBackendValidation(); ImmediateMenuEdits(); NativeRenderScale(); Feedback(); Generation(); Neural(); LiveGenerationActions(); DraftModeRoundTrip(); StagedGenerationDefaults(); ActualPresenterGenerationGate(); LiveGenerationWithOrdinaryDraft(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: automatic menu edits, Native render scale, visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

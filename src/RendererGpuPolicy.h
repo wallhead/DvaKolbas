@@ -9,20 +9,20 @@ namespace TheosRenderPipeline
 inline bool IsAmdRenderer(std::uint32_t vendor) { return vendor == 0x1002; }
 
 // This restricts providers, independently of NR's model/device-ID catalog.
-inline bool AmdRendererSelectionAllowed(int mode, long presenter, bool neural)
+inline bool FsrOnlyRendererSelectionAllowed(int mode, long presenter, bool neural)
 {
     return mode == FSR && (presenter == 0 || presenter == 2) && !neural;
 }
 
 // Normalize only the in-memory startup view. Saving defaults remains explicit.
 // Keep an existing FSR FG request; never translate NVIDIA FG into enabled FSR FG.
-template<class Ini> void ApplyRendererGpuPolicy(Ini& ini, std::uint32_t vendor, bool fsrFgBuilt)
+template<class Ini> void ApplyRendererGpuPolicy(Ini& ini, std::uint32_t vendor, bool fsrFgBuilt, bool fsrOnlyRenderer = false)
 {
-    if (!IsAmdRenderer(vendor)) return;
+    if (!IsAmdRenderer(vendor) && !fsrOnlyRenderer) return;
     const IniLayout::ReadView read(ini);
     const bool fsr = read.GetLongValue("Settings", "UpscaleType", DLSS) == FSR;
     const long backend = read.GetLongValue("Experimental", "FrameGenerationBackend", 1);
-    const bool enabled = fsr && backend == 2 && fsrFgBuilt && read.GetBoolValue("FrameGeneration", "Enabled", true);
+    const bool enabled = fsr && backend == 2 && fsrFgBuilt && read.GetBoolValue("FrameGeneration", "Enabled", false);
     const long presenter = fsr && backend == 0 ? 0 : fsrFgBuilt ? 2 : 0;
     ini.SetLongValue("Settings", "UpscaleType", FSR);
     ini.SetBoolValue("Settings", "EnableUpscaler", true);
@@ -38,5 +38,14 @@ template<class Ini> void ApplyRendererGpuPolicy(Ini& ini, std::uint32_t vendor, 
     ini.SetBoolValue("HDROutput", "Enabled", false);
     ini.SetBoolValue("DynamicResolution", "Enabled", false);
     ini.SetBoolValue("DynamicResolution", "Oscillate", false);
+    if (ini.GetLongValue("FrameGeneration", "BackendPreference", 0) == 1)
+        ini.SetLongValue("FrameGeneration", "BackendPreference", 0);
+    if (vendor == 0x10de) {
+        // Non-RTX NVIDIA must not enter either ML or NVIDIA-only probing.
+        ini.SetValue("FSR", "ProviderPolicy", "Analytical");
+        ini.SetValue("FrameGeneration", "FsrProviderPolicy", "Analytical");
+        ini.SetBoolValue("Experimental", "SourceDLSSGMFGUnlock", false);
+        ini.SetBoolValue("Compatibility", "NvidiaMFGUnlock", false);
+    }
 }
 }

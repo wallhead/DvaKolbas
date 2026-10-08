@@ -32,6 +32,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     const auto& generation=SourceFrameGeneration::GetSingleton()->settings;
     TheosRenderPipeline::Upscaling::BackendConfiguration requested;
     requested.adapterVendorId=upscalerSettings->mAdapterVendorId;
+    requested.fsrOnlyRenderer=upscalerSettings->mFsrOnlyRenderer;
     requested.backend=upscalerSettings->mUpscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
         upscalerSettings->mUpscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
     requested.generationEnabled=generation.enabled;requested.generationBackend=generation.generationBackend;

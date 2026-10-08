@@ -167,6 +167,7 @@ struct RendererSettingsCapabilities
     bool fsrFgPresenter{};
     bool communityNeural{};
     std::uint32_t adapterVendorId{};
+    bool fsrOnlyRenderer{};
 };
 
 template<class Generation>
@@ -221,12 +222,16 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     {
         return "Presentation host is unavailable; settings were not applied.";
     }
-    if (IsAmdRenderer(capabilities.adapterVendorId) &&
-        !AmdRendererSelectionAllowed(draft.upscaleType, draft.generationBackend, draft.sourceDLSSG.neuralEnabled)) {
-        return "AMD supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
+    if ((IsAmdRenderer(capabilities.adapterVendorId) || capabilities.fsrOnlyRenderer) &&
+        !FsrOnlyRendererSelectionAllowed(draft.upscaleType, draft.generationBackend, draft.sourceDLSSG.neuralEnabled)) {
+        return "This GPU supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
     }
+    if (capabilities.fsrOnlyRenderer && capabilities.adapterVendorId==0x10de &&
+        (draft.fsr.providerPolicy!=Upscaling::ProviderPolicy::Analytical ||
+         draft.fsr.generationProviderPolicy!=Upscaling::ProviderPolicy::Analytical))
+        return "Non-RTX NVIDIA uses FSR3 upscaling and FSR3 frame generation; ML providers are unavailable.";
     if (capabilities.fsrFgPresenter && !draft.nativeUI) {
-        return "Native UI must stay enabled while the AMD FSR presenter is active. Restart with the new presenter before disabling it.";
+        return "Native UI must stay enabled while the FSR presenter is active. Restart with the new presenter before disabling it.";
     }
     if (draft.upscaleType != DLSS && draft.upscaleType != DLAA && draft.upscaleType != FSR)
     {

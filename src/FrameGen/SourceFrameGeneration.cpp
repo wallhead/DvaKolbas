@@ -4,7 +4,7 @@
 #include "RendererGpuPolicy.h"
 #include "SettingsFile.h"
 
-void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId)
+void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId, bool fsrOnlyRenderer)
 {
     CSimpleIniA ini;
     ini.SetUnicode();
@@ -18,11 +18,12 @@ void SourceFrameGeneration::LoadINI(std::uint32_t adapterVendorId)
 #else
         false
 #endif
+        , fsrOnlyRenderer
     );
     LoadStartupPreferences(ini);
     logger::info("[NR selection] policy={} profileRequest={} catalogRoot={} driverCore={} vendor=0x{:04X}; actual model selection uses the rendering device",
         settings.neuralStartup.community ? "automatic-bundled" :
-            TheosRenderPipeline::IsAmdRenderer(adapterVendorId) ? "AMD-unsupported" : "legacy-diagnostic",
+            (fsrOnlyRenderer || TheosRenderPipeline::IsAmdRenderer(adapterVendorId)) ? "GPU-NR-unsupported" : "legacy-diagnostic",
         settings.neuralStartup.profile, settings.neuralStartup.runtimeRoot.empty() ? "packaged" : "diagnostic-override",
         settings.neuralStartup.driverCore.empty() ? "active-render-driver" : "diagnostic-override", adapterVendorId);
     const TheosRenderPipeline::IniLayout::ReadView read(ini);

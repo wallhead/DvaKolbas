@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(
 	RaZkolbaS
-	VERSION 1.3.1
+	VERSION 1.3.2
 	LANGUAGES C CXX
 )
 
@@ -195,6 +195,10 @@ if(TRP_ENABLE_NEURAL_RENDERING)
     trp_nr_enable_source_stage("${TRP_NGX_SDK_DIR}/include")
     target_link_libraries(RaZkolbaS PRIVATE TRPNeuralRuntime)
     target_sources(RaZkolbaS PRIVATE src/FrameGen/NvidiaHostNeural.cpp)
+else()
+    # Startup GPU selection is required even in builds without NR.
+    target_sources(RaZkolbaS PRIVATE src/NeuralRendering/RuntimeCatalog.cpp
+        src/NeuralRendering/GpuArchitecture.cpp)
 endif()
 
 if(TRP_ENABLE_OPTIONAL_FEATURES)
@@ -274,6 +278,14 @@ if(TRP_BUILD_COMPATIBILITY_TESTS)
     target_compile_features(TRPBackendSelectionTests PRIVATE cxx_std_23)
     target_include_directories(TRPBackendSelectionTests PRIVATE src "${TRP_SIMPLEINI_INCLUDE_DIR}")
     add_test(NAME BackendSelection COMMAND TRPBackendSelectionTests)
+    add_executable(TRPRendererGpuMatrixTests tests/RendererGpuMatrixTests.cpp)
+    target_compile_features(TRPRendererGpuMatrixTests PRIVATE cxx_std_23)
+    target_compile_definitions(TRPRendererGpuMatrixTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_include_directories(TRPRendererGpuMatrixTests PRIVATE src "${TRP_SIMPLEINI_INCLUDE_DIR}")
+    target_sources(TRPRendererGpuMatrixTests PRIVATE src/NeuralRendering/RuntimeCatalog.cpp
+        src/NeuralRendering/GpuArchitecture.cpp)
+    target_link_libraries(TRPRendererGpuMatrixTests PRIVATE dxgi d3d12)
+    add_test(NAME RendererGpuMatrix COMMAND TRPRendererGpuMatrixTests "${CMAKE_CURRENT_SOURCE_DIR}/package/SKSE/Plugins/RaZkolbaS.ini")
     add_executable(TRPNrFsrRouteDiagnosticsTests tests/NrFsrRouteDiagnosticsTests.cpp)
     target_compile_features(TRPNrFsrRouteDiagnosticsTests PRIVATE cxx_std_23)
     target_include_directories(TRPNrFsrRouteDiagnosticsTests PRIVATE src)

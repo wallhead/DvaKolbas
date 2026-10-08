@@ -20,13 +20,13 @@ namespace TheosRenderPipeline::Overlay
         return changed;
     }
     inline bool DrawFsrProviderChoice(const char* label, int& selected, const char* const* names,
-                                     bool mlAvailable, const char* reason)
+                                     bool mlAvailable, const char* reason, bool analyticalOnly=false)
     {
         bool changed{};
         ImGui::SetNextItemWidth(-1.0f);
         if(ImGui::BeginCombo(label,names[selected>=0 && selected<3?selected:0])) {
             for(int i=0;i<3;++i) {
-                ImGui::BeginDisabled(i==2 && !mlAvailable);
+                ImGui::BeginDisabled((i==2 && !mlAvailable) || (analyticalOnly && i!=0));
                 if(ImGui::Selectable(names[i],selected==i)) {selected=i;changed=true;}
                 ImGui::EndDisabled();
             }

@@ -83,6 +83,7 @@ public:
 
 	int   mUpscaleType{ 3 };
     std::uint32_t mAdapterVendorId{};
+    bool mFsrOnlyRenderer{};
     TheosRenderPipeline::Upscaling::FsrSettings mFsrSettings;
     bool mDynamicResolutionRequested{};
 	int   mQualityLevel{ 2 };
