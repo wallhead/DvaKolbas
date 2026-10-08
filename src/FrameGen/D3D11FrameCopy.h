@@ -69,6 +69,23 @@ namespace TheosRenderPipeline
         class Depth final
         {
         public:
+            // Source admission and the actual conversion must agree. Skyrim's
+            // captured allocation is packed/typeless; only the shared FG guide
+            // produced by Copy is required to be R32_FLOAT.
+            static DXGI_FORMAT SourceViewFormat(DXGI_FORMAT format)
+            {
+                switch (format) {
+                case DXGI_FORMAT_R24G8_TYPELESS: return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+                case DXGI_FORMAT_R32G8X24_TYPELESS: return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+                case DXGI_FORMAT_R32_TYPELESS: case DXGI_FORMAT_R32_FLOAT: return DXGI_FORMAT_R32_FLOAT;
+                default: return DXGI_FORMAT_UNKNOWN;
+                }
+            }
+            static bool ReadableSource(const D3D11_TEXTURE2D_DESC& desc)
+            {
+                return (desc.BindFlags & D3D11_BIND_SHADER_RESOURCE) &&
+                    SourceViewFormat(desc.Format) != DXGI_FORMAT_UNKNOWN;
+            }
             void ResetViews() { source_.Reset(); destination_.Reset(); srv_.Reset(); uav_.Reset(); }
 
             HRESULT Copy(ID3D11DeviceContext* context, ID3D11Texture2D* source,
@@ -77,15 +94,10 @@ namespace TheosRenderPipeline
                 if (!ValidResources(context, source, destination)) { return E_INVALIDARG; }
                 D3D11_TEXTURE2D_DESC from{}, to{}; source->GetDesc(&from); destination->GetDesc(&to);
                 if (!extent.Fits(from) || !extent.Fits(to) || to.Width != extent.width || to.Height != extent.height ||
-                    to.Format != DXGI_FORMAT_R32_FLOAT || !(from.BindFlags & D3D11_BIND_SHADER_RESOURCE) ||
+                    to.Format != DXGI_FORMAT_R32_FLOAT || !ReadableSource(from) ||
                     !(to.BindFlags & D3D11_BIND_UNORDERED_ACCESS)) { return E_INVALIDARG; }
                 D3D11_SHADER_RESOURCE_VIEW_DESC view{};
-                switch (from.Format) {
-                case DXGI_FORMAT_R24G8_TYPELESS: view.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;
-                case DXGI_FORMAT_R32G8X24_TYPELESS: view.Format = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS; break;
-                case DXGI_FORMAT_R32_TYPELESS: case DXGI_FORMAT_R32_FLOAT: view.Format = DXGI_FORMAT_R32_FLOAT; break;
-                default: return E_INVALIDARG;
-                }
+                view.Format = SourceViewFormat(from.Format);
                 view.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D; view.Texture2D.MipLevels = 1;
                 ComPtr<ID3D11Device> device; context->GetDevice(&device);
                 if (shader_) {

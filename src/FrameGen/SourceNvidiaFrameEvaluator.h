@@ -67,13 +67,18 @@ namespace TheosRenderPipeline
             SourceNvidiaFrameInputs frame, Operations& operations)
         {
             if constexpr (requires { operations.ExternalGuideRecoveryEnabled(); operations.RecoverInvalidSourceGuides(frame); }) {
-                const auto matches=[&](ID3D11Texture2D* guide,DXGI_FORMAT format){
-                    if(!guide)return false;D3D11_TEXTURE2D_DESC desc{};guide->GetDesc(&desc);
-                    Microsoft::WRL::ComPtr<ID3D11Device> expected,actual;context->GetDevice(&expected);guide->GetDevice(&actual);
-                    return desc.Width==frame.renderWidth && desc.Height==frame.renderHeight && desc.Format==format && desc.SampleDesc.Count==1 &&
-                        D3D11FrameCopy::SameObject(expected.Get(),actual.Get());
+                const auto matches = [&](ID3D11Texture2D* guide, bool depth) {
+                    if (!guide) { return false; }
+                    D3D11_TEXTURE2D_DESC desc{}; guide->GetDesc(&desc);
+                    Microsoft::WRL::ComPtr<ID3D11Device> expected, actual;
+                    context->GetDevice(&expected); guide->GetDevice(&actual);
+                    const bool readable = depth ? D3D11FrameCopy::Depth::ReadableSource(desc) :
+                        desc.Format == DXGI_FORMAT_R16G16_FLOAT && (desc.BindFlags & D3D11_BIND_SHADER_RESOURCE);
+                    return desc.Width == frame.renderWidth && desc.Height == frame.renderHeight &&
+                        FrameExtent{frame.renderWidth, frame.renderHeight}.Fits(desc) && readable &&
+                        D3D11FrameCopy::SameObject(expected.Get(), actual.Get());
                 };
-                if(context && operations.ExternalGuideRecoveryEnabled() && (!matches(frame.depth,DXGI_FORMAT_R32_FLOAT) || !matches(frame.motion,DXGI_FORMAT_R16G16_FLOAT))) {
+                if(context && operations.ExternalGuideRecoveryEnabled() && (!matches(frame.depth,true) || !matches(frame.motion,false))) {
                     context->OMSetRenderTargets(0,nullptr,nullptr);operations.CopyInput(context,frame);
                     const auto recovered=operations.RecoverInvalidSourceGuides(frame);
                     return {recovered,false,recovered};

@@ -46,6 +46,12 @@ ComPtr<ID3D11Texture2D> Texture(ID3D11Device* device,Extent size,DXGI_FORMAT for
     d.Format=format;d.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;
     ComPtr<ID3D11Texture2D> result;Gpu(device->CreateTexture2D(&d,nullptr,&result));return result;
 }
+ComPtr<ID3D11Texture2D> PackedDepth(ID3D11Device* device,Extent size,bool stencil){
+    D3D11_TEXTURE2D_DESC d{};d.Width=size.width;d.Height=size.height;d.MipLevels=d.ArraySize=d.SampleDesc.Count=1;
+    d.Format=DXGI_FORMAT_R24G8_TYPELESS;d.BindFlags=D3D11_BIND_SHADER_RESOURCE;
+    if(stencil)d.BindFlags|=D3D11_BIND_DEPTH_STENCIL;
+    ComPtr<ID3D11Texture2D> result;Gpu(device->CreateTexture2D(&d,nullptr,&result));return result;
+}
 std::vector<uint8_t> Read(ID3D11DeviceContext* context,ID3D11Texture2D* texture){
     ComPtr<ID3D11Device> device;context->GetDevice(&device);D3D11_TEXTURE2D_DESC d{};texture->GetDesc(&d);
     const auto width=d.Width,height=d.Height;d.BindFlags=d.MiscFlags=0;d.Usage=D3D11_USAGE_STAGING;d.CPUAccessFlags=D3D11_CPU_ACCESS_READ;
@@ -62,7 +68,7 @@ struct State {
     FsrHostPresentation presenter;
     std::shared_ptr<NR::RuntimeOwner> nrOwner;
     std::unique_ptr<NR::PostUpscale> post;
-    ComPtr<ID3D11Texture2D> world,input,output,depth,motion,ui;
+    ComPtr<ID3D11Texture2D> world,input,output,depth,depthUpload,motion,ui;
     LoadingScreenUpscaler spatial;
     std::unique_ptr<FgObservation::Capture> capture;
     std::map<uint64_t,std::vector<uint8_t>> enhancedRows;
@@ -259,13 +265,17 @@ int wmain(int argc,wchar_t** argv){
             state->post=std::make_unique<NR::PostUpscale>();Neural(state->post->Initialize(state->nrOwner,state->rig.device11.Get(),contract,0,nullptr,NR::ColorDomain::SdrBytes,epoch?3:1));
             state->world=Texture(state->rig.device11.Get(),render,DXGI_FORMAT_R8G8B8A8_UNORM);state->input=Texture(state->rig.device11.Get(),render,DXGI_FORMAT_R8G8B8A8_UNORM);
             state->output=Texture(state->rig.device11.Get(),display,DXGI_FORMAT_R8G8B8A8_UNORM);state->ui=Texture(state->rig.device11.Get(),display,DXGI_FORMAT_R8G8B8A8_UNORM);
-            state->depth=Texture(state->rig.device11.Get(),render,DXGI_FORMAT_R32_FLOAT);state->motion=Texture(state->rig.device11.Get(),render,DXGI_FORMAT_R16G16_FLOAT);
+            // Exercise Skyrim's actual packed depth-stencil source through NGX,
+            // NR and the production conversion into shared R32 FSR FG guides.
+            state->depth=PackedDepth(state->rig.device11.Get(),render,true);
+            state->depthUpload=PackedDepth(state->rig.device11.Get(),render,false);
+            state->motion=Texture(state->rig.device11.Get(),render,DXGI_FORMAT_R16G16_FLOAT);
             Need(dlss->InitUpscale(render.width,render.height,display.width,display.height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,mode),"actual production NGX feature creation failed");
             Need(srLease.Matches(PluginPaths::ModulePath(GetModuleHandleW(L"nvngx_dlss.dll"))),"loaded DLSS differs from held qualified payload");
             state->capture=std::make_unique<FgObservation::Capture>(contract.device.Get(),256,display.width,display.height,true);state->enhancedRows.clear();state->eligible.clear();FgObservation::activeCapture=state->capture.get();
             std::vector<uint32_t> hud(size_t(display.width)*display.height);hud[0]=0xff0000ff;hud[8]=0x80008000;
             state->rig.context11->UpdateSubresource(state->ui.Get(),0,nullptr,hud.data(),display.width*4,0);
-            std::vector<uint32_t> colors(size_t(render.width)*render.height);std::vector<float> depths(colors.size(),.5f);
+            std::vector<uint32_t> colors(size_t(render.width)*render.height),depths(colors.size());
             std::vector<DirectX::PackedVector::HALF> velocities(colors.size()*2);
             
             for(unsigned local=0;local<82;++local){
@@ -273,10 +283,14 @@ int wmain(int argc,wchar_t** argv){
                 const auto source=uint64_t(epoch)*82+local+1;
                 for(UINT y=0;y<render.height;++y)for(UINT x=0;x<render.width;++x){const auto i=size_t(y)*render.width+x;
                     const bool object=x>render.width/4+local*2%80 && x<render.width/4+local*2%80+render.width/10;
-                    colors[i]=object?0xff1940d0:0xff704025;depths[i]=object?.3f:.6f;
+                    colors[i]=object?0xff1940d0:0xff704025;depths[i]=static_cast<uint32_t>((object?.3f:.6f)*0xffffff);
                     velocities[i*2]=DirectX::PackedVector::XMConvertFloatToHalf(object?-2.f/render.width:0.f);velocities[i*2+1]=0;}
                 auto* context=state->rig.context11.Get();context->UpdateSubresource(state->world.Get(),0,nullptr,colors.data(),render.width*4,0);
-                context->UpdateSubresource(state->depth.Get(),0,nullptr,depths.data(),render.width*4,0);context->UpdateSubresource(state->motion.Get(),0,nullptr,velocities.data(),render.width*4,0);
+                // UpdateSubresource cannot write a depth-stencil allocation;
+                // upload identical packed bytes, then copy the full subresource.
+                context->UpdateSubresource(state->depthUpload.Get(),0,nullptr,depths.data(),render.width*4,0);
+                context->CopyResource(state->depth.Get(),state->depthUpload.Get());
+                context->UpdateSubresource(state->motion.Get(),0,nullptr,velocities.data(),render.width*4,0);
                 UpscaleFrame snapshot;snapshot.backend=mode==5?BackendKind::Dlaa:BackendKind::Dlss;snapshot.sourceId=source;snapshot.sourceEpoch=epoch+1;
                 snapshot.render=snapshot.subrect=render;snapshot.display=display;snapshot.deltaMilliseconds=1000.f/72;snapshot.depthFormat=DXGI_FORMAT_R32_FLOAT;snapshot.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
                 snapshot.motionConvention={float(render.width),float(render.height),true,false};snapshot.camera.identity=7;snapshot.camera.nearDistance=.1f;snapshot.camera.farDistance=100;
@@ -341,6 +355,7 @@ int wmain(int argc,wchar_t** argv){
     std::ofstream out(report);
     out<<"{\"qualified\":"<<(failure.empty()?"true":"false")<<",\"revision\":"<<JsonString(TRP_FG_VALIDATION_REVISION)<<",\"quality\":"<<JsonString(quality)<<",\"device\":"<<JsonString(deviceName)<<",\"fgProvider\":"<<JsonString(fgProvider)<<",\"mlFgAvailability\":"<<JsonString(mlFgAvailability);
     out<<",\"inputPolicyReentries\":"<<evidence.policyReentries;
+    out<<",\"sourceDepthFormat\":\"R24G8_TYPELESS\",\"sourceDepthStencil\":true";
     out<<",\"dlssDispatches\":"<<evidence.sources<<",\"nrDispatches\":"<<evidence.nr<<",\"fsrSrCreates\":"<<srCreates<<",\"fsrSrDispatches\":"<<srDispatches<<",\"generatedCallbacks\":"<<evidence.callbacks<<",\"generatedPixelReadbacks\":"<<evidence.generatedPixels<<",\"changingGeneratedReadbacks\":"<<evidence.changingGenerated<<",\"uiChecks\":"<<evidence.uiChecks<<",\"uiFailures\":"<<evidence.uiFailures<<",\"colorChecks\":"<<evidence.colorChecks<<",\"readerRetirements\":"<<evidence.retirements<<",\"retirementFailures\":"<<evidence.retirementFailures<<",\"pendingReaderRetirements\":"<<evidence.pendingReaders<<",\"resetReentries\":"<<evidence.resetReentries<<",\"sdkWaits\":"<<waits<<",\"resizes\":"<<evidence.resizes<<",\"suspensions\":"<<evidence.suspensions<<",\"failure\":"<<JsonString(failure)<<",\"hashes\":{";
     bool first=true;for(const auto& [key,value]:hashes){if(!first)out<<',';first=false;out<<JsonString(key)<<':'<<JsonString(value);}out<<"}}\n";out.flush();
     if(!out){std::puts("NOT QUALIFIED: report could not be saved");return 1;}

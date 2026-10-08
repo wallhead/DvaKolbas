@@ -32,6 +32,9 @@ foreach ($quality in @('native','quality','performance','negative-control')) {
     $code = $LASTEXITCODE
     if (!(Test-Path -LiteralPath $report)) { throw "NOT QUALIFIED: $quality produced no report" }
     $receipt = Get-Content -Raw -LiteralPath $report | ConvertFrom-Json
+    if ($receipt.sourceDepthFormat -ne 'R24G8_TYPELESS' -or !$receipt.sourceDepthStencil) {
+        throw 'NOT QUALIFIED: fixture did not exercise Skyrim packed depth-stencil input'
+    }
     if ($receipt.hashes.executable -ne (Get-FileHash -LiteralPath $fixture -Algorithm SHA256).Hash.ToLowerInvariant()) {
         throw 'NOT QUALIFIED: receipt/executable mismatch'
     }

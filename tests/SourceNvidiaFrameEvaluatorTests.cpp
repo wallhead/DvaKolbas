@@ -277,6 +277,33 @@ static void TestExtent(bool nativeResolution)
         Require(result.upscaled && result.prepared && ops.externalPreparations==1 && !ops.cameras && !ops.prepares,
             "external owner preparation is selected independently of DLSS source");
     }
+    // Skyrim captures a typeless depth-stencil allocation, not an already
+    // converted R32 FG guide. Both enabled and disabled FG still require DLSS.
+    for (const auto format : {DXGI_FORMAT_R24G8_TYPELESS, DXGI_FORMAT_R32G8X24_TYPELESS,
+                             DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_R32_FLOAT}) {
+        D3D11_TEXTURE2D_DESC desc{};
+        desc.Width=12;desc.Height=8;desc.MipLevels=desc.ArraySize=desc.SampleDesc.Count=1;
+        desc.Format=format;desc.BindFlags=D3D11_BIND_SHADER_RESOURCE;
+        if(format!=DXGI_FORMAT_R32_FLOAT)desc.BindFlags|=D3D11_BIND_DEPTH_STENCIL;
+        ComPtr<ID3D11Texture2D> sourceDepth,sourceMotion;
+        Check(device->CreateTexture2D(&desc,nullptr,&sourceDepth),"producer depth allocation");
+        desc.Format=DXGI_FORMAT_R16G16_FLOAT;desc.BindFlags=D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET;
+        Check(device->CreateTexture2D(&desc,nullptr,&sourceMotion),"producer motion allocation");
+        for(bool requested : {false,true}) {
+            world.Paint(context.Get(),{.25f,.5f,.75f,1});
+            SourceNvidiaFrameInputs frame{};
+            frame.color=world.texture.Get();frame.input=input.texture.Get();frame.output=output.texture.Get();
+            frame.depth=sourceDepth.Get();frame.motion=sourceMotion.Get();
+            frame.renderWidth=12;frame.renderHeight=8;frame.outputWidth=outputWidth;frame.outputHeight=outputHeight;
+            frame.sharpness=.25f;frame.jitterX=-.375f;frame.jitterY=.125f;
+            frame.motionScaleX=12;frame.motionScaleY=8;frame.jitterEnabled=true;
+            ExternalOperations ops{{context.Get(),world,output,frame,true,true,true,requested,false,0}};
+            ops.guideAdmission=true;ops.lateNR=true;
+            const auto result=SourceNvidiaFrameEvaluator::Evaluate(context.Get(),frame,ops);
+            Require(result.upscaled && result.prepared && ops.dlssCalls==1 && ops.externalPreparations==1 && !ops.recoveries,
+                "ReadableProducerDepthReachesTemporalDlssWithFgOnOrOff");
+        }
+    }
     for (bool stale : {false,true}) {
         SourceNvidiaFrameInputs frame{};frame.color=world.texture.Get();frame.input=input.texture.Get();frame.output=output.texture.Get();
         frame.depth=stale?output.texture.Get():nullptr;frame.motion=motion.texture.Get();

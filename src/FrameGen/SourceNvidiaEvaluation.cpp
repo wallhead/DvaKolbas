@@ -19,6 +19,7 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
     RenderPipeline& upscaler;
     TheosRenderPipeline::SourceDLSSG::NeuralOptions neuralOptions;
     sl::Constants constants{};
+    bool temporalSourceSucceeded{};
 
     bool NeuralEligible(const TheosRenderPipeline::SourceNvidiaFrameGuides& frame) const
     {
@@ -82,6 +83,7 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
                 frame.sharpness, frame.jitterX, frame.jitterY, frame.motionScaleX, frame.motionScaleY,
                 frame.reset);
             if (evaluated) {
+                temporalSourceSucceeded = true;
                 if (host.loadingScreenLogged_) {
                     logger::info("[LoadingScreen] resumed DLSS with temporal history reset");
                     host.loadingScreenLogged_ = false;
@@ -149,7 +151,23 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
         auto prepared=host.PrepareExternalGeneration(recovery,TheosRenderPipeline::Upscaling::UpscaleOutcome::SpatialRecovery);
         host.resetNextEvaluation_=true;
         host.sourceRecoveryActive_=true;
+        ++host.sourceRecoveryFailures_;
         host.status_="DLSS guides unavailable; spatial real frame, NR and FSR FG suppressed";
+        if (host.sourceRecoveryFailures_ == 1 || host.sourceRecoveryFailures_ % 120 == 0) {
+            const auto describe = [&](ID3D11Texture2D* guide) {
+                if (!guide) { return std::string{"missing"}; }
+                D3D11_TEXTURE2D_DESC desc{}; guide->GetDesc(&desc);
+                Microsoft::WRL::ComPtr<ID3D11Device> expected, actual;
+                host.context_->GetDevice(&expected); guide->GetDevice(&actual);
+                return std::format("{}x{} format={} mips={} array={} samples={}/{} binds=0x{:X} sameDevice={}",
+                    desc.Width, desc.Height, static_cast<unsigned>(desc.Format), desc.MipLevels, desc.ArraySize,
+                    desc.SampleDesc.Count, desc.SampleDesc.Quality, desc.BindFlags,
+                    TheosRenderPipeline::D3D11FrameCopy::SameObject(expected.Get(), actual.Get()));
+            };
+            logger::warn("[Source recovery] {} recoveryFrames={} expected={}x{} depth=[{}] motion=[{}]",
+                host.status_, host.sourceRecoveryFailures_, frame.renderWidth, frame.renderHeight,
+                describe(frame.depth), describe(frame.motion));
+        }
         return bool(prepared);
     }
     bool CaptureCamera(const TheosRenderPipeline::SourceNvidiaFrameGuides& frame)
@@ -260,7 +278,7 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
         }
         return false;
     }
-    if(!sourceRecoveryActive_ && sourceRecoveryFailures_) {
+    if(operations.temporalSourceSucceeded && !sourceRecoveryActive_ && sourceRecoveryFailures_) {
         logger::info("[Source recovery] temporal DLSS source resumed after {} recovery frames",sourceRecoveryFailures_);
         sourceRecoveryFailures_=0;
     }
