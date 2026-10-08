@@ -176,7 +176,7 @@ namespace TheosRenderPipeline::HDROutput
     {
         std::array<float, 4> red, green, blue; // BT.709 -> BT.2020 rows; w unused.
         std::array<float, 4> scale;            // paper nits, UI nits, expansion start, maximum scale.
-        std::array<float, 4> mode;             // transfer, passthrough, expand whole frame, 0.
+        std::array<float, 4> mode;             // transfer, passthrough, expand whole frame, calibration patches.
     };
     static_assert(sizeof(ShaderConstants) == 20 * sizeof(float));
 

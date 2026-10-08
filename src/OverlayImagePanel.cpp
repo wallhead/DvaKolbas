@@ -6,6 +6,7 @@
 #include "OverlayFsrGenerationControls.h"
 #include "OverlayUI.h"
 #include "OverlayUIStyle.h"
+#include "PerformanceTuning.h"
 #include "RenderPipeline.h"
 #include "VideoMemoryTelemetry.h"
 #include <PCH.h>
