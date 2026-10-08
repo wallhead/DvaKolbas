@@ -52,11 +52,12 @@ namespace TheosRenderPipeline
                     const auto status = operations.PrepareGeneration(frame, snapshot);
                     cameraValid = status == Upscaling::GenerationPreparationStatus::Succeeded;
                     return status;
-                }
+                } else {
                 // NVIDIA preparation also serves after-upscale NR with FG off.
                 const auto result = SourceNvidiaFramePreparation::PrepareCompletedFrame(frame, operations);
                 cameraValid = result.cameraValid;
                 return result.prepared ? Upscaling::GenerationPreparationStatus::Succeeded : Upscaling::GenerationPreparationStatus::Failed;
+                }
             }
         };
     public:

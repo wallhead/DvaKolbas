@@ -18,3 +18,23 @@ target_compile_definitions(TRPFsrGenerationGpuSmoke PRIVATE TRP_FG_VALIDATION_RE
 add_test(NAME FsrGenerationGpuSmoke COMMAND TRPFsrGenerationGpuSmoke --frames 1000 --recreate 25 --debug auto
     --runtime "${TRP_FSR_SDK_DIR}/runtime" --output "${CMAKE_BINARY_DIR}/validation/fsr-fg-gpu.json")
 set_tests_properties(FsrGenerationGpuSmoke PROPERTIES TIMEOUT 600 SKIP_RETURN_CODE 77)
+
+if(TRP_NR_NGX_INCLUDE_DIR AND TRP_NGX_LIB AND TRP_NR_DLSS_SR_DLL)
+    add_executable(TRPDlssFsrGenerationGpuTests DlssFsrGenerationGpuTests.cpp ../nr-postsr/dlss/PerformanceFacade.cpp
+        "${PROJECT_SOURCE_DIR}/src/DLSSBackend.cpp" "${PROJECT_SOURCE_DIR}/src/Graphics/D3D11D3D12Interop.cpp")
+    target_compile_features(TRPDlssFsrGenerationGpuTests PRIVATE cxx_std_23)
+    target_compile_definitions(TRPDlssFsrGenerationGpuTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN
+        TRP_FG_VALIDATION_REVISION="${fgValidationRevision}" TRP_FG_LOADER_SHA="${fgLoaderSha}" TRP_FG_MODULE_SHA="${fgModuleSha}")
+    target_include_directories(TRPDlssFsrGenerationGpuTests PRIVATE ../nr-postsr/dlss ../ "${TRP_NR_NGX_INCLUDE_DIR}" "${TRP_STREAMLINE_INCLUDE_DIR}")
+    target_link_libraries(TRPDlssFsrGenerationGpuTests PRIVATE TRPFsrRuntime TRPNeuralRuntime "${TRP_NGX_LIB}" d3d11 d3d12 dxgi d3dcompiler bcrypt user32)
+    add_custom_command(TARGET TRPDlssFsrGenerationGpuTests POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:TRPDlssFsrGenerationGpuTests>/Data/SKSE/Plugins/RaZkolbaS"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${TRP_NR_DLSS_SR_DLL}" "$<TARGET_FILE_DIR:TRPDlssFsrGenerationGpuTests>/Data/SKSE/Plugins/RaZkolbaS/nvngx_dlss.dll")
+    foreach(quality IN ITEMS Native Quality Performance)
+        string(TOLOWER "${quality}" qualityLower)
+        add_test(NAME DlssFsrGenerationGpu-${quality} COMMAND TRPDlssFsrGenerationGpuTests --quality "${qualityLower}"
+            --nr "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}" --runtime "${TRP_FSR_SDK_DIR}/runtime"
+            --output "${CMAKE_BINARY_DIR}/validation/dlss-fsr-fg-${qualityLower}.json")
+        set_tests_properties(DlssFsrGenerationGpu-${quality} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 180)
+    endforeach()
+endif()
