@@ -1,0 +1,42 @@
+Internal ctest changing into directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+Test project C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+      Start   2: BackendSelection
+ 1/18 Test   #2: BackendSelection .................   Passed    0.01 sec
+      Start   3: RendererGpuMatrix
+ 2/18 Test   #3: RendererGpuMatrix ................   Passed    0.08 sec
+      Start  38: OverlayLayout
+ 3/18 Test  #38: OverlayLayout ....................   Passed    0.03 sec
+      Start  40: OverlayNeuralTab
+ 4/18 Test  #40: OverlayNeuralTab .................   Passed    0.01 sec
+      Start  41: OverlayFsrGenerationTab
+ 5/18 Test  #41: OverlayFsrGenerationTab ..........   Passed    0.02 sec
+      Start  42: StartupPreferences
+ 6/18 Test  #42: StartupPreferences ...............   Passed    0.01 sec
+      Start  43: PublicIni
+ 7/18 Test  #43: PublicIni ........................   Passed    0.01 sec
+      Start  45: IniLayout
+ 8/18 Test  #45: IniLayout ........................   Passed    0.01 sec
+      Start  48: PublicIniSchema
+ 9/18 Test  #48: PublicIniSchema ..................   Passed    0.05 sec
+      Start  49: IniMessages
+10/18 Test  #49: IniMessages ......................   Passed    0.04 sec
+      Start  50: RendererSettingsActions
+11/18 Test  #50: RendererSettingsActions ..........   Passed    0.01 sec
+      Start  52: FsrSettings
+12/18 Test  #52: FsrSettings ......................   Passed    0.01 sec
+      Start  54: NvidiaAppSettings
+13/18 Test  #54: NvidiaAppSettings ................   Passed    0.01 sec
+      Start  56: NvidiaDriverSettings
+14/18 Test  #56: NvidiaDriverSettings .............   Passed    0.01 sec
+      Start  57: RendererUpgrade
+15/18 Test  #57: RendererUpgrade ..................   Passed    0.01 sec
+      Start  59: NrPortablePackage
+16/18 Test  #59: NrPortablePackage ................   Passed    0.59 sec
+      Start 188: NrRuntimeCatalog
+17/18 Test #188: NrRuntimeCatalog .................   Passed    0.02 sec
+      Start 189: NrGpuArchitecture
+18/18 Test #189: NrGpuArchitecture ................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 18
+
+Total Test time (real) =   0.96 sec
