@@ -39,6 +39,21 @@ route is FSR plus optional FSR FG, with NR unavailable. Set `[FSR]
 SourceColorEncoding` to the verified scene encoding before first enabling FSR;
 the shipped source INI deliberately uses `Unknown` until configured.
 
+The Frame generation tab has an independent **Backend** choice: Auto, NVIDIA
+or FSR. Auto uses NVIDIA presentation with DLSS/DLAA, and FSR presentation with
+FSR upscaling. FSR can also present **DLSS/DLAA → NR → FSR FG → UI**, without
+running an FSR upscaler. Select Backend FSR, Save as default, then restart Skyrim
+to test that combination. Keep FsrProvider FSR3 on NVIDIA; official FSR4 ML FG
+requires supported Radeon hardware and its runtime. The FG Enabled toggle remains
+live and does not change the running backend. FSR upscaling with NVIDIA FG is
+unsupported. HDR and dynamic resolution are unavailable on the mixed FSR FG route.
+
+The independent FSR FG test archive preserves the qualified v1.2 runtime files
+and defaults Backend to Auto. Actual local GPU qualification covers Native,
+Quality and Performance DLSS plus NR After and FSR FG on an RTX 4080 SUPER.
+This standalone result does not replace Skyrim gameplay validation or qualify
+other GPU families. See [the qualification record](../docs/validation/2026-10-07-independent-fsr-fg.md).
+
 Leave `[Runtime] NRRuntimeRoot` and `NRDriverCore` blank for portable packages.
 The models resolve from the mod's resource tree and the core is discovered beside
 the NVIDIA rendering driver loaded by Skyrim. Discovery does not qualify a new
