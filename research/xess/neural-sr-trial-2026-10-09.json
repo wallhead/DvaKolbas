@@ -7,6 +7,17 @@
   "sdkRuntimeSha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
   "nrRuntimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
   "route": "Existing community NR owner; Before XeSS or After accepted XeSS, before future FG/UI",
+  "installedTrial": {
+    "profile": "V5.4 NO-LORE",
+    "mod": "RaZKolbaS XeSS NR trial - 69fbc8c61f3d",
+    "sourceRevision": "69fbc8c61f3d",
+    "pluginSha256": "662b4905006892b40ad644e13aff0a4788e937b098f5d365947e78e429afea9d",
+    "archiveSha256": "f86dd349f8502f5c57dfb5ba46a6c11e65a095df2e5b198f0b51b461e72e270f",
+    "archiveFilesVerified": 13,
+    "configuration": "XeSS Native; NR Before; one pass; existing Style 0/Tone 1; FG/HDR/dynamic resolution off",
+    "rollback": "RaZKolbaS XeSS SR trial - b32446a9e6a4; DLL and saved Quality INI unchanged",
+    "mo2": "Selected profile checked; ModOrganizer.ini unchanged; old SR trial disabled and new NR trial enabled in the same priority region"
+  },
   "standalone": {
     "test": "PostXessGpu",
     "qualities": ["Native (640x360)", "Performance (279x157 -> 640x360, actual SDK dimensions)"],
