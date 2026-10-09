@@ -1,6 +1,6 @@
 # XeSS standalone temporal receipt — 2026-10-09
 
-Milestone 4 implementation and numerical validation are ready. **Human visual qualification is pending.** XeSS is not connected to Skyrim yet; no installed mod or MO2 files were changed.
+Milestone 4 is complete. Numerical checks passed and the user reported the standalone Native → Quality → Performance scene “seems good” on 2026-10-09. XeSS is not connected to Skyrim yet; no installed mod or MO2 files were changed.
 
 ## Runtime and ownership
 
@@ -19,7 +19,7 @@ The context requests LDR input, exposure scale 1, no external exposure texture a
 - Late stationary-edge frame differences had RGB RMS 0.002471–0.003741, below 0.02. This measures settling; it cannot certify subjective edge shimmer.
 - Maximum foreground centroid alignment error was 0.5000 display pixels, below the three-pixel test limit. All readbacks were finite and bounded.
 
-The visible run `out/validation/xess/visible-20261009-105908-9434a4.log` completed 960 actual SDK frames at 1280×720, Gamma22 only, through Native → Quality → Performance. Queried sizes were 1280×720, 753×424 and 557×314. Its largest centroid error was 0.5765 pixels; static RMS was at most 0.002187. The window closed after successful cleanup. A human still needs to confirm convergence, camera stability and acceptable shimmer.
+The visible run `out/validation/xess/visible-20261009-105908-9434a4.log` completed 960 actual SDK frames at 1280×720, Gamma22 only, through Native → Quality → Performance. Queried sizes were 1280×720, 753×424 and 557×314. Its largest centroid error was 0.5765 pixels; static RMS was at most 0.002187. The window closed after successful cleanup. The user reported the displayed scene looked good. This subjective qualification covers the local synthetic scene, not Skyrim gameplay.
 
 ## Failure and retirement checks
 
