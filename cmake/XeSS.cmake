@@ -38,6 +38,8 @@ function(trp_add_xess_tests)
             target_compile_definitions(TRPXessDouble_${case} PRIVATE XESS_MISSING_EXPORT)
         endif()
         set_target_properties(TRPXessDouble_${case} PROPERTIES OUTPUT_NAME libxess
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/xess-fixtures/${case}/RaZkolbaS/XeSS"
+            ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}/xess-fixtures/${case}/RaZkolbaS/XeSS"
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/xess-fixtures/${case}/RaZkolbaS/XeSS"
             RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}/xess-fixtures/${case}/RaZkolbaS/XeSS")
         add_dependencies(TRPXessRuntimeTests TRPXessDouble_${case})
@@ -46,6 +48,11 @@ function(trp_add_xess_tests)
     add_executable(TRPXessFrameAdapterTests tests/XessFrameAdapterTests.cpp)
     target_link_libraries(TRPXessFrameAdapterTests PRIVATE TRPXessRuntime)
     add_test(NAME XessFrameAdapter COMMAND TRPXessFrameAdapterTests)
+    if(TRP_ENABLE_FSR_FG)
+        add_executable(TRPXessGenerationPolicyTests tests/XessGenerationPolicyTests.cpp)
+        target_link_libraries(TRPXessGenerationPolicyTests PRIVATE TRPFsrRuntime)
+        add_test(NAME XessGenerationPolicy COMMAND TRPXessGenerationPolicyTests)
+    endif()
     add_executable(TRPXessNeuralRouteTests tests/XessNeuralRouteTests.cpp)
     target_include_directories(TRPXessNeuralRouteTests PRIVATE include "${TRP_SIMPLEINI_INCLUDE_DIR}" "${TRP_STREAMLINE_INCLUDE_DIR}")
     target_link_libraries(TRPXessNeuralRouteTests PRIVATE TRPXessRuntime)

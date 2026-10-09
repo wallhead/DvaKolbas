@@ -43,8 +43,9 @@ namespace TheosRenderPipeline::Upscaling
             ArmReset(); return {false, false, true, false, "Duplicate or invalid source ID"};
         }
         const auto gap = lastSource_ && frame.sourceId - lastSource_ != 1;
-        const auto changed = lastSource_ && (lastCamera_ != frame.camera.identity || lastRender_ != frame.render || lastDisplay_ != frame.display);
-        lastSource_ = frame.sourceId; lastCamera_ = frame.camera.identity;
+        const auto changed = lastSource_ && (lastEpoch_ != frame.sourceEpoch ||
+            lastCamera_ != frame.camera.identity || lastRender_ != frame.render || lastDisplay_ != frame.display);
+        lastSource_ = frame.sourceId; lastEpoch_ = frame.sourceEpoch; lastCamera_ = frame.camera.identity;
         lastRender_ = frame.render; lastDisplay_ = frame.display; pendingPrepare_ = 0;
         const auto suppress = [this](std::string_view reason) {
             ArmReset(); return FsrGenerationDecision{false, false, true, true, reason};
@@ -56,7 +57,8 @@ namespace TheosRenderPipeline::Upscaling
         if (!uiComplete) return suppress("UI not completed");
         if (!std::isfinite(frame.deltaMilliseconds) || frame.deltaMilliseconds <= 0) return suppress("Invalid source time");
         if (frame.deltaMilliseconds >= 100) return suppress("Source stalled");
-        if ((frame.backend != BackendKind::Fsr && frame.backend != BackendKind::Dlss && frame.backend != BackendKind::Dlaa) ||
+        if ((frame.backend != BackendKind::Fsr && frame.backend != BackendKind::Dlss && frame.backend != BackendKind::Dlaa &&
+                frame.backend != BackendKind::Xess) ||
             !frame.depth || !frame.motion || !frame.render.width || !frame.render.height ||
             !frame.display.width || !frame.display.height || frame.render != frame.subrect ||
             frame.render.width > frame.display.width || frame.render.height > frame.display.height ||
@@ -64,7 +66,7 @@ namespace TheosRenderPipeline::Upscaling
             !std::isfinite(frame.motionConvention.scaleY) || frame.motionConvention.scaleX == 0 || frame.motionConvention.scaleY == 0)
             return suppress("Invalid temporal guides");
         if (!ValidCamera(frame.camera)) return suppress("Invalid camera");
-        if (changed || frame.reset || frame.camera.reset) return suppress("Camera or extent reset");
+        if (changed || frame.reset || frame.camera.reset) return suppress("Source epoch, camera or extent reset");
 
         pendingPrepare_ = frame.sourceId;
         return {true, true, resetArmed_, true, {}};

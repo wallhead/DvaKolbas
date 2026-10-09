@@ -1,0 +1,18 @@
+{
+  "sourceRevision": "6ca9e1785083",
+  "pluginSha256": "e9ba3d49e3771871de74c967b89a46c0c4b5c2200748f41853c749155ea8fc66",
+  "profile": "V5.4 NO-LORE",
+  "installedMod": "RaZKolbaS XeSS NR trial - df7abe212361",
+  "installedAt": "2026-10-09T15:31:24+03:00",
+  "change": "Use native DXGI Present count for ordinary XeSS/FSR output rate; retain cached NVIDIA runtime telemetry and leave unqualified FSR FG output unavailable",
+  "preserved": ["current INI", "MO2 settings", "modlist"],
+  "backup": "out/validation/xess/graph-update-6ca9e1785083-20261009-153124",
+  "verification": {
+    "pluginBuild": "passed",
+    "cpuChecksPassed": 200,
+    "skipped": ["FsrMlGpu fixture unavailable"],
+    "cleanBuildTelemetryRerun": "passed"
+  },
+  "gameplayGraphWitness": "pending",
+  "scope": "presentation counter rate; no inferred multiplier or physical scanout measurement"
+}

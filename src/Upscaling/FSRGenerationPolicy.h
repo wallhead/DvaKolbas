@@ -21,7 +21,7 @@ namespace TheosRenderPipeline::Upscaling
     private:
         void ArmReset();
         Extent lastRender_{}, lastDisplay_{};
-        uint64_t lastSource_{}, lastCamera_{}, pendingPrepare_{};
+        uint64_t lastSource_{}, lastEpoch_{}, lastCamera_{}, pendingPrepare_{};
         bool resetArmed_{true};
     };
 }
