@@ -1,4 +1,8 @@
+#if defined(TRP_TEST_XESS_PRODUCER)
+#include "Upscaling/XessHostResources.h"
+#else
 #include "DLSSBackend.h"
+#endif
 #include "FrameGen/LoadingScreenUpscaler.h"
 #include "FrameGen/SourceNvidiaFrameEvaluator.h"
 #include "FrameGen/FSRHostPresentation.h"
@@ -76,6 +80,11 @@ struct State {
     FsrFunctions* functions{};std::weak_ptr<FsrRuntime> observerRuntime;
     PfnFfxConfigure configure{};
     bool created{},retired{};
+#if defined(TRP_TEST_XESS_PRODUCER)
+    std::unique_ptr<XessHostResources> xess;
+    FsrColorConverter xessEncode;
+    unsigned xessDispatches{};
+#endif
     explicit State(const std::filesystem::path& plugin):resources(std::make_shared<FsrHostResources>(plugin)){}
     bool Retire(){
         if(retired)return true;
@@ -87,7 +96,13 @@ struct State {
         if(nrOwner && !nrOwner->Retire())return false;
         if(functions && observerRuntime.expired())return false;
         if(functions){functions->CreateContext=originalCreate;functions->Dispatch=originalDispatch;functions->Configure=configure;functions=nullptr;}
-        FgObservation::activeCapture=nullptr;DLSSBackend::GetSingleton()->ReleaseFeature();retired=true;return true;
+        FgObservation::activeCapture=nullptr;
+#if defined(TRP_TEST_XESS_PRODUCER)
+        if(xess && !xess->Retire())return false;
+#else
+        DLSSBackend::GetSingleton()->ReleaseFeature();
+#endif
+        retired=true;return true;
     }
     ~State(){if(window)DestroyWindow(window);}
 };
@@ -103,8 +118,23 @@ struct Operations {
     void CopyInput(ID3D11DeviceContext* context,const SourceNvidiaFrameInputs& frame){context->CopyResource(frame.input,frame.color);}
     bool EvaluateNeuralBeforeDLSS(SourceNvidiaFrameInputs&){return true;}
     void RenderReShade(const SourceNvidiaFrameInputs&,bool){}
-    bool EvaluateDLSS(const SourceNvidiaFrameInputs& f){return DLSSBackend::GetSingleton()->Evaluate(f.input,f.motion,f.depth,f.output,
-        snapshot.render.width,snapshot.render.height,0,f.jitterX,f.jitterY,float(snapshot.render.width),float(snapshot.render.height),f.reset);}
+    bool EvaluateDLSS(const SourceNvidiaFrameInputs& f){
+#if defined(TRP_TEST_XESS_PRODUCER)
+        auto frame=snapshot;frame.input=f.input;frame.output=f.output;frame.depth=f.depth;frame.motion=f.motion;
+        frame.jitterX=f.jitterX;frame.jitterY=f.jitterY;frame.reset|=f.reset;
+        frame.colorIsLinear=true;frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;
+        Accept(state.xess->PrepareInput(f.input,f.depth,f.motion));
+        auto bridge=state.xess->Bridge();Gpu(bridge->SignalProducer());ID3D12GraphicsCommandList* list{};Gpu(bridge->Begin(&list));
+        const auto dispatched=state.xess->Upscaler()->Dispatch(list,state.xess->Resources(),frame);
+        if(!dispatched){Gpu(bridge->DiscardRecording());Accept(dispatched);}
+        Gpu(bridge->Submit());Gpu(bridge->WaitConsumer());
+        Gpu(state.xessEncode.Convert(state.rig.context11.Get(),state.xess->Output11(),f.output,ColorEncoding::Linear,ColorEncoding::Gamma22));
+        ++state.xessDispatches;return true;
+#else
+        return DLSSBackend::GetSingleton()->Evaluate(f.input,f.motion,f.depth,f.output,
+            snapshot.render.width,snapshot.render.height,0,f.jitterX,f.jitterY,float(snapshot.render.width),float(snapshot.render.height),f.reset);
+#endif
+    }
     void UpscaleSucceeded(){++evidence.sources;}
     bool EvaluateNeuralAfterDLSS(SourceNvidiaFrameInputs& frame,UpscaleOutcome outcome){
         auto before=Read(state.rig.context11.Get(),frame.output);
@@ -117,6 +147,7 @@ struct Operations {
             m.sourceTime=m.guideTime=r.presentationTime;m.render=m.guides=r.guideExtent;m.display=m.color=r.colorExtent;
             m.colorDomain=r.colorDomain;m.encoding=ColorEncoding::Gamma22;m.colorFormat=DXGI_FORMAT_R8G8B8A8_UNORM;
             m.depthFormat=DXGI_FORMAT_R32_FLOAT;m.motionFormat=DXGI_FORMAT_R16G16_FLOAT;m.guideOrigin=NR::GuideOrigin::RealSource;m.motion=snapshot.motionConvention;
+            Neural(NR::BindPostSrMotionScales(m,r.motionScaleX,r.motionScaleY));
             auto result=Neural(state.post->Evaluate(input,settings));Neural(state.post->WaitDelivery(result));
             Need(result.evaluated==settings.enabled,"NR enabled preference did not reach the real model");evidence.nr+=result.evaluated;frame.reset|=result.effectiveReset;
         }
@@ -212,21 +243,35 @@ int wmain(int argc,wchar_t** argv){
     for(int i=1;i<argc;++i){if(std::wstring_view(argv[i])==L"--omit-nr"){omitNr=true;continue;}if(i+1>=argc)return 1;const std::wstring key=argv[i]; ++i; args[key]=argv[i];}
     if(NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: keep Skyrim closed for GPU checks");return 1;}
     for(auto key:{L"--quality",L"--nr",L"--core",L"--runtime",L"--output"})if(!args.contains(key)){std::puts("NOT QUALIFIED: missing argument");return 77;}
+#if defined(TRP_TEST_XESS_PRODUCER)
+    if(!args.contains(L"--xess")){std::puts("NOT QUALIFIED: missing official XeSS plugin directory");return 77;}
+#endif
     const auto quality=args[L"--quality"].string();const int mode=quality=="native"?5:quality=="quality"?2:quality=="performance"?0:-1;
     if(mode<0)return 1;
     const auto report=std::filesystem::absolute(args[L"--output"]);std::filesystem::create_directories(report.parent_path());
     Evidence evidence;std::string failure;std::unique_ptr<State> state;std::string deviceName,fgProvider,mlFgAvailability;
     std::map<std::string,std::string> hashes;
     try {
+#if defined(TRP_TEST_XESS_PRODUCER)
+        const auto plugin=report.parent_path()/("xess-fsr-runtime-"+quality);
+#else
         const auto plugin=report.parent_path()/("dlss-fsr-runtime-"+quality);
+#endif
         std::filesystem::create_directories(plugin/"FSR");
         const std::array<const char*,2> names{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_framegeneration_dx12.dll"};
         const std::array<const char*,2> expected{TRP_FG_LOADER_SHA,TRP_FG_MODULE_SHA};
         for(size_t i=0;i<names.size();++i){Need(Sha256(args[L"--runtime"]/names[i])==expected[i],"official FSR runtime hash differs from pin");
             std::filesystem::copy_file(args[L"--runtime"]/names[i],plugin/"FSR"/names[i],std::filesystem::copy_options::overwrite_existing);hashes[names[i]]=expected[i];}
+#if defined(TRP_TEST_XESS_PRODUCER)
+        const NR::RuntimeProfile srPin{"xess-sr-probe","libxess.dll",TRP_XESS_RUNTIME_SHA,TRP_XESS_RUNTIME_BYTES};
+        auto srLease=Neural(NR::RuntimeFileLease::Open(args[L"--xess"]/"RaZkolbaS/XeSS/libxess.dll",srPin));
+        hashes["xess"]=srPin.sha256;
+#else
         const NR::RuntimeProfile srPin{"dlss-sr-probe","nvngx_dlss.dll","c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",58956400};
         auto srLease=Neural(NR::RuntimeFileLease::Open(PluginPaths::Directory()/"RaZkolbaS/nvngx_dlss.dll",srPin));
-        hashes["nr"]=Sha256(args[L"--nr"]);hashes["core"]=Sha256(args[L"--core"]);hashes["dlss"]=srPin.sha256;
+        hashes["dlss"]=srPin.sha256;
+#endif
+        hashes["nr"]=Sha256(args[L"--nr"]);hashes["core"]=Sha256(args[L"--core"]);
         wchar_t executable[MAX_PATH]{};GetModuleFileNameW(nullptr,executable,MAX_PATH);hashes["executable"]=Sha256(executable);
         state=std::make_unique<State>(plugin);
         DXGI_ADAPTER_DESC adapter{};Gpu(state->rig.adapter->GetDesc(&adapter));Need(adapter.VendorId==0x10de,"mixed NGX route needs NVIDIA hardware");
@@ -235,7 +280,16 @@ int wmain(int argc,wchar_t** argv){
         Need(state->window!=nullptr,"test HWND unavailable");
         DXGI_SWAP_CHAIN_DESC descriptor{};descriptor.Windowed=TRUE;descriptor.OutputWindow=state->window;descriptor.BufferDesc.Width=640;descriptor.BufferDesc.Height=360;
         descriptor.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;descriptor.SampleDesc.Count=1;descriptor.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;descriptor.BufferCount=1;
+#if defined(TRP_TEST_XESS_PRODUCER)
+        auto renderFor=[&](Extent display){
+            if(state->xess)Accept(state->xess->Retire());
+            state->xessEncode={};state->xess=std::make_unique<XessHostResources>(args[L"--xess"]);
+            return Value(state->xess->Initialize(state->rig.device11.Get(),mode==5?Quality::NativeAA:mode==2?Quality::Quality:Quality::Performance,
+                display,ColorEncoding::Gamma22));
+        };
+#else
         auto renderFor=[mode](Extent display){return mode==5?display:Extent{UINT(display.width*(mode==2?2.f/3:.5f)),UINT(display.height*(mode==2?2.f/3:.5f))};};
+#endif
         FsrSettings fsr;fsr.quality=Quality::NativeAA;fsr.providerPolicy=ProviderPolicy::MachineLearning; // deliberately inactive INT8/ML SR preference
         fsr.generationProviderPolicy=ProviderPolicy::Analytical;fsr.sourceColorEncoding=ColorEncoding::Gamma22;
         Extent display{640,360},render=renderFor(display);
@@ -252,8 +306,10 @@ int wmain(int argc,wchar_t** argv){
         contract.adapterLuid={adapter.AdapterLuid.LowPart,adapter.AdapterLuid.HighPart};
         state->nrOwner=std::make_shared<NR::RuntimeOwner>(NR::RuntimeOwnerPaths{args[L"--nr"],args[L"--core"],plugin/"nr-cache",true});
         Neural(state->nrOwner->Open(NR::RuntimeCatalog()[1],contract.device.Get(),{adapter.VendorId,adapter.DeviceId,adapter.SubSysId,contract.adapterLuid,false}));
+#if !defined(TRP_TEST_XESS_PRODUCER)
         auto* dlss=DLSSBackend::GetSingleton();dlss->SetupDevice(state->rig.device11.Get(),state->rig.context11.Get());
         const auto firstDispatch=dlss->EvalSuccessCount();
+#endif
         for(unsigned epoch=0;epoch<2;++epoch){
             if(epoch){
                 Accept(state->presenter.BeforeResize());Neural(state->post->Retire());state->post.reset();VerifyCapture(*state,evidence);FgObservation::activeCapture=nullptr;
@@ -270,8 +326,12 @@ int wmain(int argc,wchar_t** argv){
             state->depth=PackedDepth(state->rig.device11.Get(),render,true);
             state->depthUpload=PackedDepth(state->rig.device11.Get(),render,false);
             state->motion=Texture(state->rig.device11.Get(),render,DXGI_FORMAT_R16G16_FLOAT);
+#if defined(TRP_TEST_XESS_PRODUCER)
+            Need(srLease.Matches(PluginPaths::ModulePath(GetModuleHandleW(L"libxess.dll"))),"loaded XeSS differs from held qualified payload");
+#else
             Need(dlss->InitUpscale(render.width,render.height,display.width,display.height,DXGI_FORMAT_R8G8B8A8_UNORM,false,true,0,mode),"actual production NGX feature creation failed");
             Need(srLease.Matches(PluginPaths::ModulePath(GetModuleHandleW(L"nvngx_dlss.dll"))),"loaded DLSS differs from held qualified payload");
+#endif
             state->capture=std::make_unique<FgObservation::Capture>(contract.device.Get(),256,display.width,display.height,true);state->enhancedRows.clear();state->eligible.clear();FgObservation::activeCapture=state->capture.get();
             std::vector<uint32_t> hud(size_t(display.width)*display.height);hud[0]=0xff0000ff;hud[8]=0x80008000;
             state->rig.context11->UpdateSubresource(state->ui.Get(),0,nullptr,hud.data(),display.width*4,0);
@@ -292,6 +352,9 @@ int wmain(int argc,wchar_t** argv){
                 context->CopyResource(state->depth.Get(),state->depthUpload.Get());
                 context->UpdateSubresource(state->motion.Get(),0,nullptr,velocities.data(),render.width*4,0);
                 UpscaleFrame snapshot;snapshot.backend=mode==5?BackendKind::Dlaa:BackendKind::Dlss;snapshot.sourceId=source;snapshot.sourceEpoch=epoch+1;
+#if defined(TRP_TEST_XESS_PRODUCER)
+                snapshot.backend=BackendKind::Xess;
+#endif
                 snapshot.render=snapshot.subrect=render;snapshot.display=display;snapshot.deltaMilliseconds=1000.f/72;snapshot.depthFormat=DXGI_FORMAT_R32_FLOAT;snapshot.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
                 snapshot.motionConvention={float(render.width),float(render.height),true,false};snapshot.camera.identity=7;snapshot.camera.nearDistance=.1f;snapshot.camera.farDistance=100;
                 snapshot.camera.verticalFovRadians=1.04719755f;snapshot.camera.worldUnitsToMeters=1;
@@ -343,7 +406,12 @@ int wmain(int argc,wchar_t** argv){
             }
         }
         Accept(state->presenter.BeforeResize());Neural(state->post->Retire());state->post.reset();VerifyCapture(*state,evidence);++evidence.retirements;
+#if defined(TRP_TEST_XESS_PRODUCER)
+        Need(state->xessDispatches==160 && evidence.sources==160,"not every temporal source used actual XeSS reconstruction");
+        Need(!GetModuleHandleW(L"nvngx_dlss.dll"),"XeSS route loaded DLSS SR");
+#else
         Need(dlss->EvalSuccessCount()-firstDispatch==160 && evidence.sources==160,"not every source used actual NGX reconstruction");
+#endif
         Need(evidence.nr>0 && evidence.changed>0,"no actual NR enhancement observed");
         Need(srCreates==0 && srDispatches==0,"mixed route used FSR SR");
         Need(evidence.callbacks>20 && evidence.generatedPixels>20 && evidence.uiChecks>100,"actual generation/pixel/HUD observations incomplete");
@@ -356,7 +424,12 @@ int wmain(int argc,wchar_t** argv){
     out<<"{\"qualified\":"<<(failure.empty()?"true":"false")<<",\"revision\":"<<JsonString(TRP_FG_VALIDATION_REVISION)<<",\"quality\":"<<JsonString(quality)<<",\"device\":"<<JsonString(deviceName)<<",\"fgProvider\":"<<JsonString(fgProvider)<<",\"mlFgAvailability\":"<<JsonString(mlFgAvailability);
     out<<",\"inputPolicyReentries\":"<<evidence.policyReentries;
     out<<",\"sourceDepthFormat\":\"R24G8_TYPELESS\",\"sourceDepthStencil\":true";
-    out<<",\"dlssDispatches\":"<<evidence.sources<<",\"nrDispatches\":"<<evidence.nr<<",\"fsrSrCreates\":"<<srCreates<<",\"fsrSrDispatches\":"<<srDispatches<<",\"generatedCallbacks\":"<<evidence.callbacks<<",\"generatedPixelReadbacks\":"<<evidence.generatedPixels<<",\"changingGeneratedReadbacks\":"<<evidence.changingGenerated<<",\"uiChecks\":"<<evidence.uiChecks<<",\"uiFailures\":"<<evidence.uiFailures<<",\"colorChecks\":"<<evidence.colorChecks<<",\"readerRetirements\":"<<evidence.retirements<<",\"retirementFailures\":"<<evidence.retirementFailures<<",\"pendingReaderRetirements\":"<<evidence.pendingReaders<<",\"resetReentries\":"<<evidence.resetReentries<<",\"sdkWaits\":"<<waits<<",\"resizes\":"<<evidence.resizes<<",\"suspensions\":"<<evidence.suspensions<<",\"failure\":"<<JsonString(failure)<<",\"hashes\":{";
+#if defined(TRP_TEST_XESS_PRODUCER)
+    out<<",\"xessDispatches\":"<<(state?state->xessDispatches:0);
+#else
+    out<<",\"dlssDispatches\":"<<evidence.sources;
+#endif
+    out<<",\"nrDispatches\":"<<evidence.nr<<",\"fsrSrCreates\":"<<srCreates<<",\"fsrSrDispatches\":"<<srDispatches<<",\"generatedCallbacks\":"<<evidence.callbacks<<",\"generatedPixelReadbacks\":"<<evidence.generatedPixels<<",\"changingGeneratedReadbacks\":"<<evidence.changingGenerated<<",\"uiChecks\":"<<evidence.uiChecks<<",\"uiFailures\":"<<evidence.uiFailures<<",\"colorChecks\":"<<evidence.colorChecks<<",\"readerRetirements\":"<<evidence.retirements<<",\"retirementFailures\":"<<evidence.retirementFailures<<",\"pendingReaderRetirements\":"<<evidence.pendingReaders<<",\"resetReentries\":"<<evidence.resetReentries<<",\"sdkWaits\":"<<waits<<",\"resizes\":"<<evidence.resizes<<",\"suspensions\":"<<evidence.suspensions<<",\"failure\":"<<JsonString(failure)<<",\"hashes\":{";
     bool first=true;for(const auto& [key,value]:hashes){if(!first)out<<',';first=false;out<<JsonString(key)<<':'<<JsonString(value);}out<<"}}\n";out.flush();
     if(!out){std::puts("NOT QUALIFIED: report could not be saved");return 1;}
     return failure.empty()?0:1;

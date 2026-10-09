@@ -97,4 +97,7 @@ $xessPath=Join-Path $Output 'xess.ini';[IO.File]::WriteAllLines($xessPath,[strin
 $xess=Read-PackageIni $xessPath -Raw
 if($xess['Upscaling/Upscaler'] -ne 'XeSS' -or $xess['DLSS/Quality'] -ne 'Native') {throw 'XeSS packaging must retain provider and inactive DLAA preference'}
 if((Read-PackageIni $xessPath)['FrameGeneration/Backend'] -ne '0') {throw 'XeSS SR trial must select ordinary presentation'}
+$xessFgLines=Set-PackageIniValues $xessLines @{'FrameGeneration/Backend'='FSR';'FrameGeneration/Enabled'='true'}
+$xessFgPath=Join-Path $Output 'xess-fsr-fg.ini';[IO.File]::WriteAllLines($xessFgPath,[string[]]$xessFgLines)
+if((Read-PackageIni $xessFgPath)['FrameGeneration/Backend'] -ne '2'){throw 'Explicit XeSS FSR FG must select FSR presentation'}
 Write-Output 'PASS: packaging and runtime schema agree; Native/ML/derived FG and unknown comments preserved'

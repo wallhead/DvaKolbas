@@ -31,6 +31,10 @@ int main()
         Require(PublicIni::Decode(named).empty() && ValidateRendererStartup(named,vendor,true,true,vendor!=0x10de).empty(),"named XeSS startup validates with NR/FG off on each vendor");
         named.SetBoolValue("FrameGeneration","Enabled",true);
         Require(!ValidateRendererStartup(named,vendor,true,true,vendor!=0x10de).empty(),"XeSS SR-only gate reports unsupported FG request");
+        CSimpleIniA generated;
+        generated.LoadData("[Upscaling]\nUpscaler=XeSS\n[FrameGeneration]\nBackend=FSR\nEnabled=true\n[NeuralRendering]\nEnabled=false\n");
+        Require(PublicIni::Decode(generated).empty() && generated.GetLongValue("FrameGeneration","Backend",-1)==2 &&
+            ValidateRendererStartup(generated,vendor,true,true,vendor!=0x10de).empty(),"explicit XeSS FSR FG startup is validated");
     }
     BackendConfiguration ordinary;ordinary.backend=BackendKind::Fsr;ordinary.generationBackend=0;ordinary.generationEnabled=false;
     Require(ResolveBackend(ordinary,true,true).valid && !GetModuleHandleW(L"libxess.dll"),"unrequested XeSS never loads its optional dispatcher");

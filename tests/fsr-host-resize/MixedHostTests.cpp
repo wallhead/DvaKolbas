@@ -53,7 +53,15 @@ struct NvidiaHost {
     struct Presenter {NvidiaHost* host;HRESULT WaitBeforeProducer(){return S_OK;}Upscaling::Result<void> Suspend(){return {};}Upscaling::Result<void> BeforeResize(){++host->retired;return {};}Upscaling::Result<FsrHostResize> Resize(const DXGI_SWAP_CHAIN_DESC&){return FsrHostResize{{64,64}};}Upscaling::Result<FsrHostResize> ResizeExternal(const DXGI_SWAP_CHAIN_DESC&,Upscaling::Extent e){return FsrHostResize{e};}} presenter{this};Presenter* fsrPresentation_{&presenter};
     DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
     bool FsrActive()const{return false;}bool FsrFgActive()const{return mixed;}HRESULT FailureResult()const{return S_OK;}HRESULT UpdateFsrSuspension(){return S_OK;}bool FsrPresentSuspended(){return false;}
-    bool XessActive()const{return false;}
+    bool xess{};bool XessActive()const{return xess;}
+#if defined(TRP_ENABLE_XESS)
+    struct XessResources {
+        bool ownerThread{true},canRetire{true};unsigned retirements{};
+        XessResources* Upscaler(){return this;}bool OnOwnerThread(){return ownerThread;}
+        Upscaling::Result<void> Retire(){++retirements;if(!canRetire)return std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::RetirementFailure,E_FAIL,"XeSS reader blocked"});return {};}
+    } xessOwner;
+    XessResources* xessResources_{&xessOwner};
+#endif
     bool EvaluateXessFrame(IDXGISwapChain*,bool){throw std::runtime_error("unexpected XeSS route in DLSS/FSR fixture");}
     bool PresentationBackendReadyForEvaluation(){return true;}bool EvaluateFsrFrame(IDXGISwapChain*,bool){return false;}
     bool EvaluateSourceNvidiaFrame(bool,bool reset){resets.push_back(reset);if(recovery){resetNextEvaluation_=sourceRecoveryActive_=true;status_="source recovery remains visible";}return true;}
@@ -74,5 +82,19 @@ int main(){
     NvidiaHost resize;SourceDLSSG::querySucceeds=false;
     Require(resize.ResizeFsrSwapChain(resize.outer,2,128,128,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==E_INVALIDARG,"failed render-size query rejected");
     Require(resize.retired==0&&resize.gameTargets_.live&&!resize.presentation_.buffers.empty(),"failed resize query must retain the running source and presenter");
+#if defined(TRP_ENABLE_XESS)
+    NvidiaHost xess;xess.xess=true;xess.xessOwner.ownerThread=false;
+    Require(xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==DXGI_ERROR_WAS_STILL_DRAWING && !xess.retired,
+        "off-owner XeSS FSR resize retains SDK and presenter");
+    xess.xessOwner.ownerThread=true;const auto queries=SourceDLSSG::queries;
+    Require(xess.ResizeFsrSwapChain(xess.outer,2,128,128,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==E_INVALIDARG && !xess.retired && xess.gameTargets_.live && SourceDLSSG::queries==queries,
+        "unqualified new XeSS output size rejected before retirement without DLSS sizing");
+    Require(xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==S_OK && xess.retired==2 && SourceDLSSG::queries==queries,
+        "same-size owner-thread XeSS restore retains SDK dimensions and rebuilds after reader retirement");
+    NvidiaHost blocked;blocked.xess=true;blocked.xessOwner.canRetire=false;
+    Require(blocked.ResizeFsrSwapChain(blocked.outer,2,64,64,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==E_FAIL && blocked.gameTargets_.live &&
+        !blocked.presentation_.buffers.empty() && blocked.xessOwner.retirements==1,
+        "blocked XeSS reader during FSR resize retains source before any buffer release or reconstruction");
+#endif
     std::puts("PASS: actual mixed-host FG skips, source reset consumption and non-destructive resize query failure");
 }

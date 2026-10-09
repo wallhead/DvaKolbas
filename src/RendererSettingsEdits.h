@@ -110,7 +110,12 @@ inline void StageRendererUpscaleProvider(RendererSettingsDraft &draft, bool fsr)
     draft.sourceDLSSG.neuralEnabled = neural;
 }
 inline RendererSettingsDraft PrepareRendererStartupDraft(RendererSettingsDraft draft, bool community) {
-    if(draft.upscaleType==Xess){draft.generationBackend=0;draft.generationEnabled=false;if(!community)draft.sourceDLSSG.neuralEnabled=false;draft.sourceDLSSG.hdrOutput.enabled=false;draft.dynamicResolution=false;draft.enableJitter=true;}
+    if(draft.upscaleType==Xess){
+        draft.generationBackend=ResolveGenerationBackend(draft.generationBackendPreference,Upscaling::BackendKind::Xess);
+        if(draft.generationBackend==0)draft.generationEnabled=false;
+        if(!community)draft.sourceDLSSG.neuralEnabled=false;
+        draft.sourceDLSSG.hdrOutput.enabled=false;draft.dynamicResolution=false;draft.enableJitter=true;
+    }
     if (draft.upscaleType == FSR) {
         if (draft.generationBackend == 0)
             draft.generationEnabled = false;

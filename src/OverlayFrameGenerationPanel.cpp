@@ -25,11 +25,6 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                             requestedPage == SettingsPage::FrameGeneration ? ImGuiTabItemFlags_SetSelected
                                                                            : ImGuiTabItemFlags_None))
     {
-        if(settingsDraft.upscaleType==Xess || nvidiaHost->XessActive()) {
-            ImGui::TextWrapped("This XeSS trial qualifies upscaling first. Existing FSR/NVIDIA frame-generation integration follows separately; FG is off.");
-            ImGui::EndTabItem();return;
-        }
-
         const auto drawSmoothMotionNotice=[] {
             if(const auto* notice=TheosRenderPipeline::NvidiaAppSettings::CurrentSmoothMotionNotice()) {
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(1.0f,0.75f,0.25f,1.0f));
@@ -40,16 +35,18 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         };
         if(!BeginSettingsColumns("generation",tabCardHeight,view)){ImGui::EndTabItem();return;}
         drawSmoothMotionNotice();
-        const bool nvidiaSupported=!RenderPipeline::GetSingleton()->mFsrOnlyRenderer && settingsDraft.upscaleType!=FSR &&
+        const bool nvidiaSupported=!RenderPipeline::GetSingleton()->mFsrOnlyRenderer && settingsDraft.upscaleType!=FSR && settingsDraft.upscaleType!=Xess &&
             (RenderPipeline::GetSingleton()->mAdapterVendorId==0 || RenderPipeline::GetSingleton()->mAdapterVendorId==0x10de);
         if(DrawGenerationBackendChoice(settingsDraft.generationBackendPreference,nvidiaSupported)) {
-            const auto kind=settingsDraft.upscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
+            const auto kind=settingsDraft.upscaleType==Xess?TheosRenderPipeline::Upscaling::BackendKind::Xess:settingsDraft.upscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
                 settingsDraft.upscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
             settingsDraft.generationBackend=TheosRenderPipeline::ResolveGenerationBackend(settingsDraft.generationBackendPreference,kind);
         }
-        const long actualBackend=nvidiaHost->FsrFgActive()?2:nvidiaHost->FsrActive()?0:1;
+        const long actualBackend=nvidiaHost->FsrFgActive()?2:nvidiaHost->OrdinarySourceActive()?0:1;
         ImGui::Text("Running backend: %s",actualBackend==2?"FSR FG":actualBackend==1?"NVIDIA FG":"Ordinary (diagnostic)");
         DrawSettingsHelp("Backend selection requires Save as default and restart. Auto selects NVIDIA FG for DLSS, and FSR FG for FSR upscaling.");
+        if(settingsDraft.upscaleType==Xess || nvidiaHost->XessActive())
+            ImGui::TextWrapped("Experimental XeSS + FSR FG: select FSR, save and restart. Auto keeps SR-only presentation; NVIDIA FG is still pending.");
         if(settingsDraft.generationBackend!=actualBackend)ImGui::TextWrapped("Selected backend is pending restart. The on/off switch controls the running backend.");
         bool requested=frameGen->RuntimeInterpolationRequested();
         ImGui::BeginDisabled(actualBackend==0);
@@ -68,7 +65,7 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 ImGui::TextWrapped("%s",status.text.c_str());
                 ImGui::TextWrapped("Reflex and NVIDIA output FPS cap are unavailable with FSR FG. Saved values apply to NVIDIA presentation.");
             }else ImGui::TextWrapped("FSR provider is staged for the next launch; the current backend stays active.");
-            if(!view.fsrActive) {
+            if(!view.fsrActive && settingsDraft.upscaleType!=Xess && !nvidiaHost->XessActive()) {
                 int encoding=static_cast<int>(settingsDraft.fsr.sourceColorEncoding);
                 const char* encodings[]{"Unknown", "Linear", "Gamma 2.2 SDR", "sRGB"};
                 if(ImGui::Combo("Source encoding##fsr-fg",&encoding,encodings,4))

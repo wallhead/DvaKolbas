@@ -7,11 +7,16 @@ int main()
     Rig rig;
     auto mapped = BuildFsrGenerationPrepare(rig.list.Get(), rig.frame, rig.resources, rig.limits, true);
     Require(bool(mapped), "valid typed FG preparation");
-    for(auto backend:{BackendKind::Dlss,BackendKind::Dlaa}) {
+    for(auto backend:{BackendKind::Dlss,BackendKind::Dlaa,BackendKind::Xess}) {
         auto mixed=rig.frame;mixed.backend=backend;
         Require(bool(BuildFsrGenerationPrepare(rig.list.Get(),mixed,rig.resources,rig.limits,true)),
-            "external DLSS/DLAA guides prepare FSR FG without impersonating an FSR SR source");
+            "external DLSS/DLAA/XeSS guides prepare FSR FG without impersonating an FSR SR source");
     }
+    auto xess=rig.frame;xess.backend=BackendKind::Xess;xess.motionConvention.includesJitter=true;
+    auto xessLimits=rig.limits;xessLimits.input.motionIncludesJitter=true;
+    auto xessPrepared=BuildFsrGenerationPrepare(rig.list.Get(),xess,rig.resources,xessLimits,true);
+    Require(xessPrepared && xessPrepared->jitterOffset.x==xess.jitterX && xessPrepared->jitterOffset.y==xess.jitterY,
+        "XeSS jittered engine guides retain measured jitter through FG preparation");
     Require(mapped->frameID == 41 && mapped->frameTimeDelta == 16.6667f && mapped->reset, "PrepareUsesMillisecondsAndMatchingId");
     Require(mapped->jitterOffset.x == .125f && mapped->jitterOffset.y == -.25f && mapped->motionVectorScale.x == 64 && mapped->motionVectorScale.y == 64, "MotionConventionMatchesSr");
     Require(mapped->cameraNear == 10 && mapped->cameraFar == 10000 && mapped->cameraPosition[0] == 100 && mapped->viewSpaceToMetersFactor == .0142875f, "CameraBasisAndUnits: native world units and explicit meters factor");

@@ -77,13 +77,19 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     } else {
         draft.generationBackend = 1;
     }
-    if(mode==Xess){draft.generationBackend=0;draft.generationEnabled=false;if(!next.captured)draft.sourceDLSSG.neuralEnabled=false;draft.sourceDLSSG.hdrOutput.enabled=false;draft.dynamicResolution=false;draft.enableJitter=true;}
+    if(mode==Xess){
+        if(draft.generationBackendPreference==GenerationBackendPreference::Nvidia)draft.generationBackendPreference=GenerationBackendPreference::Auto;
+        draft.generationBackend=ResolveGenerationBackend(draft.generationBackendPreference,Upscaling::BackendKind::Xess);
+        if(draft.generationBackend==0)draft.generationEnabled=false;
+        if(!next.captured)draft.sourceDLSSG.neuralEnabled=false;
+        draft.sourceDLSSG.hdrOutput.enabled=false;draft.dynamicResolution=false;draft.enableJitter=true;
+    }
     if(mode==FSR && draft.generationBackendPreference==GenerationBackendPreference::Nvidia)
         draft.generationBackendPreference=GenerationBackendPreference::Auto;
     if (draft.generationBackend != 0)
     {
         draft.generationBackend = ResolveGenerationBackend(draft.generationBackendPreference,
-            mode == FSR ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss);
+            mode == Xess ? Upscaling::BackendKind::Xess : mode == FSR ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss);
     }
 }
 
@@ -245,7 +251,11 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     if(draft.upscaleType==Xess) {
         if(!XessBuilt)return "XeSS is not included in this build.";
         if(!Upscaling::ValidXessSettings(draft.xess))return "XeSS quality/source encoding is invalid.";
-        if(draft.generationBackend!=0 || draft.generationEnabled)return "XeSS frame generation integration is pending; turn FG off.";
+        if(draft.generationBackend==2){
+            if(!capabilities.fsrFgBuilt)return "XeSS with FSR FG is not included in this build.";
+            if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "XeSS with FSR FG requires dedicated native UI and source ownership.";
+        } else if(draft.generationBackend!=0)return "XeSS NVIDIA FG integration is pending; select FSR or Auto with FG off.";
+        else if(draft.generationEnabled)return "XeSS Auto currently uses ordinary presentation. Select FSR, save and restart to use FG.";
         if(draft.sourceDLSSG.neuralEnabled && capabilities.adapterVendorId!=0x10de)return "XeSS NR requires a supported NVIDIA RTX render adapter.";
         if(draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural)return "XeSS requires the community NR runtime.";
         if(draft.dynamicResolution || draft.sourceDLSSG.hdrOutput.enabled)return "XeSS SR currently requires fixed dimensions and SDR output.";

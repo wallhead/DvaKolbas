@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
+#define TRP_ENABLE_FSR_FG
 using namespace TheosRenderPipeline::Upscaling;
 namespace logger { template<class... T> void warn(T&&...){} template<class... T> void error(T&&...){} }
 struct RenderPipeline { int mGraphicsState{};bool mEnableJitter{}; };
@@ -45,9 +46,12 @@ struct NvidiaHost {
         bool NeuralEligible(){return true;}
         bool EvaluateOptionalPreUpscale(UpscaleFrame&);
         bool EvaluateOptionalPostUpscale(UpscaleFrame&,UpscaleOutcome);
+        GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&);
     };
     bool xessRecovery_{};unsigned xessDeferredReported_{},spatial{},nrCalls{};
     std::uint64_t communityEpoch_{1};std::string xessRecoveryReason_;
+    bool fg{};UpscaleFrame fsrGenerationFrame_{};
+    bool FsrFgActive()const{return fg;}
     std::unique_ptr<HostResources> xessResources_=std::make_unique<HostResources>();
     struct Context { ID3D11DeviceContext* Get(){return nullptr;} } context_;
     struct Encoder { HRESULT Convert(ID3D11DeviceContext*,ID3D11Texture2D*,ID3D11Texture2D*,ColorEncoding,ColorEncoding){return S_OK;} } xessEncode_;
@@ -85,5 +89,13 @@ int main(){
     const auto again=operations.EvaluateUpscaler(frame);
     Require(again && *again==UpscaleOutcome::SpatialRecovery && failed.xessResources_->owner.dispatches==1,
         "terminal recovery never reexecutes a failed SDK context");
+    NvidiaHost generated;generated.fg=true;
+    NvidiaHost::SourceXessEvaluationOperations prepare{generated,pipeline};
+    frame.camera.identity=37;frame.reset=true;frame.sourceEpoch=9;
+    Require(prepare.PrepareGeneration(frame)==GenerationPreparationStatus::Succeeded &&
+        generated.fsrGenerationFrame_.camera.identity==37 && generated.fsrGenerationFrame_.sourceEpoch==9 && generated.fsrGenerationFrame_.reset,
+        "FG receives completed XeSS/NR frame including measured camera and reset");
+    generated.fg=false;
+    Require(prepare.PrepareGeneration(frame)==GenerationPreparationStatus::NotRequested,"ordinary XeSS does not prepare FG");
     std::puts("PASS: actual XeSS host deferred frames, NR isolation, resumption and vendor-failure retirement");
 }

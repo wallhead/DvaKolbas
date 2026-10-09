@@ -16,7 +16,8 @@ namespace TheosRenderPipeline::Upscaling
         };
         const auto finite = [](float value) { return std::isfinite(value); };
         if (!list || list->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT || !frame.sourceId ||
-            (frame.backend != BackendKind::Fsr && frame.backend != BackendKind::Dlss && frame.backend != BackendKind::Dlaa) ||
+            (frame.backend != BackendKind::Fsr && frame.backend != BackendKind::Dlss && frame.backend != BackendKind::Dlaa &&
+                frame.backend != BackendKind::Xess) ||
             frame.render != limits.render || frame.subrect != frame.render || frame.display != limits.display ||
             !limits.render.width || !limits.render.height || !limits.display.width || !limits.display.height ||
             limits.render.width > limits.display.width || limits.render.height > limits.display.height ||

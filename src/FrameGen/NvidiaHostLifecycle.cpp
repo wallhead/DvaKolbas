@@ -30,6 +30,12 @@ struct NvidiaHost::LifecycleOperations
         if (host.FsrFgActive()) {
             auto retired=host.fsrPresentation_->Retire();
             if (!retired) {host.status_=retired.error().message;host.FailLifecycle(E_FAIL,"AMD presentation retirement");return false;}
+#if defined(TRP_ENABLE_XESS)
+            if(host.xessResources_) {
+                const auto sourceRetired=host.xessResources_->Retire();
+                if(!sourceRetired){host.status_=sourceRetired.error().message;host.FailLifecycle(E_FAIL,"XeSS resource retirement");return false;}
+            }
+#endif
             return true;
         }
 #endif
@@ -213,6 +219,7 @@ void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
         const auto retired=xessResources_->Retire();
         if(!retired){status_=retired.error().message;FailLifecycle(E_FAIL,"XeSS feature release");return;}
         xessResources_.reset();xessEncode_={};lastXessTemporal_=false;xessRecovery_=false;xessRecoveryReason_.clear();xessDeferredReported_=0;
+        xessFgHasSource_=false;
     }
 #endif
 #if defined(TRP_ENABLE_FSR)

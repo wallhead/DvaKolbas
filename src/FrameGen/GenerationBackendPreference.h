@@ -6,7 +6,10 @@ namespace TheosRenderPipeline
     inline long ResolveGenerationBackend(GenerationBackendPreference preference,
         Upscaling::BackendKind upscaler, bool ordinaryDiagnostic = false)
     {
-        if(upscaler==Upscaling::BackendKind::Xess)return 0; // SR-only qualification; FG integration follows separately.
+        // Auto preserves the SR-only XeSS path until both presenters qualify.
+        // Explicit FSR retains its presenter even while interpolation is off.
+        if(upscaler==Upscaling::BackendKind::Xess)return preference==GenerationBackendPreference::Fsr?2:
+            preference==GenerationBackendPreference::Nvidia?1:0;
         if (upscaler == Upscaling::BackendKind::Fsr && ordinaryDiagnostic) return 0;
         if (preference == GenerationBackendPreference::Nvidia) return 1;
         if (preference == GenerationBackendPreference::Fsr) return 2;

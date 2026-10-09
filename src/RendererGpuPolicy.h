@@ -11,7 +11,7 @@ inline bool IsAmdRenderer(std::uint32_t vendor) { return vendor == 0x1002; }
 // This restricts providers, independently of NR's model/device-ID catalog.
 inline bool FsrOnlyRendererSelectionAllowed(int mode, long presenter, bool neural)
 {
-    return (mode == FSR && (presenter == 0 || presenter == 2) || mode == Xess && presenter == 0) && !neural;
+    return (mode == FSR && (presenter == 0 || presenter == 2) || mode == Xess && (presenter == 0 || presenter == 2)) && !neural;
 }
 
 // Normalize only the in-memory startup view. Saving defaults remains explicit.

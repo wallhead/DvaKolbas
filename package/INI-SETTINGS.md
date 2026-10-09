@@ -31,7 +31,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | FSR | SourceColorEncoding | `Gamma22` | Yes | Gamma22 is the ENB SDR default. Change this to match other source pipelines. Values: Unknown, Linear, Gamma22, SRGB. |
 | XeSS | Quality | `Native` | Yes | XeSS render scale. Input dimensions come from the SDK; Native uses output resolution. Values: Native, Quality, Balanced, Performance. |
 | XeSS | SourceColorEncoding | `Gamma22` | Yes | ENB SDR source default. Match other source pipelines explicitly; XeSS input is converted to linear FP16. Values: Linear, Gamma22, SRGB. |
-| FrameGeneration | Backend | `Auto` | Yes | Presentation backend. Auto uses NVIDIA with DLSS and FSR with FSR upscaling. DLSS can also use FSR FG; FSR upscaling cannot use NVIDIA FG. Values: Auto, NVIDIA, FSR. |
+| FrameGeneration | Backend | `Auto` | Yes | Presentation backend. Auto uses NVIDIA with DLSS, FSR with FSR upscaling, and ordinary SR-only presentation with XeSS. DLSS and XeSS can select FSR FG explicitly. XeSS NVIDIA FG is pending; FSR upscaling cannot use NVIDIA FG. Values: Auto, NVIDIA, FSR. |
 | FrameGeneration | Enabled | `false` | No | FG toggle. Disabling interpolation retains the selected presentation host. Values: true, false. |
 | FrameGeneration | FsrProvider | `FSR3` | Yes | FG provider, independent of upscaling. FSR4 ML FG is experimental; unsupported devices report an error. Values: FSR3, Auto, FSR4. |
 | FrameGeneration | NvidiaGeneratedFrames | `1` | No | NVIDIA generated-frame count, excluding the real frame. Effective count is limited by the GPU/runtime. FSR FG generates one frame. Values: 1=x2, 2=x3, 3=x4, 4=x5, 5=x6. Whole numbers only. Range: 1-5. |

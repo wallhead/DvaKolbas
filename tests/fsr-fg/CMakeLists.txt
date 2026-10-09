@@ -38,3 +38,29 @@ if(TRP_NR_NGX_INCLUDE_DIR AND TRP_NGX_LIB AND TRP_NR_DLSS_SR_DLL)
         set_tests_properties(DlssFsrGenerationGpu-${quality} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 180)
     endforeach()
 endif()
+
+if(TARGET TRPXessRuntime AND TARGET TRPNeuralRuntime AND TRP_NR_RTX40_DLL AND TRP_NR_DRIVER_CORE)
+    file(READ "${PROJECT_SOURCE_DIR}/tools/xess/sdk-pin.json" xessGenerationPin)
+    string(JSON xessGenerationSha GET "${xessGenerationPin}" runtime sha256)
+    string(JSON xessGenerationBytes GET "${xessGenerationPin}" runtime bytes)
+    add_executable(TRPXessFsrGenerationGpuTests XessFsrGenerationGpuTests.cpp
+        "${PROJECT_SOURCE_DIR}/src/Graphics/D3D11D3D12Interop.cpp")
+    target_compile_features(TRPXessFsrGenerationGpuTests PRIVATE cxx_std_23)
+    target_compile_definitions(TRPXessFsrGenerationGpuTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN
+        TRP_FG_VALIDATION_REVISION="${fgValidationRevision}" TRP_FG_LOADER_SHA="${fgLoaderSha}" TRP_FG_MODULE_SHA="${fgModuleSha}"
+        TRP_XESS_RUNTIME_SHA="${xessGenerationSha}" TRP_XESS_RUNTIME_BYTES=${xessGenerationBytes})
+    target_include_directories(TRPXessFsrGenerationGpuTests PRIVATE ../)
+    target_link_libraries(TRPXessFsrGenerationGpuTests PRIVATE TRPXessRuntime TRPFsrRuntime TRPNeuralRuntime
+        d3d11 d3d12 dxgi d3dcompiler bcrypt user32)
+    foreach(quality IN ITEMS Native Performance)
+        string(TOLOWER "${quality}" qualityLower)
+        set(testName XessFsrGenerationGpu)
+        if(NOT quality STREQUAL Native)
+            string(APPEND testName "-${quality}")
+        endif()
+        add_test(NAME ${testName} COMMAND TRPXessFsrGenerationGpuTests --quality "${qualityLower}"
+            --xess "${TRP_XESS_SDK_DIR}/SKSE/Plugins" --nr "${TRP_NR_RTX40_DLL}" --core "${TRP_NR_DRIVER_CORE}"
+            --runtime "${TRP_FSR_SDK_DIR}/runtime" --output "${CMAKE_BINARY_DIR}/validation/xess-fsr-fg-${qualityLower}.json")
+        set_tests_properties(${testName} PROPERTIES RUN_SERIAL TRUE LABELS GPU TIMEOUT 180)
+    endforeach()
+endif()

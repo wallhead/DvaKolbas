@@ -50,7 +50,19 @@ struct NvidiaHost::SourceXessEvaluationOperations
 #endif
     }
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}
-    GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
+    GenerationPreparationStatus PrepareGeneration(const UpscaleFrame& frame)
+    {
+#if defined(TRP_ENABLE_FSR_FG)
+        if(host.FsrFgActive()) {
+            // SourceFrameEvaluator holds a copy. Capture here, after camera
+            // measurements, XeSS execution and NR have updated that copy.
+            host.fsrGenerationFrame_=frame;
+            return GenerationPreparationStatus::Succeeded;
+        }
+#endif
+        (void)frame;
+        return GenerationPreparationStatus::NotRequested;
+    }
     void RenderReShade(const UpscaleFrame& frame,bool before)
     {
         Trace(before?"ReShade-before-enter":"ReShade-after-enter");
@@ -136,6 +148,13 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     if(FAILED(FailureResult()) || !proxyActive_ || swapChain!=outerSwapChain_ || !upscalerReady_ ||
         !xessResources_ || !context_ || !gameTargets_.GameFacing() || !gameTargets_.UpscaleInput() ||
         !gameTargets_.UpscaleOutput() || !PresentationBackendReadyForEvaluation())return false;
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        if(UpdateFsrSuspension()!=S_OK)return false;
+        const auto waited=fsrPresentation_->WaitBeforeProducer();
+        if(FAILED(waited)){FailLifecycle(waited,"XeSS FSR producer ownership");return false;}
+    }
+#endif
     SourceInternalScope internal(sourceUIInternal_);
     Microsoft::WRL::ComPtr<IDXGISwapChain3> chain;
     if(FAILED(innerSwapChain_->QueryInterface(IID_PPV_ARGS(&chain))))return false;
@@ -144,7 +163,7 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     frame.backend=BackendKind::Xess;frame.color=gameTargets_.GameFacing();frame.input=gameTargets_.UpscaleInput();frame.output=gameTargets_.UpscaleOutput();
     frame.depth=pipeline.mDepthBuffer.mImage;frame.motion=pipeline.mMotionVectors.mImage;
     frame.render=frame.subrect={renderWidth_,renderHeight_};frame.display={outputWidth_,outputHeight_};
-    frame.sourceId=pipeline.mRenderedFrameCount+1;frame.sourceEpoch=xessEpoch_;
+    frame.sourceId=FsrFgActive()?presentCount_+1:pipeline.mRenderedFrameCount+1;frame.sourceEpoch=xessEpoch_;
 #if !defined(TRP_NO_NEURAL_RENDERING)
     frame.sourceEpoch=communityEpoch_;
 #endif
@@ -154,8 +173,20 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     frame.reset=resetNextEvaluation_ || pipeline.mPendingHistoryResets>0 || loadingScreenRoute_.NeedsTemporalReset();
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
     auto* owner=xessResources_->Upscaler();
-    const auto admission=!xessRecovery_ && owner?owner->AdmitFrame(frame.sourceId,frame.sourceEpoch):XessFrameAdmission::Ready;
+    auto admission=!xessRecovery_ && owner?owner->AdmitFrame(frame.sourceId,frame.sourceEpoch):XessFrameAdmission::Ready;
+    // Present identities stay monotonic for the FG transport, but a repeated
+    // engine-rendered source must not execute XeSS or NR a second time.
+    if(FsrFgActive() && admission==XessFrameAdmission::Ready && xessFgHasSource_ &&
+        xessFgSourceEpoch_==frame.sourceEpoch && pipeline.mRenderedFrameCount<=xessFgRenderedCount_)
+        admission=XessFrameAdmission::DuplicateSource;
     SourceXessEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_),nativeUIHandoff,admission};
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        fsrGenerationFrame_=frame;fsrSourceRenderedCount_=pipeline.mRenderedFrameCount;
+        fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
+        fsrMenu_=operations.menu || pipeline.FrameGenerationTransitionBlocked();
+    }
+#endif
     const auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
     if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
         if(operations.error){status_=operations.error->message;logger::error("[XeSS frame] native=0x{:08X} {}",std::uint32_t(operations.error->nativeResult),status_);}
@@ -163,9 +194,18 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     }
     context_->CopyResource(presentation_.Buffers()[index].Get(),frame.output);
     const bool temporal=result.outcome==UpscaleOutcome::Temporal;
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive()) {
+        fsrGenerationOutcome_=result.outcome;fsrSourcePending_=true;
+        if(temporal) {
+            ++fsrGuideCaptureCount_;xessFgHasSource_=true;
+            xessFgRenderedCount_=pipeline.mRenderedFrameCount;xessFgSourceEpoch_=frame.sourceEpoch;
+        }
+    }
+#endif
     const bool changed=evaluationCount_==0 || temporal!=lastXessTemporal_;
     lastXessTemporal_=temporal;resetNextEvaluation_=!temporal;
-    if(temporal){pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();status_="XeSS active | ordinary presentation | FG off";}
+    if(temporal){pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();status_=FsrFgActive()?"XeSS active | FSR FG presenter":"XeSS active | ordinary presentation | FG off";}
     else {loadingScreenRoute_.SpatialSucceeded();status_="XeSS requested; spatial recovery: "+xessRecoveryReason_;}
     if(changed || (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && evaluationCount_%600==0))
         logger::info("[XeSS state] source={} epoch={} ownerThread={} currentThread={} route={} render={}x{} display={}x{} jitter=({},{}) motionScale=({},{}) guide=original-engine-output reset={} reason={}",

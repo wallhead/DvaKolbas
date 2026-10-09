@@ -221,6 +221,8 @@ class NvidiaHost
     std::string xessRecoveryReason_;
     std::string xessStartupFallbackReason_;
     std::uint64_t xessEpoch_{1};
+    std::uint64_t xessFgRenderedCount_{},xessFgSourceEpoch_{};
+    bool xessFgHasSource_{};
 #endif
 #if defined(TRP_ENABLE_FSR)
     std::shared_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;

@@ -223,7 +223,7 @@
       "section": "FrameGeneration",
       "key": "Backend",
       "default": "Auto",
-      "comment": "Presentation backend. Auto uses NVIDIA with DLSS and FSR with FSR upscaling. DLSS can also use FSR FG; FSR upscaling cannot use NVIDIA FG.",
+      "comment": "Presentation backend. Auto uses NVIDIA with DLSS, FSR with FSR upscaling, and ordinary SR-only presentation with XeSS. DLSS and XeSS can select FSR FG explicitly. XeSS NVIDIA FG is pending; FSR upscaling cannot use NVIDIA FG.",
       "restart": true,
       "values": {
         "Auto": "0",

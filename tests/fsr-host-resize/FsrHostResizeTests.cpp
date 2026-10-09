@@ -23,9 +23,9 @@ struct XessResources {
         bool OnOwnerThread(){return onOwner;}
         DWORD OwnerThread(){return 1;}
     } owner;
-    unsigned retirements{};
+    unsigned retirements{};bool canRetire{true};
     Owner* Upscaler(){return &owner;}
-    RetirementResult Retire(){++retirements;return {};}
+    RetirementResult Retire(){++retirements;return {canRetire};}
 };
 #endif
 struct FsrResources {
@@ -54,7 +54,11 @@ struct NvidiaHost {
     NvidiaHost(){ordinaryPresentation_.events=&events;contextStorage.events=&events;fsrResources_->events=&events;}
     bool FsrActive() const {return true;}
     bool OrdinarySourceActive() const {return true;}
-    bool FsrFgActive() const {return false;}
+    bool fg{};bool FsrFgActive() const {return fg;}
+#if defined(TRP_ENABLE_FSR_FG)
+    struct FgPresenter {unsigned retirements{};RetirementResult Retire(){++retirements;return {};}} fgPresenter;
+    FgPresenter* fsrPresentation_{&fgPresenter};
+#endif
     bool RetireCommunityNeural(){events.push_back(0);return true;}
     bool CreateGameFacingResources(IDXGISwapChain*){return true;}
     bool CompleteStartupAfterDeviceCreation(){return true;}
@@ -70,6 +74,17 @@ struct NvidiaHost {
 #include "BeforeResize.inc"
 static void Require(bool condition,const char* name){if(!condition){std::fprintf(stderr,"FAIL: %s\n",name);std::exit(1);}}
 int main(){
+#if defined(TRP_ENABLE_FSR_FG) && defined(TRP_ENABLE_XESS)
+    NvidiaHost combined;combined.fg=true;combined.xessResources_=std::make_shared<XessResources>();
+    combined.xessResources_->canRetire=false;
+    NvidiaHost::LifecycleOperations combinedOps{combined};
+    Require(!TheosRenderPipeline::SourceHostLifecycle::Destroy(combinedOps) && combined.gameTargets_.gameFacing &&
+        combined.xessResources_->retirements==1 && combined.fgPresenter.retirements==1 && combined.fsrResources_->runtime,
+        "failed XeSS retirement after FSR presenter must retain game targets and all remaining owners");
+    combined.xessResources_->canRetire=true;
+    Require(TheosRenderPipeline::SourceHostLifecycle::Destroy(combinedOps) && !combined.gameTargets_.gameFacing &&
+        combined.xessResources_->retirements==2,"retry releases game buffers only after both owners retire");
+#endif
 #if defined(TRP_ENABLE_XESS)
     NvidiaHost worker;worker.xessResources_=std::make_shared<XessResources>();
     Require(worker.BeforeResizeBuffers(nullptr)==DXGI_ERROR_WAS_STILL_DRAWING,"off-owner XeSS resize is retryable");

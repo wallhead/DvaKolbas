@@ -174,7 +174,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     // disable against the completed proxy before its first game-facing Present.
     frameGenerationStateKnown_ = false;
     SetRuntimeEnabled(false);
-    status_ = XessActive()?"Ordinary presenter active; XeSS prepared; awaiting device creation return":FsrFgActive()?"AMD presenter active; FSR feature deferred until device creation returns":FsrActive()?"Ordinary presenter active; FSR feature deferred until device creation returns":"NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
+    status_ = XessActive()?(FsrFgActive()?"AMD presenter active; XeSS prepared; awaiting device creation return":"Ordinary presenter active; XeSS prepared; awaiting device creation return"):FsrFgActive()?"AMD presenter active; FSR feature deferred until device creation returns":FsrActive()?"Ordinary presenter active; FSR feature deferred until device creation returns":"NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
     logger::info("[NvidiaHost] source swapchain active format={}", static_cast<std::uint32_t>(a_desc->BufferDesc.Format));
     logger::info("[NvidiaHost] outer stable-buffer swapchain returned during "
                  "factory creation");
@@ -232,9 +232,18 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
 #if defined(TRP_ENABLE_XESS)
     if(XessActive() && !TheosRenderPipeline::CommunityShaders::Active()) {
         TheosRenderPipeline::SourceInternalScope internal(sourceUIInternal_);
-        xessResources_=std::make_unique<TheosRenderPipeline::Upscaling::XessHostResources>(TheosRenderPipeline::PluginPaths::Directory());
-        const auto& request=sourceUpscalerSettings_.Startup().xess;
-        const auto extent=xessResources_->Initialize(device_.Get(),request.quality,{outputWidth_,outputHeight_},request.sourceEncoding);
+        TheosRenderPipeline::Upscaling::Result<TheosRenderPipeline::Upscaling::Extent> extent;
+        if(FsrFgActive() && xessResources_) {
+            const auto output=xessResources_->Resources().output;
+            if(!output || output->GetDesc().Width!=outputWidth_ || output->GetDesc().Height!=outputHeight_) {
+                status_="XeSS initialized output does not match FSR presentation target";return false;
+            }
+            extent=xessResources_->RenderExtent();
+        } else {
+            xessResources_=std::make_unique<TheosRenderPipeline::Upscaling::XessHostResources>(TheosRenderPipeline::PluginPaths::Directory());
+            const auto& request=sourceUpscalerSettings_.Startup().xess;
+            extent=xessResources_->Initialize(device_.Get(),request.quality,{outputWidth_,outputHeight_},request.sourceEncoding);
+        }
         if(extent){queriedRenderWidth=extent->width;queriedRenderHeight=extent->height;sized=true;}
         else {
             xessStartupFallbackReason_=std::format("{} (native result={})",extent.error().message,extent.error().nativeResult);
@@ -456,14 +465,17 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
     if(XessActive()) {
         if(!xessResources_ || xessResources_->RenderExtent()!=TheosRenderPipeline::Upscaling::Extent{renderWidth_,renderHeight_}){status_="XeSS initialized extent does not match game targets";return false;}
         if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="XeSS native UI resource creation failed";return false;}
+        if(FsrFgActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
+            status_="XeSS + FSR FG requires dedicated native UI resources";return false;
+        }
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
         upscalerReady_=true;splitSourceDLSSActive_=false;xessRecovery_=lastXessTemporal_=false;xessRecoveryReason_.clear();
-        ++xessEpoch_;
+        ++xessEpoch_;xessFgHasSource_=false;
         status_="XeSS context ready; waiting for a validated temporal world frame";
-        logger::info("[XeSS startup] requested=XeSS effective=XeSS quality={} sourceColorEncoding={} render={}x{} output={}x{} requestedFlags={} effectiveFlags={} presentation=ordinary NR=off FG=off",
+        logger::info("[XeSS startup] requested=XeSS effective=XeSS quality={} sourceColorEncoding={} render={}x{} output={}x{} requestedFlags={} effectiveFlags={} presentation={} FG=context-deferred",
             TheosRenderPipeline::Upscaling::XessQualityName(sourceUpscalerSettings_.Effective().xess.quality),
             TheosRenderPipeline::Upscaling::ColorEncodingName(sourceUpscalerSettings_.Effective().xess.sourceEncoding),
-            renderWidth_,renderHeight_,outputWidth_,outputHeight_,xessResources_->Upscaler()->RequestedFlags(),xessResources_->Upscaler()->EffectiveFlags());
+            renderWidth_,renderHeight_,outputWidth_,outputHeight_,xessResources_->Upscaler()->RequestedFlags(),xessResources_->Upscaler()->EffectiveFlags(),FsrFgActive()?"AMD-D3D12":"ordinary-D3D11");
         return true;
     }
 #endif
@@ -522,16 +534,44 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
         });
     fsrPresentation_=std::make_unique<FsrHostPresentation>();
     Upscaling::Result<Upscaling::Extent> extent;
+#if defined(TRP_ENABLE_XESS)
+    if(XessActive()) {
+        SourceInternalScope internal(sourceUIInternal_);
+        xessResources_=std::make_unique<Upscaling::XessHostResources>(PluginPaths::Directory());
+        const auto& request=sourceUpscalerSettings_.Startup().xess;
+        extent=xessResources_->Initialize(producer,request.quality,{descriptor.BufferDesc.Width,descriptor.BufferDesc.Height},request.sourceEncoding);
+        if(!extent) {
+            xessStartupFallbackReason_=std::format("{} (native result={})",extent.error().message,extent.error().nativeResult);
+            const auto retired=xessResources_->Retire();
+            if(!retired){status_=retired.error().message;return E_FAIL;}
+            xessResources_.reset();
+            auto fallback=sourceUpscalerSettings_.Startup();fallback.mode=FSR;
+            fallback.fsr.quality=fallback.xess.quality;fallback.fsr.sourceColorEncoding=fallback.xess.sourceEncoding;
+            fallback.fsr.providerPolicy=Upscaling::ProviderPolicy::Analytical;
+            if(!sourceUpscalerSettings_.UseStartupFallback(fallback)){status_="XeSS fallback attempted after startup commitment";return E_FAIL;}
+            backendDecision_.backend=Upscaling::BackendKind::Fsr;AdoptEffectiveSourceUpscalerSettings();
+            logger::warn("[XeSS startup] requested=XeSS effective=FSR on FSR presenter before game commitment: {}",xessStartupFallbackReason_);
+        }
+    }
+#endif
     if(FsrActive())extent=fsrPresentation_->Create(factory,producer,fsrResources_,descriptor,sourceUpscalerSettings_.Startup().fsr);
     else {
-        auto render=FsrHostPresentation::ResolveExternalRenderExtent(descriptor,[&](UINT width,UINT height,int* renderWidth,int* renderHeight){
+        Upscaling::Result<Upscaling::Extent> render;
+#if defined(TRP_ENABLE_XESS)
+        if(XessActive())render=xessResources_->RenderExtent();
+        else
+#endif
+        render=FsrHostPresentation::ResolveExternalRenderExtent(descriptor,[&](UINT width,UINT height,int* renderWidth,int* renderHeight){
             return SourceDLSSG::QueryRenderSize(width,height,sourceUpscalerSettings_.Startup().AllocationQuality(),renderWidth,renderHeight);
         });
         if(!render){status_=render.error().message;return E_INVALIDARG;}
         // Encoding is a shared, explicitly configured SDR producer contract.
         // Inactive FSR SR quality/model policy never participates in this owner.
-        extent=fsrPresentation_->CreateExternal(factory,producer,fsrResources_,descriptor,
-            sourceUpscalerSettings_.Startup().fsr,*render,{});
+        auto generationSettings=sourceUpscalerSettings_.Startup().fsr;
+        if(XessActive())generationSettings.sourceColorEncoding=sourceUpscalerSettings_.Startup().xess.sourceEncoding;
+        // Both external producers declare current-to-previous motion without
+        // jitter; camera jitter is passed separately on the completed frame.
+        extent=fsrPresentation_->CreateExternal(factory,producer,fsrResources_,descriptor,generationSettings,*render,{});
     }
     if (!extent) {
         const auto& fsr=sourceUpscalerSettings_.Startup().fsr;
@@ -557,6 +597,9 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
 {
 #if defined(TRP_ENABLE_FSR_FG)
     if (!FsrFgActive() || &outer!=outerSwapChain_ || !fsrPresentation_ || FAILED(FailureResult())) return E_UNEXPECTED;
+#if defined(TRP_ENABLE_XESS)
+    if(XessActive() && xessResources_ && !xessResources_->Upscaler()->OnOwnerThread())return DXGI_ERROR_WAS_STILL_DRAWING;
+#endif
     auto candidate=fsrDescriptor_;candidate.BufferCount=2;candidate.BufferDesc.Width=width;candidate.BufferDesc.Height=height;
     if (format!=DXGI_FORMAT_UNKNOWN)candidate.BufferDesc.Format=format;candidate.Flags=flags;
     auto valid=TheosRenderPipeline::ValidateFsrResize(count,masks,queues);if(FAILED(valid))return valid;
@@ -574,7 +617,14 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
     // Resolve external source sizing before retiring any live reader or buffer.
     // A rejected query leaves the running chain and source fully usable.
     TheosRenderPipeline::Upscaling::Extent externalRender{};
-    if(!FsrActive()) {
+    if(XessActive()) {
+        // This first Skyrim FG trial qualifies borderless suspend/restore at
+        // the startup size. Reject a new size before retiring live owners.
+        if((*translated)->BufferDesc.Width!=outputWidth_ || (*translated)->BufferDesc.Height!=outputHeight_) {
+            status_="XeSS + FSR FG output-size change requires restart; running resources retained";return E_INVALIDARG;
+        }
+        externalRender={UINT(renderWidth_),UINT(renderHeight_)};
+    } else if(!FsrActive()) {
         int renderWidth{},renderHeight{};
         if(!TheosRenderPipeline::SourceDLSSG::QueryRenderSize((*translated)->BufferDesc.Width,(*translated)->BufferDesc.Height,
             sourceUpscalerSettings_.Startup().AllocationQuality(),&renderWidth,&renderHeight) || renderWidth<=0 || renderHeight<=0) {
@@ -591,12 +641,20 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
             return S_OK;
         },
         [&]()->HRESULT {const auto before=fsrPresentation_->BeforeResize();
-            if(!before){status_=before.error().message;return FailLifecycle(E_FAIL,"AMD resize retirement");}return S_OK;});
+            if(!before){status_=before.error().message;return FailLifecycle(E_FAIL,"AMD resize retirement");}
+#if defined(TRP_ENABLE_XESS)
+            if(xessResources_) {
+                const auto retired=xessResources_->Retire();
+                if(!retired){status_=retired.error().message;return FailLifecycle(E_FAIL,"XeSS AMD resize retirement");}
+            }
+#endif
+            return S_OK;});
     if (FAILED(admission)) return admission;
     frameGenerationEnabled_=false;fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
     resetNextEvaluation_=true;
     EndNativeUIPass();context_->ClearState();context_->Flush();
     gameTargets_.ResetGameFacingAfterRetirement();ReleaseSourceUpscaler(true);presentation_.ResetAfterRetirement();
+    if(FAILED(FailureResult()))return FailureResult();
     TheosRenderPipeline::Upscaling::Result<TheosRenderPipeline::FsrHostResize> resized;
     if(FsrActive())resized=fsrPresentation_->Resize(**translated);
     else resized=fsrPresentation_->ResizeExternal(**translated,externalRender);
