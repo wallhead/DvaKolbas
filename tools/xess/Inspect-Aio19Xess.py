@@ -1,4 +1,4 @@
-"""Read-only, hash-gated AIO19 XeSS inventory and API-loader witnesses.
+"""Read-only, hash-gated AIO19 XeSS inventory, loader and dispatch witnesses.
 
 The runtime members are streamed from 7z; no additional large DLL copies and
 no DLL loading/execution are needed. Requires pefile and Capstone.
@@ -104,6 +104,57 @@ def loader_witnesses(path):
     return result
 
 
+def sr_dispatch_witness(path):
+    """Verify the API-table chain into a static D3D12 execute call site."""
+    pe = pefile.PE(str(path))
+    base = pe.OPTIONAL_HEADER.ImageBase
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
+    decoder.detail = True
+
+    def fragment(start):
+        entry = next(e.struct for e in pe.DIRECTORY_ENTRY_EXCEPTION if e.struct.BeginAddress == start)
+        return list(decoder.disasm(pe.get_data(start, entry.EndAddress - start), base + start))
+
+    constructor = fragment(0x11F880)
+    execute = fragment(0x120070)
+    loader = fragment(0x11F310)
+    by_rva = {i.address - base: i for i in constructor + execute + loader}
+
+    def rip_target(rva):
+        i = by_rva[rva]
+        operand = next(o for o in i.operands if o.type == capstone.x86.X86_OP_MEM)
+        if operand.mem.base != capstone.x86.X86_REG_RIP:
+            raise ValueError("Unexpected API-table address operand")
+        return i.address + i.size + operand.mem.disp - base
+
+    table = rip_target(0x11F9B2)
+    holder = rip_target(0x11F9B9)
+    slot = rip_target(0x11F854)  # store immediately after the pinned Execute resolver
+    if (table, holder, slot) != (0x137AB50, 0x1375E40, 0x137AC20):
+        raise ValueError("Unexpected XeSS API-table chain")
+    if rip_target(0x120135) != holder or slot - table != 0xD0:
+        raise ValueError("D3D12 dispatch does not select the pinned Execute slot")
+    expected = {0x12013C: ("mov", "rbx, qword ptr [rax + 0xd0]"),
+                0x120148: ("lea", "r8, [rbp - 0x39]"),
+                0x12014C: ("mov", "rdx, r14"),
+                0x12014F: ("mov", "rcx, qword ptr [rax]"),
+                0x120152: ("call", "rbx")}
+    for rva, (mnemonic, operands) in expected.items():
+        i = by_rva[rva]
+        if (i.mnemonic, i.op_str) != (mnemonic, operands):
+            raise ValueError(f"Unexpected D3D12 dispatch instruction at {rva:x}")
+    method = int.from_bytes(pe.get_data(0x12FBFF8, 8), "little") - base
+    if method != 0x11FF30:
+        raise ValueError("Unexpected XeSS execute virtual-method entry")
+    return {"api": "xessD3D12Execute", "methodEntryRva": hex(method),
+            "vtableEntryRva": "0x12fbff8", "apiTableRva": hex(table),
+            "apiTableHolderRva": hex(holder), "resolvedSlotRva": hex(slot),
+            "callRva": "0x120152", "parameterBase": "rbp-0x39",
+            "instructions": [{"rva": hex(i.address - base), "bytes": i.bytes.hex(),
+                              "text": f"{i.mnemonic} {i.op_str}"} for i in execute],
+            "limits": "Static dispatch and field stores, not a runtime capture; texture provenance, formats and upstream conversions remain unverified."}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--archive", required=True, type=Path)
@@ -111,16 +162,17 @@ def main():
     parser.add_argument("--sevenzip", default="C:/Program Files/7-Zip/7z.exe", type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    report = {"scope": "Static hashes, streamed archive members and unwind-bounded API loader witnesses; no DLL execution",
+    report = {"scope": "Static hashes, streamed archive members and unwind-bounded API loader/dispatch witnesses; no DLL execution",
               "sdkTag": "v3.0.2", "sdkCommit": SDK_COMMIT,
               "archive": identify(args.archive, ARCHIVE_PIN),
               "callers": {name: identify(args.extracted / name, pin) for name, pin in PE_PINS.items()},
               "runtimes": {name: runtime_member(args, name, pin) for name, pin in SDK_BLOBS.items()},
               "loaderWitnesses": loader_witnesses(args.extracted / "UpscalerBasePlugin/PDPerfPlugin.dll"),
-              "limits": "Symbol resolution establishes supported API families, not executed frame parameters, buffer colour correctness or gameplay qualification."}
+              "srDispatch": sr_dispatch_witness(args.extracted / "UpscalerBasePlugin/PDPerfPlugin.dll"),
+              "limits": "Loader and static dispatch witnesses do not establish runtime-selected frame parameters, buffer colour correctness or gameplay qualification."}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"PASS: {len(report['runtimes'])} official SDK runtime matches; {len(report['loaderWitnesses'])} verified loader witnesses")
+    print(f"PASS: {len(report['runtimes'])} official SDK runtime matches; {len(report['loaderWitnesses'])} verified loader witnesses; D3D12 SR dispatch chain")
 
 
 if __name__ == "__main__":

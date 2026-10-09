@@ -1,5 +1,5 @@
 {
-  "scope": "Static hashes, streamed archive members and unwind-bounded API loader witnesses; no DLL execution",
+  "scope": "Static hashes, streamed archive members and unwind-bounded API loader/dispatch witnesses; no DLL execution",
   "sdkTag": "v3.0.2",
   "sdkCommit": "8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0",
   "archive": {
@@ -436,5 +436,303 @@
       ]
     }
   ],
-  "limits": "Symbol resolution establishes supported API families, not executed frame parameters, buffer colour correctness or gameplay qualification."
+  "srDispatch": {
+    "api": "xessD3D12Execute",
+    "methodEntryRva": "0x11ff30",
+    "vtableEntryRva": "0x12fbff8",
+    "apiTableRva": "0x137ab50",
+    "apiTableHolderRva": "0x1375e40",
+    "resolvedSlotRva": "0x137ac20",
+    "callRva": "0x120152",
+    "parameterBase": "rbp-0x39",
+    "instructions": [
+      {
+        "rva": "0x120070",
+        "bytes": "4c89b424c8000000",
+        "text": "mov qword ptr [rsp + 0xc8], r14"
+      },
+      {
+        "rva": "0x120078",
+        "bytes": "4c8b7768",
+        "text": "mov r14, qword ptr [rdi + 0x68]"
+      },
+      {
+        "rva": "0x12007c",
+        "bytes": "0f57c9",
+        "text": "xorps xmm1, xmm1"
+      },
+      {
+        "rva": "0x12007f",
+        "bytes": "48894547",
+        "text": "mov qword ptr [rbp + 0x47], rax"
+      },
+      {
+        "rva": "0x120083",
+        "bytes": "0f57c0",
+        "text": "xorps xmm0, xmm0"
+      },
+      {
+        "rva": "0x120086",
+        "bytes": "f3480f2c4738",
+        "text": "cvttss2si rax, dword ptr [rdi + 0x38]"
+      },
+      {
+        "rva": "0x12008c",
+        "bytes": "c745ff0000803f",
+        "text": "mov dword ptr [rbp - 1], 0x3f800000"
+      },
+      {
+        "rva": "0x120093",
+        "bytes": "0f2945d7",
+        "text": "movaps xmmword ptr [rbp - 0x29], xmm0"
+      },
+      {
+        "rva": "0x120097",
+        "bytes": "f30f104744",
+        "text": "movss xmm0, dword ptr [rdi + 0x44]"
+      },
+      {
+        "rva": "0x12009c",
+        "bytes": "894507",
+        "text": "mov dword ptr [rbp + 7], eax"
+      },
+      {
+        "rva": "0x12009f",
+        "bytes": "f3480f2c473c",
+        "text": "cvttss2si rax, dword ptr [rdi + 0x3c]"
+      },
+      {
+        "rva": "0x1200a5",
+        "bytes": "0f294d27",
+        "text": "movaps xmmword ptr [rbp + 0x27], xmm1"
+      },
+      {
+        "rva": "0x1200a9",
+        "bytes": "89450b",
+        "text": "mov dword ptr [rbp + 0xb], eax"
+      },
+      {
+        "rva": "0x1200ac",
+        "bytes": "33c0",
+        "text": "xor eax, eax"
+      },
+      {
+        "rva": "0x1200ae",
+        "bytes": "384754",
+        "text": "cmp byte ptr [rdi + 0x54], al"
+      },
+      {
+        "rva": "0x1200b1",
+        "bytes": "0f294d37",
+        "text": "movaps xmmword ptr [rbp + 0x37], xmm1"
+      },
+      {
+        "rva": "0x1200b5",
+        "bytes": "f30f104f48",
+        "text": "movss xmm1, dword ptr [rdi + 0x48]"
+      },
+      {
+        "rva": "0x1200ba",
+        "bytes": "0f95c0",
+        "text": "setne al"
+      },
+      {
+        "rva": "0x1200bd",
+        "bytes": "807e3500",
+        "text": "cmp byte ptr [rsi + 0x35], 0"
+      },
+      {
+        "rva": "0x1200c1",
+        "bytes": "894503",
+        "text": "mov dword ptr [rbp + 3], eax"
+      },
+      {
+        "rva": "0x1200c4",
+        "bytes": "488b4708",
+        "text": "mov rax, qword ptr [rdi + 8]"
+      },
+      {
+        "rva": "0x1200c8",
+        "bytes": "488945c7",
+        "text": "mov qword ptr [rbp - 0x39], rax"
+      },
+      {
+        "rva": "0x1200cc",
+        "bytes": "488b4710",
+        "text": "mov rax, qword ptr [rdi + 0x10]"
+      },
+      {
+        "rva": "0x1200d0",
+        "bytes": "488945cf",
+        "text": "mov qword ptr [rbp - 0x31], rax"
+      },
+      {
+        "rva": "0x1200d4",
+        "bytes": "f30f1145f7",
+        "text": "movss dword ptr [rbp - 9], xmm0"
+      },
+      {
+        "rva": "0x1200d9",
+        "bytes": "f30f114dfb",
+        "text": "movss dword ptr [rbp - 5], xmm1"
+      },
+      {
+        "rva": "0x1200de",
+        "bytes": "7508",
+        "text": "jne 0x1801200e8"
+      },
+      {
+        "rva": "0x1200e0",
+        "bytes": "488b4718",
+        "text": "mov rax, qword ptr [rdi + 0x18]"
+      },
+      {
+        "rva": "0x1200e4",
+        "bytes": "488945d7",
+        "text": "mov qword ptr [rbp - 0x29], rax"
+      },
+      {
+        "rva": "0x1200e8",
+        "bytes": "488b4730",
+        "text": "mov rax, qword ptr [rdi + 0x30]"
+      },
+      {
+        "rva": "0x1200ec",
+        "bytes": "48c745e700000000",
+        "text": "mov qword ptr [rbp - 0x19], 0"
+      },
+      {
+        "rva": "0x1200f4",
+        "bytes": "4885c0",
+        "text": "test rax, rax"
+      },
+      {
+        "rva": "0x1200f7",
+        "bytes": "7504",
+        "text": "jne 0x1801200fd"
+      },
+      {
+        "rva": "0x1200f9",
+        "bytes": "488b4728",
+        "text": "mov rax, qword ptr [rdi + 0x28]"
+      },
+      {
+        "rva": "0x1200fd",
+        "bytes": "488945ef",
+        "text": "mov qword ptr [rbp - 0x11], rax"
+      },
+      {
+        "rva": "0x120101",
+        "bytes": "488d8e38010000",
+        "text": "lea rcx, [rsi + 0x138]"
+      },
+      {
+        "rva": "0x120108",
+        "bytes": "8b4770",
+        "text": "mov eax, dword ptr [rdi + 0x70]"
+      },
+      {
+        "rva": "0x12010b",
+        "bytes": "488bd7",
+        "text": "mov rdx, rdi"
+      },
+      {
+        "rva": "0x12010e",
+        "bytes": "89450f",
+        "text": "mov dword ptr [rbp + 0xf], eax"
+      },
+      {
+        "rva": "0x120111",
+        "bytes": "8b4774",
+        "text": "mov eax, dword ptr [rdi + 0x74]"
+      },
+      {
+        "rva": "0x120114",
+        "bytes": "894513",
+        "text": "mov dword ptr [rbp + 0x13], eax"
+      },
+      {
+        "rva": "0x120117",
+        "bytes": "8b8780000000",
+        "text": "mov eax, dword ptr [rdi + 0x80]"
+      },
+      {
+        "rva": "0x12011d",
+        "bytes": "894517",
+        "text": "mov dword ptr [rbp + 0x17], eax"
+      },
+      {
+        "rva": "0x120120",
+        "bytes": "8b8784000000",
+        "text": "mov eax, dword ptr [rdi + 0x84]"
+      },
+      {
+        "rva": "0x120126",
+        "bytes": "89451b",
+        "text": "mov dword ptr [rbp + 0x1b], eax"
+      },
+      {
+        "rva": "0x120129",
+        "bytes": "8b4778",
+        "text": "mov eax, dword ptr [rdi + 0x78]"
+      },
+      {
+        "rva": "0x12012c",
+        "bytes": "89451f",
+        "text": "mov dword ptr [rbp + 0x1f], eax"
+      },
+      {
+        "rva": "0x12012f",
+        "bytes": "8b477c",
+        "text": "mov eax, dword ptr [rdi + 0x7c]"
+      },
+      {
+        "rva": "0x120132",
+        "bytes": "894523",
+        "text": "mov dword ptr [rbp + 0x23], eax"
+      },
+      {
+        "rva": "0x120135",
+        "bytes": "488b05045d2501",
+        "text": "mov rax, qword ptr [rip + 0x1255d04]"
+      },
+      {
+        "rva": "0x12013c",
+        "bytes": "488b98d0000000",
+        "text": "mov rbx, qword ptr [rax + 0xd0]"
+      },
+      {
+        "rva": "0x120143",
+        "bytes": "e8184bf7ff",
+        "text": "call 0x180094c60"
+      },
+      {
+        "rva": "0x120148",
+        "bytes": "4c8d45c7",
+        "text": "lea r8, [rbp - 0x39]"
+      },
+      {
+        "rva": "0x12014c",
+        "bytes": "498bd6",
+        "text": "mov rdx, r14"
+      },
+      {
+        "rva": "0x12014f",
+        "bytes": "488b08",
+        "text": "mov rcx, qword ptr [rax]"
+      },
+      {
+        "rva": "0x120152",
+        "bytes": "ffd3",
+        "text": "call rbx"
+      },
+      {
+        "rva": "0x120154",
+        "bytes": "4c8bb424c8000000",
+        "text": "mov r14, qword ptr [rsp + 0xc8]"
+      }
+    ],
+    "limits": "Static dispatch and field stores, not a runtime capture; texture provenance, formats and upstream conversions remain unverified."
+  },
+  "limits": "Loader and static dispatch witnesses do not establish runtime-selected frame parameters, buffer colour correctness or gameplay qualification."
 }

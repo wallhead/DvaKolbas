@@ -43,7 +43,36 @@ Capstone disassembly bounded by PE unwind entries confirms API-name references p
 
 AIO19's INI also names XeSS upscaling and XeSS FG modes. Its broader API string inventory contains XeLL and FG resource-tagging names. The seven disassembly witnesses are stronger evidence than strings alone, but still only establish loader behavior. They do not prove the selected runtime path was used in a frame.
 
-Not yet established by RE: AIO19's actual jitter signs, motion scales, initialization flags, colour conversion, resource formats, or reader retirement rules. Optional FG frame-count symbol resolution does not prove multi-frame generation on NVIDIA/AMD. No private AIO19 implementation is needed to use the unmodified public SDK.
+Optional FG frame-count symbol resolution does not prove multi-frame generation on NVIDIA/AMD. No private AIO19 implementation is needed to use the unmodified public SDK.
+
+### Follow-up: actual static SR dispatch
+
+Further Capstone tracing on the same pinned `PDPerfPlugin.dll` establishes the function-table chain beyond symbol loading:
+
+1. The XeSS wrapper constructor at `0x11f880` stores API-table address `0x137ab50` into holder `0x1375e40` at `0x11f9b9`.
+2. The loader stores the resolved `xessD3D12Execute` pointer into `0x137ac20` at `0x11f854`.
+3. The execution method's D3D12 fragment loads the holder at `0x120135`, selects table offset `0xd0` at `0x12013c`, then calls that pointer at `0x120152`. The slot identity agrees exactly: `0x137ab50 + 0xd0 = 0x137ac20`.
+4. The method starts at `0x11ff30`, referenced by the XeSS wrapper's virtual-method table at `0x12fbff8`. Its platform selector distinguishes the D3D11 branch from the D3D12 branch.
+
+The D3D12 fragment constructs the public `xess_d3d12_execute_params_t` block at `rbp-0x39`. Mapping stores against the pinned public header gives these static observations. `frame` and `wrapper` below are names assigned for review, not recovered source identifiers:
+
+| SDK field | Observed source/store |
+| --- | --- |
+| Colour resource | `frame+0x08` |
+| Velocity resource | `frame+0x10` |
+| Depth resource | `frame+0x18` only when `wrapper+0x35` is zero; otherwise initially null |
+| Exposure / responsive-mask textures | Null in this fragment |
+| Output resource | `frame+0x30`, falling back to `frame+0x28` when null |
+| Jitter X/Y | Float values forwarded from `frame+0x44/+0x48`, without a sign change here |
+| Exposure scale | Constant `1.0f` |
+| History reset | Boolean-normalized byte from `frame+0x54` |
+| Input width/height | Float-to-integer conversion from `frame+0x38/+0x3c` |
+| Input colour / motion / depth bases | Forwarded from `frame+0x70/+0x74`, `+0x80/+0x84`, `+0x78/+0x7c` respectively |
+| Command list | `frame+0x68`, passed as the SDK's second argument |
+
+The initializer at `0x11fd30` also conditionally constructs the SDK high-resolution-motion, auto-exposure, LDR, inverted-depth and jittered-motion bits from its generic configuration. This confirms those are explicit wrapper choices; it does not establish their values during a user's game session.
+
+The verifier now records the full D3D12 fragment's instruction bytes and verifies the table/slot/call chain. Static call-site identification is not proof that a particular gameplay frame executed it. Still unverified: the upstream construction of `frame`, actual resource formats and colour encoding, original jitter signs and motion scales, selected configuration flags, barriers and downstream reader retirement. Those are the next RE targets alongside the official SDK implementation work.
 
 ### Reproduce
 
@@ -56,7 +85,7 @@ C:/Python314/python.exe tools/xess/Inspect-Aio19Xess.py `
   --output research/xess/aio19-sdk-witnesses-2026-10-09.json
 ```
 
-Observed result: `PASS: 4 official SDK runtime matches; 7 verified loader witnesses`. Detailed hashes, instruction bytes and RVAs are in [the witness report](aio19-sdk-witnesses-2026-10-09.json). A different input artifact is rejected rather than interpreted using these RVAs.
+Observed result: `PASS: 4 official SDK runtime matches; 7 verified loader witnesses; D3D12 SR dispatch chain`. Detailed hashes, instruction bytes and RVAs are in [the witness report](aio19-sdk-witnesses-2026-10-09.json). A different input artifact is rejected rather than interpreted using these RVAs.
 
 ## Official contracts affecting our integration
 
