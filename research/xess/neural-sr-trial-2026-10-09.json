@@ -20,11 +20,22 @@
   },
   "standalone": {
     "test": "PostXessGpu",
-    "qualities": ["Native (640x360)", "Performance (279x157 -> 640x360, actual SDK dimensions)"],
-    "handoffEncodings": ["Gamma22", "SRGB"],
+    "qualities": [
+      "Native (640x360)",
+      "Performance (279x157 -> 640x360, actual SDK dimensions)"
+    ],
+    "handoffEncodings": [
+      "Gamma22",
+      "SRGB"
+    ],
     "frames": 128,
     "perCase": "15 enabled Before and 15 enabled After evaluations; one exact disabled byte bypass in each placement; preserved alpha; measured changed RGB",
-    "liveEdits": ["Style 1 -> 0 -> 1", "PassCount 1 -> 2 -> 1", "Before -> After", "NR off -> on"],
+    "liveEdits": [
+      "Style 1 -> 0 -> 1",
+      "PassCount 1 -> 2 -> 1",
+      "Before -> After",
+      "NR off -> on"
+    ],
     "pendingReader": "Genuine downstream GPU copy held behind a fence; NR style change drains reader before resource reuse (110.41 ms observed in final regression run)",
     "debugLayers": "Unavailable; debug-dependent pixel fixture explicitly skips. Actual hardware source/NR/readers ran without debug layers."
   },
@@ -47,5 +58,45 @@
     "Native/Quality XeSS SR-only Skyrim evidence is already recorded separately. Native/Performance with NR still needs gameplay.",
     "RTX 20/30/50 and AMD/Intel XeSS execution not hardware-qualified by this local test.",
     "The earlier intermittent pre-menu breakpoint remains unexplained; bounded diagnostics are included without suppressing exceptions."
-  ]
+  ],
+  "reviewFollowUp": {
+    "sourceRevision": "df7abe212361",
+    "review": "COMMIT_REVIEW_2026-10-09_XESS.md",
+    "changes": [
+      "Duplicate/non-advancing sources and foreign-thread temporal attempts defer to one spatial frame before community NR, shared input preparation or SDK calls. Context retained; next owner-thread new source resumes with history reset.",
+      "Wrong-thread ResizeBuffers returns WAS_STILL_DRAWING before any NR/presentation/resource retirement; owner-thread retry follows normal teardown. SDK destruction affinity and failed-reader ownership remain strict.",
+      "First defer per reason logs source/epoch and owner/current thread IDs; XeSS state includes both thread IDs.",
+      "Unqualified effective flags report actual dispatcher version and requested/effective flags. Exact 2.0.2 LDR stripping remains the only qualified exception.",
+      "NR encoding mismatch reports both current values, INI sections and Save/restart guidance. Existing explicit encodings and INI layout retained.",
+      "Menu and README state RTX 4080 SUPER qualification and pending AMD/Intel/GTX hardware testing."
+    ],
+    "verification": {
+      "allTargetsBuild": "Passed",
+      "nonGpuLabelSuite": "199 passed, 1 unavailable ML fixture skipped; no failures",
+      "targetedGpu": "5 passed, 1 debug-dependent peripheral pixel fixture skipped; no failures",
+      "total": "204 passed, 2 skipped",
+      "regressions": "Actual host-operation and resize fixtures fail without their guards and pass with the fixes. Actual XeSS GPU owner resumes temporal dispatch after duplicate and foreign-thread admission checks. Version fixtures qualify 2.0.2 LDR stripping and reject unqualified 2.0.1/2.0.3 stripping with diagnostics."
+    },
+    "installedTrial": {
+      "profile": "V5.4 NO-LORE",
+      "mod": "RaZKolbaS XeSS NR trial - df7abe212361",
+      "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZKolbaS XeSS NR trial - df7abe212361",
+      "sourceRevision": "df7abe212361",
+      "pluginSha256": "ed063927660df572f6856444c0e3d961ab7f725215ed358a64c18df038c490db",
+      "archiveSha256": "b9e3ff1e3b8f3960f011733afe541041d6e31643dc26fd863ecd1c7a690b995e",
+      "verifiedArchiveFiles": 13,
+      "rollbackMod": "RaZKolbaS XeSS NR trial - 69fbc8c61f3d",
+      "rollbackDllSha256": "662B4905006892B40AD644E13AFF0A4788E937B098F5D365947E78E429AFEA9D",
+      "rollbackIniSha256": "98C72C7A461B86EC9AFA80A28B75CF5A1E1F8BC77E739666B129F271C8D816CD",
+      "mo2SettingsSha256": "BC32E8C888188BE1A87AA4A444AB379C3887E34F0F4CF18838FB587B5BBC76B9",
+      "gameplayQualified": false,
+      "configuration": "XeSS Native; NR Before; 1 pass; existing tuning; FG/HDR off"
+    },
+    "preservation": "13 archive entries verified against stage; installed INI hash identical to previous trial; previous DLL/INI and MO2 configuration unchanged; modlist backed up.",
+    "remaining": [
+      "Full XeSS device/queue/bridge retention across resize is deferred; current resize still rebuilds the owner and fatal reconstruction policy is unchanged.",
+      "Crash diagnostics and RE witnesses are unchanged per user-directed scope.",
+      "Milestone 6 still requires Skyrim Native/Performance NR camera/HUD and live-control qualification; milestone count remains 5 of 8."
+    ]
+  }
 }
