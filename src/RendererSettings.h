@@ -10,6 +10,7 @@
 #include "FrameGen/GenerationBackendPreference.h"
 #include "WeatherAppearance.h"
 #include "Upscaling/FSRSettings.h"
+#include "Upscaling/XessSettings.h"
 #include <array>
 #include <cmath>
 #include <utility>
@@ -27,6 +28,7 @@ struct RendererSettingsDraft
     bool sharpening{true};
     float sharpness{0.672f};
     Upscaling::FsrSettings fsr;
+    Upscaling::XessSettings xess;
     bool generationEnabled{true}, dynamicResolution{};
     long generationBackend{1};
     GenerationBackendPreference generationBackendPreference{};
@@ -48,18 +50,18 @@ struct RendererSettingsDraft
         bool captured{}, generationEnabled{}, neuralEnabled{}, hdrEnabled{}, dynamicResolution{};
         long generationBackend{};
         bool nativeScale{};
-    } nvidiaMode, fsrMode;
+    } nvidiaMode, fsrMode, xessMode;
 };
 
 inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
 {
     if (mode == draft.upscaleType) return;
-    auto& previous = draft.upscaleType == FSR ? draft.fsrMode : draft.nvidiaMode;
+    auto& previous = draft.upscaleType == Xess ? draft.xessMode : draft.upscaleType == FSR ? draft.fsrMode : draft.nvidiaMode;
     previous = {true, draft.generationEnabled, draft.sourceDLSSG.neuralEnabled,
                 draft.sourceDLSSG.hdrOutput.enabled, draft.dynamicResolution, draft.generationBackend,
                 draft.upscaleType == DLAA};
     draft.upscaleType = mode;
-    const auto& next = mode == FSR ? draft.fsrMode : draft.nvidiaMode;
+    const auto& next = mode == Xess ? draft.xessMode : mode == FSR ? draft.fsrMode : draft.nvidiaMode;
     if (next.captured) {
         draft.generationBackend = next.generationBackend;
         draft.generationEnabled = next.generationEnabled;
@@ -75,6 +77,7 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     } else {
         draft.generationBackend = 1;
     }
+    if(mode==Xess){draft.generationBackend=0;draft.generationEnabled=false;draft.sourceDLSSG.neuralEnabled=false;draft.sourceDLSSG.hdrOutput.enabled=false;draft.dynamicResolution=false;draft.enableJitter=true;}
     if(mode==FSR && draft.generationBackendPreference==GenerationBackendPreference::Nvidia)
         draft.generationBackendPreference=GenerationBackendPreference::Auto;
     if (draft.generationBackend != 0)
@@ -101,6 +104,7 @@ inline void RefreshAppliedRendererSettingsDraft(RendererSettingsDraft& draft, Re
 {
     current.nvidiaMode = draft.nvidiaMode;
     current.fsrMode = draft.fsrMode;
+    current.xessMode = draft.xessMode;
     draft = std::move(current);
 }
 
@@ -129,6 +133,7 @@ inline int CountRendererSettingsChanges(const RendererSettingsDraft& draft, cons
     }
     count += std::abs(draft.sharpness - current.sharpness) > 0.0001f;
     count += draft.fsr != current.fsr;
+    count += draft.xess != current.xess;
     count += draft.generationEnabled != current.generationEnabled;
     count += draft.generationBackend != current.generationBackend;
     count += draft.generationBackendPreference != current.generationBackendPreference;
@@ -226,18 +231,24 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         !FsrOnlyRendererSelectionAllowed(draft.upscaleType, draft.generationBackend, draft.sourceDLSSG.neuralEnabled)) {
         return "This GPU supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
     }
-    if (capabilities.fsrOnlyRenderer && capabilities.adapterVendorId==0x10de &&
+    if (draft.upscaleType==FSR && capabilities.fsrOnlyRenderer && capabilities.adapterVendorId==0x10de &&
         (draft.fsr.providerPolicy!=Upscaling::ProviderPolicy::Analytical ||
          draft.fsr.generationProviderPolicy!=Upscaling::ProviderPolicy::Analytical))
         return "Non-RTX NVIDIA uses FSR3 upscaling and FSR3 frame generation; ML providers are unavailable.";
     if (capabilities.fsrFgPresenter && !draft.nativeUI) {
         return "Native UI must stay enabled while the FSR presenter is active. Restart with the new presenter before disabling it.";
     }
-    if (draft.upscaleType != DLSS && draft.upscaleType != DLAA && draft.upscaleType != FSR)
+    if (draft.upscaleType != DLSS && draft.upscaleType != DLAA && draft.upscaleType != FSR && draft.upscaleType != Xess)
     {
         return "Choose DLSS or FSR; DLSS Quality=Native selects DLAA.";
     }
-    if (draft.upscaleType == FSR) {
+    if(draft.upscaleType==Xess) {
+        if(!XessBuilt)return "XeSS is not included in this build.";
+        if(!Upscaling::ValidXessSettings(draft.xess))return "XeSS quality/source encoding is invalid.";
+        if(draft.generationBackend!=0 || draft.generationEnabled || draft.sourceDLSSG.neuralEnabled)return "This XeSS SR trial requires NR and frame generation off.";
+        if(draft.dynamicResolution || draft.sourceDLSSG.hdrOutput.enabled)return "XeSS SR currently requires fixed dimensions and SDR output.";
+        if(!draft.enableJitter)return "XeSS requires camera jitter enabled.";
+    } else if (draft.upscaleType == FSR) {
         if (!capabilities.fsrBuilt) return "FSR is not included in this build.";
         if (!Upscaling::ValidFsrSettings(draft.fsr)) return "FSR quality/provider/sharpness is invalid.";
         if (!Upscaling::IsKnownColorEncoding(draft.fsr.sourceColorEncoding)) return "FSR requires an explicit source color encoding: Linear, Gamma22 or SRGB. Check the source producer before choosing.";

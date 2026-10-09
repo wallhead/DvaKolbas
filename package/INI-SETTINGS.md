@@ -18,7 +18,7 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 
 | Section | Setting | Default | Restart | Meaning |
 |---|---|---|---|---|
-| Upscaling | Upscaler | `DLSS` | Yes | Upscaling provider. Native is selected in the provider quality section. Values: DLSS, FSR. |
+| Upscaling | Upscaler | `DLSS` | Yes | Upscaling provider. Native is selected in the provider quality section. Values: DLSS, FSR, XeSS. |
 | Upscaling | MipLodBias | `Auto` | No | Automatic mip bias, or a manual numeric bias such as -1.0. Values: Auto, numeric bias. |
 | Upscaling | EnableJitter | `true` | No | Apply sub-pixel camera jitter for temporal reconstruction. Values: true, false. |
 | Upscaling | AutoExposure | `true` | No | Allow the upscaler to estimate scene exposure. Values: true, false. |
@@ -29,6 +29,8 @@ To convert a previous organized INI, run `pwsh -NoProfile -File tools/ini/Reorga
 | FSR | Provider | `FSR3` | Yes | FSR3 keeps the analytical runtime; Auto allows fallback; FSR4 requires ML. Values: FSR3, Auto, FSR4. |
 | FSR | Sharpness | `0.0` | No | Sharpening strength. Zero disables sharpening. Range: 0-1. |
 | FSR | SourceColorEncoding | `Gamma22` | Yes | Gamma22 is the ENB SDR default. Change this to match other source pipelines. Values: Unknown, Linear, Gamma22, SRGB. |
+| XeSS | Quality | `Native` | Yes | XeSS render scale. Input dimensions come from the SDK; Native uses output resolution. Values: Native, Quality, Balanced, Performance. |
+| XeSS | SourceColorEncoding | `Gamma22` | Yes | ENB SDR source default. Match other source pipelines explicitly; XeSS input is converted to linear FP16. Values: Linear, Gamma22, SRGB. |
 | FrameGeneration | Backend | `Auto` | Yes | Presentation backend. Auto uses NVIDIA with DLSS and FSR with FSR upscaling. DLSS can also use FSR FG; FSR upscaling cannot use NVIDIA FG. Values: Auto, NVIDIA, FSR. |
 | FrameGeneration | Enabled | `false` | No | FG toggle. Disabling interpolation retains the selected presentation host. Values: true, false. |
 | FrameGeneration | FsrProvider | `FSR3` | Yes | FG provider, independent of upscaling. FSR4 ML FG is experimental; unsupported devices report an error. Values: FSR3, Auto, FSR4. |

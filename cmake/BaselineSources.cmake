@@ -47,6 +47,7 @@ set(ARP_BASELINE_SOURCES
     src/FrameGen/CameraMeasurements.cpp
     src/FrameGen/GameCameraMeasurements.cpp
     src/FrameGen/SourceFsrEvaluation.cpp
+    src/FrameGen/SourceXessEvaluation.cpp
     src/FrameGen/D3D11FrameCopy.h
     src/FrameGen/D3D11ContextIsolation.h
     src/FrameGen/FinalFrameCapture.h

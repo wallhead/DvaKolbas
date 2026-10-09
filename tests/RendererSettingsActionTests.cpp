@@ -371,6 +371,15 @@ int main()
     nonRtxCaps.adapterVendorId=0x10de;nonRtxCaps.fsrOnlyRenderer=true;
     RendererSettingsDraft nonRtxDraft;
     Require(ValidateRendererSettings(nonRtxDraft,nonRtxCaps),"non-RTX menu cannot select DLAA/NVIDIA owner");
+#if defined(TRP_ENABLE_XESS)
+    nonRtxDraft.upscaleType=Xess;
+    nonRtxDraft.generationBackend=0;
+    nonRtxDraft.generationEnabled=false;
+    nonRtxDraft.sourceDLSSG.neuralEnabled=false;
+    nonRtxDraft.fsr.providerPolicy=Upscaling::ProviderPolicy::MachineLearning;
+    nonRtxDraft.fsr.generationProviderPolicy=Upscaling::ProviderPolicy::MachineLearning;
+    Require(!ValidateRendererSettings(nonRtxDraft,nonRtxCaps),"inactive FSR ML preferences must not reject XeSS SR");
+#endif
     try { MixedBackendValidation(); ImmediateMenuEdits(); NativeRenderScale(); Feedback(); Generation(); Neural(); LiveGenerationActions(); DraftModeRoundTrip(); StagedGenerationDefaults(); ActualPresenterGenerationGate(); LiveGenerationWithOrdinaryDraft(); EffectivePresenterUi(); CommunityNeural(); std::cout << "PASS: automatic menu edits, Native render scale, visible/logged rejection, live FG Apply/Save, effective presenter UI, generation round trips and NR capability loss\n"; return 0; }
     catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

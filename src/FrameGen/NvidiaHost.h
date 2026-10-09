@@ -29,6 +29,10 @@
 #include "UpscaleType.h"
 #include "Upscaling/UpscalerBackend.h"
 #include "Upscaling/FSRAvailability.h"
+#if defined(TRP_ENABLE_XESS)
+#include "Upscaling/XessHostResources.h"
+#include "Upscaling/SdrColorConversion.h"
+#endif
 #if defined(TRP_ENABLE_FSR)
 #include "Upscaling/FSRHostResources.h"
 #include "Upscaling/FSRFrameAdapter.h"
@@ -91,6 +95,11 @@ class NvidiaHost
     bool UpscalerReady() const { return upscalerReady_ && SUCCEEDED(FailureResult()); }
     bool SplitSourceDLSSActive() const { return splitSourceDLSSActive_; }
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
+    bool XessActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==Xess; }
+    bool XessTemporalActive()const;
+    bool OrdinarySourceActive()const { return (FsrActive() || XessActive()) && !FsrFgActive(); }
+    bool QueryXessJitter(std::uint64_t,float&,float&);
+    TheosRenderPipeline::SettingsActionStatus XessStatus()const;
     bool FsrTemporalActive() const { return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult()); }
     bool FsrFgActive() const { return StartupConfigured() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
     bool FsrPresentSuspended()const;
@@ -184,6 +193,8 @@ class NvidiaHost
     TheosRenderPipeline::Upscaling::Result<void> ResumeActivePresentation();
     bool EvaluateFsrFrame(IDXGISwapChain*,bool nativeUIHandoff);
     struct SourceFsrEvaluationOperations;
+    bool EvaluateXessFrame(IDXGISwapChain*,bool);
+    struct SourceXessEvaluationOperations;
     bool FinishSourceFrameForPresent();
     void ApplyLoadingFade(bool composed);
     void EndNativeUIPass();
@@ -194,6 +205,14 @@ class NvidiaHost
     TheosRenderPipeline::Upscaler::Configuration sourceUpscalerSettings_;
     TheosRenderPipeline::Upscaling::BackendDecision backendDecision_;
     TheosRenderPipeline::OrdinaryPresentation ordinaryPresentation_;
+#if defined(TRP_ENABLE_XESS)
+    std::unique_ptr<TheosRenderPipeline::Upscaling::XessHostResources> xessResources_;
+    TheosRenderPipeline::Upscaling::SdrColorConverter xessEncode_;
+    bool xessRecovery_{},lastXessTemporal_{};
+    std::string xessRecoveryReason_;
+    std::string xessStartupFallbackReason_;
+    std::uint64_t xessEpoch_{1};
+#endif
 #if defined(TRP_ENABLE_FSR)
     std::shared_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;
     std::unique_ptr<TheosRenderPipeline::Upscaling::FsrFrameAdapter> fsrFrame_;

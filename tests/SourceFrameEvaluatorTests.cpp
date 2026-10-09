@@ -62,7 +62,8 @@ int main()
         SUCCEEDED(device->CreateRenderTargetView(texture.Get(), nullptr, &rtv)), "bound source target");
 
     UpscaleFrame frame{}; frame.backend = BackendKind::Fsr;
-    for (bool before : {false, true}) {
+    for(auto backend:{BackendKind::Fsr,BackendKind::Xess})for (bool before : {false, true}) {
+        frame.backend=backend;
         ID3D11RenderTargetView* target = rtv.Get(); context->OMSetRenderTargets(1, &target, nullptr);
         Operations ops; ops.effectsBefore = before;
         const auto result = SourceFrameEvaluator::Evaluate(context.Get(), frame, ops);

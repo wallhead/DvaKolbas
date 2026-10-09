@@ -131,7 +131,7 @@ template<class Ini> std::string Decode(Ini& ini)
     const bool ordinary = ini.GetBoolValue("Experimental", "FsrOrdinaryPresenter", false);
     ini.SetLongValue("FrameGeneration", "Backend", ResolveGenerationBackend(
         static_cast<GenerationBackendPreference>(ini.GetLongValue("FrameGeneration", "BackendPreference", 0)),
-        mode == 4 ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss, ordinary));
+        mode == 5 ? Upscaling::BackendKind::Xess : mode == 4 ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss, ordinary));
     if (mode == 4 && ordinary && ini.GetBoolValue("FrameGeneration", "Enabled", false))
         return "[Upscaling Advanced] FsrOrdinaryPresenter requires [FrameGeneration] Enabled=false.";
     RemoveRetired(ini);
@@ -141,8 +141,8 @@ template<class Ini> std::string Decode(Ini& ini)
 template<class Ini> std::string Encode(Ini& ini)
 {
     const long mode = ini.GetLongValue("Settings", "UpscaleType", 3);
-    if (mode != 0 && mode != 3 && mode != 4) return "Cannot save an unsupported upscaling mode.";
-    const bool native = mode == 3 || (mode == 4 && ini.GetBoolValue("Settings", "DLSSNativeScale", true));
+    if (mode != 0 && mode != 3 && mode != 4 && mode != 5) return "Cannot save an unsupported upscaling mode.";
+    const bool native = mode == 3 || ((mode == 4 || mode == 5) && ini.GetBoolValue("Settings", "DLSSNativeScale", true));
     std::vector<std::optional<std::string>> encoded;
     encoded.reserve(Fields.size());
     for (const auto& field : Fields) {
@@ -150,7 +150,7 @@ template<class Ini> std::string Encode(Ini& ini)
         if (!raw) { encoded.emplace_back(std::nullopt); continue; }
         std::string value(raw);
         const std::string_view section(field.section), key(field.key);
-        if (section == "Upscaling" && key == "Upscaler") value = mode == 4 ? "FSR" : "DLSS";
+        if (section == "Upscaling" && key == "Upscaler") value = mode == 5 ? "XeSS" : mode == 4 ? "FSR" : "DLSS";
         else if (section == "DLSS" && key == "Quality" && native) value = "Native";
         else if (section == "DLSS" && key == "Sharpness") {
             if (!ini.GetBoolValue("Settings", "Sharpening", false)) value = "0.0";

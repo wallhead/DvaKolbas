@@ -339,6 +339,15 @@ void DrawSourceNeuralControls(TheosRenderPipeline::SourceDLSSG::Preferences& dra
 
 void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
 {
+    const auto* xessHost=NvidiaHost::GetSingleton();
+    if(settingsDraft.upscaleType==Xess || xessHost->XessActive()) {
+        if(ImGui::BeginTabItem("NR")) {
+            ImGui::TextWrapped("XeSS SR trial: NR is off. NR integration follows Skyrim SR qualification.");
+            ImGui::TextWrapped("XeSS sharpening is not exposed by this implementation.");
+            ImGui::EndTabItem();
+        }
+        return;
+    }
     const bool community=SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community;
     if (!BeginNeuralRenderingTab(requestedPage == SettingsPage::NeuralRendering, view.fsrActive, community,
             (RenderPipeline::GetSingleton()->mFsrOnlyRenderer || TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId))))

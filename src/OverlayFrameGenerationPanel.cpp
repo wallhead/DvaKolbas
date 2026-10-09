@@ -25,6 +25,11 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                             requestedPage == SettingsPage::FrameGeneration ? ImGuiTabItemFlags_SetSelected
                                                                            : ImGuiTabItemFlags_None))
     {
+        if(settingsDraft.upscaleType==Xess || nvidiaHost->XessActive()) {
+            ImGui::TextWrapped("This XeSS trial qualifies upscaling first. Existing FSR/NVIDIA frame-generation integration follows separately; FG is off.");
+            ImGui::EndTabItem();return;
+        }
+
         const auto drawSmoothMotionNotice=[] {
             if(const auto* notice=TheosRenderPipeline::NvidiaAppSettings::CurrentSmoothMotionNotice()) {
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(1.0f,0.75f,0.25f,1.0f));

@@ -16,6 +16,7 @@ void NvidiaHost::AdoptEffectiveSourceUpscalerSettings() const
     settings->mAutoExposure = effective.autoExposure;
     settings->mSharpening = effective.sharpening;
     settings->mFsrSettings = effective.fsr;
+    settings->mXessSettings = effective.xess;
 }
 
 void NvidiaHost::RequestSourceUpscalerSettings(TheosRenderPipeline::Upscaler::Creation request)
@@ -37,6 +38,7 @@ void NvidiaHost::ApplySourceUpscalerSettingsAfterPresent()
             sourceUpscalerSettings_.Effective().fsr.sharpness,sourceUpscalerSettings_.NeedsRestart(),sourceUpscalerSettings_.Unsaved());
         return;
     }
+    if(XessActive())return; // XeSS creation settings require restart; never enter DLSS live feature replacement.
     auto* dlss = DLSSBackend::GetSingleton();
     D3D11_TEXTURE2D_DESC inputDesc{};
     gameTargets_.UpscaleInput()->GetDesc(&inputDesc);

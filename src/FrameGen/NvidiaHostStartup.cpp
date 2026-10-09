@@ -13,6 +13,7 @@
 #include "PresentationDevice.h"
 #include "FSRSwapChainPolicy.h"
 #include "PluginPaths.h"
+#include "SourceInternalScope.h"
 #include "NeuralRendering/SourcePolicy.h"
 #include <PCH.h>
 
@@ -28,12 +29,12 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     const auto* upscalerSettings = RenderPipeline::GetSingleton();
     sourceUpscalerSettings_.Initialize(
         {upscalerSettings->mUpscaleType, upscalerSettings->mQualityLevel, upscalerSettings->mDLSSPreset,
-         upscalerSettings->mSharpening, upscalerSettings->mAutoExposure, upscalerSettings->mFsrSettings});
+         upscalerSettings->mSharpening, upscalerSettings->mAutoExposure, upscalerSettings->mFsrSettings, upscalerSettings->mXessSettings});
     const auto& generation=SourceFrameGeneration::GetSingleton()->settings;
     TheosRenderPipeline::Upscaling::BackendConfiguration requested;
     requested.adapterVendorId=upscalerSettings->mAdapterVendorId;
     requested.fsrOnlyRenderer=upscalerSettings->mFsrOnlyRenderer;
-    requested.backend=upscalerSettings->mUpscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
+    requested.backend=upscalerSettings->mUpscaleType==Xess?TheosRenderPipeline::Upscaling::BackendKind::Xess:upscalerSettings->mUpscaleType==FSR?TheosRenderPipeline::Upscaling::BackendKind::Fsr:
         upscalerSettings->mUpscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
     requested.generationEnabled=generation.enabled;requested.generationBackend=generation.generationBackend;
     requested.quality=upscalerSettings->mFsrSettings.quality;requested.providerPolicy=upscalerSettings->mFsrSettings.providerPolicy;
@@ -58,6 +59,9 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
         return E_INVALIDARG;
     }
     if(!backendDecision_.valid){status_=backendDecision_.diagnostic;return E_INVALIDARG;}
+    if(XessActive() && TheosRenderPipeline::CommunityShaders::Active()) {
+        status_="XeSS SR is unavailable while Community Shaders owns upscaling. Choose its provider in the Community Shaders menu.";return E_INVALIDARG;
+    }
     logger::info("[SourceUpscaler] startup size authority=QualityLevel mode={} "
                  "quality={}",
                  upscalerSettings->mUpscaleType, upscalerSettings->mQualityLevel);
@@ -114,14 +118,14 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     const auto result=TheosRenderPipeline::CreatePresentation(backendDecision_,creation);
     if (FAILED(result) || !*a_swapChain)
     {
-        if(!FsrFgActive())status_ = FsrActive()?"Ordinary D3D11 swapchain creation failed":TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
+        if(!FsrFgActive())status_ = OrdinarySourceActive()?"Ordinary D3D11 swapchain creation failed":TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
         return FAILED(result) ? result : E_FAIL;
     }
     innerSwapChain_ = *a_swapChain;
     nativeUIContexts_.ResetAfterRetirement();
     device_.Reset();
     context_.Reset();
-    const auto deviceResult = TheosRenderPipeline::AcquirePresentationDevice(innerSwapChain_,a_device,FsrActive() || FsrFgActive(),device_);
+    const auto deviceResult = TheosRenderPipeline::AcquirePresentationDevice(innerSwapChain_,a_device,OrdinarySourceActive() || FsrFgActive(),device_);
     if (FAILED(deviceResult) || !device_)
     {
         status_ = std::format("Renderer source D3D11 device selection failed (0x{:08X})", static_cast<std::uint32_t>(deviceResult));
@@ -135,7 +139,8 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
             status_=TheosRenderPipeline::Upscaling::FsrStartupRecoveryMessage(
                 {TheosRenderPipeline::Upscaling::ErrorKind::ContextFailure,0,
                  "FSR game-facing buffer creation failed: "+status_},fsr.providerPolicy,fsr.generationProviderPolicy);
-        } else status_="NVIDIA DLSS-G stable game-facing buffer creation failed";
+        } else if(XessActive())status_="XeSS game-facing buffer creation failed: "+status_;
+        else status_="NVIDIA DLSS-G stable game-facing buffer creation failed";
         (*a_swapChain)->Release();
         *a_swapChain = nullptr;
         return E_FAIL;
@@ -162,7 +167,7 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
     // disable against the completed proxy before its first game-facing Present.
     frameGenerationStateKnown_ = false;
     SetRuntimeEnabled(false);
-    status_ = FsrFgActive()?"AMD presenter active; FSR feature deferred until device creation returns":FsrActive()?"Ordinary presenter active; FSR feature deferred until device creation returns":"NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
+    status_ = XessActive()?"Ordinary presenter active; XeSS prepared; awaiting device creation return":FsrFgActive()?"AMD presenter active; FSR feature deferred until device creation returns":FsrActive()?"Ordinary presenter active; FSR feature deferred until device creation returns":"NVIDIA DLSS-G proxy active; waiting for complete frame inputs";
     logger::info("[NvidiaHost] source swapchain active format={}", static_cast<std::uint32_t>(a_desc->BufferDesc.Format));
     logger::info("[NvidiaHost] outer stable-buffer swapchain returned during "
                  "factory creation");
@@ -194,7 +199,7 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     else
 #endif
     cacheResult = presentation_.CacheAfterRetirement(a_swapChain,
-        FsrActive() ? TheosRenderPipeline::PresentationBufferAccess::D3D11Current :
+        OrdinarySourceActive() ? TheosRenderPipeline::PresentationBufferAccess::D3D11Current :
             TheosRenderPipeline::PresentationBufferAccess::Indexed);
     if (FAILED(cacheResult))
     {
@@ -217,6 +222,34 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
         return TheosRenderPipeline::SourceDLSSG::QueryRenderSize(width, height, quality, renderWidth, renderHeight);
     };
     bool sized{};
+#if defined(TRP_ENABLE_XESS)
+    if(XessActive() && !TheosRenderPipeline::CommunityShaders::Active()) {
+        TheosRenderPipeline::SourceInternalScope internal(sourceUIInternal_);
+        xessResources_=std::make_unique<TheosRenderPipeline::Upscaling::XessHostResources>(TheosRenderPipeline::PluginPaths::Directory());
+        const auto& request=sourceUpscalerSettings_.Startup().xess;
+        const auto extent=xessResources_->Initialize(device_.Get(),request.quality,{outputWidth_,outputHeight_},request.sourceEncoding);
+        if(extent){queriedRenderWidth=extent->width;queriedRenderHeight=extent->height;sized=true;}
+        else {
+            xessStartupFallbackReason_=std::format("{} (native result={})",extent.error().message,extent.error().nativeResult);
+            const auto retired=xessResources_->Retire();
+            if(!retired){status_=retired.error().message;return false;}
+            xessResources_.reset();
+#if defined(TRP_ENABLE_FSR)
+            auto fallback=sourceUpscalerSettings_.Startup();fallback.mode=FSR;
+            fallback.fsr.quality=fallback.xess.quality;fallback.fsr.sourceColorEncoding=fallback.xess.sourceEncoding;
+            fallback.fsr.providerPolicy=TheosRenderPipeline::Upscaling::ProviderPolicy::Analytical;
+            if(!sourceUpscalerSettings_.UseStartupFallback(fallback)){status_="XeSS fallback attempted after startup commitment";return false;}
+            backendDecision_.backend=TheosRenderPipeline::Upscaling::BackendKind::Fsr;
+            fsrResources_=std::make_shared<TheosRenderPipeline::Upscaling::FsrHostResources>(TheosRenderPipeline::PluginPaths::Directory());
+            AdoptEffectiveSourceUpscalerSettings();
+            logger::warn("[XeSS startup] requested=XeSS effective=FSR before game targets/jitter commitment: {}",xessStartupFallbackReason_);
+#else
+            status_="XeSS unavailable and no FSR fallback is built: "+xessStartupFallbackReason_;return false;
+#endif
+        }
+    }
+#endif
+    if(!sized) {
 #if defined(TRP_ENABLE_FSR)
     if (FsrFgActive()) { queriedRenderWidth=renderWidth_;queriedRenderHeight=renderHeight_;sized=true; }
     else if(FsrActive() && !TheosRenderPipeline::CommunityShaders::Active()) {
@@ -235,6 +268,7 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     } else
 #endif
     sized=sizeQuery(static_cast<int>(outputWidth_),static_cast<int>(outputHeight_),sourceUpscalerSettings_.Startup().AllocationQuality(),&queriedRenderWidth,&queriedRenderHeight);
+    }
     if (!sized ||
         queriedRenderWidth <= 0 || queriedRenderHeight <= 0 || queriedRenderWidth > static_cast<int>(outputWidth_) ||
         queriedRenderHeight > static_cast<int>(outputHeight_))
@@ -316,7 +350,7 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
     const auto expectedRenderHeight = renderHeight_;
     if (!InitializeSourceUpscaler(outputDesc))
     {
-        status_ = std::format("Source {} startup failed: {}", FsrActive()?"FSR":"DLSS", status_);
+        status_ = std::format("Source {} startup failed: {}", XessActive()?"XeSS":FsrActive()?"FSR":"DLSS", status_);
         logger::error("[NvidiaHost] {}", status_);
         return false;
     }
@@ -332,11 +366,11 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
                   "contract";
         return false;
     }
-    if(FsrActive() || FsrFgActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
+    if(FsrActive() || XessActive() || FsrFgActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
     TheosRenderPipeline::ReShadeIntegration::Get().Configure(device_.Get(), context_.Get(), {outputWidth_, outputHeight_});
     logger::info("[NvidiaHost] source upscaler initialized after D3D11 startup Present");
 #if !defined(TRP_NO_NEURAL_RENDERING)
-    InspectCommunityNeural();
+    if(!XessActive()) InspectCommunityNeural();
 #endif
 #if defined(TRP_ENABLE_FSR)
     fsrSizingRetainedForResize_=false;
@@ -408,6 +442,21 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
             TheosRenderPipeline::Upscaling::ProviderPolicyName(settings.providerPolicy),
             TheosRenderPipeline::Upscaling::ColorEncodingName(settings.sourceColorEncoding),settings.sharpness,
             renderWidth_,renderHeight_,outputWidth_,outputHeight_,FsrFgActive()?"AMD-D3D12":"ordinary-D3D11");
+        return true;
+    }
+#endif
+#if defined(TRP_ENABLE_XESS)
+    if(XessActive()) {
+        if(!xessResources_ || xessResources_->RenderExtent()!=TheosRenderPipeline::Upscaling::Extent{renderWidth_,renderHeight_}){status_="XeSS initialized extent does not match game targets";return false;}
+        if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="XeSS native UI resource creation failed";return false;}
+        sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
+        upscalerReady_=true;splitSourceDLSSActive_=false;xessRecovery_=lastXessTemporal_=false;xessRecoveryReason_.clear();
+        ++xessEpoch_;
+        status_="XeSS context ready; waiting for a validated temporal world frame";
+        logger::info("[XeSS startup] requested=XeSS effective=XeSS quality={} sourceColorEncoding={} render={}x{} output={}x{} requestedFlags={} effectiveFlags={} presentation=ordinary NR=off FG=off",
+            TheosRenderPipeline::Upscaling::XessQualityName(sourceUpscalerSettings_.Effective().xess.quality),
+            TheosRenderPipeline::Upscaling::ColorEncodingName(sourceUpscalerSettings_.Effective().xess.sourceEncoding),
+            renderWidth_,renderHeight_,outputWidth_,outputHeight_,xessResources_->Upscaler()->RequestedFlags(),xessResources_->Upscaler()->EffectiveFlags());
         return true;
     }
 #endif

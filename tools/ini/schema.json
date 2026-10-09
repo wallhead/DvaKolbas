@@ -3,6 +3,7 @@
     "Upscaling",
     "DLSS",
     "FSR",
+    "XeSS",
     "FrameGeneration",
     "Latency",
     "Interface",
@@ -35,7 +36,8 @@
       "restart": true,
       "values": {
         "DLSS": "0",
-        "FSR": "4"
+        "FSR": "4",
+        "XeSS": "5"
       },
       "type": "Enum"
     },
@@ -183,6 +185,37 @@
         "SRGB": "SRGB"
       },
       "type": "Text"
+    },
+    {
+      "internal_section": "XeSS",
+      "internal_key": "Quality",
+      "section": "XeSS",
+      "key": "Quality",
+      "default": "Native",
+      "comment": "XeSS render scale. Input dimensions come from the SDK; Native uses output resolution.",
+      "restart": true,
+      "values": {
+        "Native": "NativeAA",
+        "Quality": "Quality",
+        "Balanced": "Balanced",
+        "Performance": "Performance"
+      },
+      "type": "Enum"
+    },
+    {
+      "internal_section": "XeSS",
+      "internal_key": "SourceColorEncoding",
+      "section": "XeSS",
+      "key": "SourceColorEncoding",
+      "default": "Gamma22",
+      "comment": "ENB SDR source default. Match other source pipelines explicitly; XeSS input is converted to linear FP16.",
+      "restart": true,
+      "values": {
+        "Linear": "Linear",
+        "Gamma22": "Gamma22",
+        "SRGB": "SRGB"
+      },
+      "type": "Enum"
     },
     {
       "internal_section": "FrameGeneration",

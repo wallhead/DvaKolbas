@@ -8,16 +8,29 @@
 
 namespace TheosRenderPipeline
 {
+    inline constexpr bool XessBuilt =
+#if defined(TRP_ENABLE_XESS)
+        true;
+#else
+        false;
+#endif
     inline Upscaling::BackendDecision ResolveBackend(const Upscaling::BackendConfiguration& config, bool fsrBuilt, bool fsrFgBuilt = false)
     {
         using namespace Upscaling;
         BackendDecision decision{config.backend, PresentationKind::Nvidia, false, config.generationEnabled, {}};
         if ((IsAmdRenderer(config.adapterVendorId) || config.fsrOnlyRenderer) &&
-            !FsrOnlyRendererSelectionAllowed(config.backend == BackendKind::Fsr ? ::FSR : ::DLSS,
+            !FsrOnlyRendererSelectionAllowed(config.backend == BackendKind::Xess ? ::Xess : config.backend == BackendKind::Fsr ? ::FSR : ::DLSS,
                 config.generationBackend, config.neuralRendering)) {
             decision.diagnostic = "This GPU supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
         }
         else if (!config.enabled) { decision.diagnostic = "This renderer requires an enabled temporal upscaler."; }
+        else if(config.backend==BackendKind::Xess) {
+            decision.presentation=PresentationKind::Ordinary;
+            if(!XessBuilt)decision.diagnostic="XeSS support is unavailable in this build.";
+            else if(config.generationBackend!=0 || config.generationEnabled || config.neuralRendering)decision.diagnostic="This XeSS SR trial requires NR and frame generation off; their integration is pending.";
+            else if(config.hdr || config.dynamicResolution)decision.diagnostic="XeSS SR currently requires fixed dimensions and SDR output.";
+            else decision.valid=true;
+        }
         else if (config.backend == BackendKind::Dlss || config.backend == BackendKind::Dlaa) {
             if (config.generationBackend == 2) {
                 decision.presentation = PresentationKind::Fsr;
@@ -58,6 +71,13 @@ namespace TheosRenderPipeline
         // Legacy execution caps it at two without erasing the third-pass setup.
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
         const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
+        if(mode==Xess) {
+            if(!XessBuilt)return "XeSS support is unavailable in this build.";
+            if(presenter!=0 || ini.GetBoolValue("FrameGeneration","Enabled",false) || ini.GetBoolValue("SourceDLSSG","NeuralRenderingEnabled",false))return "This XeSS SR trial requires NR and frame generation off.";
+            if(ini.GetBoolValue("HDROutput","Enabled",false) || ini.GetBoolValue("DynamicResolution","Enabled",false) || ini.GetBoolValue("DynamicResolution","Oscillate",false))return "XeSS SR requires fixed dimensions and SDR output.";
+            if(!ini.GetBoolValue("Settings","EnableJitter",true))return "XeSS requires camera jitter enabled.";
+            return ValidateLegacyRendererExperiments(ini);
+        }
         if (mode != FSR && presenter != 2) { return ValidateNvidiaBaseline(ini); }
         if (mode != FSR && mode != DLSS && mode != DLAA) return "Choose DLSS or FSR upscaling.";
         if (mode == FSR && !fsrBuilt) { return "FSR support is unavailable in this build."; }

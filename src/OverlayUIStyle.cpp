@@ -64,6 +64,8 @@ const char* ModeName(int a_mode)
 {
     switch (a_mode)
     {
+    case Xess:
+        return "XeSS";
     case FSR:
         return "FSR";
     case DLAA:

@@ -16,6 +16,7 @@ inline constexpr std::array RetiredInputs{
 inline constexpr std::array enum0{
     EnumValue{"DLSS","0"},
     EnumValue{"FSR","4"},
+    EnumValue{"XeSS","5"},
 };
 inline constexpr std::array enum1{
     EnumValue{"Auto","true"},
@@ -56,49 +57,60 @@ inline constexpr std::array enum10{
     EnumValue{"SRGB","SRGB"},
 };
 inline constexpr std::array enum11{
+    EnumValue{"Native","NativeAA"},
+    EnumValue{"Quality","Quality"},
+    EnumValue{"Balanced","Balanced"},
+    EnumValue{"Performance","Performance"},
+};
+inline constexpr std::array enum12{
+    EnumValue{"Linear","Linear"},
+    EnumValue{"Gamma22","Gamma22"},
+    EnumValue{"SRGB","SRGB"},
+};
+inline constexpr std::array enum13{
     EnumValue{"Auto","0"},
     EnumValue{"NVIDIA","1"},
     EnumValue{"FSR","2"},
 };
-inline constexpr std::array enum13{
+inline constexpr std::array enum15{
     EnumValue{"FSR3","Analytical"},
     EnumValue{"Auto","Compatible"},
     EnumValue{"FSR4","MachineLearning"},
 };
-inline constexpr std::array enum19{
+inline constexpr std::array enum21{
     EnumValue{"Off","0"},
     EnumValue{"On","1"},
     EnumValue{"Boost","2"},
 };
-inline constexpr std::array enum22{
+inline constexpr std::array enum24{
     EnumValue{"Dedicated","0"},
     EnumValue{"HudlessDetection","1"},
 };
-inline constexpr std::array enum24{
+inline constexpr std::array enum26{
     EnumValue{"Before","true"},
     EnumValue{"After","false"},
 };
-inline constexpr std::array enum52{
+inline constexpr std::array enum54{
     EnumValue{"End","0x23"},
 };
-inline constexpr std::array enum59{
+inline constexpr std::array enum61{
     EnumValue{"Auto","Auto"},
     EnumValue{"rtx20-30","rtx20-30"},
     EnumValue{"rtx40","rtx40"},
     EnumValue{"rtx50","rtx50"},
 };
-inline constexpr std::array enum60{
+inline constexpr std::array enum62{
     EnumValue{"Unknown","Unknown"},
     EnumValue{"Linear","Linear"},
     EnumValue{"Gamma22","Gamma22"},
     EnumValue{"SRGB","SRGB"},
 };
-inline constexpr std::array enum64{
+inline constexpr std::array enum66{
     EnumValue{"Auto","0"},
     EnumValue{"Residual","1"},
     EnumValue{"Ratio","2"},
 };
-inline constexpr std::array enum83{
+inline constexpr std::array enum85{
     EnumValue{"Gamma22","0"},
     EnumValue{"SRGB","1"},
 };
@@ -114,20 +126,22 @@ inline constexpr std::array Fields{
     Field{"FSR","ProviderPolicy","FSR","Provider","FSR3","Enum","","[FSR] Provider",false,enum8},
     Field{"FSR","Sharpness","FSR","Sharpness","0.0","Number","","[FSR] Sharpness",false,{}},
     Field{"FSR","SourceColorEncoding","FSR","SourceColorEncoding","Gamma22","Text","","[FSR] SourceColorEncoding",false,enum10},
-    Field{"FrameGeneration","BackendPreference","FrameGeneration","Backend","Auto","Enum","","[FrameGeneration] Backend",false,enum11},
+    Field{"XeSS","Quality","XeSS","Quality","Native","Enum","","[XeSS] Quality",false,enum11},
+    Field{"XeSS","SourceColorEncoding","XeSS","SourceColorEncoding","Gamma22","Enum","","[XeSS] SourceColorEncoding",false,enum12},
+    Field{"FrameGeneration","BackendPreference","FrameGeneration","Backend","Auto","Enum","","[FrameGeneration] Backend",false,enum13},
     Field{"FrameGeneration","Enabled","FrameGeneration","Enabled","false","Bool","","[FrameGeneration] Enabled",false,{}},
-    Field{"FrameGeneration","FsrProviderPolicy","FrameGeneration","FsrProvider","FSR3","Enum","","[FrameGeneration] FsrProvider",false,enum13},
+    Field{"FrameGeneration","FsrProviderPolicy","FrameGeneration","FsrProvider","FSR3","Enum","","[FrameGeneration] FsrProvider",false,enum15},
     Field{"FrameGeneration","GeneratedFrames","FrameGeneration","NvidiaGeneratedFrames","1","Integer","","[FrameGeneration] NvidiaGeneratedFrames",false,{}},
     Field{"FrameGeneration","DynamicMFG","FrameGeneration","NvidiaDynamicMFG","false","Bool","","[FrameGeneration] NvidiaDynamicMFG",false,{}},
     Field{"FrameGeneration","DynamicTargetFPS","FrameGeneration","DynamicTargetFPS","0","Integer","","[FrameGeneration] DynamicTargetFPS",false,{}},
     Field{"FrameGeneration","UIRecomposition","FrameGeneration","NvidiaUIRecomposition","true","Bool","","[FrameGeneration] NvidiaUIRecomposition",false,{}},
     Field{"FrameGeneration","OutputFPSLimit","Latency","OutputFPSLimit","0","Integer","","[Latency] OutputFPSLimit",false,{}},
-    Field{"FrameGeneration","ReflexMode","Latency","Reflex","On","Enum","","[Latency] Reflex",false,enum19},
+    Field{"FrameGeneration","ReflexMode","Latency","Reflex","On","Enum","","[Latency] Reflex",false,enum21},
     Field{"Settings","NativeUI","Interface","NativeUI","true","Bool","","[Interface] NativeUI",false,{}},
     Field{"Settings","RequestLoadingArtwork","Interface","RequestLoadingArtwork","true","Bool","","[Interface] RequestLoadingArtwork",false,{}},
-    Field{"FrameGeneration","UICompositionMode","Interface","UIComposition","Dedicated","Enum","","[Interface] UIComposition",false,enum22},
+    Field{"FrameGeneration","UICompositionMode","Interface","UIComposition","Dedicated","Enum","","[Interface] UIComposition",false,enum24},
     Field{"NeuralRendering","Enabled","NeuralRendering","Enabled","false","Bool","","[NeuralRendering] Enabled",false,{}},
-    Field{"NeuralRendering","BeforeUpscaling","NeuralRendering","Placement","Before","Enum","","[NeuralRendering] Placement",false,enum24},
+    Field{"NeuralRendering","BeforeUpscaling","NeuralRendering","Placement","Before","Enum","","[NeuralRendering] Placement",false,enum26},
     Field{"NeuralRendering","PassCount","NeuralRendering","PassCount","1","Integer","","[NeuralRendering] PassCount",false,{}},
     Field{"NeuralRendering","OnePassInCombat","NeuralRendering","OnePassInCombat","false","Bool","","[NeuralRendering] OnePassInCombat",false,{}},
     Field{"NeuralRendering","OnePassWeaponsDrawn","NeuralRendering","OnePassWeaponsDrawn","false","Bool","","[NeuralRendering] OnePassWeaponsDrawn",false,{}},
@@ -155,19 +169,19 @@ inline constexpr std::array Fields{
     Field{"NR PASS 3","SkinStructure","NR PASS 3","SkinStructure","1.0","Number","","[NR PASS 3] SkinStructure",true,{}},
     Field{"NR PASS 3","AutoSkin","NR PASS 3","AutoSkin","false","Bool","","[NR PASS 3] AutoSkin",true,{}},
     Field{"NR PASS 3","UICorrection","NR PASS 3","UICorrection","false","Bool","","[NR PASS 3] UICorrection",true,{}},
-    Field{"Hotkeys","ToggleOverlay","Hotkeys","ToggleOverlay","End","Enum","Hotkey","[Hotkeys] ToggleOverlay",false,enum52},
+    Field{"Hotkeys","ToggleOverlay","Hotkeys","ToggleOverlay","End","Enum","Hotkey","[Hotkeys] ToggleOverlay",false,enum54},
     Field{"Hotkeys","EnableNRHotkeys","Hotkeys","EnableNRHotkeys","false","Bool","","[Hotkeys] EnableNRHotkeys",false,{}},
     Field{"Appearance","Enabled","Appearance","Enabled","false","Bool","","[Appearance] Enabled",false,{}},
     Field{"Appearance","SmoothingSeconds","Appearance","SmoothingSeconds","2.0","Number","","[Appearance] SmoothingSeconds",false,{}},
     Field{"Appearance","WeatherCount","Appearance","WeatherCount","0","Integer","","[Appearance] WeatherCount",false,{}},
     Field{"Experimental","FsrOrdinaryPresenter","Upscaling Advanced","FsrOrdinaryPresenter","false","Bool","","[Upscaling Advanced] FsrOrdinaryPresenter",false,{}},
     Field{"NeuralRendering","LegacyRuntimeDiagnostic","Debug","NRLegacyRuntime","false","Bool","","[Debug] NRLegacyRuntime",false,{}},
-    Field{"NeuralRendering","Profile","NeuralRendering Advanced","Profile","Auto","Text","","[NeuralRendering Advanced] Profile",false,enum59},
-    Field{"NeuralRendering","SourceColorEncoding","NeuralRendering Advanced","SourceColorEncoding","Gamma22","Text","","[NeuralRendering Advanced] SourceColorEncoding",false,enum60},
+    Field{"NeuralRendering","Profile","NeuralRendering Advanced","Profile","Auto","Text","","[NeuralRendering Advanced] Profile",false,enum61},
+    Field{"NeuralRendering","SourceColorEncoding","NeuralRendering Advanced","SourceColorEncoding","Gamma22","Text","","[NeuralRendering Advanced] SourceColorEncoding",false,enum62},
     Field{"NeuralRendering","SdrBytesTrial","NeuralRendering Advanced","SdrBytesTrial","true","Bool","","[NeuralRendering Advanced] SdrBytesTrial",false,{}},
     Field{"NR PASS 1","Preset","NR PASS 1 Advanced","Preset","0","Integer","","[NR PASS 1 Advanced] Preset",false,{}},
     Field{"NR PASS 1","InputScale","NR PASS 1 Advanced","InputScale","1.0","Number","","[NR PASS 1 Advanced] InputScale",false,{}},
-    Field{"NR PASS 1","ResolveMethod","NR PASS 1 Advanced","ResolveMethod","Auto","Enum","","[NR PASS 1 Advanced] ResolveMethod",false,enum64},
+    Field{"NR PASS 1","ResolveMethod","NR PASS 1 Advanced","ResolveMethod","Auto","Enum","","[NR PASS 1 Advanced] ResolveMethod",false,enum66},
     Field{"NR PASS 1","TransferStrength","NR PASS 1 Advanced","TransferStrength","1.0","Number","","[NR PASS 1 Advanced] TransferStrength",false,{}},
     Field{"NR PASS 1","ColourStrength","NR PASS 1 Advanced","ColourStrength","1.0","Number","","[NR PASS 1 Advanced] ColourStrength",false,{}},
     Field{"NR PASS 1","MaxRatio","NR PASS 1 Advanced","MaxRatio","2.0","Number","","[NR PASS 1 Advanced] MaxRatio",false,{}},
@@ -186,7 +200,7 @@ inline constexpr std::array Fields{
     Field{"HDROutput","UIBrightnessNits","HDROutput","UIBrightnessNits","200","Number","","[HDROutput] UIBrightnessNits",false,{}},
     Field{"HDROutput","HighlightStrength","HDROutput","HighlightStrength","1","Number","","[HDROutput] HighlightStrength",false,{}},
     Field{"HDROutput","ExpansionStart","HDROutput","ExpansionStart","0.7","Number","","[HDROutput] ExpansionStart",false,{}},
-    Field{"HDROutput","SDRTransfer","HDROutput","SDRTransfer","Gamma22","Enum","","[HDROutput] SDRTransfer",false,enum83},
+    Field{"HDROutput","SDRTransfer","HDROutput","SDRTransfer","Gamma22","Enum","","[HDROutput] SDRTransfer",false,enum85},
     Field{"Compatibility","ReShadeBeforeUpscaling","Compatibility","ReShadeBeforeUpscaling","false","Bool","","[Compatibility] ReShadeBeforeUpscaling",false,{}},
     Field{"Compatibility","WheelerLateOverlayBridge","Compatibility","WheelerLateOverlayBridge","true","Bool","","[Compatibility] WheelerLateOverlayBridge",false,{}},
     Field{"Compatibility","NvidiaMFGUnlock","Compatibility","NvidiaMFGUnlock","true","Bool","","[Compatibility] NvidiaMFGUnlock",false,{}},

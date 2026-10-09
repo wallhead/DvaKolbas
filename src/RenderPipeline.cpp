@@ -21,7 +21,7 @@
 void RenderPipeline::SetFrameGenerationTransitionBlocked(bool a_blocked)
 {
 	mFrameGenerationTransitionBlocked.store(a_blocked, std::memory_order_release);
-	if (mUpscaleType != 4) { TheosRenderPipeline::SourceDLSSG::Backend::Get().SetTransitionBlocked(a_blocked); }
+	if (mUpscaleType != FSR && mUpscaleType != Xess) { TheosRenderPipeline::SourceDLSSG::Backend::Get().SetTransitionBlocked(a_blocked); }
 }
 
 void RenderPipeline::LoadINI()
@@ -43,6 +43,8 @@ void RenderPipeline::LoadINI()
 	mUpscaleType = (int)ini.GetLongValue("Settings", "UpscaleType", 3);
     if (const auto fsr=TheosRenderPipeline::Upscaling::ReadFsrSettings(ini)) { mFsrSettings=*fsr; }
     else if(mUpscaleType==FSR) { logger::error("[FSR] {}",fsr.error().message); }
+    if(const auto xess=TheosRenderPipeline::Upscaling::ReadXessSettings(ini))mXessSettings=*xess;
+    else if(mUpscaleType==Xess)logger::error("[XeSS] {}",xess.error().message);
 	mQualityLevel = (int)ini.GetLongValue("Settings", "QualityLevel", 2);
 	mUseOptimalMipLodBias = ini.GetBoolValue("Settings", "UseOptimalMipLodBias", true);
 	mMipLodBias = (float)ini.GetDoubleValue("Settings", "MipLodBias", 0.0);
@@ -78,9 +80,9 @@ void RenderPipeline::LoadINI()
 
 	// A reload after the feature exists (e.g. kDataLoaded) must not stomp the
 	// computed optimal bias with the INI's stored value.
-	if (mUseOptimalMipLodBias && mUpscaleType == 4 && NvidiaHost::GetSingleton()->UpscalerReady()) {
+	if (mUseOptimalMipLodBias && (mUpscaleType == FSR || mUpscaleType == Xess) && NvidiaHost::GetSingleton()->UpscalerReady()) {
 		mMipLodBias = NvidiaHost::GetSingleton()->OptimalMipmapBias();
-	} else if (mUseOptimalMipLodBias && mUpscaleType != 4 && DLSSBackend::GetSingleton()->HasFeature()) {
+	} else if (mUseOptimalMipLodBias && mUpscaleType != FSR && mUpscaleType != Xess && DLSSBackend::GetSingleton()->HasFeature()) {
 		mMipLodBias = DLSSBackend::GetSingleton()->GetOptimalMipLodBias();
 	}
 
@@ -117,8 +119,9 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 	auto* sourceHost = NvidiaHost::GetSingleton();
 	const auto creation = sourceHost->StartupConfigured() ?
 		sourceHost->SourceUpscalerSettings().Requested() :
-		TheosRenderPipeline::Upscaler::Creation{mUpscaleType, mQualityLevel, mDLSSPreset, mSharpening, mAutoExposure, mFsrSettings};
+		TheosRenderPipeline::Upscaler::Creation{mUpscaleType, mQualityLevel, mDLSSPreset, mSharpening, mAutoExposure, mFsrSettings, mXessSettings};
     TheosRenderPipeline::Upscaling::StoreFsrSettings(ini,creation.fsr);
+    TheosRenderPipeline::Upscaling::StoreXessSettings(ini,creation.xess);
 	ini.SetLongValue("Settings", "UpscaleType", creation.mode);
 	ini.SetLongValue("Settings", "QualityLevel", creation.quality);
 	ini.SetBoolValue("Settings", "UseOptimalMipLodBias", mUseOptimalMipLodBias);
@@ -158,7 +161,7 @@ bool RenderPipeline::SaveINI(const TheosRenderPipeline::Overlay::Layout* layout)
 	ini.SetBoolValue("Debug", "LogMenuMetrics", mLogMenuMetrics);
     if (layout) { TheosRenderPipeline::Overlay::StoreLayout(ini, *layout); }
 	TheosRenderPipeline::IniLayout::StoreCanonical(ini);
-    ini.SetBoolValue("Settings", "DLSSNativeScale", creation.mode == DLAA || (creation.mode == FSR && mDlssNativeScale));
+    ini.SetBoolValue("Settings", "DLSSNativeScale", creation.mode == DLAA || ((creation.mode == FSR || creation.mode == Xess) && mDlssNativeScale));
     if (const auto error = TheosRenderPipeline::PublicIni::Encode(ini); !error.empty()) {
         logger::error("[Config] Save refused: {}", error); return false;
     }
@@ -206,7 +209,7 @@ void RenderPipeline::SetupSwapChain(IDXGISwapChain* a_swapChain)
 	mSwapChain = a_swapChain;
 	mSwapChain->GetDevice(IID_PPV_ARGS(&mDevice));
 	mDevice->GetImmediateContext(&mContext);
-	if (mUpscaleType != 4) { DLSSBackend::GetSingleton()->SetupDevice(mDevice, mContext); }
+	if (mUpscaleType != FSR && mUpscaleType != Xess) { DLSSBackend::GetSingleton()->SetupDevice(mDevice, mContext); }
 }
 
 bool RenderPipeline::IsEnabled()
@@ -216,6 +219,11 @@ bool RenderPipeline::IsEnabled()
 
 void RenderPipeline::GetJitters(float* a_outX, float* a_outY)
 {
+    if (mUpscaleType == Xess) {
+        mJitterIndex=static_cast<float>(mRenderedFrameCount);
+        NvidiaHost::GetSingleton()->QueryXessJitter(mRenderedFrameCount,*a_outX,*a_outY);
+        return;
+    }
     if (mUpscaleType == FSR) {
         *a_outX=*a_outY=0;
         NvidiaHost::GetSingleton()->QueryFsrJitter(mRenderedFrameCount,*a_outX,*a_outY);

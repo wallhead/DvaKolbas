@@ -33,7 +33,7 @@ struct NvidiaHost::LifecycleOperations
             return true;
         }
 #endif
-        if (!host.FsrActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
+        if (!host.OrdinarySourceActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
         const auto result = host.ordinaryPresentation_.Retire();
         if (FAILED(result)) { host.FailLifecycle(result, "FSR presentation retirement"); return false; }
 #if defined(TRP_ENABLE_FSR)
@@ -43,6 +43,12 @@ struct NvidiaHost::LifecycleOperations
             if (resizing) { host.fsrSizingRetainedForResize_ = true; }
         }
 #endif
+ #if defined(TRP_ENABLE_XESS)
+        if(host.xessResources_) {
+            const auto retired=host.xessResources_->Retire();
+            if(!retired){host.status_=retired.error().message;host.FailLifecycle(E_FAIL,"XeSS resource retirement");return false;}
+        }
+ #endif
         return true;
     }
     void EndUI() { host.EndNativeUIPass(); }
@@ -103,7 +109,7 @@ HRESULT NvidiaHost::BeforeResizeBuffers(IDXGISwapChain* a_swapChain)
     }
     LifecycleOperations operations{*this, nullptr, true};
     if (!TheosRenderPipeline::SourceHostLifecycle::BeforeResize(operations)) { return DXGI_ERROR_WAS_STILL_DRAWING; }
-    return FsrActive() && !FsrFgActive() ? ordinaryPresentation_.BeforeResize() : S_OK;
+    return OrdinarySourceActive() ? ordinaryPresentation_.BeforeResize() : S_OK;
 }
 
 HRESULT NvidiaHost::AfterResizeBuffers(IDXGISwapChain* a_swapChain, HRESULT a_result)
@@ -114,7 +120,7 @@ HRESULT NvidiaHost::AfterResizeBuffers(IDXGISwapChain* a_swapChain, HRESULT a_re
         return a_result;
     }
     LifecycleOperations operations{*this, a_swapChain};
-    if (FsrActive() && !FsrFgActive()) { a_result = ordinaryPresentation_.AfterResize(a_result); }
+    if (OrdinarySourceActive()) { a_result = ordinaryPresentation_.AfterResize(a_result); }
     return TheosRenderPipeline::SourceHostLifecycle::AfterResize(operations, a_result);
 }
 
@@ -187,6 +193,13 @@ HRESULT NvidiaHost::UpdateFsrSuspension()
 
 void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
 {
+#if defined(TRP_ENABLE_XESS)
+    if(xessResources_) {
+        const auto retired=xessResources_->Retire();
+        if(!retired){status_=retired.error().message;FailLifecycle(E_FAIL,"XeSS feature release");return;}
+        xessResources_.reset();xessEncode_={};lastXessTemporal_=false;xessRecovery_=false;xessRecoveryReason_.clear();
+    }
+#endif
 #if !defined(TRP_NO_NEURAL_RENDERING)
     if (!RetireCommunityNeural()) return;
 #endif
@@ -263,7 +276,7 @@ void NvidiaHost::OnPresentCompleted(HRESULT a_result)
 
     // Consume the session snapshot after Present; querying Streamline again
     // here would consume its output-count delta a second time.
-    if (!FsrActive() && !FsrFgActive()) {
+    if (!OrdinarySourceActive() && !FsrFgActive()) {
         const auto& state = TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().state;
         UpdateRuntimeDLSSGState(static_cast<std::uint32_t>(state.status), state.numFramesActuallyPresented, state.minWidthOrHeight,
                                 state.numFramesToGenerateMax);
@@ -310,7 +323,7 @@ void NvidiaHost::ArmFrameGenerationWarmup()
 void NvidiaHost::SetRuntimeEnabled(bool a_enabled)
 {
     if (FsrFgActive()) { frameGenerationStateKnown_=true;frameGenerationEnabled_=false;return; }
-    if (FsrActive()) {
+    if (OrdinarySourceActive()) {
         if (!frameGenerationStateKnown_ || frameGenerationEnabled_) { resetNextEvaluation_ = true; }
         frameGenerationStateKnown_ = true;
         frameGenerationEnabled_ = false;

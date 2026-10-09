@@ -65,7 +65,7 @@ function ConvertFrom-PublicIniValues([hashtable]$Settings) {
     if($result['Settings/UpscaleType'] -eq '0' -and $native){$result['Settings/UpscaleType']='3'}
     $result['Settings/MipLodBias']=if($result['Settings/UseOptimalMipLodBias'] -eq 'true'){'0.0'}else{$Settings['Upscaling/MipLodBias']}
     $result['Settings/Sharpening']=if([double]::Parse($result['Settings/Sharpness'],[Globalization.CultureInfo]::InvariantCulture) -gt 0){'true'}else{'false'}
-    $result['FrameGeneration/Backend']=if($result['Settings/UpscaleType'] -eq '4' -and $result['Experimental/FsrOrdinaryPresenter'] -eq 'true'){'0'}
+    $result['FrameGeneration/Backend']=if($result['Settings/UpscaleType'] -eq '5' -or ($result['Settings/UpscaleType'] -eq '4' -and $result['Experimental/FsrOrdinaryPresenter'] -eq 'true')){'0'}
         elseif($result['FrameGeneration/BackendPreference'] -eq '1'){'1'}
         elseif($result['FrameGeneration/BackendPreference'] -eq '2' -or $result['Settings/UpscaleType'] -eq '4'){'2'}else{'1'}
     if($result['FrameGeneration/Backend'] -eq '0' -and $result['FrameGeneration/Enabled'] -eq 'true'){
@@ -77,13 +77,13 @@ function ConvertTo-PublicIniValues([hashtable]$Settings) {
     $schema=Get-PublicIniSchema
     $result=@{};foreach($key in $Settings.Keys){$result[$key]=$Settings[$key]}
     $mode=[string]$Settings['Settings/UpscaleType']
-    $native=$mode -eq '3' -or ($mode -eq '4' -and $Settings['Settings/DLSSNativeScale'] -eq 'true')
+    $native=$mode -eq '3' -or ($mode -in @('4','5') -and $Settings['Settings/DLSSNativeScale'] -eq 'true')
     $converted=@{}
     foreach($field in $schema.fields){
         $internal=$field.internal_section+'/'+$field.internal_key;$public=$field.section+'/'+$field.key
         if(-not $Settings.ContainsKey($internal)){continue}
         $value=[string]$Settings[$internal]
-        if($public -eq 'Upscaling/Upscaler'){$value=if($mode -eq '4'){'FSR'}else{'DLSS'}}
+        if($public -eq 'Upscaling/Upscaler'){$value=if($mode -eq '5'){'XeSS'}elseif($mode -eq '4'){'FSR'}else{'DLSS'}}
         elseif($public -eq 'DLSS/Quality' -and $native){$value='Native'}
         elseif($public -eq 'DLSS/Sharpness' -and $Settings['Settings/Sharpening'] -eq 'false'){$value='0.0'}
         elseif($field.codec -eq 'MipLodBias'){$value=if($value -eq 'true'){'Auto'}else{[string]$Settings['Settings/MipLodBias']}}
@@ -194,7 +194,7 @@ function Set-PackageIniValues([string[]]$Lines,[hashtable]$Values) {
     }
     if(-not $settings.ContainsKey('Experimental/FsrOrdinaryPresenter')){$settings['Experimental/FsrOrdinaryPresenter']='false'}
     # Re-resolve after edits; the effective backend is not a saved preference.
-    $settings['FrameGeneration/Backend']=if($settings['Settings/UpscaleType'] -eq '4' -and $settings['Experimental/FsrOrdinaryPresenter'] -eq 'true'){'0'}
+    $settings['FrameGeneration/Backend']=if($settings['Settings/UpscaleType'] -eq '5' -or ($settings['Settings/UpscaleType'] -eq '4' -and $settings['Experimental/FsrOrdinaryPresenter'] -eq 'true')){'0'}
         elseif($settings['FrameGeneration/BackendPreference'] -eq '1'){'1'}
         elseif($settings['FrameGeneration/BackendPreference'] -eq '2' -or $settings['Settings/UpscaleType'] -eq '4'){'2'}else{'1'}
     $public=ConvertTo-PublicIniValues $settings

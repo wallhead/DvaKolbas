@@ -162,7 +162,7 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::ResizeBuffers(UINT a_bufferCount, UINT 
 {
     if(host_ && host_->FsrFgActive())return host_->ResizeFsrSwapChain(*this,a_bufferCount,a_width,a_height,a_format,a_flags);
     if(!inner_)return E_UNEXPECTED;
-    if (host_ && host_->FsrActive() && a_bufferCount != 0) { a_bufferCount = 2; }
+    if (host_ && host_->OrdinarySourceActive() && a_bufferCount != 0) { a_bufferCount = 2; }
     const auto resize = [&] { return inner_?inner_->ResizeBuffers(a_bufferCount, a_width, a_height, a_format, a_flags):E_UNEXPECTED; };
     return host_ ? TheosRenderPipeline::ResizeHostBuffers(*host_, inner_.Get(), resize) : resize();
 }

@@ -12,6 +12,7 @@
 
 bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHandoff)
 {
+    if(XessActive())return EvaluateXessFrame(a_swapChain,a_nativeUIHandoff);
     if(FsrActive())return EvaluateFsrFrame(a_swapChain,a_nativeUIHandoff);
     if (FAILED(FailureResult()) || !proxyActive_ || a_swapChain != outerSwapChain_ || !splitSourceDLSSActive_ || !upscalerReady_ || !gameTargets_.GameFacing() ||
         !gameTargets_.UpscaleInput() || !gameTargets_.UpscaleOutput() || !context_ || presentation_.Buffers().empty())
@@ -129,7 +130,7 @@ float NvidiaHost::OptimalMipmapBias() const
     {
         return 0.0f;
     }
-    if (FsrActive()) {
+    if (FsrActive() || XessActive()) {
         return outputWidth_ ? std::log2(static_cast<float>(renderWidth_) / outputWidth_) - 1.0f : 0.0f;
     }
     return DLSSBackend::GetSingleton()->GetOptimalMipLodBias();
@@ -285,7 +286,7 @@ bool NvidiaHost::PresentationBackendReadyForEvaluation()
 #if defined(TRP_ENABLE_FSR_FG)
     if (FsrFgActive()) return fsrPresentation_ && fsrPresentation_->SwapChain();
 #endif
-    return FsrActive() ? ordinaryPresentation_.Ready() : TheosRenderPipeline::SourceDLSSG::Backend::Get().Ready();
+    return OrdinarySourceActive() ? ordinaryPresentation_.Ready() : TheosRenderPipeline::SourceDLSSG::Backend::Get().Ready();
 }
 
 HRESULT NvidiaHost::QueryFsrProducerDevice(REFIID iid,void** output) const

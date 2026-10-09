@@ -92,4 +92,9 @@ foreach($name in @('Home','PageUp','PageDown','Delete','Tab')){
     $named=Set-PackageIniValues @('[Upscaling]','Upscaler=DLSS','[Hotkeys]',('ToggleOverlay='+$name)) @{}
     if(-not ($named -contains ('ToggleOverlay = '+$name))){throw "Named hotkey lost: $name"}
 }
+$xessLines=Set-PackageIniValues $nativeLines @{'Upscaling/Upscaler'='XeSS';'FrameGeneration/Enabled'='false';'XeSS/Quality'='Native'}
+$xessPath=Join-Path $Output 'xess.ini';[IO.File]::WriteAllLines($xessPath,[string[]]$xessLines)
+$xess=Read-PackageIni $xessPath -Raw
+if($xess['Upscaling/Upscaler'] -ne 'XeSS' -or $xess['DLSS/Quality'] -ne 'Native') {throw 'XeSS packaging must retain provider and inactive DLAA preference'}
+if((Read-PackageIni $xessPath)['FrameGeneration/Backend'] -ne '0') {throw 'XeSS SR trial must select ordinary presentation'}
 Write-Output 'PASS: packaging and runtime schema agree; Native/ML/derived FG and unknown comments preserved'

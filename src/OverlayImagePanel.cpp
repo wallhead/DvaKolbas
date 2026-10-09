@@ -189,25 +189,34 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         {
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Mode");
-            const char* modes[]{"DLSS", "FSR"};
-            int mode = settingsDraft.upscaleType == FSR ? 1 : 0;
-            constexpr int modeCount =
-#if defined(TRP_ENABLE_FSR)
-                2;
-#else
-                1;
-#endif
+            const bool restricted=RenderPipeline::GetSingleton()->mFsrOnlyRenderer || TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId);
+            const auto modeLabel=settingsDraft.upscaleType==Xess?"XeSS":settingsDraft.upscaleType==FSR?"FSR":"DLSS";
             ImGui::SetNextItemWidth(-1);
-            if ((RenderPipeline::GetSingleton()->mFsrOnlyRenderer || TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId))) {
-                ImGui::TextUnformatted("FSR");
-            }
-            else if (ImGui::Combo("##mode", &mode, modes, modeCount))
-            {
-                TheosRenderPipeline::StageRendererUpscaleProvider(settingsDraft, mode == 1);
+            if(ImGui::BeginCombo("##mode",modeLabel)) {
+                const auto choose=[&](const char* label,int mode){
+                    if(ImGui::Selectable(label,settingsDraft.upscaleType==mode)) {
+                        const bool neural=settingsDraft.sourceDLSSG.neuralEnabled,generation=settingsDraft.generationEnabled;
+                        TheosRenderPipeline::SetRendererUpscaleMode(settingsDraft,mode);
+                        settingsDraft.sourceDLSSG.neuralEnabled=neural;settingsDraft.generationEnabled=generation;
+                    }
+                };
+                if(!restricted)choose("DLSS",settingsDraft.nvidiaMode.nativeScale?DLAA:DLSS);
+#if defined(TRP_ENABLE_FSR)
+                choose("FSR",FSR);
+#endif
+#if defined(TRP_ENABLE_XESS)
+                choose("XeSS",Xess);
+#endif
+                ImGui::EndCombo();
             }
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Render scale");
-            if(settingsDraft.upscaleType==FSR) {
+            if(settingsDraft.upscaleType==Xess) {
+                const char* qualities[]{"Quality","Balanced","Performance","100% | Native"};
+                int quality=static_cast<int>(settingsDraft.xess.quality);
+                ImGui::SetNextItemWidth(-1);
+                if(ImGui::Combo("##xessQuality",&quality,qualities,4))settingsDraft.xess.quality=static_cast<TheosRenderPipeline::Upscaling::Quality>(quality);
+            } else if(settingsDraft.upscaleType==FSR) {
                 const char* qualities[]{"67% | Quality","59% | Balanced","50% | Performance","100% | Native"};
                 int quality=static_cast<int>(settingsDraft.fsr.quality);
                 ImGui::SetNextItemWidth(-1);
@@ -236,7 +245,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
         }
         DrawSettingsHelp(
             "Native uses the full output resolution. Lower render scales reduce the size of the rendered world.");
-        if (view.sourceDLSSGActive || view.fsrActive)
+        if (view.sourceDLSSGActive || view.fsrActive || host->XessActive())
         {
             const auto& configuration = host->SourceUpscalerSettings();
             if (configuration.NeedsRestart())
@@ -263,7 +272,13 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
                              "FSR keeps its FG backend ready for live on/off and saves HDR and dynamic resolution off. "
                              "After NR supports fixed DLSS/FSR render scales. Sharpness applies after editing ends.");
         }
-        if(settingsDraft.upscaleType==FSR) {
+        if(settingsDraft.upscaleType==Xess) {
+            const auto status=host->XessStatus();ImGui::TextWrapped("%s",status.text.c_str());
+            const char* encodings[]{"Linear","Gamma 2.2 SDR","sRGB SDR"};
+            int encoding=static_cast<int>(settingsDraft.xess.sourceEncoding)-1;ImGui::SetNextItemWidth(-1);
+            if(ImGui::Combo("Source color encoding##xess",&encoding,encodings,3))settingsDraft.xess.sourceEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding+1);
+            DrawSettingsHelp("XeSS SR: SDK-sized fixed resolution, linear FP16 input and jitter from the selected quality. NR, FG and HDR qualification follows separately. Save and restart for quality/encoding changes.");
+        } else if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"FSR3 (3.1.5)","Auto (FSR4 / FSR3)","FSR4 (ML)"};
             int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);
             const auto availability=host->FsrMlChoices();

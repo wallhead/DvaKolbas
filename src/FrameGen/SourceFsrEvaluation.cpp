@@ -53,6 +53,7 @@ TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrStatus() const
     const auto& creation=sourceUpscalerSettings_.Requested();
     requested.providerPolicy=creation.fsr.providerPolicy;
     requested.backend=creation.mode==FSR?BackendKind::Fsr:creation.mode==DLAA?BackendKind::Dlaa:BackendKind::Dlss;
+    if(FsrActive())requested.backend=BackendKind::Fsr; // Includes explicit XeSS -> FSR startup fallback.
     auto active=backendDecision_;active.valid=false;
     const ProviderInfo* provider=nullptr;const RuntimeError* error=nullptr;
 #if defined(TRP_ENABLE_FSR)

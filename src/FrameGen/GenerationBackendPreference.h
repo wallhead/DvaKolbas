@@ -6,6 +6,7 @@ namespace TheosRenderPipeline
     inline long ResolveGenerationBackend(GenerationBackendPreference preference,
         Upscaling::BackendKind upscaler, bool ordinaryDiagnostic = false)
     {
+        if(upscaler==Upscaling::BackendKind::Xess)return 0; // SR-only qualification; FG integration follows separately.
         if (upscaler == Upscaling::BackendKind::Fsr && ordinaryDiagnostic) return 0;
         if (preference == GenerationBackendPreference::Nvidia) return 1;
         if (preference == GenerationBackendPreference::Fsr) return 2;

@@ -44,7 +44,7 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     view.nvidiaHostActive = nvidiaHost->ProxyActive();
     view.fsrActive = nvidiaHost->FsrActive();
     view.fsrStatus = nvidiaHost->FsrStatus();
-    view.sourceDLSSGActive = view.nvidiaHostActive && nvidiaHost->StartupConfigured() && !view.fsrActive && !nvidiaHost->FsrFgActive();
+    view.sourceDLSSGActive = view.nvidiaHostActive && nvidiaHost->StartupConfigured() && !view.fsrActive && !nvidiaHost->XessActive() && !nvidiaHost->FsrFgActive();
     const bool dlssgEnabled = view.sourceDLSSGActive && TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().GenerationActive();
     view.fsrFgActive=nvidiaHost->FsrFgActive() && nvidiaHost->FsrFgStatus().kind==TheosRenderPipeline::SettingsStatusKind::Success;
     view.frameGenerationRuntimeActive = dlssgEnabled || view.fsrFgActive;
@@ -182,6 +182,12 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
             view.upscaleHealth=view.fsrStatus.kind==TheosRenderPipeline::SettingsStatusKind::Error?UIHealth::kError:UIHealth::kWarning;
             view.pipelineHealth=view.upscaleHealth;view.pipelineLabel="Attention required";
         }
+    }
+    if(nvidiaHost->XessActive()) {
+        const auto status=nvidiaHost->XessStatus();view.upscaleTitle="XeSS";
+        view.activeUpscaleStage=nvidiaHost->XessTemporalActive()?"XeSS SR":"XeSS pending / spatial recovery";
+        std::snprintf(view.upscaleDetail,sizeof(view.upscaleDetail),"%.0f%% | %s",view.proxyScale*100.0f,TheosRenderPipeline::Upscaling::XessQualityName(effective.xess.quality));
+        if(status.kind!=TheosRenderPipeline::SettingsStatusKind::Success){view.upscaleHealth=UIHealth::kWarning;view.pipelineHealth=UIHealth::kWarning;view.pipelineLabel="Attention required";}
     }
     return view;
 }

@@ -7,6 +7,7 @@
 #include <PCH.h>
 #include "UpscaleType.h"
 #include "Upscaling/FSRSettings.h"
+#include "Upscaling/XessSettings.h"
 
 #include <RE/BSGraphics.h>
 #include <d3d11.h>
@@ -85,6 +86,7 @@ public:
     std::uint32_t mAdapterVendorId{};
     bool mFsrOnlyRenderer{};
     TheosRenderPipeline::Upscaling::FsrSettings mFsrSettings;
+    TheosRenderPipeline::Upscaling::XessSettings mXessSettings;
     bool mDynamicResolutionRequested{};
 	int   mQualityLevel{ 2 };
     bool mDlssNativeScale{true};

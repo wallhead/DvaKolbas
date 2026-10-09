@@ -11,7 +11,7 @@ inline bool IsAmdRenderer(std::uint32_t vendor) { return vendor == 0x1002; }
 // This restricts providers, independently of NR's model/device-ID catalog.
 inline bool FsrOnlyRendererSelectionAllowed(int mode, long presenter, bool neural)
 {
-    return mode == FSR && (presenter == 0 || presenter == 2) && !neural;
+    return (mode == FSR && (presenter == 0 || presenter == 2) || mode == Xess && presenter == 0) && !neural;
 }
 
 // Normalize only the in-memory startup view. Saving defaults remains explicit.
@@ -20,6 +20,7 @@ template<class Ini> void ApplyRendererGpuPolicy(Ini& ini, std::uint32_t vendor, 
 {
     if (!IsAmdRenderer(vendor) && !fsrOnlyRenderer) return;
     const IniLayout::ReadView read(ini);
+    if(read.GetLongValue("Settings","UpscaleType",DLSS)==Xess) return; // Explicit cross-vendor SR; validated separately, never normalized to FSR.
     const bool fsr = read.GetLongValue("Settings", "UpscaleType", DLSS) == FSR;
     const long backend = read.GetLongValue("Experimental", "FrameGenerationBackend", 1);
     const bool enabled = fsr && backend == 2 && fsrFgBuilt && read.GetBoolValue("FrameGeneration", "Enabled", false);
