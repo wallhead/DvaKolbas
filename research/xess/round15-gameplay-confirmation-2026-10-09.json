@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-09",
+  "sourceRevision": "09816a0ccd16da293e09eb87c3ade975a55895c6",
+  "userReport": "seems fine",
+  "context": "Following request to compare XeSS sharpness 0 versus 1 and check the output-FPS graph.",
+  "logSha256": "96ac1ddc63a9c1e1d8d80d1b88dd1a14c57806e0c270e14b98d24fe610f389ca",
+  "observed": {
+    "effectiveUpscaler": "XeSS NativeAA",
+    "renderAndOutput": "2560x1440",
+    "temporalXeSS": true,
+    "nr": "rtx40, 1 pass, After upscaling before FG",
+    "fgProvider": "FSR3 3.1.6",
+    "successfulGenerationCallback": true,
+    "liveSharpnessValues": [
+      0.4,
+      0.84,
+      1.0,
+      0.61,
+      0.54
+    ],
+    "settingsSaveSucceeded": true,
+    "errorOrCriticalLogLines": 0,
+    "nextStartupRequest": "FSR saved while effective running upscaler remains XeSS; requires restart"
+  },
+  "qualification": "User reports this installed Native XeSS trial is visually fine. Logs independently confirm live sharpness changes, temporal SR, After NR and successful FSR3 generation callbacks.",
+  "limits": [
+    "The log does not contain a numeric output-FPS graph sample; no measured FPS claim is made.",
+    "This does not qualify scaled XeSS gameplay, all lifecycle cases, other GPUs, Intel FG or NVIDIA FG on XeSS."
+  ],
+  "milestones": "6 of 8 complete; milestone 7 partial"
+}
