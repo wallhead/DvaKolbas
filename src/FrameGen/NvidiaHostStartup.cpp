@@ -240,10 +240,14 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
             }
             extent=xessResources_->RenderExtent();
         } else {
+            const auto ordinaryDevice=+[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
+                return TheosRenderPipeline::ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,false);
+            };
+            const auto nativeDevice=+[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
+                return TheosRenderPipeline::ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
+            };
             xessResources_=std::make_unique<TheosRenderPipeline::Upscaling::XessHostResources>(TheosRenderPipeline::PluginPaths::Directory(),
-                +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
-                    return TheosRenderPipeline::ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
-                });
+                FsrFgActive()?nativeDevice:ordinaryDevice);
             const auto& request=sourceUpscalerSettings_.Startup().xess;
             extent=xessResources_->Initialize(device_.Get(),request.quality,{outputWidth_,outputHeight_},request.sourceEncoding);
         }
@@ -467,6 +471,10 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
 #if defined(TRP_ENABLE_XESS)
     if(XessActive()) {
         if(!xessResources_ || xessResources_->RenderExtent()!=TheosRenderPipeline::Upscaling::Extent{renderWidth_,renderHeight_}){status_="XeSS initialized extent does not match game targets";return false;}
+        const auto sharpnessPreflight=xessResources_->SharpenOutput(context_.Get(),gameTargets_.UpscaleOutput(),0);
+        if(!sharpnessPreflight){status_=sharpnessPreflight.error().message;return false;}
+        if(const auto notice=xessResources_->TakeSharpeningNotice())
+            logger::warn("[XeSS sharpening] native=0x{:08X} {}",std::uint32_t(notice->nativeResult),notice->message);
         if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="XeSS native UI resource creation failed";return false;}
         if(FsrFgActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
             status_="XeSS + FSR FG requires dedicated native UI resources";return false;
@@ -589,6 +597,7 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
         return E_FAIL;
     }
     fsrFactory_=factory;fsrDescriptor_=descriptor;
+    fsrGameBufferCount_=descriptor.BufferCount;
     const auto& fgProvider=fsrPresentation_->GenerationProvider();
     logger::info("[FSR FG provider] selectedId={} selectedVersion={} policy={} API=4.0.1 (API version is not algorithm version)",
         fgProvider.identity.id,fgProvider.identity.name,
@@ -638,7 +647,7 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
         if((*translated)->BufferDesc.Width!=outputWidth_ || (*translated)->BufferDesc.Height!=outputHeight_) {
             status_="XeSS + FSR FG output-size change requires restart; running resources retained";return E_INVALIDARG;
         }
-        if((count==0 || count==fsrDescriptor_.BufferCount) &&
+        if((count==0 || count==fsrDescriptor_.BufferCount || count==fsrGameBufferCount_) &&
             (*translated)->BufferDesc.Format==fsrDescriptor_.BufferDesc.Format && flags==fsrDescriptor_.Flags) {
             // Repeated borderless resize notifications do not change allocation.
             // A minimized chain still needs Resume and its genuine history reset.
@@ -682,6 +691,7 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
     else resized=fsrPresentation_->ResizeExternal(**translated,externalRender);
     if(!resized){status_=resized.error().message;return FailLifecycle(E_FAIL,"AMD resize reconstruction");}
     renderWidth_=resized->render.width;renderHeight_=resized->render.height;
+    if(count)fsrGameBufferCount_=count;
     auto hr=innerSwapChain_->GetDesc(&fsrDescriptor_);
     if(FAILED(hr) || !CreateGameFacingResources(innerSwapChain_) || !CompleteStartupAfterDeviceCreation())
         return FailLifecycle(FAILED(hr)?hr:E_FAIL,"AMD resized source resources");

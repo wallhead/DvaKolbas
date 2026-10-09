@@ -352,7 +352,7 @@ int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
     std::setvbuf(stdout,nullptr,_IONBF,0);
-    const bool unresolvedRoute=argc==3 && std::string_view(argv[1])=="--unresolved-reshade";
+    const bool unresolvedRoute=(argc==3 || argc==4) && std::string_view(argv[1])=="--unresolved-reshade";
     nrNative=argc==4 && std::string_view(argv[1])=="--fsr-reshade-nr-native";
     const bool nrRoute=nrNative || (argc==4 && std::string_view(argv[1])=="--fsr-reshade-nr");
     if(nrNative){renderWidth=outputWidth;renderHeight=outputHeight;}
@@ -385,6 +385,17 @@ int main(int argc, char** argv)
         Require(effects.CreateSourceDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,&strict,true)==E_NOINTERFACE && !strict,
             "recognized unresolved ReShade injector rejects AMD ownership before publication");
         ComPtr<ID3D12Device> legacy;Check(effects.CreateSourceDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,&legacy),"legacy non-strict creation remains available");
+#if defined(TRP_TEST_XESS_OWNER)
+        Require(argc==4,"unresolved XeSS test requires official runtime root");
+        TheosRenderPipeline::Upscaling::XessHostResources sr(std::filesystem::absolute(argv[3]),
+            +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** out)->HRESULT {
+                return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,out,false);
+            });
+        const auto srExtent=sr.Initialize(device.Get(),TheosRenderPipeline::Upscaling::Quality::NativeAA,{outputWidth,outputHeight},
+            TheosRenderPipeline::Upscaling::ColorEncoding::Gamma22);
+        Require(bool(srExtent),"known injector without usable addon API retains actual XeSS SR-only startup");
+        Require(bool(sr.Retire()),"unresolved injector XeSS owner retires safely");
+#endif
         FreeLibrary(module);DestroyWindow(window);std::puts("PASS: unresolved native ownership rejected; legacy creation preserved");return 0;
     }
     auto& effects = ReShadeIntegration::Get(); effects.Discover(window); effects.Configure(device.Get(), context.Get(), {outputWidth, outputHeight});

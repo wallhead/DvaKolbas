@@ -54,6 +54,9 @@ struct NvidiaHost::SourceXessEvaluationOperations
             frame.sharpness=host.sourceUpscalerSettings_.Effective().xess.sharpness;
             const auto sharpened=host.xessResources_->SharpenOutput(host.context_.Get(),frame.output,frame.sharpness);
             if(!sharpened){error=sharpened.error();return false;}
+            frame.sharpness=host.xessResources_->AppliedSharpness();
+            if(const auto notice=host.xessResources_->TakeSharpeningNotice())
+                logger::warn("[XeSS sharpening] native=0x{:08X} {}",std::uint32_t(notice->nativeResult),notice->message);
             host.xessCompletedFrame_=frame;
         }
         return true;
@@ -250,6 +253,29 @@ bool NvidiaHost::XessTemporalActive()const
 #endif
 }
 
+bool NvidiaHost::XessSharpeningAvailable()const {
+#if defined(TRP_ENABLE_XESS)
+    return xessResources_ && xessResources_->SharpeningAvailable();
+#else
+    return false;
+#endif
+}
+float NvidiaHost::XessAppliedSharpness()const {
+#if defined(TRP_ENABLE_XESS)
+    return xessResources_?xessResources_->AppliedSharpness():0;
+#else
+    return 0;
+#endif
+}
+std::string NvidiaHost::XessSharpeningStatus()const {
+#if defined(TRP_ENABLE_XESS)
+    if(xessResources_ && xessResources_->SharpeningError()) {
+        const auto& error=*xessResources_->SharpeningError();
+        return std::format("Sharpening unavailable (0x{:08X}): {}",std::uint32_t(error.nativeResult),error.message);
+    }
+#endif
+    return {};
+}
 TheosRenderPipeline::SettingsActionStatus NvidiaHost::XessStatus()const
 {
     using namespace TheosRenderPipeline;

@@ -21,15 +21,19 @@ inline std::pair<SI_Error, std::string> LoadRenderer(CSimpleIniA& ini, const wch
     if (notice) notice->clear();
     const auto result = ini.LoadFile(path);
     if (result < 0) return {result, "Cannot read Data/SKSE/Plugins/RaZkolbaS.ini. Install the matching INI from the package; startup will not guess source encoding or feature settings."};
-    if (notice) {
-        *notice=LegacyRuntimeNotice(ini);
-        if(std::string_view(ini.GetValue("Upscaling", "Upscaler", ""))=="XeSS" &&
-            std::string_view(ini.GetValue("FrameGeneration", "Backend", ""))=="NVIDIA") {
-            if(!notice->empty())notice->append(" ");
-            notice->append("[FrameGeneration] Backend=NVIDIA is unavailable with XeSS; using Auto, SR-only presentation and FG off. Select Backend=FSR and restart for experimental XeSS + FSR FG.");
-        }
+    const bool xess=std::string_view(ini.GetValue("Upscaling", "Upscaler", ""))=="XeSS";
+    const bool nvidia=std::string_view(ini.GetValue("FrameGeneration", "Backend", "Auto"))=="NVIDIA";
+    const bool requestedFG=ini.GetBoolValue("FrameGeneration", "Enabled", false);
+    if(notice)*notice=LegacyRuntimeNotice(ini);
+    auto error=PublicIni::Decode(ini);
+    if(notice && error.empty() && xess &&
+        (nvidia || (requestedFG && !ini.GetBoolValue("FrameGeneration", "Enabled", false)))) {
+        if(!notice->empty())notice->append(" ");
+        notice->append(nvidia ? "[FrameGeneration] Backend=NVIDIA is unavailable with XeSS; using Auto, SR-only presentation and FG off. " :
+            "[FrameGeneration] XeSS + Backend=Auto uses SR-only presentation; requested FG was turned off. ");
+        notice->append("Select Backend=FSR and restart for experimental XeSS + FSR FG.");
     }
-    return {result, PublicIni::Decode(ini)};
+    return {result, std::move(error)};
 }
 inline SI_Error LoadForUpdate(CSimpleIniA& ini, const wchar_t* path)
 {

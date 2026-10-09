@@ -109,6 +109,9 @@ class NvidiaHost
     bool QueryXessJitter(std::uint64_t,float&,float&);
     TheosRenderPipeline::Telemetry::OutputCounter FsrOutputCounter()const;
     TheosRenderPipeline::SettingsActionStatus XessStatus()const;
+    bool XessSharpeningAvailable()const;
+    float XessAppliedSharpness()const;
+    std::string XessSharpeningStatus()const;
     bool FsrTemporalActive() const { return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult()); }
     bool FsrFgActive() const { return StartupConfigured() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
     bool FsrPresentSuspended()const;
@@ -243,6 +246,7 @@ class NvidiaHost
     std::uint64_t fsrSourceRenderedCount_{},fsrGuideCaptureCount_{};
     Microsoft::WRL::ComPtr<IDXGIFactory> fsrFactory_;
     DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
+    UINT fsrGameBufferCount_{};
     TheosRenderPipeline::Upscaling::UpscaleFrame fsrGenerationFrame_{};
     TheosRenderPipeline::Upscaling::UpscaleOutcome fsrGenerationOutcome_{TheosRenderPipeline::Upscaling::UpscaleOutcome::SkippedInvalidInput};
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> fsrForeground_;

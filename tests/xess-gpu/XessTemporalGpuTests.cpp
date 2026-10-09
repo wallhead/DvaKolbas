@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <thread>
 #include <vector>
+#include <fstream>
 using namespace TheosRenderPipeline::Upscaling;
 using namespace InteropFixture;
 static void Accepted(Result<void> result)
@@ -84,6 +85,62 @@ static void AllocatorReuse(Rig& rig)
     Require(elapsed>=25,"allocator was not reset while its actual submission remained held");
     Check(bridge.Submit(Work::FrameGeneration),"submit retired reused slot");Check(bridge.Drain(),"allocator test drain");
     std::printf("Allocator reuse genuine wait=%.2f ms\n",elapsed);
+}
+static void OptionalSharpeningFailure(Rig& rig,const std::filesystem::path& fixture)
+{
+    const auto shader=fixture/"RaZkolbaS/RCAS.hlsl";
+    Require(!std::filesystem::exists(shader),"fault fixture starts without a sharpening shader");
+    for(const bool broken : {false,true}) {
+        if(broken){std::filesystem::create_directories(shader.parent_path());std::ofstream(shader)<<"invalid HLSL test fixture";}
+        XessHostResources host(fixture);
+        const auto extent=host.Initialize(rig.device11.Get(),Quality::NativeAA,{640,360},ColorEncoding::Gamma22);
+        if(broken)std::filesystem::remove(shader);
+        Require(bool(extent),"optional broken/missing shader cannot block XeSS initialization");
+        auto output=Texture(rig,{32,16},DXGI_FORMAT_R16G16B16A16_FLOAT);
+        auto staging=Texture(rig,{32,16},DXGI_FORMAT_R16G16B16A16_FLOAT,true);
+        ComPtr<ID3D11RenderTargetView> view;Check(rig.device11->CreateRenderTargetView(output.Get(),nullptr,&view),"optional sharpening image");
+        const float rgba[]{.2f,.4f,.6f,1.f};rig.context11->ClearRenderTargetView(view.Get(),rgba);
+        const auto before=Read(rig,output.Get(),staging.Get(),{32,16});
+        Accepted(host.SharpenOutput(rig.context11.Get(),output.Get(),1));
+        Require(!host.SharpeningAvailable() && host.AppliedSharpness()==0 && host.SharpeningError().has_value(),
+            "optional shader failure exposes unavailable status and applied strength zero");
+        const auto notice=host.TakeSharpeningNotice();
+        Require(notice && notice->message.find("RCAS.hlsl")!=std::string::npos && !host.TakeSharpeningNotice(),
+            "optional sharpening warning includes the path and is emitted only once");
+        Accepted(host.SharpenOutput(rig.context11.Get(),output.Get(),1));
+        Require(!host.TakeSharpeningNotice(),"bypassed frames cannot spam the unavailable warning");
+        const auto after=Read(rig,output.Get(),staging.Get(),{32,16});
+        Require(before.rgb==after.rgb && before.alphaMin==after.alphaMin,
+            "optional sharpening failure delivers exactly unchanged image pixels");
+        Accepted(host.Retire());
+    }
+    std::filesystem::copy_file(TRP_TEST_RCAS_SHADER,shader);
+    XessHostResources formats(fixture);
+    const auto initialized=formats.Initialize(rig.device11.Get(),Quality::NativeAA,{640,360},ColorEncoding::Gamma22);
+    std::filesystem::remove(shader);
+    Require(bool(initialized) && formats.SharpeningAvailable(),"valid optional shader initialized before live edits");
+    auto output=Texture(rig,{32,16},DXGI_FORMAT_B8G8R8A8_UNORM);
+    auto staging=Texture(rig,{32,16},DXGI_FORMAT_B8G8R8A8_UNORM,true);
+    ComPtr<ID3D11RenderTargetView> view;Check(rig.device11->CreateRenderTargetView(output.Get(),nullptr,&view),"format bypass image");
+    const float rgba[]{.2f,.4f,.6f,.75f};rig.context11->ClearRenderTargetView(view.Get(),rgba);
+    const auto bytes=[&]{
+        rig.context11->CopyResource(staging.Get(),output.Get());D3D11_MAPPED_SUBRESOURCE map{};
+        Check(rig.context11->Map(staging.Get(),0,D3D11_MAP_READ,0,&map),"format bypass readback");
+        std::vector<unsigned char> result;for(unsigned y=0;y<16;++y){
+            const auto* row=static_cast<const unsigned char*>(map.pData)+y*map.RowPitch;result.insert(result.end(),row,row+32*4);}
+        rig.context11->Unmap(staging.Get(),0);return result;
+    };
+    const auto before=bytes();Accepted(formats.SharpenOutput(rig.context11.Get(),output.Get(),0));
+    Require(!formats.SharpeningAvailable(),"unsupported output format is detected even with saved sharpness zero");
+    Accepted(formats.SharpenOutput(rig.context11.Get(),output.Get(),1));
+    Require(before==bytes() && formats.AppliedSharpness()==0,"unsupported format bypass preserves all scene/alpha bytes");
+    ComPtr<ID3D11Device> foreignDevice;ComPtr<ID3D11DeviceContext> foreignContext;
+    Check(D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_WARP,nullptr,0,nullptr,0,D3D11_SDK_VERSION,
+        &foreignDevice,nullptr,&foreignContext),"foreign software producer for ownership rejection");
+    const auto foreign=formats.SharpenOutput(foreignContext.Get(),output.Get(),1);
+    Require(!foreign && foreign.error().kind==ErrorKind::InvalidInput,
+        "unavailable sharpening cannot bypass wrong-device producer ownership checks");
+    Accepted(formats.Retire());
 }
 static void VendorFailure(Rig& rig,const std::filesystem::path& fixture)
 {
@@ -225,7 +282,8 @@ int wmain(int argc,wchar_t** argv)
         Check(bridge->DiscardRecording(),"discard rejected frame without GPU submission");Check(bridge->Drain(),"retire rejected-frame producer");
         PendingReader(rig,host);Require(!host.Resources().color && !host.Upscaler(),"retired views/context released together");
     }
-    AllocatorReuse(rig);VendorFailure(rig,std::filesystem::absolute(argv[2]));
+    AllocatorReuse(rig);OptionalSharpeningFailure(rig,std::filesystem::absolute(argv[2]));
+    VendorFailure(rig,std::filesystem::absolute(argv[2]));
     rig.ValidateDebug();
     std::printf("PASS: %u actual XeSS executions; Native/Quality/Performance %s roundtrip, static edges, non-square moving guides, resets and retirement. Visible quality requires human confirmation.\n",executed,visible?"Gamma22":"Gamma22/SRGB");
 }

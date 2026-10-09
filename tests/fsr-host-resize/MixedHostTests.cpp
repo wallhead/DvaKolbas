@@ -53,6 +53,7 @@ struct NvidiaHost {
     struct Settings {struct Creation {int AllocationQuality(){return 2;}} creation;Creation& Startup(){return creation;}} sourceUpscalerSettings_;
     struct Presenter {NvidiaHost* host;HRESULT WaitBeforeProducer(){return S_OK;}Upscaling::Result<void> Suspend(){return {};}Upscaling::Result<void> BeforeResize(){++host->retired;return {};}Upscaling::Result<FsrHostResize> Resize(const DXGI_SWAP_CHAIN_DESC&){return FsrHostResize{{64,64}};}Upscaling::Result<FsrHostResize> ResizeExternal(const DXGI_SWAP_CHAIN_DESC&,Upscaling::Extent e){return FsrHostResize{e};}} presenter{this};Presenter* fsrPresentation_{&presenter};
     DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
+    UINT fsrGameBufferCount_{};
     bool suspended{};unsigned resumes{};
     bool FsrActive()const{return false;}bool FsrFgActive()const{return mixed;}HRESULT FailureResult()const{return S_OK;}HRESULT UpdateFsrSuspension(){if(suspended){suspended=false;++resumes;resetNextEvaluation_=true;}return S_OK;}bool FsrPresentSuspended(){return suspended;}
     bool xess{};bool XessActive()const{return xess;}
@@ -96,6 +97,14 @@ int main(){
     Require(xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==S_OK && !xess.retired && !xess.xessOwner.retirements && SourceDLSSG::queries==queries,
         "same descriptor XeSS resize retains SDK and presenter without retirement");
     xess.suspended=true;
+    for(const UINT original : {1u,3u}) {
+        xess.fsrGameBufferCount_=original;
+        Require(xess.ResizeFsrSwapChain(xess.outer,original,64,64,DXGI_FORMAT_UNKNOWN,0,nullptr,nullptr)==S_OK &&
+            !xess.retired && !xess.xessOwner.retirements,
+            "same-size original game buffer count retains XeSS and AMD owners");
+    }
+    xess.suspended=true;
+    xess.resumes=0;
     Require(xess.ResizeFsrSwapChain(xess.outer,0,64,64,DXGI_FORMAT_UNKNOWN,0,nullptr,nullptr)==S_OK &&
         xess.resumes==1 && !xess.suspended && xess.resetNextEvaluation_ && !xess.retired,
         "no-op resize resumes suspended presenter and resets history without rebuilding SDK");

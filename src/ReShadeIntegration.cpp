@@ -298,7 +298,7 @@ namespace TheosRenderPipeline
                 D3D12_FEATURE_DATA_FEATURE_LEVELS levels{1,&minimum,D3D_FEATURE_LEVEL_11_0};
                 hr=s.sourceNative->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS,&levels,sizeof(levels));
                 if(FAILED(hr) || levels.MaxSupportedFeatureLevel<minimum)return FAILED(hr)?hr:E_NOINTERFACE;
-                s.nativeOutput=true;
+                s.nativeOutput=s.module!=nullptr;
                 s.status=s.module?"ReShade retained native source device reused; SDK queues remain independently owned":"ReShade not loaded";
                 return s.sourceNative.CopyTo(out);
             }

@@ -14,6 +14,10 @@ namespace TheosRenderPipeline::Upscaling
         // Scene-thread producer; previous dispatch must have queued WaitConsumer first.
         Result<void> PrepareInput(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*);
         Result<void> SharpenOutput(ID3D11DeviceContext*,ID3D11Texture2D*,float);
+        bool SharpeningAvailable() const;
+        float AppliedSharpness() const;
+        const std::optional<RuntimeError>& SharpeningError() const;
+        std::optional<RuntimeError> TakeSharpeningNotice();
         Result<void> Retire();
         Extent RenderExtent() const;
         XessGpuResources Resources() const;

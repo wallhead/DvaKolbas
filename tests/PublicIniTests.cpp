@@ -116,6 +116,19 @@ int main(int argc, char** argv)
         notice.find("SR-only")!=std::string::npos && normalized.GetLongValue("FrameGeneration","Backend",-1)==0,
         "startup file loader logs actionable XeSS NVIDIA normalization before decoding");
     IndependentGenerationPreference();
+    for(const auto* backend : {"Auto","FSR"}) {
+        CSimpleIniA requested;requested.SetValue("Upscaling","Upscaler","XeSS");
+        requested.SetValue("FrameGeneration","Backend",backend);requested.SetBoolValue("FrameGeneration","Enabled",true);
+        Check(requested.SaveFile(legacyPath.c_str())>=0,"XeSS FG notice fixture saved");
+        CSimpleIniA readBack;const auto [status,error]=SettingsFile::LoadRenderer(readBack,legacyPath.c_str(),&notice);
+        std::filesystem::remove(legacyPath);
+        Check(status>=0 && error.empty(),"XeSS FG notice fixture decodes");
+        if(std::string_view(backend)=="Auto")
+            Check(!readBack.GetBoolValue("FrameGeneration","Enabled",true) && notice.find("Backend=FSR")!=std::string::npos,
+                "XeSS Auto FG-off normalization reports the requested FG change");
+        else Check(readBack.GetBoolValue("FrameGeneration","Enabled",false) && notice.empty(),
+            "explicit XeSS FSR FG request is retained without a normalization notice");
+    }
     AutomaticNeuralRuntime();
     CSimpleIniA ini;
     ini.LoadData(R"ini(

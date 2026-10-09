@@ -15,6 +15,15 @@ namespace TheosRenderPipeline::Upscaling
         Graphics::SharedTexture color,depth,motion,output;
         SdrColorConverter decode;D3D11FrameCopy::Depth depthCopy;
         SdrSharpeningPass sharpen;
+        std::optional<RuntimeError> sharpeningError;
+        bool sharpeningNotice{};float appliedSharpness{};
+        void DisableSharpening(HRESULT code,const std::filesystem::path& shader,const char* reason) {
+            if(sharpeningError)return;
+            const auto path=shader.u8string();
+            sharpeningError=RuntimeError{ErrorKind::DispatchFailure,code,
+                std::string(reason)+"; sharpening disabled, XeSS/NR/FG continue unsharpened. Restart after repairing: "+std::string(path.begin(),path.end())};
+            sharpeningNotice=true;appliedSharpness=0;
+        }
         ColorEncoding encoding{ColorEncoding::Unknown};Extent render{},display{};
         bool ready{};
     };
@@ -55,9 +64,12 @@ namespace TheosRenderPipeline::Upscaling
             FAILED(hr=create(state_->motion,*extent,DXGI_FORMAT_R16G16_FLOAT,false)) || FAILED(hr=create(state_->output,display,DXGI_FORMAT_R16G16B16A16_FLOAT,true)))
             return fail({ErrorKind::UnsupportedDevice,hr,"XeSS shared prepared texture allocation failed"});
         // Compile the shipped optional pass during startup, before live edits.
-        const auto shader=pluginDirectory_/"RaZkolbaS/RCAS.hlsl";std::error_code fileError;
-        if(std::filesystem::is_regular_file(shader,fileError) && FAILED(hr=state_->sharpen.Initialize(device11,shader)))
-            return fail({ErrorKind::ContextFailure,hr,"XeSS output sharpening shader initialization failed"});
+        const auto shader=pluginDirectory_/"RaZkolbaS/RCAS.hlsl";
+        if(FAILED(hr=state_->sharpen.Initialize(device11,shader))) {
+            const auto removed=device11->GetDeviceRemovedReason();
+            if(FAILED(removed))return fail({ErrorKind::DeviceLost,removed,"XeSS device lost during optional sharpening initialization"});
+            state_->DisableSharpening(hr,shader,"XeSS optional RCAS shader initialization failed");
+        }
         state_->ready=true;return *extent;
     }
     Result<void> XessHostResources::PrepareInput(ID3D11Texture2D* color,ID3D11Texture2D* depth,ID3D11Texture2D* motion)
@@ -82,12 +94,38 @@ namespace TheosRenderPipeline::Upscaling
     Result<void> XessHostResources::SharpenOutput(ID3D11DeviceContext* context,ID3D11Texture2D* output,float strength)
     {
         if(!state_->ready || !context || !output)return Failure(ErrorKind::InvalidInput,E_INVALIDARG,"XeSS sharpening output unavailable");
+        state_->appliedSharpness=0;
+        if(!std::isfinite(strength) || strength<0 || strength>1)return Failure(ErrorKind::InvalidInput,E_INVALIDARG,"XeSS sharpening strength is invalid");
+        ComPtr<ID3D11Device> device,owner,producer;context->GetDevice(&device);output->GetDevice(&owner);
+        state_->bridge->Context11()->GetDevice(&producer);
+        if(!device || !D3D11FrameCopy::SameObject(device.Get(),owner.Get()) || !D3D11FrameCopy::SameObject(device.Get(),producer.Get()))
+            return Failure(ErrorKind::InvalidInput,E_INVALIDARG,"XeSS sharpening producer ownership mismatch");
+        auto hr=device->GetDeviceRemovedReason();
+        if(FAILED(hr))return Failure(ErrorKind::DeviceLost,hr,"XeSS device lost before output sharpening");
+        if(state_->sharpeningError)return {};
+        D3D11_TEXTURE2D_DESC desc{};output->GetDesc(&desc);
+        if(desc.SampleDesc.Count!=1 || desc.ArraySize!=1 || desc.MipLevels!=1 ||
+            (desc.Format!=DXGI_FORMAT_R8G8B8A8_UNORM && desc.Format!=DXGI_FORMAT_R16G16B16A16_FLOAT && desc.Format!=DXGI_FORMAT_R32G32B32A32_FLOAT)) {
+            state_->DisableSharpening(E_INVALIDARG,pluginDirectory_/"RaZkolbaS/RCAS.hlsl","XeSS RCAS output format/layout unsupported");return {};
+        }
         if(strength==0)return {};
-        ComPtr<ID3D11Device> device;context->GetDevice(&device);
-        auto hr=state_->sharpen.Initialize(device.Get(),pluginDirectory_/"RaZkolbaS/RCAS.hlsl");
-        if(SUCCEEDED(hr))hr=state_->sharpen.Apply(context,output,strength);
-        if(FAILED(hr))return Failure(ErrorKind::DispatchFailure,hr,"XeSS RCAS output sharpening failed; check RaZkolbaS/RCAS.hlsl");
+        hr=state_->sharpen.Apply(context,output,strength);
+        // Dispatch/CopyResource have no HRESULT. Recheck even when Apply returned
+        // success before publishing this image as an accepted FG source.
+        const auto removed=device->GetDeviceRemovedReason();
+        if(FAILED(removed))return Failure(ErrorKind::DeviceLost,removed,"XeSS device lost during output sharpening");
+        if(FAILED(hr)) {
+            state_->DisableSharpening(hr,pluginDirectory_/"RaZkolbaS/RCAS.hlsl","XeSS optional RCAS output sharpening failed");return {};
+        }
+        state_->appliedSharpness=strength;
         return {};
+    }
+    bool XessHostResources::SharpeningAvailable()const{return state_->ready && !state_->sharpeningError;}
+    float XessHostResources::AppliedSharpness()const{return state_->appliedSharpness;}
+    const std::optional<RuntimeError>& XessHostResources::SharpeningError()const{return state_->sharpeningError;}
+    std::optional<RuntimeError> XessHostResources::TakeSharpeningNotice(){
+        if(!state_->sharpeningNotice)return {};
+        state_->sharpeningNotice=false;return state_->sharpeningError;
     }
     Result<void> XessHostResources::Retire()
     {

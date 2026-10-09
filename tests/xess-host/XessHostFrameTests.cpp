@@ -29,12 +29,14 @@ struct HostResources {
         }
     } owner;
     std::shared_ptr<::Bridge> bridge=std::make_shared<::Bridge>();
-    unsigned preparations{},retirements{},sharpenings{};bool sharpeningFailure{};float lastSharpness{};
+    unsigned preparations{},retirements{},sharpenings{};bool sharpeningFailure{},sharpeningUnavailable{};float lastSharpness{};
     Result<void> SharpenOutput(ID3D11DeviceContext*,ID3D11Texture2D*,float strength){
-        ++sharpenings;lastSharpness=strength;
-        if(sharpeningFailure)return std::unexpected(RuntimeError{ErrorKind::DispatchFailure,-1,"sharp failure"});
+        ++sharpenings;lastSharpness=sharpeningUnavailable?0:strength;
+        if(sharpeningFailure)return std::unexpected(RuntimeError{ErrorKind::DeviceLost,-1,"device lost"});
         return {};
     }
+    float AppliedSharpness(){return lastSharpness;}
+    std::optional<RuntimeError> TakeSharpeningNotice(){return {};}
     Result<void> PrepareInput(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*){++preparations;return {};}
     auto Bridge(){return bridge;}
     Owner* Upscaler(){return &owner;}
@@ -144,8 +146,13 @@ int main(){
     sharpOps.admission=XessFrameAdmission::DuplicateSource;
     Require(sharpOps.EvaluateOptionalPostUpscale(frame,UpscaleOutcome::RepeatedOutput) && sharpHost.xessResources_->sharpenings==1,
         "completed repeats never sharpen twice");
-    sharpOps.admission=XessFrameAdmission::Ready;sharpHost.xessResources_->sharpeningFailure=true;
+    sharpOps.admission=XessFrameAdmission::Ready;sharpHost.xessResources_->sharpeningUnavailable=true;
+    Require(sharpOps.EvaluateOptionalPostUpscale(frame,UpscaleOutcome::Temporal) && frame.sharpness==0 &&
+        sharpHost.xessCompletedFrame_.sharpness==0 && !sharpOps.error &&
+        sharpOps.PrepareGeneration(frame)==GenerationPreparationStatus::Succeeded && sharpHost.fsrGenerationFrame_.sharpness==0,
+        "unavailable optional sharpening keeps completed/FG source delivery with actual strength zero");
+    sharpHost.xessResources_->sharpeningFailure=true;
     Require(!sharpOps.EvaluateOptionalPostUpscale(frame,UpscaleOutcome::Temporal) && sharpOps.error.has_value(),
-        "failed sharpening never publishes an accepted FG source");
+        "device loss during sharpening never publishes an accepted FG source");
     std::puts("PASS: actual XeSS host deferred frames, NR isolation, sharpening/FG order, resumption and vendor-failure retirement");
 }
