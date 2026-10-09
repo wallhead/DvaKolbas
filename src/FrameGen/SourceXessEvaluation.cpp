@@ -17,25 +17,31 @@ struct NvidiaHost::SourceXessEvaluationOperations
     bool menu{};
     std::optional<RuntimeError> error;
 
-    void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){context->CopyResource(frame.input,frame.color);}
+    void Trace(const char* phase)const {
+        if(host.evaluationCount_<3)logger::info("[XeSS boundary] evaluation={} source={} phase={}",host.evaluationCount_,pipeline.mRenderedFrameCount,phase);
+    }
+    void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){Trace("copy-input-enter");context->CopyResource(frame.input,frame.color);Trace("copy-input-complete");}
     bool EvaluateOptionalPreUpscale(UpscaleFrame&){return true;} // NR qualification follows separately.
     bool EvaluateOptionalPostUpscale(UpscaleFrame&,UpscaleOutcome){return true;}
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
     void RenderReShade(const UpscaleFrame& frame,bool before)
     {
+        Trace(before?"ReShade-before-enter":"ReShade-after-enter");
         auto& effects=ReShadeIntegration::Get();effects.SetBeforeUpscaling(pipeline.mReShadeBeforeUpscaling);
         const auto result=effects.Render(before?frame.input:frame.output,menu?nullptr:frame.depth,
             before?FrameExtent{frame.render.width,frame.render.height}:FrameExtent{frame.display.width,frame.display.height},
             {frame.render.width,frame.render.height},before);
         if(FAILED(result) && effects.Snapshot().failures<=3)logger::warn("[XeSS/ReShade] {}",effects.Status());
+        Trace(before?"ReShade-before-complete":"ReShade-after-complete");
     }
     Result<UpscaleOutcome> Spatial(const UpscaleFrame& frame,const std::string& reason)
     {
         host.xessRecoveryReason_=reason;
+        Trace("spatial-enter");
         const auto result=host.loadingScreenUpscaler_.Evaluate(host.context_.Get(),frame.input,frame.output);
         if(FAILED(result)){error=RuntimeError{ErrorKind::DispatchFailure,result,"XeSS spatial recovery copy failed"};return std::unexpected(*error);}
-        return UpscaleOutcome::SpatialRecovery;
+        Trace("spatial-complete");return UpscaleOutcome::SpatialRecovery;
     }
     Result<UpscaleOutcome> EvaluateUpscaler(UpscaleFrame& frame)
     {

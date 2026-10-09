@@ -6,6 +6,14 @@
 #include <SimpleIni.h>
 #include <cstdio>
 #include <cstdlib>
+#include "FrameGen/XessStartupDiagnostics.h"
+#include <fstream>
+static bool RaiseHandledBreakpoint()
+{
+    __try { RaiseException(EXCEPTION_BREAKPOINT,0,0,nullptr); }
+    __except(GetExceptionCode()==EXCEPTION_BREAKPOINT ? EXCEPTION_EXECUTE_HANDLER:EXCEPTION_CONTINUE_SEARCH) { return true; }
+    return false;
+}
 static void Require(bool ok,const char* message){if(!ok){std::fprintf(stderr,"FAIL: %s\n",message);std::exit(1);}}
 int main()
 {
@@ -32,5 +40,16 @@ int main()
     Require(config.Requested().mode==Xess && config.Startup().mode==FSR && !config.NeedsRestart(),"requested XeSS preserved separately from effective FSR fallback");
     config.BeginSubmission();config.Completed(true);
     Require(!config.UseStartupFallback(requested),"provider fallback refused after successful feature creation");
+    namespace diagnostics=TheosRenderPipeline::XessStartupDiagnostics;
+    const auto diagnosticPath=std::filesystem::temp_directory_path()/std::format("Razkolbas-xess-probe-{}.txt",GetCurrentProcessId());
+    Require(diagnostics::Install(diagnosticPath),"diagnostic evidence file and observer initialized");
+    Require(RaiseHandledBreakpoint(),"diagnostic observer must not suppress or handle the actual exception");
+    Require(diagnostics::captured==1,"first-chance breakpoint recorded without a debugger");
+    RemoveVectoredExceptionHandler(diagnostics::handler);diagnostics::handler=nullptr;
+    CloseHandle(diagnostics::file);diagnostics::file=INVALID_HANDLE_VALUE;
+    std::ifstream evidence(diagnosticPath);const std::string evidenceText((std::istreambuf_iterator<char>(evidence)),{});
+    Require(evidenceText.find("exception-code address=")!=std::string::npos && evidenceText.find("stack[0]=")!=std::string::npos,
+        "breakpoint code and stack evidence captured for disassembly");
+    evidence.close();std::filesystem::remove(diagnosticPath);
     std::puts("PASS: XeSS vendor-independent SR routing and startup fallback boundary");
 }

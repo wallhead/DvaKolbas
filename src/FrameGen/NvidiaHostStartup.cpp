@@ -6,6 +6,7 @@
 #include "CommunityShaderIntegration.h"
 #include "SourceDLSSGBackend.h"
 #include "SourceDLSSGCamera.h"
+#include "XessStartupDiagnostics.h"
 #include "SourceFrameGeneration.h"
 #include "NeuralRenderingMode.h"
 #include "RendererBackendPolicy.h"
@@ -50,6 +51,12 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
 #else
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,true);
 #endif
+    if(XessActive()) {
+        if(const auto directory=logger::log_directory()) {
+            const auto path=*directory / "RaZkolbaS-XeSS-breakpoint.txt";
+            logger::info("[XeSS diagnostics] breakpoint capture armed={} path={}",TheosRenderPipeline::XessStartupDiagnostics::Install(path),path.string());
+        }
+    }
     if(FsrActive())fsrResources_=std::make_shared<TheosRenderPipeline::Upscaling::FsrHostResources>(TheosRenderPipeline::PluginPaths::Directory());
 #else
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,false);
