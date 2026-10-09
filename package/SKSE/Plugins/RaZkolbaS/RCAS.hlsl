@@ -57,8 +57,13 @@
 //       0.25
 // This is used as a noise detection filter, to reduce the effect of RCAS on grain, and focus on real edges.
 
+#ifdef TRP_PRESERVE_ALPHA
+Texture2D<float4> Source : register(t0);
+RWTexture2D<float4> Dest : register(u0);
+#else
 Texture2D<float3> Source : register(t0);
 RWTexture2D<float3> Dest : register(u0);
+#endif
 
 // The optional macro keeps the original constant-strength shader available to
 // the pixel-equivalence fixture. Production compiles once without that macro.
@@ -78,12 +83,23 @@ float getRCASLuma(float3 rgb)
 
 [numthreads(8, 8, 1)] void main(uint3 DTid
 								: SV_DispatchThreadID) {
+#ifdef TRP_PRESERVE_ALPHA
+    uint width,height;Source.GetDimensions(width,height);
+    if(DTid.x>=width || DTid.y>=height)return;
+    int2 position=int2(DTid.xy),limit=int2(width,height)-1;
+    float3 b=Source.Load(int3(clamp(position+int2(0,-1),int2(0,0),limit),0)).rgb;
+    float3 d=Source.Load(int3(clamp(position+int2(-1,0),int2(0,0),limit),0)).rgb;
+    float3 f=Source.Load(int3(clamp(position+int2(1,0),int2(0,0),limit),0)).rgb;
+    float3 h=Source.Load(int3(clamp(position+int2(0,1),int2(0,0),limit),0)).rgb;
+#endif
 	float3 e = Source.Load(int3(DTid.x, DTid.y, 0)).rgb;
 
+#ifndef TRP_PRESERVE_ALPHA
 	float3 b = Source.Load(int3(DTid.x, DTid.y - 1, 0)).rgb;
 	float3 d = Source.Load(int3(DTid.x - 1, DTid.y, 0)).rgb;
 	float3 f = Source.Load(int3(DTid.x + 1, DTid.y, 0)).rgb;
 	float3 h = Source.Load(int3(DTid.x, DTid.y + 1, 0)).rgb;
+#endif
 
 	// Luma times 2.
 	float bL = getRCASLuma(b);
@@ -95,7 +111,11 @@ float getRCASLuma(float3 rgb)
 	// Noise detection.
 	float nz = (bL + dL + fL + hL) * 0.25 - eL;
 	float range = max(max(max(bL, dL), max(hL, fL)), eL) - min(min(min(bL, dL), min(eL, fL)), hL);
+#ifdef TRP_PRESERVE_ALPHA
+    nz=saturate(abs(nz)/max(range,1e-6));
+#else
 	nz = saturate(abs(nz) * rcp(range));
+#endif
 	nz = -0.5 * nz + 1.0;
 
 	// Min and max of ring.
@@ -119,5 +139,9 @@ float getRCASLuma(float3 rgb)
 	float rcpL = rcp(4.0 * lobe + 1.0);
 	float3 output = ((b + d + f + h) * lobe + e) * rcpL;
 
+#ifdef TRP_PRESERVE_ALPHA
+    Dest[DTid.xy]=float4(output,Source.Load(int3(DTid.xy,0)).a);
+#else
 	Dest[DTid.xy] = output;
+#endif
 }

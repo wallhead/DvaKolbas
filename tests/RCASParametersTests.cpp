@@ -1,4 +1,5 @@
 #include "RCASParameters.h"
+#include "Upscaling/SdrSharpeningPass.h"
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 #include <array>
@@ -8,6 +9,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <limits>
 
 using Microsoft::WRL::ComPtr;
 static void Require(bool ok, const char* why) { if (!ok) { std::fprintf(stderr, "FAIL: %s\n", why); std::exit(1); } }
@@ -56,6 +58,17 @@ static std::vector<Pixel> Run(ID3D11Device* device, ID3D11DeviceContext* context
     context->Unmap(readback.Get(), 0);
     return values;
 }
+static std::vector<Pixel> ReadImage(ID3D11Device* device,ID3D11DeviceContext* context,ID3D11Texture2D* image)
+{
+    D3D11_TEXTURE2D_DESC desc{};image->GetDesc(&desc);const auto width=desc.Width,height=desc.Height;
+    desc.BindFlags=0;desc.MiscFlags=0;desc.Usage=D3D11_USAGE_STAGING;desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ;
+    ComPtr<ID3D11Texture2D> staging;Check(device->CreateTexture2D(&desc,nullptr,&staging),"direct sharpened readback");
+    context->CopyResource(staging.Get(),image);D3D11_MAPPED_SUBRESOURCE mapped{};
+    Check(context->Map(staging.Get(),0,D3D11_MAP_READ,0,&mapped),"direct read map");
+    std::vector<Pixel> result(width*height);
+    for(UINT y=0;y<height;++y)std::memcpy(result.data()+y*width,static_cast<const char*>(mapped.pData)+y*mapped.RowPitch,width*sizeof(Pixel));
+    context->Unmap(staging.Get(),0);return result;
+}
 int main(int argc, char** argv)
 {
     Require(argc == 2, "shader path argument");
@@ -65,7 +78,7 @@ int main(int argc, char** argv)
     std::vector<Pixel> original(Size * Size);
     for (UINT y = 0; y < Size; ++y) { for (UINT x = 0; x < Size; ++x) {
         const auto f = .15f + .6f * static_cast<float>((x * 13 + y * 7) % 29) / 28;
-        original[y * Size + x] = {f, .2f + f * .6f, .8f - f * .4f, 1};
+        original[y * Size + x] = {f, .2f + f * .6f, .8f - f * .4f, .37f};
     } }
     auto input = Texture(device.Get(), D3D11_BIND_SHADER_RESOURCE, &original);
     auto output = Texture(device.Get(), D3D11_BIND_UNORDERED_ACCESS);
@@ -118,5 +131,30 @@ int main(int argc, char** argv)
         Require(parameters.Buffer() == firstBuffer, "ramp does not recreate resources");
     }
     Require(parameters.Uploads() == uploads + 101, "changed ramp uploads exactly once per distinct value");
+    const auto unity=Shader(device.Get(),path.c_str(),"1");
+    const auto expectedPass=Run(device.Get(),context.Get(),unity.Get(),srv.Get(),output.Get(),uav.Get());
+    context1->CSSetConstantBuffers1(0,1,&before,&firstConstant,&constantCount);
+    TheosRenderPipeline::Upscaling::SdrSharpeningPass pass;
+    Check(pass.Initialize(device.Get(),path),"compile reusable XeSS output sharpening pass");
+    Check(pass.Apply(context.Get(),input.Get(),0),"zero strength bypasses all sharpening work");
+    Require(ReadImage(device.Get(),context.Get(),input.Get())==original,"zero strength delivers exact unchanged pixels and alpha");
+    Check(pass.Apply(context.Get(),input.Get(),1),"real output sharpening delivery");
+    ComPtr<ID3D11Buffer> restored;context->CSGetConstantBuffers(0,1,&restored);
+    Require(restored.Get()==before,"output pass restores producer constant bindings");
+    const auto delivered=ReadImage(device.Get(),context.Get(),input.Get());
+    float changed{};
+    for(std::size_t i=0;i<delivered.size();++i)for(std::size_t c=0;c<3;++c)
+        changed=(std::max)(changed,std::abs(delivered[i][c]-original[i][c]));
+    Require(changed>.01f,"XeSS pass produces actual sharpened pixels");
+    for(UINT y=1;y<Size-1;++y)for(UINT x=1;x<Size-1;++x)for(UINT c=0;c<3;++c)
+        Require(std::abs(delivered[y*Size+x][c]-expectedPass[y*Size+x][c])<.000002f,"output pass matches actual RCAS interior pixels");
+    for(const auto& pixel:delivered)Require(pixel[3]==.37f,"output sharpening preserves alpha");
+    std::vector<Pixel> flat(Size*Size,Pixel{.25f,.5f,.75f,.37f});
+    context->UpdateSubresource(input.Get(),0,nullptr,flat.data(),Size*sizeof(Pixel),0);
+    Check(pass.Apply(context.Get(),input.Get(),1),"flat source sharpening");
+    const auto flatResult=ReadImage(device.Get(),context.Get(),input.Get());
+    for(const auto& pixel:flatResult)for(UINT c=0;c<4;++c)
+        Require(std::isfinite(pixel[c]) && std::abs(pixel[c]-flat[0][c])<1e-6f,"uniform colors and borders remain stable");
+    Require(FAILED(pass.Apply(context.Get(),input.Get(),std::numeric_limits<float>::quiet_NaN())),"nonfinite sharpness rejected");
     std::puts("PASS: runtime RCAS strength matches constant shader pixels and preserves caller bindings");
 }

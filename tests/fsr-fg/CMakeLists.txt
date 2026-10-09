@@ -48,7 +48,8 @@ if(TARGET TRPXessRuntime AND TARGET TRPNeuralRuntime AND TRP_NR_RTX40_DLL AND TR
     target_compile_features(TRPXessFsrGenerationGpuTests PRIVATE cxx_std_23)
     target_compile_definitions(TRPXessFsrGenerationGpuTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN
         TRP_FG_VALIDATION_REVISION="${fgValidationRevision}" TRP_FG_LOADER_SHA="${fgLoaderSha}" TRP_FG_MODULE_SHA="${fgModuleSha}"
-        TRP_XESS_RUNTIME_SHA="${xessGenerationSha}" TRP_XESS_RUNTIME_BYTES=${xessGenerationBytes})
+        TRP_XESS_RUNTIME_SHA="${xessGenerationSha}" TRP_XESS_RUNTIME_BYTES=${xessGenerationBytes}
+        TRP_TEST_RCAS_SHADER="${PROJECT_SOURCE_DIR}/package/SKSE/Plugins/RaZkolbaS/RCAS.hlsl")
     target_include_directories(TRPXessFsrGenerationGpuTests PRIVATE ../)
     target_link_libraries(TRPXessFsrGenerationGpuTests PRIVATE TRPXessRuntime TRPFsrRuntime TRPNeuralRuntime
         d3d11 d3d12 dxgi d3dcompiler bcrypt user32)

@@ -107,6 +107,7 @@ class NvidiaHost
                 SUCCEEDED(FailureResult()) && lastPresentResult_ == S_OK);
     }
     bool QueryXessJitter(std::uint64_t,float&,float&);
+    TheosRenderPipeline::Telemetry::OutputCounter FsrOutputCounter()const;
     TheosRenderPipeline::SettingsActionStatus XessStatus()const;
     bool FsrTemporalActive() const { return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult()); }
     bool FsrFgActive() const { return StartupConfigured() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }

@@ -166,11 +166,10 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     }
     const auto& output = outputRate.Rate();
     view.outputText = output.available ? std::format("{:.1f} FPS", output.fps) : std::string("unavailable");
-    const bool dxgiOutput = nvidiaHost->OrdinarySourceActive();
+    const bool dxgiOutput = nvidiaHost->OrdinarySourceActive() || nvidiaHost->FsrFgActive();
     view.outputLabel = dxgiOutput ? "DXGI output" : "Runtime output";
     view.outputHelp = dxgiOutput ?
         "DXGI's reported Present count; physical screen refreshes and scanout spacing are not measured. No generated-frame multiplier is estimated." :
-        nvidiaHost->FsrFgActive() ? "FSR FG output telemetry is unavailable; no generated-frame multiplier is estimated." :
         "NVIDIA runtime presentation count; physical screen refreshes and scanout spacing are not measured.";
     view.activeUpscaleStage = view.sourceDLSSGActive ? (view.sourceNeural.active ? "TRP DLSS NR" : "TRP DLSS")
                                                      : "NVIDIA host unavailable";

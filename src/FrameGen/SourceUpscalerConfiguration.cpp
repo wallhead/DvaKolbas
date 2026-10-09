@@ -38,7 +38,13 @@ void NvidiaHost::ApplySourceUpscalerSettingsAfterPresent()
             sourceUpscalerSettings_.Effective().fsr.sharpness,sourceUpscalerSettings_.NeedsRestart(),sourceUpscalerSettings_.Unsaved());
         return;
     }
-    if(XessActive())return; // XeSS creation settings require restart; never enter DLSS live feature replacement.
+    if(XessActive()) {
+        sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);
+        AdoptEffectiveSourceUpscalerSettings();
+        logger::info("[XeSS] applied live sharpness={:.3f} (0=off, 1=maximum); restartPending={} unsaved={}",
+            sourceUpscalerSettings_.Effective().xess.sharpness,sourceUpscalerSettings_.NeedsRestart(),sourceUpscalerSettings_.Unsaved());
+        return;
+    }
     auto* dlss = DLSSBackend::GetSingleton();
     D3D11_TEXTURE2D_DESC inputDesc{};
     gameTargets_.UpscaleInput()->GetDesc(&inputDesc);

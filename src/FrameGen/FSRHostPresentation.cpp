@@ -176,6 +176,12 @@ namespace TheosRenderPipeline
     IDXGISwapChain4* FsrHostPresentation::SwapChain()const{return state_->presenter.SwapChain();}
     ID3D11Texture2D* FsrHostPresentation::SceneTarget11()const{return state_->presenter.SceneTarget11();}
     bool FsrHostPresentation::FeatureReady()const{return state_->feature && !state_->closing && !Suspended();}
+    Telemetry::OutputCounter FsrHostPresentation::OutputCounter(std::uint64_t observations)const
+    {
+        auto* chain=state_->presenter.SwapChain();
+        return Telemetry::ReadDxgiOutputCounter(chain,reinterpret_cast<std::uintptr_t>(chain),observations,
+            state_->created && !state_->closing && !state_->resizing && !Suspended());
+    }
     FsrPresentationStatus FsrHostPresentation::Status()const{return state_->presenter.Status();}
     const FsrEffectProvider& FsrHostPresentation::GenerationProvider()const{return state_->provider;}
 }

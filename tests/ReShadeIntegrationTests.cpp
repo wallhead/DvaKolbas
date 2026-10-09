@@ -6,6 +6,7 @@
 #include "Upscaling/FSRPreparedResources.h"
 #if defined(TRP_TEST_XESS_OWNER)
 #include "Upscaling/XessHostResources.h"
+#include "Upscaling/SdrSharpeningPass.h"
 #endif
 #if defined(TRP_ENABLE_FSR_FG)
 #include "FrameGen/FSRHostPresentation.h"
@@ -412,7 +413,8 @@ int main(int argc, char** argv)
         Surface sampleMotion(device.Get(),extent->width,extent->height,DXGI_FORMAT_R16G16_FLOAT);
         Surface delivered(device.Get(),outputWidth,outputHeight);
         sampleColor.Paint(context.Get(),{.25f,.5f,.25f,1});sampleDepth.Paint(context.Get(),{.5f,0,0,0});sampleMotion.Paint(context.Get(),{0,0,0,0});
-        FsrColorConverter encode;
+        FsrColorConverter encode;SdrSharpeningPass sharp;
+        Check(sharp.Initialize(device.Get(),TRP_TEST_RCAS_SHADER),"actual ReShade source sharpening initialization");
         for(std::uint64_t id=1;id<=2;++id) {
             Require(bool(source.PrepareInput(sampleColor.texture.Get(),sampleDepth.texture.Get(),sampleMotion.texture.Get())),"real XeSS input preparation on native owner");
             UpscaleFrame frame{};frame.backend=BackendKind::Xess;frame.render=frame.subrect=*extent;frame.display={outputWidth,outputHeight};
@@ -423,6 +425,7 @@ int main(int argc, char** argv)
             Check(bridge->Begin(&list),"native XeSS recording");Require(bool(source.Upscaler()->Dispatch(list,source.Resources(),frame)),"actual XeSS execute with ReShade native ownership");
             Check(bridge->Submit(),"native XeSS submission");Check(bridge->WaitConsumer(),"native XeSS delivery");
             Check(encode.Convert(context.Get(),source.Output11(),delivered.texture.Get(),ColorEncoding::Linear,ColorEncoding::Gamma22),"native XeSS reconstructed SDR delivery");
+            Check(sharp.Apply(context.Get(),delivered.texture.Get(),id==1?0.f:1.f),"actual ReShade XeSS output sharpening off/on");
             const auto pixel=Pixel(device.Get(),context.Get(),delivered.texture.Get(),outputWidth/2,outputHeight/2);
             Require(std::abs(int(pixel[0])-64)<=3 && std::abs(int(pixel[1])-128)<=3 && std::abs(int(pixel[2])-64)<=3,
                 "actual retained-native XeSS reconstruction preserves scene colors");

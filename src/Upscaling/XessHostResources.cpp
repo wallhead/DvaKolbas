@@ -1,5 +1,6 @@
 #include "XessHostResources.h"
 #include "SdrColorConversion.h"
+#include "SdrSharpeningPass.h"
 #include "FrameGen/D3D11FrameCopy.h"
 #include <dxgi1_4.h>
 namespace TheosRenderPipeline::Upscaling
@@ -13,6 +14,7 @@ namespace TheosRenderPipeline::Upscaling
         std::unique_ptr<XessUpscaler> upscaler;
         Graphics::SharedTexture color,depth,motion,output;
         SdrColorConverter decode;D3D11FrameCopy::Depth depthCopy;
+        SdrSharpeningPass sharpen;
         ColorEncoding encoding{ColorEncoding::Unknown};Extent render{},display{};
         bool ready{};
     };
@@ -52,6 +54,10 @@ namespace TheosRenderPipeline::Upscaling
         if(FAILED(hr=create(state_->color,*extent,DXGI_FORMAT_R16G16B16A16_FLOAT,false)) || FAILED(hr=create(state_->depth,*extent,DXGI_FORMAT_R32_FLOAT,true)) ||
             FAILED(hr=create(state_->motion,*extent,DXGI_FORMAT_R16G16_FLOAT,false)) || FAILED(hr=create(state_->output,display,DXGI_FORMAT_R16G16B16A16_FLOAT,true)))
             return fail({ErrorKind::UnsupportedDevice,hr,"XeSS shared prepared texture allocation failed"});
+        // Compile the shipped optional pass during startup, before live edits.
+        const auto shader=pluginDirectory_/"RaZkolbaS/RCAS.hlsl";std::error_code fileError;
+        if(std::filesystem::is_regular_file(shader,fileError) && FAILED(hr=state_->sharpen.Initialize(device11,shader)))
+            return fail({ErrorKind::ContextFailure,hr,"XeSS output sharpening shader initialization failed"});
         state_->ready=true;return *extent;
     }
     Result<void> XessHostResources::PrepareInput(ID3D11Texture2D* color,ID3D11Texture2D* depth,ID3D11Texture2D* motion)
@@ -71,6 +77,16 @@ namespace TheosRenderPipeline::Upscaling
         if(FAILED(hr))return Failure(ErrorKind::InvalidInput,hr,"XeSS explicit source-to-linear colour conversion failed");
         hr=state_->depthCopy.Copy(context,depth,state_->depth.texture11.Get(),{state_->render.width,state_->render.height});
         if(FAILED(hr))return Failure(ErrorKind::InvalidInput,hr,"XeSS undilated depth/motion copy failed");
+        return {};
+    }
+    Result<void> XessHostResources::SharpenOutput(ID3D11DeviceContext* context,ID3D11Texture2D* output,float strength)
+    {
+        if(!state_->ready || !context || !output)return Failure(ErrorKind::InvalidInput,E_INVALIDARG,"XeSS sharpening output unavailable");
+        if(strength==0)return {};
+        ComPtr<ID3D11Device> device;context->GetDevice(&device);
+        auto hr=state_->sharpen.Initialize(device.Get(),pluginDirectory_/"RaZkolbaS/RCAS.hlsl");
+        if(SUCCEEDED(hr))hr=state_->sharpen.Apply(context,output,strength);
+        if(FAILED(hr))return Failure(ErrorKind::DispatchFailure,hr,"XeSS RCAS output sharpening failed; check RaZkolbaS/RCAS.hlsl");
         return {};
     }
     Result<void> XessHostResources::Retire()

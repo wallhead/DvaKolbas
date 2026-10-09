@@ -25,5 +25,18 @@ int main()
     Require(config.NeedsRestart() && !config.NeedsLiveChange(),"XeSS quality changes cannot reach live DLSS feature replacement");
     request.xess.quality=Upscaling::Quality::NativeAA;request.xess.sourceEncoding=Upscaling::ColorEncoding::SRGB;config.Request(request);
     Require(config.NeedsRestart() && !config.NeedsLiveChange(),"XeSS source encoding requires restart");
+    CSimpleIniA sharpIni;sharpIni.SetValue("XeSS","Sharpness","0.75");
+    auto sharp=Upscaling::ReadXessSettings(sharpIni);Require(bool(sharp),"valid XeSS sharpness");
+    CSimpleIniA saved;Upscaling::StoreXessSettings(saved,*sharp);
+    Require(saved.GetDoubleValue("XeSS","Sharpness",-1)==0.75,"XeSS sharpness survives settings save");
+    config.Request(config.Startup());request=config.Startup();request.xess=*sharp;config.Request(request);
+    Require(!config.NeedsRestart() && config.NeedsLiveChange(),"XeSS sharpening applies live without changing SDK creation");
+    request.xess.quality=Upscaling::Quality::Performance;config.Request(request);
+    Require(config.NeedsRestart() && config.NeedsLiveChange(),"pending quality must not block live sharpening");
+    Require(config.LiveCandidate().xess.quality==Upscaling::Quality::NativeAA,"live sharpening preserves allocated XeSS quality");
+    for(const auto* invalid:{"nan","inf","-0.1","1.1","0.5junk"}) {
+        sharpIni.SetValue("XeSS","Sharpness",invalid);
+        Require(!Upscaling::ReadXessSettings(sharpIni),"invalid XeSS strength rejected");
+    }
     std::puts("PASS: XeSS public choices and creation selector");
 }

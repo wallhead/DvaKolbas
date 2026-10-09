@@ -50,7 +50,12 @@ struct NvidiaHost::SourceXessEvaluationOperations
 #else
         (void)outcome;
 #endif
-        if(outcome==UpscaleOutcome::Temporal)host.xessCompletedFrame_=frame;
+        if(outcome==UpscaleOutcome::Temporal) {
+            frame.sharpness=host.sourceUpscalerSettings_.Effective().xess.sharpness;
+            const auto sharpened=host.xessResources_->SharpenOutput(host.context_.Get(),frame.output,frame.sharpness);
+            if(!sharpened){error=sharpened.error();return false;}
+            host.xessCompletedFrame_=frame;
+        }
         return true;
     }
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}

@@ -13,6 +13,7 @@ namespace TheosRenderPipeline::Upscaling
         Result<Extent> Initialize(ID3D11Device*,Quality,Extent,ColorEncoding,bool depthInverted=false);
         // Scene-thread producer; previous dispatch must have queued WaitConsumer first.
         Result<void> PrepareInput(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*);
+        Result<void> SharpenOutput(ID3D11DeviceContext*,ID3D11Texture2D*,float);
         Result<void> Retire();
         Extent RenderExtent() const;
         XessGpuResources Resources() const;

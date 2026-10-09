@@ -274,13 +274,15 @@ void OverlayUI::UpdateFrameStats()
 
 	// Ordinary XeSS/FSR presentation uses the native DXGI count. DLSS-G
 	// uses accumulated runtime deltas: an extra slDLSSGGetState query here
-	// would consume the delta. FSR FG has no qualified output counter yet.
+	// would consume the delta. FSR FG reports real/generated presents via DXGI.
 	TheosRenderPipeline::Telemetry::OutputCounter output{};
 
 	const auto* host = NvidiaHost::GetSingleton();
 	if (host->OrdinarySourceActive()) {
 		output = host->OrdinaryOutputCounter();
-	} else if (host->StartupConfigured() && !host->FsrFgActive()) {
+	} else if(host->FsrFgActive()) {
+        output=host->FsrOutputCounter();
+	} else if (host->StartupConfigured()) {
 		const auto& source = TheosRenderPipeline::SourceDLSSG::Backend::Get();
 		const auto& session = source.Snapshot();
 		output = { TheosRenderPipeline::Telemetry::OutputSource::Streamline,

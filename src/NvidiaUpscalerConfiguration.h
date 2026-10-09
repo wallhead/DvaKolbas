@@ -57,7 +57,7 @@ namespace TheosRenderPipeline::Upscaler
             return requested_.mode != startupRequest_.mode ||
                 requested_.fsr.generationProviderPolicy != startupRequest_.fsr.generationProviderPolicy ||
                 requested_.fsr.sourceColorEncoding != startupRequest_.fsr.sourceColorEncoding ||
-                (requested_.mode == 5 ? requested_.xess != startupRequest_.xess : requested_.mode == 4 ? requested_.fsr.quality != startupRequest_.fsr.quality || requested_.fsr.providerPolicy != startupRequest_.fsr.providerPolicy ||
+                (requested_.mode == 5 ? requested_.xess.quality != startupRequest_.xess.quality || requested_.xess.sourceEncoding != startupRequest_.xess.sourceEncoding : requested_.mode == 4 ? requested_.fsr.quality != startupRequest_.fsr.quality || requested_.fsr.providerPolicy != startupRequest_.fsr.providerPolicy ||
                 requested_.fsr.sourceColorEncoding != startupRequest_.fsr.sourceColorEncoding ||
                 requested_.fsr.generationProviderPolicy != startupRequest_.fsr.generationProviderPolicy :
                 requested_.mode != 3 && requested_.quality != startupRequest_.quality);
@@ -73,6 +73,7 @@ namespace TheosRenderPipeline::Upscaler
             value.fsr.generationProviderPolicy = startup_.fsr.generationProviderPolicy;
             value.fsr.sourceColorEncoding = startup_.fsr.sourceColorEncoding;
             value.xess = startup_.xess;
+            if(startup_.mode==5)value.xess.sharpness=requested_.xess.sharpness;
             if (startup_.mode == 4 || startup_.mode == 5) {
                 value.preset = startup_.preset; value.autoExposure = startup_.autoExposure; value.sharpening = startup_.sharpening;
             } else { value.fsr = startup_.fsr; }

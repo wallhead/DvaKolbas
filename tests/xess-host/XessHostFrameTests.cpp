@@ -29,7 +29,12 @@ struct HostResources {
         }
     } owner;
     std::shared_ptr<::Bridge> bridge=std::make_shared<::Bridge>();
-    unsigned preparations{},retirements{};
+    unsigned preparations{},retirements{},sharpenings{};bool sharpeningFailure{};float lastSharpness{};
+    Result<void> SharpenOutput(ID3D11DeviceContext*,ID3D11Texture2D*,float strength){
+        ++sharpenings;lastSharpness=strength;
+        if(sharpeningFailure)return std::unexpected(RuntimeError{ErrorKind::DispatchFailure,-1,"sharp failure"});
+        return {};
+    }
     Result<void> PrepareInput(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*){++preparations;return {};}
     auto Bridge(){return bridge;}
     Owner* Upscaler(){return &owner;}
@@ -59,7 +64,7 @@ struct NvidiaHost {
     std::unique_ptr<HostResources> xessResources_=std::make_unique<HostResources>();
     struct Context { ID3D11DeviceContext* Get(){return nullptr;} } context_;
     struct Encoder { HRESULT Convert(ID3D11DeviceContext*,ID3D11Texture2D*,ID3D11Texture2D*,ColorEncoding,ColorEncoding){return S_OK;} } xessEncode_;
-    struct Settings { struct Value { struct XeSS {ColorEncoding sourceEncoding{ColorEncoding::Gamma22};} xess; } value;const Value& Effective(){return value;} } sourceUpscalerSettings_;
+    struct Settings { struct Value { struct XeSS {ColorEncoding sourceEncoding{ColorEncoding::Gamma22};float sharpness{};} xess; } value;const Value& Effective(){return value;} } sourceUpscalerSettings_;
     bool EvaluateCommunityNeuralBefore(ID3D11Texture2D*,ID3D11Texture2D*,ID3D11Texture2D*,unsigned,unsigned,std::uint64_t,bool&,bool){++nrCalls;return true;}
     bool EvaluateCommunityNeuralAfter(UpscaleFrame&,UpscaleOutcome,bool){++nrCalls;return true;}
 };
@@ -128,5 +133,19 @@ int main(){
     const auto resumed=repeat.EvaluateUpscaler(frame);
     Require(resumed && *resumed==UpscaleOutcome::Temporal && !frame.reset && cached.xessResources_->owner.dispatches==1,
         "new source after cached repeat dispatches with reset false");
-    std::puts("PASS: actual XeSS host deferred frames, NR isolation, resumption and vendor-failure retirement");
+    NvidiaHost sharpHost;sharpHost.fg=true;sharpHost.sourceUpscalerSettings_.value.xess.sharpness=.6f;
+    NvidiaHost::SourceXessEvaluationOperations sharpOps{sharpHost,pipeline,false,XessFrameAdmission::Ready};
+    Require(sharpOps.EvaluateOptionalPostUpscale(frame,UpscaleOutcome::Temporal) && sharpHost.nrCalls==1 &&
+        sharpHost.xessResources_->sharpenings==1 && sharpHost.xessResources_->lastSharpness==.6f,"temporal XeSS output sharpened after NR");
+    Require(sharpOps.PrepareGeneration(frame)==GenerationPreparationStatus::Succeeded && sharpHost.fsrGenerationFrame_.sharpness==.6f,
+        "FG receives completed sharpening metadata");
+    Require(sharpOps.EvaluateOptionalPostUpscale(frame,UpscaleOutcome::SpatialRecovery) && sharpHost.xessResources_->sharpenings==1,
+        "spatial recovery does not sharpen");
+    sharpOps.admission=XessFrameAdmission::DuplicateSource;
+    Require(sharpOps.EvaluateOptionalPostUpscale(frame,UpscaleOutcome::RepeatedOutput) && sharpHost.xessResources_->sharpenings==1,
+        "completed repeats never sharpen twice");
+    sharpOps.admission=XessFrameAdmission::Ready;sharpHost.xessResources_->sharpeningFailure=true;
+    Require(!sharpOps.EvaluateOptionalPostUpscale(frame,UpscaleOutcome::Temporal) && sharpOps.error.has_value(),
+        "failed sharpening never publishes an accepted FG source");
+    std::puts("PASS: actual XeSS host deferred frames, NR isolation, sharpening/FG order, resumption and vendor-failure retirement");
 }

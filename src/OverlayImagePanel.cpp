@@ -277,6 +277,9 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             const char* encodings[]{"Linear","Gamma 2.2 SDR","sRGB SDR"};
             int encoding=static_cast<int>(settingsDraft.xess.sourceEncoding)-1;ImGui::SetNextItemWidth(-1);
             if(ImGui::Combo("Source color encoding##xess",&encoding,encodings,3))settingsDraft.xess.sourceEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding+1);
+            ImGui::SliderFloat("Sharpness##xess",&settingsDraft.xess.sharpness,0,1,"%.2f");
+            DrawSettingsHelp("0 = off, 1 = maximum. RCAS sharpens the completed XeSS/NR image before FG and UI. Applies on slider release without restart; Save as default keeps it.");
+            if(host->XessActive())DrawSettingsValue("Active XeSS sharpness",std::format("{:.2f}",host->SourceUpscalerSettings().Effective().xess.sharpness).c_str());
             DrawSettingsHelp("Experimental XeSS SR: tested on RTX 4080 SUPER; AMD, Intel and GTX hardware qualification is pending. SDK-sized fixed resolution and linear FP16 input. Community NR is available on eligible NVIDIA GPUs. FSR FG requires selecting its backend and restarting; NVIDIA FG/HDR remain pending. Save and restart for quality/encoding changes. For NR, match [NeuralRendering Advanced] SourceColorEncoding to [XeSS].");
         } else if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"FSR3 (3.1.5)","Auto (FSR4 / FSR3)","FSR4 (ML)"};

@@ -252,6 +252,7 @@ int wmain(int argc,wchar_t** argv){
     if(mode<0)return 1;
     const auto report=std::filesystem::absolute(args[L"--output"]);std::filesystem::create_directories(report.parent_path());
     Evidence evidence;std::string failure;std::unique_ptr<State> state;std::string deviceName,fgProvider,mlFgAvailability;
+    unsigned successfulSourcePresents{},sharpenedSources{};
     std::map<std::string,std::string> hashes;
     try {
 #if defined(TRP_TEST_XESS_PRODUCER)
@@ -260,13 +261,20 @@ int wmain(int argc,wchar_t** argv){
         const auto plugin=report.parent_path()/("dlss-fsr-runtime-"+quality);
 #endif
         std::filesystem::create_directories(plugin/"FSR");
+#if defined(TRP_TEST_XESS_PRODUCER)
+        std::filesystem::create_directories(plugin/"RaZkolbaS");
+        std::filesystem::copy_file(TRP_TEST_RCAS_SHADER,plugin/"RaZkolbaS/RCAS.hlsl",std::filesystem::copy_options::overwrite_existing);
+        hashes["rcas"]=Sha256(plugin/"RaZkolbaS/RCAS.hlsl");
+#endif
         const std::array<const char*,2> names{"amd_fidelityfx_loader_dx12.dll","amd_fidelityfx_framegeneration_dx12.dll"};
         const std::array<const char*,2> expected{TRP_FG_LOADER_SHA,TRP_FG_MODULE_SHA};
         for(size_t i=0;i<names.size();++i){Need(Sha256(args[L"--runtime"]/names[i])==expected[i],"official FSR runtime hash differs from pin");
             std::filesystem::copy_file(args[L"--runtime"]/names[i],plugin/"FSR"/names[i],std::filesystem::copy_options::overwrite_existing);hashes[names[i]]=expected[i];}
 #if defined(TRP_TEST_XESS_PRODUCER)
         const NR::RuntimeProfile srPin{"xess-sr-probe","libxess.dll",TRP_XESS_RUNTIME_SHA,TRP_XESS_RUNTIME_BYTES};
-        auto srLease=Neural(NR::RuntimeFileLease::Open(args[L"--xess"]/"RaZkolbaS/XeSS/libxess.dll",srPin));
+        std::filesystem::create_directories(plugin/"RaZkolbaS/XeSS");
+        std::filesystem::copy_file(args[L"--xess"]/"RaZkolbaS/XeSS/libxess.dll",plugin/"RaZkolbaS/XeSS/libxess.dll",std::filesystem::copy_options::overwrite_existing);
+        auto srLease=Neural(NR::RuntimeFileLease::Open(plugin/"RaZkolbaS/XeSS/libxess.dll",srPin));
         hashes["xess"]=srPin.sha256;
 #else
         const NR::RuntimeProfile srPin{"dlss-sr-probe","nvngx_dlss.dll","c85f971ce023c9f3492fc7455f0b01a24ba18ea39636407a846902c4360b0b7e",58956400};
@@ -285,7 +293,7 @@ int wmain(int argc,wchar_t** argv){
 #if defined(TRP_TEST_XESS_PRODUCER)
         auto renderFor=[&](Extent display){
             if(state->xess)Accept(state->xess->Retire());
-            state->xessEncode={};state->xess=std::make_unique<XessHostResources>(args[L"--xess"]);
+            state->xessEncode={};state->xess=std::make_unique<XessHostResources>(plugin);
             return Value(state->xess->Initialize(state->rig.device11.Get(),mode==5?Quality::NativeAA:mode==2?Quality::Quality:Quality::Performance,
                 display,ColorEncoding::Gamma22));
         };
@@ -297,6 +305,7 @@ int wmain(int argc,wchar_t** argv){
         Extent display{640,360},render=renderFor(display);
         Value(state->presenter.CreateExternal(state->rig.factory.Get(),state->rig.device11.Get(),state->resources,descriptor,fsr,render,{}));state->created=true;
         auto* originalChain=state->presenter.SwapChain();fgProvider=state->presenter.GenerationProvider().identity.name;
+        UINT outputStart{};const auto outputStartResult=originalChain->GetLastPresentCount(&outputStart);
         const auto catalog=Value(state->resources->Runtime()->EnumerateForEffect(state->resources->Bridge()->Device12(),FsrEffect::FrameGeneration));
         const auto ml=SelectFsrEffectProvider(catalog,FsrEffect::FrameGeneration,ProviderPolicy::MachineLearning);
         mlFgAvailability=ml?ml->identity.name:ml.error().message;
@@ -386,6 +395,14 @@ int wmain(int argc,wchar_t** argv){
                 auto policy=state->resources->GenerationInputPolicy();policy.motionIncludesJitter=snapshot.motionConvention.includesJitter;
                 Accept(state->resources->EnsureInputPolicy(policy));
                 auto* policyDepth=state->resources->Depth11();auto* policyScene=state->presenter.SceneTarget11();
+#if defined(TRP_TEST_XESS_PRODUCER)
+                if(local!=28 && !(local>=78 && local<=79)) {
+                    snapshot.sharpness=local<16?0.f:local<64?.5f:1.f;
+                    Accept(state->xess->SharpenOutput(context,state->output.Get(),snapshot.sharpness));
+                    if(snapshot.sharpness>0)++sharpenedSources;
+                    operations.final=Read(context,state->output.Get());
+                }
+#endif
                 state->enhancedRows[transportSource]=std::vector<uint8_t>(operations.final.begin()+size_t(display.height/2)*display.width*4,operations.final.begin()+size_t(display.height/2+1)*display.width*4);
                 context->CopyResource(state->presenter.SceneTarget11(),state->output.Get());
                 const bool requested=local!=16 && local!=17;const bool menu=local==24;
@@ -394,7 +411,7 @@ int wmain(int argc,wchar_t** argv){
                 if(local==23)--snapshot.sourceId; // duplicate guide/source identity must not be admitted
                 const auto outcome=(local==28 || local>=78 && local<=79)?UpscaleOutcome::SpatialRecovery:UpscaleOutcome::Temporal;
                 const auto hr=state->presenter.Present(snapshot,outcome,state->ui.Get(),nullptr,true,menu,requested,0,0);
-                if(local==23){Need(hr==DXGI_ERROR_INVALID_CALL,"duplicate source identity was admitted");++evidence.suppressed;continue;}Gpu(hr);
+                if(local==23){Need(hr==DXGI_ERROR_INVALID_CALL,"duplicate source identity was admitted");++evidence.suppressed;continue;}Gpu(hr);if(hr==S_OK)++successfulSourcePresents;
                 const auto status=state->presenter.Status();evidence.callbacks+=status.callback.invocations;
 #if defined(TRP_TEST_XESS_PRODUCER)
                 if(local==12)Need(status.decision.generate && !status.decision.reset,"new real source after repeat failed to retain actual FG history");
@@ -424,6 +441,7 @@ int wmain(int argc,wchar_t** argv){
                     ++repeatedPresents;++snapshot.sourceId;snapshot.reset=snapshot.camera.reset=false;
                     state->enhancedRows[snapshot.sourceId]=state->enhancedRows[transportSource];
                     Gpu(state->presenter.Present(snapshot,UpscaleOutcome::RepeatedOutput,state->ui.Get(),nullptr,true,false,true,0,0));
+                    ++successfulSourcePresents;
                     const auto repeat=state->presenter.Status();evidence.callbacks+=repeat.callback.invocations;
                     Need(repeat.decision.admit && !repeat.decision.prepare && !repeat.decision.generate && !repeat.decision.reset,
                         "actual FG repeat prepared stale guides or armed history reset");
@@ -433,7 +451,14 @@ int wmain(int argc,wchar_t** argv){
 #endif
             }
         }
+        const auto outputMeasured=state->presenter.OutputCounter(evidence.sources);
+        Need(outputMeasured.available && outputMeasured.source==Telemetry::OutputSource::DXGI &&
+            outputMeasured.frames-outputStart>successfulSourcePresents && outputStartResult==S_OK,
+            "DXGI output telemetry must observe generated and real presents, not only source frames");
         Accept(state->presenter.BeforeResize());Neural(state->post->Retire());state->post.reset();VerifyCapture(*state,evidence);++evidence.retirements;
+        Need(!state->presenter.OutputCounter(evidence.sources).available,"output counter unavailable during coordinated resize/retirement");
+        UINT outputEnd{};const auto outputEndResult=originalChain->GetLastPresentCount(&outputEnd);
+        std::printf("FSR output counter startHr=0x%08X endHr=0x%08X start=%u end=%u successfulRealPresents=%u sharpenedSources=%u\n",UINT(outputStartResult),UINT(outputEndResult),outputStart,outputEnd,successfulSourcePresents,sharpenedSources);
 #if defined(TRP_TEST_XESS_PRODUCER)
         Need(state->xessDispatches==160 && evidence.sources==160,"not every temporal source used actual XeSS reconstruction");
         Need(repeatedPresents==2,"both actual XeSS epochs must exercise completed repeats and non-reset reentry");

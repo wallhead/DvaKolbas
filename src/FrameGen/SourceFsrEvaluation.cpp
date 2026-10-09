@@ -315,6 +315,15 @@ HRESULT NvidiaHost::PresentFsrSource(UINT interval,UINT flags)
 #endif
 }
 
+TheosRenderPipeline::Telemetry::OutputCounter NvidiaHost::FsrOutputCounter()const
+{
+#if defined(TRP_ENABLE_FSR_FG)
+    if(FsrFgActive() && fsrPresentation_ && proxyActive_ && SUCCEEDED(FailureResult()) && lastPresentResult_==S_OK)
+        return fsrPresentation_->OutputCounter(presentCount_);
+#endif
+    return {};
+}
+
 TheosRenderPipeline::SettingsActionStatus NvidiaHost::FsrFgStatus() const
 {
 #if defined(TRP_ENABLE_FSR_FG)

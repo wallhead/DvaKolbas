@@ -2,6 +2,7 @@
 #include "FSRPresentation.h"
 #include "Upscaling/FSRHostResources.h"
 #include "Upscaling/FSRSettings.h"
+#include "FrameTelemetry.h"
 namespace TheosRenderPipeline
 {
     struct FsrHostResize { Upscaling::Extent render{};HRESULT result{S_OK}; };
@@ -39,6 +40,7 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> Retire();
         IDXGISwapChain4* SwapChain()const;ID3D11Texture2D* SceneTarget11()const;
         bool FeatureReady()const;FsrPresentationStatus Status()const;
+        Telemetry::OutputCounter OutputCounter(std::uint64_t observations)const;
         const Upscaling::FsrEffectProvider& GenerationProvider()const;
     private:
         Upscaling::Result<Upscaling::Extent> CreateInternal(IDXGIFactory*,ID3D11Device*,

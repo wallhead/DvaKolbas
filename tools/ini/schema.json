@@ -218,6 +218,18 @@
       "type": "Enum"
     },
     {
+      "internal_section": "XeSS",
+      "internal_key": "Sharpness",
+      "section": "XeSS",
+      "key": "Sharpness",
+      "default": "0",
+      "comment": "RCAS output sharpening after XeSS/NR and before frame generation/UI. Zero disables sharpening. Applies live on slider release.",
+      "restart": false,
+      "range": "0-1",
+      "type": "Number",
+      "values": {}
+    },
+    {
       "internal_section": "FrameGeneration",
       "internal_key": "BackendPreference",
       "section": "FrameGeneration",
