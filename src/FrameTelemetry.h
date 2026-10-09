@@ -23,6 +23,18 @@ namespace TheosRenderPipeline::Telemetry
 		bool available{};
 	};
 
+	// Query only a ready native presenter. Status results (including occlusion)
+	// are not a successful measurement. Never substitute source-frame counts.
+	template<class SwapChain>
+	OutputCounter ReadDxgiOutputCounter(SwapChain* a_chain, std::uint64_t a_epoch,
+		std::uint64_t a_observations, bool a_ready)
+	{
+		if (!a_ready || !a_chain) { return {}; }
+		std::uint32_t count{};
+		if (a_chain->GetLastPresentCount(&count) != 0) { return {}; }
+		return { OutputSource::DXGI, a_epoch, a_observations, count, true };
+	}
+
 	// Count producer-reported output, never raster FPS * a requested multiplier.
 	// The consumer reads cached totals, not an additional consuming runtime query.
 	// This is a runtime presentation rate, NOT physical scanout/cadence evidence.

@@ -36,8 +36,7 @@ void OverlayUI::DrawFrameMeasurements(const FrameView& view, float columnHeight)
         ImGui::TableNextColumn();
         ImGui::TextDisabled("%s", view.outputLabel);
         ImGui::TextUnformatted(view.outputText.c_str());
-        DrawSettingsHelp(
-            "NVIDIA's presentation count; physical screen refreshes and scanout spacing are not measured.");
+        DrawSettingsHelp(view.outputHelp);
         ImGui::EndTable();
     }
     ImGui::TextDisabled("Frame time: %.2f ms", view.avgMs);

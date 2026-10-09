@@ -38,5 +38,6 @@ struct OverlayUI::FrameView
     char neuralDetail[96]{};
     std::string outputText{};
     const char* outputLabel{};
+    const char* outputHelp{};
     const char* activeUpscaleStage{};
 };

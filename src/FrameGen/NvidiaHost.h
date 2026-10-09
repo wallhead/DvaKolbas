@@ -6,6 +6,7 @@
 #include <wrl/client.h>
 
 #include "GameFacingTargets.h"
+#include "FrameTelemetry.h"
 #if !defined(TRP_NO_NEURAL_RENDERING)
 #include "NeuralRendering/BeforeHost.h"
 #include "NeuralRendering/SourcePolicy.h"
@@ -98,6 +99,13 @@ class NvidiaHost
     bool XessActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==Xess; }
     bool XessTemporalActive()const;
     bool OrdinarySourceActive()const { return (FsrActive() || XessActive()) && !FsrFgActive(); }
+    TheosRenderPipeline::Telemetry::OutputCounter OrdinaryOutputCounter() const
+    {
+        return TheosRenderPipeline::Telemetry::ReadDxgiOutputCounter(innerSwapChain_,
+            reinterpret_cast<std::uintptr_t>(innerSwapChain_), presentCount_,
+            OrdinarySourceActive() && proxyActive_ && ordinaryPresentation_.Ready() &&
+                SUCCEEDED(FailureResult()) && lastPresentResult_ == S_OK);
+    }
     bool QueryXessJitter(std::uint64_t,float&,float&);
     TheosRenderPipeline::SettingsActionStatus XessStatus()const;
     bool FsrTemporalActive() const { return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult()); }

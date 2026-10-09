@@ -22,6 +22,10 @@ Neural Rendering (NR), and native-resolution menus and HUD. Current version:
   `[NeuralRendering Advanced] SourceColorEncoding` for NR.
   The bundled XeSS SR 2.0.2 runtime is qualified as a unit: replacing `libxess.dll`
   requires repeating runtime/flags, colour, guide and lifecycle qualification.
+  The menu reports DXGI output FPS for ordinary XeSS/FSR presentation from the
+  swap chain's Present counter. It needs a one-second sampling window; failed
+  queries and interruptions show unavailable. This measures presentation calls,
+  not physical scanout. FSR FG output telemetry remains unavailable.
 - Frame generation and multi-frame generation (MFG).
 - NR before or after DLSS/FSR upscaling, up to three independently configured passes.
   After placement uses DLSS/FSR -> NR -> FG -> UI. NR defaults off.

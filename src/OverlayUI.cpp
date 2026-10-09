@@ -272,21 +272,24 @@ void OverlayUI::UpdateFrameStats()
 		}
 	}
 
-	// DLSS-G output is downstream of the game-facing Present. Read the source
-	// session's accumulated runtime deltas. Do not call slDLSSGGetState
-	// again from the menu because it consumes the delta.
+	// Ordinary XeSS/FSR presentation uses the native DXGI count. DLSS-G
+	// uses accumulated runtime deltas: an extra slDLSSGGetState query here
+	// would consume the delta. FSR FG has no qualified output counter yet.
 	TheosRenderPipeline::Telemetry::OutputCounter output{};
 
-		if (NvidiaHost::GetSingleton()->StartupConfigured() && !NvidiaHost::GetSingleton()->FsrActive()) {
-			const auto& source = TheosRenderPipeline::SourceDLSSG::Backend::Get();
-			const auto& session = source.Snapshot();
-			output = { TheosRenderPipeline::Telemetry::OutputSource::Streamline,
-				session.presentationEpoch, session.stateQueries, session.runtimePresentedFrames,
-				source.Ready() && session.stateQueries > 0 &&
-					session.stage != TheosRenderPipeline::SourceDLSSG::SessionStage::Stopped &&
-					session.stage != TheosRenderPipeline::SourceDLSSG::SessionStage::Faulted &&
-					session.state.status == sl::DLSSGStatus::eOk };
-		}
+	const auto* host = NvidiaHost::GetSingleton();
+	if (host->OrdinarySourceActive()) {
+		output = host->OrdinaryOutputCounter();
+	} else if (host->StartupConfigured() && !host->FsrFgActive()) {
+		const auto& source = TheosRenderPipeline::SourceDLSSG::Backend::Get();
+		const auto& session = source.Snapshot();
+		output = { TheosRenderPipeline::Telemetry::OutputSource::Streamline,
+			session.presentationEpoch, session.stateQueries, session.runtimePresentedFrames,
+			source.Ready() && session.stateQueries > 0 &&
+				session.stage != TheosRenderPipeline::SourceDLSSG::SessionStage::Stopped &&
+				session.stage != TheosRenderPipeline::SourceDLSSG::SessionStage::Faulted &&
+				session.state.status == sl::DLSSGStatus::eOk };
+	}
 
 	outputRate.Update(now.QuadPart * qpcToMs, output, timelineDiscontinuity);
 }
