@@ -1,0 +1,440 @@
+{
+  "scope": "Static hashes, streamed archive members and unwind-bounded API loader witnesses; no DLL execution",
+  "sdkTag": "v3.0.2",
+  "sdkCommit": "8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0",
+  "archive": {
+    "bytes": 204042400,
+    "sha256": "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439"
+  },
+  "callers": {
+    "SKSE/Plugins/SkyrimUpscaler.dll": {
+      "bytes": 15975424,
+      "sha256": "ac699b5883d4deeafdfff81ab041c3f191b1970e68c3408ffdb18068a6f5482a"
+    },
+    "UpscalerBasePlugin/PDPerfPlugin.dll": {
+      "bytes": 20332032,
+      "sha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435"
+    }
+  },
+  "runtimes": {
+    "libxess.dll": {
+      "bytes": 77795704,
+      "sha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+      "gitBlobSha1": "548837c12b215d189884d54db0a480cd3bf2bfd1",
+      "matchesOfficial302": true
+    },
+    "libxess_dx11.dll": {
+      "bytes": 156016,
+      "sha256": "c7cfe86f0c9d94e4fb3696d3cd5035e2bbb6a8b1b0572f8b7395a4cdfd0c625e",
+      "gitBlobSha1": "1e0247ba23a841ff514841ff963b72b636802a4e",
+      "matchesOfficial302": true
+    },
+    "libxess_fg.dll": {
+      "bytes": 22957432,
+      "sha256": "ec5e0c65e075570c6ede72618bb666d0be0c2e10b2ea9762c0fe8cb8e375ab27",
+      "gitBlobSha1": "57a5da469d79e8dceea6af01961030219d391cdf",
+      "matchesOfficial302": true
+    },
+    "libxell.dll": {
+      "bytes": 415368,
+      "sha256": "d2030dcd694fda8f2ec7e044b13e6db8f0b56d4ba9113a5efad334e3f3ded8c7",
+      "gitBlobSha1": "c321c6c6cd148dc614e6a339a27976ce0874d2e7",
+      "matchesOfficial302": true
+    }
+  },
+  "loaderWitnesses": [
+    {
+      "api": "xefgSwapChainSetNumInterpolatedFrames",
+      "stringRva": "0x12ee9f0",
+      "fragment": [
+        "0x84f50",
+        "0x852e8"
+      ],
+      "resolver": "GetProcAddress",
+      "instructions": [
+        {
+          "rva": "0x85090",
+          "bytes": "83f802",
+          "text": "cmp eax, 2"
+        },
+        {
+          "rva": "0x85093",
+          "bytes": "0f842b020000",
+          "text": "je 0x1800852c4"
+        },
+        {
+          "rva": "0x85099",
+          "bytes": "488d1550992601",
+          "text": "lea rdx, [rip + 0x1269950]"
+        },
+        {
+          "rva": "0x850a0",
+          "bytes": "488bcf",
+          "text": "mov rcx, rdi"
+        },
+        {
+          "rva": "0x850a3",
+          "bytes": "ff1537c00a00",
+          "text": "call qword ptr [rip + 0xac037]"
+        },
+        {
+          "rva": "0x850a9",
+          "bytes": "488983c8010000",
+          "text": "mov qword ptr [rbx + 0x1c8], rax"
+        },
+        {
+          "rva": "0x850b0",
+          "bytes": "b901000000",
+          "text": "mov ecx, 1"
+        },
+        {
+          "rva": "0x850b5",
+          "bytes": "b805000000",
+          "text": "mov eax, 5"
+        },
+        {
+          "rva": "0x850ba",
+          "bytes": "3bf1",
+          "text": "cmp esi, ecx"
+        }
+      ]
+    },
+    {
+      "api": "xefgSwapChainSetNumInterpolatedFrames",
+      "stringRva": "0x12ee9f0",
+      "fragment": [
+        "0xb5050",
+        "0xb5464"
+      ],
+      "resolver": "GetProcAddress",
+      "instructions": [
+        {
+          "rva": "0xb51a1",
+          "bytes": "4885c0",
+          "text": "test rax, rax"
+        },
+        {
+          "rva": "0xb51a4",
+          "bytes": "74c5",
+          "text": "je 0x1800b516b"
+        },
+        {
+          "rva": "0xb51a6",
+          "bytes": "488d1543982301",
+          "text": "lea rdx, [rip + 0x1239843]"
+        },
+        {
+          "rva": "0xb51ad",
+          "bytes": "488b4d67",
+          "text": "mov rcx, qword ptr [rbp + 0x67]"
+        },
+        {
+          "rva": "0xb51b1",
+          "bytes": "ff1529bf0700",
+          "text": "call qword ptr [rip + 0x7bf29]"
+        },
+        {
+          "rva": "0xb51b7",
+          "bytes": "4885c0",
+          "text": "test rax, rax"
+        },
+        {
+          "rva": "0xb51ba",
+          "bytes": "74af",
+          "text": "je 0x1800b516b"
+        },
+        {
+          "rva": "0xb51bc",
+          "bytes": "4c897708",
+          "text": "mov qword ptr [rdi + 8], r14"
+        },
+        {
+          "rva": "0xb51c0",
+          "bytes": "488bd7",
+          "text": "mov rdx, rdi"
+        }
+      ]
+    },
+    {
+      "api": "xessD3D11CreateContext",
+      "stringRva": "0x12fbd08",
+      "fragment": [
+        "0x11f310",
+        "0x11f880"
+      ],
+      "resolver": "GetProcAddress",
+      "instructions": [
+        {
+          "rva": "0x11f5b3",
+          "bytes": "48890516b62501",
+          "text": "mov qword ptr [rip + 0x125b616], rax"
+        },
+        {
+          "rva": "0x11f5ba",
+          "bytes": "ff15201b0100",
+          "text": "call qword ptr [rip + 0x11b20]"
+        },
+        {
+          "rva": "0x11f5c0",
+          "bytes": "488d1541c71d01",
+          "text": "lea rdx, [rip + 0x11dc741]"
+        },
+        {
+          "rva": "0x11f5c7",
+          "bytes": "488bcb",
+          "text": "mov rcx, rbx"
+        },
+        {
+          "rva": "0x11f5ca",
+          "bytes": "48890507b62501",
+          "text": "mov qword ptr [rip + 0x125b607], rax"
+        },
+        {
+          "rva": "0x11f5d1",
+          "bytes": "ff15091b0100",
+          "text": "call qword ptr [rip + 0x11b09]"
+        },
+        {
+          "rva": "0x11f5d7",
+          "bytes": "48890502b62501",
+          "text": "mov qword ptr [rip + 0x125b602], rax"
+        },
+        {
+          "rva": "0x11f5de",
+          "bytes": "488d15dbc61d01",
+          "text": "lea rdx, [rip + 0x11dc6db]"
+        },
+        {
+          "rva": "0x11f5e5",
+          "bytes": "488bcb",
+          "text": "mov rcx, rbx"
+        }
+      ]
+    },
+    {
+      "api": "xessD3D11Execute",
+      "stringRva": "0x12fbd48",
+      "fragment": [
+        "0x11f310",
+        "0x11f880"
+      ],
+      "resolver": "GetProcAddress",
+      "instructions": [
+        {
+          "rva": "0x11f5f8",
+          "bytes": "488905e9b52501",
+          "text": "mov qword ptr [rip + 0x125b5e9], rax"
+        },
+        {
+          "rva": "0x11f5ff",
+          "bytes": "ff15db1a0100",
+          "text": "call qword ptr [rip + 0x11adb]"
+        },
+        {
+          "rva": "0x11f605",
+          "bytes": "488d153cc71d01",
+          "text": "lea rdx, [rip + 0x11dc73c]"
+        },
+        {
+          "rva": "0x11f60c",
+          "bytes": "488bcb",
+          "text": "mov rcx, rbx"
+        },
+        {
+          "rva": "0x11f60f",
+          "bytes": "488905dab52501",
+          "text": "mov qword ptr [rip + 0x125b5da], rax"
+        },
+        {
+          "rva": "0x11f616",
+          "bytes": "ff15c41a0100",
+          "text": "call qword ptr [rip + 0x11ac4]"
+        },
+        {
+          "rva": "0x11f61c",
+          "bytes": "488905d5b52501",
+          "text": "mov qword ptr [rip + 0x125b5d5], rax"
+        },
+        {
+          "rva": "0x11f623",
+          "bytes": "c605feb5250101",
+          "text": "mov byte ptr [rip + 0x125b5fe], 1"
+        },
+        {
+          "rva": "0x11f62a",
+          "bytes": "4885ff",
+          "text": "test rdi, rdi"
+        }
+      ]
+    },
+    {
+      "api": "xessD3D12CreateContext",
+      "stringRva": "0x12fbd60",
+      "fragment": [
+        "0x11f310",
+        "0x11f880"
+      ],
+      "resolver": "GetProcAddress",
+      "instructions": [
+        {
+          "rva": "0x11f7d4",
+          "bytes": "488905f5b32501",
+          "text": "mov qword ptr [rip + 0x125b3f5], rax"
+        },
+        {
+          "rva": "0x11f7db",
+          "bytes": "ff15ff180100",
+          "text": "call qword ptr [rip + 0x118ff]"
+        },
+        {
+          "rva": "0x11f7e1",
+          "bytes": "488d1578c51d01",
+          "text": "lea rdx, [rip + 0x11dc578]"
+        },
+        {
+          "rva": "0x11f7e8",
+          "bytes": "488bcf",
+          "text": "mov rcx, rdi"
+        },
+        {
+          "rva": "0x11f7eb",
+          "bytes": "488905e6b32501",
+          "text": "mov qword ptr [rip + 0x125b3e6], rax"
+        },
+        {
+          "rva": "0x11f7f2",
+          "bytes": "ff15e8180100",
+          "text": "call qword ptr [rip + 0x118e8]"
+        },
+        {
+          "rva": "0x11f7f8",
+          "bytes": "48890501b42501",
+          "text": "mov qword ptr [rip + 0x125b401], rax"
+        },
+        {
+          "rva": "0x11f7ff",
+          "bytes": "488d151ac51d01",
+          "text": "lea rdx, [rip + 0x11dc51a]"
+        },
+        {
+          "rva": "0x11f806",
+          "bytes": "488bcf",
+          "text": "mov rcx, rdi"
+        }
+      ]
+    },
+    {
+      "api": "xessD3D12Init",
+      "stringRva": "0x12fbd38",
+      "fragment": [
+        "0x11f310",
+        "0x11f880"
+      ],
+      "resolver": "GetProcAddress",
+      "instructions": [
+        {
+          "rva": "0x11f806",
+          "bytes": "488bcf",
+          "text": "mov rcx, rdi"
+        },
+        {
+          "rva": "0x11f809",
+          "bytes": "ff15d1180100",
+          "text": "call qword ptr [rip + 0x118d1]"
+        },
+        {
+          "rva": "0x11f80f",
+          "bytes": "488d1522c51d01",
+          "text": "lea rdx, [rip + 0x11dc522]"
+        },
+        {
+          "rva": "0x11f816",
+          "bytes": "488bcf",
+          "text": "mov rcx, rdi"
+        },
+        {
+          "rva": "0x11f819",
+          "bytes": "488905e8b32501",
+          "text": "mov qword ptr [rip + 0x125b3e8], rax"
+        },
+        {
+          "rva": "0x11f820",
+          "bytes": "ff15ba180100",
+          "text": "call qword ptr [rip + 0x118ba]"
+        },
+        {
+          "rva": "0x11f826",
+          "bytes": "488d158bc51d01",
+          "text": "lea rdx, [rip + 0x11dc58b]"
+        },
+        {
+          "rva": "0x11f82d",
+          "bytes": "488bcf",
+          "text": "mov rcx, rdi"
+        },
+        {
+          "rva": "0x11f830",
+          "bytes": "488905d9b32501",
+          "text": "mov qword ptr [rip + 0x125b3d9], rax"
+        }
+      ]
+    },
+    {
+      "api": "xessD3D12Execute",
+      "stringRva": "0x12fbdd0",
+      "fragment": [
+        "0x11f310",
+        "0x11f880"
+      ],
+      "resolver": "GetProcAddress",
+      "instructions": [
+        {
+          "rva": "0x11f830",
+          "bytes": "488905d9b32501",
+          "text": "mov qword ptr [rip + 0x125b3d9], rax"
+        },
+        {
+          "rva": "0x11f837",
+          "bytes": "ff15a3180100",
+          "text": "call qword ptr [rip + 0x118a3]"
+        },
+        {
+          "rva": "0x11f83d",
+          "bytes": "488d158cc51d01",
+          "text": "lea rdx, [rip + 0x11dc58c]"
+        },
+        {
+          "rva": "0x11f844",
+          "bytes": "488bcf",
+          "text": "mov rcx, rdi"
+        },
+        {
+          "rva": "0x11f847",
+          "bytes": "488905cab32501",
+          "text": "mov qword ptr [rip + 0x125b3ca], rax"
+        },
+        {
+          "rva": "0x11f84e",
+          "bytes": "ff158c180100",
+          "text": "call qword ptr [rip + 0x1188c]"
+        },
+        {
+          "rva": "0x11f854",
+          "bytes": "488905c5b32501",
+          "text": "mov qword ptr [rip + 0x125b3c5], rax"
+        },
+        {
+          "rva": "0x11f85b",
+          "bytes": "c605c6b3250101",
+          "text": "mov byte ptr [rip + 0x125b3c6], 1"
+        },
+        {
+          "rva": "0x11f862",
+          "bytes": "488d0d0fc51d01",
+          "text": "lea rcx, [rip + 0x11dc50f]"
+        }
+      ]
+    }
+  ],
+  "limits": "Symbol resolution establishes supported API families, not executed frame parameters, buffer colour correctness or gameplay qualification."
+}

@@ -1,0 +1,127 @@
+"""Read-only, hash-gated AIO19 XeSS inventory and API-loader witnesses.
+
+The runtime members are streamed from 7z; no additional large DLL copies and
+no DLL loading/execution are needed. Requires pefile and Capstone.
+"""
+import argparse
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+import capstone
+import pefile
+
+SDK_COMMIT = "8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0"
+ARCHIVE_PIN = (204042400, "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439")
+PE_PINS = {
+    "SKSE/Plugins/SkyrimUpscaler.dll": (15975424, "ac699b5883d4deeafdfff81ab041c3f191b1970e68c3408ffdb18068a6f5482a"),
+    "UpscalerBasePlugin/PDPerfPlugin.dll": (20332032, "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435"),
+}
+# Git object identities of Intel's unmodified bin/ payload at the pinned tag.
+SDK_BLOBS = {
+    "libxess.dll": (77795704, "548837c12b215d189884d54db0a480cd3bf2bfd1"),
+    "libxess_dx11.dll": (156016, "1e0247ba23a841ff514841ff963b72b636802a4e"),
+    "libxess_fg.dll": (22957432, "57a5da469d79e8dceea6af01961030219d391cdf"),
+    "libxell.dll": (415368, "c321c6c6cd148dc614e6a339a27976ce0874d2e7"),
+}
+API_STRINGS = {
+    0x12FBD08: "xessD3D11CreateContext",
+    0x12FBD48: "xessD3D11Execute",
+    0x12FBD60: "xessD3D12CreateContext",
+    0x12FBD38: "xessD3D12Init",
+    0x12FBDD0: "xessD3D12Execute",
+    0x12EE9F0: "xefgSwapChainSetNumInterpolatedFrames",
+}
+
+
+def identify(path, pin):
+    with path.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    if (path.stat().st_size, digest) != pin:
+        raise ValueError(f"Pinned artifact mismatch: {path.name}")
+    return {"bytes": pin[0], "sha256": digest}
+
+
+def runtime_member(args, name, pin):
+    proc = subprocess.Popen([str(args.sevenzip), "e", "-so", "-bd", "-bso0", "-bsp0",
+                             str(args.archive), f"UpscalerBasePlugin/{name}"],
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    sha256 = hashlib.sha256()
+    blob = hashlib.sha1(f"blob {pin[0]}\0".encode())
+    size = 0
+    while chunk := proc.stdout.read(1024 * 1024):
+        size += len(chunk)
+        sha256.update(chunk)
+        blob.update(chunk)
+    proc.stdout.close()
+    error = proc.stderr.read().decode(errors="replace")
+    proc.stderr.close()
+    if proc.wait() or (size, blob.hexdigest()) != pin:
+        raise ValueError(f"Archive member/official SDK identity mismatch: {name}; {error[:200]}")
+    return {"bytes": size, "sha256": sha256.hexdigest(), "gitBlobSha1": blob.hexdigest(),
+            "matchesOfficial302": True}
+
+
+def loader_witnesses(path):
+    pe = pefile.PE(str(path))
+    base = pe.OPTIONAL_HEADER.ImageBase
+    imports = {s.address - base: s.name.decode() for e in pe.DIRECTORY_ENTRY_IMPORT
+               for s in e.imports if s.name}
+    for rva, name in API_STRINGS.items():
+        if pe.get_data(rva, len(name) + 1) != name.encode() + b"\0":
+            raise ValueError(f"Pinned API string mismatch: {name}")
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
+    decoder.detail = True
+    result = []
+    # Bounded PE-unwind fragments containing the previously located RIP xrefs.
+    for start in (0x84F50, 0xB5050, 0x11F310):
+        fragment = next(e.struct for e in pe.DIRECTORY_ENTRY_EXCEPTION if e.struct.BeginAddress == start)
+        ins = list(decoder.disasm(pe.get_data(start, fragment.EndAddress - start), base + start))
+        for index, instruction in enumerate(ins):
+            for op in instruction.operands:
+                if op.type != capstone.x86.X86_OP_MEM or op.mem.base != capstone.x86.X86_REG_RIP:
+                    continue
+                target = instruction.address + instruction.size + op.mem.disp - base
+                if target not in API_STRINGS:
+                    continue
+                following = ins[index + 1:index + 7]
+                call = next(i for i in following if i.mnemonic == "call")
+                operand = call.operands[0]
+                if operand.type != capstone.x86.X86_OP_MEM or operand.mem.base != capstone.x86.X86_REG_RIP:
+                    raise ValueError("Unexpected symbol resolver call")
+                resolver = call.address + call.size + operand.mem.disp - base
+                if imports.get(resolver) != "GetProcAddress":
+                    raise ValueError("API name is not passed to GetProcAddress")
+                result.append({"api": API_STRINGS[target], "stringRva": hex(target),
+                               "fragment": [hex(start), hex(fragment.EndAddress)],
+                               "resolver": "GetProcAddress", "instructions": [
+                                   {"rva": hex(i.address - base), "bytes": i.bytes.hex(),
+                                    "text": f"{i.mnemonic} {i.op_str}"}
+                                   for i in ins[max(0, index - 2):index + 7]]})
+    if len(result) != 7:
+        raise ValueError(f"Expected seven loader witnesses, found {len(result)}")
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--archive", required=True, type=Path)
+    parser.add_argument("--extracted", required=True, type=Path)
+    parser.add_argument("--sevenzip", default="C:/Program Files/7-Zip/7z.exe", type=Path)
+    parser.add_argument("--output", required=True, type=Path)
+    args = parser.parse_args()
+    report = {"scope": "Static hashes, streamed archive members and unwind-bounded API loader witnesses; no DLL execution",
+              "sdkTag": "v3.0.2", "sdkCommit": SDK_COMMIT,
+              "archive": identify(args.archive, ARCHIVE_PIN),
+              "callers": {name: identify(args.extracted / name, pin) for name, pin in PE_PINS.items()},
+              "runtimes": {name: runtime_member(args, name, pin) for name, pin in SDK_BLOBS.items()},
+              "loaderWitnesses": loader_witnesses(args.extracted / "UpscalerBasePlugin/PDPerfPlugin.dll"),
+              "limits": "Symbol resolution establishes supported API families, not executed frame parameters, buffer colour correctness or gameplay qualification."}
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    print(f"PASS: {len(report['runtimes'])} official SDK runtime matches; {len(report['loaderWitnesses'])} verified loader witnesses")
+
+
+if __name__ == "__main__":
+    main()
