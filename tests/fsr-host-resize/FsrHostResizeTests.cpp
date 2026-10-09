@@ -36,6 +36,7 @@ struct NvidiaHost {
     IDXGISwapChain* outerSwapChain_{},*innerSwapChain_{};
     NvidiaHost(){ordinaryPresentation_.events=&events;contextStorage.events=&events;fsrResources_->events=&events;}
     bool FsrActive() const {return true;}
+    bool OrdinarySourceActive() const {return true;}
     bool FsrFgActive() const {return false;}
     bool RetireCommunityNeural(){events.push_back(0);return true;}
     bool CreateGameFacingResources(IDXGISwapChain*){return true;}

@@ -27,7 +27,9 @@ namespace TheosRenderPipeline
         else if(config.backend==BackendKind::Xess) {
             decision.presentation=PresentationKind::Ordinary;
             if(!XessBuilt)decision.diagnostic="XeSS support is unavailable in this build.";
-            else if(config.generationBackend!=0 || config.generationEnabled || config.neuralRendering)decision.diagnostic="This XeSS SR trial requires NR and frame generation off; their integration is pending.";
+            else if(config.generationBackend!=0 || config.generationEnabled)decision.diagnostic="XeSS frame generation integration is pending; turn FG off.";
+            else if(config.neuralRendering && config.adapterVendorId!=0x10de)decision.diagnostic="XeSS NR requires a supported NVIDIA RTX render adapter.";
+            else if(config.neuralRendering && !config.communityNeural)decision.diagnostic="XeSS requires the community NR runtime.";
             else if(config.hdr || config.dynamicResolution)decision.diagnostic="XeSS SR currently requires fixed dimensions and SDR output.";
             else decision.valid=true;
         }
@@ -73,7 +75,8 @@ namespace TheosRenderPipeline
         const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
         if(mode==Xess) {
             if(!XessBuilt)return "XeSS support is unavailable in this build.";
-            if(presenter!=0 || ini.GetBoolValue("FrameGeneration","Enabled",false) || ini.GetBoolValue("SourceDLSSG","NeuralRenderingEnabled",false))return "This XeSS SR trial requires NR and frame generation off.";
+            if(presenter!=0 || ini.GetBoolValue("FrameGeneration","Enabled",false))return "XeSS frame generation integration is pending; turn FG off.";
+            if(ini.GetBoolValue("SourceDLSSG","NeuralRenderingEnabled",false) && ini.GetBoolValue("NeuralRendering","LegacyRuntimeDiagnostic",false))return "XeSS requires the community NR runtime.";
             if(ini.GetBoolValue("HDROutput","Enabled",false) || ini.GetBoolValue("DynamicResolution","Enabled",false) || ini.GetBoolValue("DynamicResolution","Oscillate",false))return "XeSS SR requires fixed dimensions and SDR output.";
             if(!ini.GetBoolValue("Settings","EnableJitter",true))return "XeSS requires camera jitter enabled.";
             return ValidateLegacyRendererExperiments(ini);

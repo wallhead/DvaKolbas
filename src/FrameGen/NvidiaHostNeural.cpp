@@ -118,8 +118,11 @@ void NvidiaHost::InspectCommunityNeural()
     const auto& startup=SourceFrameGeneration::GetSingleton()->settings.neuralStartup;
     const auto cache=PluginPaths::Directory()/"RaZkolbaS"/"NR"/"cache";
     ID3D12Device* presenter{};
+#if defined(TRP_ENABLE_XESS)
+    if(XessActive() && xessResources_ && xessResources_->Bridge())presenter=xessResources_->Bridge()->Device12();
+#endif
 #if defined(TRP_ENABLE_FSR)
-    if(fsrResources_ && fsrResources_->Bridge())presenter=fsrResources_->Bridge()->Device12();
+    if(!presenter && fsrResources_ && fsrResources_->Bridge())presenter=fsrResources_->Bridge()->Device12();
 #endif
     if(!presenter)presenter=SourceDLSSG::Backend::Get().Transport().Device12();
     // Never create another injector device proxy while the presenter is live.
@@ -185,6 +188,10 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     const NR::ImageExtent guideExtent=post?NR::ImageExtent{post->render.width,post->render.height}:input.guideExtent;
     auto* pipeline=RenderPipeline::GetSingleton();
     const char* unavailable=NR::NativeBeforeUnavailable(p);
+#if defined(TRP_ENABLE_XESS)
+    if(XessActive() && sourceUpscalerSettings_.Effective().xess.sourceEncoding!=startup.sourceEncoding)
+        unavailable="XeSS NR source encoding differs from its qualified runtime route";
+#endif
 #if defined(TRP_ENABLE_FSR)
     if(post && FsrActive() && fsrResources_->HandoffEncoding()!=startup.sourceEncoding)
         unavailable="After upscaling NR source encoding differs from its qualified runtime route";

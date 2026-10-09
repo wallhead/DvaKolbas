@@ -77,7 +77,7 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     } else {
         draft.generationBackend = 1;
     }
-    if(mode==Xess){draft.generationBackend=0;draft.generationEnabled=false;draft.sourceDLSSG.neuralEnabled=false;draft.sourceDLSSG.hdrOutput.enabled=false;draft.dynamicResolution=false;draft.enableJitter=true;}
+    if(mode==Xess){draft.generationBackend=0;draft.generationEnabled=false;if(!next.captured)draft.sourceDLSSG.neuralEnabled=false;draft.sourceDLSSG.hdrOutput.enabled=false;draft.dynamicResolution=false;draft.enableJitter=true;}
     if(mode==FSR && draft.generationBackendPreference==GenerationBackendPreference::Nvidia)
         draft.generationBackendPreference=GenerationBackendPreference::Auto;
     if (draft.generationBackend != 0)
@@ -245,7 +245,9 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     if(draft.upscaleType==Xess) {
         if(!XessBuilt)return "XeSS is not included in this build.";
         if(!Upscaling::ValidXessSettings(draft.xess))return "XeSS quality/source encoding is invalid.";
-        if(draft.generationBackend!=0 || draft.generationEnabled || draft.sourceDLSSG.neuralEnabled)return "This XeSS SR trial requires NR and frame generation off.";
+        if(draft.generationBackend!=0 || draft.generationEnabled)return "XeSS frame generation integration is pending; turn FG off.";
+        if(draft.sourceDLSSG.neuralEnabled && capabilities.adapterVendorId!=0x10de)return "XeSS NR requires a supported NVIDIA RTX render adapter.";
+        if(draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural)return "XeSS requires the community NR runtime.";
         if(draft.dynamicResolution || draft.sourceDLSSG.hdrOutput.enabled)return "XeSS SR currently requires fixed dimensions and SDR output.";
         if(!draft.enableJitter)return "XeSS requires camera jitter enabled.";
     } else if (draft.upscaleType == FSR) {
@@ -291,7 +293,8 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if (capabilities.communityNeural) {
             if (capabilities.externalWorld || !draft.nativeUI) return "Community NR requires TRP world ownership and native UI.";
             if (const auto error=NeuralRendering::NativeBeforeUnavailable(draft.sourceDLSSG)) return error;
-            if (const auto error=NeuralRendering::NativeAfterUnavailable(draft.sourceDLSSG,draft.upscaleType,draft.fsr.quality,draft.dynamicResolution)) return error;
+            if (const auto error=NeuralRendering::NativeAfterUnavailable(draft.sourceDLSSG,draft.upscaleType,
+                draft.upscaleType==Xess?draft.xess.quality:draft.fsr.quality,draft.dynamicResolution)) return error;
         }
         if (const auto error = NeuralSettingsUnavailable(draft.upscaleType, capabilities)) {
             // Preserve an unchanged startup request when saving unrelated edits.

@@ -8,6 +8,8 @@ public:
     bool mDlssNativeScale{true};
     std::uint32_t mAdapterVendorId{};
     TheosRenderPipeline::Upscaling::FsrSettings mFsrSettings;
+    TheosRenderPipeline::Upscaling::XessSettings mXessSettings;
+    bool mFsrOnlyRenderer{};
     bool mDynamicResolutionRequested{},mAutoExposure{true},mSharpening{},mEnableJitter{true},mNativeUI{true};
     bool mReShadeBeforeUpscaling{},mWheelerLateOverlayBridge{true};float mSharpness{};
     std::atomic_bool mRequestLoadingArtwork{true};unsigned saves{};bool saveResult{true};

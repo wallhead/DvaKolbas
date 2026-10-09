@@ -185,4 +185,9 @@ static void IndependentPasses(GPU& gpu,bool adaptive=false){
     Fixture::secondWidth=Fixture::secondHeight=0;Fixture::transform=false;
     std::printf("PASS: %u independent pass configurations (adaptive=%d); rounded sizes, larger/smaller/equal second grid, per-pass tuning/preset, identity detail, chained transform and UI/history contracts\n",cases,adaptive);
 }
-int main(){GPU gpu;Kernels(gpu);Passes(gpu);CombinedPreparation(gpu);PreparationRecorder(gpu);IndependentPasses(gpu);IndependentPasses(gpu,true);}
+int main(){
+    ComPtr<ID3D12Debug> debug;const auto hr=D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
+    if(hr==DXGI_ERROR_SDK_COMPONENT_MISSING){std::puts("SKIPPED: required D3D12 debug layer unavailable");return 77;}
+    Check(hr,"required debug interface");
+    GPU gpu;Kernels(gpu);Passes(gpu);CombinedPreparation(gpu);PreparationRecorder(gpu);IndependentPasses(gpu);IndependentPasses(gpu,true);
+}

@@ -4,6 +4,7 @@
 #include "Upscaling/UpscalerBackend.h"
 #include <vector>
 #include <string>
+#include <stdexcept>
 #include <format>
 #include <cstdio>
 #include <cstdlib>
@@ -52,6 +53,8 @@ struct NvidiaHost {
     struct Presenter {NvidiaHost* host;HRESULT WaitBeforeProducer(){return S_OK;}Upscaling::Result<void> Suspend(){return {};}Upscaling::Result<void> BeforeResize(){++host->retired;return {};}Upscaling::Result<FsrHostResize> Resize(const DXGI_SWAP_CHAIN_DESC&){return FsrHostResize{{64,64}};}Upscaling::Result<FsrHostResize> ResizeExternal(const DXGI_SWAP_CHAIN_DESC&,Upscaling::Extent e){return FsrHostResize{e};}} presenter{this};Presenter* fsrPresentation_{&presenter};
     DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
     bool FsrActive()const{return false;}bool FsrFgActive()const{return mixed;}HRESULT FailureResult()const{return S_OK;}HRESULT UpdateFsrSuspension(){return S_OK;}bool FsrPresentSuspended(){return false;}
+    bool XessActive()const{return false;}
+    bool EvaluateXessFrame(IDXGISwapChain*,bool){throw std::runtime_error("unexpected XeSS route in DLSS/FSR fixture");}
     bool PresentationBackendReadyForEvaluation(){return true;}bool EvaluateFsrFrame(IDXGISwapChain*,bool){return false;}
     bool EvaluateSourceNvidiaFrame(bool,bool reset){resets.push_back(reset);if(recovery){resetNextEvaluation_=sourceRecoveryActive_=true;status_="source recovery remains visible";}return true;}
     bool StartupConfigured(){return configured;}void SetRuntimeEnabled(bool){}HRESULT FailLifecycle(HRESULT h,const char*){return h;}

@@ -25,6 +25,8 @@ public:
     bool CommunityNeuralAvailable()const{return available;}
     bool CommunityNeuralTerminal()const{return terminal;}
     bool FsrActive()const{return StartupConfigured()&&configuration.Startup().mode==FSR;}
+    bool XessActive()const{return StartupConfigured()&&configuration.Startup().mode==Xess;}
+    bool OrdinarySourceActive()const{return (FsrActive()||XessActive())&&!FsrFgActive();}
     bool FsrFgActive()const{return StartupConfigured()&&fsrFg;}
     const auto& SourceUpscalerSettings()const{return configuration;}
     HRESULT FailureResult()const{return failure;}

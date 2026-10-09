@@ -193,15 +193,15 @@ HRESULT NvidiaHost::UpdateFsrSuspension()
 
 void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
 {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    if (!RetireCommunityNeural()) return;
+#endif
 #if defined(TRP_ENABLE_XESS)
     if(xessResources_) {
         const auto retired=xessResources_->Retire();
         if(!retired){status_=retired.error().message;FailLifecycle(E_FAIL,"XeSS feature release");return;}
         xessResources_.reset();xessEncode_={};lastXessTemporal_=false;xessRecovery_=false;xessRecoveryReason_.clear();
     }
-#endif
-#if !defined(TRP_NO_NEURAL_RENDERING)
-    if (!RetireCommunityNeural()) return;
 #endif
 #if defined(TRP_ENABLE_FSR)
     if ((FsrActive() || FsrFgActive()) && fsrResources_) {

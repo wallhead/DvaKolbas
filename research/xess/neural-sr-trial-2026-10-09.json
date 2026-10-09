@@ -1,0 +1,40 @@
+{
+  "milestone": 6,
+  "status": "local-NVIDIA-standalone-qualified; Skyrim-Native-and-Performance-pending",
+  "completedMilestones": 5,
+  "totalMilestones": 8,
+  "adapter": "RTX 4080 SUPER (0x10DE:0x2702)",
+  "sdkRuntimeSha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+  "nrRuntimeSha256": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+  "route": "Existing community NR owner; Before XeSS or After accepted XeSS, before future FG/UI",
+  "standalone": {
+    "test": "PostXessGpu",
+    "qualities": ["Native (640x360)", "Performance (279x157 -> 640x360, actual SDK dimensions)"],
+    "handoffEncodings": ["Gamma22", "SRGB"],
+    "frames": 128,
+    "perCase": "15 enabled Before and 15 enabled After evaluations; one exact disabled byte bypass in each placement; preserved alpha; measured changed RGB",
+    "liveEdits": ["Style 1 -> 0 -> 1", "PassCount 1 -> 2 -> 1", "Before -> After", "NR off -> on"],
+    "pendingReader": "Genuine downstream GPU copy held behind a fence; NR style change drains reader before resource reuse (110.41 ms observed in final regression run)",
+    "debugLayers": "Unavailable; debug-dependent pixel fixture explicitly skips. Actual hardware source/NR/readers ran without debug layers."
+  },
+  "regressionCheckpoint": {
+    "allTargetsBuild": "Passed",
+    "nonGpuLabelSuite": "197 passed; 1 unavailable ML fixture skipped; no failures",
+    "targetedGpu": "XeSS+NR, scaled DLSS+NR and Performance FSR+NR passed; required-debug peripheral pixel fixture skipped",
+    "total": "200 passed, 2 skipped"
+  },
+  "policy": {
+    "afterAdmission": "Accepted temporal real source only; identity, epoch, guide dimensions, explicit encoding and motion scales validated",
+    "staleGuides": "Diagnostic rejection and zero motion scales; no fallback scale",
+    "legacyNr": "Rejected for XeSS",
+    "amdIntelNr": "Rejected; XeSS SR without NR remains allowed",
+    "fgHdrDynamicResolution": "Off for this milestone",
+    "runtimePaths": "Package-relative models and active-driver discovery; no local DriverStore override"
+  },
+  "limits": [
+    "Synthetic SR/NR colour and ownership evidence does not qualify Skyrim camera motion, HUD or residual vendor tone drift.",
+    "Native/Quality XeSS SR-only Skyrim evidence is already recorded separately. Native/Performance with NR still needs gameplay.",
+    "RTX 20/30/50 and AMD/Intel XeSS execution not hardware-qualified by this local test.",
+    "The earlier intermittent pre-menu breakpoint remains unexplained; bounded diagnostics are included without suppressing exceptions."
+  ]
+}

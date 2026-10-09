@@ -23,10 +23,10 @@ inline const char* NativeAfterUnavailable(const SourceDLSSG::Preferences& p,int 
     if(p.neuralBeforeUpscaling)return nullptr;
     if(dynamicResolution)
         return "After upscaling NR requires a fixed render scale; disable dynamic resolution.";
-    if(mode!=DLAA && mode!=DLSS && mode!=FSR)
-        return "After upscaling NR requires DLSS or FSR reconstruction.";
-    if(mode==FSR && (quality<Upscaling::Quality::Quality || quality>Upscaling::Quality::NativeAA))
-        return "After upscaling NR requires a supported FSR render scale.";
+    if(mode!=DLAA && mode!=DLSS && mode!=FSR && mode!=Xess)
+        return "After upscaling NR requires DLSS, FSR or XeSS reconstruction.";
+    if((mode==FSR || mode==Xess) && (quality<Upscaling::Quality::Quality || quality>Upscaling::Quality::NativeAA))
+        return "After upscaling NR requires a supported render scale.";
     return nullptr;
 }
 }

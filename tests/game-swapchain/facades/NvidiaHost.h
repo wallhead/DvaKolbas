@@ -15,6 +15,7 @@ public:
     HRESULT FailureResult() const { return failure; }
     bool FsrFgActive() const { return fsrFg; }
     bool FsrActive() const { return false; }
+    bool OrdinarySourceActive() const { return false; }
     bool FsrPresentSuspended() const { return suspended; }
     HRESULT UpdateFsrSuspension() { return S_OK; }
     void Prepare() { events.push_back(1); failure=prepareFailure; }

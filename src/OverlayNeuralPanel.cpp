@@ -339,15 +339,6 @@ void DrawSourceNeuralControls(TheosRenderPipeline::SourceDLSSG::Preferences& dra
 
 void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
 {
-    const auto* xessHost=NvidiaHost::GetSingleton();
-    if(settingsDraft.upscaleType==Xess || xessHost->XessActive()) {
-        if(ImGui::BeginTabItem("NR")) {
-            ImGui::TextWrapped("XeSS SR trial: NR is off. NR integration follows Skyrim SR qualification.");
-            ImGui::TextWrapped("XeSS sharpening is not exposed by this implementation.");
-            ImGui::EndTabItem();
-        }
-        return;
-    }
     const bool community=SourceFrameGeneration::GetSingleton()->settings.neuralStartup.community;
     if (!BeginNeuralRenderingTab(requestedPage == SettingsPage::NeuralRendering, view.fsrActive, community,
             (RenderPipeline::GetSingleton()->mFsrOnlyRenderer || TheosRenderPipeline::IsAmdRenderer(RenderPipeline::GetSingleton()->mAdapterVendorId))))
@@ -361,7 +352,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             if(ImGui::CollapsingHeader("Status and measurements")) {
             DrawSettingsValue("Placement",view.neuralBeforeUpscaling?"Before upscaling and frame generation":"After upscaling, before frame generation");
             DrawSettingsValue("Model","Native SDR, up to three passes");
-            ImGui::TextDisabled("After upscaling uses the selected fixed DLSS/FSR render scale.");
+            ImGui::TextDisabled("After upscaling uses the selected fixed DLSS/FSR/XeSS render scale.");
             ImGui::TextWrapped("RTX 40/50 share a runtime path; RTX 20/30 use a separate compatibility runtime. AMD NR is currently unsupported.");
             }
             NextSettingsColumn(height);
@@ -376,7 +367,7 @@ void OverlayUI::DrawNeuralRenderingPanel(float height, const FrameView& view)
             if(ImGui::Combo("Placement",&placement,placements,IM_ARRAYSIZE(placements)))p.neuralBeforeUpscaling=placement==0;
             DrawCommunityNeuralPassControls(p);
             ImGui::EndDisabled();
-            DrawCommunityNeuralCompatibility(p,settingsDraft.upscaleType,settingsDraft.fsr.quality,settingsDraft.dynamicResolution);
+            DrawCommunityNeuralCompatibility(p,settingsDraft.upscaleType,settingsDraft.upscaleType==Xess?settingsDraft.xess.quality:settingsDraft.fsr.quality,settingsDraft.dynamicResolution);
             EndSettingsColumns();
         }
         ImGui::EndTabItem();return;

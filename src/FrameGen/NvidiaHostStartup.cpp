@@ -377,7 +377,7 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
     TheosRenderPipeline::ReShadeIntegration::Get().Configure(device_.Get(), context_.Get(), {outputWidth_, outputHeight_});
     logger::info("[NvidiaHost] source upscaler initialized after D3D11 startup Present");
 #if !defined(TRP_NO_NEURAL_RENDERING)
-    if(!XessActive()) InspectCommunityNeural();
+    InspectCommunityNeural();
 #endif
 #if defined(TRP_ENABLE_FSR)
     fsrSizingRetainedForResize_=false;

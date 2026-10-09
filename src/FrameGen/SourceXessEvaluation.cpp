@@ -15,14 +15,37 @@ struct NvidiaHost::SourceXessEvaluationOperations
     NvidiaHost& host;
     RenderPipeline& pipeline;
     bool menu{};
+    bool nativeUIHandoff{};
     std::optional<RuntimeError> error;
 
     void Trace(const char* phase)const {
         if(host.evaluationCount_<3)logger::info("[XeSS boundary] evaluation={} source={} phase={}",host.evaluationCount_,pipeline.mRenderedFrameCount,phase);
     }
     void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){Trace("copy-input-enter");context->CopyResource(frame.input,frame.color);Trace("copy-input-complete");}
-    bool EvaluateOptionalPreUpscale(UpscaleFrame&){return true;} // NR qualification follows separately.
-    bool EvaluateOptionalPostUpscale(UpscaleFrame&,UpscaleOutcome){return true;}
+    bool NeuralEligible()const {
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        return NeuralRendering::SourceWorldEligible(!menu && !host.xessRecovery_,nativeUIHandoff,
+            host.nativeUI_.Dedicated(),CommunityShaders::Active());
+#else
+        return false;
+#endif
+    }
+    bool EvaluateOptionalPreUpscale(UpscaleFrame& frame){
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        frame.sourceEpoch=host.communityEpoch_;
+        return host.EvaluateCommunityNeuralBefore(frame.input,frame.depth,frame.motion,
+            frame.render.width,frame.render.height,frame.sourceId,frame.reset,NeuralEligible());
+#else
+        (void)frame;return true;
+#endif
+    }
+    bool EvaluateOptionalPostUpscale(UpscaleFrame& frame,UpscaleOutcome outcome){
+#if !defined(TRP_NO_NEURAL_RENDERING)
+        return host.EvaluateCommunityNeuralAfter(frame,outcome,NeuralEligible());
+#else
+        (void)frame;(void)outcome;return true;
+#endif
+    }
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&){return GenerationPreparationStatus::NotRequested;}
     void RenderReShade(const UpscaleFrame& frame,bool before)
@@ -94,7 +117,6 @@ bool NvidiaHost::QueryXessJitter(std::uint64_t sourceId,float& x,float& y)
 
 bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff)
 {
-    (void)nativeUIHandoff;
 #if defined(TRP_ENABLE_XESS)
     if(FAILED(FailureResult()) || !proxyActive_ || swapChain!=outerSwapChain_ || !upscalerReady_ ||
         !xessResources_ || !context_ || !gameTargets_.GameFacing() || !gameTargets_.UpscaleInput() ||
@@ -108,12 +130,15 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     frame.depth=pipeline.mDepthBuffer.mImage;frame.motion=pipeline.mMotionVectors.mImage;
     frame.render=frame.subrect={renderWidth_,renderHeight_};frame.display={outputWidth_,outputHeight_};
     frame.sourceId=pipeline.mRenderedFrameCount+1;frame.sourceEpoch=xessEpoch_;
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    frame.sourceEpoch=communityEpoch_;
+#endif
     frame.deltaMilliseconds=pipeline.mSourceDeltaMilliseconds;frame.jitterX=pipeline.mJitterOffsets[0];frame.jitterY=pipeline.mJitterOffsets[1];
     frame.motionConvention={float(renderWidth_),float(renderHeight_),true,false};
     frame.colorIsLinear=true;frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
     frame.reset=resetNextEvaluation_ || pipeline.mPendingHistoryResets>0 || loadingScreenRoute_.NeedsTemporalReset();
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
-    SourceXessEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_)};
+    SourceXessEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_),nativeUIHandoff};
     const auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
     if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
         if(operations.error){status_=operations.error->message;logger::error("[XeSS frame] native=0x{:08X} {}",std::uint32_t(operations.error->nativeResult),status_);}
@@ -123,7 +148,7 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     const bool temporal=result.outcome==UpscaleOutcome::Temporal;
     const bool changed=evaluationCount_==0 || temporal!=lastXessTemporal_;
     lastXessTemporal_=temporal;resetNextEvaluation_=!temporal;
-    if(temporal){pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();status_="XeSS active | ordinary presentation | NR/FG off";}
+    if(temporal){pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();status_="XeSS active | ordinary presentation | FG off";}
     else {loadingScreenRoute_.SpatialSucceeded();status_="XeSS requested; spatial recovery: "+xessRecoveryReason_;}
     if(changed || (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && evaluationCount_%600==0))
         logger::info("[XeSS state] source={} epoch={} route={} render={}x{} display={}x{} jitter=({},{}) motionScale=({},{}) guide=original-engine-output reset={} reason={}",
@@ -131,7 +156,7 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
             frame.jitterX,frame.jitterY,frame.motionConvention.scaleX,frame.motionConvention.scaleY,frame.reset,status_);
     ++evaluationCount_;return true;
 #else
-    (void)swapChain;return false;
+    (void)swapChain;(void)nativeUIHandoff;return false;
 #endif
 }
 

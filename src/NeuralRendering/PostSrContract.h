@@ -32,7 +32,7 @@ inline Result<PostSrGuidePlan> ValidatePostSrSourceContract(const PostSrSourceCo
         return std::unexpected(Error{kind,0,message});
     };
     if(source.backend!=Upscaling::BackendKind::Dlss && source.backend!=Upscaling::BackendKind::Dlaa &&
-        source.backend!=Upscaling::BackendKind::Fsr)
+        source.backend!=Upscaling::BackendKind::Fsr && source.backend!=Upscaling::BackendKind::Xess)
         return fail(ErrorKind::Unsupported,"NR post-SR source backend is not owned");
     if(source.outcome!=Upscaling::UpscaleOutcome::Temporal)
         return fail(ErrorKind::Unsupported,"NR post-SR requires a completed temporal real source");

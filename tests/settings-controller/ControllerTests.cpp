@@ -11,6 +11,9 @@ void Require(bool v,const char* message){if(!v)throw std::runtime_error(message)
 int main(){try{
     auto controller=RendererSettingsController::Current();auto& host=*NvidiaHost::GetSingleton();
     auto& fg=*SourceFrameGeneration::GetSingleton();auto& pipeline=*RenderPipeline::GetSingleton();
+    // These staging cases require an already-running FG owner, independently
+    // of the product's disabled-by-default next-launch preference.
+    fg.RequestRuntimeInterpolation(true);
     {
         pipeline.mAdapterVendorId=0x1002;
         const auto invalid=controller.Capture(true,false);
@@ -191,5 +194,21 @@ int main(){try{
     draft=controller.Capture(true,false);draft.fsr.generationProviderPolicy=Upscaling::ProviderPolicy::MachineLearning;
     Require(controller.Apply(draft,false).applied && host.configuration.NeedsRestart(),
         "DLSS FSR FG provider choice is staged for restart independently of SR");
+#if defined(TRP_ENABLE_XESS)
+    pipeline.mAdapterVendorId=0x10de;
+    Upscaler::Creation xess;xess.mode=Xess;xess.xess.quality=Upscaling::Quality::Performance;
+    host.configuration.Initialize(xess);host.configuration.BeginSubmission();host.configuration.Completed(true);
+    host.fsrFg=false;pipeline.mUpscaleType=Xess;pipeline.mXessSettings=xess.xess;
+    fg.settings.generationBackend=0;fg.RequestRuntimeInterpolation(false);
+    fg.settings.neuralStartup.community=true;fg.settings.sourceDLSSG.neuralEnabled=false;
+    fg.settings.sourceDLSSG.neuralBeforeUpscaling=false;
+    Require(!controller.SetNeuralRenderingEnabled(true).error && fg.settings.sourceDLSSG.neuralEnabled,
+        "XeSS After NR hotkey uses the community owner");
+    auto xessBefore=controller.Capture(true,false);auto xessAfter=xessBefore;
+    xessAfter.sourceDLSSG.neuralBeforeUpscaling=true;xessAfter.sourceDLSSG.neuralTuning.style=1;
+    Require(controller.ApplyLiveEdits(xessBefore,xessAfter).applied && fg.settings.sourceDLSSG.neuralBeforeUpscaling &&
+        !SourceDLSSG::Backend::Get().NeuralConfiguration().enabled,"XeSS placement/style edits never invoke legacy NR");
+    Require(!controller.SetNeuralRenderingEnabled(false).error && !fg.settings.sourceDLSSG.neuralEnabled,"XeSS NR disables live");
+#endif
     std::cout<<"PASS production RendererSettingsController Apply/Save/staging/rejection\n";return 0;
 }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}

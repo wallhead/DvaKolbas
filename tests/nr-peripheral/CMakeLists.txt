@@ -13,6 +13,7 @@ target_include_directories(TRPNeuralPeripheralTests PRIVATE . ../../src)
 target_link_libraries(TRPNeuralPeripheralTests PRIVATE d3d12 d3d11 d3dcompiler dxgi)
 trp_target_neural_shaders(TRPNeuralPeripheralTests)
 add_test(NAME NeuralPeripheralPixels COMMAND TRPNeuralPeripheralTests)
+set_tests_properties(NeuralPeripheralPixels PROPERTIES LABELS GPU SKIP_RETURN_CODE 77)
 
 add_executable(TRPNeuralCombatPolicyTests ../NeuralCombatPolicyTests.cpp)
 target_compile_features(TRPNeuralCombatPolicyTests PRIVATE cxx_std_20)
