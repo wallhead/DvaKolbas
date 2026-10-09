@@ -140,6 +140,26 @@
       "nrOnTransitions": 5,
       "lastNrActiveEvidence": "[2026-10-09 14:31:55.982] [thread 62884] [info] [Community NR frame] source=20541 requested=true evaluated=true profile=rtx40 revision=10 reset=false frames=9600 resets=13 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active before upscaling; rtx40; 1 SDR RGBA8 byte trial pass",
       "limits": "Native Before is accepted provisionally from user feedback. Native After, multiple-pass changes and Performance camera/HUD gameplay are not claimed from this log. Milestone 6 remains open."
+    },
+    "skyrimNativeAfterCheckpoint": {
+      "userReport": "done after requested After and pass-count tests",
+      "sourceRevision": "df7abe212361",
+      "snapshot": "out/validation/xess/skyrim-20261009/native-nr-after-df7abe212361-20261009-143343.log",
+      "snapshotSha256": "d9f845c5c15900c9588edb473b3568f6987fdad84e1545e5307d944349c8a6a6",
+      "errorOrCriticalCount": 0,
+      "route": "Actual XeSS Native 2560x1440 with NR After before FG; FG off.",
+      "acceptedLivePassSequence": "1 -> 2 -> 3 -> 1",
+      "nrAfterEvidence": [
+        "[2026-10-09 14:33:30.023] [thread 62884] [info] [Community NR frame] source=24741 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=13800 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:33:42.789] [thread 62884] [info] [Community NR frame] source=25341 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=14400 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:33:55.722] [thread 62884] [info] [Community NR frame] source=25941 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=15000 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:34:08.490] [thread 62884] [info] [Community NR frame] source=26541 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=15600 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:34:21.325] [thread 62884] [info] [Community NR frame] source=27141 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=16200 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:34:34.355] [thread 62884] [info] [Community NR frame] source=27741 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=16800 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:34:47.264] [thread 62884] [info] [Community NR frame] source=28341 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=17400 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:35:00.058] [thread 62884] [info] [Community NR frame] source=28941 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=18000 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass"
+      ],
+      "qualification": "Native Before/After and live NR changes accepted from user report and logged evaluation. Performance gameplay still pending: latest startup and installed INI both remain Native. Milestone 6 is not yet complete."
     }
   }
 }
