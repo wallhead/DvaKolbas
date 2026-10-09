@@ -18,7 +18,7 @@ namespace TheosRenderPipeline::Upscaling
     };
     static std::unexpected<RuntimeError> Failure(ErrorKind kind,HRESULT native,const char* text)
     { return std::unexpected(RuntimeError{kind,native,text}); }
-    XessHostResources::XessHostResources(std::filesystem::path path):state_(std::make_unique<State>()),pluginDirectory_(std::move(path)){}
+    XessHostResources::XessHostResources(std::filesystem::path path,DeviceCreator creator):state_(std::make_unique<State>()),pluginDirectory_(std::move(path)),deviceCreator_(creator){}
     XessHostResources::~XessHostResources(){if(!Retire())(void)state_.release();}
     Result<Extent> XessHostResources::Initialize(ID3D11Device* device11,Quality quality,Extent display,ColorEncoding encoding,bool inverted)
     {
@@ -27,8 +27,9 @@ namespace TheosRenderPipeline::Upscaling
         ComPtr<IDXGIDevice> dxgi;ComPtr<IDXGIAdapter> adapter;DXGI_ADAPTER_DESC description{};
         auto hr=device11->QueryInterface(IID_PPV_ARGS(&dxgi));
         if(FAILED(hr) || FAILED(hr=dxgi->GetAdapter(&adapter)) || FAILED(hr=adapter->GetDesc(&description)))return Failure(ErrorKind::UnsupportedDevice,hr,"XeSS actual D3D11 adapter query failed");
-        hr=D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&state_->device));
-        if(FAILED(hr))return fail({ErrorKind::UnsupportedDevice,hr,"XeSS native same-adapter D3D12 device creation failed"});
+        hr=deviceCreator_?deviceCreator_(adapter.Get(),D3D_FEATURE_LEVEL_12_0,state_->device.ReleaseAndGetAddressOf()):
+            D3D12CreateDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,IID_PPV_ARGS(&state_->device));
+        if(FAILED(hr) || !state_->device)return fail({ErrorKind::UnsupportedDevice,FAILED(hr)?hr:E_NOINTERFACE,"XeSS native same-adapter D3D12 device creation failed"});
         const auto match=ValidateXessAdapter(description.AdapterLuid,state_->device->GetAdapterLuid());if(!match)return fail(match.error());
         D3D12_COMMAND_QUEUE_DESC queue{};queue.Type=D3D12_COMMAND_LIST_TYPE_DIRECT;
         if(FAILED(hr=state_->device->CreateCommandQueue(&queue,IID_PPV_ARGS(&state_->queue))))return fail({ErrorKind::UnsupportedDevice,hr,"XeSS direct queue creation failed"});

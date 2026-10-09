@@ -240,7 +240,10 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
             }
             extent=xessResources_->RenderExtent();
         } else {
-            xessResources_=std::make_unique<TheosRenderPipeline::Upscaling::XessHostResources>(TheosRenderPipeline::PluginPaths::Directory());
+            xessResources_=std::make_unique<TheosRenderPipeline::Upscaling::XessHostResources>(TheosRenderPipeline::PluginPaths::Directory(),
+                +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
+                    return TheosRenderPipeline::ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
+                });
             const auto& request=sourceUpscalerSettings_.Startup().xess;
             extent=xessResources_->Initialize(device_.Get(),request.quality,{outputWidth_,outputHeight_},request.sourceEncoding);
         }
@@ -539,7 +542,10 @@ HRESULT NvidiaHost::CreateFsrPresenter(IDXGIFactory* factory,ID3D11Device* produ
 #if defined(TRP_ENABLE_XESS)
     if(XessActive()) {
         SourceInternalScope internal(sourceUIInternal_);
-        xessResources_=std::make_unique<Upscaling::XessHostResources>(PluginPaths::Directory());
+        xessResources_=std::make_unique<Upscaling::XessHostResources>(PluginPaths::Directory(),
+            +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
+                return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
+            });
         const auto& request=sourceUpscalerSettings_.Startup().xess;
         extent=xessResources_->Initialize(producer,request.quality,{descriptor.BufferDesc.Width,descriptor.BufferDesc.Height},request.sourceEncoding);
         if(!extent) {

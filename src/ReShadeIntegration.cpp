@@ -36,6 +36,11 @@ namespace TheosRenderPipeline
         HWND window{};
         ComPtr<ID3D11Device> device;
         ComPtr<ID3D11DeviceContext> context;
+        // Retain the native handle from our own synchronous creation. D3D12
+        // uses a per-adapter device singleton; ReShade may emit init_device only
+        // on its first creation, even while independent SDK owners remain live.
+        std::mutex sourceDeviceMutex;
+        ComPtr<ID3D12Device> sourceNative;
         ComPtr<ID3D11Texture2D> ui, color, depth, displayDepth, emptyDepth;
         ComPtr<ID3D11RenderTargetView> colorRTV, colorSRGB;
         ComPtr<ID3D11ShaderResourceView> depthSRV, displayDepthSRV, emptyDepthSRV;
@@ -278,9 +283,25 @@ namespace TheosRenderPipeline
         if (!out) { return E_POINTER; }
         *out = nullptr;
         auto& s = Data();
+        std::lock_guard sourceLock(s.sourceDeviceMutex);
         if (requireNative && s.knownInjector && !s.module) {
             s.status = "ReShade public native ownership unavailable; AMD presentation rejected before publication";
             return E_NOINTERFACE;
+        }
+        if(s.sourceNative && adapter) {
+            ComPtr<IDXGIAdapter> requested;DXGI_ADAPTER_DESC description{};
+            auto hr=adapter->QueryInterface(IID_PPV_ARGS(&requested));
+            if(FAILED(hr) || FAILED(hr=requested->GetDesc(&description)))return FAILED(hr)?hr:E_NOINTERFACE;
+            const auto held=s.sourceNative->GetAdapterLuid();
+            if(held.LowPart==description.AdapterLuid.LowPart && held.HighPart==description.AdapterLuid.HighPart) {
+                hr=s.sourceNative->GetDeviceRemovedReason();if(FAILED(hr))return hr;
+                D3D12_FEATURE_DATA_FEATURE_LEVELS levels{1,&minimum,D3D_FEATURE_LEVEL_11_0};
+                hr=s.sourceNative->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS,&levels,sizeof(levels));
+                if(FAILED(hr) || levels.MaxSupportedFeatureLevel<minimum)return FAILED(hr)?hr:E_NOINTERFACE;
+                s.nativeOutput=true;
+                s.status=s.module?"ReShade retained native source device reused; SDK queues remain independently owned":"ReShade not loaded";
+                return s.sourceNative.CopyTo(out);
+            }
         }
         ComPtr<ID3D12Device> exposed, native;
         // Capture only this synchronous host-owned creation, never another mod's
@@ -302,6 +323,10 @@ namespace TheosRenderPipeline
             }
             s.status = "ReShade native output ownership unavailable; keeping automatic effects";
         }
+        // No injector is the existing direct-native path. With ReShade, cache
+        // only its public native handle captured during this owned creation.
+        if(native)s.sourceNative=native;
+        else if(!s.knownInjector)s.sourceNative=exposed;
         *out = native ? native.Detach() : exposed.Detach();
         return result;
     }

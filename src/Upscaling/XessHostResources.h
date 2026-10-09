@@ -6,7 +6,8 @@ namespace TheosRenderPipeline::Upscaling
     class XessHostResources final
     {
     public:
-        explicit XessHostResources(std::filesystem::path);~XessHostResources();
+        using DeviceCreator = HRESULT (*)(IUnknown*, D3D_FEATURE_LEVEL, ID3D12Device**);
+        explicit XessHostResources(std::filesystem::path, DeviceCreator = nullptr);~XessHostResources();
         XessHostResources(const XessHostResources&)=delete;
         XessHostResources& operator=(const XessHostResources&)=delete;
         Result<Extent> Initialize(ID3D11Device*,Quality,Extent,ColorEncoding,bool depthInverted=false);
@@ -19,6 +20,6 @@ namespace TheosRenderPipeline::Upscaling
         XessUpscaler* Upscaler() const;
         ID3D11Texture2D* Output11() const;
     private:
-        struct State;std::unique_ptr<State> state_;std::filesystem::path pluginDirectory_;
+        struct State;std::unique_ptr<State> state_;std::filesystem::path pluginDirectory_;DeviceCreator deviceCreator_{};
     };
 }

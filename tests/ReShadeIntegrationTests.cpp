@@ -4,6 +4,9 @@
 #include "Graphics/D3D11D3D12Interop.h"
 #include "Upscaling/FSRColorConversion.h"
 #include "Upscaling/FSRPreparedResources.h"
+#if defined(TRP_TEST_XESS_OWNER)
+#include "Upscaling/XessHostResources.h"
+#endif
 #if defined(TRP_ENABLE_FSR_FG)
 #include "FrameGen/FSRHostPresentation.h"
 #include "FrameGen/NativeUICompletion.h"
@@ -362,7 +365,8 @@ int main(int argc, char** argv)
     Require(!nrRoute,"combined NR not built");
 #endif
     const bool ordinaryRoute = argc == 2 && std::string_view(argv[1]) == "--ordinary-reshade";
-    const bool requireReShade = fsrRoute || ordinaryRoute || (argc == 2 && std::string_view(argv[1]) == "--require-reshade");
+    const bool xessFirstRoute = argc == 3 && std::string_view(argv[1]) == "--xess-first";
+    const bool requireReShade = fsrRoute || ordinaryRoute || xessFirstRoute || (argc == 2 && std::string_view(argv[1]) == "--require-reshade");
     Require(argc == 1 || requireReShade || unresolvedRoute, "supported arguments");
     WNDCLASSW wc{}; wc.hInstance = GetModuleHandleW(nullptr); wc.lpfnWndProc = DefWindowProcW; wc.lpszClassName = L"TRPReShadeFixture";
     RegisterClassW(&wc);
@@ -383,6 +387,66 @@ int main(int argc, char** argv)
         FreeLibrary(module);DestroyWindow(window);std::puts("PASS: unresolved native ownership rejected; legacy creation preserved");return 0;
     }
     auto& effects = ReShadeIntegration::Get(); effects.Discover(window); effects.Configure(device.Get(), context.Get(), {outputWidth, outputHeight});
+#if defined(TRP_TEST_XESS_OWNER)
+    if(xessFirstRoute) {
+        using namespace TheosRenderPipeline::Upscaling;
+        XessHostResources source(std::filesystem::absolute(argv[2]),
+            +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** output)->HRESULT {
+                return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,output,true);
+            });
+        const auto extent=source.Initialize(device.Get(),Quality::NativeAA,{outputWidth,outputHeight},ColorEncoding::Gamma22);
+        Require(bool(extent),"actual XeSS first-device startup");
+        wchar_t executable[32768]{};Require(GetModuleFileNameW(nullptr,executable,32768)!=0,"FSR fixture root");
+        FsrHostResources fg(std::filesystem::path(executable).parent_path(),
+            +[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** output)->HRESULT {
+                return ReShadeIntegration::Get().CreateSourceDevice(adapter,level,output,true);
+            });
+        const auto sized=fg.PrepareExternalSizing(device.Get(),*extent,{outputWidth,outputHeight},DXGI_FORMAT_R8G8B8A8_UNORM,ColorEncoding::Gamma22,{});
+        if(!sized)std::printf("XeSS-first FSR failure: %s native=%lld\n",sized.error().message.c_str(),sized.error().nativeResult);
+        Require(bool(sized),"FSR acquires native ownership after actual XeSS initialization");
+        Require(bool(fg.CompleteExternalStartup()),"actual external FG guide allocations");
+        Require(TheosRenderPipeline::D3D11FrameCopy::SameObject(source.Bridge()->Device12(),fg.Bridge()->Device12()),
+            "XeSS and FSR owners use the same native adapter device identity");
+        Surface sampleColor(device.Get(),extent->width,extent->height);
+        Surface sampleDepth(device.Get(),extent->width,extent->height,DXGI_FORMAT_R32_FLOAT);
+        Surface sampleMotion(device.Get(),extent->width,extent->height,DXGI_FORMAT_R16G16_FLOAT);
+        Surface delivered(device.Get(),outputWidth,outputHeight);
+        sampleColor.Paint(context.Get(),{.25f,.5f,.25f,1});sampleDepth.Paint(context.Get(),{.5f,0,0,0});sampleMotion.Paint(context.Get(),{0,0,0,0});
+        FsrColorConverter encode;
+        for(std::uint64_t id=1;id<=2;++id) {
+            Require(bool(source.PrepareInput(sampleColor.texture.Get(),sampleDepth.texture.Get(),sampleMotion.texture.Get())),"real XeSS input preparation on native owner");
+            UpscaleFrame frame{};frame.backend=BackendKind::Xess;frame.render=frame.subrect=*extent;frame.display={outputWidth,outputHeight};
+            frame.sourceId=id;frame.sourceEpoch=1;frame.reset=id==1;frame.depth=sampleDepth.texture.Get();frame.motion=sampleMotion.texture.Get();
+            frame.colorIsLinear=true;frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
+            frame.motionConvention={float(extent->width),float(extent->height),true,false};
+            auto bridge=source.Bridge();Check(bridge->SignalProducer(),"native XeSS producer");ID3D12GraphicsCommandList* list{};
+            Check(bridge->Begin(&list),"native XeSS recording");Require(bool(source.Upscaler()->Dispatch(list,source.Resources(),frame)),"actual XeSS execute with ReShade native ownership");
+            Check(bridge->Submit(),"native XeSS submission");Check(bridge->WaitConsumer(),"native XeSS delivery");
+            Check(encode.Convert(context.Get(),source.Output11(),delivered.texture.Get(),ColorEncoding::Linear,ColorEncoding::Gamma22),"native XeSS reconstructed SDR delivery");
+            const auto pixel=Pixel(device.Get(),context.Get(),delivered.texture.Get(),outputWidth/2,outputHeight/2);
+            Require(std::abs(int(pixel[0])-64)<=3 && std::abs(int(pixel[1])-128)<=3 && std::abs(int(pixel[2])-64)<=3,
+                "actual retained-native XeSS reconstruction preserves scene colors");
+        }
+        ComPtr<ID3D12Fence> fence;ComPtr<ID3D12Device> native;
+        Check(source.Bridge()->Device12()->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&fence)),"native XeSS fence");
+        Check(fence->GetDevice(IID_PPV_ARGS(&native)),"fence native owner");
+        Require(TheosRenderPipeline::D3D11FrameCopy::SameObject(source.Bridge()->Device12(),native.Get()),
+            "retained source handle matches a native child GetDevice identity");
+        effects.ResetAfterRetirement(); // Sized/runtime reset must not lose the native anchor while SDK owners remain live.
+        ComPtr<IDXGIDevice> dxgi;ComPtr<IDXGIAdapter> adapter;
+        Check(device.As(&dxgi),"repeat adapter query");Check(dxgi->GetAdapter(&adapter),"repeat adapter");
+        ComPtr<ID3D12Device> repeated;Check(effects.CreateSourceDevice(adapter.Get(),D3D_FEATURE_LEVEL_12_0,&repeated,true),"retained device after runtime reset");
+        Require(TheosRenderPipeline::D3D11FrameCopy::SameObject(repeated.Get(),native.Get()),"reset preserves live native anchor");
+        ComPtr<ID3D12Device> unsupported;
+        Require(FAILED(effects.CreateSourceDevice(adapter.Get(),static_cast<D3D_FEATURE_LEVEL>(0xffff),&unsupported,true)) && !unsupported,
+            "retained native anchor never bypasses unsupported feature level checks");
+        Require(bool(fg.Retire()) && bool(source.Retire()),"both owners retire their own queues and resources");
+        effects.ResetAfterRetirement();DestroyWindow(window);
+        std::puts("PASS: actual XeSS-first / ReShade / FSR owner startup, native identity, two SDK executions, color delivery and retirement");return 0;
+    }
+#else
+    Require(!xessFirstRoute,"XeSS-first fixture requires compiled XeSS ownership");
+#endif
     effects.SetBeforeUpscaling(false);
     Surface color(device.Get(), outputWidth, outputHeight), earlyColor(device.Get(), renderWidth, renderHeight), depth(device.Get(), renderWidth, renderHeight, DXGI_FORMAT_R32_FLOAT), ui(device.Get(), outputWidth, outputHeight);
     const std::array<float, 4> scene{0.25f, 0.5f, 0.25f, 1};

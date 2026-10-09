@@ -12,6 +12,7 @@ parser.add_argument('--exe', type=Path, required=True)
 parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--fsr-runtime-dir', type=Path)
+parser.add_argument('--xess-runtime-dir', type=Path)
 parser.add_argument('--nr-runtime-root', type=Path)
 parser.add_argument('--nr-driver-core', type=Path)
 args = parser.parse_args()
@@ -23,13 +24,15 @@ if args.nr_runtime_root and (not args.fsr_runtime_dir or not args.nr_driver_core
     parser.error('combined NR requires FSR runtime and driver core')
 if args.fsr_runtime_dir and not args.nr_runtime_root:
     routes.append('--fsr-reshade')
+    if args.xess_runtime_dir:
+        routes.append('--xess-first')
 for route in routes:
     with tempfile.TemporaryDirectory(prefix='trp-reshade-', dir=args.output.resolve()) as temporary:
         root = Path(temporary)
         shutil.copy2(args.exe, root / args.exe.name)
         shutil.copy2(args.runtime, root / 'dxgi.dll')
         runtime_records = []
-        if route.startswith('--fsr-reshade'):
+        if route.startswith('--fsr-reshade') or route == '--xess-first':
             pins = Path(__file__).parent.parent / 'tools' / 'fsr'
             for pin_name in ('runtime-pin.json', 'fg-runtime-pin.json'):
                 for entry in json.loads((pins / pin_name).read_text())['runtime']:
@@ -44,6 +47,8 @@ for route in routes:
         shutil.copytree(fixture, root, dirs_exist_ok=True)
         (root / 'screenshots').mkdir(exist_ok=True)
         extra = [str(args.nr_runtime_root.resolve()), str(args.nr_driver_core.resolve())] if args.nr_runtime_root else []
+        if route == '--xess-first':
+            extra = [str(args.xess_runtime_dir.resolve())]
         result = subprocess.run([str(root / args.exe.name), route, *extra], cwd=root,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=120)
         log = args.output / (route.removeprefix('--') + '.log')
