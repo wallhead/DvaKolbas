@@ -1,7 +1,7 @@
 {
   "milestone": 5,
-  "status": "installed-awaiting-Skyrim-qualification",
-  "completedMilestones": 4,
+  "status": "Skyrim-Native-and-Quality-qualified-on-local-NVIDIA",
+  "completedMilestones": 5,
   "totalMilestones": 8,
   "sourceRevision": "b32446a9e6a4",
   "profile": "V5.4 NO-LORE",
@@ -31,7 +31,7 @@
     "MO2LaunchSettingsUnchanged": true,
     "debugLayers": "unavailable; not claimed",
     "SkyrimNative": "real temporal execution confirmed; user reports visual camera/HUD check seems good",
-    "SkyrimQuality": "user already saved Quality; game closed; next startup required for execution/visual qualification",
+    "SkyrimQuality": "real temporal 1506x848 to 2560x1440 confirmed; user reports camera/edge/HUD check seems good",
     "AMDIntelHardware": "not-qualified"
   },
   "startupEvidence": {
