@@ -1,6 +1,6 @@
 # XeSS SR design — 2026-10-09
 
-Status: proposed written design, awaiting review. Investigation complete; product implementation has not started.
+Status: approved for native execution, 2026-10-09. Investigation complete; implementation and GPU qualification are in progress.
 
 ## Intent and scope
 
@@ -37,7 +37,7 @@ The current `BackendKind`, `UpscaleType`, backend decision and source evaluator 
 
 Prepare HUD-less input as linear `R16G16B16A16_FLOAT`. Decode the declared SDR source using the existing tested conversion math, then re-encode the reconstructed image into the established downstream SDR handoff. Separate shared colour conversion from FSR-specific validation/messages where necessary; do not rewrite the FSR dispatch or expose FSR masks as XeSS inputs.
 
-For this SDR path set the SDK LDR input flag and use exposure scale 1 without automatic exposure. Treat alpha as opaque scene output and retain the independent HUD layer. Both NR placements must receive the colour encoding they already expect, which is essential to preserve the prior NR colour-drift fix.
+For this SDR path request the SDK LDR input flag and use exposure scale 1 without automatic exposure. **Probe finding:** the pinned dispatcher reports SR 2.0.2 and clears the LDR bit before forwarding Init; do not claim this disables tonemapping. Log requested/effective flags and require real colour roundtrip/temporal tests in Task 4 before game integration. Treat alpha as opaque scene output and retain the independent HUD layer. Both NR placements must receive the colour encoding they already expect, which is essential to preserve the prior NR colour-drift fix.
 
 Start with low-resolution, undilated `R16G16_FLOAT` motion and corresponding depth. Convert combined camera/object motion to current-to-previous input-pixel units. An extent/convention mismatch is a diagnostic failure, not permission to guess a motion scale. Set inverted-depth and jittered-motion flags only when the producer contract warrants them. Validate whether the currently captured source motion is raw or already dilated before binding it; produce the required undilated guide if it is not raw.
 

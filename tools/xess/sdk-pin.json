@@ -1,0 +1,28 @@
+{
+  "release": "3.0.2",
+  "commit": "8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0",
+  "files": [
+    {
+      "path": "inc/xess/xess.h",
+      "sha256": "98dc435f5aed252d83a161fc1f86223f20c67eb863214fe3b5cb215a3f6e3319"
+    },
+    {
+      "path": "inc/xess/xess_d3d12.h",
+      "sha256": "a582a60c3e39ee6fd6aa4871e23082cfb5ec510f98a19fc04acf7a7edb2f6b6c"
+    },
+    {
+      "path": "LICENSE.txt",
+      "sha256": "784be42c39a4a4d03cf85d88e15e59d75828fca773ce45b8dbfffbd7eaf208df"
+    }
+  ],
+  "runtime": {
+    "path": "bin/libxess.dll",
+    "stagePath": "SKSE/Plugins/RaZkolbaS/XeSS/libxess.dll",
+    "sha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+    "bytes": 77795704
+  },
+  "aio19": {
+    "sha256": "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439",
+    "entry": "UpscalerBasePlugin/libxess.dll"
+  }
+}
