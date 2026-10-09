@@ -1,0 +1,155 @@
+{
+  "date": "2026-10-09",
+  "sourceRevision": "b06984538f0ae8e1d5b92fb25f559166313a722e",
+  "milestone": "7 partial; 6 of 8 complete",
+  "problem": {
+    "gameBuild": "7cf8324d3822",
+    "gpu": "RTX 4080 SUPER (10DE:2702)",
+    "nativeResult": "0x80004002",
+    "dialogResult": "0x80004005",
+    "message": "FSR same-adapter native D3D12 ownership unavailable",
+    "gameLogSha256": "c174deb70c29fdefead3c9f9dd5aaf477b749501e70ecdcd032c5fd1a2aaf6a4",
+    "reproduction": "Real XeSS initializes first through ReShade; FSR then requests the same-adapter native D3D12 owner. The old route receives no second ReShade init_device event and fails.",
+    "redTestLogSha256": "73ff10e45352719289d0926590d2c9a825f7353ce7ef035d2fbbfcbbdb8bc636"
+  },
+  "fix": [
+    "Both production XeSS constructors acquire the native device through the same public ReShade ownership path used by FSR.",
+    "Retain the native handle from synchronous host-owned creation. Reuse only on matching adapter LUID after device-removal and minimum-feature-level checks.",
+    "Retain the device anchor across sized effects/runtime retirement while independent SDK owners remain live. SDK queues and resources remain independently owned.",
+    "Unknown injector/public-native failure still rejects strict startup. No private proxy GUID, offsets or blind native fallback."
+  ],
+  "verification": {
+    "cleanAllBuild": true,
+    "sharedRegressionTestsPassed": 197,
+    "cleanReShadeAggregate": {
+      "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+      "executableSha256": "4ffcd5e2791c0cfedbcca2c01b1a1cd7c9efcd24efb0fa12783a39b8c9cdba05",
+      "routes": [
+        {
+          "route": "--ordinary-reshade",
+          "result": "PASS",
+          "fsrRuntime": []
+        },
+        {
+          "route": "--require-reshade",
+          "result": "PASS",
+          "fsrRuntime": []
+        },
+        {
+          "route": "--fsr-reshade",
+          "result": "PASS",
+          "fsrRuntime": [
+            {
+              "filename": "amd_fidelityfx_loader_dx12.dll",
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "filename": "amd_fidelityfx_upscaler_dx12.dll",
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "filename": "amd_fidelityfx_framegeneration_dx12.dll",
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            }
+          ]
+        },
+        {
+          "route": "--xess-first",
+          "result": "PASS",
+          "fsrRuntime": [
+            {
+              "filename": "amd_fidelityfx_loader_dx12.dll",
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "filename": "amd_fidelityfx_upscaler_dx12.dll",
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "filename": "amd_fidelityfx_framegeneration_dx12.dll",
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            }
+          ]
+        }
+      ],
+      "skyrimTested": false
+    },
+    "newRegression": "Native XeSS SDK initialization then FSR external owner allocations; native identity, two actual XeSS dispatches/reset transition and reconstructed SDR pixel checks, native child device identity, retained ownership across effects reset, invalid feature-level rejection, coordinated owner retirement.",
+    "cleanGpuRegressionTestsPassed": 5,
+    "standaloneXeSSNrFsrFg": [
+      {
+        "quality": "native",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedPixelReadbacks": 134,
+        "uiChecks": 292,
+        "uiFailures": 0,
+        "retirementFailures": 0,
+        "pendingReaderRetirements": 2,
+        "hashes": {
+          "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+          "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+          "executable": "4148567ac45ce3386b5b4d268da3d019f56725a4c4fdc1347f8ac96f383bc19e",
+          "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+          "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+        }
+      },
+      {
+        "quality": "performance",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedPixelReadbacks": 134,
+        "uiChecks": 292,
+        "uiFailures": 0,
+        "retirementFailures": 0,
+        "pendingReaderRetirements": 2,
+        "hashes": {
+          "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+          "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+          "executable": "4148567ac45ce3386b5b4d268da3d019f56725a4c4fdc1347f8ac96f383bc19e",
+          "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+          "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+        }
+      }
+    ],
+    "review": "Focused read-only review found no production blocker. Evidence label narrowed; real XeSS dispatch/readback coverage added.",
+    "testLogSha256": {
+      "ownership-shared-test.log": "0674ec0f80dec21eb36bc5ef5c0aaef6358de7aedad1edb6605b6af977a5d6f0",
+      "ownership-clean-build.log": "32f23e7d8b850d050fc7f78d9234beca82778de8ced5d4be9d69705b2eeaf95b",
+      "ownership-clean-reshade-test.log": "11df66f8eb706278f839e7e2eb888e424a7aef2a67f61f4f7b98473c70915646",
+      "ownership-clean-gpu-test.log": "b64a8a4b60e7c3a9596dddf9cdc11d9a63e15f9fb43119d2b2998c4d8dc6ac0a"
+    }
+  },
+  "installation": {
+    "profile": "V5.4 NO-LORE",
+    "mod": "RaZKolbaS XeSS FSR FG trial - b06984538f0a",
+    "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZKolbaS XeSS FSR FG trial - b06984538f0a",
+    "sourceRevision": "b06984538f0a",
+    "pluginSha256": "5f6d742b9bc541115da64d18f4942075bfa1c304088de4d68baa3b017057fb54",
+    "archiveSha256": "6c1300387563d7ec90aa2cddfc1b1075399e9292106b10c33a2cd49eb501d28a",
+    "verifiedArchiveFiles": 14,
+    "rollbackMod": "RaZKolbaS XeSS FSR FG trial - 7cf8324d3822",
+    "rollbackDllSha256": "D620AD4D212BDDFF39571D385CA0DFFA65A973C1B8489684E203639C7B0D157F",
+    "rollbackIniSha256": "7844DF74B97FF3B5C68B3347B8BC1CD90F96E671A4EC3293E306F23896A4CA1D",
+    "mo2SettingsSha256": "9365F19FFC0D3A82653894A4581D9D690D6A0DF24E7EB36FF77E500A012D4B97",
+    "gameplayQualified": false,
+    "configuration": "XeSS Native; NR After; 1 pass Style 1; FSR3 FG on; HDR off; fixed output size",
+    "preservedCurrentIniSha256": "7844df74b97ff3b5c68b3347b8bc1cd90f96e671a4ec3293e306f23896a4ca1d"
+  },
+  "limits": [
+    "Skyrim startup and visual confirmation with this revision still pending.",
+    "New ReShade XeSS-first test exercises source execution and FSR owner startup, not the complete Skyrim automatic FG compositor.",
+    "Standalone FG pixels use the callback compositor and a zero-jitter synthetic scene; physical display cadence and other GPUs are not qualified here.",
+    "Graphics Tools debug layer remains unavailable; no debug-layer validation claimed."
+  ]
+}
