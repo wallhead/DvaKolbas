@@ -11,7 +11,7 @@ struct ID3D11Texture2D;
 namespace TheosRenderPipeline::Upscaling
 {
     struct Extent { std::uint32_t width{}, height{}; bool operator==(const Extent&) const = default; };
-    enum class BackendKind { Dlss, Dlaa, Fsr, External };
+    enum class BackendKind { Dlss, Dlaa, Fsr, External, Xess };
     enum class Quality { Quality, Balanced, Performance, NativeAA };
     enum class ProviderPolicy { Analytical, Compatible, MachineLearning };
     inline bool ValidProviderPolicy(ProviderPolicy policy)
