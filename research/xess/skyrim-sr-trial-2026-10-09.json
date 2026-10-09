@@ -30,8 +30,8 @@
     "originalWorkingPluginAndIniHashesUnchanged": true,
     "MO2LaunchSettingsUnchanged": true,
     "debugLayers": "unavailable; not claimed",
-    "SkyrimNative": "real temporal execution observed on second launch; camera/HUD visual qualification pending",
-    "SkyrimQuality": "pending",
+    "SkyrimNative": "real temporal execution confirmed; user reports visual camera/HUD check seems good",
+    "SkyrimQuality": "user already saved Quality; game closed; next startup required for execution/visual qualification",
     "AMDIntelHardware": "not-qualified"
   },
   "startupEvidence": {
