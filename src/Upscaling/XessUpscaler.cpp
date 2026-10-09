@@ -2,6 +2,7 @@
 #include "FSRColorContract.h"
 #include <vector>
 #include <utility>
+#include <format>
 namespace TheosRenderPipeline::Upscaling
 {
     using Microsoft::WRL::ComPtr;
@@ -66,7 +67,14 @@ namespace TheosRenderPipeline::Upscaling
         if(code!=XESS_RESULT_SUCCESS)return fail(code,"xessD3D12GetInitParams failed");
         xess_version_t version{};code=api.GetVersion(&version);if(code!=XESS_RESULT_SUCCESS)return fail(code,"xessGetVersion failed after initialization");
         const bool ldrRemoved=version.major==2 && version.minor==0 && version.patch==2 && actual.initFlags==(state_->requestedFlags & ~XESS_INIT_FLAG_LDR_INPUT_COLOR);
-        if(actual.outputResolution.x!=output.width || actual.outputResolution.y!=output.height || actual.qualitySetting!=*setting || (actual.initFlags!=state_->requestedFlags && !ldrRemoved))
+        if(actual.initFlags!=state_->requestedFlags && !ldrRemoved) {
+            const auto message=std::format("XeSS dispatcher {}.{}.{} effective flags {} differ from requested flags {}; runtime flag behavior is not qualified (LDR stripping is qualified only for 2.0.2)",
+                version.major,version.minor,version.patch,actual.initFlags,state_->requestedFlags);
+            const auto cleanup=DestroyAfterRetirement();
+            if(!cleanup)return std::unexpected(cleanup.error());
+            return Failure(ErrorKind::IncompatibleAbi,XESS_RESULT_ERROR_INVALID_ARGUMENT,message.c_str());
+        }
+        if(actual.outputResolution.x!=output.width || actual.outputResolution.y!=output.height || actual.qualitySetting!=*setting)
             return fail(XESS_RESULT_ERROR_INVALID_ARGUMENT,"XeSS effective initialization parameters do not match the validated request");
         state_->effectiveFlags=actual.initFlags;state_->poisoned=false;state_->ready=true;
         return *render;
@@ -88,6 +96,16 @@ namespace TheosRenderPipeline::Upscaling
         if(!state_->ready || state_->poisoned || state_->thread!=GetCurrentThreadId())return Failure(ErrorKind::ContextFailure,0,"XeSS jitter requires initialized context on its owner thread");
         const auto jitter=GenerateXessJitter(sourceId,state_->render,state_->output);if(!jitter)return std::unexpected(jitter.error());
         return std::array<float,2>{jitter->generatedX,jitter->generatedY};
+    }
+    bool XessUpscaler::OnOwnerThread() const { return !state_->thread || state_->thread==GetCurrentThreadId(); }
+    DWORD XessUpscaler::OwnerThread() const { return state_->thread; }
+    XessFrameAdmission XessUpscaler::AdmitFrame(uint64_t sourceId,uint64_t sourceEpoch) const
+    {
+        // Do not inspect mutable temporal history on the foreign thread.
+        if(!OnOwnerThread())return XessFrameAdmission::OffOwnerThread;
+        if(state_->ready && !state_->poisoned && state_->accepted && sourceEpoch==state_->sourceEpoch && sourceId<=state_->sourceId)
+            return XessFrameAdmission::DuplicateSource;
+        return XessFrameAdmission::Ready;
     }
     Result<void> XessUpscaler::Dispatch(ID3D12GraphicsCommandList* list,const XessGpuResources& gpu,const UpscaleFrame& frame)
     {

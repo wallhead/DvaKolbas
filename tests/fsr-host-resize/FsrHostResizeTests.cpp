@@ -15,6 +15,19 @@ struct RetirementResult {
     struct Error { std::string message{"reader retirement blocked"}; };
     Error error() const { return {}; }
 };
+#if defined(TRP_ENABLE_XESS)
+namespace logger { template<class... T> void warn(T&&...){} }
+struct XessResources {
+    struct Owner {
+        bool onOwner{};
+        bool OnOwnerThread(){return onOwner;}
+        DWORD OwnerThread(){return 1;}
+    } owner;
+    unsigned retirements{};
+    Owner* Upscaler(){return &owner;}
+    RetirementResult Retire(){++retirements;return {};}
+};
+#endif
 struct FsrResources {
     std::shared_ptr<int> runtime{std::make_shared<int>(1)},device{std::make_shared<int>(2)},bridge{std::make_shared<int>(3)};
     bool sized{true},canRetire{true};
@@ -30,6 +43,10 @@ struct NvidiaHost {
     struct Targets { bool gameFacing{true};void ResetGameFacingAfterRetirement(){gameFacing=false;} } gameTargets_;
     struct Presentation { void ResetAfterRetirement(){} } presentation_;
     std::shared_ptr<FsrResources> fsrResources_{std::make_shared<FsrResources>()};
+#if defined(TRP_ENABLE_XESS)
+    std::shared_ptr<XessResources> xessResources_;
+    unsigned xessDeferredReported_{};
+#endif
     std::vector<int> events;
     std::string status_;
     bool resetNextEvaluation_{},proxyActive_{true},sourceUpscalerInitializationPending_{},fsrSizingRetainedForResize_{};
@@ -53,6 +70,15 @@ struct NvidiaHost {
 #include "BeforeResize.inc"
 static void Require(bool condition,const char* name){if(!condition){std::fprintf(stderr,"FAIL: %s\n",name);std::exit(1);}}
 int main(){
+#if defined(TRP_ENABLE_XESS)
+    NvidiaHost worker;worker.xessResources_=std::make_shared<XessResources>();
+    Require(worker.BeforeResizeBuffers(nullptr)==DXGI_ERROR_WAS_STILL_DRAWING,"off-owner XeSS resize is retryable");
+    Require(worker.events.empty() && !worker.xessResources_->retirements && worker.gameTargets_.gameFacing && worker.fsrResources_->sized,
+        "off-owner resize preserves NR, presentation, shared resources and game targets before all retirement");
+    worker.xessResources_->owner.onOwner=true;
+    Require(worker.BeforeResizeBuffers(nullptr)==S_OK && worker.xessResources_->retirements==1 && !worker.gameTargets_.gameFacing,
+        "owner-thread retry enters normal retirement and releases game targets");
+#endif
     NvidiaHost resize;auto runtime=resize.fsrResources_->runtime,device=resize.fsrResources_->device,bridge=resize.fsrResources_->bridge;
     Require(resize.BeforeResizeBuffers(nullptr)==S_OK,"ordinary resize retirement succeeds");
     Require(resize.fsrResources_->runtime==runtime && resize.fsrResources_->device==device && resize.fsrResources_->bridge==bridge,

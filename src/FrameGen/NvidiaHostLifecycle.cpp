@@ -108,6 +108,18 @@ HRESULT NvidiaHost::BeforeResizeBuffers(IDXGISwapChain* a_swapChain)
         return S_OK;
     }
     LifecycleOperations operations{*this, nullptr, true};
+#if defined(TRP_ENABLE_XESS)
+    // Refuse before retiring NR/presentation or releasing any game resource.
+    // The caller may retry on the creation thread; do not invoke the SDK here.
+    if(xessResources_ && xessResources_->Upscaler() && !xessResources_->Upscaler()->OnOwnerThread()) {
+        if(!(xessDeferredReported_ & 4u)) {
+            xessDeferredReported_ |= 4u;
+            logger::warn("[XeSS resize] deferred before retirement: ownerThread={} currentThread={}; retry ResizeBuffers on the owner thread",
+                xessResources_->Upscaler()->OwnerThread(),GetCurrentThreadId());
+        }
+        return DXGI_ERROR_WAS_STILL_DRAWING;
+    }
+#endif
     if (!TheosRenderPipeline::SourceHostLifecycle::BeforeResize(operations)) { return DXGI_ERROR_WAS_STILL_DRAWING; }
     return OrdinarySourceActive() ? ordinaryPresentation_.BeforeResize() : S_OK;
 }
@@ -200,7 +212,7 @@ void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
     if(xessResources_) {
         const auto retired=xessResources_->Retire();
         if(!retired){status_=retired.error().message;FailLifecycle(E_FAIL,"XeSS feature release");return;}
-        xessResources_.reset();xessEncode_={};lastXessTemporal_=false;xessRecovery_=false;xessRecoveryReason_.clear();
+        xessResources_.reset();xessEncode_={};lastXessTemporal_=false;xessRecovery_=false;xessRecoveryReason_.clear();xessDeferredReported_=0;
     }
 #endif
 #if defined(TRP_ENABLE_FSR)

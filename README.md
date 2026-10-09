@@ -14,6 +14,14 @@ Neural Rendering (NR), and native-resolution menus and HUD. Current version:
 ## Features
 
 - DLSS Super Resolution, DLAA, model presets and sharpening.
+- Experimental XeSS SR (Native, Quality, Balanced and Performance), qualified
+  for Skyrim SR on RTX 4080 SUPER; AMD, Intel and GTX hardware testing is pending.
+  XeSS currently requires FG, HDR and dynamic resolution off. Optional community
+  NR is available on eligible NVIDIA hardware; XeSS + NR gameplay qualification
+  is still pending. Match `[XeSS] SourceColorEncoding` and
+  `[NeuralRendering Advanced] SourceColorEncoding` for NR.
+  The bundled XeSS SR 2.0.2 runtime is qualified as a unit: replacing `libxess.dll`
+  requires repeating runtime/flags, colour, guide and lifecycle qualification.
 - Frame generation and multi-frame generation (MFG).
 - NR before or after DLSS/FSR upscaling, up to three independently configured passes.
   After placement uses DLSS/FSR -> NR -> FG -> UI. NR defaults off.

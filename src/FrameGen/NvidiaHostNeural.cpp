@@ -188,9 +188,13 @@ bool NvidiaHost::EvaluateCommunityNeuralBefore(ID3D11Texture2D* color,ID3D11Text
     const NR::ImageExtent guideExtent=post?NR::ImageExtent{post->render.width,post->render.height}:input.guideExtent;
     auto* pipeline=RenderPipeline::GetSingleton();
     const char* unavailable=NR::NativeBeforeUnavailable(p);
+    std::string encodingRejection;
 #if defined(TRP_ENABLE_XESS)
-    if(XessActive() && sourceUpscalerSettings_.Effective().xess.sourceEncoding!=startup.sourceEncoding)
-        unavailable="XeSS NR source encoding differs from its qualified runtime route";
+    if(XessActive() && sourceUpscalerSettings_.Effective().xess.sourceEncoding!=startup.sourceEncoding) {
+        encodingRejection=std::format("NR paused: [XeSS] SourceColorEncoding={} differs from [NeuralRendering Advanced] SourceColorEncoding={}. Set both to the verified source encoding, Save and restart.",
+            Upscaling::ColorEncodingName(sourceUpscalerSettings_.Effective().xess.sourceEncoding),Upscaling::ColorEncodingName(startup.sourceEncoding));
+        unavailable=encodingRejection.c_str();
+    }
 #endif
 #if defined(TRP_ENABLE_FSR)
     if(post && FsrActive() && fsrResources_->HandoffEncoding()!=startup.sourceEncoding)

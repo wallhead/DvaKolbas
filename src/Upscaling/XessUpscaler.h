@@ -4,6 +4,7 @@
 #include <memory>
 namespace TheosRenderPipeline::Upscaling
 {
+    enum class XessFrameAdmission { Ready, DuplicateSource, OffOwnerThread };
     struct XessGpuResources
     {
         ID3D12Resource *color{},*depth{},*motion{},*output{};
@@ -20,6 +21,11 @@ namespace TheosRenderPipeline::Upscaling
         // Resolve measured guide units/extents after SDK sizing, before first execution.
         Result<void> ConfigureGuides(XessInputPolicy);
         Result<std::array<float,2>> QueryJitter(uint64_t sourceId);
+        // Check before NR, shared input writes or SDK calls. Deferred frames do
+        // not change accepted history; the next owner-thread source may resume.
+        XessFrameAdmission AdmitFrame(uint64_t sourceId,uint64_t sourceEpoch) const;
+        bool OnOwnerThread() const;
+        DWORD OwnerThread() const;
         Result<void> Dispatch(ID3D12GraphicsCommandList*,const XessGpuResources&,const UpscaleFrame&);
         Result<void> TrackReader(ID3D12Fence*,uint64_t value);
         Result<void> DestroyAfterRetirement();

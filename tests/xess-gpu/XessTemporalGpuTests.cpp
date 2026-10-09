@@ -184,6 +184,22 @@ int wmain(int argc,wchar_t** argv)
             if(visible){Check(encode.Convert(rig.context11.Get(),host.Output11(),encoded.Get(),ColorEncoding::Linear,encoding),"visible SDR handoff");scene.Present(rig,encoded.Get());std::this_thread::sleep_until(visibleStart+std::chrono::milliseconds((index+1)*33));}
         }
         std::printf("  static-edge late-frame RMS=%.6f; moving-edge max centroid error=%.4f pixels\n",staticRms,maximumTrackingError);
+        Require(host.Upscaler()->AdmitFrame(lastFrame.sourceId,lastFrame.sourceEpoch)==XessFrameAdmission::DuplicateSource,
+            "repeated rendered source is deferred before preparing shared input");
+        Require(host.Upscaler()->AdmitFrame(lastFrame.sourceId-1,lastFrame.sourceEpoch)==XessFrameAdmission::DuplicateSource,
+            "older source in the same epoch cannot enter temporal processing");
+        Require(host.Upscaler()->AdmitFrame(1,lastFrame.sourceEpoch+1)==XessFrameAdmission::Ready,
+            "new epoch permits reset source numbering");
+        bool workerDeferred{};
+        std::thread worker([&]{workerDeferred=host.Upscaler()->AdmitFrame(lastFrame.sourceId+1,lastFrame.sourceEpoch)==XessFrameAdmission::OffOwnerThread;});
+        worker.join();Require(workerDeferred,"foreign thread defers before SDK or shared guide writes");
+        ++lastFrame.sourceId;lastFrame.reset=true;
+        Require(host.Upscaler()->AdmitFrame(lastFrame.sourceId,lastFrame.sourceEpoch)==XessFrameAdmission::Ready,
+            "new owner-thread source remains eligible after duplicate and worker deferrals");
+        auto resumed=host.Bridge();Check(resumed->SignalProducer(),"resumed producer");ID3D12GraphicsCommandList* resumedList{};
+        Check(resumed->Begin(&resumedList),"resumed temporal recording");
+        Accepted(host.Upscaler()->Dispatch(resumedList,host.Resources(),lastFrame));
+        Check(resumed->Submit(),"resumed SDK submission");Check(resumed->WaitConsumer(),"resumed SDK consumer");++executed;
         Require(maximumTrackingError<3,"guide/jitter alignment tracks analytic non-square camera pan within three display pixels");
         auto bridge=host.Bridge();Check(bridge->SignalProducer(),"rejected-frame producer");ID3D12GraphicsCommandList* list{};Check(bridge->Begin(&list),"rejected-frame list");
         const auto duplicate=host.Upscaler()->Dispatch(list,host.Resources(),lastFrame);

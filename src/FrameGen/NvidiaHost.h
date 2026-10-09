@@ -209,6 +209,7 @@ class NvidiaHost
     std::unique_ptr<TheosRenderPipeline::Upscaling::XessHostResources> xessResources_;
     TheosRenderPipeline::Upscaling::SdrColorConverter xessEncode_;
     bool xessRecovery_{},lastXessTemporal_{};
+    unsigned xessDeferredReported_{};
     std::string xessRecoveryReason_;
     std::string xessStartupFallbackReason_;
     std::uint64_t xessEpoch_{1};

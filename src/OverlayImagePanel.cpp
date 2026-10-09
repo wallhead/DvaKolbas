@@ -277,7 +277,7 @@ void OverlayUI::DrawImagePanel(float tabCardHeight, const FrameView& view)
             const char* encodings[]{"Linear","Gamma 2.2 SDR","sRGB SDR"};
             int encoding=static_cast<int>(settingsDraft.xess.sourceEncoding)-1;ImGui::SetNextItemWidth(-1);
             if(ImGui::Combo("Source color encoding##xess",&encoding,encodings,3))settingsDraft.xess.sourceEncoding=static_cast<TheosRenderPipeline::Upscaling::ColorEncoding>(encoding+1);
-            DrawSettingsHelp("XeSS SR: SDK-sized fixed resolution, linear FP16 input and jitter from the selected quality. NR, FG and HDR qualification follows separately. Save and restart for quality/encoding changes.");
+            DrawSettingsHelp("Experimental XeSS SR: tested on RTX 4080 SUPER; AMD, Intel and GTX hardware qualification is pending. SDK-sized fixed resolution and linear FP16 input. Community NR is available on eligible NVIDIA GPUs; FG/HDR remain unavailable in this trial. Save and restart for quality/encoding changes. For NR, match [NeuralRendering Advanced] SourceColorEncoding to [XeSS].");
         } else if(settingsDraft.upscaleType==FSR) {
             const char* policies[]{"FSR3 (3.1.5)","Auto (FSR4 / FSR3)","FSR4 (ML)"};
             int policy=static_cast<int>(settingsDraft.fsr.providerPolicy);

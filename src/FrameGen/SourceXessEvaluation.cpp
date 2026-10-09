@@ -16,6 +16,7 @@ struct NvidiaHost::SourceXessEvaluationOperations
     RenderPipeline& pipeline;
     bool menu{};
     bool nativeUIHandoff{};
+    XessFrameAdmission admission{XessFrameAdmission::Ready};
     std::optional<RuntimeError> error;
 
     void Trace(const char* phase)const {
@@ -31,6 +32,7 @@ struct NvidiaHost::SourceXessEvaluationOperations
 #endif
     }
     bool EvaluateOptionalPreUpscale(UpscaleFrame& frame){
+        if(admission!=XessFrameAdmission::Ready)return true;
 #if !defined(TRP_NO_NEURAL_RENDERING)
         frame.sourceEpoch=host.communityEpoch_;
         return host.EvaluateCommunityNeuralBefore(frame.input,frame.depth,frame.motion,
@@ -40,6 +42,7 @@ struct NvidiaHost::SourceXessEvaluationOperations
 #endif
     }
     bool EvaluateOptionalPostUpscale(UpscaleFrame& frame,UpscaleOutcome outcome){
+        if(admission!=XessFrameAdmission::Ready)return true;
 #if !defined(TRP_NO_NEURAL_RENDERING)
         return host.EvaluateCommunityNeuralAfter(frame,outcome,NeuralEligible());
 #else
@@ -69,6 +72,18 @@ struct NvidiaHost::SourceXessEvaluationOperations
     Result<UpscaleOutcome> EvaluateUpscaler(UpscaleFrame& frame)
     {
         if(host.xessRecovery_)return Spatial(frame,host.xessRecoveryReason_);
+        if(admission!=XessFrameAdmission::Ready) {
+            const auto bit=admission==XessFrameAdmission::DuplicateSource?1u:2u;
+            const auto reason=admission==XessFrameAdmission::DuplicateSource?
+                "repeated/non-advancing source; spatial this frame, XeSS context retained":
+                "off owner thread; spatial this frame, XeSS context retained";
+            if(!(host.xessDeferredReported_ & bit)) {
+                host.xessDeferredReported_ |= bit;
+                logger::warn("[XeSS defer] source={} epoch={} ownerThread={} currentThread={} reason={}",
+                    frame.sourceId,frame.sourceEpoch,host.xessResources_->Upscaler()->OwnerThread(),GetCurrentThreadId(),reason);
+            }
+            return Spatial(frame,reason);
+        }
         if(menu || !frame.depth || !frame.motion)return Spatial(frame,menu?"main/loading menu":"waiting for original game depth/motion guides");
         const auto camera=CaptureGameCameraMeasurements(pipeline.mGraphicsState,frame.render,pipeline.mEnableJitter,frame.reset);
         if(!camera)return Spatial(frame,camera.error().message);
@@ -138,7 +153,9 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     frame.colorIsLinear=true;frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
     frame.reset=resetNextEvaluation_ || pipeline.mPendingHistoryResets>0 || loadingScreenRoute_.NeedsTemporalReset();
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
-    SourceXessEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_),nativeUIHandoff};
+    auto* owner=xessResources_->Upscaler();
+    const auto admission=!xessRecovery_ && owner?owner->AdmitFrame(frame.sourceId,frame.sourceEpoch):XessFrameAdmission::Ready;
+    SourceXessEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_),nativeUIHandoff,admission};
     const auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
     if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
         if(operations.error){status_=operations.error->message;logger::error("[XeSS frame] native=0x{:08X} {}",std::uint32_t(operations.error->nativeResult),status_);}
@@ -151,8 +168,8 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     if(temporal){pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();status_="XeSS active | ordinary presentation | FG off";}
     else {loadingScreenRoute_.SpatialSucceeded();status_="XeSS requested; spatial recovery: "+xessRecoveryReason_;}
     if(changed || (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && evaluationCount_%600==0))
-        logger::info("[XeSS state] source={} epoch={} route={} render={}x{} display={}x{} jitter=({},{}) motionScale=({},{}) guide=original-engine-output reset={} reason={}",
-            frame.sourceId,frame.sourceEpoch,temporal?"temporal":"spatial",renderWidth_,renderHeight_,outputWidth_,outputHeight_,
+        logger::info("[XeSS state] source={} epoch={} ownerThread={} currentThread={} route={} render={}x{} display={}x{} jitter=({},{}) motionScale=({},{}) guide=original-engine-output reset={} reason={}",
+            frame.sourceId,frame.sourceEpoch,xessResources_->Upscaler()?xessResources_->Upscaler()->OwnerThread():0,GetCurrentThreadId(),temporal?"temporal":"spatial",renderWidth_,renderHeight_,outputWidth_,outputHeight_,
             frame.jitterX,frame.jitterY,frame.motionConvention.scaleX,frame.motionConvention.scaleY,frame.reset,status_);
     ++evaluationCount_;return true;
 #else
