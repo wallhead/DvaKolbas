@@ -1,0 +1,228 @@
+{
+  "date": "2026-10-09",
+  "sourceRevision": "049f69adc5954dd4d25f93023bb0ba6bc263846e",
+  "milestone": "7 partial; 6 of 8 complete",
+  "changes": [
+    "Live XeSS output RCAS sharpening, range 0..1, default 0, saved in [XeSS] Sharpness. Strength edits do not recreate XeSS or reset temporal history.",
+    "Sharpen accepted XeSS temporal output after NR and before FG/UI. Repeated completed outputs reuse existing sharpening; spatial recovery does not sharpen.",
+    "RCAS preserves scene alpha, isolates/restores D3D11 caller state and uses owned same-device resources.",
+    "FSR FG graph samples the owned AMD DXGI presentation chain GetLastPresentCount. No source-FPS multiplier estimate."
+  ],
+  "verification": {
+    "cleanAllBuild": true,
+    "sharedRegressionTestsPassed": 196,
+    "cleanFocusedTestsPassed": 9,
+    "cleanFocusedGpuTestsPassed": 5,
+    "focusedTests": [
+      "XessSettings",
+      "XessTemporalGpu",
+      "RCASParameters",
+      "ReShadePresentationRuntime",
+      "DlssFsrGenerationGpu-Native",
+      "DlssFsrGenerationGpu-Performance",
+      "XessFsrGenerationGpu",
+      "XessFsrGenerationGpu-Performance",
+      "XessHostFrameRecovery"
+    ],
+    "coverage": [
+      "XeSS sharpness persistence, invalid values and live adoption with pending startup quality changes.",
+      "Actual packaged RCAS pixel changes at strength 1, exact strength-0 bypass, alpha preservation, finite flat-color/border output, caller binding restoration and rejection of NaN.",
+      "Production host operation order: NR then sharpness then FG; failed sharpening does not publish FG; spatial/repeated frames do not sharpen again.",
+      "Real ReShade: ordinary, required, FSR and XeSS-first routes pass. XeSS-first executes actual RCAS with SR output pixel checks.",
+      "Actual XeSS Native and Performance with NR and FSR3 FG: sharpening 0/0.5/1, generated-frame pixel checks, HUD and pending-reader retirement."
+    ],
+    "outputCounterObservations": [
+      {
+        "producer": "DLSS",
+        "quality": "Native",
+        "dxgiOutputDelta": 300,
+        "successfulRealPresents": 162,
+        "sharpenedSources": 0
+      },
+      {
+        "producer": "DLSS",
+        "quality": "Performance",
+        "dxgiOutputDelta": 300,
+        "successfulRealPresents": 162,
+        "sharpenedSources": 0
+      },
+      {
+        "producer": "XeSS",
+        "quality": "Native",
+        "dxgiOutputDelta": 302,
+        "successfulRealPresents": 164,
+        "sharpenedSources": 126
+      },
+      {
+        "producer": "XeSS",
+        "quality": "Performance",
+        "dxgiOutputDelta": 302,
+        "successfulRealPresents": 164,
+        "sharpenedSources": 126
+      }
+    ],
+    "xeSSFsrGpuReceipts": [
+      {
+        "qualified": true,
+        "revision": "049f69adc5954dd4d25f93023bb0ba6bc263846e",
+        "quality": "native",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "mlFgAvailability": "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. FSR4 upscaling does not enable ML FG. Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FrameGeneration] FsrProvider=FSR3, then restart.",
+        "inputPolicyReentries": 4,
+        "sourceDepthFormat": "R24G8_TYPELESS",
+        "sourceDepthStencil": true,
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedCallbacks": 138,
+        "generatedPixelReadbacks": 134,
+        "changingGeneratedReadbacks": 132,
+        "uiChecks": 293,
+        "uiFailures": 0,
+        "colorChecks": 159,
+        "readerRetirements": 3,
+        "retirementFailures": 0,
+        "pendingReaderRetirements": 2,
+        "resetReentries": 14,
+        "sdkWaits": 9,
+        "resizes": 1,
+        "suspensions": 2,
+        "failure": "",
+        "hashes": {
+          "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+          "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+          "executable": "46c1b8b27c42b0623c9c36fdeaa90a0b318db285d85f40ec305451baa17c9ee2",
+          "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+          "rcas": "87f0ff6352aa2666ab3361989a6cb998442ea303abe6aafc7357a8ddfc3ff0d1",
+          "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+        }
+      },
+      {
+        "qualified": true,
+        "revision": "049f69adc5954dd4d25f93023bb0ba6bc263846e",
+        "quality": "performance",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "mlFgAvailability": "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. FSR4 upscaling does not enable ML FG. Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FrameGeneration] FsrProvider=FSR3, then restart.",
+        "inputPolicyReentries": 4,
+        "sourceDepthFormat": "R24G8_TYPELESS",
+        "sourceDepthStencil": true,
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedCallbacks": 138,
+        "generatedPixelReadbacks": 134,
+        "changingGeneratedReadbacks": 132,
+        "uiChecks": 292,
+        "uiFailures": 0,
+        "colorChecks": 158,
+        "readerRetirements": 3,
+        "retirementFailures": 0,
+        "pendingReaderRetirements": 2,
+        "resetReentries": 14,
+        "sdkWaits": 9,
+        "resizes": 1,
+        "suspensions": 2,
+        "failure": "",
+        "hashes": {
+          "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+          "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+          "executable": "46c1b8b27c42b0623c9c36fdeaa90a0b318db285d85f40ec305451baa17c9ee2",
+          "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+          "rcas": "87f0ff6352aa2666ab3361989a6cb998442ea303abe6aafc7357a8ddfc3ff0d1",
+          "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+        }
+      }
+    ],
+    "reShadeReceipt": {
+      "runtimeSha256": "059168b9d8aaa694a02a64342409fa26dfdf335035f2c0184cc61581deffc3bc",
+      "executableSha256": "89a244e2adf20ede5624047a734486d37a2ff140d4db10d182aa5015fddeffc2",
+      "routes": [
+        {
+          "route": "--ordinary-reshade",
+          "result": "PASS",
+          "fsrRuntime": []
+        },
+        {
+          "route": "--require-reshade",
+          "result": "PASS",
+          "fsrRuntime": []
+        },
+        {
+          "route": "--fsr-reshade",
+          "result": "PASS",
+          "fsrRuntime": [
+            {
+              "filename": "amd_fidelityfx_loader_dx12.dll",
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "filename": "amd_fidelityfx_upscaler_dx12.dll",
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "filename": "amd_fidelityfx_framegeneration_dx12.dll",
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            }
+          ]
+        },
+        {
+          "route": "--xess-first",
+          "result": "PASS",
+          "fsrRuntime": [
+            {
+              "filename": "amd_fidelityfx_loader_dx12.dll",
+              "sha256": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa"
+            },
+            {
+              "filename": "amd_fidelityfx_upscaler_dx12.dll",
+              "sha256": "d0dcccc74a43c44ba435b7a369b456e0970d8a4464e4bd683119b374f2c9fb46"
+            },
+            {
+              "filename": "amd_fidelityfx_framegeneration_dx12.dll",
+              "sha256": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18"
+            }
+          ]
+        }
+      ],
+      "skyrimTested": false
+    },
+    "logSha256": {
+      "controls-clean-configure.log": "8b263ff1bc03b4813d6d72588ac3adeedf82ac0efdee6bc1fb7c14ad3187d985",
+      "controls-clean-build.log": "b7ba06ddcf525badc353d10348fce8cb42c08d970b209c160882a16dfb8beb3b",
+      "controls-clean-tests.log": "0ed08a92ee45eb3f70109097ff5cd3b365d5d69db525a6b17946de8dc9ab81d5",
+      "next-shared-tests.log": "76b403baaeb83fc2425e699fb2b26da43948b6d959d5eda5bf71de1f706c72f2"
+    }
+  },
+  "installation": {
+    "disabledRenderer": "SkyrimUpscalerAIOBuild20",
+    "profile": "V5.4 NO-LORE",
+    "mod": "RaZKolbaS XeSS FSR FG trial - 049f69adc595",
+    "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZKolbaS XeSS FSR FG trial - 049f69adc595",
+    "sourceRevision": "049f69adc595",
+    "pluginSha256": "644bed6d20663f40b95e2844ae5bf549e30c4d0955351b6bda21bda1aab9e166",
+    "archiveSha256": "641fa3a14f30c63e3c5f8097c7910ccada6b5834b6aa751ec1aca82603d2b285",
+    "verifiedArchiveFiles": 14,
+    "rollbackMod": "RaZKolbaS XeSS FSR FG trial - b06984538f0a",
+    "rollbackDllSha256": "5F6D742B9BC541115DA64D18F4942075BFA1C304088DE4D68BAA3B017057FB54",
+    "rollbackIniSha256": "7844DF74B97FF3B5C68B3347B8BC1CD90F96E671A4EC3293E306F23896A4CA1D",
+    "mo2SettingsSha256": "ED9BEF6BD1603D402461FCFDB7B414EF6B70D66322A7F10C15671875B4338FEF",
+    "gameplayQualified": false,
+    "configuration": "XeSS Native; NR After; 1 pass Style 1; FSR3 FG on; HDR off; fixed output size"
+  },
+  "installedRcasSha256": "87f0ff6352aa2666ab3361989a6cb998442ea303abe6aafc7357a8ddfc3ff0d1",
+  "verifiedIniPreserved": true,
+  "verifiedMo2LaunchSettingsPreserved": true,
+  "limits": [
+    "Skyrim confirmation of this revision and its new controls is pending; standalone GPU results do not replace gameplay qualification.",
+    "Output FPS is DXGI-reported presented count; physical screen cadence was not measured.",
+    "RTX 4080 SUPER hardware tested. No new hardware qualification for other GPUs or FSR4 ML FG.",
+    "XeSS with NVIDIA FG and Intel XeSS FG are not qualified by this receipt.",
+    "Graphics Tools debug layer unavailable; continued without it as authorized."
+  ]
+}
