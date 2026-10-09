@@ -1,7 +1,7 @@
 {
   "milestone": 6,
-  "status": "local-NVIDIA-standalone-qualified; Skyrim-Native-and-Performance-pending",
-  "completedMilestones": 5,
+  "status": "local-RTX4080SUPER-Native-and-Performance-Skyrim-accepted; FG-pending",
+  "completedMilestones": 6,
   "totalMilestones": 8,
   "adapter": "RTX 4080 SUPER (0x10DE:0x2702)",
   "sdkRuntimeSha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
@@ -55,7 +55,7 @@
   },
   "limits": [
     "Synthetic SR/NR colour and ownership evidence does not qualify Skyrim camera motion, HUD or residual vendor tone drift.",
-    "Native/Quality XeSS SR-only Skyrim evidence is already recorded separately. Native/Performance with NR still needs gameplay.",
+    "Skyrim Native Before/After and Performance After are captured and accepted locally. Performance Before is covered by synthetic GPU tests, without a direct Skyrim log witness.",
     "RTX 20/30/50 and AMD/Intel XeSS execution not hardware-qualified by this local test.",
     "The earlier intermittent pre-menu breakpoint remains unexplained; bounded diagnostics are included without suppressing exceptions."
   ],
@@ -96,7 +96,7 @@
     "remaining": [
       "Full XeSS device/queue/bridge retention across resize is deferred; current resize still rebuilds the owner and fatal reconstruction policy is unchanged.",
       "Crash diagnostics and RE witnesses are unchanged per user-directed scope.",
-      "Milestone 6 still requires Skyrim Native/Performance NR camera/HUD and live-control qualification; milestone count remains 5 of 8."
+      "Milestone 6 accepted on the local RTX 4080 SUPER; milestone 7 (XeSS with existing FSR/NVIDIA FG) and milestone 8 remain open."
     ],
     "skyrimNativeBeforeCheckpoint": {
       "userReport": "seems working",
@@ -160,6 +160,46 @@
         "[2026-10-09 14:35:00.058] [thread 62884] [info] [Community NR frame] source=28941 requested=true evaluated=true profile=rtx40 revision=14 reset=false frames=18000 resets=18 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass"
       ],
       "qualification": "Native Before/After and live NR changes accepted from user report and logged evaluation. Performance gameplay still pending: latest startup and installed INI both remain Native. Milestone 6 is not yet complete."
+    },
+    "skyrimPerformanceAfterCheckpoint": {
+      "userReport": "seems fine in response to Performance camera/HUD and NR Before/After test instructions",
+      "sourceRevision": "df7abe212361",
+      "snapshot": "out/validation/xess/skyrim-20261009/performance-nr-after-df7abe212361-20261009145445.log",
+      "snapshotSha256": "d0696cea51c893f9d12597374bf0dbadf9da860ebf201944fe84d0e989938982",
+      "errorOrCriticalCount": 0,
+      "extent": "actual SDK Performance: 1114x627 -> 2560x1440",
+      "xessStateEvidence": [
+        "[2026-10-09 14:43:39.870] [thread 67192] [info] [XeSS state] source=2 epoch=1 ownerThread=67548 currentThread=67192 route=spatial render=1114x627 display=2560x1440 jitter=(0,0) motionScale=(1114,627) guide=original-engine-output reset=true reason=XeSS requested; spatial recovery: off owner thread; spatial this frame, XeSS context retained",
+        "[2026-10-09 14:51:05.533] [thread 67548] [info] [XeSS state] source=59788 epoch=1 ownerThread=67548 currentThread=67548 route=temporal render=1114x627 display=2560x1440 jitter=(0.21875,0.4259259) motionScale=(1114,627) guide=original-engine-output reset=true reason=XeSS active | ordinary presentation | FG off"
+      ],
+      "nrOffTransitions": 3,
+      "nrActiveEvidence": [
+        "[2026-10-09 14:51:05.533] [thread 67548] [info] [Community NR frame] source=59788 requested=true evaluated=true profile=rtx40 revision=1 reset=true frames=1 resets=1 color=2560x1440 guides=1114x627 motionScale=(2560, 1440) guideJitterRenderPx=(0.21875, 0.4259259) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass",
+        "[2026-10-09 14:54:43.891] [thread 67548] [info] [Community NR frame] source=70770 requested=true evaluated=true profile=rtx40 revision=7 reset=false frames=10800 resets=12 color=2560x1440 guides=1114x627 motionScale=(2560, 1440) guideJitterRenderPx=(-0.265625, -0.40123457) status=NR active after upscaling, before FG; rtx40; 1 SDR RGBA8 byte trial pass"
+      ],
+      "loggedPlacement": "After upscaling, before FG; one pass; FG off",
+      "visualResult": "User accepts camera/HUD appearance; no visual failure reported.",
+      "coverageLimit": "This captured Performance session logs After only. Performance Before has synthetic GPU coverage; no direct Skyrim Performance Before witness is claimed. Native Before/After and 1->2->3->1 live pass changes are captured in prior checkpoints.",
+      "milestoneDecision": "Milestone 6 accepted from actual Native/Performance Skyrim temporal+NR processing, user visual acceptance, logged live NR changes and existing standalone Before/After coverage. This is a local RTX 4080 SUPER SDR qualification; other GPUs, FG and HDR are not qualified by it."
     }
+  },
+  "qualificationCoverage": {
+    "completedMilestones": 6,
+    "totalMilestones": 8,
+    "gameplay": [
+      "Native Before",
+      "Native After",
+      "Performance After"
+    ],
+    "syntheticOnly": [
+      "Performance Before"
+    ],
+    "unqualified": [
+      "XeSS with FSR FG",
+      "XeSS with NVIDIA FG",
+      "Intel XeSS FG/XeLL",
+      "other GPU hardware",
+      "HDR"
+    ]
   }
 }
