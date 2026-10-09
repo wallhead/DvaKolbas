@@ -16,6 +16,7 @@ The previous XeSS SR spec explicitly deferred Intel FG/XeLL to its own presentat
 - Public headers `inc/xess_fg/xefg_swapchain.h`, `xefg_swapchain_d3d12.h`, `inc/xell/xell.h` and `xell_d3d12.h` were read at that revision.
 - AIO19 ships byte-identical official FG/XeLL runtimes. Existing streamed archive witnesses record their identities in `research/xess/aio19-sdk-witnesses-2026-10-09.json`.
 - New read-only Capstone inspection of the hash-pinned `PDPerfPlugin.dll` found twelve FG/XeLL API names and a bounded `GetProcAddress` witness for `xefgSwapChainD3D12CreateContext` at RVA `0xb5190`, resolver call `0xb519b`, unwind fragment `0xb5050..0xb5464`. This is static loader evidence, not proof of executed FG, resource states or AIO's UI composition policy.
+- Follow-up [AIO19 call-site inspection](../../../research/xess-fg/AIO19_XESS_FG_IMPLEMENTATION_2026-10-09.md) verifies 33 public FG/XeLL delay-import calls, matching tag/Present IDs, next-frame post-Present sleep, three retained-resource tags, actual last-Present statistics and FG-before-XeLL destruction. The byte witnesses are reproducible with `tools/xess/Inspect-Aio19Generation.py`. Its main wrapper tags UI/motion/depth with `RV_UNTIL_NEXT_PRESENT` and initializes UI mode AUTO; explicit composition enable, complete GPU retirement and pre-input timing are not proven. The earlier GetProcAddress fragment is provider-specific helper evidence, not the complete normal loader path.
 - The current repository has source-frame, dedicated HUD, D3D11/D3D12 interop, native ReShade ownership and ordinary/NVIDIA/AMD presentation boundaries. `FsrPresentationTransport` contains AMD-specific reader retirement; its acknowledgement protocol cannot be copied into Intel ownership unchanged.
 
 ## Approach
@@ -59,11 +60,15 @@ Default SDK UI interpolation is unsuitable for the intended pipeline. Enable UI 
 
 Use `RV_ONLY_NOW` tagging on a recorded command list initially so Intel captures the scene, motion, depth and UI instead of asynchronously retaining mutable game resources. Queue ordering and a signalled tagging fence protect reuse; `Present` return alone is not an all-GPU retirement proof. Track incoming/outgoing resource states, resource bases and valid extents explicitly. A later zero-copy optimization requires separate reader-retirement evidence.
 
+This deliberately differs from AIO19's observed `RV_UNTIL_NEXT_PRESENT` tags. Intel's public copy mode supplies a clearer lifetime boundary for our existing D3D11 producer and mutable guide resources. AIO's UI tag and AUTO initialization do not establish dedicated HUD composition; our explicit HUD qualification remains required.
+
 Duplicate source, spatial recovery, menu, loading, camera cut and missing-guide cases must not generate from an unaccepted source. Retained completed SR output can still be presented as a real frame; generation readiness resets/re-enters according to the source-epoch policy. Extra loading/duplicate Presents do not invent sleep/simulation marker cycles. Qualify their interpolation-disabled proxy Present behavior in the real SDK harness before game integration, including last-Present status and resumption on the next complete engine frame.
 
 ## XeLL integration
 
 Use actual engine boundaries for sleep before input sampling, simulation start/end, render-submit start/end and Present start/end. The current `BeginSourceFrame` jitter/render hook is not evidence of a pre-input simulation boundary. Locate and verify an appropriate engine hook for each supported Skyrim runtime before qualification; a cluster of markers inserted at Present cannot be called a complete XeLL integration.
+
+AIO19 normally increments the next frame ID and sleeps immediately after the preceding Present, then emits SimulationStart. Investigate this existing owner boundary as a lower-impact candidate before adding an engine hook. It is acceptable only if call-flow and runtime traces prove it precedes the next input sample, pairs correctly with real simulation/render boundaries and cannot repeat during extra/loading Presents. AIO's guarded fallback markers are not evidence that these conditions hold in our pipeline.
 
 Only one sleep call occurs per new SDK frame ID and returns before that frame's first marker. State-machine tests enforce all marker pairs and allowed phase overlap. Initial frame limiting remains off (`minimumIntervalUs=0`); retain borderless tearing/VSync semantics required by the SDK. Changing sleep mode follows GPU quiescence and executes on the owner boundary, including live FG off/on. Non-Intel latency reduction is enabled only with supported Intel interpolation; no standalone XeLL qualification is claimed there.
 
