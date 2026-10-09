@@ -61,6 +61,7 @@ inline RendererSettingsDraft ProjectRendererLiveEdits(const RendererSettingsDraf
     if (before.textureProviderConnected && after.textureProviderConnected && current.textureProviderConnected)
         copy(before, after, current, values, &RendererSettingsDraft::textureProviderSettings);
     copy(before.fsr, after.fsr, current.fsr, values.fsr, &Upscaling::FsrSettings::sharpness);
+    copy(before.xess, after.xess, current.xess, values.xess, &Upscaling::XessSettings::sharpness);
     using P = SourceDLSSG::Preferences;
     copy(before.sourceDLSSG, after.sourceDLSSG, current.sourceDLSSG, values.sourceDLSSG, &P::reflexMode,
          &P::outputFPSLimit, &P::uiRecomposition, &P::neuralBeforeUpscaling, &P::neuralPasses,

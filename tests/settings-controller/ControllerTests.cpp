@@ -209,6 +209,33 @@ int main(){try{
     Require(controller.ApplyLiveEdits(xessBefore,xessAfter).applied && fg.settings.sourceDLSSG.neuralBeforeUpscaling &&
         !SourceDLSSG::Backend::Get().NeuralConfiguration().enabled,"XeSS placement/style edits never invoke legacy NR");
     Require(!controller.SetNeuralRenderingEnabled(false).error && !fg.settings.sourceDLSSG.neuralEnabled,"XeSS NR disables live");
+    auto pendingXess=host.configuration.Requested();
+    pendingXess.xess.quality=Upscaling::Quality::NativeAA;
+    pendingXess.xess.sourceEncoding=Upscaling::ColorEncoding::SRGB;
+    host.RequestSourceUpscalerSettings(pendingXess);
+    for(const float sharpness : {1.f,0.f,.65f}) {
+        const auto beforeSharpness=controller.Capture(true,false);
+        auto afterSharpness=beforeSharpness;afterSharpness.xess.sharpness=sharpness;
+        Require(controller.ApplyLiveEdits(beforeSharpness,afterSharpness).applied,
+            "XeSS slider release submits a live sharpness edit through the controller");
+        Require(host.configuration.Requested().xess.sharpness==sharpness,
+            "XeSS live edit retains the slider strength in the runtime request");
+        const auto beforeUnrelated=controller.Capture(true,false);
+        auto afterUnrelated=beforeUnrelated;
+        afterUnrelated.requestLoadingArtwork=!beforeUnrelated.requestLoadingArtwork;
+        Require(controller.ApplyLiveEdits(beforeUnrelated,afterUnrelated).applied &&
+            host.configuration.Requested().xess.sharpness==sharpness,
+            "unrelated live edits preserve XeSS sharpness while its Present adoption is pending");
+        host.ApplySourceUpscalerSettingsAfterPresent();
+        Require(host.configuration.Effective().xess.sharpness==sharpness &&
+            pipeline.mXessSettings.sharpness==sharpness,
+            "XeSS live sharpness reaches the effective frame settings");
+        Require(host.configuration.Requested().xess.quality==Upscaling::Quality::NativeAA &&
+            host.configuration.Requested().xess.sourceEncoding==Upscaling::ColorEncoding::SRGB &&
+            host.configuration.Effective().xess.quality==Upscaling::Quality::Performance &&
+            host.configuration.Effective().xess.sourceEncoding==xess.xess.sourceEncoding,
+            "XeSS sharpness preserves pending quality/encoding without changing the live allocation");
+    }
 #endif
     std::cout<<"PASS production RendererSettingsController Apply/Save/staging/rejection\n";return 0;
 }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}

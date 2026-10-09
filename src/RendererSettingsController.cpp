@@ -103,11 +103,13 @@ RendererSettingsResult RendererSettingsController::ApplyLiveEdits(const Renderer
     auto current=Capture(true,after.textureProviderConnected);
     if(host_.StartupConfigured()){
         const auto requestedSharpness=current.fsr.sharpness;
+        const auto requestedXessSharpness=current.xess.sharpness;
         const auto& effective=host_.SourceUpscalerSettings().Effective();
         current.upscaleType=effective.mode;current.qualityLevel=effective.quality;current.fsr=effective.fsr;current.xess=effective.xess;
-        // FSR sharpness remains a requested preference on a NVIDIA session.
-        // Use effective allocation fields without losing that pending live value.
+        // Preserve requested strengths, including edits awaiting Present adoption
+        // and preferences for a provider staged for the next launch.
         current.fsr.sharpness=requestedSharpness;
+        current.xess.sharpness=requestedXessSharpness;
     }
     current.generationBackend=host_.FsrFgActive()?2:host_.OrdinarySourceActive()?0:1;
     current.generationEnabled=frameGen_.RuntimeInterpolationRequested();
@@ -193,7 +195,9 @@ RendererSettingsResult RendererSettingsController::ApplyImpl(const RendererSetti
         settingsDraft.dlssPreset,settingsDraft.sharpening,settingsDraft.autoExposure,settingsDraft.fsr,settingsDraft.xess};
     if(liveOnly && host_.StartupConfigured()){
         const auto& pending=host_.SourceUpscalerSettings().Requested();
-        sourceRequest.mode=pending.mode;sourceRequest.quality=pending.quality;sourceRequest.xess=pending.xess;
+        sourceRequest.mode=pending.mode;sourceRequest.quality=pending.quality;
+        sourceRequest.xess.quality=pending.xess.quality;
+        sourceRequest.xess.sourceEncoding=pending.xess.sourceEncoding;
         sourceRequest.fsr.quality=pending.fsr.quality;sourceRequest.fsr.providerPolicy=pending.fsr.providerPolicy;
         sourceRequest.fsr.sourceColorEncoding=pending.fsr.sourceColorEncoding;
         sourceRequest.fsr.generationProviderPolicy=pending.fsr.generationProviderPolicy;
