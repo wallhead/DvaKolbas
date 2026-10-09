@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-09",
+  "sourceRevision": "fd89c121ab6a2a4d63944bdc29e9e4aac9fea8b1",
+  "milestone": "7 partial; 6 of 8 complete",
+  "standaloneQualified": true,
+  "gameplayQualified": false,
+  "pipeline": "XeSS -> NR After -> FSR FG -> UI",
+  "adapter": "RTX 4080 SUPER (10de:2702)",
+  "srRuntime": "XeSS SR 2.0.2 from SDK 3.0.2",
+  "fgAlgorithm": "FSR 3.1.6",
+  "verification": {
+    "sharedRegressions": {
+      "passed": 197,
+      "failed": 0,
+      "selection": "ctest -LE GPU -E Gpu|GPU|Visible"
+    },
+    "gpuRegressionGroup": {
+      "passed": 5,
+      "failed": 0,
+      "tests": [
+        "XessTemporalGpu",
+        "DlssFsrGenerationGpu-Native",
+        "DlssFsrGenerationGpu-Performance",
+        "XessFsrGenerationGpu",
+        "XessFsrGenerationGpu-Performance"
+      ]
+    },
+    "cleanRevisionGpuRerun": {
+      "passed": 2,
+      "failed": 0
+    },
+    "reviewFixRegressions": [
+      "XessFsrLifecycleOwnership RED -> GREEN",
+      "XessFsrHostResizeOwnership RED -> GREEN",
+      "XessHostFrameRecovery completed-frame handoff RED -> GREEN",
+      "PublicIniPackage explicit FSR selector RED -> GREEN"
+    ]
+  },
+  "limits": [
+    "Actual Skyrim AMD automatic compositor is pending gameplay feedback; standalone uses the public Present callback observer compositor.",
+    "Synthetic FG scene uses zero jitter; it does not certify nonzero-jitter gameplay alignment. Typed parameter tests cover jitter values and flag consistency.",
+    "Graphics debug-layer diagnostics unavailable on this PC; runtime/pixel/HUD tests executed.",
+    "Native and Performance standalone qualified on this adapter only; AMD/Intel/other NVIDIA hardware unqualified.",
+    "NVIDIA FG and Intel XeSS FG/XeLL remain unavailable for XeSS SR.",
+    "First engine trial keeps fixed output dimensions; other sizes require restart before retirement.",
+    "Auto retains ordinary XeSS SR; explicit FSR presenter selection requires restart, FG off/on is live.",
+    "FSR FG output FPS telemetry remains unavailable; no interpolated FPS estimate reported."
+  ],
+  "standaloneReceipts": [
+    {
+      "qualified": true,
+      "revision": "fd89c121ab6a2a4d63944bdc29e9e4aac9fea8b1",
+      "quality": "native",
+      "device": "vendor=10DE device=2702",
+      "fgProvider": "3.1.6",
+      "mlFgAvailability": "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. FSR4 upscaling does not enable ML FG. Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FrameGeneration] FsrProvider=FSR3, then restart.",
+      "inputPolicyReentries": 4,
+      "sourceDepthFormat": "R24G8_TYPELESS",
+      "sourceDepthStencil": true,
+      "xessDispatches": 160,
+      "nrDispatches": 152,
+      "fsrSrCreates": 0,
+      "fsrSrDispatches": 0,
+      "generatedCallbacks": 138,
+      "generatedPixelReadbacks": 135,
+      "changingGeneratedReadbacks": 133,
+      "uiChecks": 291,
+      "uiFailures": 0,
+      "colorChecks": 156,
+      "readerRetirements": 3,
+      "retirementFailures": 0,
+      "pendingReaderRetirements": 2,
+      "resetReentries": 14,
+      "sdkWaits": 9,
+      "resizes": 1,
+      "suspensions": 2,
+      "failure": "",
+      "hashes": {
+        "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+        "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+        "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "executable": "fb4c93f109aa10c1a69f36a12b5cb7e1305cb3c582d2be87692b7b701bb1c997",
+        "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+      }
+    },
+    {
+      "qualified": true,
+      "revision": "fd89c121ab6a2a4d63944bdc29e9e4aac9fea8b1",
+      "quality": "performance",
+      "device": "vendor=10DE device=2702",
+      "fgProvider": "3.1.6",
+      "mlFgAvailability": "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. FSR4 upscaling does not enable ML FG. Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FrameGeneration] FsrProvider=FSR3, then restart.",
+      "inputPolicyReentries": 4,
+      "sourceDepthFormat": "R24G8_TYPELESS",
+      "sourceDepthStencil": true,
+      "xessDispatches": 160,
+      "nrDispatches": 152,
+      "fsrSrCreates": 0,
+      "fsrSrDispatches": 0,
+      "generatedCallbacks": 138,
+      "generatedPixelReadbacks": 134,
+      "changingGeneratedReadbacks": 132,
+      "uiChecks": 290,
+      "uiFailures": 0,
+      "colorChecks": 156,
+      "readerRetirements": 3,
+      "retirementFailures": 0,
+      "pendingReaderRetirements": 2,
+      "resetReentries": 14,
+      "sdkWaits": 9,
+      "resizes": 1,
+      "suspensions": 2,
+      "failure": "",
+      "hashes": {
+        "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+        "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+        "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+        "executable": "fb4c93f109aa10c1a69f36a12b5cb7e1305cb3c582d2be87692b7b701bb1c997",
+        "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+        "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+      }
+    }
+  ],
+  "installedTrial": {
+    "profile": "V5.4 NO-LORE",
+    "mod": "RaZKolbaS XeSS FSR FG trial - fd89c121ab6a",
+    "configuration": "XeSS Native; NR After; 1 pass Style 1; FSR3 FG on; HDR off; fixed output size",
+    "pluginSha256": "70b6cdda80334e4d09733903ae97d7bc0996c9497550f17b99c4721ada835c7c",
+    "archiveSha256": "accea65c183a15264efce2b41e8011417b4cc77c8dd3f674e8bbc200c4d38eca",
+    "verifiedFiles": 14,
+    "rollbackMod": "RaZKolbaS XeSS NR trial - df7abe212361",
+    "rollbackDllSha256": "E9BA3D49E3771871DE74C967B89A46C0C4B5C2200748F41853C749155EA8FC66",
+    "rollbackIniSha256": "C6B142623FDAE920F46BC7B50C54B8C47043319E4CE8F342C1D4EA209EA4B200",
+    "mo2LaunchSettingsPreserved": true,
+    "gameplayQualified": false
+  }
+}
