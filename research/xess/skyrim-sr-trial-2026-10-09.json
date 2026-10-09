@@ -30,9 +30,18 @@
     "originalWorkingPluginAndIniHashesUnchanged": true,
     "MO2LaunchSettingsUnchanged": true,
     "debugLayers": "unavailable; not claimed",
-    "SkyrimNative": "pending",
+    "SkyrimNative": "real temporal execution observed on second launch; camera/HUD visual qualification pending",
     "SkyrimQuality": "pending",
     "AMDIntelHardware": "not-qualified"
+  },
+  "startupEvidence": {
+    "firstLaunch": "pre-menu EXCEPTION_BREAKPOINT in unidentified generated code; cause unconfirmed",
+    "secondLaunch": "unchanged installed b32446a9e6a4 reaches world and real temporal XeSS at 2560x1440",
+    "startupThread": 69004,
+    "temporalThread": 69004,
+    "loadingSpatialThread": 45076,
+    "rendererErrorsInSuccessfulSnapshot": 0,
+    "diagnosticBuild": "9481c8dfca5a built and tested; not installed"
   },
   "motionGuideEvidence": {
     "route": "original engine source-sized RG16_FLOAT RTV, direct copy, no plugin dilation",
