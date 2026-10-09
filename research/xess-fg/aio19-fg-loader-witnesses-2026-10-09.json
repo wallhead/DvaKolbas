@@ -1,0 +1,95 @@
+{
+  "scope": "Read-only Capstone static symbol-loader witnesses; no DLL execution or gameplay qualification",
+  "callerSha256": "ff6c58391501006474e36afaac2b5a5cfceda47850abdbbcc7f2fe5521004435",
+  "apiNamesFound": [
+    "xefgSwapChainD3D12CreateContext",
+    "xefgSwapChainD3D12GetSwapChainPtr",
+    "xefgSwapChainD3D12InitFromSwapChainDesc",
+    "xefgSwapChainD3D12TagFrameResource",
+    "xefgSwapChainGetLastPresentStatus",
+    "xefgSwapChainSetEnabled",
+    "xefgSwapChainSetLatencyReduction",
+    "xefgSwapChainSetPresentId",
+    "xefgSwapChainTagFrameConstants",
+    "xellAddMarkerData",
+    "xellD3D12CreateContext",
+    "xellSleep"
+  ],
+  "witnesses": [
+    {
+      "api": "xefgSwapChainD3D12CreateContext",
+      "stringRva": "0x12f4308",
+      "xref": "0xb5190",
+      "fragment": [
+        "0xb5050",
+        "0xb5464"
+      ],
+      "getProcAddressCalls": [
+        "0xb519b",
+        "0xb51b1"
+      ],
+      "instructions": [
+        {
+          "rva": "0xb5190",
+          "bytes": "488d1571f12301",
+          "text": "lea rdx, [rip + 0x123f171]"
+        },
+        {
+          "rva": "0xb5197",
+          "bytes": "488b4d67",
+          "text": "mov rcx, qword ptr [rbp + 0x67]"
+        },
+        {
+          "rva": "0xb519b",
+          "bytes": "ff153fbf0700",
+          "text": "call qword ptr [rip + 0x7bf3f]"
+        },
+        {
+          "rva": "0xb51a1",
+          "bytes": "4885c0",
+          "text": "test rax, rax"
+        },
+        {
+          "rva": "0xb51a4",
+          "bytes": "74c5",
+          "text": "je 0x1800b516b"
+        },
+        {
+          "rva": "0xb51a6",
+          "bytes": "488d1543982301",
+          "text": "lea rdx, [rip + 0x1239843]"
+        },
+        {
+          "rva": "0xb51ad",
+          "bytes": "488b4d67",
+          "text": "mov rcx, qword ptr [rbp + 0x67]"
+        },
+        {
+          "rva": "0xb51b1",
+          "bytes": "ff1529bf0700",
+          "text": "call qword ptr [rip + 0x7bf29]"
+        },
+        {
+          "rva": "0xb51b7",
+          "bytes": "4885c0",
+          "text": "test rax, rax"
+        },
+        {
+          "rva": "0xb51ba",
+          "bytes": "74af",
+          "text": "je 0x1800b516b"
+        },
+        {
+          "rva": "0xb51bc",
+          "bytes": "4c897708",
+          "text": "mov qword ptr [rdi + 8], r14"
+        },
+        {
+          "rva": "0xb51c0",
+          "bytes": "488bd7",
+          "text": "mov rdx, rdi"
+        }
+      ]
+    }
+  ]
+}
