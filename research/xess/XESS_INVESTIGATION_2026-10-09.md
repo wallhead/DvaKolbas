@@ -74,6 +74,27 @@ The initializer at `0x11fd30` also conditionally constructs the SDK high-resolut
 
 The verifier now records the full D3D12 fragment's instruction bytes and verifies the table/slot/call chain. Static call-site identification is not proof that a particular gameplay frame executed it. Still unverified: the upstream construction of `frame`, actual resource formats and colour encoding, original jitter signs and motion scales, selected configuration flags, barriers and downstream reader retirement. Those are the next RE targets alongside the official SDK implementation work.
 
+### Follow-up: game-side input preparation
+
+The pinned `SkyrimUpscaler.dll` has delay imports from `PDPerfPlugin.dll`. The verifier now resolves their actual IAT slots and checks four call sites, rather than relying on API-name strings:
+
+| API | Game-side call RVA | Delay-import slot |
+| --- | --- | --- |
+| `GetJitterOffset` | `0x1b48cc` | `0x538370` |
+| `EvaluateUpscaler` | `0x2e983c` | `0x538320` |
+| `SetMotionScaleX` | `0x2f95e2` | `0x538308` |
+| `SetMotionScaleY` | `0x2f95ef` | `0x538310` |
+
+In the jitter hook, `GetJitterOffset` supplies `hx/hy`. Instructions `0x1b48eb..0x1b493a` use verified constants `-2`, `+2`, and sign-bit XOR masks. They store `-2*hx/W` and `+2*hy/H` at hook-object offsets `+0x44/+0x48`, and `-hx/-hy` at scene-owner offsets `+0x08/+0x0c`. The resolution-normalized pair is consistent with camera projection offsets; its complete downstream matrix consumer has not yet been traced. The generic evaluation frame reads the negated pair from owner `+0x08/+0x0c` into frame `+0x44/+0x48`, matching the fields forwarded to the SDK by its wrapper. This is a static convention witness, not an assertion about every camera path or selected runtime branch.
+
+At `0x2f95bb..0x2f95ef`, owner fields `+0x278/+0x27c` are converted to floats, stored as the motion scales and passed to the public motion-scale setters. The same dimension fields populate input width/height in the generic SR evaluation frame at `0x2e96ac..0x2e96ff`. This ties the scales to input dimensions rather than an assumed display size on this path. It does not prove the units/signs of the underlying motion texture or whether it has been dilated.
+
+The game-side evaluation method prepares colour/depth/motion copies through its D3D11 context and includes optional processing branches before constructing the generic frame. The shared D3D12 backend's SR dispatch at `PDPerfPlugin` RVA `0x114d95` copies the generic frame into the selected upscaler's virtual execute method. These inspected dispatch/copy blocks contain no explicit gamma-decoding arithmetic, but that does **not** establish an encoded-colour SDK input: resource creation and optional shader paths are not fully resolved. The next colour investigation must follow those paths and texture descriptions before assigning an encoding.
+
+The game-side resource-preparation fragment at `0x2f8f2e..0x2f8f78` copies a runtime-owned descriptor region into the texture descriptor later used to validate the colour resource; its format field is inherited rather than set to a single literal in that block. This prevents assigning an AIO19 colour format from a nearby immediate constant alone. Identifying the selected original render target and tracing the optional shader branches remain necessary to establish its actual encoding.
+
+The SR design's requirement for an explicit jitter/motion adapter is supported by this RE. Its linear-colour conversion remains grounded in Intel's contract, not a guessed AIO19 format. New instruction bytes, constants and import identities are saved under `gameInputs` in the witness report. Only static analysis was performed.
+
 ### Reproduce
 
 Requires Python with `pefile` and `capstone`, 7-Zip, the pinned archive and its already extracted caller DLLs. Paths below assume the original local research layout; the script accepts replacement paths.
@@ -85,7 +106,7 @@ C:/Python314/python.exe tools/xess/Inspect-Aio19Xess.py `
   --output research/xess/aio19-sdk-witnesses-2026-10-09.json
 ```
 
-Observed result: `PASS: 4 official SDK runtime matches; 7 verified loader witnesses; D3D12 SR dispatch chain`. Detailed hashes, instruction bytes and RVAs are in [the witness report](aio19-sdk-witnesses-2026-10-09.json). A different input artifact is rejected rather than interpreted using these RVAs.
+Observed result: `PASS: 4 official SDK runtime matches; 7 verified loader witnesses; D3D12 SR dispatch chain; game-side input witnesses`. Detailed hashes, instruction bytes and RVAs are in [the witness report](aio19-sdk-witnesses-2026-10-09.json). A different input artifact is rejected rather than interpreted using these RVAs.
 
 ## Official contracts affecting our integration
 

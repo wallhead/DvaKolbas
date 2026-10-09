@@ -6,6 +6,7 @@ no DLL loading/execution are needed. Requires pefile and Capstone.
 import argparse
 import hashlib
 import json
+import struct
 import subprocess
 from pathlib import Path
 
@@ -155,6 +156,57 @@ def sr_dispatch_witness(path):
             "limits": "Static dispatch and field stores, not a runtime capture; texture provenance, formats and upstream conversions remain unverified."}
 
 
+def game_input_witnesses(path):
+    """Pin the game-side public interface calls and jitter arithmetic."""
+    pe = pefile.PE(str(path))
+    base = pe.OPTIONAL_HEADER.ImageBase
+    imports = {s.address - base: s.name.decode() for e in pe.DIRECTORY_ENTRY_DELAY_IMPORT
+               if e.dll == b"PDPerfPlugin.dll" for s in e.imports if s.name}
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
+    decoder.detail = True
+    ranges = ((0x1B484A, 0x1B48CC, 0x1B493F),
+              (0x2E952A, 0x2E96A8, 0x2E970F),
+              (0x2E9802, 0x2E97FA, 0x2E9842),
+              (0x2F8E76, 0x2F8F2E, 0x2F8F78),
+              (0x2F935A, 0x2F95BB, 0x2F95F5))
+    fragments = []
+    instructions = {}
+    for start, low, high in ranges:
+        entry = next(e.struct for e in pe.DIRECTORY_ENTRY_EXCEPTION if e.struct.BeginAddress == start)
+        decoded = list(decoder.disasm(pe.get_data(start, entry.EndAddress - start), base + start))
+        instructions.update({i.address - base: i for i in decoded})
+        selected = [i for i in decoded if low <= i.address - base < high]
+        fragments.append({"fragment": [hex(start), hex(entry.EndAddress)],
+                          "instructions": [{"rva": hex(i.address - base), "bytes": i.bytes.hex(),
+                                            "text": f"{i.mnemonic} {i.op_str}"} for i in selected]})
+
+    def rip_target(i):
+        op = next(o for o in i.operands if o.type == capstone.x86.X86_OP_MEM)
+        if op.mem.base != capstone.x86.X86_REG_RIP:
+            raise ValueError("Unexpected game-side witness operand")
+        return i.address + i.size + op.mem.disp - base
+
+    calls = []
+    for rva, api in ((0x1B48CC, "GetJitterOffset"), (0x2E983C, "EvaluateUpscaler"),
+                     (0x2F95E2, "SetMotionScaleX"), (0x2F95EF, "SetMotionScaleY")):
+        i = instructions[rva]
+        slot = rip_target(i)
+        if i.mnemonic != "call" or imports.get(slot) != api:
+            raise ValueError(f"Unexpected game-side API call: {api}")
+        calls.append({"api": api, "callRva": hex(rva), "delayImportSlotRva": hex(slot)})
+    constants = []
+    for rva, expected in ((0x1B48EB, 0xC0000000), (0x1B4903, 0x40000000),
+                          (0x1B490B, 0x80000000), (0x1B4928, 0x80000000)):
+        location = rip_target(instructions[rva])
+        value = struct.unpack("<I", pe.get_data(location, 4))[0]
+        if value != expected:
+            raise ValueError(f"Unexpected jitter constant at {rva:x}")
+        constants.append({"instructionRva": hex(rva), "constantRva": hex(location),
+                          "bits": hex(value)})
+    return {"apiCalls": calls, "jitterConstants": constants, "fragments": fragments,
+            "limits": "Static game-side paths; active branch/configuration and final texture encoding need additional tracing or runtime capture."}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--archive", required=True, type=Path)
@@ -169,10 +221,11 @@ def main():
               "runtimes": {name: runtime_member(args, name, pin) for name, pin in SDK_BLOBS.items()},
               "loaderWitnesses": loader_witnesses(args.extracted / "UpscalerBasePlugin/PDPerfPlugin.dll"),
               "srDispatch": sr_dispatch_witness(args.extracted / "UpscalerBasePlugin/PDPerfPlugin.dll"),
+              "gameInputs": game_input_witnesses(args.extracted / "SKSE/Plugins/SkyrimUpscaler.dll"),
               "limits": "Loader and static dispatch witnesses do not establish runtime-selected frame parameters, buffer colour correctness or gameplay qualification."}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"PASS: {len(report['runtimes'])} official SDK runtime matches; {len(report['loaderWitnesses'])} verified loader witnesses; D3D12 SR dispatch chain")
+    print(f"PASS: {len(report['runtimes'])} official SDK runtime matches; {len(report['loaderWitnesses'])} verified loader witnesses; D3D12 SR dispatch chain; game-side input witnesses")
 
 
 if __name__ == "__main__":

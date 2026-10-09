@@ -43,6 +43,8 @@ Start with low-resolution, undilated `R16G16_FLOAT` motion and corresponding dep
 
 Generate and apply a XeSS-specific temporal jitter contract. Verify X/Y direction, reported sample offset versus camera offset, viewport origin and history reset with synthetic tests. Use the SDK sizing queries and its documented jitter-sequence rule rather than reusing a fixed FSR ratio/sequence length. Returning jitter to Skyrim and submitting it to XeSS must describe the same frame.
 
+AIO19's pinned game-side RE now provides a comparison convention: raw jitter `hx/hy` is stored as `-hx/-hy` for the generic SR frame, alongside resolution-normalized hook values `-2*hx/W` and `+2*hy/H`. Its motion-scale setters receive the dimensions used for the SR input. Use these as reference cases for adapter tests; do not copy the signs into RaZkolbaS without checking our own projection and motion producers. The traced AIO19 path is static evidence and does not resolve its optional colour-processing branches.
+
 Reset history on source-epoch changes, camera cuts, loading transitions, extent changes and context replacement. A missing guide is not a successful temporal frame. Spatial copies/recovery, if invoked by an existing recovery policy, must be labeled separately from XeSS active processing.
 
 ## Sizing, settings and menu
