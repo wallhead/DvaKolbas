@@ -97,6 +97,49 @@
       "Full XeSS device/queue/bridge retention across resize is deferred; current resize still rebuilds the owner and fatal reconstruction policy is unchanged.",
       "Crash diagnostics and RE witnesses are unchanged per user-directed scope.",
       "Milestone 6 still requires Skyrim Native/Performance NR camera/HUD and live-control qualification; milestone count remains 5 of 8."
-    ]
+    ],
+    "skyrimNativeBeforeCheckpoint": {
+      "userReport": "seems working",
+      "sourceRevision": "df7abe212361",
+      "snapshot": "out/validation/xess/skyrim-20261009/native-nr-before-df7abe212361-20261009143156.log",
+      "snapshotSha256": "8c40a2e3787f0b400e627e8b50b9e2313ffd44ced5f05592d20e036157657895",
+      "lastCapturedLine": "[2026-10-09 14:31:56.779] [thread 62884] [info] [NativeUI] dedicated native UI captured and composed frame=13800 extent=2560x1440",
+      "errorOrCriticalCount": 0,
+      "rendererErrors": [],
+      "route": "Actual XeSS temporal, Native 2560x1440 -> 2560x1440; community RTX40 NR Before, one pass; FG off.",
+      "threadRecovery": "Loading frame on thread 32704 deferred spatial without retirement; later world frame on owner thread 62884 resumed actual temporal execution.",
+      "xessStateEvidence": [
+        "[2026-10-09 14:25:59.416] [thread 32704] [info] [XeSS state] source=2 epoch=1 ownerThread=62884 currentThread=32704 route=spatial render=2560x1440 display=2560x1440 jitter=(0,0) motionScale=(2560,1440) guide=original-engine-output reset=true reason=XeSS requested; spatial recovery: off owner thread; spatial this frame, XeSS context retained",
+        "[2026-10-09 14:28:29.869] [thread 62884] [info] [XeSS state] source=10652 epoch=1 ownerThread=62884 currentThread=62884 route=temporal render=2560x1440 display=2560x1440 jitter=(0.375,0.055555552) motionScale=(2560,1440) guide=original-engine-output reset=true reason=XeSS active | ordinary presentation | FG off"
+      ],
+      "nrSettingsRevisions": [
+        "[2026-10-09 14:27:53.724] [thread 62884] [info] [Community NR settings] revision=1 placement=Before SR passes=1",
+        "[2026-10-09 14:29:26.476] [thread 62884] [info] [Community NR settings] revision=2 placement=Before SR passes=1",
+        "[2026-10-09 14:29:27.859] [thread 62884] [info] [Community NR settings] revision=3 placement=Before SR passes=1",
+        "[2026-10-09 14:29:28.982] [thread 62884] [info] [Community NR settings] revision=4 placement=Before SR passes=1",
+        "[2026-10-09 14:29:30.117] [thread 62884] [info] [Community NR settings] revision=5 placement=Before SR passes=1",
+        "[2026-10-09 14:29:33.102] [thread 62884] [info] [Community NR settings] revision=6 placement=Before SR passes=1",
+        "[2026-10-09 14:29:39.478] [thread 62884] [info] [Community NR settings] revision=7 placement=Before SR passes=1",
+        "[2026-10-09 14:29:40.960] [thread 62884] [info] [Community NR settings] revision=8 placement=Before SR passes=1",
+        "[2026-10-09 14:29:43.926] [thread 62884] [info] [Community NR settings] revision=9 placement=Before SR passes=1",
+        "[2026-10-09 14:29:45.380] [thread 62884] [info] [Community NR settings] revision=10 placement=Before SR passes=1"
+      ],
+      "passSettingsEvidence": [
+        "[2026-10-09 14:27:53.724] [thread 62884] [info] [Community NR pass] revision=1 pass=1 style=0 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:26.476] [thread 62884] [info] [Community NR pass] revision=2 pass=1 style=0 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:27.859] [thread 62884] [info] [Community NR pass] revision=3 pass=1 style=0 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:28.982] [thread 62884] [info] [Community NR pass] revision=4 pass=1 style=0 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:30.117] [thread 62884] [info] [Community NR pass] revision=5 pass=1 style=0 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:33.102] [thread 62884] [info] [Community NR pass] revision=6 pass=1 style=1 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:39.478] [thread 62884] [info] [Community NR pass] revision=7 pass=1 style=1 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:40.960] [thread 62884] [info] [Community NR pass] revision=8 pass=1 style=1 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:43.926] [thread 62884] [info] [Community NR pass] revision=9 pass=1 style=1 intensity=1 tone=1 structure=1 skin=1 autoSkin=false",
+        "[2026-10-09 14:29:45.380] [thread 62884] [info] [Community NR pass] revision=10 pass=1 style=1 intensity=1 tone=1 structure=1 skin=1 autoSkin=false"
+      ],
+      "nrOffTransitions": 4,
+      "nrOnTransitions": 5,
+      "lastNrActiveEvidence": "[2026-10-09 14:31:55.982] [thread 62884] [info] [Community NR frame] source=20541 requested=true evaluated=true profile=rtx40 revision=10 reset=false frames=9600 resets=13 color=2560x1440 guides=2560x1440 motionScale=(2560, 1440) guideJitterRenderPx=(-0.125, -0.2777778) status=NR active before upscaling; rtx40; 1 SDR RGBA8 byte trial pass",
+      "limits": "Native Before is accepted provisionally from user feedback. Native After, multiple-pass changes and Performance camera/HUD gameplay are not claimed from this log. Milestone 6 remains open."
+    }
   }
 }
