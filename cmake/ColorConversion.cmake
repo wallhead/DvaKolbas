@@ -1,0 +1,5 @@
+add_library(TRPSdrColorConversion STATIC src/Upscaling/FSRColorConversion.cpp)
+target_compile_features(TRPSdrColorConversion PUBLIC cxx_std_23)
+target_compile_definitions(TRPSdrColorConversion PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN)
+target_include_directories(TRPSdrColorConversion PUBLIC src)
+target_link_libraries(TRPSdrColorConversion PUBLIC d3d11 d3dcompiler dxgi)

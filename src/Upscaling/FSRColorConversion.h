@@ -6,7 +6,7 @@
 namespace TheosRenderPipeline::Upscaling
 {
     Result<float> ConvertColorChannel(float,ColorEncoding source,ColorEncoding destination);
-    class FsrColorConverter
+    class SdrColorConverter
     {
     public:
         HRESULT Convert(ID3D11DeviceContext*,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding source,ColorEncoding destination);
@@ -20,4 +20,5 @@ namespace TheosRenderPipeline::Upscaling
         D3D11ContextIsolation isolation_;
         const char* failureStage_{"none"};
     };
+    using FsrColorConverter = SdrColorConverter; // existing FSR callers retain their interface
 }

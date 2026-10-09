@@ -62,6 +62,7 @@ if(NOT TRP_ENABLE_RAZKOLBAS_TAB)
     list(REMOVE_ITEM ARP_BASELINE_SOURCES src/OverlayRazkolbasPanel.cpp)
 endif()
 target_sources(${TRP_PLUGIN_TARGET} PRIVATE ${ARP_BASELINE_SOURCES})
+include(cmake/ColorConversion.cmake)
 include(cmake/FSR.cmake)
 include(cmake/XeSS.cmake)
 

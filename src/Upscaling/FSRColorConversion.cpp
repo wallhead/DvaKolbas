@@ -15,7 +15,7 @@ namespace TheosRenderPipeline::Upscaling
         else if(to==ColorEncoding::SRGB)c=c<=0.0031308f?c*12.92f:1.055f*std::pow(c,1.0f/2.4f)-0.055f;
         return c;
     }
-    HRESULT FsrColorConverter::Initialize(ID3D11Device* device)
+    HRESULT SdrColorConverter::Initialize(ID3D11Device* device)
     {
         if(device_)return D3D11FrameCopy::SameObject(device_.Get(),device)?S_OK:E_INVALIDARG;
         constexpr char program[]=R"(
@@ -40,7 +40,7 @@ float4 ps(Vertex v):SV_Target{float4 c=inputImage.SampleLevel(sampling,v.uv,0);r
         if(FAILED(hr=device->CreateBuffer(&desc,nullptr,&constants_)))return hr;
         device_=device;return S_OK;
     }
-    HRESULT FsrColorConverter::Convert(ID3D11DeviceContext* context,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding from,ColorEncoding to)
+    HRESULT SdrColorConverter::Convert(ID3D11DeviceContext* context,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding from,ColorEncoding to)
     {
         failureStage_="color encoding";
         if(!IsKnownColorEncoding(from) || !IsKnownColorEncoding(to))return E_INVALIDARG;
