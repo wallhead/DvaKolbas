@@ -221,8 +221,11 @@ class NvidiaHost
     std::string xessRecoveryReason_;
     std::string xessStartupFallbackReason_;
     std::uint64_t xessEpoch_{1};
-    std::uint64_t xessFgRenderedCount_{},xessFgSourceEpoch_{};
-    bool xessFgHasSource_{};
+    // UpscaleOutput holds the completed HUD-less image until a new evaluation
+    // writes it. Reuse is invalidated on spatial recovery, reset and retirement.
+    TheosRenderPipeline::Upscaling::UpscaleFrame xessCompletedFrame_{};
+    bool xessHasCompleted_{};
+    std::uint64_t xessDuplicateCount_{},xessForeignThreadCount_{},xessRepeatedCount_{};
 #endif
 #if defined(TRP_ENABLE_FSR)
     std::shared_ptr<TheosRenderPipeline::Upscaling::FsrHostResources> fsrResources_;

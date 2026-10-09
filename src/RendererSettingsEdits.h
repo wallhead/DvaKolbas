@@ -111,6 +111,7 @@ inline void StageRendererUpscaleProvider(RendererSettingsDraft &draft, bool fsr)
 }
 inline RendererSettingsDraft PrepareRendererStartupDraft(RendererSettingsDraft draft, bool community) {
     if(draft.upscaleType==Xess){
+        draft.generationBackendPreference=NormalizeGenerationBackendPreference(draft.generationBackendPreference,Upscaling::BackendKind::Xess);
         draft.generationBackend=ResolveGenerationBackend(draft.generationBackendPreference,Upscaling::BackendKind::Xess);
         if(draft.generationBackend==0)draft.generationEnabled=false;
         if(!community)draft.sourceDLSSG.neuralEnabled=false;

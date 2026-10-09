@@ -170,7 +170,8 @@ OverlayUI::FrameView OverlayUI::CaptureFrameView()
     view.outputLabel = dxgiOutput ? "DXGI output" : "Runtime output";
     view.outputHelp = dxgiOutput ?
         "DXGI's reported Present count; physical screen refreshes and scanout spacing are not measured. No generated-frame multiplier is estimated." :
-        "Runtime presentation count; physical screen refreshes and scanout spacing are not measured. FSR FG output telemetry is unavailable.";
+        nvidiaHost->FsrFgActive() ? "FSR FG output telemetry is unavailable; no generated-frame multiplier is estimated." :
+        "NVIDIA runtime presentation count; physical screen refreshes and scanout spacing are not measured.";
     view.activeUpscaleStage = view.sourceDLSSGActive ? (view.sourceNeural.active ? "TRP DLSS NR" : "TRP DLSS")
                                                      : "NVIDIA host unavailable";
     if(nvidiaHost->FsrFgActive() && !view.fsrActive)view.activeUpscaleStage="TRP DLSS + FSR FG";

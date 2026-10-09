@@ -47,6 +47,10 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         DrawSettingsHelp("Backend selection requires Save as default and restart. Auto selects NVIDIA FG for DLSS, and FSR FG for FSR upscaling.");
         if(settingsDraft.upscaleType==Xess || nvidiaHost->XessActive())
             ImGui::TextWrapped("Experimental XeSS + FSR FG: select FSR, save and restart. Auto keeps SR-only presentation; NVIDIA FG is still pending.");
+        if((settingsDraft.upscaleType==Xess || nvidiaHost->XessActive()) &&
+            (settingsDraft.generationBackend==2 || nvidiaHost->FsrFgActive()) &&
+            RenderPipeline::GetSingleton()->mAdapterVendorId!=0x10de)
+            ImGui::TextWrapped("XeSS + FSR FG has not been validated on this AMD/Intel/GTX hardware path. If presentation fails, select Auto and restart for XeSS without FG.");
         if(settingsDraft.generationBackend!=actualBackend)ImGui::TextWrapped("Selected backend is pending restart. The on/off switch controls the running backend.");
         bool requested=frameGen->RuntimeInterpolationRequested();
         ImGui::BeginDisabled(actualBackend==0);

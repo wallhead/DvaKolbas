@@ -470,12 +470,14 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         }
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
         upscalerReady_=true;splitSourceDLSSActive_=false;xessRecovery_=lastXessTemporal_=false;xessRecoveryReason_.clear();
-        ++xessEpoch_;xessFgHasSource_=false;
+        ++xessEpoch_;xessHasCompleted_=false;xessCompletedFrame_={};
         status_="XeSS context ready; waiting for a validated temporal world frame";
         logger::info("[XeSS startup] requested=XeSS effective=XeSS quality={} sourceColorEncoding={} render={}x{} output={}x{} requestedFlags={} effectiveFlags={} presentation={} FG=context-deferred",
             TheosRenderPipeline::Upscaling::XessQualityName(sourceUpscalerSettings_.Effective().xess.quality),
             TheosRenderPipeline::Upscaling::ColorEncodingName(sourceUpscalerSettings_.Effective().xess.sourceEncoding),
             renderWidth_,renderHeight_,outputWidth_,outputHeight_,xessResources_->Upscaler()->RequestedFlags(),xessResources_->Upscaler()->EffectiveFlags(),FsrFgActive()?"AMD-D3D12":"ordinary-D3D11");
+        if(FsrFgActive() && RenderPipeline::GetSingleton()->mAdapterVendorId!=0x10de)
+            logger::warn("[XeSS startup] experimental XeSS + FSR FG on vendor=0x{:04X}; AMD/Intel hardware qualification pending. Use [FrameGeneration] Backend=Auto and restart for SR-only if this route fails.",RenderPipeline::GetSingleton()->mAdapterVendorId);
         return true;
     }
 #endif
@@ -598,7 +600,14 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
 #if defined(TRP_ENABLE_FSR_FG)
     if (!FsrFgActive() || &outer!=outerSwapChain_ || !fsrPresentation_ || FAILED(FailureResult())) return E_UNEXPECTED;
 #if defined(TRP_ENABLE_XESS)
-    if(XessActive() && xessResources_ && !xessResources_->Upscaler()->OnOwnerThread())return DXGI_ERROR_WAS_STILL_DRAWING;
+    if(XessActive() && xessResources_ && !xessResources_->Upscaler()->OnOwnerThread()) {
+        if(!(xessDeferredReported_ & 4u)) {
+            xessDeferredReported_ |= 4u;
+            logger::warn("[XeSS resize defer] ownerThread={} currentThread={}; resize refused before retirement, running resources retained",
+                xessResources_->Upscaler()->OwnerThread(),GetCurrentThreadId());
+        }
+        return DXGI_ERROR_WAS_STILL_DRAWING;
+    }
 #endif
     auto candidate=fsrDescriptor_;candidate.BufferCount=2;candidate.BufferDesc.Width=width;candidate.BufferDesc.Height=height;
     if (format!=DXGI_FORMAT_UNKNOWN)candidate.BufferDesc.Format=format;candidate.Flags=flags;
@@ -622,6 +631,13 @@ HRESULT NvidiaHost::ResizeFsrSwapChain(GameSwapChain& outer,UINT count,UINT widt
         // the startup size. Reject a new size before retiring live owners.
         if((*translated)->BufferDesc.Width!=outputWidth_ || (*translated)->BufferDesc.Height!=outputHeight_) {
             status_="XeSS + FSR FG output-size change requires restart; running resources retained";return E_INVALIDARG;
+        }
+        if((count==0 || count==fsrDescriptor_.BufferCount) &&
+            (*translated)->BufferDesc.Format==fsrDescriptor_.BufferDesc.Format && flags==fsrDescriptor_.Flags) {
+            // Repeated borderless resize notifications do not change allocation.
+            // A minimized chain still needs Resume and its genuine history reset.
+            const auto resumed=UpdateFsrSuspension();
+            return FAILED(resumed)?resumed:S_OK;
         }
         externalRender={UINT(renderWidth_),UINT(renderHeight_)};
     } else if(!FsrActive()) {

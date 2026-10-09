@@ -78,7 +78,7 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
         draft.generationBackend = 1;
     }
     if(mode==Xess){
-        if(draft.generationBackendPreference==GenerationBackendPreference::Nvidia)draft.generationBackendPreference=GenerationBackendPreference::Auto;
+        draft.generationBackendPreference=NormalizeGenerationBackendPreference(draft.generationBackendPreference,Upscaling::BackendKind::Xess);
         draft.generationBackend=ResolveGenerationBackend(draft.generationBackendPreference,Upscaling::BackendKind::Xess);
         if(draft.generationBackend==0)draft.generationEnabled=false;
         if(!next.captured)draft.sourceDLSSG.neuralEnabled=false;

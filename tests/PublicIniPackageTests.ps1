@@ -97,6 +97,12 @@ $xessPath=Join-Path $Output 'xess.ini';[IO.File]::WriteAllLines($xessPath,[strin
 $xess=Read-PackageIni $xessPath -Raw
 if($xess['Upscaling/Upscaler'] -ne 'XeSS' -or $xess['DLSS/Quality'] -ne 'Native') {throw 'XeSS packaging must retain provider and inactive DLAA preference'}
 if((Read-PackageIni $xessPath)['FrameGeneration/Backend'] -ne '0') {throw 'XeSS SR trial must select ordinary presentation'}
+$xessNvLines=Set-PackageIniValues $xessLines @{'FrameGeneration/Backend'='NVIDIA';'FrameGeneration/Enabled'='true'}
+$xessNvPath=Join-Path $Output 'xess-normalized.ini';[IO.File]::WriteAllLines($xessNvPath,[string[]]$xessNvLines)
+$xessNv=Read-PackageIni $xessNvPath
+if($xessNv['FrameGeneration/Backend'] -ne '0' -or $xessNv['FrameGeneration/Enabled'] -ne 'false'){
+    throw 'XeSS unavailable NVIDIA FG must normalize to SR-only, matching the runtime decoder and menu'
+}
 $xessFgLines=Set-PackageIniValues $xessLines @{'FrameGeneration/Backend'='FSR';'FrameGeneration/Enabled'='true'}
 $xessFgPath=Join-Path $Output 'xess-fsr-fg.ini';[IO.File]::WriteAllLines($xessFgPath,[string[]]$xessFgLines)
 if((Read-PackageIni $xessFgPath)['FrameGeneration/Backend'] -ne '2'){throw 'Explicit XeSS FSR FG must select FSR presentation'}

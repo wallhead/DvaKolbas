@@ -1,7 +1,8 @@
 // Compile the actual host control flow with CPU facades; no vendor or GPU work.
-#include <dxgi1_4.h>
+#include <dxgi1_6.h>
 #include <d3d11.h>
 #include "Upscaling/UpscalerBackend.h"
+#include "FrameGen/FSRSwapChainPolicy.h"
 #include <vector>
 #include <string>
 #include <stdexcept>
@@ -23,15 +24,15 @@ struct RenderPipeline {
     unsigned mPendingHistoryResets{};
     static RenderPipeline* GetSingleton(){static RenderPipeline p;return &p;}
 };
-namespace logger {template<class... T> void info(T&&...){}template<class... T> void error(T&&...){} }
+namespace logger {template<class... T> void info(T&&...){}template<class... T> void error(T&&...){}template<class... T> void warn(T&&...){} }
 struct ScopedD3D11PerformanceStage {template<class... T> ScopedD3D11PerformanceStage(T&&...){} };
 namespace TheosRenderPipeline {
 struct PerformanceTuning {struct Settings {struct Diagnostics {bool frameDetails{};} diagnostics;} settings;enum class D3D11Stage{kPresentationCopy};static PerformanceTuning* GetSingleton(){static PerformanceTuning p;return &p;}};
 struct GameSwapChain {};
 struct FsrHostResize {Upscaling::Extent render;HRESULT result{S_OK};};
-inline HRESULT ValidateFsrResize(UINT,const UINT*,IUnknown* const*){return S_OK;}
-inline HRESULT ValidateFsrResizeFlags(UINT,UINT){return S_OK;}
-struct FsrPresentation {static Upscaling::Result<std::optional<DXGI_SWAP_CHAIN_DESC>> TranslateResizeDescriptor(const DXGI_SWAP_CHAIN_DESC& d){return std::optional{d};}};
+struct FsrPresentation {static Upscaling::Result<std::optional<DXGI_SWAP_CHAIN_DESC>> TranslateResizeDescriptor(const DXGI_SWAP_CHAIN_DESC& d){
+    if(d.BufferDesc.Format!=DXGI_FORMAT_R8G8B8A8_UNORM)return std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::InvalidInput,E_INVALIDARG,"unsupported transport format"});
+    return std::optional{d};}};
 namespace SourceDLSSG {inline bool querySucceeds{};inline unsigned queries{};inline bool QueryRenderSize(UINT,UINT,int,int* w,int* h){++queries;*w=64;*h=64;return querySucceeds;}}
 namespace NeuralRendering {template<class A,class B> HRESULT RetireBeforeSourceResize(A a,B b){auto hr=a();return FAILED(hr)?hr:b();}}
 }
@@ -52,12 +53,14 @@ struct NvidiaHost {
     struct Settings {struct Creation {int AllocationQuality(){return 2;}} creation;Creation& Startup(){return creation;}} sourceUpscalerSettings_;
     struct Presenter {NvidiaHost* host;HRESULT WaitBeforeProducer(){return S_OK;}Upscaling::Result<void> Suspend(){return {};}Upscaling::Result<void> BeforeResize(){++host->retired;return {};}Upscaling::Result<FsrHostResize> Resize(const DXGI_SWAP_CHAIN_DESC&){return FsrHostResize{{64,64}};}Upscaling::Result<FsrHostResize> ResizeExternal(const DXGI_SWAP_CHAIN_DESC&,Upscaling::Extent e){return FsrHostResize{e};}} presenter{this};Presenter* fsrPresentation_{&presenter};
     DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
-    bool FsrActive()const{return false;}bool FsrFgActive()const{return mixed;}HRESULT FailureResult()const{return S_OK;}HRESULT UpdateFsrSuspension(){return S_OK;}bool FsrPresentSuspended(){return false;}
+    bool suspended{};unsigned resumes{};
+    bool FsrActive()const{return false;}bool FsrFgActive()const{return mixed;}HRESULT FailureResult()const{return S_OK;}HRESULT UpdateFsrSuspension(){if(suspended){suspended=false;++resumes;resetNextEvaluation_=true;}return S_OK;}bool FsrPresentSuspended(){return suspended;}
     bool xess{};bool XessActive()const{return xess;}
+    unsigned xessDeferredReported_{};
 #if defined(TRP_ENABLE_XESS)
     struct XessResources {
         bool ownerThread{true},canRetire{true};unsigned retirements{};
-        XessResources* Upscaler(){return this;}bool OnOwnerThread(){return ownerThread;}
+        XessResources* Upscaler(){return this;}bool OnOwnerThread(){return ownerThread;}DWORD OwnerThread(){return 1;}
         Upscaling::Result<void> Retire(){++retirements;if(!canRetire)return std::unexpected(Upscaling::RuntimeError{Upscaling::ErrorKind::RetirementFailure,E_FAIL,"XeSS reader blocked"});return {};}
     } xessOwner;
     XessResources* xessResources_{&xessOwner};
@@ -89,8 +92,23 @@ int main(){
     xess.xessOwner.ownerThread=true;const auto queries=SourceDLSSG::queries;
     Require(xess.ResizeFsrSwapChain(xess.outer,2,128,128,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==E_INVALIDARG && !xess.retired && xess.gameTargets_.live && SourceDLSSG::queries==queries,
         "unqualified new XeSS output size rejected before retirement without DLSS sizing");
-    Require(xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==S_OK && xess.retired==2 && SourceDLSSG::queries==queries,
-        "same-size owner-thread XeSS restore retains SDK dimensions and rebuilds after reader retirement");
+    xess.fsrDescriptor_.BufferCount=2;xess.fsrDescriptor_.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;
+    Require(xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==S_OK && !xess.retired && !xess.xessOwner.retirements && SourceDLSSG::queries==queries,
+        "same descriptor XeSS resize retains SDK and presenter without retirement");
+    xess.suspended=true;
+    Require(xess.ResizeFsrSwapChain(xess.outer,0,64,64,DXGI_FORMAT_UNKNOWN,0,nullptr,nullptr)==S_OK &&
+        xess.resumes==1 && !xess.suspended && xess.resetNextEvaluation_ && !xess.retired,
+        "no-op resize resumes suspended presenter and resets history without rebuilding SDK");
+    Require(xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_R16G16B16A16_FLOAT,0,nullptr,nullptr)==E_INVALIDARG && !xess.retired,
+        "unsupported format rejected before no-op admission or retirement");
+    UINT mask=1;IUnknown* queue=reinterpret_cast<IUnknown*>(1);
+    Require(xess.ResizeFsrSwapChain(xess.outer,17,64,64,DXGI_FORMAT_UNKNOWN,0,nullptr,nullptr)==E_INVALIDARG &&
+        xess.ResizeFsrSwapChain(xess.outer,0,64,64,DXGI_FORMAT_UNKNOWN,0,&mask,nullptr)==E_INVALIDARG &&
+        xess.ResizeFsrSwapChain(xess.outer,1,64,64,DXGI_FORMAT_UNKNOWN,0,&mask,nullptr)==E_INVALIDARG &&
+        xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_UNKNOWN,0,nullptr,&queue)==E_INVALIDARG &&
+        xess.ResizeFsrSwapChain(xess.outer,2,64,64,DXGI_FORMAT_UNKNOWN,DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING,nullptr,nullptr)==E_INVALIDARG &&
+        !xess.retired && xess.gameTargets_.live && !xess.xessOwner.retirements,
+        "no-op shortcut never bypasses count, node mask, queue or immutable flag validation");
     NvidiaHost blocked;blocked.xess=true;blocked.xessOwner.canRetire=false;
     Require(blocked.ResizeFsrSwapChain(blocked.outer,2,64,64,DXGI_FORMAT_R8G8B8A8_UNORM,0,nullptr,nullptr)==E_FAIL && blocked.gameTargets_.live &&
         !blocked.presentation_.buffers.empty() && blocked.xessOwner.retirements==1,

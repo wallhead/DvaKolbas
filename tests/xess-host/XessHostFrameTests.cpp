@@ -1,6 +1,7 @@
 // Execute the production host operations with SDK/bridge boundaries replaced
 // by CPU witnesses. Actual SDK admission/resumption is covered by XessTemporalGpu.
 #include "Upscaling/XessUpscaler.h"
+#include "Upscaling/XessRepeatPolicy.h"
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
@@ -40,6 +41,7 @@ struct NvidiaHost {
     struct SourceXessEvaluationOperations {
         NvidiaHost& host;RenderPipeline& pipeline;
         bool menu{};XessFrameAdmission admission{XessFrameAdmission::Ready};
+        bool reuseCompleted{};
         std::optional<RuntimeError> error;
         Result<UpscaleOutcome> Spatial(const UpscaleFrame&,const std::string& reason){++host.spatial;host.xessRecoveryReason_=reason;return UpscaleOutcome::SpatialRecovery;}
         Result<UpscaleOutcome> EvaluateUpscaler(UpscaleFrame&);
@@ -49,6 +51,8 @@ struct NvidiaHost {
         GenerationPreparationStatus PrepareGeneration(const UpscaleFrame&);
     };
     bool xessRecovery_{};unsigned xessDeferredReported_{},spatial{},nrCalls{};
+    std::uint64_t xessDuplicateCount_{},xessForeignThreadCount_{},xessRepeatedCount_{},xessEpoch_{1},presentCount_{20};
+    UpscaleFrame xessCompletedFrame_{};
     std::uint64_t communityEpoch_{1};std::string xessRecoveryReason_;
     bool fg{};UpscaleFrame fsrGenerationFrame_{};
     bool FsrFgActive()const{return fg;}
@@ -97,5 +101,32 @@ int main(){
         "FG receives completed XeSS/NR frame including measured camera and reset");
     generated.fg=false;
     Require(prepare.PrepareGeneration(frame)==GenerationPreparationStatus::NotRequested,"ordinary XeSS does not prepare FG");
+    frame.reset=false;
+    NvidiaHost cached;cached.fg=true;cached.xessCompletedFrame_=frame;
+    Require(CanRepeatXessOutput(frame,cached.xessCompletedFrame_,true,true,false,false),"same completed source can be repeated");
+    for(unsigned change=0;change<10;++change) {
+        auto invalid=frame;
+        if(change==0)++invalid.sourceId;
+        if(change==1)++invalid.sourceEpoch;
+        if(change==2)++invalid.render.width;
+        if(change==3)++invalid.display.width;
+        if(change==4)invalid.reset=true;
+        if(change==5)invalid.output=reinterpret_cast<ID3D11Texture2D*>(9);
+        Require(!CanRepeatXessOutput(invalid,cached.xessCompletedFrame_,change!=6,change!=7,change==8,change==9),
+            "new source/epoch/extent/allocation, reset, invalid cache, thread, menu or recovery cannot reuse stale output");
+    }
+    cached.xessCompletedFrame_.camera.identity=91;
+    NvidiaHost::SourceXessEvaluationOperations repeat{cached,pipeline,false,XessFrameAdmission::DuplicateSource,true};
+    const auto reused=repeat.EvaluateUpscaler(frame);
+    Require(reused && *reused==UpscaleOutcome::RepeatedOutput && !cached.spatial && !cached.nrCalls &&
+        !cached.xessResources_->owner.dispatches && !cached.xessResources_->bridge->signals,
+        "completed duplicate reuses final NR/effects image without spatial or SDK work");
+    Require(cached.fsrGenerationFrame_.camera.identity==91 && cached.fsrGenerationFrame_.sourceId==21 &&
+        !cached.fsrGenerationFrame_.reset && !cached.fsrGenerationFrame_.camera.reset,
+        "repeat preserves completed camera and maps fresh transport sequence without a source reset");
+    repeat.admission=XessFrameAdmission::Ready;repeat.reuseCompleted=false;frame.reset=false;++frame.sourceId;
+    const auto resumed=repeat.EvaluateUpscaler(frame);
+    Require(resumed && *resumed==UpscaleOutcome::Temporal && !frame.reset && cached.xessResources_->owner.dispatches==1,
+        "new source after cached repeat dispatches with reset false");
     std::puts("PASS: actual XeSS host deferred frames, NR isolation, resumption and vendor-failure retirement");
 }

@@ -3,6 +3,12 @@
 namespace TheosRenderPipeline
 {
     enum class GenerationBackendPreference { Auto, Nvidia, Fsr };
+    inline GenerationBackendPreference NormalizeGenerationBackendPreference(GenerationBackendPreference preference,
+        Upscaling::BackendKind upscaler)
+    {
+        return upscaler==Upscaling::BackendKind::Xess && preference==GenerationBackendPreference::Nvidia?
+            GenerationBackendPreference::Auto:preference;
+    }
     inline long ResolveGenerationBackend(GenerationBackendPreference preference,
         Upscaling::BackendKind upscaler, bool ordinaryDiagnostic = false)
     {

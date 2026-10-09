@@ -65,6 +65,10 @@ function ConvertFrom-PublicIniValues([hashtable]$Settings) {
     if($result['Settings/UpscaleType'] -eq '0' -and $native){$result['Settings/UpscaleType']='3'}
     $result['Settings/MipLodBias']=if($result['Settings/UseOptimalMipLodBias'] -eq 'true'){'0.0'}else{$Settings['Upscaling/MipLodBias']}
     $result['Settings/Sharpening']=if([double]::Parse($result['Settings/Sharpness'],[Globalization.CultureInfo]::InvariantCulture) -gt 0){'true'}else{'false'}
+    if($result['Settings/UpscaleType'] -eq '5'){
+        if($result['FrameGeneration/BackendPreference'] -eq '1'){$result['FrameGeneration/BackendPreference']='0'}
+        if($result['FrameGeneration/BackendPreference'] -eq '0'){$result['FrameGeneration/Enabled']='false'}
+    }
     $result['FrameGeneration/Backend']=if(($result['Settings/UpscaleType'] -eq '5' -and $result['FrameGeneration/BackendPreference'] -eq '0') -or ($result['Settings/UpscaleType'] -eq '4' -and $result['Experimental/FsrOrdinaryPresenter'] -eq 'true')){'0'}
         elseif($result['FrameGeneration/BackendPreference'] -eq '1'){'1'}
         elseif($result['FrameGeneration/BackendPreference'] -eq '2' -or $result['Settings/UpscaleType'] -eq '4'){'2'}else{'1'}

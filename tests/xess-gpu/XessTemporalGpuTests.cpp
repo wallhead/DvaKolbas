@@ -190,6 +190,16 @@ int wmain(int argc,wchar_t** argv)
             "older source in the same epoch cannot enter temporal processing");
         Require(host.Upscaler()->AdmitFrame(1,lastFrame.sourceEpoch+1)==XessFrameAdmission::Ready,
             "new epoch permits reset source numbering");
+        // A deferred duplicate never records work. The next source must execute
+        // on the actual retained context with the vendor reset flag still off.
+        ++lastFrame.sourceId;lastFrame.reset=false;
+        Require(host.Upscaler()->AdmitFrame(lastFrame.sourceId,lastFrame.sourceEpoch)==XessFrameAdmission::Ready,
+            "new source after duplicate admitted without reset");
+        auto retained=host.Bridge();Check(retained->SignalProducer(),"retained producer");ID3D12GraphicsCommandList* retainedList{};
+        Check(retained->Begin(&retainedList),"retained recording");
+        Accepted(host.Upscaler()->Dispatch(retainedList,host.Resources(),lastFrame));
+        Check(retained->Submit(),"retained SDK submission");Check(retained->WaitConsumer(),"retained consumer");++executed;
+        Require(!lastFrame.reset,"duplicate did not request SDK history reset");
         bool workerDeferred{};
         std::thread worker([&]{workerDeferred=host.Upscaler()->AdmitFrame(lastFrame.sourceId+1,lastFrame.sourceEpoch)==XessFrameAdmission::OffOwnerThread;});
         worker.join();Require(workerDeferred,"foreign thread defers before SDK or shared guide writes");

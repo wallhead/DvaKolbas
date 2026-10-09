@@ -84,6 +84,7 @@ struct State {
     std::unique_ptr<XessHostResources> xess;
     FsrColorConverter xessEncode;
     unsigned xessDispatches{};
+    bool xessLastDispatchReset{};
 #endif
     explicit State(const std::filesystem::path& plugin):resources(std::make_shared<FsrHostResources>(plugin)){}
     bool Retire(){
@@ -123,6 +124,7 @@ struct Operations {
         auto frame=snapshot;frame.input=f.input;frame.output=f.output;frame.depth=f.depth;frame.motion=f.motion;
         frame.jitterX=f.jitterX;frame.jitterY=f.jitterY;frame.reset|=f.reset;
         frame.colorIsLinear=true;frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;
+        state.xessLastDispatchReset=frame.reset;
         Accept(state.xess->PrepareInput(f.input,f.depth,f.motion));
         auto bridge=state.xess->Bridge();Gpu(bridge->SignalProducer());ID3D12GraphicsCommandList* list{};Gpu(bridge->Begin(&list));
         const auto dispatched=state.xess->Upscaler()->Dispatch(list,state.xess->Resources(),frame);
@@ -310,6 +312,7 @@ int wmain(int argc,wchar_t** argv){
         auto* dlss=DLSSBackend::GetSingleton();dlss->SetupDevice(state->rig.device11.Get(),state->rig.context11.Get());
         const auto firstDispatch=dlss->EvalSuccessCount();
 #endif
+        unsigned repeatedPresents{};
         for(unsigned epoch=0;epoch<2;++epoch){
             if(epoch){
                 Accept(state->presenter.BeforeResize());Neural(state->post->Retire());state->post.reset();VerifyCapture(*state,evidence);FgObservation::activeCapture=nullptr;
@@ -369,6 +372,13 @@ int wmain(int argc,wchar_t** argv){
                 if(local==79)inputs.motion=state->output.Get();
                 const auto result=SourceNvidiaFrameEvaluator::Evaluate(context,inputs,operations);Need(result.upscaled&&result.prepared,"actual NGX NR source handoff incomplete");
                 snapshot=operations.snapshot;
+#if defined(TRP_TEST_XESS_PRODUCER)
+                // SDK/NR use engine source IDs. Only presentation identities
+                // advance for an extra present of a completed source.
+                snapshot.sourceId=source+repeatedPresents;
+                if(local==12)Need(!state->xessLastDispatchReset,"duplicate forced a reset on the next actual XeSS dispatch");
+#endif
+                const auto transportSource=snapshot.sourceId;
                 // Jitter is zero in this scene, so either convention describes
                 // the same guides. Exercise actual SDK flag recreation without
                 // changing source reconstruction or the NR image.
@@ -376,7 +386,7 @@ int wmain(int argc,wchar_t** argv){
                 auto policy=state->resources->GenerationInputPolicy();policy.motionIncludesJitter=snapshot.motionConvention.includesJitter;
                 Accept(state->resources->EnsureInputPolicy(policy));
                 auto* policyDepth=state->resources->Depth11();auto* policyScene=state->presenter.SceneTarget11();
-                state->enhancedRows[source]=std::vector<uint8_t>(operations.final.begin()+size_t(display.height/2)*display.width*4,operations.final.begin()+size_t(display.height/2+1)*display.width*4);
+                state->enhancedRows[transportSource]=std::vector<uint8_t>(operations.final.begin()+size_t(display.height/2)*display.width*4,operations.final.begin()+size_t(display.height/2+1)*display.width*4);
                 context->CopyResource(state->presenter.SceneTarget11(),state->output.Get());
                 const bool requested=local!=16 && local!=17;const bool menu=local==24;
                 if(local==20)snapshot.depth=nullptr;
@@ -386,6 +396,9 @@ int wmain(int argc,wchar_t** argv){
                 const auto hr=state->presenter.Present(snapshot,outcome,state->ui.Get(),nullptr,true,menu,requested,0,0);
                 if(local==23){Need(hr==DXGI_ERROR_INVALID_CALL,"duplicate source identity was admitted");++evidence.suppressed;continue;}Gpu(hr);
                 const auto status=state->presenter.Status();evidence.callbacks+=status.callback.invocations;
+#if defined(TRP_TEST_XESS_PRODUCER)
+                if(local==12)Need(status.decision.generate && !status.decision.reset,"new real source after repeat failed to retain actual FG history");
+#endif
                 if(local==46 || local==48) {
                     Need(status.decision.generate && status.decision.reset,"actual guide-policy recreation did not resume with FG reset");
                     Need(state->presenter.SwapChain()==originalChain && state->resources->Depth11()==policyDepth &&
@@ -400,14 +413,30 @@ int wmain(int argc,wchar_t** argv){
                 if(local==80 && !omitNr)Need(!status.decision.generate,"NR recovery reset source generated");
                 if(local==18 || local==22 || local==25 || local==29 || local==(omitNr?80:81) || (local==33 && !omitNr) || local==41){Need(status.decision.generate && status.decision.reset,"resume did not generate with reset history");++evidence.resetReentries;}
                 if(local==32)++evidence.styleReentries;
-                if(status.decision.generate)state->eligible.insert(source);
+                if(status.decision.generate)state->eligible.insert(transportSource);
                 Need(!state->resources->ContextOwned() && !GetModuleHandleW(L"amd_fidelityfx_upscaler_dx12.dll"),"inactive ML SR preference created an upscaler");
                 if(local==40)PendingReaderSuspend(*state,evidence);
+#if defined(TRP_TEST_XESS_PRODUCER)
+                if(local==11) {
+                    const auto dispatches=state->xessDispatches,nrDispatches=evidence.nr;
+                    const auto completed=Read(context,state->output.Get());
+                    Gpu(state->presenter.WaitBeforeProducer());
+                    ++repeatedPresents;++snapshot.sourceId;snapshot.reset=snapshot.camera.reset=false;
+                    state->enhancedRows[snapshot.sourceId]=state->enhancedRows[transportSource];
+                    Gpu(state->presenter.Present(snapshot,UpscaleOutcome::RepeatedOutput,state->ui.Get(),nullptr,true,false,true,0,0));
+                    const auto repeat=state->presenter.Status();evidence.callbacks+=repeat.callback.invocations;
+                    Need(repeat.decision.admit && !repeat.decision.prepare && !repeat.decision.generate && !repeat.decision.reset,
+                        "actual FG repeat prepared stale guides or armed history reset");
+                    Need(state->xessDispatches==dispatches && evidence.nr==nrDispatches && Read(context,state->output.Get())==completed,
+                        "repeat changed completed NR pixels or executed another source");
+                }
+#endif
             }
         }
         Accept(state->presenter.BeforeResize());Neural(state->post->Retire());state->post.reset();VerifyCapture(*state,evidence);++evidence.retirements;
 #if defined(TRP_TEST_XESS_PRODUCER)
         Need(state->xessDispatches==160 && evidence.sources==160,"not every temporal source used actual XeSS reconstruction");
+        Need(repeatedPresents==2,"both actual XeSS epochs must exercise completed repeats and non-reset reentry");
         Need(!GetModuleHandleW(L"nvngx_dlss.dll"),"XeSS route loaded DLSS SR");
 #else
         Need(dlss->EvalSuccessCount()-firstDispatch==160 && evidence.sources==160,"not every source used actual NGX reconstruction");

@@ -30,6 +30,10 @@ int main() {
     draft.generationBackendPreference=GenerationBackendPreference::Fsr;draft.generationBackend=2;draft.generationEnabled=true;
     const auto fgDraft=PrepareRendererStartupDraft(draft,true);
     check(fgDraft.generationBackend==2 && fgDraft.generationEnabled,"XeSSStartupPreservesExplicitFsrFgRequest");
+    draft.generationBackendPreference=GenerationBackendPreference::Nvidia;
+    const auto normalized=PrepareRendererStartupDraft(draft,true);
+    check(normalized.generationBackendPreference==GenerationBackendPreference::Auto &&
+        normalized.generationBackend==0 && !normalized.generationEnabled,"XeSSStartupNormalizesUnavailableNvidiaFg");
     draft.generationBackendPreference=GenerationBackendPreference::Auto;draft.generationBackend=0;draft.generationEnabled=false;
     draft.upscaleType=DLAA;draft.xessMode={true,false,true,false,false,0,false};
     SetRendererUpscaleMode(draft,Xess);

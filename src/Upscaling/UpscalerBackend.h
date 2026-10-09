@@ -19,7 +19,9 @@ namespace TheosRenderPipeline::Upscaling
     enum class ColorEncoding { Unknown, Linear, Gamma22, SRGB };
     struct ProviderInfo { std::uint64_t id{}; std::string name; };
     enum class GenerationPreparationStatus { NotRequested, Succeeded, Failed };
-    enum class UpscaleOutcome { Temporal, SpatialRecovery, SkippedInvalidInput, Fatal };
+    // RepeatedOutput reuses an already completed real source. It does not
+    // acknowledge new SDK work or supply fresh guides for interpolation.
+    enum class UpscaleOutcome { Temporal, SpatialRecovery, SkippedInvalidInput, Fatal, RepeatedOutput };
     enum class PresentationKind { Ordinary, Nvidia, Fsr };
     enum class ErrorKind {
         MissingRuntime, WrongArchitecture, MissingExport, IncompatibleAbi,

@@ -53,8 +53,15 @@ namespace TheosRenderPipeline::Upscaling
         if (gap) return suppress("Source ID discontinuity");
         if (!requested) return suppress("Generation not requested");
         if (menu) return suppress("Menu or loading");
-        if (outcome != UpscaleOutcome::Temporal) return suppress("Non-temporal source");
         if (!uiComplete) return suppress("UI not completed");
+        // A new transport present of a completed image is not a new source.
+        // Keep accepted SDK history, but never prepare from its stale guides.
+        if (outcome == UpscaleOutcome::RepeatedOutput) {
+            if (changed || frame.reset || frame.camera.reset || !ValidCamera(frame.camera))
+                return suppress("Repeated output crossed a source reset");
+            return {false, false, resetArmed_, true, "No new source; completed output retained"};
+        }
+        if (outcome != UpscaleOutcome::Temporal) return suppress("Non-temporal source");
         if (!std::isfinite(frame.deltaMilliseconds) || frame.deltaMilliseconds <= 0) return suppress("Invalid source time");
         if (frame.deltaMilliseconds >= 100) return suppress("Source stalled");
         if ((frame.backend != BackendKind::Fsr && frame.backend != BackendKind::Dlss && frame.backend != BackendKind::Dlaa &&

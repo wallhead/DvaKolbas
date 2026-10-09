@@ -15,6 +15,15 @@ void Check(bool value, const char* message)
 void IndependentGenerationPreference()
 {
     using namespace TheosRenderPipeline;
+    CSimpleIniA xess;
+    xess.SetValue("Upscaling", "Upscaler", "XeSS");
+    xess.SetValue("FrameGeneration", "Backend", "NVIDIA");
+    xess.SetBoolValue("FrameGeneration", "Enabled", true);
+    Check(PublicIni::Decode(xess).empty() && xess.GetLongValue("FrameGeneration", "Backend", -1)==0 &&
+        xess.GetLongValue("FrameGeneration", "BackendPreference", -1)==0 && !xess.GetBoolValue("FrameGeneration", "Enabled", true),
+        "XeSS startup normalizes unavailable NVIDIA backend to Auto SR-only, matching menu");
+    Check(PublicIni::Encode(xess).empty() && std::string_view(xess.GetValue("FrameGeneration", "Backend", ""))=="Auto",
+        "normalized XeSS choice survives Save and restart");
     for (const char* upscaler : {"DLSS", "FSR"}) {
         for (const char* preference : {"Auto", "NVIDIA", "FSR"}) {
             CSimpleIniA configured;
@@ -98,6 +107,14 @@ int main(int argc, char** argv)
     std::filesystem::remove(legacyPath);
     Check(legacyResult>=0 && legacyError.empty() && notice.find("[Debug] NRLegacyRuntime")!=std::string::npos &&
         !loaded.GetValue("NeuralRendering Advanced","Runtime",nullptr),"file loader reports Legacy before decoder removes it");
+    CSimpleIniA nvidiaXeSS;nvidiaXeSS.SetValue("Upscaling","Upscaler","XeSS");
+    nvidiaXeSS.SetValue("FrameGeneration","Backend","NVIDIA");nvidiaXeSS.SetBoolValue("FrameGeneration","Enabled",true);
+    Check(nvidiaXeSS.SaveFile(legacyPath.c_str())>=0,"XeSS notice fixture saved");
+    CSimpleIniA normalized;const auto [normalizedResult,normalizedError]=SettingsFile::LoadRenderer(normalized,legacyPath.c_str(),&notice);
+    std::filesystem::remove(legacyPath);
+    Check(normalizedResult>=0 && normalizedError.empty() && notice.find("Backend=NVIDIA")!=std::string::npos &&
+        notice.find("SR-only")!=std::string::npos && normalized.GetLongValue("FrameGeneration","Backend",-1)==0,
+        "startup file loader logs actionable XeSS NVIDIA normalization before decoding");
     IndependentGenerationPreference();
     AutomaticNeuralRuntime();
     CSimpleIniA ini;

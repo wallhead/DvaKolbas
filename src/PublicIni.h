@@ -129,6 +129,12 @@ template<class Ini> std::string Decode(Ini& ini)
     ini.SetValue("Settings", "MipLodBias", automaticBias ? "0.0" : bias.c_str());
     ini.SetBoolValue("Settings", "Sharpening", ini.GetDoubleValue("Settings", "Sharpness", 0) > 0);
     const bool ordinary = ini.GetBoolValue("Experimental", "FsrOrdinaryPresenter", false);
+    if(mode==5) {
+        const auto preference=NormalizeGenerationBackendPreference(
+            static_cast<GenerationBackendPreference>(ini.GetLongValue("FrameGeneration", "BackendPreference", 0)),Upscaling::BackendKind::Xess);
+        ini.SetLongValue("FrameGeneration", "BackendPreference", static_cast<long>(preference));
+        if(preference==GenerationBackendPreference::Auto)ini.SetBoolValue("FrameGeneration", "Enabled", false);
+    }
     ini.SetLongValue("FrameGeneration", "Backend", ResolveGenerationBackend(
         static_cast<GenerationBackendPreference>(ini.GetLongValue("FrameGeneration", "BackendPreference", 0)),
         mode == 5 ? Upscaling::BackendKind::Xess : mode == 4 ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss, ordinary));

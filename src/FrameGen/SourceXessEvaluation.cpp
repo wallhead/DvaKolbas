@@ -6,6 +6,7 @@
 #include "CommunityShaderIntegration.h"
 #include "PerformanceTuning.h"
 #include "SourceInternalScope.h"
+#include "Upscaling/XessRepeatPolicy.h"
 
 #if defined(TRP_ENABLE_XESS)
 using namespace TheosRenderPipeline;
@@ -17,12 +18,13 @@ struct NvidiaHost::SourceXessEvaluationOperations
     bool menu{};
     bool nativeUIHandoff{};
     XessFrameAdmission admission{XessFrameAdmission::Ready};
+    bool reuseCompleted{};
     std::optional<RuntimeError> error;
 
     void Trace(const char* phase)const {
         if(host.evaluationCount_<3)logger::info("[XeSS boundary] evaluation={} source={} phase={}",host.evaluationCount_,pipeline.mRenderedFrameCount,phase);
     }
-    void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){Trace("copy-input-enter");context->CopyResource(frame.input,frame.color);Trace("copy-input-complete");}
+    void CopyInput(ID3D11DeviceContext* context,const UpscaleFrame& frame){if(reuseCompleted)return;Trace("copy-input-enter");context->CopyResource(frame.input,frame.color);Trace("copy-input-complete");}
     bool NeuralEligible()const {
 #if !defined(TRP_NO_NEURAL_RENDERING)
         return NeuralRendering::SourceWorldEligible(!menu && !host.xessRecovery_,nativeUIHandoff,
@@ -44,10 +46,12 @@ struct NvidiaHost::SourceXessEvaluationOperations
     bool EvaluateOptionalPostUpscale(UpscaleFrame& frame,UpscaleOutcome outcome){
         if(admission!=XessFrameAdmission::Ready)return true;
 #if !defined(TRP_NO_NEURAL_RENDERING)
-        return host.EvaluateCommunityNeuralAfter(frame,outcome,NeuralEligible());
+        if(!host.EvaluateCommunityNeuralAfter(frame,outcome,NeuralEligible()))return false;
 #else
-        (void)frame;(void)outcome;return true;
+        (void)outcome;
 #endif
+        if(outcome==UpscaleOutcome::Temporal)host.xessCompletedFrame_=frame;
+        return true;
     }
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame& frame)
@@ -57,6 +61,7 @@ struct NvidiaHost::SourceXessEvaluationOperations
             // SourceFrameEvaluator holds a copy. Capture here, after camera
             // measurements, XeSS execution and NR have updated that copy.
             host.fsrGenerationFrame_=frame;
+            host.fsrGenerationFrame_.sourceId=host.presentCount_+1;
             return GenerationPreparationStatus::Succeeded;
         }
 #endif
@@ -65,6 +70,7 @@ struct NvidiaHost::SourceXessEvaluationOperations
     }
     void RenderReShade(const UpscaleFrame& frame,bool before)
     {
+        if(reuseCompleted)return;
         Trace(before?"ReShade-before-enter":"ReShade-after-enter");
         auto& effects=ReShadeIntegration::Get();effects.SetBeforeUpscaling(pipeline.mReShadeBeforeUpscaling);
         const auto result=effects.Render(before?frame.input:frame.output,menu?nullptr:frame.depth,
@@ -85,14 +91,27 @@ struct NvidiaHost::SourceXessEvaluationOperations
     {
         if(host.xessRecovery_)return Spatial(frame,host.xessRecoveryReason_);
         if(admission!=XessFrameAdmission::Ready) {
+            if(admission==XessFrameAdmission::DuplicateSource)++host.xessDuplicateCount_;
+            else ++host.xessForeignThreadCount_;
+            if(reuseCompleted) {
+                ++host.xessRepeatedCount_;
+#if defined(TRP_ENABLE_FSR_FG)
+                if(host.FsrFgActive()) {
+                    host.fsrGenerationFrame_=host.xessCompletedFrame_;
+                    host.fsrGenerationFrame_.sourceId=host.presentCount_+1;
+                    host.fsrGenerationFrame_.reset=host.fsrGenerationFrame_.camera.reset=false;
+                }
+#endif
+                return UpscaleOutcome::RepeatedOutput;
+            }
             const auto bit=admission==XessFrameAdmission::DuplicateSource?1u:2u;
             const auto reason=admission==XessFrameAdmission::DuplicateSource?
                 "repeated/non-advancing source; spatial this frame, XeSS context retained":
                 "off owner thread; spatial this frame, XeSS context retained";
             if(!(host.xessDeferredReported_ & bit)) {
                 host.xessDeferredReported_ |= bit;
-                logger::warn("[XeSS defer] source={} epoch={} ownerThread={} currentThread={} reason={}",
-                    frame.sourceId,frame.sourceEpoch,host.xessResources_->Upscaler()->OwnerThread(),GetCurrentThreadId(),reason);
+                logger::warn("[XeSS defer] source={} sourceEpoch={} contextEpoch={} ownerThread={} currentThread={} reason={}",
+                    frame.sourceId,frame.sourceEpoch,host.xessEpoch_,host.xessResources_->Upscaler()->OwnerThread(),GetCurrentThreadId(),reason);
             }
             return Spatial(frame,reason);
         }
@@ -163,7 +182,9 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     frame.backend=BackendKind::Xess;frame.color=gameTargets_.GameFacing();frame.input=gameTargets_.UpscaleInput();frame.output=gameTargets_.UpscaleOutput();
     frame.depth=pipeline.mDepthBuffer.mImage;frame.motion=pipeline.mMotionVectors.mImage;
     frame.render=frame.subrect={renderWidth_,renderHeight_};frame.display={outputWidth_,outputHeight_};
-    frame.sourceId=FsrFgActive()?presentCount_+1:pipeline.mRenderedFrameCount+1;frame.sourceEpoch=xessEpoch_;
+    // Engine IDs belong to XeSS/NR history; presents can repeat an engine frame.
+    // Only the completed FG snapshot maps to the fresh transport sequence.
+    frame.sourceId=pipeline.mRenderedFrameCount+1;frame.sourceEpoch=xessEpoch_;
 #if !defined(TRP_NO_NEURAL_RENDERING)
     frame.sourceEpoch=communityEpoch_;
 #endif
@@ -174,43 +195,41 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     auto* ui=RE::UI::GetSingleton();const bool menu=ui && (ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
     auto* owner=xessResources_->Upscaler();
     auto admission=!xessRecovery_ && owner?owner->AdmitFrame(frame.sourceId,frame.sourceEpoch):XessFrameAdmission::Ready;
-    // Present identities stay monotonic for the FG transport, but a repeated
-    // engine-rendered source must not execute XeSS or NR a second time.
-    if(FsrFgActive() && admission==XessFrameAdmission::Ready && xessFgHasSource_ &&
-        xessFgSourceEpoch_==frame.sourceEpoch && pipeline.mRenderedFrameCount<=xessFgRenderedCount_)
-        admission=XessFrameAdmission::DuplicateSource;
     SourceXessEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_),nativeUIHandoff,admission};
+    operations.reuseCompleted=CanRepeatXessOutput(frame,xessCompletedFrame_,xessHasCompleted_,
+        admission==XessFrameAdmission::DuplicateSource,operations.menu,xessRecovery_);
 #if defined(TRP_ENABLE_FSR_FG)
     if(FsrFgActive()) {
-        fsrGenerationFrame_=frame;fsrSourceRenderedCount_=pipeline.mRenderedFrameCount;
+        fsrGenerationFrame_=frame;fsrGenerationFrame_.sourceId=presentCount_+1;fsrSourceRenderedCount_=pipeline.mRenderedFrameCount;
         fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
         fsrMenu_=operations.menu || pipeline.FrameGenerationTransitionBlocked();
     }
 #endif
     const auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
-    if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
+    if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery && result.outcome!=UpscaleOutcome::RepeatedOutput) {
         if(operations.error){status_=operations.error->message;logger::error("[XeSS frame] native=0x{:08X} {}",std::uint32_t(operations.error->nativeResult),status_);}
         FailLifecycle(E_FAIL,"XeSS frame delivery");return false;
     }
     context_->CopyResource(presentation_.Buffers()[index].Get(),frame.output);
     const bool temporal=result.outcome==UpscaleOutcome::Temporal;
+    const bool repeated=result.outcome==UpscaleOutcome::RepeatedOutput;
 #if defined(TRP_ENABLE_FSR_FG)
     if(FsrFgActive()) {
         fsrGenerationOutcome_=result.outcome;fsrSourcePending_=true;
-        if(temporal) {
-            ++fsrGuideCaptureCount_;xessFgHasSource_=true;
-            xessFgRenderedCount_=pipeline.mRenderedFrameCount;xessFgSourceEpoch_=frame.sourceEpoch;
-        }
+        if(temporal)++fsrGuideCaptureCount_;
     }
 #endif
-    const bool changed=evaluationCount_==0 || temporal!=lastXessTemporal_;
-    lastXessTemporal_=temporal;resetNextEvaluation_=!temporal;
+    const bool changed=!repeated && (evaluationCount_==0 || temporal!=lastXessTemporal_);
+    if(!repeated){lastXessTemporal_=temporal;resetNextEvaluation_=!temporal;xessHasCompleted_=temporal;}
     if(temporal){pipeline.mPendingHistoryResets=0;loadingScreenRoute_.TemporalSucceeded();status_=FsrFgActive()?"XeSS active | FSR FG presenter":"XeSS active | ordinary presentation | FG off";}
-    else {loadingScreenRoute_.SpatialSucceeded();status_="XeSS requested; spatial recovery: "+xessRecoveryReason_;}
+    else if(!repeated){loadingScreenRoute_.SpatialSucceeded();status_="XeSS requested; spatial recovery: "+xessRecoveryReason_;}
     if(changed || (PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails && evaluationCount_%600==0))
-        logger::info("[XeSS state] source={} epoch={} ownerThread={} currentThread={} route={} render={}x{} display={}x{} jitter=({},{}) motionScale=({},{}) guide=original-engine-output reset={} reason={}",
-            frame.sourceId,frame.sourceEpoch,xessResources_->Upscaler()?xessResources_->Upscaler()->OwnerThread():0,GetCurrentThreadId(),temporal?"temporal":"spatial",renderWidth_,renderHeight_,outputWidth_,outputHeight_,
+        logger::info("[XeSS state] source={} sourceEpoch={} contextEpoch={} ownerThread={} currentThread={} route={} render={}x{} display={}x{} jitter=({},{}) motionScale=({},{}) guide=original-engine-output reset={} reason={}",
+            frame.sourceId,frame.sourceEpoch,xessEpoch_,xessResources_->Upscaler()?xessResources_->Upscaler()->OwnerThread():0,GetCurrentThreadId(),repeated?"repeated":temporal?"temporal":"spatial",renderWidth_,renderHeight_,outputWidth_,outputHeight_,
             frame.jitterX,frame.jitterY,frame.motionConvention.scaleX,frame.motionConvention.scaleY,frame.reset,status_);
+    if(evaluationCount_%600==0 && (xessDuplicateCount_ || xessForeignThreadCount_))
+        logger::info("[XeSS defer counts] duplicate={} completedReused={} foreignThread={} contextEpoch={}",
+            xessDuplicateCount_,xessRepeatedCount_,xessForeignThreadCount_,xessEpoch_);
     ++evaluationCount_;return true;
 #else
     (void)swapChain;(void)nativeUIHandoff;return false;

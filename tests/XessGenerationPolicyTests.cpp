@@ -38,6 +38,23 @@ int main()
     history.AcknowledgePrepared(2);
     Require(TheosRenderPipeline::SourceGenerationEnabled(0, true, decision.generate), "completed source can prepare NVIDIA FG");
     Require(!TheosRenderPipeline::SourceGenerationEnabled(0, true, decision.generate, true), "NVIDIA transition blocks generation");
+    FsrGenerationHistory repeated;
+    decision = repeated.Decide(Frame(1), UpscaleOutcome::Temporal, true, false, true);
+    repeated.AcknowledgePrepared(1);
+    decision = repeated.Decide(Frame(2), UpscaleOutcome::RepeatedOutput, true, false, true);
+    Require(decision.admit && !decision.prepare && !decision.generate && !decision.reset,
+        "cached source gets a fresh presentation ID without generation or history reset");
+    decision = repeated.Decide(Frame(3), UpscaleOutcome::Temporal, true, false, true);
+    Require(decision.prepare && decision.generate && !decision.reset, "new source after repeated output retains FG history");
+    repeated.AcknowledgePrepared(3);
+    decision = repeated.Decide(Frame(4, 8), UpscaleOutcome::RepeatedOutput, true, false, true);
+    Require(!decision.generate && decision.reset, "repeat cannot conceal an epoch change");
+    FsrGenerationHistory noHistory;
+    decision = noHistory.Decide(Frame(1), UpscaleOutcome::RepeatedOutput, true, false, true);
+    Require(!decision.generate && decision.reset, "repeat cannot create prepared history");
+    repeated.Invalidate();
+    decision = repeated.Decide(Frame(5, 8), UpscaleOutcome::RepeatedOutput, true, false, true);
+    Require(decision.reset, "repeat preserves an already pending reset");
     decision = history.Decide(Frame(2), UpscaleOutcome::Temporal, true, false, true);
     Require(!decision.admit && !decision.generate, "duplicate XeSS source never generates");
     for (auto outcome : {UpscaleOutcome::SpatialRecovery, UpscaleOutcome::SkippedInvalidInput, UpscaleOutcome::Fatal}) {

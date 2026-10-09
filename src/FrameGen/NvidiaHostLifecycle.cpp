@@ -219,7 +219,7 @@ void NvidiaHost::ReleaseSourceUpscaler(bool retainFsrDevice)
         const auto retired=xessResources_->Retire();
         if(!retired){status_=retired.error().message;FailLifecycle(E_FAIL,"XeSS feature release");return;}
         xessResources_.reset();xessEncode_={};lastXessTemporal_=false;xessRecovery_=false;xessRecoveryReason_.clear();xessDeferredReported_=0;
-        xessFgHasSource_=false;
+        xessHasCompleted_=false;xessCompletedFrame_={};
     }
 #endif
 #if defined(TRP_ENABLE_FSR)

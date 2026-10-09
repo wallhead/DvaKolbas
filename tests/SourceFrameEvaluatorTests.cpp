@@ -94,6 +94,11 @@ int main()
         "spatial recovery never claims temporal generation readiness");
     Require(recovery.events == std::vector<std::string>{"copy", "optional", "upscale", "effects-after", "post"},
         "spatial output completes effects without preparing generation");
+    Operations repeat;repeat.outcome=UpscaleOutcome::RepeatedOutput;
+    const auto repeated=SourceFrameEvaluator::Evaluate(context.Get(),frame,repeat);
+    Require(repeated.outcome==UpscaleOutcome::RepeatedOutput && repeated.preparation==GenerationPreparationStatus::NotRequested &&
+        repeat.events==std::vector<std::string>{"copy","optional","upscale"},
+        "completed repeat skips post effects, NR, source success acknowledgement and FG preparation");
     Operations postFailed; postFailed.postOK=false;
     const auto unavailable=SourceFrameEvaluator::Evaluate(context.Get(),frame,postFailed);
     Require(unavailable.outcome==UpscaleOutcome::Fatal && postFailed.events.back()=="post",
