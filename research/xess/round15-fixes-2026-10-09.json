@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-09",
+  "sourceRevision": "09816a0ccd16da293e09eb87c3ade975a55895c6",
+  "progress": "6 of 8 milestones complete; milestone 7 partial",
+  "review": "COMMIT_REVIEW_2026-10-09_ROUND15.md",
+  "resolved": {
+    "R15-1": "Ordinary optional RCAS compile/layout/dispatch failures disable sharpening with one warning and visible unavailable status. Delivery and FG continue with zero applied sharpness. Wrong-device, invalid strength and device loss remain fatal; removal is checked before and after Apply. Shader compilation and layout preflight occur during initialization, not on slider use.",
+    "R15-2": "Ordinary XeSS SR-only uses non-strict source-device acquisition. FSR FG startup and recreation retain strict same-adapter native ownership.",
+    "R15-3": "Same-size FSR presenter resize accepts zero, current AMD buffer count, or original game buffer count without retiring owners.",
+    "R15-4": "Successful INI decoding emits a notice when requested XeSS Auto FG is normalized off. Explicit FSR FG remains enabled. Canonical enum parsing stays strict: the review claim of case-insensitive decoding was not reproduced.",
+    "R15-5": "Cached nativeOutput follows whether a usable ReShade module is present.",
+    "R15-6": "RCAS tooltip explicitly describes after-upscaling ReShade effects and possible grain/noise sharpening. Execution order unchanged."
+  },
+  "deferred": {
+    "R15-7": "Shader fusion and performance capture deferred; moving RCAS into XeSS encode would place it before After NR. No pipeline-order change or benchmark."
+  },
+  "regressions": {
+    "red": [
+      "Missing shader rejected XeSS initialization.",
+      "XeSS Auto requested-FG normalization lacked a notice.",
+      "Same-size original buffer count retired running owners.",
+      "Unusable ReShade addon API rejected real SR-only XeSS initialization."
+    ],
+    "green": [
+      "Missing and broken shader cases preserve exact scene pixels/alpha and log one notice.",
+      "Unsupported BGRA8 preflight disables sharpening and preserves pixels/alpha.",
+      "Cross-device context rejected even after optional sharpening becomes unavailable.",
+      "Completed-frame and FG metadata contain actual zero sharpness after optional bypass.",
+      "Device-loss host failure never publishes an accepted FG source.",
+      "Counts 1 and 3 retain owners on same-size resize; minimize/restore regressions pass.",
+      "Auto notice and explicit FSR preservation pass.",
+      "Real official XeSS initializes with the unusable ReShade API fixture in SR-only mode; strict FSR ownership still rejects it."
+    ],
+    "review": "Final independent read-only review found no remaining actionable issues after post-Apply device-loss check and applied-strength metadata coverage."
+  },
+  "verification": {
+    "allTargetsReleaseBuildPassed": true,
+    "focusedTestsPassed": 18,
+    "actualReShadeRoutes": [
+      "--ordinary-reshade",
+      "--require-reshade",
+      "--fsr-reshade",
+      "--xess-first"
+    ],
+    "gpu": [
+      {
+        "revision": "09816a0ccd16da293e09eb87c3ade975a55895c6",
+        "quality": "native",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedPixelReadbacks": 134,
+        "uiFailures": 0,
+        "retirementFailures": 0,
+        "qualified": true
+      },
+      {
+        "revision": "09816a0ccd16da293e09eb87c3ade975a55895c6",
+        "quality": "performance",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedPixelReadbacks": 134,
+        "uiFailures": 0,
+        "retirementFailures": 0,
+        "qualified": true
+      }
+    ],
+    "logSha256": {
+      "r15-red-tests.log": "5672945f43487cfdaa24d3d2078d33f55930e14c80b19fdac54e37b9529e6b03",
+      "r15-compat-red-tests.log": "69eba993bf78c86ae58fe99005e7be6cc53aba453b7e2535f7952aca5059d004",
+      "r15-clean-build.log": "659aa5d17a1d9767ac59d6b2ab4d02eda4a3dfb7a3302a96a10f034325345fcd",
+      "r15-clean-tests.log": "9606d2bf1f4d3df3ecf794033e665737e069a084ff157340bf5412a3ed876343"
+    }
+  },
+  "trial": {
+    "installed": true,
+    "pluginSha256": "df96d6812ec020734a0996b6f0f511efbcc5ad7f5e1bc56f2cf84a01b48cf367",
+    "archiveSha256": "176759e128f8b416870a74b672d4ceaadb623850f127c91c5186d5d140c2caca",
+    "verifiedArchiveFiles": 14,
+    "iniPreserved": true,
+    "mo2SettingsPreserved": true,
+    "previousTrialRetained": true,
+    "gameplayQualified": false
+  },
+  "limits": [
+    "New-build Skyrim sharpness and DXGI output-FPS visual confirmation remains pending.",
+    "GPU validation used RTX 4080 SUPER, XeSS and FSR3 FG; it does not qualify Intel FG, NVIDIA FG on XeSS, other GPUs or all ReShade versions.",
+    "Device removal is guarded in production and mocked at the host boundary; physical GPU device removal was not forced."
+  ]
+}
