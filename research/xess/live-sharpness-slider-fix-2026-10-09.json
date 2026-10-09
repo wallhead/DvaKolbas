@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-09",
+  "sourceRevision": "69605c309804b83a54818139084255d8f7635f05",
+  "milestone": "7 partial; 6 of 8 complete",
+  "reportedSymptom": "XeSS End-menu sharpness slider visibly has no effect.",
+  "gameLogBeforeSha256": "e2c0486eb9f8f3f058bdca2428df19eea93c727b058b3f9782bb8e4c955ae040",
+  "rootCauses": [
+    "ProjectRendererLiveEdits omitted XeSS sharpness, so slider release did not project the changed strength.",
+    "ApplyImpl live-only merge replaced all XeSS settings with pending settings, discarding the changed strength.",
+    "Selective merge also requires retaining requested sharpness when taking effective allocation fields; otherwise unrelated edits overwrite strengths awaiting Present adoption."
+  ],
+  "fix": "Project XeSS sharpness; preserve pending quality/encoding separately; retain requested strength across unrelated live edits.",
+  "regression": {
+    "firstRed": "FAIL XeSS slider release submits a live sharpness edit through the controller",
+    "reviewRed": "FAIL unrelated live edits preserve XeSS sharpness while its Present adoption is pending",
+    "green": "Actual production controller and AfterPresent path adopt strengths 1, 0 and .65; pending Native quality/sRGB encoding stay pending while Performance startup allocation stays live.",
+    "review": "Read-only reviewer identified pending-strength loss; regression reproduced it before repair; follow-up found no remaining actionable findings."
+  },
+  "verification": {
+    "allTargetsBuildPassed": true,
+    "focusedTestsPassed": 11,
+    "coverage": [
+      "settings controller",
+      "ImGui release transaction",
+      "XeSS settings persistence",
+      "RCAS pixel/alpha/state checks",
+      "real ReShade",
+      "XeSS NR FSR FG Native/Performance",
+      "host frame recovery",
+      "deferred settings",
+      "legacy NR isolation",
+      "community NR repair"
+    ],
+    "gpuReceipts": [
+      {
+        "qualified": true,
+        "revision": "69605c309804b83a54818139084255d8f7635f05",
+        "quality": "native",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "mlFgAvailability": "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. FSR4 upscaling does not enable ML FG. Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FrameGeneration] FsrProvider=FSR3, then restart.",
+        "inputPolicyReentries": 4,
+        "sourceDepthFormat": "R24G8_TYPELESS",
+        "sourceDepthStencil": true,
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedCallbacks": 138,
+        "generatedPixelReadbacks": 134,
+        "changingGeneratedReadbacks": 132,
+        "uiChecks": 292,
+        "uiFailures": 0,
+        "colorChecks": 158,
+        "readerRetirements": 3,
+        "retirementFailures": 0,
+        "pendingReaderRetirements": 2,
+        "resetReentries": 14,
+        "sdkWaits": 9,
+        "resizes": 1,
+        "suspensions": 2,
+        "failure": "",
+        "hashes": {
+          "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+          "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+          "executable": "942a34e0078da6c255fb01811f3760d8e5456efe0a91da01f5cde491571e9f7b",
+          "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+          "rcas": "87f0ff6352aa2666ab3361989a6cb998442ea303abe6aafc7357a8ddfc3ff0d1",
+          "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+        }
+      },
+      {
+        "qualified": true,
+        "revision": "69605c309804b83a54818139084255d8f7635f05",
+        "quality": "performance",
+        "device": "vendor=10DE device=2702",
+        "fgProvider": "3.1.6",
+        "mlFgAvailability": "FSR4 ML frame generation is unavailable in this device's FG catalog. The official runtime requires Windows 11, Radeon RX 9000 or later and DirectX 12 Agility SDK 1.4.9+. FSR4 upscaling does not enable ML FG. Close Skyrim, edit SKSE/Plugins/RaZkolbaS.ini: [FrameGeneration] FsrProvider=FSR3, then restart.",
+        "inputPolicyReentries": 4,
+        "sourceDepthFormat": "R24G8_TYPELESS",
+        "sourceDepthStencil": true,
+        "xessDispatches": 160,
+        "nrDispatches": 152,
+        "fsrSrCreates": 0,
+        "fsrSrDispatches": 0,
+        "generatedCallbacks": 138,
+        "generatedPixelReadbacks": 134,
+        "changingGeneratedReadbacks": 132,
+        "uiChecks": 292,
+        "uiFailures": 0,
+        "colorChecks": 158,
+        "readerRetirements": 3,
+        "retirementFailures": 0,
+        "pendingReaderRetirements": 2,
+        "resetReentries": 14,
+        "sdkWaits": 9,
+        "resizes": 1,
+        "suspensions": 2,
+        "failure": "",
+        "hashes": {
+          "amd_fidelityfx_framegeneration_dx12.dll": "02297beedd285e822d3a64f314cf00faf378dcec0edc47ff0c4dd71b3a8c2f18",
+          "amd_fidelityfx_loader_dx12.dll": "e2d85aa05a9bd9ed8b38935fdf5199372cca6f74c12015143bb6f945ee1608aa",
+          "core": "66767018c36b3bab46398dade3adf173daa3730fda75965689ea848c9bc4e79b",
+          "executable": "942a34e0078da6c255fb01811f3760d8e5456efe0a91da01f5cde491571e9f7b",
+          "nr": "e67dee209320cdafe0e93e45675d7aa34323a53acc57a72b2e40a181581c989a",
+          "rcas": "87f0ff6352aa2666ab3361989a6cb998442ea303abe6aafc7357a8ddfc3ff0d1",
+          "xess": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+        }
+      }
+    ],
+    "logSha256": {
+      "slider-clean-build.log": "32b4b9143f3dbc5c64ae44801064d0d85851700f630eceb78c10e0559bf60dd3",
+      "slider-final-tests.log": "cd09d969d0f80d3ce234242d2dddd5e4a45d1d6ce895df7f9d0a4662268c191a",
+      "slider-pending-red-tests.log": "65fc5fdc3a97d1567baac592dee1058d5e8e18ae5ebcff465b8dfee84cefead9"
+    }
+  },
+  "installation": {
+    "disabledRenderer": "SkyrimUpscalerAIOBuild20",
+    "profile": "V5.4 NO-LORE",
+    "mod": "RaZKolbaS XeSS FSR FG trial - 69605c309804",
+    "path": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZKolbaS XeSS FSR FG trial - 69605c309804",
+    "sourceRevision": "69605c309804",
+    "pluginSha256": "246db7ed39dae8057516b5aeb1b0db39d2308649514fb11401ea97a91c2e8835",
+    "archiveSha256": "673e4926710e14b8d098e9cdaff378d077e15eba06283aa096d35131b7acdaf3",
+    "verifiedArchiveFiles": 14,
+    "rollbackMod": "RaZKolbaS XeSS FSR FG trial - 049f69adc595",
+    "rollbackDllSha256": "644BED6D20663F40B95E2844AE5BF549E30C4D0955351B6BDA21BDA1AAB9E166",
+    "rollbackIniSha256": "7844DF74B97FF3B5C68B3347B8BC1CD90F96E671A4EC3293E306F23896A4CA1D",
+    "mo2SettingsSha256": "B5BBDFD1566FDD8E80C643BE24FBAE558DD3BACF89A4BCCC5570A6528ED25D68",
+    "gameplayQualified": false,
+    "configuration": "XeSS Native; NR After; 1 pass Style 1; FSR3 FG on; HDR off; fixed output size"
+  },
+  "verifiedIniAndMo2SettingsPreserved": true,
+  "limits": [
+    "New-build Skyrim slider confirmation remains pending.",
+    "GPU checks used RTX 4080 SUPER and FSR3 FG; no new other-GPU, ML FG or Intel FG qualification."
+  ]
+}
