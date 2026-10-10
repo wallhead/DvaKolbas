@@ -78,6 +78,7 @@ namespace TheosRenderPipeline::Upscaling
         // requires explicit measurements; other providers retain their contracts.
         Extent depthExtent{}, motionExtent{};
         bool motionDilated{};
+        ColorEncoding outputEncoding{ColorEncoding::Unknown}, uiEncoding{ColorEncoding::Unknown};
         DXGI_FORMAT colorFormat{DXGI_FORMAT_UNKNOWN}, depthFormat{DXGI_FORMAT_UNKNOWN}, motionFormat{DXGI_FORMAT_UNKNOWN};
         CameraMeasurements camera{};
         MotionConvention motionConvention{};
