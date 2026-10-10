@@ -136,7 +136,9 @@ namespace TheosRenderPipeline
             }
         }
         state_->waited=false;state_->guidesValid=false;state_->uploaded=false;state_->tagged=false;
-        auto hr=state_->sceneConverter.Convert(context,frame.output,state_->scene.texture11.Get(),frame.outputEncoding,ColorEncoding::SRGB);
+        // SR scene RGB describes opaque world color; its alpha is not HUD
+        // coverage and may be zero. Normalize only this owned scene copy.
+        auto hr=state_->sceneConverter.Convert(context,frame.output,state_->scene.texture11.Get(),frame.outputEncoding,ColorEncoding::SRGB,SdrAlphaMode::OpaqueScene);
         if (SUCCEEDED(hr)) hr=state_->uiConverter.Convert(context,ui,overlay,state_->ui.texture11.Get(),frame.uiEncoding);
         // Intel's UI policy composites generated images. The application's
         // real backbuffer must already contain its HUD, even with FG disabled.

@@ -19,13 +19,13 @@ namespace TheosRenderPipeline::Upscaling
     {
         if(device_)return D3D11FrameCopy::SameObject(device_.Get(),device)?S_OK:E_INVALIDARG;
         constexpr char program[]=R"(
-cbuffer Transfer : register(b0) { uint sourceEncoding; uint targetEncoding; uint2 unused; };
+cbuffer Transfer : register(b0) { uint sourceEncoding; uint targetEncoding; uint opaqueScene; uint unused; };
 Texture2D<float4> inputImage : register(t0);SamplerState sampling : register(s0);
 struct Vertex { float4 position:SV_Position;float2 uv:TEXCOORD0; };
 Vertex vs(uint id:SV_VertexID){Vertex v;v.uv=float2((id<<1)&2,id&2);v.position=float4(v.uv*float2(2,-2)+float2(-1,1),0,1);return v;}
 float3 decode(float3 c){c=saturate(c);if(sourceEncoding==2)return pow(c,2.2);if(sourceEncoding==3)return float3(c.x<=0.04045?c.x/12.92:pow((c.x+0.055)/1.055,2.4),c.y<=0.04045?c.y/12.92:pow((c.y+0.055)/1.055,2.4),c.z<=0.04045?c.z/12.92:pow((c.z+0.055)/1.055,2.4));return c;}
 float3 encode(float3 c){c=saturate(c);if(targetEncoding==2)return pow(c,1.0/2.2);if(targetEncoding==3)return float3(c.x<=0.0031308?c.x*12.92:1.055*pow(c.x,1.0/2.4)-0.055,c.y<=0.0031308?c.y*12.92:1.055*pow(c.y,1.0/2.4)-0.055,c.z<=0.0031308?c.z*12.92:1.055*pow(c.z,1.0/2.4)-0.055);return c;}
-float4 ps(Vertex v):SV_Target{float4 c=inputImage.SampleLevel(sampling,v.uv,0);return float4(encode(decode(c.rgb)),c.a);}
+float4 ps(Vertex v):SV_Target{float4 c=inputImage.SampleLevel(sampling,v.uv,0);return float4(encode(decode(c.rgb)),opaqueScene?1.0:c.a);}
 )";
         Ptr<ID3DBlob> code;
         auto hr=D3DCompile(program,sizeof(program)-1,"FsrColorConversion",nullptr,nullptr,"vs","vs_5_0",D3DCOMPILE_ENABLE_STRICTNESS,0,&code,nullptr);
@@ -40,7 +40,7 @@ float4 ps(Vertex v):SV_Target{float4 c=inputImage.SampleLevel(sampling,v.uv,0);r
         if(FAILED(hr=device->CreateBuffer(&desc,nullptr,&constants_)))return hr;
         device_=device;return S_OK;
     }
-    HRESULT SdrColorConverter::Convert(ID3D11DeviceContext* context,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding from,ColorEncoding to)
+    HRESULT SdrColorConverter::Convert(ID3D11DeviceContext* context,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding from,ColorEncoding to,SdrAlphaMode alphaMode)
     {
         failureStage_="color encoding";
         if(!IsKnownColorEncoding(from) || !IsKnownColorEncoding(to))return E_INVALIDARG;
@@ -58,7 +58,7 @@ float4 ps(Vertex v):SV_Target{float4 c=inputImage.SampleLevel(sampling,v.uv,0);r
         if(output_.Get()!=output){Ptr<ID3D11RenderTargetView> view;hr=device->CreateRenderTargetView(output,nullptr,&view);if(FAILED(hr))return hr;rtv_=view;output_=output;}
         failureStage_="context state isolation";
         D3D11ContextIsolation::Scope scope(isolation_,context);if(!scope)return E_FAIL;
-        const UINT values[]{static_cast<UINT>(from),static_cast<UINT>(to),0,0};context->UpdateSubresource(constants_.Get(),0,nullptr,values,0,0);
+        const UINT values[]{static_cast<UINT>(from),static_cast<UINT>(to),alphaMode==SdrAlphaMode::OpaqueScene?1u:0u,0};context->UpdateSubresource(constants_.Get(),0,nullptr,values,0,0);
         auto* buffer=constants_.Get();auto* sampler=sampler_.Get();auto* srv=srv_.Get();auto* rtv=rtv_.Get();
         context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);context->VSSetShader(vertex_.Get(),nullptr,0);context->PSSetShader(pixel_.Get(),nullptr,0);
         context->PSSetConstantBuffers(0,1,&buffer);context->PSSetSamplers(0,1,&sampler);context->PSSetShaderResources(0,1,&srv);context->OMSetRenderTargets(1,&rtv,nullptr);

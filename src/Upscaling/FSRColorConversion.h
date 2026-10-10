@@ -6,10 +6,12 @@
 namespace TheosRenderPipeline::Upscaling
 {
     Result<float> ConvertColorChannel(float,ColorEncoding source,ColorEncoding destination);
+    enum class SdrAlphaMode { Preserve, OpaqueScene };
     class SdrColorConverter
     {
     public:
-        HRESULT Convert(ID3D11DeviceContext*,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding source,ColorEncoding destination);
+        HRESULT Convert(ID3D11DeviceContext*,ID3D11Texture2D* input,ID3D11Texture2D* output,ColorEncoding source,ColorEncoding destination,
+            SdrAlphaMode alphaMode=SdrAlphaMode::Preserve);
         const char* FailureStage() const { return failureStage_; }
     private:
         template<class T> using Ptr=Microsoft::WRL::ComPtr<T>;

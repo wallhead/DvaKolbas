@@ -1062,6 +1062,11 @@ struct UpscalerHooks
 		stl::write_thunk_call<IntelMainUpdate>(update);
 		stl::write_thunk_call<IntelMainInput>(input);
 		stl::write_thunk_call<IntelMainRender>(render);
+		witnesses={HookWitness{update,IntelMainUpdate::func.address()},
+			HookWitness{input,IntelMainInput::func.address()},HookWitness{render,IntelMainRender::func.address()}};
+		for(auto& witness:witnesses)if(!HookSafety::Read(witness.site,witness.installedCall.data(),witness.installedCall.size())) {
+			logger::warn("[XeSS-FG] installed engine call witness unavailable; interpolation remains inactive");return;
+		}
 		installed.store(true,std::memory_order_release);
 		logger::info("[XeSS-FG] inspected engine call sites installed: update=36550+11F input=36564+567 render=36555+47; callbacks require an Intel owner; per-frame timing awaits game trace");
 	}

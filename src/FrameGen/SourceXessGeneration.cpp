@@ -6,6 +6,7 @@
 #include "SourceInternalScope.h"
 #include "GameSwapChain.h"
 #include "XessGenerationCompletedSource.h"
+#include "HookSafety.h"
 
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
@@ -123,6 +124,18 @@ void NvidiaHost::ObserveXessEngine(XessEngineHooks::Boundary boundary) noexcept
         // AfterUpdate is observational. Present owns render-end and Present markers.
         auto* ui=RE::UI::GetSingleton();
         const bool world=ui && !ui->IsMenuOpen(RE::MainMenu::MENU_NAME) && !ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME);
+        if(world && xessEngineTrace_==0) {
+            logger::info("[XeSS engine hooks] updateCalls={} inputCalls={} renderCalls={} afterUpdateCalls={}",
+                XessEngineHooks::boundaryCalls[0].load(),XessEngineHooks::boundaryCalls[1].load(),
+                XessEngineHooks::boundaryCalls[2].load(),XessEngineHooks::boundaryCalls[3].load());
+            for(unsigned index=0;index<XessEngineHooks::witnesses.size();++index) {
+                const auto& witness=XessEngineHooks::witnesses[index];std::uint64_t prefix{};
+                const bool readable=HookSafety::Read(witness.callee,&prefix,sizeof(prefix));
+                logger::info("[XeSS engine hooks] site={} retainedCall={} originalCallee={} prefixReadable={} prefix=0x{:016X}",
+                    index,HookSafety::Bytes(witness.site,witness.installedCall),
+                    reinterpret_cast<void*>(witness.callee),readable,prefix);
+            }
+        }
         if(world && xessEngineTrace_<512) {
             ++xessEngineTrace_;
             logger::info("[XeSS engine trace] event={} boundary={} source={} epoch={} rendered={} thread={} accepted={} reason={}",

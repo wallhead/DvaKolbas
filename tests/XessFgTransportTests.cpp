@@ -11,8 +11,8 @@ static void Success(const Result<void>& result,const char* reason)
 static std::array<xefg_swapchain_d3d12_resource_data_t,4> tags;
 static uint32_t tagCount{},constantCount{};
 static xefg_swapchain_result_t sdkFailure{XEFG_SWAPCHAIN_RESULT_SUCCESS};
-static ComPtr<ID3D12Resource> snapshots[2];
-static D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprints[2];
+static ComPtr<ID3D12Resource> snapshots[3];
+static D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprints[3];
 static xefg_swapchain_result_t Capture(xefg_swapchain_handle_t,ID3D12CommandList* commandList,uint32_t id,const xefg_swapchain_d3d12_resource_data_t* desc)
 {
     Require(id==17,"exact SDK ID in every tag");Require(tagCount<4,"one tag for each owned input");tags[tagCount++]=*desc;
@@ -36,7 +36,7 @@ int main()
     if (NrRuntimeResearch::GameRunningOrUnknown()) { std::puts("NOT QUALIFIED: Skyrim running or guard unavailable");return 2; }
     Rig rig;auto bridge=std::make_shared<Interop>();rig.Initialize(*bridge);
     XessGenerationTransport transport;Success(transport.Initialize(bridge,{3,2}),"owned transport initializes");
-    for (int i=0;i<2;++i) {
+    for (int i=0;i<3;++i) {
         const auto desc=transport.Scene()->GetDesc();UINT64 bytes{};
         rig.device12->GetCopyableFootprints(&desc,0,1,0,&footprints[i],nullptr,nullptr,&bytes);
         D3D12_HEAP_PROPERTIES heap{};heap.Type=D3D12_HEAP_TYPE_READBACK;
@@ -48,8 +48,10 @@ int main()
     auto ui=Texture(rig,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET);
     auto depth=Texture(rig,DXGI_FORMAT_R32_FLOAT,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_UNORDERED_ACCESS);
     auto motion=Texture(rig,DXGI_FORMAT_R16G16_FLOAT,D3D11_BIND_SHADER_RESOURCE);
-    const std::array<uint32_t,6> scenePixels{0xff204080,0xff204080,0xff204080,0xff204080,0xff204080,0xff204080};
-    const std::array<uint32_t,6> uiPixels{0x80402010,0x80402010,0x80402010,0x80402010,0x80402010,0x80402010};
+    // Upscaler scene alpha is not coverage. RGB must survive alpha 0 or 0.5,
+    // while the separate premultiplied HUD must retain its real coverage.
+    const std::array<uint32_t,6> scenePixels{0x00204080,0x00204080,0x80204080,0x80204080,0xff204080,0xff204080};
+    const std::array<uint32_t,6> uiPixels{0x80402010,0,0x80402010,0,0x80402010,0};
     rig.context11->UpdateSubresource(scene.Get(),0,nullptr,scenePixels.data(),12,0);
     rig.context11->UpdateSubresource(ui.Get(),0,nullptr,uiPixels.data(),12,0);
     auto frame=XessFgFrame();frame.render=frame.subrect=frame.display=frame.depthExtent=frame.motionExtent={3,2};
@@ -75,12 +77,30 @@ int main()
     auto desc=transport.Scene()->GetDesc();desc.Flags=D3D12_RESOURCE_FLAG_NONE;ComPtr<ID3D12Resource> backbuffer;
     Check(rig.device12->CreateCommittedResource(&heap,D3D12_HEAP_FLAG_NONE,&desc,D3D12_RESOURCE_STATE_COMMON,nullptr,IID_PPV_ARGS(&backbuffer)),"publication buffer");
     Success(transport.PublishTo(backbuffer.Get()),"same direct-queue real publication");
+    ID3D12GraphicsCommandList* publication{};
+    Check(bridge->Begin(Work::SwapChain,&publication),"final composition readback begin");
+    D3D12_RESOURCE_BARRIER barrier{};barrier.Type=D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Transition.pResource=backbuffer.Get();barrier.Transition.Subresource=D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    barrier.Transition.StateBefore=D3D12_RESOURCE_STATE_COMMON;barrier.Transition.StateAfter=D3D12_RESOURCE_STATE_COPY_SOURCE;
+    publication->ResourceBarrier(1,&barrier);
+    D3D12_TEXTURE_COPY_LOCATION from{};from.pResource=backbuffer.Get();from.Type=D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+    D3D12_TEXTURE_COPY_LOCATION to{};to.pResource=snapshots[2].Get();to.Type=D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;to.PlacedFootprint=footprints[2];
+    publication->CopyTextureRegion(&to,0,0,0,&from,nullptr);
+    std::swap(barrier.Transition.StateBefore,barrier.Transition.StateAfter);publication->ResourceBarrier(1,&barrier);
+    Check(bridge->Submit(Work::SwapChain),"final composition readback submit");
     Check(bridge->Drain(),"snapshot tag queue completed");
+    void* finalPixels{};Check(snapshots[2]->Map(0,nullptr,&finalPixels),"composed scene pixel readback");
+    for(unsigned y=0;y<2;++y){
+        const auto* row=reinterpret_cast<const uint32_t*>(static_cast<const unsigned char*>(finalPixels)+footprints[2].Offset+y*footprints[2].Footprint.RowPitch);
+        for(unsigned x=0;x<3;++x)if(!uiPixels[y*3+x])
+            Require(row[x]==(scenePixels[y*3+x]|0xff000000u),"real image retains scene RGB regardless of upscaler alpha");
+    }
+    snapshots[2]->Unmap(0,nullptr);
     for (int i=0;i<2;++i) {
         void* mapped{};Check(snapshots[i]->Map(0,nullptr,&mapped),"owned-input pixel readback");
         const auto pixel=*reinterpret_cast<const uint32_t*>(static_cast<const unsigned char*>(mapped)+footprints[i].Offset);
         snapshots[i]->Unmap(0,nullptr);
-        Require(pixel==(i?uiPixels[0]:scenePixels[0]),"queued owned scene and premultiplied UI pixels preserved");
+        Require(pixel==(i?uiPixels[0]:(scenePixels[0]|0xff000000u)),"opaque scene and premultiplied UI pixels preserved");
     }
     Success(transport.WaitBeforeProducer(),"actual copy fences before next writes");
     Require(!transport.Upload(frame,ui.Get(),nullptr,true),"duplicate source not uploaded twice");

@@ -15,6 +15,14 @@ namespace TheosRenderPipeline::XessEngineHooks
         void (*observe)(void*, Boundary) noexcept{};
     };
     inline std::atomic<Observer*> observer{};
+    struct HookWitness
+    {
+        std::uintptr_t site{},callee{};
+        std::array<std::uint8_t,5> installedCall{};
+    };
+    // Written once before publishing installed; diagnostics read only.
+    inline std::array<HookWitness,3> witnesses{};
+    inline std::array<std::atomic<std::uint64_t>,4> boundaryCalls{};
     inline bool Bind(Observer* value)
     {
         if (!value || !value->observe) return false;
@@ -25,6 +33,7 @@ namespace TheosRenderPipeline::XessEngineHooks
     { return value && observer.compare_exchange_strong(value,nullptr,std::memory_order_acq_rel,std::memory_order_relaxed); }
     inline void Observe(Boundary boundary) noexcept
     {
+        boundaryCalls[static_cast<unsigned>(boundary)].fetch_add(1,std::memory_order_relaxed);
         if (auto* value=observer.load(std::memory_order_acquire)) value->observe(value->context,boundary);
     }
 
