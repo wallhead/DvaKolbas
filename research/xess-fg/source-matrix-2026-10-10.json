@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-10",
+  "baseline": "638c374246fd5257d94f41ddd01368b5c48e5505",
+  "worktreeDirty": true,
+  "adapter": "RTX 4080 SUPER",
+  "vendor": "10de",
+  "device": "2702",
+  "luid": "00000000:00011072",
+  "exeSha256": "ac092a118a0c63708713974e6eca03a9bc5c9407c48b7b4a482f95b6ea53b8e6",
+  "sourceSha256": "b8dd110ed526a0465634f99165cb6e0f54d244da0cd2d8419b6eb88f43612a00",
+  "cases": [
+    "XeSS Native",
+    "XeSS Performance",
+    "FSR 3.1.5 Native",
+    "FSR 3.1.5 Performance"
+  ],
+  "eligibleSourcesPerCase": 49,
+  "generatedSourcesPerCase": 49,
+  "nrBeforeSourcesPerCase": 24,
+  "nrAfterSourcesPerCase": 24,
+  "passes": [
+    1,
+    2,
+    3
+  ],
+  "sdkErrors": 0,
+  "hudReadbacksPerCase": 7,
+  "retirement": "clean",
+  "debugLayers": "unavailable",
+  "actualCouplingNotRun": [
+    "DLSS/DLAA",
+    "FSR4"
+  ],
+  "gameplay": "not yet qualified",
+  "visual": "not requested for this numerical matrix"
+}

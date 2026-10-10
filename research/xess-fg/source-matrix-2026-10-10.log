@@ -1,0 +1,29 @@
+Start testing: Oct 10 13:31 RTZ 2 (çèìà)
+----------------------------------------------------------
+107/365 Testing: XessFgSourceGpu
+107/365 Test: XessFgSourceGpu
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgSourceGpuTests.exe" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/xess-sdk-3.0.2/SKSE/Plugins" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/nr/host-fixture" "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/fsr-probe-plugin"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgSourceGpu" start time: Oct 10 13:31 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+ADAPTER vendor=10de device=2702 LUID=00000000:00011072 real_sdk=1
+PASS CASE backend=4 quality=3 render=640x360 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS CASE backend=4 quality=2 render=279x157 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS CASE backend=2 quality=3 render=640x360 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS CASE backend=2 quality=2 render=320x180 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS actual XeSS/FSR315 Native/Performance -> NR off/Before/After 1..3 -> Intel FG -> HUD; DLSS and FSR4 actual coupling NOT RUN
+<end of output>
+Test time =  17.46 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgSourceGpu" end time: Oct 10 13:31 RTZ 2 (çèìà)
+"XessFgSourceGpu" time elapsed: 00:00:17
+----------------------------------------------------------
+
+End testing: Oct 10 13:31 RTZ 2 (çèìà)
+
+GPU =  17.46 sec*proc
+

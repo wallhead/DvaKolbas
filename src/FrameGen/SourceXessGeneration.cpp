@@ -5,6 +5,7 @@
 #include "PluginPaths.h"
 #include "SourceInternalScope.h"
 #include "GameSwapChain.h"
+#include "XessGenerationCompletedSource.h"
 
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
@@ -169,14 +170,11 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
     auto frame=fsrGenerationFrame_;
     // The final scene includes SR, NR, ReShade and fade, while the dedicated
     // game HUD/foreground remains separate for Intel interpolation.
-    frame.output=presentation_.Texture();frame.display={outputWidth_,outputHeight_};
-    frame.outputEncoding=XessActive()?sourceUpscalerSettings_.Startup().xess.sourceEncoding:sourceUpscalerSettings_.Startup().fsr.sourceColorEncoding;
-    frame.uiEncoding=ColorEncoding::SRGB;
-    if(frame.depth && frame.motion) {
-        D3D11_TEXTURE2D_DESC depth{},motion{};frame.depth->GetDesc(&depth);frame.motion->GetDesc(&motion);
-        frame.depthExtent={depth.Width,depth.Height};frame.motionExtent={motion.Width,motion.Height};
-        frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=motion.Format;
-    }
+    frame.display={outputWidth_,outputHeight_};
+    const auto encoding=XessActive()?sourceUpscalerSettings_.Startup().xess.sourceEncoding:sourceUpscalerSettings_.Startup().fsr.sourceColorEncoding;
+    auto completed=CompleteXessGenerationSource(frame,presentation_.Texture(),encoding);
+    if(!completed){status_=completed.error().message;return FailLifecycle(E_FAIL,"Intel final real scene identity");}
+    frame=*completed;
     const auto outcome=fsrSourcePending_?fsrGenerationOutcome_:UpscaleOutcome::RepeatedOutput;
     if(!fsrSourcePending_)frame.sourceId=frame.sourceEpoch=0;
     const bool requested=SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested();
