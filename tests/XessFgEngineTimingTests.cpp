@@ -22,20 +22,33 @@ static void Complete(XessGenerationEngineTiming& timing,uint64_t source,uint32_t
 int wmain(int argc,wchar_t** argv)
 {
     using namespace XessEngineHooks;
-    Require(Qualified({1,6,1170,0},updateBytes,inputBytes,renderBytes),"identified instructions qualify hook sites");
-    Require(!Qualified({1,6,640,0},updateBytes,inputBytes,renderBytes),"uninspected runtime cannot borrow 1170 witnesses");
+    Require(Qualified({1,6,1170,0},inputBytes,renderBytes),"identified instructions qualify hook sites");
+    Require(!Qualified({1,6,640,0},inputBytes,renderBytes),"uninspected runtime cannot borrow 1170 witnesses");
     auto changed=inputBytes;changed[15]=0xE9;
-    Require(!Qualified({1,6,1170,0},updateBytes,changed,renderBytes),"changed input call rejected before publishing hooks");
+    Require(!Qualified({1,6,1170,0},changed,renderBytes),"changed input call rejected before publishing hooks");
     auto wrongArguments=renderBytes;wrongArguments[1]=0xC9;
-    Require(!Qualified({1,6,1170,0},updateBytes,inputBytes,wrongArguments),"changed render arguments rejected");
-    auto foreignTarget=updateBytes;foreignTarget[8]^=1;
-    Require(!Qualified({1,6,1170,0},foreignTarget,inputBytes,renderBytes),"unexpected update callee rejected");
+    Require(!Qualified({1,6,1170,0},inputBytes,wrongArguments),"changed render arguments rejected");
+    auto foreignTarget=inputBytes;foreignTarget[16]^=1;
+    Require(!Qualified({1,6,1170,0},foreignTarget,renderBytes),"unexpected input callee rejected");
     unsigned observed{};Observer sink{&observed,[](void* context,Boundary) noexcept { ++*static_cast<unsigned*>(context); }};
-    Observe(Boundary::BeforeUpdate);Require(!observed && !Bind(nullptr),"ordinary owners dispatch no Intel markers");
+    Observe(Boundary::BeforeInput);Require(!observed && !Bind(nullptr),"ordinary owners dispatch no Intel markers");
     Require(Bind(&sink) && !Bind(&sink),"only one retained Intel observer");
-    Observe(Boundary::BeforeUpdate);Observe(Boundary::InputSampled);Observe(Boundary::BeforeRender);Observe(Boundary::AfterUpdate);
-    Require(observed==4 && Unbind(&sink),"verified wrappers dispatch genuine boundaries");
-    Observe(Boundary::BeforeUpdate);Require(observed==4,"unbound owner receives no callbacks");
+    Observe(Boundary::BeforeInput);Observe(Boundary::InputSampled);Observe(Boundary::BeforeRender);
+    Require(observed==3 && Unbind(&sink),"verified wrappers dispatch genuine boundaries");
+    Observe(Boundary::BeforeInput);Require(observed==3,"unbound owner receives no callbacks");
+    // A detoured outer update caller can be skipped while the actual main input
+    // and render calls still run. The input adapter must start timing itself.
+    struct PollOrder { unsigned step{}, begin{}, poll{}, sampled{}; } order;
+    Observer inputSink{&order,[](void* context,Boundary boundary) noexcept {
+        auto& state=*static_cast<PollOrder*>(context);
+        if(boundary==Boundary::BeforeInput)state.begin=++state.step;
+        if(boundary==Boundary::InputSampled)state.sampled=++state.step;
+    }};
+    Require(Bind(&inputSink),"main input adapter observer bound");
+    PollMainInput([&] { order.poll=++order.step; });
+    Require(Unbind(&inputSink),"main input adapter observer unbound");
+    Require(order.begin==1 && order.poll==2 && order.sampled==3,
+        "source begins before preserved input poll without an outer update callback");
     Require(argc==2,"fixture path");auto loaded=XessGenerationRuntime::Load(argv[1]);Require(bool(loaded),"fixture loader");
     auto module=GetModuleHandleW(L"libxell.dll");
     auto count=reinterpret_cast<XellFixtureCount>(GetProcAddress(module,"FixtureCount"));
@@ -69,6 +82,31 @@ int wmain(int argc,wchar_t** argv)
     Require(bool(timing.AbandonUnsubmitted(true)) && count()==beforeAbandon,"untagged interruption never fabricates missing end markers");
     auto recovered=timing.BeginSourceLoop(12,8);
     Require(recovered && *recovered==3,"untagged recovery retains monotonic SDK IDs");Complete(timing,12,*recovered);
+    Require(bool(timing.ResetAfterDrain(true)),"input-adapter regression starts a drained SDK epoch");
+    struct InputLoop { XessGenerationEngineTiming* timing; std::uint32_t id{}; bool sampled{},rendering{}; } loop{&timing};
+    Observer loopSink{&loop,[](void* context,Boundary boundary) noexcept {
+        auto& state=*static_cast<InputLoop*>(context);
+        if(boundary==Boundary::BeforeInput) {
+            auto begin=state.timing->BeginSourceLoop(13,8);
+            if(begin)state.id=*begin;
+        } else if(boundary==Boundary::InputSampled)state.sampled=bool(state.timing->InputSampled(13));
+        else if(boundary==Boundary::BeforeRender)state.rendering=
+            bool(state.timing->EndSimulation(13)) && bool(state.timing->BeginRender(13));
+    }};
+    Require(Bind(&loopSink),"input adapter drives real timing owner");
+    PollMainInput([&] {
+        Require(loop.id==1 && !loop.sampled,"source ID reserved before actual main input poll");
+        Require(read(count()-2).kind==3 && read(count()-2).id==1 &&
+            read(count()-1).kind==4 && read(count()-1).marker==0,
+            "main input observes pre-input XeLL sleep and simulation start");
+        Require(!timing.CurrentRenderId(13,8),"no render admission during preserved input poll");
+    });
+    Observe(Boundary::BeforeRender);
+    Require(loop.sampled && loop.rendering && timing.CurrentRenderId(13,8)==1,
+        "input and render callbacks alone qualify the same source for FG tagging");
+    Require(bool(timing.EndRender(13)) && bool(timing.BeforePresent(1)) && bool(timing.AfterPresent(1)),
+        "input-started source completes through real presentation timing");
+    Require(Unbind(&loopSink),"input loop observer unbound");
     Require(bool(latency.Retire(true,true)),"latency retires after proven owner cleanup");
     std::puts("PASS: source/input/simulation/render/Present mapping; Skyrim instruction/ordering qualification remains separate");
 }

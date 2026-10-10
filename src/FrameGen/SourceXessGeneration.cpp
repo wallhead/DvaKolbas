@@ -114,20 +114,20 @@ void NvidiaHost::ObserveXessEngine(XessEngineHooks::Boundary boundary) noexcept
             xessTimingBound_=true;
         }
         Result<void> result;
-        if(boundary==XessEngineHooks::Boundary::BeforeUpdate) {
+        if(boundary==XessEngineHooks::Boundary::BeforeInput) {
             xessEngineSource_=RenderPipeline::GetSingleton()->mRenderedFrameCount+1;
             xessEngineEpoch_=IntelSourceEpoch();
             const auto begin=xessPresentation_->BeforeSourceLoop(xessEngineSource_,xessEngineEpoch_);
             if(!begin)result=std::unexpected(begin.error());
         } else if(boundary==XessEngineHooks::Boundary::InputSampled)result=xessPresentation_->InputSampled(xessEngineSource_);
         else if(boundary==XessEngineHooks::Boundary::BeforeRender)result=xessPresentation_->BeforeRender(xessEngineSource_);
-        // AfterUpdate is observational. Present owns render-end and Present markers.
+        // Present owns render-end and Present markers.
         auto* ui=RE::UI::GetSingleton();
         const bool world=ui && !ui->IsMenuOpen(RE::MainMenu::MENU_NAME) && !ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME);
         if(world && xessEngineTrace_==0) {
-            logger::info("[XeSS engine hooks] updateCalls={} inputCalls={} renderCalls={} afterUpdateCalls={}",
+            logger::info("[XeSS engine hooks] preInputCalls={} inputCalls={} renderCalls={}",
                 XessEngineHooks::boundaryCalls[0].load(),XessEngineHooks::boundaryCalls[1].load(),
-                XessEngineHooks::boundaryCalls[2].load(),XessEngineHooks::boundaryCalls[3].load());
+                XessEngineHooks::boundaryCalls[2].load());
             for(unsigned index=0;index<XessEngineHooks::witnesses.size();++index) {
                 const auto& witness=XessEngineHooks::witnesses[index];std::uint64_t prefix{};
                 const bool readable=HookSafety::Read(witness.callee,&prefix,sizeof(prefix));

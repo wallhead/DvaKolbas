@@ -3,9 +3,11 @@
 ## Status
 
 The CPU timing contract and inspected 1.6.1170 call-site wrappers are implemented.
-**Actual per-frame Skyrim ordering is not yet qualified.** The installed game
-was used for read-only instruction capture; its plugin and INI were not replaced.
-Milestone 3 remains partial until the first Intel-host gameplay trace.
+The first gameplay trace confirmed the specific input and render callbacks run,
+but the original outer-update callback never runs in this modlist. The corrected
+adapter starts timing immediately before the preserved main input poll.
+**Actual complete per-frame Skyrim ordering and interpolation remain unqualified.**
+Milestone 3 remains partial until the corrected Intel-host gameplay trace.
 
 ## Identified runtime and evidence
 
@@ -29,17 +31,19 @@ required to match. The compact checked-in receipt is
 
 | Boundary | Caller relocation + offset | Call RVA | Preserved callee / ABI |
 |---|---|---|---|
-| Before main update | 36550 + 0x11F | 0x641BEF | Main update, relocation 36564; RCX=Main pointer |
-| Input sampled | 36564 + 0x567 | 0x646407 | PollInputDevices, relocation 68617; RCX=device manager, XMM1=seconds |
+| Pre-input source start / input sampled | 36564 + 0x567 | 0x646407 | PollInputDevices, relocation 68617; RCX=device manager, XMM1=seconds |
 | Simulation end / render start | 36555 + 0x47 | 0x643C47 | Renderer::Begin, relocation 77245; RCX=renderer, EDX=window 0 |
 
 The main update body calls the render routine (36555) at RVA 0x646937, after its
 input call at 0x646407. The caller's argument setup, entire E8 call and relative
-callee displacement are pinned in the hook profile; all three sites must match
+callee displacement are pinned in the hook profile; both sites must match
 before publishing any patch. Existing detours at the callee entries are retained.
 CommonLib's PollInputDevices and Renderer::Begin declarations agree with the
 captured register setup. Main update retains RCX in R12 and the loop supplies the
-Main singleton; no additional argument is supplied by this call site.
+Main singleton; no additional argument is supplied by this call site. The
+captured outer update call at 36550 + 0x11F (RVA 0x641BEF) is retained as research
+evidence, but is no longer patched or required for timing admission: the actual
+game trace showed zero executions despite its installed call remaining intact.
 
 The alternate loop (39039) calls Renderer::Begin at 0x6D220B **before** polling
 input at 0x6D2322. It receives no main-source callbacks. A third Renderer::Begin
@@ -49,8 +53,8 @@ would incorrectly create main source cycles in these paths.
 The existing jitter hook runs after an inner Renderer::Begin call. It is useful
 for source textures but too late for a pre-input XeLL sleep. AIO19's observed
 post-Present Sleep/SimulationStart candidate does not prove ordering across
-loading/extra Presents; this implementation begins a source only at the verified
-main update call instead.
+loading/extra Presents; this implementation begins a source only immediately
+before the verified main input poll instead.
 
 ## Admission, lifetime and trace contract
 
@@ -60,9 +64,8 @@ until process exit; Unbind prevents new dispatch but does not reclaim a callback
 that another thread already loaded. The timing contract separately checks its
 bound thread before accessing phase state or the SDK.
 
-The main update wrapper emits BeforeUpdate before its preserved original call,
-and AfterUpdate afterward. The specific main-input wrapper emits InputSampled
-after the preserved poll; the main-render wrapper emits BeforeRender before
+The specific main-input adapter emits BeforeInput before its preserved poll and
+InputSampled after the poll; the main-render wrapper emits BeforeRender before
 Renderer::Begin. The host must use one source/epoch-to-32-bit-SDK mapping across
 Sleep, all six markers, tags, constants and Present. RenderEnd and Present markers
 belong to the actual host submission/Present boundaries, not these input hooks.
@@ -83,5 +86,9 @@ unqualified-bind rejection, genuine pre-input sleep, input/marker ordering,
 same-ID mapping, duplicate/extra-Present rejection, thread mismatch and drained
 epoch reset. Additional profile tests reject another runtime, changed call opcode,
 callee and argument setup; observer tests check unbound/retained-owner dispatch.
+The regression for a bypassed outer update caller failed with the original
+input-only adapter, then passed after moving source start into the pre-input
+boundary. It also drives the actual timing owner through same-ID render and
+Present completion without invoking any outer update callback.
 Release plugin compilation and `XessFgEngineTiming` pass. These results establish
 the implementation contract, not physical Skyrim latency qualification.

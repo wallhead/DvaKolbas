@@ -1007,23 +1007,11 @@ struct UpscalerHooks
 	};
 
 #ifdef TRP_ENABLE_XESS_FG
-	struct IntelMainUpdate
-	{
-		static void thunk(RE::Main* main)
-		{
-			using namespace TheosRenderPipeline::XessEngineHooks;
-			Observe(Boundary::BeforeUpdate);
-			func(main);
-			Observe(Boundary::AfterUpdate);
-		}
-		static inline REL::Relocation<decltype(thunk)> func;
-	};
 	struct IntelMainInput
 	{
 		static void thunk(RE::BSInputDeviceManager* manager,float seconds)
 		{
-			func(manager,seconds);
-			TheosRenderPipeline::XessEngineHooks::Observe(TheosRenderPipeline::XessEngineHooks::Boundary::InputSampled);
+			TheosRenderPipeline::XessEngineHooks::PollMainInput([&] { func(manager,seconds); });
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
@@ -1044,31 +1032,26 @@ struct UpscalerHooks
 			logger::info("[XeSS-FG] engine timing inactive: this Skyrim runtime has no inspected Intel source-loop profile");
 			return;
 		}
-		const auto update=REL::ID(36550).address()+0x11F;
 		const auto input=REL::ID(36564).address()+0x567;
 		const auto render=REL::ID(36555).address()+0x47;
 		// Validate every ABI/callee witness before changing any call site. The
 		// callee entry points may be detoured by other mods; those chains survive.
-		std::array<std::uint8_t,updateBytes.size()> actualUpdate{};
 		std::array<std::uint8_t,inputBytes.size()> actualInput{};
 		std::array<std::uint8_t,renderBytes.size()> actualRender{};
-		if (!HookSafety::Read(update-7,actualUpdate.data(),actualUpdate.size()) ||
-			!HookSafety::Read(input-15,actualInput.data(),actualInput.size()) ||
+		if (!HookSafety::Read(input-15,actualInput.data(),actualInput.size()) ||
 			!HookSafety::Read(render-9,actualRender.data(),actualRender.size()) ||
-			!Qualified({1,6,1170,0},actualUpdate,actualInput,actualRender)) {
-			logger::warn("[XeSS-FG] engine timing inactive: update/input/render instructions differ from the captured 1.6.1170 profile");
+			!Qualified({1,6,1170,0},actualInput,actualRender)) {
+			logger::warn("[XeSS-FG] engine timing inactive: input/render instructions differ from the captured 1.6.1170 profile");
 			return;
 		}
-		stl::write_thunk_call<IntelMainUpdate>(update);
 		stl::write_thunk_call<IntelMainInput>(input);
 		stl::write_thunk_call<IntelMainRender>(render);
-		witnesses={HookWitness{update,IntelMainUpdate::func.address()},
-			HookWitness{input,IntelMainInput::func.address()},HookWitness{render,IntelMainRender::func.address()}};
+		witnesses={HookWitness{input,IntelMainInput::func.address()},HookWitness{render,IntelMainRender::func.address()}};
 		for(auto& witness:witnesses)if(!HookSafety::Read(witness.site,witness.installedCall.data(),witness.installedCall.size())) {
 			logger::warn("[XeSS-FG] installed engine call witness unavailable; interpolation remains inactive");return;
 		}
 		installed.store(true,std::memory_order_release);
-		logger::info("[XeSS-FG] inspected engine call sites installed: update=36550+11F input=36564+567 render=36555+47; callbacks require an Intel owner; per-frame timing awaits game trace");
+		logger::info("[XeSS-FG] inspected engine call sites installed: pre-input/input=36564+567 render=36555+47; callbacks require an Intel owner; per-frame timing awaits game trace");
 	}
 #endif
 
