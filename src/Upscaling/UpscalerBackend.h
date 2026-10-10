@@ -66,6 +66,7 @@ namespace TheosRenderPipeline::Upscaling
     {
         float scaleX{}, scaleY{};
         bool currentToPrevious{}, includesJitter{};
+        bool usesNdc{};
     };
     struct UpscaleFrame
     {
@@ -73,6 +74,10 @@ namespace TheosRenderPipeline::Upscaling
         ID3D11Texture2D *color{}, *input{}, *depth{}, *motion{}, *output{};
         ID3D11Texture2D *exposure{}, *reactive{}, *transparencyComposition{};
         Extent render{}, display{}, subrect{};
+        // Valid guide regions, distinct from backing allocations. Intel FG
+        // requires explicit measurements; other providers retain their contracts.
+        Extent depthExtent{}, motionExtent{};
+        bool motionDilated{};
         DXGI_FORMAT colorFormat{DXGI_FORMAT_UNKNOWN}, depthFormat{DXGI_FORMAT_UNKNOWN}, motionFormat{DXGI_FORMAT_UNKNOWN};
         CameraMeasurements camera{};
         MotionConvention motionConvention{};
