@@ -15,7 +15,7 @@ if(TRP_ENABLE_XESS_FG)
     endforeach()
     add_library(TRPXessGeneration STATIC src/FrameGen/XessGenerationRuntime.cpp
         src/FrameGen/XessGenerationFrameAdapter.cpp src/FrameGen/XessGenerationPolicy.cpp src/FrameGen/XellSession.cpp
-        src/FrameGen/XessGenerationTransport.cpp src/Graphics/D3D11D3D12Interop.cpp
+        src/FrameGen/XessGenerationTransport.cpp src/FrameGen/XessGenerationPresentation.cpp src/Graphics/D3D11D3D12Interop.cpp
         src/Upscaling/FSRColorConversion.cpp src/Upscaling/FSRPresentationColor.cpp)
     target_compile_features(TRPXessGeneration PUBLIC cxx_std_23)
     target_compile_definitions(TRPXessGeneration PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN TRP_ENABLE_XESS_FG)
@@ -65,4 +65,10 @@ function(trp_add_xess_fg_tests)
     target_link_libraries(TRPXessFgTransportTests PRIVATE TRPXessGeneration)
     add_test(NAME XessFgTransport COMMAND TRPXessFgTransportTests)
     set_tests_properties(XessFgTransport PROPERTIES LABELS GPU RUN_SERIAL TRUE TIMEOUT 60)
+    add_executable(TRPXessFgPresentationTests tests/XessFgPresentationTests.cpp)
+    target_include_directories(TRPXessFgPresentationTests PRIVATE tests)
+    target_link_libraries(TRPXessFgPresentationTests PRIVATE TRPXessGeneration)
+    add_dependencies(TRPXessFgPresentationTests TRPXessFgDouble_generation TRPXessFgDouble_latency)
+    add_test(NAME XessFgPresentation COMMAND TRPXessFgPresentationTests "${CMAKE_CURRENT_BINARY_DIR}/xess-fg-fixtures/good")
+    set_tests_properties(XessFgPresentation PROPERTIES LABELS GPU RUN_SERIAL TRUE TIMEOUT 60)
 endfunction()
