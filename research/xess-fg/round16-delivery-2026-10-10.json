@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "sourceRevision": "23efd2a8f99b",
+  "pluginSha256": "c533773358f8debd2dde92af533b94e79f94f40016c56f1e99105b8a0dc5b76f",
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "23efd2a8f99b",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true,
+    "xessCompiled": true,
+    "xessFrameGenerationCompiled": true
+  },
+  "cleanReleaseBuildPassed": true,
+  "optionalNrOffBuildPassed": true,
+  "affectedChecks": {
+    "passed": 18,
+    "failed": 0,
+    "includes": "Intel contracts, policy, settings, hooks, package/schema, native transport/host/lifecycle and actual Intel SDK probes"
+  },
+  "broadSuite": {
+    "reShadeRerun": "Failed: DirectNrFsrFgRetainsBeforeReShadeFallback",
+    "passed": 354,
+    "total": 361,
+    "sourceRevision": "a8d4ac81616c",
+    "skipped": 2,
+    "initialFailed": 5,
+    "overallQualified": false,
+    "nvidiaProbeFailure": "Driver override simulation was not consumed or bundled runtime was not retained",
+    "outstandingFailures": [
+      "NvidiaAppSettingsGpu-filtered",
+      "NvidiaAppSettingsGpu-streamline",
+      "NvidiaAppSettingsGpu-compatibility",
+      "NrFsrReShadeBefore"
+    ],
+    "schemaFailureCorrected": true
+  },
+  "actualIntelSdk": {
+    "generatedPerCase": 49,
+    "presentationInterpolated": 74,
+    "presentationEligible": 74,
+    "opaqueHudReadbacksPerCase": 7,
+    "eligiblePerCase": 49,
+    "debugLayersAvailable": false,
+    "errors": 0,
+    "cleanRetirement": true,
+    "dlssAndFsr4CouplingTested": false,
+    "sourceCases": 4
+  },
+  "package": {
+    "previousArchivePreserved": true,
+    "entries": 15,
+    "filename": "RaZKolbaS XeSS FG trial - 23efd2a8f99b.zip",
+    "sha256": "6b03f54a3f88fa2f0fe2452ebddedeb2ce75cb3115f232ff28c5a88ab2d66104",
+    "allEntryHashesVerified": true,
+    "bytes": 352098429
+  },
+  "installation": {
+    "initial": "FSR 3.1.5 Native; Intel presenter; FG off; NR off; HDR off",
+    "menuLayoutPreserved": true,
+    "rollbackBackup": "out/backups/xess-fg-round16-23efd2a8f99b",
+    "modName": "RaZKolbaS XeSS FG trial - 23efd2a8f99b",
+    "profile": "V5.4 NO-LORE",
+    "mo2LaunchSettingsPreserved": true,
+    "iniPreserved": true
+  },
+  "milestonesDone": 3,
+  "milestonesTotal": 8,
+  "gameplayQualified": false,
+  "nextCheck": "Load a Skyrim save with FG and NR off, wait 30 seconds, inspect genuine engine timing before enabling Intel FG"
+}
