@@ -1,6 +1,6 @@
 # XeSS Frame Generation and XeLL design
 
-Status: draft for user review; implementation has not started.
+Status: advanced to implementation planning by the user's next-step request on 2026-10-10. The written plan awaits review; product implementation has not started.
 
 ## Goal and existing agreement
 
