@@ -8,7 +8,8 @@ param(
     [switch]$FsrFrameGeneration,
     [switch]$XessFrameGeneration,
     [string]$IntelSdkDirectory='',
-    [string]$ValidationReceipt=''
+    [string]$ValidationReceipt='',
+    [string]$ProfileName=''
 )
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot '../fsr/PackageCommon.ps1')
@@ -101,6 +102,6 @@ if($neuralTrial){Assert-PortableNrPackageIni $settings}
 if($XessFrameGeneration){Assert-XessGenerationPayload $stage $pin;Assert-XessGenerationIni (Join-Path $plugins 'RaZkolbaS.ini')}
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [IO.Compression.ZipFile]::CreateFromDirectory($stage,$archive,[IO.Compression.CompressionLevel]::Optimal,$false)
-$receipt=[ordered]@{name=$name;stage=$stage;archive=$archive;sourceRevision=$revision;buildIdentity=$identity;pluginSha256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash.ToLowerInvariant();runtimeSha256=$pin.runtime.sha256;archiveSha256=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant();fsrFrameGeneration=[bool]$FsrFrameGeneration;xessFrameGeneration=[bool]$XessFrameGeneration;gameplayQualified=$false}
+$receipt=[ordered]@{name=$name;stage=$stage;archive=$archive;sourceRevision=$revision;sourceProfile=$ProfileName;buildIdentity=$identity;pluginSha256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash.ToLowerInvariant();runtimeSha256=$pin.runtime.sha256;archiveSha256=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant();fsrFrameGeneration=[bool]$FsrFrameGeneration;xessFrameGeneration=[bool]$XessFrameGeneration;gameplayQualified=$false}
 $receipt | ConvertTo-Json | Set-Content -LiteralPath ($archive+'.receipt.json') -Encoding utf8
 $receipt | ConvertTo-Json

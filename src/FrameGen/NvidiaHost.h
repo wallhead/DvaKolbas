@@ -125,7 +125,14 @@ class NvidiaHost
     bool XessSharpeningAvailable()const;
     float XessAppliedSharpness()const;
     std::string XessSharpeningStatus()const;
-    bool FsrTemporalActive() const { return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult()); }
+    bool FsrTemporalActive() const
+    {
+#if defined(TRP_ENABLE_FSR)
+        return FsrActive() && upscalerReady_ && lastFsrTemporal_ && SUCCEEDED(FailureResult());
+#else
+        return false;
+#endif
+    }
     bool FsrFgActive() const { return StartupConfigured() && backendDecision_.presentation == TheosRenderPipeline::Upscaling::PresentationKind::Fsr; }
     bool FsrPresentSuspended()const;
     HRESULT UpdateFsrSuspension();
