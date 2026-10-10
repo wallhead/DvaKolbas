@@ -1,7 +1,8 @@
 # XeSS FG adjacent-frame pacing investigation
 
-Status: SDK hint correction prepared; Skyrim confirmation pending. Milestones
-remain 5 of 8 complete.
+Status: zero-hint candidate improved visible motion but retained cadence
+oscillation. Scoped publication-readiness candidate prepared for gameplay
+confirmation. Milestones remain 5 of 8 complete.
 
 The user reports regular stutter with FSR Native -> NR After -> XeSS FG on
 RTX 4080 SUPER. The FSR FG comparison graph is flatter. Both source sessions
@@ -179,3 +180,85 @@ Saved evidence under the ignored capture directory:
 boundaries, requires all sampled rows to be generated, and keeps adjacent
 differences within each burst. No installed files or settings changed during
 this follow-up.
+
+## GPU-loaded source readiness follow-up (2026-10-11)
+
+The earlier CPU-sleep workload underrepresented queued world GPU work. The
+extended opt-in source probe retains actual FSR 3.1.5 Native, one NR After
+Style 0 pass and Intel FG at 2560x1440, but adds 384 D3D11 texture-copy pairs
+before SR/NR and gives Intel presentation a separate normal-priority DIRECT
+queue on the same adapter. Independent disjoint/timestamp queries measure
+world work and the world/SR/NR producer span. Copies exercise bandwidth and
+queue dependencies; they are not an equivalent Skyrim shader workload.
+Normal CTest source-matrix size, phases and sleeps remain unchanged.
+
+Measured world work was approximately 11–13 ms, with a 19–22 ms producer
+elapsed span including queue gaps. This reproduces large proxy Present
+alternation even with the SDK frameRenderTime hint at zero. The earlier
+single-queue CPU-sleep reduction therefore did not isolate the remaining
+gameplay mechanism.
+
+A diagnostic full bridge Drain before Intel Present reduced the adjacent
+cadence difference from 7.991 to 0.313 ms in one paired capture. A separate
+reverse-order control entered a stable but slow regime (42.988 ms cadence,
+0.893 ms adjacent difference), so the uncontrolled runs do not support a
+uniform oscillation mechanism or average-FPS gain. Those initial phase
+captures had no foreground samples. Full Drain was an experiment only.
+
+The production candidate waits on the latest actually submitted SwapChain
+publication fence, after ONLY_NOW tag copies and the real backbuffer copy
+are queued. It neither flushes/drains other work nor alters command slots,
+source IDs, history admission, NR passes, markers or reader retirement.
+Host creation enables the policy on non-Intel rendering adapters only;
+tagged FG frames wait, while untagged/FG-off/loading frames retain asynchronous
+publication. Intel adapter behavior stays unchanged and unqualified here.
+Prepare timing includes this current-source CPU wait; proxy Present timing
+excludes it. Private SDK generation/readers still use existing retirement.
+
+Scoped-wait probes use this actual production Prepare path, with no manual
+Drain. Settled sources 41–160 on the RTX 4080 SUPER:
+
+| Metric | Control | Scoped publication readiness |
+| --- | ---: | ---: |
+| First pair: median cadence | 25.662 ms | 24.780 ms |
+| First pair: cadence p95 | 34.106 ms | 25.656 ms |
+| First pair: median adjacent difference | 16.328 ms | 0.352 ms |
+| First pair: median proxy Present | 20.922 ms | 0.457 ms |
+| Reverse order: median cadence | 24.481 ms | 25.248 ms |
+| Reverse order: median adjacent difference | 8.108 ms | 0.350 ms |
+
+All four runs generated 159/159 eligible sources with nonnegative SDK status,
+real HUD readback and clean ordered retirement. The first pair had 120/120
+foreground samples in each run. The repeat had 17/120 control and 0/120
+readiness foreground samples, so it supports the CPU/GPU mechanism only.
+These data do not measure actual display intervals or establish an average
+FPS improvement. D3D11/D3D12 debug layers were unavailable; actual runtime
+generation, resource and fence checks ran.
+
+Native queue-gate regressions first failed for premature readiness and then
+passed with the scoped wait. They check no publication/no submission,
+recording rejection, no wait on unrelated future work, unchanged slot/fence
+identity and terminal timeout without fabricated completion. Presentation
+tests check tagged-only readiness, asynchronous real-only frames, no SDK
+Present after timeout, and retention of the complete SDK/transport owner.
+Review caught an accidental CPU-probe sleep and partial teardown after a
+readiness timeout; both are corrected. A retained timeout fixture initially
+blocked another flip chain on the same HWND; a separate fixture HWND fixes
+that test collision. The corrected presentation test passes; the other 20
+targeted checks passed in the group run. Clean final build/group validation
+is recorded in the revision-specific candidate receipt before installation.
+
+Additional AIO19 static inspection found a zero-initialized public
+CreateCommandQueue descriptor at PDPerfPlugin RVA 0x701b6, retained at owner
+offset +0xa8 and reused by Intel initialization near 0x10784e. This is
+consistent with our normal-priority DIRECT queue; it provides no evidence
+for changing queue priority. Three-element wrapper arrays are not proof of
+native BufferCount. Intel proxy Present resides in the pinned libxess_fg.dll
+at RVA 0x50f0; tracing its private thunk does not identify the exact internal
+wait or prove an SDK defect. No binary modification is involved.
+
+Ignored artifacts in `out/research/xess-fg-reference/`: the `pacing-*-world*`
+logs, `pacing-world-summary.json`, `pacing-scoped-summary.json`, queue/thunk
+disassembly, and red/green build/test logs. The committed opt-in harness is
+the reproducible probe. Skyrim visual/cadence confirmation is still required;
+milestone qualification remains 5 of 8.

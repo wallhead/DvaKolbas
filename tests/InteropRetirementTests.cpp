@@ -67,6 +67,47 @@ public:
 int main()
 {
     Rig rig;
+    {
+        Interop interop;rig.Initialize(interop);
+        ComPtr<ID3D12Fence> gate;Check(rig.device12->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&gate)),"publication readiness gate");
+        Check(rig.queue->Wait(gate.Get(),1),"hold current native publication");
+        ID3D12GraphicsCommandList* list{};Check(interop.Begin(Work::SwapChain,&list),"publication readiness begin");
+        Check(interop.Submit(Work::SwapChain),"publication readiness submit");
+        const auto value=interop.LastValue(Work::SwapChain);const auto slot=interop.CurrentSlot(Work::SwapChain);
+        HANDLE returned=CreateEventW(nullptr,FALSE,FALSE,nullptr);Require(returned!=nullptr,"publication readiness return event");
+        std::atomic<bool> early{false};
+        std::thread release([&]{early=WaitForSingleObject(returned,75)==WAIT_OBJECT_0;Check(gate->Signal(1),"release native publication");});
+        const auto waited=interop.WaitSubmittedWork(Work::SwapChain);SetEvent(returned);release.join();CloseHandle(returned);
+        Check(interop.Drain(),"retire readiness fixture before assertions");
+        Check(waited,"published source readiness");Require(!early,"readiness cannot return before current native publication completes");
+        Require(interop.LastValue(Work::SwapChain)==value && interop.CurrentSlot(Work::SwapChain)==slot,"readiness changes neither submission identity nor allocator slot");
+    }
+    {
+        Interop interop;rig.Initialize(interop);interop.SetRetirementWaitPolicy({10,100});
+        Require(interop.WaitSubmittedWork(Work::SwapChain)==E_UNEXPECTED,"no native publication is not proof of readiness");
+        ID3D12GraphicsCommandList* list{};Check(interop.Begin(Work::SwapChain,&list),"scoped readiness begin");
+        Require(interop.WaitSubmittedWork(Work::SwapChain)==E_UNEXPECTED,"unsubmitted recording is not a readiness boundary");
+        Check(interop.Submit(Work::SwapChain),"scoped readiness submit");
+        ComPtr<ID3D12Fence> gate;Check(rig.device12->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&gate)),"future unrelated work gate");
+        Check(rig.queue->Wait(gate.Get(),1),"hold unrelated future GPU work");
+        Check(interop.Begin(Work::FrameGeneration,&list),"unrelated future work begin");Check(interop.Submit(Work::FrameGeneration),"unrelated future work submit");
+        const auto waited=interop.WaitSubmittedWork(Work::SwapChain);
+        Check(gate->Signal(1),"release unrelated work before assertions");Check(interop.Drain(),"retire scoped readiness fixture");
+        Require(waited==S_OK,"current publication readiness must not drain unrelated future work");
+    }
+    {
+        Interop interop;rig.Initialize(interop);interop.SetRetirementWaitPolicy({10,40});
+        ComPtr<ID3D12Fence> gate;Check(rig.device12->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&gate)),"readiness timeout gate");
+        Check(rig.queue->Wait(gate.Get(),1),"hold publication beyond readiness deadline");
+        ID3D12GraphicsCommandList* list{};Check(interop.Begin(Work::SwapChain,&list),"timeout publication begin");Check(interop.Submit(Work::SwapChain),"timeout publication submit");
+        const auto value=interop.LastValue(Work::SwapChain);const auto slot=interop.CurrentSlot(Work::SwapChain);
+        const auto waited=interop.WaitSubmittedWork(Work::SwapChain);
+        const auto unchanged=interop.LastValue(Work::SwapChain)==value && interop.CurrentSlot(Work::SwapChain)==slot;
+        const auto fault=interop.Fault();const auto ready=interop.Ready();
+        Check(gate->Signal(1),"release timed out publication before assertions");Check(interop.Drain(),"actual timeout fixture retirement");
+        Require(waited==HRESULT_FROM_WIN32(WAIT_TIMEOUT) && fault==waited && !ready,"publication timeout is a latched fault, never readiness");
+        Require(unchanged,"publication timeout fabricates no completion or allocator progress");
+    }
     for(auto kind:{Work::Upscaling,Work::FrameGeneration,Work::SwapChain}) {
         DiscardProbe interop;rig.Initialize(interop);ID3D12GraphicsCommandList* list{};
         if(kind==Work::Upscaling){Check(interop.SignalProducer(),"discard producer");Check(interop.Begin(&list),"discard begin");}

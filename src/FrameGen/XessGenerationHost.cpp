@@ -79,7 +79,7 @@ namespace TheosRenderPipeline
         if(!runtime)return state_->Failure(runtime.error());
         state_->producer=producer;state_->bridge=std::move(bridge);state_->descriptor=descriptor;
         state_->attempted=true;
-        auto created=state_->presentation.Create(factory,*runtime,state_->bridge,descriptor,flags);
+        auto created=state_->presentation.Create(factory,*runtime,state_->bridge,descriptor,flags,adapterDesc.VendorId!=0x8086);
         if(!created)return state_->Failure(created.error());
         state_->initFlags=flags;
         state_->created=true;state_->reason="Intel presenter ready; interpolation inactive until verified engine source timing";return {};

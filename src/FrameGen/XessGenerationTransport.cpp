@@ -54,7 +54,7 @@ namespace TheosRenderPipeline
         D3D11ContextIsolation isolation;
         ComPtr<ID3D12GraphicsCommandList> recording;
         std::uint64_t source{},epoch{};
-        bool waited{},uploaded{},tagged{},guidesValid{},closing{};
+        bool waited{},uploaded{},tagged{},published{},guidesValid{},closing{};
         HRESULT fault{S_OK};
         Result<void> Check(HRESULT hr,const char* message)
         {
@@ -135,7 +135,7 @@ namespace TheosRenderPipeline
                 state_->depthCopy.ResetViews();state_->depth=std::move(newDepth);state_->motion=std::move(newMotion);state_->guides=frame.depthExtent;
             }
         }
-        state_->waited=false;state_->guidesValid=false;state_->uploaded=false;state_->tagged=false;
+        state_->waited=false;state_->guidesValid=false;state_->uploaded=false;state_->tagged=false;state_->published=false;
         // SR scene RGB describes opaque world color; its alpha is not HUD
         // coverage and may be zero. Normalize only this owned scene copy.
         auto hr=state_->sceneConverter.Convert(context,frame.output,state_->scene.texture11.Get(),frame.outputEncoding,ColorEncoding::SRGB,SdrAlphaMode::OpaqueScene);
@@ -219,7 +219,17 @@ namespace TheosRenderPipeline
         ID3D12GraphicsCommandList* list{};
         if (auto result=state_->Check(state_->bridge->Begin(InteropWork::SwapChain,&list),"Intel publication list begin failed"); !result) return result;
         if (auto result=state_->Check(D3D11D3D12Interop::RecordCopy(list,state_->finalImage.texture12.Get(),backbuffer),"Intel composed real-image publication copy failed"); !result) return result;
-        return state_->Check(state_->bridge->Submit(InteropWork::SwapChain),"Intel publication submit failed");
+        if (auto result=state_->Check(state_->bridge->Submit(InteropWork::SwapChain),"Intel publication submit failed"); !result) return result;
+        state_->published=true;return {};
+    }
+    Result<void> XessGenerationTransport::WaitPublicationReady()
+    {
+        if (!state_) return Invalid("Intel transport is not initialized");
+        if (auto ready=state_->Ready(); !ready) return ready;
+        if (!state_->uploaded || !state_->published || state_->recording)
+            return Invalid("Intel source readiness requires an actually submitted current publication");
+        return state_->Check(state_->bridge->WaitSubmittedWork(InteropWork::SwapChain),
+            "Intel source publication readiness failed; retaining copy owners");
     }
     Result<void> XessGenerationTransport::Retire()
     {

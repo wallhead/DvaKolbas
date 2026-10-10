@@ -20,6 +20,8 @@ namespace TheosRenderPipeline
         // seals the actual SDK ONLY_NOW copies with the bridge's FG fence.
         Upscaling::Result<void> Tag(ID3D12GraphicsCommandList*,xefg_swapchain_handle_t,const XessGenerationFunctions&,const XessGenerationFrame&);
         Upscaling::Result<void> PublishTo(ID3D12Resource* backbuffer);
+        // Current source copy readiness only; not SDK reader retirement.
+        Upscaling::Result<void> WaitPublicationReady();
         Upscaling::Result<void> Retire();
         ID3D12Resource* Scene() const;
         ID3D12Resource* Ui() const;

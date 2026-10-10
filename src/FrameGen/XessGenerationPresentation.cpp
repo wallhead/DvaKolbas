@@ -31,7 +31,7 @@ namespace TheosRenderPipeline
         std::uint32_t flags{};
         XessGenerationFrame prepared{};
         xefg_swapchain_present_status_t status{};
-        bool initialized{},ready{},closing{},suspended{},enabled{},hasPrepared{},tagged{};
+        bool initialized{},ready{},closing{},suspended{},enabled{},hasPrepared{},tagged{},waitTaggedPublication{},publicationFailed{};
         HRESULT fault{S_OK};
         Result<void> Check(xefg_swapchain_result_t result,const char* message)
         {
@@ -56,7 +56,7 @@ namespace TheosRenderPipeline
     XessGenerationPresentation::~XessGenerationPresentation()
     { if (state_ && !Retire()) (void)state_.release(); }
     Result<void> XessGenerationPresentation::Create(IDXGIFactory* factory,std::shared_ptr<XessGenerationRuntime> runtime,
-        std::shared_ptr<Graphics::D3D11D3D12Interop> bridge,const DXGI_SWAP_CHAIN_DESC& desc,std::uint32_t initFlags)
+        std::shared_ptr<Graphics::D3D11D3D12Interop> bridge,const DXGI_SWAP_CHAIN_DESC& desc,std::uint32_t initFlags,bool waitTaggedPublication)
     {
         constexpr auto supportedFlags=XEFG_SWAPCHAIN_INIT_FLAG_INVERTED_DEPTH|XEFG_SWAPCHAIN_INIT_FLAG_HIGH_RES_MV|
             XEFG_SWAPCHAIN_INIT_FLAG_USE_NDC_VELOCITY|XEFG_SWAPCHAIN_INIT_FLAG_JITTERED_MV;
@@ -69,6 +69,7 @@ namespace TheosRenderPipeline
         if (FAILED(factory->QueryInterface(IID_PPV_ARGS(&nativeFactory)))) return Invalid("Intel FG requires IDXGIFactory2");
         state_=std::make_unique<State>();auto& state=*state_;
         state.runtime=std::move(runtime);state.bridge=std::move(bridge);state.flags=initFlags;
+        state.waitTaggedPublication=waitTaggedPublication;
         state.display={desc.BufferDesc.Width,desc.BufferDesc.Height};
         if (auto result=state.latency.Create(state.bridge->Device12(),state.runtime); !result) return result;
         const auto& api=state.runtime->Generation();
@@ -135,6 +136,17 @@ namespace TheosRenderPipeline
         const auto hr=state.proxy->GetBuffer(state.proxy->GetCurrentBackBufferIndex(),IID_PPV_ARGS(&buffer));
         if (FAILED(hr)) return std::unexpected(RuntimeError{ErrorKind::ContextFailure,hr,"Intel FG real backbuffer acquisition failed"});
         if (auto result=state.transport.PublishTo(buffer.Get()); !result) return std::unexpected(result.error());
+        // Non-Intel pacing must see the current source ready before entering
+        // the proxy. This is the existing copy fence, not a full queue drain
+        // or proof that private SDK readers have retired. Disabled/menu real
+        // images stay asynchronous; no source IDs or lifetime gates change.
+        if (tag && state.waitTaggedPublication) {
+            if (auto result=state.transport.WaitPublicationReady(); !result) {
+                state.publicationFailed=true;
+                state.fault=static_cast<HRESULT>(result.error().nativeResult);
+                return std::unexpected(result.error());
+            }
+        }
         state.prepared=prepared;state.hasPrepared=true;state.tagged=tag;return prepared;
     }
     Result<XessGenerationFrame> XessGenerationPresentation::PrepareReal(const UpscaleFrame& frame,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool complete)
@@ -219,6 +231,11 @@ namespace TheosRenderPipeline
     Result<void> XessGenerationPresentation::Retire()
     {
         if (!state_) return {};
+        // A failed readiness boundary keeps the entire SDK/transport owner.
+        // Later queue progress cannot authorize partial teardown. Other SDK
+        // Destroy failures still use the existing proven quiescent retry.
+        if (state_->publicationFailed)
+            return std::unexpected(RuntimeError{ErrorKind::RetirementFailure,state_->fault,"Intel source readiness failed; retaining complete presentation owner"});
         auto& state=*state_;state.closing=true;state.ready=false;
         const auto& api=state.runtime->Generation();
         if (state.context && state.initialized)

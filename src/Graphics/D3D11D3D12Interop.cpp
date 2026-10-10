@@ -302,6 +302,18 @@ namespace TheosRenderPipeline::Graphics
 		return S_OK;
 	}
 
+    HRESULT D3D11D3D12Interop::WaitSubmittedWork(InteropWork kind)
+    {
+        auto* work=Get(kind);
+        if (!Ready() || !work || work->recording) return E_UNEXPECTED;
+        // Submit advances slot only after the native queue signal succeeds.
+        // value can also describe a D3D11 producer signal, so it is not proof
+        // that a native publication has actually been submitted.
+        const auto submitted=work->submitted[(work->slot+kCommandSlots-1)%kCommandSlots];
+        if (!submitted) return E_UNEXPECTED;
+        return WaitCPU(*work,submitted);
+    }
+
 	HRESULT D3D11D3D12Interop::Drain()
 	{
         // Recording can still contain context/descriptor references which a

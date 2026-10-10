@@ -13,6 +13,8 @@ namespace TheosRenderPipeline
         struct PresentTiming
         {
             std::uint32_t sdkId{};
+            // Tagged non-Intel Prepare includes the current publication wait;
+            // proxyPresentMs excludes it. Neither measures GPU execution.
             double prepareMs{-1},proxyPresentMs{-1};
         };
         explicit XessGenerationHost(std::filesystem::path pluginDirectory);

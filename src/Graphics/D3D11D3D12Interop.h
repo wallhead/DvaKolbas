@@ -95,6 +95,9 @@ namespace TheosRenderPipeline::Graphics
         HRESULT DiscardUnsubmitted(InteropWork);
         HRESULT WaitConsumer();
         HRESULT Drain();
+        // CPU readiness of the latest actually submitted native work only.
+        // Does not flush/retire unrelated work, reset slots or authorize reuse.
+        HRESULT WaitSubmittedWork(InteropWork);
         ID3D12Device* Device12() const { return device12_.Get(); }
         ID3D12CommandQueue* Queue() const { return queue_.Get(); }
         ID3D11DeviceContext4* Context11() const { return context11_.Get(); }

@@ -10,7 +10,7 @@ namespace TheosRenderPipeline
         ~XessGenerationPresentation();
         XessGenerationPresentation(const XessGenerationPresentation&)=delete;
         XessGenerationPresentation& operator=(const XessGenerationPresentation&)=delete;
-        Upscaling::Result<void> Create(IDXGIFactory*,std::shared_ptr<XessGenerationRuntime>,std::shared_ptr<Graphics::D3D11D3D12Interop>,const DXGI_SWAP_CHAIN_DESC&,std::uint32_t initFlags=0);
+        Upscaling::Result<void> Create(IDXGIFactory*,std::shared_ptr<XessGenerationRuntime>,std::shared_ptr<Graphics::D3D11D3D12Interop>,const DXGI_SWAP_CHAIN_DESC&,std::uint32_t initFlags=0,bool waitTaggedPublication=false);
         Upscaling::Result<XessGenerationFrame> Prepare(const Upscaling::UpscaleFrame&,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool hudComplete,std::uint32_t sdkId,bool tag);
         // Real image/HUD publication with no new engine source or SDK ID.
         Upscaling::Result<XessGenerationFrame> PrepareReal(const Upscaling::UpscaleFrame&,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool hudComplete);

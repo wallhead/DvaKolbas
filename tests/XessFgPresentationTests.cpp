@@ -3,6 +3,8 @@
 #include "XessFgFrameFixture.h"
 #include "fixtures/xess-fg/Control.h"
 #include "nr-runtime/GpuProbeGuard.h"
+#include <atomic>
+#include <thread>
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
 using namespace InteropFixture;
@@ -76,6 +78,43 @@ int wmain(int argc,wchar_t** argv)
     auto resized=frame;resized.display.width=4;Require(!owner.Prepare(resized,ui.Get(),nullptr,true,19,true) && owner.SwapChain()==proxy,"changed extent rejected before owner retirement");
     fail(12);Require(!owner.Retire() && owner.Latency() && owner.Latency()->Context(),"failed FG destroy keeps latency and runtime owners");
     Success(owner.Retire(),"quiescent FG destroy retry then XeLL cleanup");Require(!owner.SwapChain() && !owner.Latency(),"clean owner released");
+    for (bool tagged:{true,false}) {
+        reset();resetLatency();observe(Observe);
+        auto pacedBridge=std::make_shared<Interop>();rig.Initialize(*pacedBridge);
+        XessGenerationPresentation paced;Success(paced.Create(rig.factory.Get(),*loaded,pacedBridge,desc,0,true),"source-ready pacing owner");
+        ComPtr<ID3D12Fence> gate;Check(rig.device12->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&gate)),"source-ready pacing gate");
+        Check(rig.queue->Wait(gate.Get(),1),"hold source publication");
+        HANDLE returned=CreateEventW(nullptr,FALSE,FALSE,nullptr);Require(returned!=nullptr,"prepare return event");
+        std::atomic<bool> early{false};
+        std::thread release([&]{early=WaitForSingleObject(returned,75)==WAIT_OBJECT_0;Check(gate->Signal(1),"release source publication");});
+        frame.sourceId=1;frame.reset=true;
+        auto result=tagged?paced.Prepare(frame,ui.Get(),nullptr,true,17,true):paced.PrepareReal(frame,ui.Get(),nullptr,true);
+        SetEvent(returned);release.join();CloseHandle(returned);
+        Require(bool(result),"source-ready preparation succeeds after actual progress");
+        Check(paced.Present(*result,false,0,0),"source-ready real/reset present");Success(paced.Retire(),"source-ready owner retirement");
+        Require(early!=tagged,"only tagged FG preparation waits for current source publication; real-only publication stays asynchronous");
+    }
+    {
+        reset();resetLatency();observe(Observe);
+        auto stalledBridge=std::make_shared<Interop>();rig.Initialize(*stalledBridge);stalledBridge->SetRetirementWaitPolicy({10,40});
+        // Timeout intentionally retains the proxy. Its HWND must be separate
+        // from subsequent fixtures; DXGI allows only one flip chain per HWND.
+        const auto timeoutWindow=CreateWindowW(wc.lpszClassName,L"readiness timeout",WS_OVERLAPPEDWINDOW,0,0,64,48,nullptr,nullptr,wc.hInstance,nullptr);
+        Require(timeoutWindow!=nullptr,"timeout fixture window");auto timeoutDesc=desc;timeoutDesc.OutputWindow=timeoutWindow;
+        XessGenerationPresentation stalled;Success(stalled.Create(rig.factory.Get(),*loaded,stalledBridge,timeoutDesc,0,true),"readiness timeout owner");
+        ComPtr<ID3D12Fence> gate;Check(rig.device12->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&gate)),"readiness timeout publication gate");
+        Check(rig.queue->Wait(gate.Get(),1),"hold current publication beyond deadline");
+        frame.sourceId=1;frame.reset=true;
+        const auto result=stalled.Prepare(frame,ui.Get(),nullptr,true,17,true);
+        Check(gate->Signal(1),"release timed out source before assertions");Check(stalledBridge->Drain(),"retire actual copies without granting owner reuse");
+        Require(!result && result.error().nativeResult==HRESULT_FROM_WIN32(WAIT_TIMEOUT),"publication timeout is reported from preparation");
+        const auto calls=count();
+        auto rejected=XessGenerationFrame{};rejected.sourceId=1;rejected.sourceEpoch=frame.sourceEpoch;rejected.sdkId=17;
+        Require(stalled.Present(rejected,true,0,0)==E_UNEXPECTED && count()==calls,"failed readiness never admits SDK Present/status");
+        Require(!stalled.PrepareReal(frame,ui.Get(),nullptr,true) && !stalled.Retire() && stalled.Latency()->Context(),"timeout keeps native, SDK and latency owners and rejects reuse");
+        for(auto i=calls;i<count();++i)Require(read(i).kind!=12,"failed source readiness cannot authorize SDK destruction");
+        DestroyWindow(timeoutWindow);
+    }
     for (const uint32_t stage:{1u,2u,3u,4u,5u,6u,7u}) {
         reset();resetLatency();observe(Observe);fail(stage);
         XessGenerationPresentation partial;Require(!partial.Create(rig.factory.Get(),*loaded,bridge,desc),"public creation failure returned");
