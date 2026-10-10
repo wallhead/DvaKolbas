@@ -28,18 +28,38 @@ tests pass for calls that reach that adapter; they do not qualify its coverage
 of the actual gameplay branch. Runtime call counts and instruction witnesses
 must both be used when choosing the replacement.
 
-## Next investigation
+## Loaded-save capture and diagnostic probe
 
-Capture the actual gameplay branch and the relevant preserved detours while a
-loaded save runs. A bounded read-only helper is prepared locally to inspect
-relocations 16405, 36577 and 36567 in addition to the original timing witnesses.
-These are candidate callees, not established input boundaries. Identify their
-meaning and ordering before changing admission or adding a hook.
+The subsequent loaded-save read-only capture succeeded. Relocations 16405,
+36577 and 36567 were inspected; their object iteration, timer bookkeeping and
+auxiliary dispatch do not establish input sampling. The selected menu input
+site remains intact and its callee entry is detoured by DevBench. Main::Update
+has a CBPC entry detour whose retained trampoline restores the original
+prologue and returns to the native body. These existing chains must survive.
+
+Extending the mapped-code scan from E8 calls to E9 tail jumps found relocation
+36578, RVA 0x647410, with a tail jump at 0x647433 into PollInputDevices (68617).
+Its full 40-byte function restores its stack before the tail transfer and sets
+RCX to the input manager and XMM1 to the frame interval. The compact evidence
+is `gameplay-input-job-profile-1170.json`. Instructions alone do not establish
+its scheduling, thread ownership or one-to-one association with raster frames.
+
+The diagnostic build wraps this verified tail jump, preserving the existing
+PollInputDevices entry chain. Atomic counters record calls started/completed,
+QPC times and thread IDs. The main render callback logs 128 bounded world
+snapshots alongside the raster counter and render-thread ID. These independent
+snapshots are advisory: concurrent calls cannot be paired from them alone.
+The probe does not emit XeLL markers, source IDs or FG admission. All three
+instruction witnesses are checked before any installation.
+
+The new CPU regression failed on the original menu-only preflight and passes
+with the gameplay witness required. It also checks the tail target, stack
+restoration, exactly-once preserved polling and absence of timing callbacks.
+Release compilation and five selected CPU/package checks passed; independent
+review found no important installation blocker. Physical GPU and gameplay
+timing validation are still pending. The existing timing contract is unchanged.
 
 Keep strict same-source, epoch and thread checks. Do not repair this by emitting
 the missing markers at Present or dropping the genuine-input requirement.
-Skyrim had already closed when the external capture was attempted; that attempt
-returned Windows error 87 and produced no new instruction evidence.
-
-Milestone progress remains 3 of 8. No replacement DLL was installed for this
-investigation; the next necessary action is another loaded-save capture.
+Milestone progress remains 3 of 8. The next necessary action is installing the
+diagnostic DLL with Skyrim/MO2 closed, then observing a new loaded-save run.

@@ -104,7 +104,8 @@ def main():
             if extent > 32 * 1024 * 1024:
                 raise ValueError('Mapped code scan exceeds 32 MiB bound')
             # No whole-image dump: examine code in bounded chunks and retain
-            # only instruction witnesses for direct callers of the input poll.
+            # only instruction witnesses for direct calls and tail transfers.
+            # The gameplay input job uses E9, unlike the menu branch's E8.
             targets = {addresses[68617]: 'poll_input', addresses[36564]: 'main_update',
                        addresses[36559]: 'main_render_world_caller', addresses[77245]: 'renderer_begin'}
             seen = set()
@@ -115,7 +116,7 @@ def main():
                 scanned_bytes += len(chunk)
                 for index, byte in enumerate(chunk[:-4]):
                     call_rva = start + index
-                    if byte != 0xe8 or call_rva in seen:
+                    if byte not in (0xe8, 0xe9) or call_rva in seen:
                         continue
                     target = call_rva + 5 + struct.unpack_from('<i', chunk, index + 1)[0]
                     if target not in targets:
@@ -129,7 +130,7 @@ def main():
                         raise ValueError('Input caller instructions changed during capture')
                     instructions = [{'rva': hex(i.address - base), 'bytes': i.bytes.hex(), 'instruction': i.mnemonic + ' ' + i.op_str}
                                     for i in engine.disasm(code, base + begin)]
-                    if not any(i['rva'] == hex(call_rva) and i['instruction'].startswith('call ') for i in instructions):
+                    if not any(i['rva'] == hex(call_rva) and i['instruction'].startswith(('call ', 'jmp ')) for i in instructions):
                         continue
                     if counts[targets[target]] == 8 or total_bytes + len(code) > 65536:
                         raise ValueError('Caller count or saved instruction bytes exceed capture bound')

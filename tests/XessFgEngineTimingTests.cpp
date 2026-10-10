@@ -22,14 +22,14 @@ static void Complete(XessGenerationEngineTiming& timing,uint64_t source,uint32_t
 int wmain(int argc,wchar_t** argv)
 {
     using namespace XessEngineHooks;
-    Require(Qualified({1,6,1170,0},inputBytes,renderBytes),"identified instructions qualify hook sites");
-    Require(!Qualified({1,6,640,0},inputBytes,renderBytes),"uninspected runtime cannot borrow 1170 witnesses");
+    Require(Qualified({1,6,1170,0},inputBytes,renderBytes,gameplayInputBytes),"identified instructions qualify hook sites");
+    Require(!Qualified({1,6,640,0},inputBytes,renderBytes,gameplayInputBytes),"uninspected runtime cannot borrow 1170 witnesses");
     auto changed=inputBytes;changed[15]=0xE9;
-    Require(!Qualified({1,6,1170,0},changed,renderBytes),"changed input call rejected before publishing hooks");
+    Require(!Qualified({1,6,1170,0},changed,renderBytes,gameplayInputBytes),"changed input call rejected before publishing hooks");
     auto wrongArguments=renderBytes;wrongArguments[1]=0xC9;
-    Require(!Qualified({1,6,1170,0},inputBytes,wrongArguments),"changed render arguments rejected");
+    Require(!Qualified({1,6,1170,0},inputBytes,wrongArguments,gameplayInputBytes),"changed render arguments rejected");
     auto foreignTarget=inputBytes;foreignTarget[16]^=1;
-    Require(!Qualified({1,6,1170,0},foreignTarget,renderBytes),"unexpected input callee rejected");
+    Require(!Qualified({1,6,1170,0},foreignTarget,renderBytes,gameplayInputBytes),"unexpected input callee rejected");
     unsigned observed{};Observer sink{&observed,[](void* context,Boundary) noexcept { ++*static_cast<unsigned*>(context); }};
     Observe(Boundary::BeforeInput);Require(!observed && !Bind(nullptr),"ordinary owners dispatch no Intel markers");
     Require(Bind(&sink) && !Bind(&sink),"only one retained Intel observer");

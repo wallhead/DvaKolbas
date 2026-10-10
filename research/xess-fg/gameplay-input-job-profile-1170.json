@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "capturedUtc": "2026-10-10T16:02:40.476453+00:00",
+  "runtime": "1.6.1170.0",
+  "exeSha256": "c434208894f07f604b852f29b8edc3a58c4de63de783373733e72b2b73f33be9",
+  "addressLibrarySha256": "c4093c569a3c83b26587f4b9ea4c55de9ae6e73b84a2af9fb3fbd30e2fe0d452",
+  "access": "QUERY_INFORMATION | VM_READ only",
+  "functionRelocationId": 36578,
+  "functionRva": "0x647410",
+  "tailSiteRva": "0x647433",
+  "tailOffset": "0x23",
+  "tailTargetRelocationId": 68617,
+  "codeSha256": "bb1b175fe785c662cececc83424ff4c77a992a95be12c7a856505d3ef7cb5a53",
+  "codeHex": "4883ec28488b0d2d23b202e8e06a4000f30f100d644eb802488b0d715ab1024883c428e9081b6900",
+  "instructions": [
+    {
+      "rva": "0x647410",
+      "bytes": "4883ec28",
+      "instruction": "sub rsp, 0x28"
+    },
+    {
+      "rva": "0x647414",
+      "bytes": "488b0d2d23b202",
+      "instruction": "mov rcx, qword ptr [rip + 0x2b2232d]"
+    },
+    {
+      "rva": "0x64741b",
+      "bytes": "e8e06a4000",
+      "instruction": "call 0x7ff689f1df00"
+    },
+    {
+      "rva": "0x647420",
+      "bytes": "f30f100d644eb802",
+      "instruction": "movss xmm1, dword ptr [rip + 0x2b84e64]"
+    },
+    {
+      "rva": "0x647428",
+      "bytes": "488b0d715ab102",
+      "instruction": "mov rcx, qword ptr [rip + 0x2b15a71]"
+    },
+    {
+      "rva": "0x64742f",
+      "bytes": "4883c428",
+      "instruction": "add rsp, 0x28"
+    },
+    {
+      "rva": "0x647433",
+      "bytes": "e9081b6900",
+      "instruction": "jmp 0x7ff68a1a8f40"
+    }
+  ],
+  "qualification": "Instruction/ABI evidence only. Gameplay scheduling, thread ownership and frame association unqualified."
+}

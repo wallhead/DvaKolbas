@@ -1019,8 +1019,32 @@ struct UpscalerHooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* renderer,std::uint32_t window)
 		{
+			// Main/render-thread snapshot of advisory job counters. Worker-side
+			// hooks never inspect engine/UI containers or the raster frame counter.
+			static unsigned traces{};
+			auto* ui=RE::UI::GetSingleton();
+			if(traces<128 && ui && !ui->IsMenuOpen(RE::MainMenu::MENU_NAME) && !ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME)) {
+				using namespace TheosRenderPipeline::XessEngineHooks;
+				LARGE_INTEGER now{};QueryPerformanceCounter(&now);
+				logger::info("[XeSS gameplay input probe] event={} rendered={} renderThread={} renderQpc={} started={} completed={} latestBeginThread={} latestEndThread={} latestBeginQpc={} latestEndQpc={}; diagnostic only, counters are independent snapshots",
+					++traces,RenderPipeline::GetSingleton()->mRenderedFrameCount,GetCurrentThreadId(),now.QuadPart,
+					gameplayProbe.started.load(std::memory_order_acquire),gameplayProbe.completed.load(std::memory_order_acquire),
+					gameplayProbe.beginThread.load(),gameplayProbe.endThread.load(),gameplayProbe.beginTicks.load(),gameplayProbe.endTicks.load());
+			}
 			TheosRenderPipeline::XessEngineHooks::Observe(TheosRenderPipeline::XessEngineHooks::Boundary::BeforeRender);
 			func(renderer,window);
+		}
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+	struct IntelGameplayInputProbe
+	{
+		static void thunk(RE::BSInputDeviceManager* manager,float seconds)
+		{
+			TheosRenderPipeline::XessEngineHooks::gameplayProbe.PollInput(
+				[&]{func(manager,seconds);},[] {
+					LARGE_INTEGER tick{};QueryPerformanceCounter(&tick);
+					return std::pair<std::uint32_t,std::uint64_t>{GetCurrentThreadId(),static_cast<std::uint64_t>(tick.QuadPart)};
+				});
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
@@ -1034,24 +1058,34 @@ struct UpscalerHooks
 		}
 		const auto input=REL::ID(36564).address()+0x567;
 		const auto render=REL::ID(36555).address()+0x47;
+		const auto gameplayInput=REL::ID(36578).address();
 		// Validate every ABI/callee witness before changing any call site. The
 		// callee entry points may be detoured by other mods; those chains survive.
 		std::array<std::uint8_t,inputBytes.size()> actualInput{};
 		std::array<std::uint8_t,renderBytes.size()> actualRender{};
+		std::array<std::uint8_t,gameplayInputBytes.size()> actualGameplayInput{};
 		if (!HookSafety::Read(input-15,actualInput.data(),actualInput.size()) ||
 			!HookSafety::Read(render-9,actualRender.data(),actualRender.size()) ||
-			!Qualified({1,6,1170,0},actualInput,actualRender)) {
+			!HookSafety::Read(gameplayInput,actualGameplayInput.data(),actualGameplayInput.size()) ||
+			!HookSafety::Executable(REL::ID(68617).address()) ||
+			!Qualified({1,6,1170,0},actualInput,actualRender,actualGameplayInput)) {
 			logger::warn("[XeSS-FG] engine timing inactive: input/render instructions differ from the captured 1.6.1170 profile");
 			return;
 		}
 		stl::write_thunk_call<IntelMainInput>(input);
 		stl::write_thunk_call<IntelMainRender>(render);
-		witnesses={HookWitness{input,IntelMainInput::func.address()},HookWitness{render,IntelMainRender::func.address()}};
+		// Keep the tail jump's stack/ABI and enter the existing poll detour chain.
+		// Publish its predecessor before any job can enter this diagnostic thunk.
+		IntelGameplayInputProbe::func=REL::ID(68617).address();
+		(void)SKSE::GetTrampoline().write_branch<5>(gameplayInput+0x23,IntelGameplayInputProbe::thunk);
+		witnesses={HookWitness{input,IntelMainInput::func.address()},HookWitness{render,IntelMainRender::func.address()},
+			HookWitness{gameplayInput+0x23,IntelGameplayInputProbe::func.address()}};
 		for(auto& witness:witnesses)if(!HookSafety::Read(witness.site,witness.installedCall.data(),witness.installedCall.size())) {
 			logger::warn("[XeSS-FG] installed engine call witness unavailable; interpolation remains inactive");return;
 		}
 		installed.store(true,std::memory_order_release);
 		logger::info("[XeSS-FG] inspected engine call sites installed: pre-input/input=36564+567 render=36555+47; callbacks require an Intel owner; per-frame timing awaits game trace");
+		logger::info("[XeSS-FG] native input job probe installed: 36578+23 tail jump; diagnostic only, no XeLL markers or FG qualification");
 	}
 #endif
 
