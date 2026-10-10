@@ -46,9 +46,10 @@ namespace TheosRenderPipeline
     {
         std::shared_ptr<D3D11D3D12Interop> bridge;
         Extent display{},guides{};
-        SharedTexture scene,ui,depth,motion;
+        SharedTexture scene,ui,finalImage,depth,motion;
         SdrColorConverter sceneConverter;
-        FsrPresentationUiConverter uiConverter;
+        FsrPresentationUiConverter uiConverter,finalComposer;
+        ComPtr<ID3D11ShaderResourceView> uiView;
         D3D11FrameCopy::Depth depthCopy;
         D3D11ContextIsolation isolation;
         ComPtr<ID3D12GraphicsCommandList> recording;
@@ -82,6 +83,9 @@ namespace TheosRenderPipeline
         const auto desc=Description(display,DXGI_FORMAT_R8G8B8A8_UNORM,D3D11_BIND_SHADER_RESOURCE|D3D11_BIND_RENDER_TARGET);
         if (auto result=state->Check(state->bridge->CreateSharedTexture(desc,state->scene),"Intel owned scene allocation failed"); !result) return result;
         if (auto result=state->Check(state->bridge->CreateSharedTexture(desc,state->ui),"Intel owned HUD allocation failed"); !result) return result;
+        if (auto result=state->Check(state->bridge->CreateSharedTexture(desc,state->finalImage),"Intel composed real-image allocation failed"); !result) return result;
+        ComPtr<ID3D11Device> device;state->bridge->Context11()->GetDevice(&device);
+        if (auto result=state->Check(device->CreateShaderResourceView(state->ui.texture11.Get(),nullptr,&state->uiView),"Intel HUD composition view failed"); !result) return result;
         state_=std::move(state);return {};
     }
     Result<void> XessGenerationTransport::WaitBeforeProducer()
@@ -127,6 +131,11 @@ namespace TheosRenderPipeline
         state_->waited=false;state_->guidesValid=false;state_->uploaded=false;state_->tagged=false;
         auto hr=state_->sceneConverter.Convert(context,frame.output,state_->scene.texture11.Get(),frame.outputEncoding,ColorEncoding::SRGB);
         if (SUCCEEDED(hr)) hr=state_->uiConverter.Convert(context,ui,overlay,state_->ui.texture11.Get(),frame.uiEncoding);
+        // Intel's UI policy composites generated images. The application's
+        // real backbuffer must already contain its HUD, even with FG disabled.
+        // Both prepared inputs are premultiplied sRGB bytes; SRGB -> SRGB in
+        // the existing compositor preserves UI + (1-alpha) * scene.
+        if (SUCCEEDED(hr)) hr=state_->finalComposer.Convert(context,state_->scene.texture11.Get(),state_->uiView.Get(),state_->finalImage.texture11.Get(),ColorEncoding::SRGB);
         if (SUCCEEDED(hr) && guides) {
             D3D11ContextIsolation::Scope isolation(state_->isolation,context);
             if (!isolation) hr=E_FAIL;
@@ -200,7 +209,7 @@ namespace TheosRenderPipeline
         if (auto result=state_->Check(state_->bridge->WaitD3D12(InteropWork::FrameGeneration),"Intel producer/tag dependency failed"); !result) return result;
         ID3D12GraphicsCommandList* list{};
         if (auto result=state_->Check(state_->bridge->Begin(InteropWork::SwapChain,&list),"Intel publication list begin failed"); !result) return result;
-        if (auto result=state_->Check(D3D11D3D12Interop::RecordCopy(list,state_->scene.texture12.Get(),backbuffer),"Intel scene publication copy failed"); !result) return result;
+        if (auto result=state_->Check(D3D11D3D12Interop::RecordCopy(list,state_->finalImage.texture12.Get(),backbuffer),"Intel composed real-image publication copy failed"); !result) return result;
         return state_->Check(state_->bridge->Submit(InteropWork::SwapChain),"Intel publication submit failed");
     }
     Result<void> XessGenerationTransport::Retire()

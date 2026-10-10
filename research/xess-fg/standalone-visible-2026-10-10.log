@@ -1,0 +1,48 @@
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+ADAPTER vendor=10de device=2702 LUID=00000000:00011072 extent=1280x720 SDK=3.0.2 real_runtime=1
+PIXEL x=0 y=0 actual=ff505050 expected=ff505050
+PIXEL x=32 y=32 actual=ff0000ff expected=ff0000ff
+PIXEL x=32 y=80 actual=ff28a828 expected=ff28a828
+FRAME id=1 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=21 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=41 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=61 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=81 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=101 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=121 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=141 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=161 phase=0 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=181 phase=1 focus=1 tag=1 generate=0 sdk_frames=1 enabled=1 result=3
+PIXEL x=0 y=0 actual=ff505050 expected=ff505050
+PIXEL x=32 y=32 actual=ff0000ff expected=ff0000ff
+PIXEL x=32 y=80 actual=ff28a828 expected=ff28a828
+FRAME id=201 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=221 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=241 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=261 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=281 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=301 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=321 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=341 phase=1 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=361 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=381 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=401 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=421 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=441 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=461 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=481 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=501 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=521 phase=2 focus=1 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=541 phase=3 focus=1 tag=1 generate=0 sdk_frames=1 enabled=1 result=3
+FRAME id=561 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=581 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=601 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=621 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=641 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=661 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=681 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+FRAME id=701 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+SUMMARY qualified=1 visual_requested=1 interrupted=0 lost_focus_frames=0 active_sources=357 interpolated_sources=357 off_sources=363 errors=0 clean_retirement=1
+PASS: actual Intel SDK generated frames and ordered retirement; visual smoothness/HUD confirmation separate
+

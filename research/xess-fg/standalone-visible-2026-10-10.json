@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-10T11:25:53.5284348+03:00",
+  "qualified": true,
+  "exitCode": 0,
+  "sourceRevision": "d8404c63da3dba48f54018d06bc9f8774da4469c",
+  "executableSHA256": "f54e9d2112dd807db57d2c1680c04f8b8b6b9c37c460693282a00ae223601944",
+  "worktreeDirty": true,
+  "sdkBundle": "3.0.2",
+  "sdkCommit": "8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0",
+  "runtimeHashes": {
+    "libxess_fg.dll": "ec5e0c65e075570c6ede72618bb666d0be0c2e10b2ea9762c0fe8cb8e375ab27",
+    "libxell.dll": "d2030dcd694fda8f2ec7e044b13e6db8f0b56d4ba9113a5efad334e3f3ded8c7"
+  },
+  "numericalOnly": false,
+  "summary": "SUMMARY qualified=1 visual_requested=1 interrupted=0 lost_focus_frames=0 active_sources=357 interpolated_sources=357 off_sources=363 errors=0 clean_retirement=1",
+  "log": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\validation\\xess-fg\\intel-fg-20261010-112529-c6cf8d.log",
+  "visualUserConfirmation": "Smoother; HUD intact",
+  "debugLayers": "see log; unavailable layers do not qualify validation",
+  "sourceFilesSHA256": {
+    "src/FrameGen/XessGenerationTransport.cpp": "ede10843638fe32dba451e6afd7f66400e830c60905439e8ae4ad9083d7b7233",
+    "src/FrameGen/XessGenerationPresentation.cpp": "6e64f6b28f2fa2a65e6186c2159f61562b1f674210555bda521f886a8a022446",
+    "tests/xess-fg/XessFgPresentationGpuTests.cpp": "95d1aeba23431bfcdb688be4a278a254aff32e5b04d69f08098de63499c7154a",
+    "tests/xess-fg/XessFgVisibleScene.h": "5ed6a68639f635dd44d1a9842eb84a7f1d7d17da9547f78a8e9a3e02edad1a5d"
+  }
+}
