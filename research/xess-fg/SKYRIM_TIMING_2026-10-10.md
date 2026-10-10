@@ -9,6 +9,12 @@ adapter starts timing immediately before the preserved main input poll.
 **Actual complete per-frame Skyrim ordering and interpolation remain unqualified.**
 Milestone 3 remains partial until the corrected Intel-host gameplay trace.
 
+The `dd89f752e732` trial also failed gameplay timing: source start and input
+completion ran during startup, but the world trace contained only render events.
+The captured update body branches around the pinned input call during normal
+unpaused gameplay. See `GAMEPLAY_INPUT_BLOCKER_2026-10-10.md`. The current adapter
+therefore does not establish a complete gameplay input boundary.
+
 ## Identified runtime and evidence
 
 Skyrim SE 1.6.1170.0 executable SHA-256:
