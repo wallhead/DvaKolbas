@@ -1,8 +1,9 @@
 # XeSS FG adjacent-frame pacing investigation
 
-Status: zero-hint candidate improved visible motion but retained cadence
-oscillation. Scoped publication-readiness candidate prepared for gameplay
-confirmation. Milestones remain 5 of 8 complete.
+Status: scoped publication-readiness candidate confirmed smoother in Skyrim
+on the current FSR Native -> NR After -> XeSS FG route. The regular cadence
+alternation is substantially reduced in the capture. Milestones remain
+5 of 8 complete; wider provider/lifecycle qualification remains open.
 
 The user reports regular stutter with FSR Native -> NR After -> XeSS FG on
 RTX 4080 SUPER. The FSR FG comparison graph is flatter. Both source sessions
@@ -262,3 +263,40 @@ logs, `pacing-world-summary.json`, `pacing-scoped-summary.json`, queue/thunk
 disassembly, and red/green build/test logs. The committed opt-in harness is
 the reproducible probe. Skyrim visual/cadence confirmation is still required;
 milestone qualification remains 5 of 8.
+
+## Gameplay confirmation (2026-10-11)
+
+The user reports "seems fixed" after installing clean revision `8b0f1c63f302`
+in V5.4 NO-LORE. The saved capture identifies that DLL and the RTX 4080 SUPER
+route: FSR 3.1.5 Native, one active NR After pass using rtx40, Intel FG and
+SDR output. A real-only FG-off interval is followed by accepted gameplay
+generation with `sourceProof=true`, `requested=true`, `frames=2`, `sdk=0`
+and successful Present. No error/critical records occur in the snapshot.
+
+Three complete generated 64-source bursts have median adjacent source-time
+differences of 0.518, 1.035 and 1.001 ms, versus 12.87–14.16 ms in the final
+seven bursts of the preceding zero-hint capture. Proxy Present lower/upper
+half medians are now 0.69–0.81 / 0.76–1.04 ms, compared with the previous
+0.84–2.61 / 14.03–16.24 ms. Prepare medians are 10.67–11.17 ms because the
+current source-publication readiness wait is included there. Moving the CPU
+wait explains that phase redistribution; it is not a new measurement of
+GPU generation cost. Next XeLL Sleep stays approximately 0.023–0.025 ms.
+
+This supports the user's visible pacing result on the tested route. It does
+not claim higher average FPS, physical scanout regularity or qualified latency;
+world load differs between sessions. Other SR/NR combinations and the full
+lifecycle/release matrix remain open, so progress is still 5 of 8 milestones.
+
+The final clean build passed all 21 targeted checks, including seven GPU
+checks. The installed DLL SHA256 is
+`d0c044e2e5b1a795b2033eb7bf5b30b9b68c6c23ef44192d913a76617dbc0882`.
+The working `d56fea8ab659` DLL and current settings have a rollback backup;
+INI, menu layout, mod list and MO2 launch/profile settings were preserved.
+The immutable candidate and validation/installation receipts are under
+`out/research/xess-fg-reference/pacing-publication-8b0f1c63f302/`.
+
+Ignored capture evidence: `xess-pacing-publication-gameplay-capture.log` and
+`xess-pacing-publication-gameplay-summary.json` in the existing
+`nr-fg-overhead-2026-10-10` directory. The summary retains burst boundaries,
+rejects incomplete/non-generated bursts and omits the buffered log boundary
+row when calculating cadence differences.
