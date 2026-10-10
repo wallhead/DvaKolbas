@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "sourceRevision": "000ccf57b3c7",
+  "sourceClean": true,
+  "plugin": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\xess-fg-reference\\gameplay-handoff-000ccf57b3c7\\RaZkolbaS.dll",
+  "pluginSha256": "913ef0f701624d950bfd0d04f41a76f15a4104dd4d4badc2b7e71308a6785dbb",
+  "checksPassed": 20,
+  "physicalGpuChecksPassed": 7,
+  "allChecksPassed": true,
+  "candidateInputHandoff": true,
+  "gameplayQualified": false,
+  "milestonesCompleted": 3,
+  "milestonesTotal": 8,
+  "gpuDebugLayersUnavailable": true,
+  "review": "Follow-up review: no important blockers",
+  "validationScope": "XessFg.* and PublicIniPackage; 20 passed, 27.37s; final clean Release build succeeded"
+}
