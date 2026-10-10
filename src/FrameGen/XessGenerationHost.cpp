@@ -163,11 +163,11 @@ namespace TheosRenderPipeline
         return result;
     }
     HRESULT XessGenerationHost::Present(const UpscaleFrame& frame,UpscaleOutcome outcome,ID3D11Texture2D* ui,
-        ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags)
+        ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,bool inputProof)
     {
         std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return E_UNEXPECTED;
-        auto id=state_->bound && !state_->timingResetPending?state_->timing.CurrentRenderId(frame.sourceId,frame.sourceEpoch):Result<std::uint32_t>{std::unexpected(Invalid("no engine source").error())};
+        auto id=inputProof && state_->bound && !state_->timingResetPending?state_->timing.CurrentRenderId(frame.sourceId,frame.sourceEpoch):Result<std::uint32_t>{std::unexpected(Invalid("no engine source").error())};
         if(!id) {
             if(outcome!=UpscaleOutcome::RepeatedOutput || !requested || menu || !complete || frame.reset || frame.camera.reset)
                 state_->history.Invalidate();

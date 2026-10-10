@@ -61,8 +61,9 @@ namespace TheosRenderPipeline
         if (auto ready=Check(); !ready) return ready;
         if (sdkId!=id_) return Invalid("Intel post-Present ID differs from the accepted source");
         if (auto result=SourceMarker(source_,5,XELL_PRESENT_END); !result) return result;
-        // Arm readiness only. The next actual pre-input source boundary owns
-        // Sleep/SimulationStart; extra/loading Presents cannot invent one.
+        // Finish this source. The owner's next-source reservation may follow
+        // this Present, but input admission still needs a genuine later job.
+        // Extra/loading Presents cannot manufacture completed input.
         phase_=0;return {};
     }
     Result<void> XessGenerationEngineTiming::ResetAfterDrain(bool quiescent)

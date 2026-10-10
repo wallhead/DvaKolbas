@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sourceRevision": "4c6efe59a725",
+  "records": 128,
+  "renderThreads": [
+    64020
+  ],
+  "inputThreads": [
+    5244,
+    18644,
+    28440,
+    42836,
+    60752,
+    65320
+  ],
+  "allCompletedAtSnapshot": true,
+  "startCountRange": [
+    0,
+    127
+  ],
+  "rasterRange": [
+    19671,
+    19798
+  ],
+  "completedInputBeforeRenderAtSnapshot": 127,
+  "countDeltas": [
+    1
+  ],
+  "generatedPeriodicReports": 0,
+  "qualification": "Native gameplay input runs on worker threads. Independent snapshots cannot associate a job to an exact source/epoch."
+}

@@ -147,6 +147,20 @@ int wmain(int argc,wchar_t** argv)
     bool resetAfterDisable=false;
     for(auto i=afterDisable;i<count();++i)if(read(i).kind==9)resetAfterDisable=read(i).value==1;
     Require(resetAfterDisable,"disabled duplicate invalidates history before re-enabled temporal tags");
+    frame.sourceId=25;
+    Require(bool(owner.BeforeSourceLoop(25,3)) && bool(owner.InputSampled(25)) && bool(owner.BeforeRender(25)),
+        "source rendered before late worker invalidated its proof");
+    const auto beforeInvalidated=count(),beforeInvalidatedLatency=latencyCount();
+    Check(owner.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,false),
+        "invalidated input proof retains real output even with completed render markers");
+    Require(latencyCount()==beforeInvalidatedLatency,"rejected final input proof emits no Present repair markers");
+    for(auto i=beforeInvalidated;i<count();++i)Require(read(i).kind!=8 && read(i).kind!=9 && read(i).kind!=10,
+        "late input invalidation prevents all SDK tags, constants and Present ID");
+    frame.sourceId=26;
+    Require(bool(owner.BeforeSourceLoop(26,3)) && bool(owner.InputSampled(26)) && bool(owner.BeforeRender(26)),
+        "fresh genuine source recovers from invalidated untagged render");
+    Check(owner.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true),
+        "fresh intact input proof presents without terminal failure");
     Require(bool(owner.Retire()),"host retires generation then XeLL after drain");
     Rig foreign;XessGenerationHost wrong(argv[1]);
     Require(!wrong.Create(rig.factory.Get(),foreign.device11.Get(),desc,bridge),"foreign D3D11 identity rejected even on same adapter");

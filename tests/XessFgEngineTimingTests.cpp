@@ -107,6 +107,20 @@ int wmain(int argc,wchar_t** argv)
     Require(bool(timing.EndRender(13)) && bool(timing.BeforePresent(1)) && bool(timing.AfterPresent(1)),
         "input-started source completes through real presentation timing");
     Require(Unbind(&loopSink),"input loop observer unbound");
+    XessGenerationInputHandoff handoff;
+    const auto nextSource=timing.BeginSourceLoop(14,8);
+    Require(nextSource && *nextSource==2 && handoff.Arm(14,8,100),
+        "post-Present owner reserves next ID and publishes only after sleep returns");
+    const auto beforeWorker=count();
+    std::thread inputWorker([&] {
+        auto ticket=handoff.Begin(101,17);Require(bool(ticket),"native worker retains next source ticket");
+        Require(handoff.Complete(ticket,102,17),"native input completion recorded after its actual return");
+    });inputWorker.join();
+    Require(count()==beforeWorker,"worker handoff never issues foreign-thread XeLL calls");
+    Require(handoff.Consume(14,8) && bool(timing.InputSampled(14)) && bool(timing.EndSimulation(14)) && bool(timing.BeginRender(14)),
+        "owner translates only exact completed native input into simulation/render markers");
+    Require(handoff.Seal(14,8) && bool(timing.EndRender(14)) && bool(timing.BeforePresent(*nextSource)) && bool(timing.AfterPresent(*nextSource)),
+        "sealed completed source retains one SDK ID through real publication");
     Require(bool(latency.Retire(true,true)),"latency retires after proven owner cleanup");
     std::puts("PASS: source/input/simulation/render/Present mapping; Skyrim instruction/ordering qualification remains separate");
 }

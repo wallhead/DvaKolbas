@@ -277,6 +277,7 @@ class NvidiaHost
     DXGI_SWAP_CHAIN_DESC xessPresentationDescriptor_{};
     std::uint64_t xessEngineSource_{},xessEngineEpoch_{1},xessEngineTrace_{};
     bool xessTimingBound_{};
+    std::atomic<std::uint32_t> xessTimingOwnerThread_{};
     unsigned xessPresentTrace_{};
 #endif
 #if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)

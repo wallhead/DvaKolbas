@@ -1038,13 +1038,22 @@ struct UpscalerHooks
 	};
 	struct IntelGameplayInputProbe
 	{
-		static void thunk(RE::BSInputDeviceManager* manager,float seconds)
+		static void thunk()
 		{
+			using namespace TheosRenderPipeline::XessEngineHooks;
+			const auto stamp=[] {
+				LARGE_INTEGER tick{};QueryPerformanceCounter(&tick);
+				return std::pair<std::uint32_t,std::uint64_t>{GetCurrentThreadId(),static_cast<std::uint64_t>(tick.QuadPart)};
+			};
+			const auto begin=stamp();
+			// Observe the complete native job, including its earlier bookkeeping
+			// call. A tail-only ticket could miss input work preceding publication.
+			const auto ticket=gameplayInput.Begin(begin.second,begin.first);
 			TheosRenderPipeline::XessEngineHooks::gameplayProbe.PollInput(
-				[&]{func(manager,seconds);},[] {
-					LARGE_INTEGER tick{};QueryPerformanceCounter(&tick);
-					return std::pair<std::uint32_t,std::uint64_t>{GetCurrentThreadId(),static_cast<std::uint64_t>(tick.QuadPart)};
-				});
+				[]{func();},stamp);
+			const auto end=stamp();
+			// Rejected/unarmed tickets also retain the job until its real return.
+			gameplayInput.Complete(ticket,end.second,end.first);
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
@@ -1058,7 +1067,7 @@ struct UpscalerHooks
 		}
 		const auto input=REL::ID(36564).address()+0x567;
 		const auto render=REL::ID(36555).address()+0x47;
-		const auto gameplayInput=REL::ID(36578).address();
+		const auto gameplayJobSite=REL::ID(36578).address();
 		// Validate every ABI/callee witness before changing any call site. The
 		// callee entry points may be detoured by other mods; those chains survive.
 		std::array<std::uint8_t,inputBytes.size()> actualInput{};
@@ -1066,26 +1075,33 @@ struct UpscalerHooks
 		std::array<std::uint8_t,gameplayInputBytes.size()> actualGameplayInput{};
 		if (!HookSafety::Read(input-15,actualInput.data(),actualInput.size()) ||
 			!HookSafety::Read(render-9,actualRender.data(),actualRender.size()) ||
-			!HookSafety::Read(gameplayInput,actualGameplayInput.data(),actualGameplayInput.size()) ||
+			!HookSafety::Read(gameplayJobSite,actualGameplayInput.data(),actualGameplayInput.size()) ||
 			!HookSafety::Executable(REL::ID(68617).address()) ||
 			!Qualified({1,6,1170,0},actualInput,actualRender,actualGameplayInput)) {
 			logger::warn("[XeSS-FG] engine timing inactive: input/render instructions differ from the captured 1.6.1170 profile");
 			return;
 		}
+		// This exact job has no live incoming arguments: its two RCX arguments
+		// and XMM1 seconds are established by the witnessed body. Relocate the
+		// whole displaced RIP-relative instruction, then retain the original
+		// body and existing PollInputDevices detour chain.
+		auto* predecessor=static_cast<std::uint8_t*>(SKSE::GetTrampoline().allocate(25));
+		const auto relocated=RelocateGameplayEntry(gameplayJobSite,reinterpret_cast<std::uintptr_t>(predecessor),actualGameplayInput);
+		if(!relocated){logger::warn("[XeSS-FG] native input job predecessor cannot be relocated; timing inactive");return;}
+		std::memcpy(predecessor,relocated->data(),relocated->size());
+		FlushInstructionCache(GetCurrentProcess(),predecessor,relocated->size());
+		IntelGameplayInputProbe::func=reinterpret_cast<std::uintptr_t>(predecessor);
 		stl::write_thunk_call<IntelMainInput>(input);
 		stl::write_thunk_call<IntelMainRender>(render);
-		// Keep the tail jump's stack/ABI and enter the existing poll detour chain.
-		// Publish its predecessor before any job can enter this diagnostic thunk.
-		IntelGameplayInputProbe::func=REL::ID(68617).address();
-		(void)SKSE::GetTrampoline().write_branch<5>(gameplayInput+0x23,IntelGameplayInputProbe::thunk);
+		(void)SKSE::GetTrampoline().write_branch<5>(gameplayJobSite,IntelGameplayInputProbe::thunk);
 		witnesses={HookWitness{input,IntelMainInput::func.address()},HookWitness{render,IntelMainRender::func.address()},
-			HookWitness{gameplayInput+0x23,IntelGameplayInputProbe::func.address()}};
+			HookWitness{gameplayJobSite,IntelGameplayInputProbe::func.address()}};
 		for(auto& witness:witnesses)if(!HookSafety::Read(witness.site,witness.installedCall.data(),witness.installedCall.size())) {
 			logger::warn("[XeSS-FG] installed engine call witness unavailable; interpolation remains inactive");return;
 		}
 		installed.store(true,std::memory_order_release);
 		logger::info("[XeSS-FG] inspected engine call sites installed: pre-input/input=36564+567 render=36555+47; callbacks require an Intel owner; per-frame timing awaits game trace");
-		logger::info("[XeSS-FG] native input job probe installed: 36578+23 tail jump; diagnostic only, no XeLL markers or FG qualification");
+		logger::info("[XeSS-FG] native input job handoff installed: complete 36578 job; worker proof only, all XeLL markers stay on the render owner");
 	}
 #endif
 

@@ -3,6 +3,10 @@
 #include <atomic>
 #include <cstdint>
 #include <span>
+#include <cstring>
+#include <limits>
+#include <optional>
+#include "XessGenerationInputHandoff.h"
 
 namespace TheosRenderPipeline::XessEngineHooks
 {
@@ -92,5 +96,24 @@ namespace TheosRenderPipeline::XessEngineHooks
         }
     };
     inline GameplayInputProbe gameplayProbe;
+    inline XessGenerationInputHandoff gameplayInput;
+    // The inspected job's first eleven bytes contain a RIP-relative singleton
+    // load. Relocate that complete instruction before jumping to its original
+    // first call. Generic prologue copying would use the wrong singleton.
+    inline std::optional<std::array<std::uint8_t,25>> RelocateGameplayEntry(
+        std::uintptr_t site,std::uintptr_t trampoline,std::span<const std::uint8_t> actual)
+    {
+        if(!site || !trampoline || actual.size()!=gameplayInputBytes.size())return {};
+        for(std::size_t i=0;i<actual.size();++i)if(actual[i]!=gameplayInputBytes[i])return {};
+        std::int32_t original{};std::memcpy(&original,actual.data()+7,4);
+        const auto displacement=static_cast<std::int64_t>(site)-static_cast<std::int64_t>(trampoline)+original;
+        if(displacement<std::numeric_limits<std::int32_t>::min() || displacement>std::numeric_limits<std::int32_t>::max())return {};
+        std::array<std::uint8_t,25> code{};
+        std::memcpy(code.data(),actual.data(),11);
+        const auto relocated=static_cast<std::int32_t>(displacement);std::memcpy(code.data()+7,&relocated,4);
+        code[11]=0xFF;code[12]=0x25; // jmp qword ptr [rip+0], no scratch register
+        const std::uint64_t resume=site+11;std::memcpy(code.data()+17,&resume,8);
+        return code;
+    }
     inline std::atomic_bool installed{};
 }

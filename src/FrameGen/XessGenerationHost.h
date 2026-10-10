@@ -25,7 +25,8 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> InputSampled(std::uint64_t source);
         Upscaling::Result<void> BeforeRender(std::uint64_t source);
         HRESULT Present(const Upscaling::UpscaleFrame&,Upscaling::UpscaleOutcome,ID3D11Texture2D* ui,
-            ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags);
+            ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,
+            bool inputProof=true);
         HRESULT WaitBeforeProducer();
         HRESULT StartupPresent(UINT interval,UINT flags);
         Upscaling::Result<void> Suspend();
