@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-10",
+  "scope": "physical context/properties probe only; frame production unqualified",
+  "sdkCommit": "8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0",
+  "fgApi": "1.3.1",
+  "xellApi": "1.3.2",
+  "adapter": {
+    "description": "NVIDIA GeForce RTX 4080 SUPER",
+    "vendor": "10de",
+    "device": "2702",
+    "renderLuid": "00000000:00011072",
+    "sameAdapterD3D12": true,
+    "shaderModel": "6.4"
+  },
+  "maxInterpolatedFrames": 1,
+  "requestedInterpolatedFrames": 1,
+  "properties": {
+    "descriptors": 326,
+    "bufferBytes": 7208960,
+    "textureBytes": 41484288,
+    "constantBytes": 8978432
+  },
+  "contextCreate": {
+    "xell": 0,
+    "fg": 0,
+    "link": 0
+  },
+  "destroy": {
+    "fg": 0,
+    "xell": 0,
+    "modulesUnloaded": true
+  },
+  "runtimeSha256": {
+    "libxess_fg.dll": "ec5e0c65e075570c6ede72618bb666d0be0c2e10b2ea9762c0fe8cb8e375ab27",
+    "libxell.dll": "d2030dcd694fda8f2ec7e044b13e6db8f0b56d4ba9113a5efad334e3f3ded8c7"
+  }
+}

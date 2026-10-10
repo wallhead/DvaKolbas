@@ -2,7 +2,8 @@
 param(
     [string]$Destination = (Join-Path $PSScriptRoot '../../out/research/xess-sdk-3.0.2'),
     [string]$Aio19Archive,
-    [string]$SevenZip = 'C:/Program Files/7-Zip/7z.exe'
+    [string]$SevenZip = 'C:/Program Files/7-Zip/7z.exe',
+    [switch]$FrameGeneration
 )
 $ErrorActionPreference = 'Stop'
 $pin = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'sdk-pin.json') -Raw | ConvertFrom-Json
@@ -55,6 +56,18 @@ if ((Test-Path -LiteralPath $runtime) -or -not $Aio19Archive) {
     }
 }
 if ((Get-Item -LiteralPath $runtime).Length -ne $pin.runtime.bytes) { throw 'Unexpected XeSS DLL length' }
-[ordered]@{ sdkRelease=$pin.release; commit=$pin.commit; runtime=$pin.runtime; files=$pin.files } |
+$generation = @()
+if ($FrameGeneration) {
+    foreach ($file in $pin.generationFiles) {
+        Get-PinnedFile $file.path (Join-Path $root $file.path) $file.sha256
+    }
+    foreach ($file in $pin.generationRuntimes) {
+        $target = Join-Path $root $file.stagePath
+        Get-PinnedFile $file.path $target $file.sha256
+        if ((Get-Item -LiteralPath $target).Length -ne $file.bytes) { throw "Unexpected FG/XeLL DLL length: $target" }
+    }
+    $generation = @($pin.generationFiles) + @($pin.generationRuntimes)
+}
+[ordered]@{ sdkRelease=$pin.release; commit=$pin.commit; runtime=$pin.runtime; files=$pin.files; generation=$generation } |
     ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $root 'acquisition-receipt.json') -Encoding utf8
 Write-Output "PASS: minimal pinned XeSS SDK acquired: $root"

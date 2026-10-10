@@ -21,6 +21,16 @@
     "sha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
     "bytes": 77795704
   },
+  "generationFiles": [
+    { "path": "inc/xess_fg/xefg_swapchain.h", "sha256": "39f20fc1eef0b5d3fd41e25a2c5c04734d1a2cbdcf3f3da1c86cefef181ce976" },
+    { "path": "inc/xess_fg/xefg_swapchain_d3d12.h", "sha256": "1aa9a1c31214aaefb2c4ca4fd3bce29a166c8384148466d69f679ea554cf2dbc" },
+    { "path": "inc/xell/xell.h", "sha256": "0a65a677001edf473156e6ed1d6cf97150fa12ff9930811bbaf4613b080c11b2" },
+    { "path": "inc/xell/xell_d3d12.h", "sha256": "e3b07f2f3adc317416a6aaa2343ae9b56c7707a34bb0e56fbefea14463a76bce" }
+  ],
+  "generationRuntimes": [
+    { "path": "bin/libxess_fg.dll", "stagePath": "SKSE/Plugins/RaZkolbaS/XeSS/libxess_fg.dll", "sha256": "ec5e0c65e075570c6ede72618bb666d0be0c2e10b2ea9762c0fe8cb8e375ab27", "bytes": 22957432 },
+    { "path": "bin/libxell.dll", "stagePath": "SKSE/Plugins/RaZkolbaS/XeSS/libxell.dll", "sha256": "d2030dcd694fda8f2ec7e044b13e6db8f0b56d4ba9113a5efad334e3f3ded8c7", "bytes": 415368 }
+  ],
   "aio19": {
     "sha256": "49e7f7dabf426937915d1aeed664fc40a7cc7d89f42092a69c205b22c4687439",
     "entry": "UpscalerBasePlugin/libxess.dll"
