@@ -98,12 +98,19 @@ namespace TheosRenderPipeline
         state_->waited=true;return {};
     }
     Result<void> XessGenerationTransport::Upload(const UpscaleFrame& frame,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool complete)
+    { return UploadInternal(frame,ui,overlay,complete,false); }
+    Result<void> XessGenerationTransport::UploadReal(const UpscaleFrame& frame,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool complete)
+    {
+        auto real=frame;real.sourceId=real.sourceEpoch=0;real.depth=real.motion=nullptr;
+        return UploadInternal(real,ui,overlay,complete,true);
+    }
+    Result<void> XessGenerationTransport::UploadInternal(const UpscaleFrame& frame,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool complete,bool realOnly)
     {
         if (!state_) return Invalid("Intel transport is not initialized");
         if (auto ready=state_->Ready(); !ready) return ready;
-        if (!state_->waited || !complete || !frame.sourceId || !frame.sourceEpoch || frame.display!=state_->display ||
+        if (!state_->waited || !complete || (!realOnly && (!frame.sourceId || !frame.sourceEpoch)) || frame.display!=state_->display ||
             !IsKnownColorEncoding(frame.outputEncoding) || !IsKnownColorEncoding(frame.uiEncoding) ||
-            (state_->uploaded && state_->epoch==frame.sourceEpoch && frame.sourceId<=state_->source))
+            (!realOnly && state_->uploaded && state_->epoch==frame.sourceEpoch && frame.sourceId<=state_->source))
             return Invalid("Intel upload requires a waited fresh completed scene and HUD with explicit output/UI transfers");
         auto* context=state_->bridge->Context11();ComPtr<ID3D11Device> device;context->GetDevice(&device);
         if (!Fits(frame.output,state_->display,device.Get(),true) || !Fits(ui,state_->display,device.Get(),true))

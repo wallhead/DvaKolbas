@@ -64,12 +64,12 @@ struct NvidiaHost::SourceXessEvaluationOperations
     void UpscaleSucceeded(){++host.upscaleEvaluationCount_;}
     GenerationPreparationStatus PrepareGeneration(const UpscaleFrame& frame)
     {
-#if defined(TRP_ENABLE_FSR_FG)
-        if(host.FsrFgActive()) {
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+        if(host.NativeGenerationActive()) {
             // SourceFrameEvaluator holds a copy. Capture here, after camera
             // measurements, XeSS execution and NR have updated that copy.
             host.fsrGenerationFrame_=frame;
-            host.fsrGenerationFrame_.sourceId=host.presentCount_+1;
+            if(host.FsrFgActive())host.fsrGenerationFrame_.sourceId=host.presentCount_+1;
             return GenerationPreparationStatus::Succeeded;
         }
 #endif
@@ -103,10 +103,10 @@ struct NvidiaHost::SourceXessEvaluationOperations
             else ++host.xessForeignThreadCount_;
             if(reuseCompleted) {
                 ++host.xessRepeatedCount_;
-#if defined(TRP_ENABLE_FSR_FG)
-                if(host.FsrFgActive()) {
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+                if(host.NativeGenerationActive()) {
                     host.fsrGenerationFrame_=host.xessCompletedFrame_;
-                    host.fsrGenerationFrame_.sourceId=host.presentCount_+1;
+                    if(host.FsrFgActive())host.fsrGenerationFrame_.sourceId=host.presentCount_+1;
                     host.fsrGenerationFrame_.reset=host.fsrGenerationFrame_.camera.reset=false;
                 }
 #endif
@@ -182,6 +182,7 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
         if(FAILED(waited)){FailLifecycle(waited,"XeSS FSR producer ownership");return false;}
     }
 #endif
+    if(XessFgActive() && (UpdateXessSuspension()!=S_OK || FAILED(WaitXessProducer())))return false;
     SourceInternalScope internal(sourceUIInternal_);
     Microsoft::WRL::ComPtr<IDXGISwapChain3> chain;
     if(FAILED(innerSwapChain_->QueryInterface(IID_PPV_ARGS(&chain))))return false;
@@ -192,7 +193,7 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     frame.render=frame.subrect={renderWidth_,renderHeight_};frame.display={outputWidth_,outputHeight_};
     // Engine IDs belong to XeSS/NR history; presents can repeat an engine frame.
     // Only the completed FG snapshot maps to the fresh transport sequence.
-    frame.sourceId=pipeline.mRenderedFrameCount+1;frame.sourceEpoch=xessEpoch_;
+    frame.sourceId=XessFgActive()?pipeline.mRenderedFrameCount:pipeline.mRenderedFrameCount+1;frame.sourceEpoch=xessEpoch_;
 #if !defined(TRP_NO_NEURAL_RENDERING)
     frame.sourceEpoch=communityEpoch_;
 #endif
@@ -206,9 +207,9 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     SourceXessEvaluationOperations operations{*this,pipeline,menu || loadingScreenRoute_.Active(presentCount_),nativeUIHandoff,admission};
     operations.reuseCompleted=CanRepeatXessOutput(frame,xessCompletedFrame_,xessHasCompleted_,
         admission==XessFrameAdmission::DuplicateSource,operations.menu,xessRecovery_);
-#if defined(TRP_ENABLE_FSR_FG)
-    if(FsrFgActive()) {
-        fsrGenerationFrame_=frame;fsrGenerationFrame_.sourceId=presentCount_+1;fsrSourceRenderedCount_=pipeline.mRenderedFrameCount;
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+    if(NativeGenerationActive()) {
+        fsrGenerationFrame_=frame;if(FsrFgActive())fsrGenerationFrame_.sourceId=presentCount_+1;fsrSourceRenderedCount_=pipeline.mRenderedFrameCount;
         fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
         fsrMenu_=operations.menu || pipeline.FrameGenerationTransitionBlocked();
     }
@@ -221,8 +222,8 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
     context_->CopyResource(presentation_.Buffers()[index].Get(),frame.output);
     const bool temporal=result.outcome==UpscaleOutcome::Temporal;
     const bool repeated=result.outcome==UpscaleOutcome::RepeatedOutput;
-#if defined(TRP_ENABLE_FSR_FG)
-    if(FsrFgActive()) {
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+    if(NativeGenerationActive()) {
         fsrGenerationOutcome_=result.outcome;fsrSourcePending_=true;
         if(temporal)++fsrGuideCaptureCount_;
     }

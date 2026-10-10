@@ -29,8 +29,8 @@ bool NvidiaHost::CaptureAndComposeDedicatedNativeUI()
     // The direct compositor binds graphics state. Keep our routing hooks from
     // treating its fullscreen draw as another native-UI producer.
     InternalOperation internal(sourceUIInternal_);
-#if defined(TRP_ENABLE_FSR_FG)
-    if(FsrFgActive()) {fsrUiComplete_=nativeUI_.CaptureDedicated(context_.Get());return fsrUiComplete_;}
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+    if(NativeGenerationActive()) {fsrUiComplete_=nativeUI_.CaptureDedicated(context_.Get());return fsrUiComplete_;}
 #endif
     return nativeUI_.Compose(context_.Get(), presentation_.Texture());
 }
@@ -178,7 +178,7 @@ struct NvidiaHost::SourceFrameOperations
     void CompositionFailed()
     {
         host.nativeUI_.Invalidate();
-        if(host.FsrFgActive()) {host.FailLifecycle(E_FAIL,"AMD native HUD completion");return;}
+        if(host.NativeGenerationActive()) {host.FailLifecycle(E_FAIL,"AMD native HUD completion");return;}
         logger::error("[NativeUIRoute] composition failed; reverting to HUD-less-only tagging");
     }
     void Trace(const char* stage) { host.LogNativeUIState(stage, MainOrLoading()); }
@@ -187,7 +187,7 @@ struct NvidiaHost::SourceFrameOperations
 void NvidiaHost::OnBackgroundReady(TheosRenderPipeline::BackgroundBoundary boundary, bool mainOrLoading)
 {
     if (!StartupConfigured() || !proxyActive_ || !UpscalerReady() || !context_ || !RenderPipeline::GetSingleton()->mNativeUI) { return; }
-    if(FsrFgActive() && UpdateFsrSuspension()!=S_OK)return;
+    if((FsrFgActive() && UpdateFsrSuspension()!=S_OK) || (XessFgActive() && UpdateXessSuspension()!=S_OK))return;
     if (boundary == TheosRenderPipeline::BackgroundBoundary::World) {
         startupWorldFrame_ = presentCount_;
         sourceRenderThread_ = GetCurrentThreadId();
@@ -212,7 +212,7 @@ bool NvidiaHost::PrepareSourceFrameForPresent(IDXGISwapChain* swapChain)
     }
     SourceFrameOperations operations{*this};
     const bool prepared=sourceFrameCoordinator_.PrepareForPresent(context_.Get(), operations);
-    if(prepared && FsrFgActive() && !TheosRenderPipeline::PrepareFsrPresentUi(context_.Get(),nativeUI_.RenderRTV(),nativeUIPass_.Frame().UIDrawn())) {
+    if(prepared && NativeGenerationActive() && !TheosRenderPipeline::PrepareFsrPresentUi(context_.Get(),nativeUI_.RenderRTV(),nativeUIPass_.Frame().UIDrawn())) {
         Microsoft::WRL::ComPtr<ID3D11Device> producer,viewOwner,resourceOwner;
         Microsoft::WRL::ComPtr<ID3D11Resource> resource;
         auto* target=nativeUI_.RenderRTV();context_->GetDevice(&producer);
@@ -230,8 +230,8 @@ bool NvidiaHost::PrepareSourceFrameForPresent(IDXGISwapChain* swapChain)
 bool NvidiaHost::FinishSourceFrameForPresent()
 {
     const bool ready = NativePresentReady();
-#if defined(TRP_ENABLE_FSR_FG)
-    if(FsrFgActive() && ready && !nativeUIPass_.Frame().UIDrawn()) {
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+    if(NativeGenerationActive() && ready && !nativeUIPass_.Frame().UIDrawn()) {
         // Preparation already cleared an empty game HUD before the late
         // foreground draws. Freeze their completed pixels without clearing again.
         fsrUiComplete_=nativeUI_.CaptureDedicated(context_.Get());
@@ -244,8 +244,8 @@ bool NvidiaHost::FinishSourceFrameForPresent()
         InternalOperation internal(sourceUIInternal_);
         // The scene and ordinary native UI are complete. This foreground was
         // never included in DLSS input and must survive a same-frame Mist entry.
-#if defined(TRP_ENABLE_FSR_FG)
-        if(FsrFgActive()) {fsrForeground_=startupOverlay_.SRV();}
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+        if(NativeGenerationActive()) {fsrForeground_=startupOverlay_.SRV();}
         else
 #endif
         if (!nativeUI_.ComposeOverlay(context_.Get(), presentation_.Texture(), startupOverlay_.SRV())) {
@@ -271,8 +271,8 @@ void NvidiaHost::ApplyLoadingFade(bool composed)
     if (factor >= 1.0f || !composed) { return; }
     InternalOperation internal(sourceUIInternal_);
     bool faded=presentationFade_.Apply(context_.Get(), presentation_.Texture(), factor);
-#if defined(TRP_ENABLE_FSR_FG)
-    if(FsrFgActive() && fsrUiComplete_) {
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+    if(NativeGenerationActive() && fsrUiComplete_) {
         faded &= presentationFade_.Apply(context_.Get(),nativeUI_.TaggedTexture(),factor);
         if(fsrForeground_) {
             Microsoft::WRL::ComPtr<ID3D11Resource> resource;Microsoft::WRL::ComPtr<ID3D11Texture2D> foreground;

@@ -78,4 +78,17 @@ namespace TheosRenderPipeline
         if (!phase_ || source!=source_ || epoch!=epoch_) return std::unexpected(Invalid("Intel host source has no matching active engine timing ID").error());
         return id_;
     }
+    Result<void> XessGenerationEngineTiming::AbandonAfterDrain(bool quiescent)
+    {
+        if (auto ready=Check(); !ready) return ready;
+        if (!quiescent) return Invalid("Intel interrupted timing cycle requires a proven GPU drain");
+        if (auto result=latency_->ResetAfterDrain(true); !result) { fault_=true;return result; }
+        source_=epoch_=id_=phase_=0;sampled_=false;return {};
+    }
+    Result<std::uint32_t> XessGenerationEngineTiming::CurrentRenderId(std::uint64_t source,std::uint64_t epoch) const
+    {
+        auto id=CurrentId(source,epoch);if(!id)return id;
+        if(phase_!=3 || !sampled_)return std::unexpected(Invalid("Intel tagging requires observed input and a genuine render-start boundary").error());
+        return id;
+    }
 }

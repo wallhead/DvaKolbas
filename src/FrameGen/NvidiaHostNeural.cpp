@@ -124,6 +124,9 @@ void NvidiaHost::InspectCommunityNeural()
 #if defined(TRP_ENABLE_FSR)
     if(!presenter && fsrResources_ && fsrResources_->Bridge())presenter=fsrResources_->Bridge()->Device12();
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+    if(!presenter && XessFgActive() && xessPresentation_)presenter=xessPresentation_->Bridge()->Device12();
+#endif
     if(!presenter)presenter=SourceDLSSG::Backend::Get().Transport().Device12();
     // Never create another injector device proxy while the presenter is live.
     logger::info("[Community NR startup] driverCorePolicy=Windows-signature/catalog + NVIDIA NGX metadata; whole-file SHA is diagnostic, not a fixed driver-version pin");

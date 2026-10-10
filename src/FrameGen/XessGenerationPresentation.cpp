@@ -120,7 +120,9 @@ namespace TheosRenderPipeline
             prepared.display=frame.display;prepared.render=frame.render;prepared.constants.resetHistory=1;
         }
         if (auto result=state.transport.WaitBeforeProducer(); !result) return std::unexpected(result.error());
-        if (auto result=state.transport.Upload(input,ui,overlay,complete); !result) return std::unexpected(result.error());
+        const bool untimed=!tag && !frame.sourceId && !frame.sourceEpoch && !sdkId;
+        const auto uploaded=untimed?state.transport.UploadReal(input,ui,overlay,complete):state.transport.Upload(input,ui,overlay,complete);
+        if (!uploaded) return std::unexpected(uploaded.error());
         if (auto result=state.Enabled(tag); !result) return std::unexpected(result.error());
         if (tag) {
             const auto list=state.transport.BeginTag();if (!list) return std::unexpected(list.error());
@@ -132,14 +134,21 @@ namespace TheosRenderPipeline
         if (auto result=state.transport.PublishTo(buffer.Get()); !result) return std::unexpected(result.error());
         state.prepared=prepared;state.hasPrepared=true;state.tagged=tag;return prepared;
     }
+    Result<XessGenerationFrame> XessGenerationPresentation::PrepareReal(const UpscaleFrame& frame,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool complete)
+    {
+        auto real=frame;real.sourceId=real.sourceEpoch=0;real.depth=real.motion=nullptr;
+        return Prepare(real,ui,overlay,complete,0,false);
+    }
     HRESULT XessGenerationPresentation::Present(const XessGenerationFrame& frame,bool generate,UINT interval,UINT flags)
     {
         if (!state_ || !state_->Ready() || !state_->hasPrepared || frame.sdkId!=state_->prepared.sdkId ||
             frame.sourceId!=state_->prepared.sourceId || frame.sourceEpoch!=state_->prepared.sourceEpoch) return E_UNEXPECTED;
         auto& state=*state_;
+        const bool untimed=!state.tagged && !frame.sourceId && !frame.sourceEpoch && !frame.sdkId;
+        if (untimed && generate) return E_INVALIDARG;
         // Reset consumes a real frame but keeps a valid tagged history warm.
         if (!state.Enabled(state.tagged && (generate || state.prepared.constants.resetHistory!=0))) return state.fault;
-        if (!state.Check(state.runtime->Generation().SetPresentId(state.context,frame.sdkId),"Intel FG Present ID failed")) return state.fault;
+        if (!untimed && !state.Check(state.runtime->Generation().SetPresentId(state.context,frame.sdkId),"Intel FG Present ID failed")) return state.fault;
         const auto hr=state.proxy->Present(interval,flags);
         state.hasPrepared=false;
         const auto status=state.runtime->Generation().GetLastPresentStatus(state.context,&state.status);
@@ -152,6 +161,7 @@ namespace TheosRenderPipeline
         if (!state_ || !state_->Ready() || state_->hasPrepared) return E_UNEXPECTED;
         auto& state=*state_;
         if (!state.Enabled(false)) return state.fault;
+        if((flags&DXGI_PRESENT_TEST)!=0)return state.proxy->Present(interval,flags);
         ComPtr<ID3D12Resource> buffer;
         auto hr=state.proxy->GetBuffer(state.proxy->GetCurrentBackBufferIndex(),IID_PPV_ARGS(&buffer));
         if (FAILED(hr)) return hr;

@@ -63,6 +63,7 @@ struct NvidiaHost {
     std::uint64_t communityEpoch_{1};std::string xessRecoveryReason_;
     bool fg{};UpscaleFrame fsrGenerationFrame_{};
     bool FsrFgActive()const{return fg;}
+    bool NativeGenerationActive()const{return fg;}
     std::unique_ptr<HostResources> xessResources_=std::make_unique<HostResources>();
     struct Context { ID3D11DeviceContext* Get(){return nullptr;} } context_;
     struct Encoder { HRESULT Convert(ID3D11DeviceContext*,ID3D11Texture2D*,ID3D11Texture2D*,ColorEncoding,ColorEncoding){return S_OK;} } xessEncode_;

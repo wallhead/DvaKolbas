@@ -37,9 +37,9 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
                 !host.loadingScreenRoute_.Active(host.presentCount_);
             return host.EvaluateCommunityNeuralBefore(frame.input,frame.depth,frame.motion,frame.renderWidth,frame.renderHeight,
                 frame.sourceSnapshot.sourceId,frame.reset,TheosRenderPipeline::NeuralRendering::SourceWorldEligible(world,
-                    frame.uiColorAndAlpha && frame.hudLessColor,host.nativeUI_.Dedicated(),TheosRenderPipeline::CommunityShaders::Active()),nullptr,nullptr,TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal,host.FsrFgActive()?&frame.sourceSnapshot.camera:nullptr);
+                    frame.uiColorAndAlpha && frame.hudLessColor,host.nativeUI_.Dedicated(),TheosRenderPipeline::CommunityShaders::Active()),nullptr,nullptr,TheosRenderPipeline::Upscaling::UpscaleOutcome::Temporal,host.NativeGenerationActive()?&frame.sourceSnapshot.camera:nullptr);
         }
-        if(host.FsrFgActive())return true; // Legacy NR belongs to the NVIDIA presenter.
+        if(host.NativeGenerationActive())return true; // Legacy NR belongs to the NVIDIA presenter.
         auto& backend = TheosRenderPipeline::SourceDLSSG::Backend::Get();
         auto& options = neuralOptions;
         sl::Constants preview{};
@@ -132,7 +132,7 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
         const TheosRenderPipeline::SourceNvidiaFrameInputs& frame,const TheosRenderPipeline::Upscaling::UpscaleFrame& completed)
     {
         using namespace TheosRenderPipeline;
-        if(host.FsrFgActive()) {
+        if(host.NativeGenerationActive()) {
             auto prepared=host.PrepareExternalGeneration(completed,host.loadingScreenRoute_.Active(host.presentCount_)?
                 Upscaling::UpscaleOutcome::SpatialRecovery:Upscaling::UpscaleOutcome::Temporal);
             return prepared?Upscaling::GenerationPreparationStatus::Succeeded:Upscaling::GenerationPreparationStatus::Failed;
@@ -140,7 +140,7 @@ struct NvidiaHost::SourceNvidiaEvaluationOperations
         const auto result=SourceNvidiaFramePreparation::PrepareCompletedFrame(frame,*this);
         return result.prepared?Upscaling::GenerationPreparationStatus::Succeeded:Upscaling::GenerationPreparationStatus::Failed;
     }
-    bool ExternalGuideRecoveryEnabled() const { return host.FsrFgActive(); }
+    bool ExternalGuideRecoveryEnabled() const { return host.NativeGenerationActive(); }
     bool RecoverInvalidSourceGuides(const TheosRenderPipeline::SourceNvidiaFrameInputs& frame)
     {
         // The common admission gate already froze this real source into input.
@@ -210,7 +210,7 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
     frame.outputWidth = outputWidth_;
     frame.outputHeight = outputHeight_;
     TheosRenderPipeline::SourceDLSSG::NeuralOptions neuralOptions;
-    if(!FsrFgActive())neuralOptions=TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();
+    if(!NativeGenerationActive())neuralOptions=TheosRenderPipeline::SourceDLSSG::Backend::Get().NeuralConfiguration();
     else {
         const auto& preferences=SourceFrameGeneration::GetSingleton()->settings.sourceDLSSG;
         neuralOptions.enabled=preferences.neuralEnabled;neuralOptions.tuning=preferences.neuralTuning;
@@ -229,7 +229,7 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
     frame.jitterEnabled = upscaler.mEnableJitter;
     auto& snapshot=frame.sourceSnapshot;
     snapshot.backend=upscaler.mUpscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
-    snapshot.sourceId=FsrFgActive()?presentCount_+1:upscaler.mRenderedFrameCount;
+    snapshot.sourceId=FsrFgActive()?presentCount_+1:upscaler.mRenderedFrameCount;snapshot.sourceEpoch=1;
 #if !defined(TRP_NO_NEURAL_RENDERING)
     snapshot.sourceEpoch=communityEpoch_;
 #endif
@@ -240,7 +240,7 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
     snapshot.motionConvention={frame.motionScaleX,frame.motionScaleY,true,false};
     auto* ui=RE::UI::GetSingleton();
     const bool world=ui && !ui->IsMenuOpen(RE::MainMenu::MENU_NAME) && !ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME);
-    if(FsrFgActive() && world) {
+    if(NativeGenerationActive() && world) {
         auto measured=TheosRenderPipeline::CaptureGameCameraMeasurements(upscaler.mGraphicsState,snapshot.render,frame.jitterEnabled,frame.reset);
         if(measured)snapshot.camera=*measured;
     }
@@ -268,7 +268,7 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
             status_ = std::format("Loading-screen scaling failed (0x{:08X}); generation held off",
                 static_cast<std::uint32_t>(loadingScreenResult_));
         } else {
-            status_ = !FsrFgActive() && !backend.Ready() ? backend.Status() :
+            status_ = !NativeGenerationActive() && !backend.Ready() ? backend.Status() :
                 std::format("RaZkolbaS direct DLSS evaluation failed (0x{:08X}); generation held off",
                     DLSSBackend::GetSingleton()->LastEvalResult());
         }
@@ -282,7 +282,7 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
         logger::info("[Source recovery] temporal DLSS source resumed after {} recovery frames",sourceRecoveryFailures_);
         sourceRecoveryFailures_=0;
     }
-    if (!FsrFgActive() && !result.prepared && !splitSourceRuntimeFailureLogged_) {
+    if (!NativeGenerationActive() && !result.prepared && !splitSourceRuntimeFailureLogged_) {
         logger::warn("[SourceDLSSG] generation held off cameraValid={} backend={}", result.cameraValid,
             TheosRenderPipeline::SourceDLSSG::Backend::Get().Status());
     }
@@ -294,6 +294,16 @@ TheosRenderPipeline::Upscaling::Result<void> NvidiaHost::PrepareExternalGenerati
     const TheosRenderPipeline::Upscaling::UpscaleFrame& frame,TheosRenderPipeline::Upscaling::UpscaleOutcome outcome)
 {
     using namespace TheosRenderPipeline::Upscaling;
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive()) {
+        fsrGenerationFrame_=frame;fsrGenerationOutcome_=outcome;
+        fsrSourceRenderedCount_=RenderPipeline::GetSingleton()->mRenderedFrameCount;
+        auto* ui=RE::UI::GetSingleton();
+        fsrMenu_=!ui || ui->IsMenuOpen(RE::MainMenu::MENU_NAME) || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME) ||
+            loadingScreenRoute_.Active(presentCount_) || RenderPipeline::GetSingleton()->FrameGenerationTransitionBlocked();
+        fsrSourcePending_=true;return {};
+    }
+#endif
 #if defined(TRP_ENABLE_FSR_FG)
     if(!FsrFgActive() || !fsrResources_ || !fsrPresentation_)return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_UNEXPECTED,"External FSR owner unavailable"});
     fsrGenerationFrame_=frame;fsrGenerationOutcome_=outcome;

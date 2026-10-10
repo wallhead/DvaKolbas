@@ -57,11 +57,14 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
             logger::info("[XeSS diagnostics] breakpoint capture armed={} path={}",TheosRenderPipeline::XessStartupDiagnostics::Install(path),path.string());
         }
     }
-    if(FsrActive())fsrResources_=std::make_shared<TheosRenderPipeline::Upscaling::FsrHostResources>(TheosRenderPipeline::PluginPaths::Directory());
+    if(FsrActive())fsrResources_=std::make_shared<TheosRenderPipeline::Upscaling::FsrHostResources>(TheosRenderPipeline::PluginPaths::Directory(),
+        XessFgActive()?+[](IUnknown* adapter,D3D_FEATURE_LEVEL level,ID3D12Device** device)->HRESULT {
+            return TheosRenderPipeline::ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
+        }:nullptr);
 #else
     backendDecision_=TheosRenderPipeline::ResolveBackend(requested,false);
 #endif
-    if (FsrFgActive() && (TheosRenderPipeline::CommunityShaders::Active() || !upscalerSettings->mNativeUI || generation.nativeUICompositionMode != 0)) {
+    if (NativeGenerationActive() && (TheosRenderPipeline::CommunityShaders::Active() || !upscalerSettings->mNativeUI || generation.nativeUICompositionMode != 0)) {
         status_ = "FSR FG requires RaZkolbaS-owned upscaling and [Interface] NativeUI=true, UIComposition=Dedicated";
         return E_INVALIDARG;
     }
@@ -121,18 +124,25 @@ HRESULT NvidiaHost::CreateSwapChain(IDXGIFactory* a_factory, ID3D11Device* a_dev
         return E_NOTIMPL;
 #endif
     };
-    TheosRenderPipeline::PresentationCreation creation{createNvidia,createOrdinary,createFsr};
+    auto createXess=[&]()->HRESULT {
+#if defined(TRP_ENABLE_XESS_FG)
+        return CreateXessPresenter(a_factory,a_device,*a_desc,a_swapChain);
+#else
+        return E_NOTIMPL;
+#endif
+    };
+    TheosRenderPipeline::PresentationCreation creation{createNvidia,createOrdinary,createFsr,createXess};
     const auto result=TheosRenderPipeline::CreatePresentation(backendDecision_,creation);
     if (FAILED(result) || !*a_swapChain)
     {
-        if(!FsrFgActive())status_ = OrdinarySourceActive()?"Ordinary D3D11 swapchain creation failed":TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
+        if(!NativeGenerationActive())status_ = OrdinarySourceActive()?"Ordinary D3D11 swapchain creation failed":TheosRenderPipeline::SourceDLSSG::Backend::Get().Status();
         return FAILED(result) ? result : E_FAIL;
     }
     innerSwapChain_ = *a_swapChain;
     nativeUIContexts_.ResetAfterRetirement();
     device_.Reset();
     context_.Reset();
-    const auto deviceResult = TheosRenderPipeline::AcquirePresentationDevice(innerSwapChain_,a_device,OrdinarySourceActive() || FsrFgActive(),device_);
+    const auto deviceResult = TheosRenderPipeline::AcquirePresentationDevice(innerSwapChain_,a_device,OrdinarySourceActive() || NativeGenerationActive(),device_);
     if (FAILED(deviceResult) || !device_)
     {
         status_ = std::format("Renderer source D3D11 device selection failed (0x{:08X})", static_cast<std::uint32_t>(deviceResult));
@@ -201,6 +211,10 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     }
 
     HRESULT cacheResult{};
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive()) { cacheResult=presentation_.CacheSceneAfterRetirement(xessPresentationScene_.texture11.Get()); }
+    else
+#endif
 #if defined(TRP_ENABLE_FSR_FG)
     if (FsrFgActive()) { cacheResult = presentation_.CacheSceneAfterRetirement(fsrPresentation_->SceneTarget11()); }
     else
@@ -247,7 +261,7 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
                 return TheosRenderPipeline::ReShadeIntegration::Get().CreateSourceDevice(adapter,level,device,true);
             };
             xessResources_=std::make_unique<TheosRenderPipeline::Upscaling::XessHostResources>(TheosRenderPipeline::PluginPaths::Directory(),
-                FsrFgActive()?nativeDevice:ordinaryDevice);
+                NativeGenerationActive()?nativeDevice:ordinaryDevice);
             const auto& request=sourceUpscalerSettings_.Startup().xess;
             extent=xessResources_->Initialize(device_.Get(),request.quality,{outputWidth_,outputHeight_},request.sourceEncoding);
         }
@@ -304,6 +318,10 @@ bool NvidiaHost::CreateGameFacingResources(IDXGISwapChain* a_swapChain)
     }
     renderWidth_ = static_cast<UINT>(queriedRenderWidth);
     renderHeight_ = static_cast<UINT>(queriedRenderHeight);
+    if(XessFgActive() && (renderWidth_!=outputWidth_ || renderHeight_!=outputHeight_)) {
+        status_="Intel FG first Skyrim trial requires Native render scale; select Native, save and restart";
+        return false;
+    }
 
     const auto gameFacingDesc = TheosRenderPipeline::GameFacingTargets::GameFacingDesc(outputDesc, renderWidth_, renderHeight_);
     const auto createResult = gameTargets_.CreateGameFacingAfterRetirement(device_.Get(), outputDesc, renderWidth_, renderHeight_);
@@ -389,7 +407,7 @@ bool NvidiaHost::CompleteStartupAfterDeviceCreation()
                   "contract";
         return false;
     }
-    if(FsrActive() || XessActive() || FsrFgActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
+    if(FsrActive() || XessActive() || NativeGenerationActive()){warmupPresentsRemaining_=0;SetRuntimeEnabled(false);}else ArmFrameGenerationWarmup();
     TheosRenderPipeline::ReShadeIntegration::Get().Configure(device_.Get(), context_.Get(), {outputWidth_, outputHeight_});
     logger::info("[NvidiaHost] source upscaler initialized after D3D11 startup Present");
 #if !defined(TRP_NO_NEURAL_RENDERING)
@@ -447,7 +465,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         upscalerReady_=true;splitSourceDLSSActive_=false;
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
         if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="FSR native UI resource creation failed";return false;}
-        if (FsrFgActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
+        if (NativeGenerationActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
             status_="FSR FG dedicated UI initialization failed";return false;
         }
         status_=FsrFgActive()?"FSR ready on AMD presenter; FG awaits measured camera and completed UI":"FSR context ready on ordinary D3D11 presenter; waiting for validated source frames";
@@ -476,7 +494,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         if(const auto notice=xessResources_->TakeSharpeningNotice())
             logger::warn("[XeSS sharpening] native=0x{:08X} {}",std::uint32_t(notice->nativeResult),notice->message);
         if(!CreateNativeUIExtractionResources(a_outputDesc)){status_="XeSS native UI resource creation failed";return false;}
-        if(FsrFgActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
+        if(NativeGenerationActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
             status_="XeSS + FSR FG requires dedicated native UI resources";return false;
         }
         sourceUpscalerSettings_.BeginSubmission();sourceUpscalerSettings_.Completed(true);AdoptEffectiveSourceUpscalerSettings();
@@ -522,7 +540,7 @@ bool NvidiaHost::InitializeSourceUpscaler(const D3D11_TEXTURE2D_DESC& a_outputDe
         logger::warn("[NvidiaHost] explicit native UI extraction unavailable on "
                      "split source; retaining HUD-less-only fallback");
     }
-    if(FsrFgActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
+    if(NativeGenerationActive() && (!nativeUI_.Dedicated() || !nativeUI_.Available())) {
         status_="DLSS + FSR FG requires dedicated native UI resources";return false;
     }
     status_ = FsrFgActive()?"Source DLSS and FSR frame-generation path ready":"Source DLSS and NVIDIA frame-generation path ready";

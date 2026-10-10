@@ -64,6 +64,14 @@ int wmain(int argc,wchar_t** argv)
     frame.sourceId=2;frame.reset=false;prepared=owner.Prepare(frame,ui.Get(),nullptr,true,18,true);Require(bool(prepared),"next accepted source");
     Check(owner.Present(*prepared,true,0,0),"accepted interpolating source");
     Require(owner.Status().isFrameGenEnabled==1,"enabled after validated inputs");
+    const auto beforeReal=count(),beforeRealLatency=latencyCount();
+    auto real=owner.PrepareReal(frame,ui.Get(),nullptr,true);Require(bool(real),"repeated/loading real scene and HUD publish without a fresh source");
+    const auto beforeUntimedGenerate=count();Require(owner.Present(*real,true,0,0)==E_INVALIDARG && count()==beforeUntimedGenerate,"no-source real image cannot be promoted to generated output");
+    Check(owner.Present(*real,false,0,0),"untimed real-only presentation");
+    Require(!owner.Status().isFrameGenEnabled && latencyCount()==beforeRealLatency,"no-source real presentation disables generation without invented latency markers");
+    for(auto i=beforeReal;i<count();++i)Require(read(i).kind!=8 && read(i).kind!=9 && read(i).kind!=10,"no-source real publication tags no resources/constants or SDK Present ID");
+    real=owner.PrepareReal(frame,ui.Get(),nullptr,true);Require(bool(real),"same source can be displayed repeatedly without new guides");
+    Check(owner.Present(*real,false,0,0),"second untimed real-only presentation");
     auto* proxy=owner.SwapChain();Success(owner.Suspend(),"suspend");Success(owner.Resume(),"resume without rebuild");Require(owner.SwapChain()==proxy,"fixed-size restore keeps owner");
     auto resized=frame;resized.display.width=4;Require(!owner.Prepare(resized,ui.Get(),nullptr,true,19,true) && owner.SwapChain()==proxy,"changed extent rejected before owner retirement");
     fail(12);Require(!owner.Retire() && owner.Latency() && owner.Latency()->Context(),"failed FG destroy keeps latency and runtime owners");

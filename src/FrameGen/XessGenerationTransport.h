@@ -14,6 +14,7 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> Initialize(std::shared_ptr<Graphics::D3D11D3D12Interop>,Upscaling::Extent display);
         Upscaling::Result<void> WaitBeforeProducer();
         Upscaling::Result<void> Upload(const Upscaling::UpscaleFrame&,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool hudComplete);
+        Upscaling::Result<void> UploadReal(const Upscaling::UpscaleFrame&,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool hudComplete);
         Upscaling::Result<ID3D12GraphicsCommandList*> BeginTag();
         // Only the list returned by BeginTag is accepted; Tag submits it and
         // seals the actual SDK ONLY_NOW copies with the bridge's FG fence.
@@ -23,6 +24,7 @@ namespace TheosRenderPipeline
         ID3D12Resource* Scene() const;
         ID3D12Resource* Ui() const;
     private:
+        Upscaling::Result<void> UploadInternal(const Upscaling::UpscaleFrame&,ID3D11Texture2D*,ID3D11ShaderResourceView*,bool,bool realOnly);
         struct State;
         std::unique_ptr<State> state_;
     };

@@ -109,6 +109,22 @@ int wmain(int argc,wchar_t** argv)
     Check(owner.StartupPresent(0,0),"real startup present");
     SetForegroundWindow(window.Handle());window.Pump();
     Inputs inputs;inputs.Create(rig);XessGenerationHistory history;
+    // A genuine loading/extra Present has no new engine simulation or SDK ID.
+    // Check the real runtime accepts it and preserves the final scene/HUD.
+    inputs.Simulate(0,true);inputs.Upload(rig);
+    auto real=XessFgFrame();real.sourceId=real.sourceEpoch=0;
+    real.render=real.subrect=real.display={width,height};real.output=inputs.scene.Get();
+    real.outputEncoding=real.uiEncoding=ColorEncoding::SRGB;
+    for(unsigned repeat=0;repeat<3;++repeat) {
+        const auto prepared=owner.PrepareReal(real,inputs.ui.Get(),nullptr,true);
+        Require(bool(prepared),"real runtime no-source preparation");
+        CheckPublishedScene(rig,*bridge,owner.SwapChain(),inputs.colour[0]);
+        CheckPublishedScene(rig,*bridge,owner.SwapChain(),0xff0000ff,32,32);
+        CheckPublishedScene(rig,*bridge,owner.SwapChain(),0xff28a828,32,80);
+        Check(owner.Present(*prepared,false,0,0),"real runtime no-source Present without ID/markers");
+        Require(owner.Status().framesPresented<=1 && !owner.Status().isFrameGenEnabled,"no-source pass cannot interpolate");
+    }
+    std::puts("NO_SOURCE real_presents=3 generated=0 scene_and_hud_readbacks=pass SDK_ID=none XeLL_markers=none");
     const unsigned phaseFrames=visible?180:40,total=phaseFrames*4;
     unsigned generated{},offFrames{},onFrames{},errors{},lostFocus{};bool interrupted{};
     auto deadline=std::chrono::steady_clock::now();

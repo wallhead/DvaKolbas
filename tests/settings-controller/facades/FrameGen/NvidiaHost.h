@@ -28,6 +28,8 @@ public:
     bool XessActive()const{return StartupConfigured()&&configuration.Startup().mode==Xess;}
     bool OrdinarySourceActive()const{return (FsrActive()||XessActive())&&!FsrFgActive();}
     bool FsrFgActive()const{return StartupConfigured()&&fsrFg;}
+    bool XessFgActive()const{return false;}
+    bool NativeGenerationActive()const{return FsrFgActive();}
     const auto& SourceUpscalerSettings()const{return configuration;}
     HRESULT FailureResult()const{return failure;}
     void FailLifecycle(HRESULT value,const char*){failure=value;++lifecycleFailures;}

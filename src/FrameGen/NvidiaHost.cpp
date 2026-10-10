@@ -27,8 +27,14 @@ bool NvidiaHost::EvaluateFrame(IDXGISwapChain* a_swapChain, bool a_nativeUIHando
         fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
     }
 #endif
+    if(XessFgActive()) {
+        if(UpdateXessSuspension()!=S_OK || FAILED(WaitXessProducer()))return false;
+#if defined(TRP_ENABLE_XESS_FG)
+        fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
+#endif
+    }
     auto* upscaler = RenderPipeline::GetSingleton();
-    if(!FsrFgActive()) {
+    if(!NativeGenerationActive()) {
     if (!upscaler->mMotionVectors.mImage || !upscaler->mDepthBuffer.mImage)
     {
         SetRuntimeEnabled(false);
@@ -286,11 +292,14 @@ bool NvidiaHost::PresentationBackendReadyForEvaluation()
 #if defined(TRP_ENABLE_FSR_FG)
     if (FsrFgActive()) return fsrPresentation_ && fsrPresentation_->SwapChain();
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive())return xessPresentation_ && xessPresentation_->SwapChain();
+#endif
     return OrdinarySourceActive() ? ordinaryPresentation_.Ready() : TheosRenderPipeline::SourceDLSSG::Backend::Get().Ready();
 }
 
 HRESULT NvidiaHost::QueryFsrProducerDevice(REFIID iid,void** output) const
 {
     if (!output)return E_POINTER;*output=nullptr;
-    return FsrFgActive() && device_?device_->QueryInterface(iid,output):E_NOINTERFACE;
+    return NativeGenerationActive() && device_?device_->QueryInterface(iid,output):E_NOINTERFACE;
 }

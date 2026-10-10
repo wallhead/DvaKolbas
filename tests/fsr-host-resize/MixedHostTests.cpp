@@ -56,6 +56,8 @@ struct NvidiaHost {
     UINT fsrGameBufferCount_{};
     bool suspended{};unsigned resumes{};
     bool FsrActive()const{return false;}bool FsrFgActive()const{return mixed;}HRESULT FailureResult()const{return S_OK;}HRESULT UpdateFsrSuspension(){if(suspended){suspended=false;++resumes;resetNextEvaluation_=true;}return S_OK;}bool FsrPresentSuspended(){return suspended;}
+    bool XessFgActive()const{return false;}bool NativeGenerationActive()const{return mixed;}
+    HRESULT UpdateXessSuspension(){return E_NOTIMPL;}HRESULT WaitXessProducer(){return E_NOTIMPL;}
     bool xess{};bool XessActive()const{return xess;}
     unsigned xessDeferredReported_{};
 #if defined(TRP_ENABLE_XESS)

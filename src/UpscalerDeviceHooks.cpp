@@ -76,6 +76,10 @@ HRESULT WINAPI hk_IDXGIFactory_CreateSwapChain(IDXGIFactory* This, IUnknown* pDe
         return (This->*ptrFactoryCreateSwapChain)(pDevice,pDesc,ppSwapChain);
     }
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+    if(TheosRenderPipeline::XessGenerationPresentation::InternalFactoryCreation())
+        return (This->*ptrFactoryCreateSwapChain)(pDevice,pDesc,ppSwapChain);
+#endif
     auto nvidiaHost = NvidiaHost::GetSingleton();
 
     // The vtable detour is class-wide: later swapchain creations from other

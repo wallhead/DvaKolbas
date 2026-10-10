@@ -39,6 +39,14 @@ struct NvidiaHost::LifecycleOperations
             return true;
         }
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+        if(host.XessFgActive()) {
+            host.StopXessEngineObserver();
+            auto retired=host.xessPresentation_->Retire();
+            if(!retired){host.status_=retired.error().message;host.FailLifecycle(E_FAIL,"Intel presentation retirement");return false;}
+            host.ReleaseSourceUpscaler();return SUCCEEDED(host.FailureResult());
+        }
+#endif
         if (!host.OrdinarySourceActive()) { return TheosRenderPipeline::SourceDLSSG::Backend::Get().Quiesce(); }
         const auto result = host.ordinaryPresentation_.Retire();
         if (FAILED(result)) { host.FailLifecycle(result, "FSR presentation retirement"); return false; }
@@ -163,6 +171,10 @@ void NvidiaHost::ResetSessionAfterRetirement()
     fsrResources_.reset();
     fsrSizingRetainedForResize_=false;
     lastFsrTemporal_=false;
+#endif
+#if defined(TRP_ENABLE_XESS_FG)
+    StopXessEngineObserver();xessPresentation_.reset();xessPresentationScene_={};xessTimingBound_=false;
+    xessEngineSource_=xessEngineTrace_=0;xessPresentTrace_=0;
 #endif
     ordinaryPresentation_.ResetAfterRetirement();
     outputWindow_ = nullptr;
@@ -295,7 +307,7 @@ void NvidiaHost::OnPresentCompleted(HRESULT a_result)
 
     // Consume the session snapshot after Present; querying Streamline again
     // here would consume its output-count delta a second time.
-    if (!OrdinarySourceActive() && !FsrFgActive()) {
+    if (!OrdinarySourceActive() && !NativeGenerationActive()) {
         const auto& state = TheosRenderPipeline::SourceDLSSG::Backend::Get().Snapshot().state;
         UpdateRuntimeDLSSGState(static_cast<std::uint32_t>(state.status), state.numFramesActuallyPresented, state.minWidthOrHeight,
                                 state.numFramesToGenerateMax);
@@ -341,7 +353,7 @@ void NvidiaHost::ArmFrameGenerationWarmup()
 
 void NvidiaHost::SetRuntimeEnabled(bool a_enabled)
 {
-    if (FsrFgActive()) { frameGenerationStateKnown_=true;frameGenerationEnabled_=false;return; }
+    if (NativeGenerationActive()) { frameGenerationStateKnown_=true;frameGenerationEnabled_=false;return; }
     if (OrdinarySourceActive()) {
         if (!frameGenerationStateKnown_ || frameGenerationEnabled_) { resetNextEvaluation_ = true; }
         frameGenerationStateKnown_ = true;
@@ -384,6 +396,9 @@ void NvidiaHost::UpdateRuntimeDLSSGState(std::uint32_t a_status, std::uint32_t a
 
 TheosRenderPipeline::Upscaling::Result<void> NvidiaHost::QuiesceActivePresentation()
 {
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive())return xessPresentation_->Suspend();
+#endif
 #if defined(TRP_ENABLE_FSR_FG)
     if(FsrFgActive()) {
         if(!fsrPresentation_)return std::unexpected(TheosRenderPipeline::Upscaling::RuntimeError{TheosRenderPipeline::Upscaling::ErrorKind::RetirementFailure,E_UNEXPECTED,"FSR presenter unavailable"});
@@ -395,6 +410,13 @@ TheosRenderPipeline::Upscaling::Result<void> NvidiaHost::QuiesceActivePresentati
 }
 TheosRenderPipeline::Upscaling::Result<void> NvidiaHost::ResumeActivePresentation()
 {
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive()) {
+        auto result=xessPresentation_->Resume();
+        if(result){resetNextEvaluation_=true;fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();}
+        return result;
+    }
+#endif
 #if defined(TRP_ENABLE_FSR_FG)
     if(FsrFgActive()) {
         auto resumed=fsrPresentation_->Resume();

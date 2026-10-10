@@ -121,8 +121,8 @@ struct NvidiaHost::SourceFsrEvaluationOperations
         auto configured=host.fsrResources_->EnsureInputPolicy(policy);
         if(!configured){error=configured.error();return std::unexpected(configured.error());}
         frame.camera=*camera;
-#if defined(TRP_ENABLE_FSR_FG)
-        if(host.FsrFgActive())host.fsrGenerationFrame_=frame;
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+        if(host.NativeGenerationActive())host.fsrGenerationFrame_=frame;
 #endif
         if(PerformanceTuning::GetSingleton()->settings.diagnostics.frameDetails &&
             (host.evaluationCount_<3 || host.evaluationCount_%600==0)) {
@@ -156,8 +156,8 @@ struct NvidiaHost::SourceFsrEvaluationOperations
 #if !defined(TRP_NO_NEURAL_RENDERING)
         const bool ok=host.EvaluateCommunityNeuralAfter(frame,outcome,NeuralRendering::SourceWorldEligible(!spatial,
             nativeUIHandoff,host.nativeUI_.Dedicated(),CommunityShaders::Active()));
-#if defined(TRP_ENABLE_FSR_FG)
-        if(host.FsrFgActive())host.fsrGenerationFrame_.reset|=frame.reset;
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+        if(host.NativeGenerationActive())host.fsrGenerationFrame_.reset|=frame.reset;
 #endif
         return ok;
 #else
@@ -205,7 +205,7 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     frame.backend=BackendKind::Fsr;frame.color=gameTargets_.GameFacing();frame.input=gameTargets_.UpscaleInput();frame.output=gameTargets_.UpscaleOutput();
     frame.depth=pipeline.mDepthBuffer.mImage;frame.motion=pipeline.mMotionVectors.mImage;
     frame.render=frame.subrect={renderWidth_,renderHeight_};frame.display={outputWidth_,outputHeight_};
-    frame.sourceId=FsrFgActive()?presentCount_+1:pipeline.mRenderedFrameCount;frame.deltaMilliseconds=pipeline.mSourceDeltaMilliseconds;
+    frame.sourceEpoch=1;frame.sourceId=FsrFgActive()?presentCount_+1:pipeline.mRenderedFrameCount;frame.deltaMilliseconds=pipeline.mSourceDeltaMilliseconds;
     frame.jitterX=pipeline.mJitterOffsets[0];frame.jitterY=pipeline.mJitterOffsets[1];
     // Skyrim's unjittered previous/current projection motion is current-to-
     // previous UV displacement. The signed RG16_FLOAT producer is copied raw;
@@ -240,6 +240,14 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
         fsrMenu_=operations.spatial || pipeline.FrameGenerationTransitionBlocked();
     }
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive()) {
+        if(UpdateXessSuspension()!=S_OK || FAILED(WaitXessProducer()))return false;
+        fsrGenerationFrame_=frame;fsrSourceRenderedCount_=pipeline.mRenderedFrameCount;
+        fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
+        fsrMenu_=operations.spatial || pipeline.FrameGenerationTransitionBlocked();
+    }
+#endif
     auto result=SourceFrameEvaluator::Evaluate(context_.Get(),frame,operations);
     if(result.outcome!=UpscaleOutcome::Temporal && result.outcome!=UpscaleOutcome::SpatialRecovery) {
         if(!handoffLogged)logHandoff();
@@ -251,12 +259,14 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
         }
         FailLifecycle(E_FAIL,"FSR frame delivery");return false;
     }
-#if defined(TRP_ENABLE_FSR_FG)
-    if(FsrFgActive()) {
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+    if(NativeGenerationActive()) {
         fsrGenerationOutcome_=result.outcome;
         if(result.outcome==UpscaleOutcome::Temporal)++fsrGuideCaptureCount_;
-        fsrGenerationFrame_.depthFormat=DXGI_FORMAT_R32_FLOAT;fsrGenerationFrame_.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
-        fsrGenerationFrame_.colorIsLinear=true;
+        if(FsrFgActive()) {
+            fsrGenerationFrame_.depthFormat=DXGI_FORMAT_R32_FLOAT;fsrGenerationFrame_.motionFormat=DXGI_FORMAT_R16G16_FLOAT;
+            fsrGenerationFrame_.colorIsLinear=true;
+        }
         fsrGenerationFrame_.reset |= fsrFrame_->LastTemporalReset();fsrSourcePending_=true;
     }
 #endif

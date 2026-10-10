@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-10-10T12:58:35.2923890+03:00",
+  "qualified": true,
+  "exitCode": 0,
+  "sourceRevision": "5d0865ef8eed11fcf0c9a0221fcd9fbd084522ca",
+  "executableSHA256": "10584af77369bfc851369d6d9c2bd6f51ae19fa562b01caf304a112d8c2614fa",
+  "worktreeDirty": true,
+  "sdkBundle": "3.0.2",
+  "sdkCommit": "8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0",
+  "runtimeHashes": {
+    "libxell.dll": "d2030dcd694fda8f2ec7e044b13e6db8f0b56d4ba9113a5efad334e3f3ded8c7",
+    "libxess_fg.dll": "ec5e0c65e075570c6ede72618bb666d0be0c2e10b2ea9762c0fe8cb8e375ab27"
+  },
+  "numericalOnly": true,
+  "summary": "SUMMARY qualified=1 visual_requested=0 interrupted=0 lost_focus_frames=2 active_sources=74 interpolated_sources=74 off_sources=86 errors=0 clean_retirement=1",
+  "log": "research/xess-fg/host-numerical-2026-10-10.log",
+  "visualUserConfirmation": "pending",
+  "debugLayers": "see log; unavailable layers do not qualify validation",
+  "qualificationScope": "Numerical SDK presentation/no-source publication only; game engine hooks and gameplay visuals pending",
+  "sourceHashes": {
+    "src/FrameGen/XessGenerationHost.cpp": "8153c7b0b1e8038080d8d661cd137d49b808acbc2ba40e6434d62bd3fc79af33",
+    "src/FrameGen/XessGenerationHost.h": "541bca044aaa767a6f494ca98e2d3e5a408c83839a4de2b3a72d93a1f49a8753",
+    "src/FrameGen/XessGenerationPresentation.cpp": "d3007ca514169d18e614a200c60fc11796fa2ae428f49ccc9ef2170301ad4ddb",
+    "src/FrameGen/XessGenerationTransport.cpp": "0b84f095bef38419c4d0db93c4764214bb8c91ba80d60f590ee716646735e44e",
+    "src/FrameGen/XessGenerationEngineTiming.cpp": "417892cbc54eec6e5005795201f7e7333432e3ea7e3f8d17175faef1e68b8ac6",
+    "src/FrameGen/SourceXessGeneration.cpp": "75df2da8bc80202b5aa59628f0904c9788f02c098fb9f805cbe74fff5c6cfbeb",
+    "tests/xess-fg/XessFgPresentationGpuTests.cpp": "6ca11afb64b16a9abc54a7e5bd870cc5dce48048784eb77801665dc251d6fd6b"
+  }
+}

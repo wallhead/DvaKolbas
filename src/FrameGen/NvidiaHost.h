@@ -41,6 +41,10 @@
 #if defined(TRP_ENABLE_FSR_FG)
 #include "FSRHostPresentation.h"
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+#include "XessGenerationHost.h"
+#include "XessGenerationEngineHooks.h"
+#endif
 #include "PresentationFade.h"
 #include "ReShadeIntegration.h"
 #include <atomic>
@@ -98,7 +102,14 @@ class NvidiaHost
     bool FsrActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==FSR; }
     bool XessActive() const { return StartupConfigured() && sourceUpscalerSettings_.Startup().mode==Xess; }
     bool XessTemporalActive()const;
-    bool OrdinarySourceActive()const { return (FsrActive() || XessActive()) && !FsrFgActive(); }
+    bool OrdinarySourceActive()const { return (FsrActive() || XessActive()) && !NativeGenerationActive(); }
+    bool XessFgActive()const { return StartupConfigured() && backendDecision_.presentation==TheosRenderPipeline::Upscaling::PresentationKind::Xess; }
+    bool NativeGenerationActive()const { return FsrFgActive() || XessFgActive(); }
+    HRESULT PresentXessSource(UINT interval,UINT flags);
+    HRESULT ResizeXessSwapChain(class GameSwapChain&,UINT count,UINT width,UINT height,DXGI_FORMAT format,UINT flags);
+    HRESULT UpdateXessSuspension();
+    bool XessPresentSuspended()const;
+    HRESULT WaitXessProducer();
     TheosRenderPipeline::Telemetry::OutputCounter OrdinaryOutputCounter() const
     {
         return TheosRenderPipeline::Telemetry::ReadDxgiOutputCounter(innerSwapChain_,
@@ -243,10 +254,24 @@ class NvidiaHost
 #if defined(TRP_ENABLE_FSR_FG)
     HRESULT CreateFsrPresenter(IDXGIFactory*, ID3D11Device*, const DXGI_SWAP_CHAIN_DESC&, IDXGISwapChain**);
     std::unique_ptr<TheosRenderPipeline::FsrHostPresentation> fsrPresentation_;
-    std::uint64_t fsrSourceRenderedCount_{},fsrGuideCaptureCount_{};
     Microsoft::WRL::ComPtr<IDXGIFactory> fsrFactory_;
     DXGI_SWAP_CHAIN_DESC fsrDescriptor_{};
     UINT fsrGameBufferCount_{};
+#endif
+#if defined(TRP_ENABLE_XESS_FG)
+    HRESULT CreateXessPresenter(IDXGIFactory*,ID3D11Device*,const DXGI_SWAP_CHAIN_DESC&,IDXGISwapChain**);
+    void ObserveXessEngine(TheosRenderPipeline::XessEngineHooks::Boundary) noexcept;
+    void StopXessEngineObserver();
+    std::unique_ptr<TheosRenderPipeline::XessGenerationHost> xessPresentation_;
+    TheosRenderPipeline::Graphics::SharedTexture xessPresentationScene_;
+    DXGI_SWAP_CHAIN_DESC xessPresentationDescriptor_{};
+    std::uint64_t xessEngineSource_{},xessEngineEpoch_{1},xessEngineTrace_{};
+    bool xessTimingBound_{};
+    unsigned xessPresentTrace_{};
+#endif
+#if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
+    // Completed source/HUD snapshot shared by the native generation presenters.
+    std::uint64_t fsrSourceRenderedCount_{},fsrGuideCaptureCount_{};
     TheosRenderPipeline::Upscaling::UpscaleFrame fsrGenerationFrame_{};
     TheosRenderPipeline::Upscaling::UpscaleOutcome fsrGenerationOutcome_{TheosRenderPipeline::Upscaling::UpscaleOutcome::SkippedInvalidInput};
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> fsrForeground_;

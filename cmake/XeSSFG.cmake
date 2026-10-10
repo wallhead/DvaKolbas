@@ -15,7 +15,7 @@ if(TRP_ENABLE_XESS_FG)
     endforeach()
     add_library(TRPXessGeneration STATIC src/FrameGen/XessGenerationRuntime.cpp
         src/FrameGen/XessGenerationFrameAdapter.cpp src/FrameGen/XessGenerationPolicy.cpp src/FrameGen/XellSession.cpp
-        src/FrameGen/XessGenerationTransport.cpp src/FrameGen/XessGenerationPresentation.cpp src/FrameGen/XessGenerationEngineTiming.cpp src/Graphics/D3D11D3D12Interop.cpp
+        src/FrameGen/XessGenerationTransport.cpp src/FrameGen/XessGenerationPresentation.cpp src/FrameGen/XessGenerationEngineTiming.cpp src/FrameGen/XessGenerationHost.cpp src/Graphics/D3D11D3D12Interop.cpp
         src/Upscaling/FSRColorConversion.cpp src/Upscaling/FSRPresentationColor.cpp)
     target_compile_features(TRPXessGeneration PUBLIC cxx_std_23)
     target_compile_definitions(TRPXessGeneration PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN TRP_ENABLE_XESS_FG)
@@ -89,4 +89,10 @@ function(trp_add_xess_fg_tests)
         endif()
         add_test(NAME XessFg${kind} COMMAND TRPXessFg${kind}Tests)
     endforeach()
+    add_executable(TRPXessFgHostTests tests/XessFgHostTests.cpp)
+    target_include_directories(TRPXessFgHostTests PRIVATE tests)
+    target_link_libraries(TRPXessFgHostTests PRIVATE TRPXessGeneration)
+    add_dependencies(TRPXessFgHostTests TRPXessFgDouble_generation TRPXessFgDouble_latency)
+    add_test(NAME XessFgHost COMMAND TRPXessFgHostTests "${CMAKE_CURRENT_BINARY_DIR}/xess-fg-fixtures/good")
+    set_tests_properties(XessFgHost PROPERTIES LABELS GPU RUN_SERIAL TRUE TIMEOUT 60 SKIP_RETURN_CODE 77)
 endfunction()

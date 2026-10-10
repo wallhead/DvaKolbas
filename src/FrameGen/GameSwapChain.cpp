@@ -100,11 +100,19 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::GetPrivateData(REFGUID a_name, UINT* a_
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::GetParent(REFIID a_iid, void** a_parent) { return inner_?inner_->GetParent(a_iid, a_parent):E_UNEXPECTED; }
 
-HRESULT STDMETHODCALLTYPE GameSwapChain::GetDevice(REFIID a_iid, void** a_device) { return host_ && host_->FsrFgActive()?host_->QueryFsrProducerDevice(a_iid,a_device):inner_?inner_->GetDevice(a_iid,a_device):E_UNEXPECTED; }
+HRESULT STDMETHODCALLTYPE GameSwapChain::GetDevice(REFIID a_iid, void** a_device) { return host_ && host_->NativeGenerationActive()?host_->QueryFsrProducerDevice(a_iid,a_device):inner_?inner_->GetDevice(a_iid,a_device):E_UNEXPECTED; }
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::Present(UINT a_syncInterval, UINT a_flags)
 {
     if (host_ && FAILED(host_->FailureResult())) { return host_->FailureResult(); }
+    if(host_ && host_->XessFgActive()) {
+        const auto restored=host_->UpdateXessSuspension();if(restored!=S_OK)return restored;
+        if((a_flags & DXGI_PRESENT_TEST)!=0)return host_->PresentXessSource(a_syncInterval,a_flags);
+        BeforeGameSwapChainPresent(this);
+        if(FAILED(host_->FailureResult()))return host_->FailureResult();
+        const auto result=MeasureSourcePresent([&]{return host_->PresentXessSource(a_syncInterval,a_flags);});
+        host_->OnPresentCompleted(result);return result;
+    }
     if(host_ && host_->FsrFgActive()) {
         const auto restored=host_->UpdateFsrSuspension();if(restored!=S_OK)return restored;
         return TheosRenderPipeline::PresentFsrSourceBoundary(a_flags,nullptr,
@@ -136,7 +144,7 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::GetBuffer(UINT a_buffer, REFIID a_iid, 
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::SetFullscreenState(BOOL a_fullscreen, IDXGIOutput* a_target)
 {
-    return TheosRenderPipeline::SetFsrCompatibleFullscreen(host_ && host_->FsrFgActive(),a_fullscreen,
+    return TheosRenderPipeline::SetFsrCompatibleFullscreen(host_ && host_->NativeGenerationActive(),a_fullscreen,
         [&]{return inner_?inner_->SetFullscreenState(a_fullscreen,a_target):E_UNEXPECTED;});
 }
 
@@ -160,6 +168,7 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC* a_desc)
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::ResizeBuffers(UINT a_bufferCount, UINT a_width, UINT a_height, DXGI_FORMAT a_format, UINT a_flags)
 {
+    if(host_ && host_->XessFgActive())return host_->ResizeXessSwapChain(*this,a_bufferCount,a_width,a_height,a_format,a_flags);
     if(host_ && host_->FsrFgActive())return host_->ResizeFsrSwapChain(*this,a_bufferCount,a_width,a_height,a_format,a_flags);
     if(!inner_)return E_UNEXPECTED;
     if (host_ && host_->OrdinarySourceActive() && a_bufferCount != 0) { a_bufferCount = 2; }
@@ -192,6 +201,15 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::GetCoreWindow(REFIID a_iid, void** a_wi
 HRESULT STDMETHODCALLTYPE GameSwapChain::Present1(UINT a_syncInterval, UINT a_flags, const DXGI_PRESENT_PARAMETERS* a_parameters)
 {
     if (host_ && FAILED(host_->FailureResult())) { return host_->FailureResult(); }
+    if(host_ && host_->XessFgActive()) {
+        if(a_parameters && (a_parameters->DirtyRectsCount || a_parameters->pScrollRect || a_parameters->pScrollOffset))return E_INVALIDARG;
+        const auto restored=host_->UpdateXessSuspension();if(restored!=S_OK)return restored;
+        if((a_flags & DXGI_PRESENT_TEST)!=0)return host_->PresentXessSource(a_syncInterval,a_flags);
+        BeforeGameSwapChainPresent(this);
+        if(FAILED(host_->FailureResult()))return host_->FailureResult();
+        const auto result=MeasureSourcePresent([&]{return host_->PresentXessSource(a_syncInterval,a_flags);});
+        host_->OnPresentCompleted(result);return result;
+    }
     if(host_ && host_->FsrFgActive()) {
         if(a_parameters && (a_parameters->DirtyRectsCount || a_parameters->pScrollRect || a_parameters->pScrollOffset))return E_INVALIDARG;
         const auto restored=host_->UpdateFsrSuspension();if(restored!=S_OK)return restored;
@@ -281,7 +299,7 @@ UINT STDMETHODCALLTYPE GameSwapChain::GetCurrentBackBufferIndex() { return inner
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::CheckColorSpaceSupport(DXGI_COLOR_SPACE_TYPE a_colorSpace, UINT* a_support)
 {
-    if(host_ && host_->FsrFgActive() && a_colorSpace!=DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709){
+    if(host_ && host_->NativeGenerationActive() && a_colorSpace!=DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709){
         if(!a_support)return E_POINTER;*a_support=0;return S_OK;
     }
     return inner3_ ? inner3_->CheckColorSpaceSupport(a_colorSpace, a_support) : E_NOINTERFACE;
@@ -289,13 +307,15 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::CheckColorSpaceSupport(DXGI_COLOR_SPACE
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::SetColorSpace1(DXGI_COLOR_SPACE_TYPE a_colorSpace)
 {
-    return TheosRenderPipeline::SetFsrCompatibleColorSpace(host_ && host_->FsrFgActive(),a_colorSpace,
+    return TheosRenderPipeline::SetFsrCompatibleColorSpace(host_ && host_->NativeGenerationActive(),a_colorSpace,
         [&]{return inner3_?inner3_->SetColorSpace1(a_colorSpace):E_NOINTERFACE;});
 }
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::ResizeBuffers1(UINT a_bufferCount, UINT a_width, UINT a_height, DXGI_FORMAT a_format, UINT a_flags,
                                                         const UINT* a_creationNodeMask, IUnknown* const* a_presentQueue)
 {
+    if(host_ && host_->XessFgActive() && (a_creationNodeMask || a_presentQueue))return E_INVALIDARG;
+    if(host_ && host_->XessFgActive())return host_->ResizeXessSwapChain(*this,a_bufferCount,a_width,a_height,a_format,a_flags);
     if(host_ && host_->FsrFgActive())return host_->ResizeFsrSwapChain(*this,a_bufferCount,a_width,a_height,a_format,a_flags,a_creationNodeMask,a_presentQueue);
     if (!inner3_)
     {
@@ -307,6 +327,6 @@ HRESULT STDMETHODCALLTYPE GameSwapChain::ResizeBuffers1(UINT a_bufferCount, UINT
 
 HRESULT STDMETHODCALLTYPE GameSwapChain::SetHDRMetaData(DXGI_HDR_METADATA_TYPE a_type, UINT a_size, void* a_metadata)
 {
-    return TheosRenderPipeline::SetFsrCompatibleHdrMetadata(host_ && host_->FsrFgActive(),a_type,a_size,
+    return TheosRenderPipeline::SetFsrCompatibleHdrMetadata(host_ && host_->NativeGenerationActive(),a_type,a_size,
         [&]{return inner4_?inner4_->SetHDRMetaData(a_type,a_size,a_metadata):E_NOINTERFACE;});
 }

@@ -16,7 +16,11 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> BeforePresent(std::uint32_t sdkId);
         Upscaling::Result<void> AfterPresent(std::uint32_t sdkId);
         Upscaling::Result<void> ResetAfterDrain(bool gpuQuiescent);
+        // Discard an interrupted cycle after quiescence, without inventing end
+        // markers or resetting the next monotonic SDK ID.
+        Upscaling::Result<void> AbandonAfterDrain(bool gpuQuiescent);
         Upscaling::Result<std::uint32_t> CurrentId(std::uint64_t sourceId,std::uint64_t epoch) const;
+        Upscaling::Result<std::uint32_t> CurrentRenderId(std::uint64_t sourceId,std::uint64_t epoch) const;
     private:
         Upscaling::Result<void> Check() const;
         Upscaling::Result<void> SourceMarker(std::uint64_t sourceId,unsigned phase,xell_latency_marker_type_t);
