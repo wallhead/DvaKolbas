@@ -72,7 +72,6 @@ HRESULT NvidiaHost::CreateXessPresenter(IDXGIFactory* factory,ID3D11Device* prod
     xessPresentation_=std::make_unique<XessGenerationHost>(PluginPaths::Directory());
     auto created=xessPresentation_->Create(factory,producer,descriptor,bridge);
     if(!created){status_=created.error().message;return E_FAIL;}
-    xessPresentation_->RequireOrderedSources(128);
     D3D11_TEXTURE2D_DESC scene{};
     scene.Width=descriptor.BufferDesc.Width;scene.Height=descriptor.BufferDesc.Height;
     scene.Format=descriptor.BufferDesc.Format;scene.SampleDesc.Count=1;scene.MipLevels=scene.ArraySize=1;
@@ -106,25 +105,24 @@ std::uint64_t NvidiaHost::IntelSourceEpoch()const
 void NvidiaHost::ObserveXessEngine(XessEngineHooks::Boundary boundary) noexcept
 {
     try {
-        // The conditional menu poll is diagnostic only. Gameplay input runs
-        // in native worker jobs; their completion is handed to this owner.
+        // Native input is diagnostic only in presentation-pacing mode.
+        // This inspected boundary supplies render timing, not pre-input proof.
         if(boundary!=XessEngineHooks::Boundary::BeforeRender)return;
         if(!XessFgActive() || !xessPresentation_ || !proxyActive_ || FAILED(FailureResult()) ||
             !XessEngineHooks::installed.load(std::memory_order_acquire) || XessPresentSuspended())return;
         if(!xessTimingBound_) {
-            const auto bound=xessPresentation_->BindTiming(true);
+            const auto bound=xessPresentation_->BindTiming(true,XessGenerationEngineTiming::Mode::PresentationPacing);
             if(!bound){logger::warn("[XeSS engine] timing not bound: {}",bound.error().message);return;}
             xessTimingOwnerThread_.store(GetCurrentThreadId(),std::memory_order_release);
             xessTimingBound_=true;
+            logger::info("[XeSS timing] mode=presentation-pacing; input timing diagnostic; pre-input latency unqualified; consecutive input gate disabled");
         }
         const auto source=RenderPipeline::GetSingleton()->mRenderedFrameCount+1;
         const auto epoch=IntelSourceEpoch();
         Result<void> result=std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,
-            "no exact-source native input completion after pre-input sleep"});
-        if(source==xessEngineSource_ && epoch==xessEngineEpoch_ && XessEngineHooks::gameplayInput.Consume(source,epoch)) {
-            result=xessPresentation_->InputSampled(source);
-            if(result)result=xessPresentation_->BeforeRender(source);
-        }
+            "no exact-source presentation pacing reservation"});
+        if(source==xessEngineSource_ && epoch==xessEngineEpoch_)
+            result=xessPresentation_->BeforeRender(source);
         // Present owns render-end and Present markers.
         auto* ui=RE::UI::GetSingleton();
         const bool world=ui && !ui->IsMenuOpen(RE::MainMenu::MENU_NAME) && !ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME);
@@ -227,9 +225,9 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
     const auto outcome=fsrSourcePending_?fsrGenerationOutcome_:UpscaleOutcome::RepeatedOutput;
     if(!fsrSourcePending_)frame.sourceId=frame.sourceEpoch=0;
     const bool requested=SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested();
-    const bool inputProof=frame.sourceId && xessTimingOwnerThread_.load(std::memory_order_acquire)==GetCurrentThreadId() &&
-        XessEngineHooks::gameplayInput.Seal(frame.sourceId,frame.sourceEpoch);
-    const auto result=xessPresentation_->Present(frame,outcome,nativeUI_.TaggedTexture(),fsrForeground_.Get(),true,fsrMenu_,requested,interval,flags,inputProof);
+    const bool sourceProof=frame.sourceId && frame.sourceId==xessEngineSource_ && frame.sourceEpoch==xessEngineEpoch_ &&
+        xessTimingOwnerThread_.load(std::memory_order_acquire)==GetCurrentThreadId();
+    const auto result=xessPresentation_->Present(frame,outcome,nativeUI_.TaggedTexture(),fsrForeground_.Get(),true,fsrMenu_,requested,interval,flags,sourceProof);
     const auto status=xessPresentation_->Status();
     const bool previouslyEnabled=frameGenerationEnabled_;
     frameGenerationEnabled_=result==S_OK && static_cast<int>(status.frameGenResult)>=0 && status.framesPresented==2;
@@ -237,14 +235,14 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
         logger::info("[XeSS FG state] active={} requested={} source={} epoch={} sdk={} reason={}",frameGenerationEnabled_,requested,
             frame.sourceId,frame.sourceEpoch,static_cast<int>(status.frameGenResult),xessPresentation_->Reason());
     if((!fsrMenu_ && xessPresentTrace_++<160) || FAILED(result) || (presentCount_%600==0))
-        logger::info("[XeSS FG Present] source={} epoch={} temporal={} inputProof={} requested={} frames={} sdk={} orderedSources={} drainSuspends={} skippedCycles={} result=0x{:08X} reason={}",
-            frame.sourceId,frame.sourceEpoch,outcome==UpscaleOutcome::Temporal,inputProof,requested,status.framesPresented,
+        logger::info("[XeSS FG Present] source={} epoch={} temporal={} sourceProof={} timing=presentation-pacing requested={} frames={} sdk={} orderedSources={} drainSuspends={} skippedCycles={} result=0x{:08X} reason={}",
+            frame.sourceId,frame.sourceEpoch,outcome==UpscaleOutcome::Temporal,sourceProof,requested,status.framesPresented,
             static_cast<int>(status.frameGenResult),xessPresentation_->OrderedSources(),xessPresentation_->DrainSuspends(),
             xessPresentation_->SkippedCycles(),static_cast<std::uint32_t>(result),xessPresentation_->Reason());
     fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
-    // AIO19's owner sleeps for the next source after a real Present. Here it
-    // is only a reservation: actual native input after publication and exact
-    // source/epoch consumption before render are required before any FG tags.
+    // AIO19-style pacing: sleep for the next exact source after real Present.
+    // Render and completed scene IDs still have to match this reservation.
+    // Engine input may already have run; no pre-input latency claim is made.
     // Menu, loading/repeated/test/error Presents cannot start another cycle.
     using NextSource=XessGenerationInputHandoff::NextSource;
     const auto nextAction=XessGenerationInputHandoff::AfterPresent(result==S_OK,outcome==UpscaleOutcome::Temporal,
@@ -256,14 +254,11 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
         const auto next=frame.sourceId+1;
         const auto begin=xessPresentation_->BeforeSourceLoop(next,frame.sourceEpoch);
         if(begin) {
-            LARGE_INTEGER tick{};QueryPerformanceCounter(&tick);
-            const bool armed=XessEngineHooks::gameplayInput.Arm(next,frame.sourceEpoch,static_cast<std::uint64_t>(tick.QuadPart));
             xessEngineSource_=next;xessEngineEpoch_=frame.sourceEpoch;
             if(xessPresentTrace_<160 || presentCount_%600==0)
-                logger::info("[XeSS next input] source={} epoch={} sdkId={} armed={} reason={}",next,frame.sourceEpoch,*begin,armed,
-                    armed?"awaiting actual native job":"input already in flight; source remains real-only");
+                logger::info("[XeSS next source] source={} epoch={} sdkId={} timing=presentation-pacing",next,frame.sourceEpoch,*begin);
         } else if(xessPresentTrace_<160)
-            logger::warn("[XeSS next input] source={} epoch={} not armed: {}",next,frame.sourceEpoch,begin.error().message);
+            logger::warn("[XeSS next source] source={} epoch={} not reserved: {}",next,frame.sourceEpoch,begin.error().message);
     }
     return FAILED(result)?FailLifecycle(result,"Intel source Present"):result;
 #else

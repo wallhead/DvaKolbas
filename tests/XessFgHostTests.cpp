@@ -162,6 +162,37 @@ int wmain(int argc,wchar_t** argv)
     Check(owner.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true),
         "fresh intact input proof presents without terminal failure");
     Require(bool(owner.Retire()),"host retires generation then XeLL after drain");
+    XessGenerationHost paced(argv[1]);
+    Require(bool(paced.Create(rig.factory.Get(),rig.device11.Get(),desc,bridge)) &&
+        bool(paced.BindTiming(true,XessGenerationEngineTiming::Mode::PresentationPacing)),"paced host owns the same measured producer bridge");
+    for(std::uint64_t source=100;source<=101;++source) {
+        frame.sourceId=source;frame.sourceEpoch=3;frame.reset=false;
+        Require(bool(paced.BeforeSourceLoop(source,3)) && bool(paced.BeforeRender(source)),"paced render has no physical-input admission gate");
+        const auto events=count();
+        Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true),"paced complete temporal source presents");
+        bool tagged=false,reset=true;
+        for(auto i=events;i<count();++i) {
+            if(read(i).kind==8)tagged=true;
+            if(read(i).kind==9)reset=read(i).value!=0;
+        }
+        Require(tagged,"paced real source supplies owned SDK guides");
+        Require(reset==(source==100),"generation resumes after one history frame, without a 128-frame input streak");
+    }
+    frame.sourceId=102;
+    Require(bool(paced.BeforeSourceLoop(102,3)) && bool(paced.BeforeRender(102)),"paced source prepared before final identity rejection");
+    const auto rejectedEvents=count();
+    Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,false),"pacing still needs a completed owner source proof");
+    for(auto i=rejectedEvents;i<count();++i)Require(read(i).kind!=8 && read(i).kind!=9 && read(i).kind!=10,"invalid final source gets no tags or Present ID in pacing mode");
+    for(std::uint64_t source=103;source<=104;++source) {
+        frame.sourceId=source;
+        Require(bool(paced.BeforeSourceLoop(source,3)) && bool(paced.BeforeRender(source)),"paced fresh source recovers from untagged interruption");
+        const auto events=count();
+        Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true),"paced recovery presents safely");
+        bool reset=true;
+        for(auto i=events;i<count();++i)if(read(i).kind==9)reset=read(i).value!=0;
+        Require(reset==(source==103),"missed source costs one history warmup, not a consecutive-frame qualification delay");
+    }
+    Require(bool(paced.Retire()),"paced generation and latency retire after drain");
     Rig foreign;XessGenerationHost wrong(argv[1]);
     Require(!wrong.Create(rig.factory.Get(),foreign.device11.Get(),desc,bridge),"foreign D3D11 identity rejected even on same adapter");
     Require(bool(wrong.Retire()),"rejected creation cleanup");

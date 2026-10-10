@@ -16,7 +16,8 @@ namespace TheosRenderPipeline
         XessGenerationHost& operator=(const XessGenerationHost&)=delete;
         Upscaling::Result<void> Create(IDXGIFactory*,ID3D11Device*,const DXGI_SWAP_CHAIN_DESC&,
             std::shared_ptr<Graphics::D3D11D3D12Interop>,std::uint32_t initFlags=0);
-        Upscaling::Result<void> BindTiming(bool verifiedInstructionProfile);
+        Upscaling::Result<void> BindTiming(bool verifiedInstructionProfile,
+            XessGenerationEngineTiming::Mode mode=XessGenerationEngineTiming::Mode::VerifiedInput);
         void RequireOrderedSources(unsigned count);
         unsigned OrderedSources()const;
         std::uint64_t DrainSuspends()const;
@@ -26,7 +27,7 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> BeforeRender(std::uint64_t source);
         HRESULT Present(const Upscaling::UpscaleFrame&,Upscaling::UpscaleOutcome,ID3D11Texture2D* ui,
             ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,
-            bool inputProof=true);
+            bool sourceProof=true);
         HRESULT WaitBeforeProducer();
         HRESULT StartupPresent(UINT interval,UINT flags);
         Upscaling::Result<void> Suspend();

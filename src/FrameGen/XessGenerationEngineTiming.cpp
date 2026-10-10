@@ -8,12 +8,12 @@ namespace TheosRenderPipeline
         Result<void> Invalid(const char* reason)
         { return std::unexpected(RuntimeError{ErrorKind::InvalidInput,E_INVALIDARG,reason}); }
     }
-    Result<void> XessGenerationEngineTiming::Bind(XellSession* session,bool verified)
+    Result<void> XessGenerationEngineTiming::Bind(XellSession* session,bool verified,Mode mode)
     {
         if (latency_) return Invalid("Intel engine timing is already bound");
         if (!session || !session->Context() || !verified)
             return std::unexpected(RuntimeError{ErrorKind::ContextFailure,E_UNEXPECTED,"Intel FG inactive: engine pre-input/simulation/render boundaries are unqualified"});
-        latency_=session;verified_=true;thread_=GetCurrentThreadId();return {};
+        latency_=session;verified_=true;mode_=mode;thread_=GetCurrentThreadId();return {};
     }
     Result<void> XessGenerationEngineTiming::Check() const
     {
@@ -34,13 +34,13 @@ namespace TheosRenderPipeline
     Result<void> XessGenerationEngineTiming::InputSampled(std::uint64_t source)
     {
         if (auto ready=Check(); !ready) return ready;
-        if (!phase_ || phase_!=1 || source!=source_ || sampled_) return Invalid("Intel input sample must follow this source's sleep and precede simulation end exactly once");
+        if (mode_!=Mode::VerifiedInput || !phase_ || phase_!=1 || source!=source_ || sampled_) return Invalid("Intel input proof is only accepted in verified-input mode after this source's sleep");
         sampled_=true;return {};
     }
     Result<void> XessGenerationEngineTiming::SourceMarker(std::uint64_t source,unsigned phase,xell_latency_marker_type_t marker)
     {
         if (auto ready=Check(); !ready) return ready;
-        if (source!=source_ || phase_!=phase || !sampled_) return Invalid("Intel source/simulation/render phase does not match verified input ordering");
+        if (source!=source_ || phase_!=phase || (mode_==Mode::VerifiedInput && !sampled_)) return Invalid("Intel source/simulation/render phase does not match the selected timing contract");
         if (auto result=latency_->Marker(id_,marker); !result) { fault_=true;return result; }
         ++phase_;return {};
     }
@@ -61,9 +61,8 @@ namespace TheosRenderPipeline
         if (auto ready=Check(); !ready) return ready;
         if (sdkId!=id_) return Invalid("Intel post-Present ID differs from the accepted source");
         if (auto result=SourceMarker(source_,5,XELL_PRESENT_END); !result) return result;
-        // Finish this source. The owner's next-source reservation may follow
-        // this Present, but input admission still needs a genuine later job.
-        // Extra/loading Presents cannot manufacture completed input.
+        // Finish this source. Extra/loading Presents cannot manufacture a
+        // render boundary or a completed source in either timing mode.
         phase_=0;return {};
     }
     Result<void> XessGenerationEngineTiming::ResetAfterDrain(bool quiescent)
@@ -97,7 +96,7 @@ namespace TheosRenderPipeline
     Result<std::uint32_t> XessGenerationEngineTiming::CurrentRenderId(std::uint64_t source,std::uint64_t epoch) const
     {
         auto id=CurrentId(source,epoch);if(!id)return id;
-        if(phase_!=3 || !sampled_)return std::unexpected(Invalid("Intel tagging requires observed input and a genuine render-start boundary").error());
+        if(phase_!=3 || (mode_==Mode::VerifiedInput && !sampled_))return std::unexpected(Invalid("Intel tagging requires the selected timing contract and a genuine render-start boundary").error());
         return id;
     }
 }

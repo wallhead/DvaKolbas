@@ -2,6 +2,8 @@
 
 Status: candidate implementation; Skyrim interpolation is **not qualified**. Milestones remain 3 of 8.
 
+Update: the loaded gameplay run rejected every source because native input did not satisfy the post-Present publication window. The user approved [presentation pacing](PRESENTATION_PACING_2026-10-10.md) instead; the handoff below is historical and no longer a production FG admission requirement.
+
 ## Observed failure
 
 The clean `4c6efe59a725` diagnostic recorded 128 bounded render snapshots:

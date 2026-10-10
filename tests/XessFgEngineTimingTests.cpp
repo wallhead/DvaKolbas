@@ -121,6 +121,25 @@ int wmain(int argc,wchar_t** argv)
         "owner translates only exact completed native input into simulation/render markers");
     Require(handoff.Seal(14,8) && bool(timing.EndRender(14)) && bool(timing.BeforePresent(*nextSource)) && bool(timing.AfterPresent(*nextSource)),
         "sealed completed source retains one SDK ID through real publication");
+    Require(bool(timing.ResetAfterDrain(true)),"paced regression starts a drained SDK epoch");
+    XessGenerationEngineTiming paced;
+    Require(bool(paced.Bind(&latency,true,XessGenerationEngineTiming::Mode::PresentationPacing)),"explicit presentation pacing bind");
+    auto pacedId=paced.BeginSourceLoop(30,9);
+    Require(pacedId && *pacedId==1,"paced source reserves one SDK ID");
+    Require(!paced.InputSampled(30),"presentation pacing cannot claim verified input timing");
+    Require(bool(paced.EndSimulation(30)) && bool(paced.BeginRender(30)),
+        "presentation pacing admits render without a worker input proof");
+    Require(!paced.CurrentRenderId(31,9) && !paced.CurrentRenderId(30,10),"pacing still rejects mismatched source or epoch");
+    Require(paced.CurrentRenderId(30,9)==1,"exact paced render maps to its SDK ID");
+    Require(bool(paced.EndRender(30)) && bool(paced.BeforePresent(1)) && bool(paced.AfterPresent(1)),"paced source completes ordered SDK markers");
+    auto gap=paced.BeginSourceLoop(31,9);
+    Require(gap && *gap==2 && bool(paced.AbandonUnsubmitted(true)),"interrupted pacing emits no invented end markers");
+    auto recovery=paced.BeginSourceLoop(32,9);
+    Require(recovery && *recovery==3 && bool(paced.EndSimulation(32)) && bool(paced.BeginRender(32)),"paced recovery keeps exact monotonic IDs without consecutive input warmup");
+    bool foreignPacing=true;
+    std::thread pacedForeign([&]{foreignPacing=bool(paced.EndRender(32));});pacedForeign.join();
+    Require(!foreignPacing,"pacing keeps owner thread enforcement");
+    Require(bool(paced.EndRender(32)) && bool(paced.BeforePresent(3)) && bool(paced.AfterPresent(3)),"recovered pacing completes normally");
     Require(bool(latency.Retire(true,true)),"latency retires after proven owner cleanup");
     std::puts("PASS: source/input/simulation/render/Present mapping; Skyrim instruction/ordering qualification remains separate");
 }

@@ -83,11 +83,11 @@ namespace TheosRenderPipeline
         state_->initFlags=flags;
         state_->created=true;state_->reason="Intel presenter ready; interpolation inactive until verified engine source timing";return {};
     }
-    Result<void> XessGenerationHost::BindTiming(bool verified)
+    Result<void> XessGenerationHost::BindTiming(bool verified,XessGenerationEngineTiming::Mode mode)
     {
         std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return ready;
-        auto bound=state_->timing.Bind(state_->presentation.Latency(),verified);
+        auto bound=state_->timing.Bind(state_->presentation.Latency(),verified,mode);
         if(!bound){state_->reason=bound.error().message;return bound;}
         state_->bound=true;return {};
     }
@@ -163,11 +163,11 @@ namespace TheosRenderPipeline
         return result;
     }
     HRESULT XessGenerationHost::Present(const UpscaleFrame& frame,UpscaleOutcome outcome,ID3D11Texture2D* ui,
-        ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,bool inputProof)
+        ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,bool sourceProof)
     {
         std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return E_UNEXPECTED;
-        auto id=inputProof && state_->bound && !state_->timingResetPending?state_->timing.CurrentRenderId(frame.sourceId,frame.sourceEpoch):Result<std::uint32_t>{std::unexpected(Invalid("no engine source").error())};
+        auto id=sourceProof && state_->bound && !state_->timingResetPending?state_->timing.CurrentRenderId(frame.sourceId,frame.sourceEpoch):Result<std::uint32_t>{std::unexpected(Invalid("no engine source").error())};
         if(!id) {
             if(outcome!=UpscaleOutcome::RepeatedOutput || !requested || menu || !complete || frame.reset || frame.camera.reset)
                 state_->history.Invalidate();
