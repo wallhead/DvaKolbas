@@ -280,6 +280,8 @@ void OverlayUI::UpdateFrameStats()
 	const auto* host = NvidiaHost::GetSingleton();
 	if (host->OrdinarySourceActive()) {
 		output = host->OrdinaryOutputCounter();
+	} else if(host->XessFgActive()) {
+        output=host->XessFgOutputCounter();
 	} else if(host->FsrFgActive()) {
         output=host->FsrOutputCounter();
 	} else if (host->StartupConfigured()) {

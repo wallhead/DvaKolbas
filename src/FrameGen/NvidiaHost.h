@@ -119,6 +119,8 @@ class NvidiaHost
     }
     bool QueryXessJitter(std::uint64_t,float&,float&);
     TheosRenderPipeline::Telemetry::OutputCounter FsrOutputCounter()const;
+    TheosRenderPipeline::Telemetry::OutputCounter XessFgOutputCounter()const;
+    TheosRenderPipeline::SettingsActionStatus XessFgStatus()const;
     TheosRenderPipeline::SettingsActionStatus XessStatus()const;
     bool XessSharpeningAvailable()const;
     float XessAppliedSharpness()const;

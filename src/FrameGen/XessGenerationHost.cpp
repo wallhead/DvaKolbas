@@ -1,4 +1,5 @@
 #include "XessGenerationHost.h"
+#include "XessGenerationTelemetry.h"
 #include <dxgi1_4.h>
 namespace TheosRenderPipeline
 {
@@ -24,6 +25,7 @@ namespace TheosRenderPipeline
         XessGenerationPresentation presentation;
         XessGenerationEngineTiming timing;
         XessGenerationHistory history;
+        XessGenerationTelemetry output;
         DXGI_SWAP_CHAIN_DESC descriptor{};
         bool created{},attempted{},closing{},suspended{},bound{};
         HRESULT fault{S_OK};
@@ -128,7 +130,10 @@ namespace TheosRenderPipeline
     HRESULT XessGenerationHost::StartupPresent(UINT interval,UINT flags)
     {
         if(auto ready=state_->Ready();!ready)return E_UNEXPECTED;
-        return state_->presentation.StartupPresent(interval,flags);
+        const auto result=state_->presentation.StartupPresent(interval,flags);
+        const auto status=state_->presentation.Status();
+        state_->output.Observe(result,status.framesPresented,static_cast<int>(status.frameGenResult),(flags&DXGI_PRESENT_TEST)!=0);
+        return result;
     }
     HRESULT XessGenerationHost::Present(const UpscaleFrame& frame,UpscaleOutcome outcome,ID3D11Texture2D* ui,
         ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags)
@@ -140,7 +145,10 @@ namespace TheosRenderPipeline
             auto real=state_->presentation.PrepareReal(frame,ui,overlay,complete);
             if(!real){state_->reason=real.error().message;return E_FAIL;}
             const auto hr=state_->presentation.Present(*real,false,interval,flags);
+            const auto status=state_->presentation.Status();
+            state_->output.Observe(hr,status.framesPresented,static_cast<int>(status.frameGenResult),(flags&DXGI_PRESENT_TEST)!=0);
             if(FAILED(hr)){state_->fault=hr;state_->reason="Intel real-only Present failed; retaining owners";}
+            else state_->reason="Intel real-only output; no matching completed engine source";
             return hr;
         }
         // The transport converts readable engine depth into owned R32 guides.
@@ -166,6 +174,8 @@ namespace TheosRenderPipeline
         auto end=state_->timing.AfterPresent(*id);
         if(FAILED(hr)){state_->fault=hr;state_->reason="Intel timed Present failed; retaining native/XeLL owners";return hr;}
         if(!end){state_->Failure(end.error());return E_FAIL;}
+        const auto status=state_->presentation.Status();
+        state_->output.Observe(hr,status.framesPresented,static_cast<int>(status.frameGenResult),(flags&DXGI_PRESENT_TEST)!=0);
         state_->unfinished=false;
         if(orderedSource && state_->ordered<state_->requiredOrdered)++state_->ordered;
         if(admission.tag)state_->history.Accept(frame.sourceId,frame.sourceEpoch);
@@ -178,7 +188,7 @@ namespace TheosRenderPipeline
         if(auto ready=state_->Ready();!ready)return ready;
         if(auto paused=state_->presentation.Suspend();!paused)return state_->Failure(paused.error());
         if(state_->bound)if(auto abandoned=state_->timing.AbandonAfterDrain(true);!abandoned)return state_->Failure(abandoned.error());
-        state_->suspended=true;state_->unfinished=false;state_->history.Invalidate();return {};
+        state_->suspended=true;state_->unfinished=false;state_->history.Invalidate();state_->output.Invalidate();return {};
     }
     Result<void> XessGenerationHost::Resume()
     {
@@ -209,6 +219,8 @@ namespace TheosRenderPipeline
     HRESULT XessGenerationHost::GetProducerDevice(REFIID iid,void** result) const
     { if(!result)return E_POINTER;*result=nullptr;return state_->producer?state_->producer->QueryInterface(iid,result):E_UNEXPECTED; }
     xefg_swapchain_present_status_t XessGenerationHost::Status() const{return state_->presentation.Status();}
+    Telemetry::OutputCounter XessGenerationHost::OutputCounter() const
+    {return state_->Ready()?state_->output.Counter():Telemetry::OutputCounter{};}
     const std::string& XessGenerationHost::Reason() const{return state_->reason;}
     bool XessGenerationHost::Suspended() const{return state_->suspended;}
     std::shared_ptr<Graphics::D3D11D3D12Interop> XessGenerationHost::Bridge() const{return state_->bridge;}

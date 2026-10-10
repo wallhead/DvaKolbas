@@ -42,8 +42,8 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
                 settingsDraft.upscaleType==DLAA?TheosRenderPipeline::Upscaling::BackendKind::Dlaa:TheosRenderPipeline::Upscaling::BackendKind::Dlss;
             settingsDraft.generationBackend=TheosRenderPipeline::ResolveGenerationBackend(settingsDraft.generationBackendPreference,kind);
         }
-        const long actualBackend=nvidiaHost->FsrFgActive()?2:nvidiaHost->OrdinarySourceActive()?0:1;
-        ImGui::Text("Running backend: %s",actualBackend==2?"FSR FG":actualBackend==1?"NVIDIA FG":"Ordinary (diagnostic)");
+        const long actualBackend=nvidiaHost->XessFgActive()?3:nvidiaHost->FsrFgActive()?2:nvidiaHost->OrdinarySourceActive()?0:1;
+        ImGui::Text("Running backend: %s",actualBackend==3?"XeSS FG (2x)":actualBackend==2?"FSR FG":actualBackend==1?"NVIDIA FG":"Ordinary (diagnostic)");
         DrawSettingsHelp("Backend selection requires Save as default and restart. Auto selects NVIDIA FG for DLSS, and FSR FG for FSR upscaling.");
         if(settingsDraft.upscaleType==Xess || nvidiaHost->XessActive())
             ImGui::TextWrapped("Experimental XeSS + FSR FG: select FSR, save and restart. Auto keeps SR-only presentation; NVIDIA FG is still pending.");
@@ -57,6 +57,13 @@ void OverlayUI::DrawFrameGenerationPanel(float tabCardHeight, const FrameView& v
         if(ImGui::Checkbox("Frame generation##runtime",&requested))
             TheosRenderPipeline::SetLiveGenerationRequest(settingsDraft,*frameGen,requested,actualBackend);
         ImGui::EndDisabled();
+        if(actualBackend==3 || settingsDraft.generationBackend==3) {
+            ImGui::TextWrapped("XeSS FG: one generated frame per real source. The initial trial uses SDR, Native render scale and a fixed borderless window.");
+            if(actualBackend==3)ImGui::TextWrapped("%s",nvidiaHost->XessFgStatus().text.c_str());
+            else ImGui::TextWrapped("XeSS FG is selected for the next launch; the running presenter stays active.");
+            ImGui::TextWrapped("XeLL handles latency for Intel presentation. NVIDIA Reflex and its output FPS cap apply to NVIDIA presentation only.");
+            DrawFrameGenerationAdvanced(view);EndSettingsColumns();ImGui::EndTabItem();return;
+        }
         if(nvidiaHost->FsrFgActive() || settingsDraft.generationBackend==2 || view.fsrActive) {
             int fgPolicy=static_cast<int>(settingsDraft.fsr.generationProviderPolicy);
             const char* fgProviders[]{"FSR3 FG (3.1.6)","Auto (FSR4 / FSR3 FG)","FSR4 FG (ML, experimental)"};

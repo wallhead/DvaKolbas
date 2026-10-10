@@ -139,9 +139,26 @@ template<class Preference> static void FsrControlsVisibleWithDlss(Preference pre
         Require(context.DisabledStackSize==0,"backend picker balances disabled stack");ImGui::DestroyContext();
     } else Require(false,"independent FG backend picker is missing");
 }
+static void IntelChoiceIsSelectable()
+{
+    ImGui::CreateContext();auto& io=ImGui::GetIO();io.IniFilename=nullptr;io.DisplaySize={1024,768};io.DeltaTime=1.f/60;io.ConfigInputTrickleEventQueue=false;
+    unsigned char* pixels;int width,height;io.Fonts->GetTexDataAsRGBA32(&pixels,&width,&height);
+    auto preference=TheosRenderPipeline::GenerationBackendPreference::Auto;ImVec2 combo{};
+    auto frame=[&]{ImGui::NewFrame();ImGui::SetNextWindowPos({50,50},ImGuiCond_Always);ImGui::SetNextWindowSize({800,600},ImGuiCond_Always);
+        ImGui::Begin("Intel backend choice");combo=ImGui::GetCursorScreenPos();combo.x+=100;combo.y+=ImGui::GetFrameHeight()/2;
+        TheosRenderPipeline::Overlay::DrawGenerationBackendChoice(preference,true,true);ImGui::End();ImGui::Render();};
+    frame();frame();io.AddMousePosEvent(combo.x,combo.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();frame();
+    auto& context=*ImGui::GetCurrentContext();Require(context.OpenPopupStack.Size>0,"Intel choice combo open");
+    auto* popup=context.OpenPopupStack.back().Window;Require(popup!=nullptr,"backend popup");
+    const ImVec2 choice{popup->Pos.x+40,popup->Pos.y+ImGui::GetStyle().WindowPadding.y+3*ImGui::GetTextLineHeightWithSpacing()+ImGui::GetTextLineHeight()/2};
+    io.AddMousePosEvent(choice.x,choice.y);io.AddMouseButtonEvent(0,true);frame();io.AddMouseButtonEvent(0,false);frame();
+    Require(preference==TheosRenderPipeline::GenerationBackendPreference::Xess,"fourth visible backend stages XeSS FG without changing current owner");
+    Require(context.DisabledStackSize==0,"Intel choice balances UI stack");ImGui::DestroyContext();
+}
 int main()
 {
  try {
+    IntelChoiceIsSelectable();
     FsrControlsVisibleWithDlss(TheosRenderPipeline::GenerationBackendPreference::Auto);
     MlChoiceAvailability(std::array<const char*,3>{"FSR3","Auto","FSR4"});
     NormalToggleRetainsPresenter();

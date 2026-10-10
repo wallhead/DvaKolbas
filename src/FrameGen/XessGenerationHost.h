@@ -2,6 +2,7 @@
 #include "XessGenerationPresentation.h"
 #include "XessGenerationEngineTiming.h"
 #include "XessGenerationPolicy.h"
+#include "FrameTelemetry.h"
 #include <filesystem>
 namespace TheosRenderPipeline
 {
@@ -31,6 +32,7 @@ namespace TheosRenderPipeline
         IDXGISwapChain4* SwapChain() const;
         HRESULT GetProducerDevice(REFIID,void**) const;
         xefg_swapchain_present_status_t Status() const;
+        Telemetry::OutputCounter OutputCounter() const;
         const std::string& Reason() const;
         bool Suspended() const;
         std::shared_ptr<Graphics::D3D11D3D12Interop> Bridge() const;

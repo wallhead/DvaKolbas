@@ -42,5 +42,12 @@ int main()
     after.generationBackend=2;after.generationBackendPreference=GenerationBackendPreference::Fsr;after.generationEnabled=false;
     auto live=ProjectRendererLiveEdits(before,after,current);
     Require(live.generationBackend==1 && live.generationEnabled==current.generationEnabled,"pending backend choice cannot mutate active owner or live FG request");
+    current.generationBackend=3;current.generationBackendPreference=GenerationBackendPreference::Xess;
+    live=ProjectRendererLiveEdits(before,after,current);
+    Require(live.generationBackend==3 && live.generationEnabled==current.generationEnabled,"pending choice cannot replace active Intel owner or its live request");
+    struct LiveGeneration {struct {long generationBackend{3};bool enabled{};} settings;bool requested{};
+        void RequestRuntimeInterpolation(bool enabled){requested=enabled;} } generation;
+    SetLiveGenerationRequest(after,generation,true,3);
+    Require(generation.requested && generation.settings.generationBackend==3,"live toggle addresses retained Intel owner despite pending FSR choice");
     std::puts("PASS: independent Intel settings, roundtrip, source changes and unavailable request");
 }

@@ -4,13 +4,21 @@
 
 namespace TheosRenderPipeline::Overlay
 {
-    inline bool DrawGenerationBackendChoice(GenerationBackendPreference& preference,bool nvidiaSupported)
+    inline constexpr bool XessGenerationBuilt()
     {
-        const char* labels[]{"Auto", "NVIDIA FG", "FSR FG"};
+#if defined(TRP_ENABLE_XESS_FG)
+        return true;
+#else
+        return false;
+#endif
+    }
+    inline bool DrawGenerationBackendChoice(GenerationBackendPreference& preference,bool nvidiaSupported,bool xessBuilt=XessGenerationBuilt())
+    {
+        const char* labels[]{"Auto", "NVIDIA FG", "FSR FG", "XeSS FG (2x)"};
         const int current=static_cast<int>(preference);bool changed{};
         ImGui::SetNextItemWidth(-1.0f);
-        if(ImGui::BeginCombo("Backend##generation",labels[current>=0 && current<3?current:0])) {
-            for(int i=0;i<3;++i) {
+        if(ImGui::BeginCombo("Backend##generation",labels[current>=0 && current<4?current:0])) {
+            for(int i=0;i<(xessBuilt?4:3);++i) {
                 ImGui::BeginDisabled(i==1 && !nvidiaSupported);
                 if(ImGui::Selectable(labels[i],current==i)){preference=static_cast<GenerationBackendPreference>(i);changed=true;}
                 ImGui::EndDisabled();

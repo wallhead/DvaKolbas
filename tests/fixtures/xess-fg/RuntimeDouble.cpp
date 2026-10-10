@@ -29,6 +29,8 @@ extern "C" xell_result_t xellD3D12CreateContext(ID3D12Device*, xell_context_hand
 static XessFgFixtureCall fgCalls[256];
 static uint32_t fgCount{}, fgFailure{};
 static bool fgEnabled{};
+static uint32_t fgFrames{7};
+extern "C" __declspec(dllexport) void FixtureFrames(uint32_t frames) {fgFrames=frames;}
 static XessFgFixtureObserver fgObserver{};
 static Microsoft::WRL::ComPtr<IDXGISwapChain4> fgProxy;
 static xefg_swapchain_d3d12_init_params_t fgInit{};
@@ -49,7 +51,7 @@ extern "C" xefg_swapchain_result_t xefgSwapChainGetProperties(xefg_swapchain_han
 extern "C" xefg_swapchain_result_t xefgSwapChainTagFrameConstants(xefg_swapchain_handle_t hSwapChain, uint32_t presentId, const xefg_swapchain_frame_constant_data_t* pConstants) { return FgRecord({9,presentId,pConstants->resetHistory}); }
 extern "C" xefg_swapchain_result_t xefgSwapChainSetEnabled(xefg_swapchain_handle_t hSwapChain, uint32_t enable) { const auto r=FgRecord({7,0,enable});if(r==0)fgEnabled=enable!=0;return r; }
 extern "C" xefg_swapchain_result_t xefgSwapChainSetPresentId(xefg_swapchain_handle_t hSwapChain, uint32_t presentId) { return FgRecord({10,presentId}); }
-extern "C" xefg_swapchain_result_t xefgSwapChainGetLastPresentStatus(xefg_swapchain_handle_t hSwapChain, xefg_swapchain_present_status_t* pPresentStatus) { const auto r=FgRecord({11});if(r==0)*pPresentStatus={7,XEFG_SWAPCHAIN_RESULT_SUCCESS,fgEnabled?1u:0u};return r; }
+extern "C" xefg_swapchain_result_t xefgSwapChainGetLastPresentStatus(xefg_swapchain_handle_t hSwapChain, xefg_swapchain_present_status_t* pPresentStatus) { const auto r=FgRecord({11});if(r==0)*pPresentStatus={fgFrames?fgFrames:fgEnabled?2u:1u,XEFG_SWAPCHAIN_RESULT_SUCCESS,fgEnabled?1u:0u};return r; }
 extern "C" xefg_swapchain_result_t xefgSwapChainSetLoggingCallback(xefg_swapchain_handle_t hSwapChain, xefg_swapchain_logging_level_t loggingLevel, xefg_swapchain_app_log_callback_t loggingCallback, void* userData) { return XEFG_SWAPCHAIN_RESULT_SUCCESS; }
 extern "C" xefg_swapchain_result_t xefgSwapChainDestroy(xefg_swapchain_handle_t hSwapChain) { const auto r=FgRecord({12});if(r==0){fgProxy.Reset();fgEnabled=false;}return r; }
 extern "C" xefg_swapchain_result_t xefgSwapChainSetLatencyReduction(xefg_swapchain_handle_t hSwapChain, void* hXeLLContext) { return FgRecord({2,0,hXeLLContext?1u:0u}); }

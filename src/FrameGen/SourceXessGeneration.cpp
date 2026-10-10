@@ -10,6 +10,28 @@
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
 
+Telemetry::OutputCounter NvidiaHost::XessFgOutputCounter()const
+{
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive() && xessPresentation_ && proxyActive_ && SUCCEEDED(FailureResult()) && lastPresentResult_==S_OK)
+        return xessPresentation_->OutputCounter();
+#endif
+    return {};
+}
+SettingsActionStatus NvidiaHost::XessFgStatus()const
+{
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive() && xessPresentation_) {
+        const auto status=xessPresentation_->Status();
+        if(static_cast<int>(status.frameGenResult)<0)
+            return {std::format("Intel SDK could not generate this frame (result {}). Real output retained.",static_cast<int>(status.frameGenResult)),SettingsStatusKind::Error};
+        const bool active=XessFgOutputCounter().available && status.isFrameGenEnabled && status.framesPresented>1;
+        return {xessPresentation_->Reason(),FAILED(FailureResult())?SettingsStatusKind::Error:active?SettingsStatusKind::Success:SettingsStatusKind::Neutral};
+    }
+#endif
+    return {"XeSS FG is not the running presenter. Save the backend selection and restart.",SettingsStatusKind::Neutral};
+}
+
 #if defined(TRP_ENABLE_XESS_FG)
 namespace
 {
@@ -180,7 +202,11 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
     const bool requested=SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested();
     const auto result=xessPresentation_->Present(frame,outcome,nativeUI_.TaggedTexture(),fsrForeground_.Get(),true,fsrMenu_,requested,interval,flags);
     const auto status=xessPresentation_->Status();
-    frameGenerationEnabled_=SUCCEEDED(result) && status.framesPresented>1;
+    const bool previouslyEnabled=frameGenerationEnabled_;
+    frameGenerationEnabled_=result==S_OK && static_cast<int>(status.frameGenResult)>=0 && status.framesPresented==2;
+    if(previouslyEnabled!=frameGenerationEnabled_)
+        logger::info("[XeSS FG state] active={} requested={} source={} epoch={} sdk={} reason={}",frameGenerationEnabled_,requested,
+            frame.sourceId,frame.sourceEpoch,static_cast<int>(status.frameGenResult),xessPresentation_->Reason());
     if((!fsrMenu_ && xessPresentTrace_++<160) || FAILED(result) || (presentCount_%600==0))
         logger::info("[XeSS FG Present] source={} epoch={} temporal={} requested={} frames={} sdk={} orderedSources={} result=0x{:08X} reason={}",
             frame.sourceId,frame.sourceEpoch,outcome==UpscaleOutcome::Temporal,requested,status.framesPresented,
