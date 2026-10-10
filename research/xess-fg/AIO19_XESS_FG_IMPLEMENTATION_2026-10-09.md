@@ -4,6 +4,11 @@ Date: 2026-10-09. Scope: Build19-Hotfix1, read-only PE inspection with
 Capstone and pefile. No AIO DLL was loaded, patched or executed. These findings
 describe code present in the binary, not a captured gameplay execution.
 
+Follow-up: the [2026-10-10 scheduling trace](AIO19_XESS_SCHEDULING_2026-10-10.md)
+connects the formerly untraced outer-chain callback assignment and ordinary
+Present route. This report preserves the original 2026-10-09 scope/status;
+its final implementation-status statement is historical.
+
 ## Result
 
 AIO19 has a concrete Intel D3D12 FG wrapper, not just SDK names in a loader.
