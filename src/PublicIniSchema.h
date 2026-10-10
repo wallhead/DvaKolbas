@@ -71,6 +71,7 @@ inline constexpr std::array enum14{
     EnumValue{"Auto","0"},
     EnumValue{"NVIDIA","1"},
     EnumValue{"FSR","2"},
+    EnumValue{"XeSS","3"},
 };
 inline constexpr std::array enum16{
     EnumValue{"FSR3","Analytical"},

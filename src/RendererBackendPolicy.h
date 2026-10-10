@@ -8,13 +8,19 @@
 
 namespace TheosRenderPipeline
 {
+    inline constexpr bool XessFgBuilt =
+#if defined(TRP_ENABLE_XESS_FG)
+        true;
+#else
+        false;
+#endif
     inline constexpr bool XessBuilt =
 #if defined(TRP_ENABLE_XESS)
         true;
 #else
         false;
 #endif
-    inline Upscaling::BackendDecision ResolveBackend(const Upscaling::BackendConfiguration& config, bool fsrBuilt, bool fsrFgBuilt = false)
+    inline Upscaling::BackendDecision ResolveBackend(const Upscaling::BackendConfiguration& config, bool fsrBuilt, bool fsrFgBuilt = false,bool xessFgBuilt = XessFgBuilt)
     {
         using namespace Upscaling;
         BackendDecision decision{config.backend, PresentationKind::Nvidia, false, config.generationEnabled, {}};
@@ -24,6 +30,19 @@ namespace TheosRenderPipeline
             decision.diagnostic = "This GPU supports only FSR upscaling and optional FSR frame generation; DLSS, DLAA and NR are unavailable.";
         }
         else if (!config.enabled) { decision.diagnostic = "This renderer requires an enabled temporal upscaler."; }
+        else if(config.generationBackend==3) {
+            decision.presentation=PresentationKind::Xess;
+            if(!xessFgBuilt)decision.diagnostic="XeSS frame generation support is unavailable in this build.";
+            else if(config.backend==BackendKind::External)decision.diagnostic="XeSS FG requires the mod's source ownership; external/Community Shaders presentation is not qualified.";
+            else if(config.backend==BackendKind::Fsr && !fsrBuilt)decision.diagnostic="FSR upscaling support is unavailable in this build.";
+            else if(config.backend==BackendKind::Xess && !XessBuilt)decision.diagnostic="XeSS upscaling support is unavailable in this build.";
+            else if(config.backend==BackendKind::Fsr && !ValidProviderPolicy(config.providerPolicy))decision.diagnostic="Invalid FSR provider policy.";
+            else if(config.neuralRendering && config.adapterVendorId!=0x10de)decision.diagnostic="NR requires a supported NVIDIA RTX render adapter.";
+            else if(config.neuralRendering && !config.communityNeural)decision.diagnostic="XeSS FG requires the community NR runtime.";
+            else if(config.hdr)decision.diagnostic="XeSS FG requires SDR output. Disable the mod's HDR output and restart.";
+            else if(config.dynamicResolution)decision.diagnostic="XeSS FG requires fixed render dimensions. Disable dynamic resolution and restart.";
+            else decision.valid=true;
+        }
         else if(config.backend==BackendKind::Xess) {
             decision.presentation=config.generationBackend==2?PresentationKind::Fsr:PresentationKind::Ordinary;
             if(!XessBuilt)decision.diagnostic="XeSS support is unavailable in this build.";
@@ -75,6 +94,18 @@ namespace TheosRenderPipeline
         // Legacy execution caps it at two without erasing the third-pass setup.
         const auto mode = ini.GetLongValue("Settings", "UpscaleType", DLSS);
         const auto presenter = ini.GetLongValue("Experimental", "FrameGenerationBackend", 1);
+        if(presenter==3) {
+            if(!XessFgBuilt)return "XeSS frame generation support is unavailable in this build.";
+            if(mode!=DLSS && mode!=DLAA && mode!=FSR && mode!=Xess)return "XeSS FG requires DLSS, FSR or XeSS upscaling with the mod's source ownership.";
+            if(mode==FSR && !fsrBuilt)return "FSR upscaling support is unavailable in this build.";
+            if(mode==Xess && !XessBuilt)return "XeSS upscaling support is unavailable in this build.";
+            if(!ini.GetBoolValue("Settings","NativeUI",true) || ini.GetLongValue("Experimental","NativeUICompositionMode",0)!=0)return "XeSS FG requires [Interface] NativeUI=true and UIComposition=Dedicated.";
+            if(ini.GetBoolValue("HDROutput","Enabled",false))return "XeSS FG requires SDR output. Disable the mod's HDR output and restart.";
+            if(ini.GetBoolValue("DynamicResolution","Enabled",false) || ini.GetBoolValue("DynamicResolution","Oscillate",false))return "XeSS FG requires fixed render dimensions. Disable dynamic resolution and restart.";
+            if(!ini.GetBoolValue("Settings","EnableJitter",true))return "XeSS FG requires camera jitter enabled.";
+            if(ini.GetBoolValue("SourceDLSSG","NeuralRenderingEnabled",false) && ini.GetBoolValue("NeuralRendering","LegacyRuntimeDiagnostic",false))return "XeSS FG requires the community NR runtime.";
+            return ValidateLegacyRendererExperiments(ini);
+        }
         if(mode==Xess) {
             if(!XessBuilt)return "XeSS support is unavailable in this build.";
             if(presenter==2) {

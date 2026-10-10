@@ -2,7 +2,7 @@
 #include "Upscaling/UpscalerBackend.h"
 namespace TheosRenderPipeline
 {
-    enum class GenerationBackendPreference { Auto, Nvidia, Fsr };
+    enum class GenerationBackendPreference { Auto, Nvidia, Fsr, Xess };
     inline GenerationBackendPreference NormalizeGenerationBackendPreference(GenerationBackendPreference preference,
         Upscaling::BackendKind upscaler)
     {
@@ -12,6 +12,7 @@ namespace TheosRenderPipeline
     inline long ResolveGenerationBackend(GenerationBackendPreference preference,
         Upscaling::BackendKind upscaler, bool ordinaryDiagnostic = false)
     {
+        if (preference==GenerationBackendPreference::Xess) return 3;
         // Auto preserves the SR-only XeSS path until both presenters qualify.
         // Explicit FSR retains its presenter even while interpolation is off.
         if(upscaler==Upscaling::BackendKind::Xess)return preference==GenerationBackendPreference::Fsr?2:

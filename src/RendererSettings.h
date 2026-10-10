@@ -86,7 +86,7 @@ inline void SetRendererUpscaleMode(RendererSettingsDraft& draft, int mode)
     }
     if(mode==FSR && draft.generationBackendPreference==GenerationBackendPreference::Nvidia)
         draft.generationBackendPreference=GenerationBackendPreference::Auto;
-    if (draft.generationBackend != 0)
+    if (draft.generationBackend != 0 || draft.generationBackendPreference==GenerationBackendPreference::Xess)
     {
         draft.generationBackend = ResolveGenerationBackend(draft.generationBackendPreference,
             mode == Xess ? Upscaling::BackendKind::Xess : mode == FSR ? Upscaling::BackendKind::Fsr : Upscaling::BackendKind::Dlss);
@@ -179,6 +179,7 @@ struct RendererSettingsCapabilities
     bool communityNeural{};
     std::uint32_t adapterVendorId{};
     bool fsrOnlyRenderer{};
+    bool xessFgBuilt{}, xessFgPresenter{};
 };
 
 template<class Generation>
@@ -244,6 +245,14 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     if (capabilities.fsrFgPresenter && !draft.nativeUI) {
         return "Native UI must stay enabled while the FSR presenter is active. Restart with the new presenter before disabling it.";
     }
+    if(capabilities.xessFgPresenter && !draft.nativeUI)return "Native UI must stay enabled while the XeSS FG presenter is active. Save and restart before disabling it.";
+    if(draft.generationBackend==3) {
+        if(!capabilities.xessFgBuilt)return "XeSS frame generation is not included in this build.";
+        if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "XeSS FG requires dedicated native UI and the mod's source ownership.";
+        if(draft.sourceDLSSG.hdrOutput.enabled)return "XeSS FG requires SDR output; disable the mod's HDR output and restart.";
+        if(draft.dynamicResolution)return "XeSS FG requires fixed render dimensions; disable dynamic resolution and restart.";
+        if(draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural)return "XeSS FG requires the community NR runtime.";
+    }
     if (draft.upscaleType != DLSS && draft.upscaleType != DLAA && draft.upscaleType != FSR && draft.upscaleType != Xess)
     {
         return "Choose DLSS or FSR; DLSS Quality=Native selects DLAA.";
@@ -251,7 +260,8 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
     if(draft.upscaleType==Xess) {
         if(!XessBuilt)return "XeSS is not included in this build.";
         if(!Upscaling::ValidXessSettings(draft.xess))return "XeSS quality/source encoding is invalid.";
-        if(draft.generationBackend==2){
+        if(draft.generationBackend==3) {} // Intel owner contract checked above.
+        else if(draft.generationBackend==2){
             if(!capabilities.fsrFgBuilt)return "XeSS with FSR FG is not included in this build.";
             if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "XeSS with FSR FG requires dedicated native UI and source ownership.";
         } else if(draft.generationBackend!=0)return "XeSS NVIDIA FG integration is pending; select FSR or Auto with FG off.";
@@ -264,7 +274,8 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if (!capabilities.fsrBuilt) return "FSR is not included in this build.";
         if (!Upscaling::ValidFsrSettings(draft.fsr)) return "FSR quality/provider/sharpness is invalid.";
         if (!Upscaling::IsKnownColorEncoding(draft.fsr.sourceColorEncoding)) return "FSR requires an explicit source color encoding: Linear, Gamma22 or SRGB. Check the source producer before choosing.";
-        if(draft.generationBackend==0){if(draft.generationEnabled)return "Ordinary FSR presentation requires frame generation off.";}
+        if(draft.generationBackend==3) {} // Intel owner contract checked above.
+        else if(draft.generationBackend==0){if(draft.generationEnabled)return "Ordinary FSR presentation requires frame generation off.";}
         else if(draft.generationBackend==2){
             if(!capabilities.fsrFgBuilt)return "FSR frame generation is not included in this build.";
             if(!capabilities.dedicatedUI || !draft.nativeUI || capabilities.externalWorld)return "FSR frame generation requires TRP's dedicated native UI and source ownership.";
@@ -286,7 +297,7 @@ inline const char* ValidateRendererSettings(const RendererSettingsDraft& draft,
         if (draft.dynamicResolution) return "FSR frame generation requires fixed render dimensions; disable dynamic resolution and restart.";
         if (draft.sourceDLSSG.neuralEnabled && !capabilities.communityNeural)
             return "FSR presentation requires the community NR runtime.";
-    } else if (draft.generationBackend!=1) return "DLSS/DLAA require NVIDIA or FSR presentation.";
+    } else if (draft.generationBackend!=1 && draft.generationBackend!=3) return "DLSS/DLAA require NVIDIA, FSR or XeSS presentation.";
     if (!Appearance::ValidHours(draft.appearance.hours)) {
         return "Preset times must increase from Night to Dusk and stay between 0 and 24 hours.";
     }

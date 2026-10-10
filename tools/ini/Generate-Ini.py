@@ -58,7 +58,7 @@ def generate():
                  '; [restart] marks settings that require Save and a Skyrim restart.',
                  '; Native selects output-resolution AA in [DLSS], [FSR] or [XeSS].',
                  '; FG Backend=Auto follows the upscaler; choose FSR to pair DLSS with FSR FG.',
-                 '; NR After order: DLSS/FSR -> NR -> FG -> UI. XeSS SR trial requires NR, FG and HDR off.',
+                 '; NR After order: DLSS/FSR/XeSS -> NR -> FG -> UI. Intel FG is an experimental SDR trial.',
                  '; NR selects its bundled model from the rendering GPU automatically; manual overrides are diagnostic.',
                  '; Advanced and program-owned settings are grouped below ordinary options.']
         for section in schema['sections']:

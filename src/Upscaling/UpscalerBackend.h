@@ -22,7 +22,7 @@ namespace TheosRenderPipeline::Upscaling
     // RepeatedOutput reuses an already completed real source. It does not
     // acknowledge new SDK work or supply fresh guides for interpolation.
     enum class UpscaleOutcome { Temporal, SpatialRecovery, SkippedInvalidInput, Fatal, RepeatedOutput };
-    enum class PresentationKind { Ordinary, Nvidia, Fsr };
+    enum class PresentationKind { Ordinary, Nvidia, Fsr, Xess };
     enum class ErrorKind {
         MissingRuntime, WrongArchitecture, MissingExport, IncompatibleAbi,
         NoProvider, UnsupportedDevice, InvalidInput, ContextFailure,

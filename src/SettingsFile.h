@@ -31,7 +31,7 @@ inline std::pair<SI_Error, std::string> LoadRenderer(CSimpleIniA& ini, const wch
         if(!notice->empty())notice->append(" ");
         notice->append(nvidia ? "[FrameGeneration] Backend=NVIDIA is unavailable with XeSS; using Auto, SR-only presentation and FG off. " :
             "[FrameGeneration] XeSS + Backend=Auto uses SR-only presentation; requested FG was turned off. ");
-        notice->append("Select Backend=FSR and restart for experimental XeSS + FSR FG.");
+        notice->append("Select Backend=FSR or XeSS and restart for the corresponding experimental FG presenter; XeSS FG requires its optional SDK payload and verified engine hooks.");
     }
     return {result, std::move(error)};
 }

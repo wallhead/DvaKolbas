@@ -235,12 +235,13 @@
       "section": "FrameGeneration",
       "key": "Backend",
       "default": "Auto",
-      "comment": "Presentation backend. Auto uses NVIDIA with DLSS, FSR with FSR upscaling, and ordinary SR-only presentation with XeSS. DLSS and XeSS can select FSR FG explicitly. XeSS NVIDIA FG is pending; FSR upscaling cannot use NVIDIA FG.",
+      "comment": "Presentation backend. Auto keeps the existing provider policy: NVIDIA with DLSS, FSR with FSR upscaling, ordinary SR-only with XeSS. Explicit FSR or XeSS selects that FG presenter independently of DLSS/FSR/XeSS upscaling. XeSS FG is experimental, requires the optional Intel FG/XeLL payload and verified Skyrim timing, and supports SDR with fixed dimensions only. XeSS SR with NVIDIA FG is pending; FSR upscaling cannot use NVIDIA FG.",
       "restart": true,
       "values": {
         "Auto": "0",
         "NVIDIA": "1",
-        "FSR": "2"
+        "FSR": "2",
+        "XeSS": "3"
       },
       "type": "Enum"
     },
