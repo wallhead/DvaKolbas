@@ -24,6 +24,8 @@ namespace TheosRenderPipeline
         XessGenerationTransport transport;
         xefg_swapchain_handle_t context{};
         ComPtr<IDXGISwapChain4> proxy;
+        ComPtr<ID3D12DescriptorHeap> startupRtvs;
+        std::array<ComPtr<ID3D12Resource>,2> startupBuffers;
         Extent display{};
         std::uint32_t flags{};
         XessGenerationFrame prepared{};
@@ -162,13 +164,20 @@ namespace TheosRenderPipeline
         auto& state=*state_;
         if (!state.Enabled(false)) return state.fault;
         if((flags&DXGI_PRESENT_TEST)!=0)return state.proxy->Present(interval,flags);
-        ComPtr<ID3D12Resource> buffer;
-        auto hr=state.proxy->GetBuffer(state.proxy->GetCurrentBackBufferIndex(),IID_PPV_ARGS(&buffer));
-        if (FAILED(hr)) return hr;
-        ComPtr<ID3D12DescriptorHeap> heap;
-        D3D12_DESCRIPTOR_HEAP_DESC desc{};desc.Type=D3D12_DESCRIPTOR_HEAP_TYPE_RTV;desc.NumDescriptors=1;
-        if (FAILED(hr=state.bridge->Device12()->CreateDescriptorHeap(&desc,IID_PPV_ARGS(&heap)))) return hr;
-        const auto rtv=heap->GetCPUDescriptorHandleForHeapStart();state.bridge->Device12()->CreateRenderTargetView(buffer.Get(),nullptr,rtv);
+        const auto index=state.proxy->GetCurrentBackBufferIndex();
+        if(index>=state.startupBuffers.size())return E_UNEXPECTED;
+        HRESULT hr=S_OK;
+        if(!state.startupRtvs) {
+            D3D12_DESCRIPTOR_HEAP_DESC desc{};desc.Type=D3D12_DESCRIPTOR_HEAP_TYPE_RTV;desc.NumDescriptors=2;
+            if(FAILED(hr=state.bridge->Device12()->CreateDescriptorHeap(&desc,IID_PPV_ARGS(&state.startupRtvs))))return hr;
+        }
+        auto& buffer=state.startupBuffers[index];
+        auto rtv=state.startupRtvs->GetCPUDescriptorHandleForHeapStart();
+        rtv.ptr+=index*state.bridge->Device12()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        if(!buffer) {
+            if(FAILED(hr=state.proxy->GetBuffer(index,IID_PPV_ARGS(&buffer))))return hr;
+            state.bridge->Device12()->CreateRenderTargetView(buffer.Get(),nullptr,rtv);
+        }
         ID3D12GraphicsCommandList* list{};
         if (FAILED(hr=state.bridge->Begin(Graphics::InteropWork::SwapChain,&list))) return hr;
         D3D12_RESOURCE_BARRIER barrier{};barrier.Type=D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -177,11 +186,10 @@ namespace TheosRenderPipeline
         list->ResourceBarrier(1,&barrier);const float clear[4]{0,0,0,1};list->ClearRenderTargetView(rtv,clear,0,nullptr);
         std::swap(barrier.Transition.StateBefore,barrier.Transition.StateAfter);list->ResourceBarrier(1,&barrier);
         hr=state.bridge->Submit(Graphics::InteropWork::SwapChain);
-        // RTV heap/backbuffer cannot die while the clear list is pending.
-        if (SUCCEEDED(hr)) hr=state.bridge->Drain();
+        // Cached buffers/RTVs survive until ordered retirement. Begin waits
+        // only before reusing its command slot; no per-Present full GPU drain.
         if (FAILED(hr)) {
-            struct ClearOwners { ComPtr<ID3D12Resource> buffer;ComPtr<ID3D12DescriptorHeap> heap;std::shared_ptr<Graphics::D3D11D3D12Interop> bridge; };
-            new ClearOwners{buffer,heap,state.bridge};state.fault=hr;return hr;
+            state.fault=hr;return hr;
         }
         hr=state.proxy->Present(interval,flags);
         const auto status=state.runtime->Generation().GetLastPresentStatus(state.context,&state.status);
@@ -213,6 +221,7 @@ namespace TheosRenderPipeline
             if (auto result=state.Check(api.SetEnabled(state.context,0),"Intel FG teardown disable failed; retaining owners"); !result) return result;
         const auto drain=state.bridge->Drain();
         if (FAILED(drain)) return std::unexpected(RuntimeError{ErrorKind::RetirementFailure,drain,"Intel FG tagged work did not retire; retain all native owners"});
+        state.startupBuffers={};state.startupRtvs.Reset();
         state.proxy.Reset();
         if (state.context) {
             if (auto result=state.Check(api.Destroy(state.context),"Intel FG Destroy failed; retaining XeLL/context/runtime for proven retry"); !result) return result;

@@ -14,6 +14,9 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> Marker(std::uint32_t sdkId,xell_latency_marker_type_t);
         Upscaling::Result<void> SetEnabled(bool enabled,bool gpuQuiescent);
         Upscaling::Result<void> ResetAfterDrain(bool gpuQuiescent);
+        // Local marker bookkeeping only. The rejected cycle has no FG tags;
+        // retain its reserved SDK ID and never fabricate missing markers.
+        Upscaling::Result<void> AbandonUnsubmittedFrame();
         Upscaling::Result<void> Retire(bool fgDestroyed,bool gpuQuiescent);
         xell_context_handle_t Context() const;
     private:

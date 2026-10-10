@@ -19,6 +19,8 @@ namespace TheosRenderPipeline
         // Discard an interrupted cycle after quiescence, without inventing end
         // markers or resetting the next monotonic SDK ID.
         Upscaling::Result<void> AbandonAfterDrain(bool gpuQuiescent);
+        Upscaling::Result<void> AbandonUnsubmitted(bool noTaggedWork);
+        bool OnOwnerThread() const { return thread_ && thread_==GetCurrentThreadId(); }
         Upscaling::Result<std::uint32_t> CurrentId(std::uint64_t sourceId,std::uint64_t epoch) const;
         Upscaling::Result<std::uint32_t> CurrentRenderId(std::uint64_t sourceId,std::uint64_t epoch) const;
     private:

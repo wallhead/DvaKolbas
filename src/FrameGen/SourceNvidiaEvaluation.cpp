@@ -233,6 +233,9 @@ bool NvidiaHost::EvaluateSourceNvidiaFrame(bool nativeUIHandoff, bool resetHisto
 #if !defined(TRP_NO_NEURAL_RENDERING)
     snapshot.sourceEpoch=communityEpoch_;
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive())snapshot.sourceEpoch=IntelSourceEpoch();
+#endif
     snapshot.deltaMilliseconds=upscaler.mSourceDeltaMilliseconds;
     snapshot.render=snapshot.subrect={renderWidth_,renderHeight_};snapshot.display={outputWidth_,outputHeight_};
     snapshot.jitterX=frame.jitterX;snapshot.jitterY=frame.jitterY;snapshot.reset=frame.reset;

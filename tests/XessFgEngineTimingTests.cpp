@@ -63,6 +63,12 @@ int wmain(int argc,wchar_t** argv)
     auto next=timing.BeginSourceLoop(10,8);Require(next && *next==1,"new checked SDK epoch starts consistently");
     bool foreignThreadAccepted=true;std::thread foreign([&] { foreignThreadAccepted=bool(timing.InputSampled(10)); });foreign.join();
     Require(!foreignThreadAccepted,"unqualified engine-thread boundary rejected");Complete(timing,10,*next);
+    auto skipped=timing.BeginSourceLoop(11,8);Require(skipped && *skipped==2,"skipped loop reserves an SDK ID once");
+    const auto beforeAbandon=count();
+    Require(!timing.AbandonUnsubmitted(false),"submitted work cannot use CPU-only abandonment");
+    Require(bool(timing.AbandonUnsubmitted(true)) && count()==beforeAbandon,"untagged interruption never fabricates missing end markers");
+    auto recovered=timing.BeginSourceLoop(12,8);
+    Require(recovered && *recovered==3,"untagged recovery retains monotonic SDK IDs");Complete(timing,12,*recovered);
     Require(bool(latency.Retire(true,true)),"latency retires after proven owner cleanup");
     std::puts("PASS: source/input/simulation/render/Present mapping; Skyrim instruction/ordering qualification remains separate");
 }

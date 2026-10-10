@@ -197,6 +197,9 @@ bool NvidiaHost::EvaluateXessFrame(IDXGISwapChain* swapChain,bool nativeUIHandof
 #if !defined(TRP_NO_NEURAL_RENDERING)
     frame.sourceEpoch=communityEpoch_;
 #endif
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive())frame.sourceEpoch=IntelSourceEpoch();
+#endif
     frame.deltaMilliseconds=pipeline.mSourceDeltaMilliseconds;frame.jitterX=pipeline.mJitterOffsets[0];frame.jitterY=pipeline.mJitterOffsets[1];
     frame.motionConvention={float(renderWidth_),float(renderHeight_),true,false};
     frame.colorIsLinear=true;frame.colorFormat=DXGI_FORMAT_R16G16B16A16_FLOAT;frame.depthFormat=DXGI_FORMAT_R32_FLOAT;frame.motionFormat=DXGI_FORMAT_R16G16_FLOAT;

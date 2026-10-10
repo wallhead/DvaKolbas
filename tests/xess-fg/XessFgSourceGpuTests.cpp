@@ -89,11 +89,15 @@ int wmain(int argc,wchar_t** argv) {
         XessGenerationPresentation owner;Accepted(owner.Create(rig.factory.Get(),runtime,bridge,desc));Check(owner.StartupPresent(0,0),"Intel startup present");
         XessGenerationHistory history;U::SdrColorConverter encode;unsigned generated{},active{},before{},after{},nrSources{},errors{};
         for(unsigned index=0;index<56;++index) {
-            Require(window.Pump(),"probe not interrupted");const unsigned phase=index/8;const uint32_t id=index+1;
+            Require(window.Pump(),"probe not interrupted");const unsigned phase=index/8;const uint32_t id=index+1+(index>=32?1:0);
+            if(index==32) {
+                Accepted(owner.Latency()->BeginFrame(33));
+                Accepted(owner.Latency()->AbandonUnsubmittedFrame());
+            }
             Accepted(owner.Latency()->BeginFrame(id));
             auto frame=XessFgFrame();frame.backend=backend;frame.render=frame.subrect=render;frame.display=display;
             frame.input=frame.color=color.Get();frame.output=encoded.texture11.Get();frame.depth=depth.Get();frame.motion=motion.Get();
-            frame.sourceId=id;frame.sourceEpoch=phase+1;frame.reset=index%8==0;frame.deltaMilliseconds=1000.f/30;
+            frame.sourceId=index+1;frame.sourceEpoch=phase+1;frame.reset=index%8==0;frame.deltaMilliseconds=1000.f/30;
             frame.motionConvention={float(render.width),float(render.height),true,false};frame.colorIsLinear=false;
             const auto jitter=backend==U::BackendKind::Xess?Value(xess.Upscaler()->QueryJitter(index)):Value(fsr.Upscaler()->QueryJitter(index));
             frame.jitterX=-jitter[0];frame.jitterY=-jitter[1];

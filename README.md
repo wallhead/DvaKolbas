@@ -31,6 +31,10 @@ Neural Rendering (NR), and native-resolution menus and HUD. Current version:
   queries and interruptions show unavailable. This measures presentation calls,
   not physical scanout. FSR FG output telemetry remains unavailable.
 - Frame generation and multi-frame generation (MFG).
+- Experimental Intel XeSS FG (2x), selected with `[FrameGeneration] Backend=XeSS`,
+  requires the optional paired Intel FG/XeLL runtimes, Skyrim 1.6.1170 with verified
+  engine call sites, Native render scale, SDR and a fixed borderless window.
+  Gameplay timing and lifecycle qualification is pending; Auto never selects it.
 - NR before or after DLSS/FSR upscaling, up to three independently configured passes.
   After placement uses DLSS/FSR -> NR -> FG -> UI. NR defaults off.
 - Bundled NR model selection uses the render adapter NVAPI architecture and RTX

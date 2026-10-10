@@ -29,14 +29,13 @@ namespace TheosRenderPipeline
         DXGI_SWAP_CHAIN_DESC descriptor{};
         bool created{},attempted{},closing{},suspended{},bound{};
         HRESULT fault{S_OK};
-        DWORD thread{};
         std::uint64_t loopSource{},loopEpoch{};
-        bool unfinished{};
+        bool unfinished{},cycleTagged{},timingResetPending{};
+        std::uint64_t drainSuspends{},skippedCycles{};
         std::uint32_t initFlags{};
         unsigned requiredOrdered{},ordered{};
         Result<void> Ready() const
         {
-            if(thread && thread!=GetCurrentThreadId())return Invalid("Intel host operation differs from its producer thread");
             if(!created || closing || suspended || !bridge || !bridge->Ready() || FAILED(fault))
                 return std::unexpected(RuntimeError{ErrorKind::ContextFailure,FAILED(fault)?fault:E_UNEXPECTED,"Intel host is inactive/suspended or failed"});
             return {};
@@ -51,6 +50,7 @@ namespace TheosRenderPipeline
     Result<void> XessGenerationHost::Create(IDXGIFactory* factory,ID3D11Device* producer,const DXGI_SWAP_CHAIN_DESC& input,
         std::shared_ptr<Graphics::D3D11D3D12Interop> bridge,std::uint32_t flags)
     {
+        std::lock_guard lock(mutex_);
         if(state_->attempted || !factory || !producer || !bridge || !bridge->Ready())return Invalid("Intel creation requires an empty host and a ready native bridge");
         ComPtr<ID3D11Device> actual;bridge->Context11()->GetDevice(&actual);
         if(!SameDevice(producer,actual.Get()))return Invalid("Intel bridge D3D11 identity differs from the game's retained producer");
@@ -77,7 +77,7 @@ namespace TheosRenderPipeline
         auto runtime=XessGenerationRuntime::Load(state_->directory);
         if(!runtime)return state_->Failure(runtime.error());
         state_->producer=producer;state_->bridge=std::move(bridge);state_->descriptor=descriptor;
-        state_->thread=GetCurrentThreadId();state_->attempted=true;
+        state_->attempted=true;
         auto created=state_->presentation.Create(factory,*runtime,state_->bridge,descriptor,flags);
         if(!created)return state_->Failure(created.error());
         state_->initFlags=flags;
@@ -85,42 +85,68 @@ namespace TheosRenderPipeline
     }
     Result<void> XessGenerationHost::BindTiming(bool verified)
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return ready;
         auto bound=state_->timing.Bind(state_->presentation.Latency(),verified);
         if(!bound){state_->reason=bound.error().message;return bound;}
         state_->bound=true;return {};
     }
     void XessGenerationHost::RequireOrderedSources(unsigned count)
-    { state_->requiredOrdered=count;state_->ordered=0; }
-    unsigned XessGenerationHost::OrderedSources()const{return state_->ordered;}
+    { std::lock_guard lock(mutex_);state_->requiredOrdered=count;state_->ordered=0; }
+    unsigned XessGenerationHost::OrderedSources()const{std::lock_guard lock(mutex_);return state_->ordered;}
+    std::uint64_t XessGenerationHost::DrainSuspends()const{std::lock_guard lock(mutex_);return state_->drainSuspends;}
+    std::uint64_t XessGenerationHost::SkippedCycles()const{std::lock_guard lock(mutex_);return state_->skippedCycles;}
     Result<std::uint32_t> XessGenerationHost::BeforeSourceLoop(std::uint64_t source,std::uint64_t epoch)
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return std::unexpected(ready.error());
         if(!state_->bound)return std::unexpected(Invalid("Intel engine timing is unqualified").error());
+        if(!state_->timing.OnOwnerThread())return std::unexpected(Invalid("Intel source loop is not on its verified timing thread").error());
+        if(state_->timingResetPending) {
+            // The foreign suspend retired the interrupted cycle. Subsequent
+            // untimed real copies may now be pending; do not claim global GPU
+            // quiescence or reset its ID counter. No new timed tags were allowed.
+            auto reset=state_->timing.AbandonUnsubmitted(!state_->cycleTagged);
+            if(!reset)return std::unexpected(reset.error());
+            state_->timingResetPending=false;
+        }
         if(source<=state_->loopSource && epoch==state_->loopEpoch)
             return std::unexpected(Invalid("Intel source loop has not advanced").error());
-        if(state_->unfinished || (state_->loopEpoch && epoch!=state_->loopEpoch)) {
+        if(state_->loopEpoch && epoch!=state_->loopEpoch) {
             if(auto paused=Suspend();!paused)return std::unexpected(paused.error());
             if(auto resumed=Resume();!resumed)return std::unexpected(resumed.error());
         }
+        else if(state_->unfinished) {
+            // Prepare/Present is serialized and faults retain ownership. Only
+            // a cycle which never submitted FG tags may be discarded here.
+            auto abandoned=state_->timing.AbandonUnsubmitted(!state_->cycleTagged);
+            if(!abandoned)return std::unexpected(abandoned.error());
+            state_->unfinished=false;++state_->skippedCycles;
+            state_->history.Invalidate();state_->ordered=0;
+        }
         auto begin=state_->timing.BeginSourceLoop(source,epoch);
         if(!begin)state_->reason=begin.error().message;
-        else {state_->loopSource=source;state_->loopEpoch=epoch;state_->unfinished=true;}
+        else {state_->loopSource=source;state_->loopEpoch=epoch;state_->unfinished=true;state_->cycleTagged=false;}
         return begin;
     }
     Result<void> XessGenerationHost::InputSampled(std::uint64_t source)
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return ready;
+        if(state_->timingResetPending)return Invalid("Intel interrupted timing awaits a new main-loop source");
         return state_->timing.InputSampled(source);
     }
     Result<void> XessGenerationHost::BeforeRender(std::uint64_t source)
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return ready;
+        if(state_->timingResetPending)return Invalid("Intel interrupted timing awaits a new main-loop source");
         if(auto end=state_->timing.EndSimulation(source);!end)return end;
         return state_->timing.BeginRender(source);
     }
     HRESULT XessGenerationHost::WaitBeforeProducer()
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return E_UNEXPECTED;
         auto hr=state_->bridge->WaitD3D11(Graphics::InteropWork::FrameGeneration);
         if(SUCCEEDED(hr))hr=state_->bridge->WaitD3D11(Graphics::InteropWork::SwapChain);
@@ -129,6 +155,7 @@ namespace TheosRenderPipeline
     }
     HRESULT XessGenerationHost::StartupPresent(UINT interval,UINT flags)
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return E_UNEXPECTED;
         const auto result=state_->presentation.StartupPresent(interval,flags);
         const auto status=state_->presentation.Status();
@@ -138,17 +165,19 @@ namespace TheosRenderPipeline
     HRESULT XessGenerationHost::Present(const UpscaleFrame& frame,UpscaleOutcome outcome,ID3D11Texture2D* ui,
         ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags)
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return E_UNEXPECTED;
-        auto id=state_->bound?state_->timing.CurrentRenderId(frame.sourceId,frame.sourceEpoch):Result<std::uint32_t>{std::unexpected(Invalid("no engine source").error())};
+        auto id=state_->bound && !state_->timingResetPending?state_->timing.CurrentRenderId(frame.sourceId,frame.sourceEpoch):Result<std::uint32_t>{std::unexpected(Invalid("no engine source").error())};
         if(!id) {
-            state_->history.Invalidate();
+            if(outcome!=UpscaleOutcome::RepeatedOutput || !requested || menu || !complete || frame.reset || frame.camera.reset)
+                state_->history.Invalidate();
             auto real=state_->presentation.PrepareReal(frame,ui,overlay,complete);
             if(!real){state_->reason=real.error().message;return E_FAIL;}
             const auto hr=state_->presentation.Present(*real,false,interval,flags);
             const auto status=state_->presentation.Status();
             state_->output.Observe(hr,status.framesPresented,static_cast<int>(status.frameGenResult),(flags&DXGI_PRESENT_TEST)!=0);
             if(FAILED(hr)){state_->fault=hr;state_->reason="Intel real-only Present failed; retaining owners";}
-            else state_->reason="Intel real-only output; no matching completed engine source";
+            else state_->reason=state_->timingResetPending?"Intel real-only output; interrupted timing awaits a new main-loop source":"Intel real-only output; no matching completed engine source";
             return hr;
         }
         // The transport converts readable engine depth into owned R32 guides.
@@ -166,6 +195,7 @@ namespace TheosRenderPipeline
         } else if(!qualified) {
             heldReason="Intel interpolation held while genuine ordered engine sources are collected";
         }
+        state_->cycleTagged=admission.tag;
         auto prepared=state_->presentation.Prepare(input,ui,overlay,complete,*id,admission.tag);
         if(!prepared){state_->Failure(prepared.error());return E_FAIL;}
         if(auto end=state_->timing.EndRender(frame.sourceId);!end){state_->Failure(end.error());return E_FAIL;}
@@ -184,20 +214,29 @@ namespace TheosRenderPipeline
     }
     Result<void> XessGenerationHost::Suspend()
     {
+        std::lock_guard lock(mutex_);
         if(state_->suspended)return {};
         if(auto ready=state_->Ready();!ready)return ready;
         if(auto paused=state_->presentation.Suspend();!paused)return state_->Failure(paused.error());
-        if(state_->bound)if(auto abandoned=state_->timing.AbandonAfterDrain(true);!abandoned)return state_->Failure(abandoned.error());
+        ++state_->drainSuspends;
+        state_->cycleTagged=false;
+        if(state_->bound) {
+            if(state_->timing.OnOwnerThread()) {
+                if(auto abandoned=state_->timing.AbandonAfterDrain(true);!abandoned)return state_->Failure(abandoned.error());
+            } else state_->timingResetPending=true;
+        }
         state_->suspended=true;state_->unfinished=false;state_->history.Invalidate();state_->output.Invalidate();return {};
     }
     Result<void> XessGenerationHost::Resume()
     {
+        std::lock_guard lock(mutex_);
         if(!state_->created || state_->closing || !state_->suspended || FAILED(state_->fault))return Invalid("Intel resume requires a safely suspended fixed-size owner");
         if(auto resumed=state_->presentation.Resume();!resumed)return state_->Failure(resumed.error());
         state_->suspended=false;return {};
     }
     Result<void> XessGenerationHost::Resize(const DXGI_SWAP_CHAIN_DESC& descriptor)
     {
+        std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return ready;
         if(descriptor.BufferDesc.Width!=state_->descriptor.BufferDesc.Width || descriptor.BufferDesc.Height!=state_->descriptor.BufferDesc.Height ||
             descriptor.BufferDesc.Format!=state_->descriptor.BufferDesc.Format || !descriptor.Windowed ||
@@ -209,19 +248,19 @@ namespace TheosRenderPipeline
     }
     Result<void> XessGenerationHost::Retire()
     {
+        std::lock_guard lock(mutex_);
         if(!state_ || !state_->attempted)return {};
-        if(state_->thread!=GetCurrentThreadId())return Invalid("Intel retirement requires the producer thread");
         state_->closing=true;state_->bound=false;
         if(auto retired=state_->presentation.Retire();!retired)return state_->Failure(retired.error());
         auto path=state_->directory;state_=std::make_unique<State>();state_->directory=std::move(path);state_->reason="Intel owner retired";return {};
     }
-    IDXGISwapChain4* XessGenerationHost::SwapChain() const{return state_->created?state_->presentation.SwapChain():nullptr;}
+    IDXGISwapChain4* XessGenerationHost::SwapChain() const{std::lock_guard lock(mutex_);return state_->created?state_->presentation.SwapChain():nullptr;}
     HRESULT XessGenerationHost::GetProducerDevice(REFIID iid,void** result) const
-    { if(!result)return E_POINTER;*result=nullptr;return state_->producer?state_->producer->QueryInterface(iid,result):E_UNEXPECTED; }
-    xefg_swapchain_present_status_t XessGenerationHost::Status() const{return state_->presentation.Status();}
+    { std::lock_guard lock(mutex_);if(!result)return E_POINTER;*result=nullptr;return state_->producer?state_->producer->QueryInterface(iid,result):E_UNEXPECTED; }
+    xefg_swapchain_present_status_t XessGenerationHost::Status() const{std::lock_guard lock(mutex_);return state_->presentation.Status();}
     Telemetry::OutputCounter XessGenerationHost::OutputCounter() const
-    {return state_->Ready()?state_->output.Counter():Telemetry::OutputCounter{};}
-    const std::string& XessGenerationHost::Reason() const{return state_->reason;}
-    bool XessGenerationHost::Suspended() const{return state_->suspended;}
-    std::shared_ptr<Graphics::D3D11D3D12Interop> XessGenerationHost::Bridge() const{return state_->bridge;}
+    {std::lock_guard lock(mutex_);return state_->Ready()?state_->output.Counter():Telemetry::OutputCounter{};}
+    std::string XessGenerationHost::Reason() const{std::lock_guard lock(mutex_);return state_->reason;}
+    bool XessGenerationHost::Suspended() const{std::lock_guard lock(mutex_);return state_->suspended;}
+    std::shared_ptr<Graphics::D3D11D3D12Interop> XessGenerationHost::Bridge() const{std::lock_guard lock(mutex_);return state_->bridge;}
 }

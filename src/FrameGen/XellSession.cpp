@@ -97,6 +97,12 @@ namespace TheosRenderPipeline
         state_->active=false;state_->lastId.reset();state_->nextMarker=0;
         return {};
     }
+    Upscaling::Result<void> XellSession::AbandonUnsubmittedFrame()
+    {
+        if (auto ready=state_->Ready(); !ready) return ready;
+        state_->active=false;state_->nextMarker=0;
+        return {};
+    }
     Upscaling::Result<void> XellSession::Retire(bool fgDestroyed,bool gpuQuiescent)
     {
         if (!state_->context) { state_=std::make_unique<State>();return {}; }

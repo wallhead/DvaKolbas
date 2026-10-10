@@ -271,6 +271,7 @@ class NvidiaHost
     HRESULT CreateXessPresenter(IDXGIFactory*,ID3D11Device*,const DXGI_SWAP_CHAIN_DESC&,IDXGISwapChain**);
     void ObserveXessEngine(TheosRenderPipeline::XessEngineHooks::Boundary) noexcept;
     void StopXessEngineObserver();
+    std::uint64_t IntelSourceEpoch()const;
     std::unique_ptr<TheosRenderPipeline::XessGenerationHost> xessPresentation_;
     TheosRenderPipeline::Graphics::SharedTexture xessPresentationScene_;
     DXGI_SWAP_CHAIN_DESC xessPresentationDescriptor_{};

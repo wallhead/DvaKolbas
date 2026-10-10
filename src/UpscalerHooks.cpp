@@ -1081,7 +1081,8 @@ struct UpscalerHooks
 			return;
 		}
 #ifdef TRP_ENABLE_XESS_FG
-		InstallIntelEngineHooks();
+		if(SourceFrameGeneration::GetSingleton()->settings.generationBackend==3)
+			InstallIntelEngineHooks();
 #endif
 		{
 			// Validate all sites before publishing

@@ -4,6 +4,7 @@
 #include "XessGenerationPolicy.h"
 #include "FrameTelemetry.h"
 #include <filesystem>
+#include <mutex>
 namespace TheosRenderPipeline
 {
     class XessGenerationHost final
@@ -18,6 +19,8 @@ namespace TheosRenderPipeline
         Upscaling::Result<void> BindTiming(bool verifiedInstructionProfile);
         void RequireOrderedSources(unsigned count);
         unsigned OrderedSources()const;
+        std::uint64_t DrainSuspends()const;
+        std::uint64_t SkippedCycles()const;
         Upscaling::Result<std::uint32_t> BeforeSourceLoop(std::uint64_t source,std::uint64_t epoch);
         Upscaling::Result<void> InputSampled(std::uint64_t source);
         Upscaling::Result<void> BeforeRender(std::uint64_t source);
@@ -33,11 +36,14 @@ namespace TheosRenderPipeline
         HRESULT GetProducerDevice(REFIID,void**) const;
         xefg_swapchain_present_status_t Status() const;
         Telemetry::OutputCounter OutputCounter() const;
-        const std::string& Reason() const;
+        std::string Reason() const;
         bool Suspended() const;
         std::shared_ptr<Graphics::D3D11D3D12Interop> Bridge() const;
     private:
         struct State;
+        // Skyrim loading and world rendering can use different threads. Native
+        // publication is serialized; only engine timing is pinned to its loop.
+        mutable std::recursive_mutex mutex_;
         std::unique_ptr<State> state_;
     };
 }

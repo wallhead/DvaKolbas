@@ -9,7 +9,15 @@ namespace TheosRenderPipeline
         const bool real=frame.output && frame.display.width && frame.display.height &&
             (outcome==UpscaleOutcome::Temporal || outcome==UpscaleOutcome::SpatialRecovery || outcome==UpscaleOutcome::RepeatedOutput);
         const auto suppress=[&] { Invalidate();return XessGenerationAdmission{real,false,false,true}; };
-        if (!real || !requested || !hudComplete || menu || outcome!=UpscaleOutcome::Temporal) return suppress();
+        if (!real || !requested || !hudComplete || menu) return suppress();
+        if (outcome==UpscaleOutcome::RepeatedOutput) {
+            const auto adapted=AdaptXessGenerationFrame(frame,0);
+            if (!adapted || frame.sourceId!=lastSource_ || frame.sourceEpoch!=lastEpoch_ ||
+                frame.camera.identity!=lastCamera_ || frame.render!=lastRender_ || frame.display!=lastDisplay_ ||
+                adapted->initFlags!=lastFlags_ || frame.reset || frame.camera.reset) return suppress();
+            return {true,false,false,resetArmed_};
+        }
+        if (outcome!=UpscaleOutcome::Temporal) return suppress();
         const auto adapted=AdaptXessGenerationFrame(frame,0);
         if (!adapted) return suppress();
         if (frame.sourceEpoch==lastEpoch_ && frame.sourceId<=lastSource_) return suppress();

@@ -15,6 +15,11 @@ int main()
     history.Accept(2,7);frame.sourceId=3;
     Require(history.Decide(frame,UpscaleOutcome::Temporal,true,true,false).generate,"accepted complete low-FPS source generates");
     history.Accept(3,7);
+    decision=history.Decide(frame,UpscaleOutcome::RepeatedOutput,true,true,false);
+    Require(decision.presentReal && !decision.tag && !decision.generate,"repeated completed image has no new guides");
+    ++frame.sourceId;
+    Require(history.Decide(frame,UpscaleOutcome::Temporal,true,true,false).generate,"repeated completed output preserves accepted history");
+    history.Accept(frame.sourceId,7);
     decision=history.Decide(frame,UpscaleOutcome::Temporal,true,true,false);
     Require(decision.presentReal && !decision.tag && !decision.generate,"duplicate source presents real without invented tags");
     for (const auto outcome:{UpscaleOutcome::SpatialRecovery,UpscaleOutcome::RepeatedOutput,UpscaleOutcome::SkippedInvalidInput,UpscaleOutcome::Fatal}) {

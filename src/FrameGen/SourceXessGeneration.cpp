@@ -22,6 +22,8 @@ SettingsActionStatus NvidiaHost::XessFgStatus()const
 {
 #if defined(TRP_ENABLE_XESS_FG)
     if(XessFgActive() && xessPresentation_) {
+        if(!XessEngineHooks::installed.load(std::memory_order_acquire))
+            return {"Intel real-only output: engine timing inactive; requires inspected Skyrim 1.6.1170 call sites.",SettingsStatusKind::Pending};
         const auto status=xessPresentation_->Status();
         if(static_cast<int>(status.frameGenResult)<0)
             return {std::format("Intel SDK could not generate this frame (result {}). Real output retained.",static_cast<int>(status.frameGenResult)),SettingsStatusKind::Error};
@@ -90,6 +92,16 @@ HRESULT NvidiaHost::CreateXessPresenter(IDXGIFactory* factory,ID3D11Device* prod
 }
 void NvidiaHost::StopXessEngineObserver()
 { XessEngineHooks::Unbind(&EngineObserver()); }
+std::uint64_t NvidiaHost::IntelSourceEpoch()const
+{
+#if !defined(TRP_NO_NEURAL_RENDERING)
+    return communityEpoch_;
+#elif defined(TRP_ENABLE_XESS)
+    return XessActive()?xessEpoch_:1;
+#else
+    return 1;
+#endif
+}
 void NvidiaHost::ObserveXessEngine(XessEngineHooks::Boundary boundary) noexcept
 {
     try {
@@ -103,11 +115,7 @@ void NvidiaHost::ObserveXessEngine(XessEngineHooks::Boundary boundary) noexcept
         Result<void> result;
         if(boundary==XessEngineHooks::Boundary::BeforeUpdate) {
             xessEngineSource_=RenderPipeline::GetSingleton()->mRenderedFrameCount+1;
-#if !defined(TRP_NO_NEURAL_RENDERING)
-            xessEngineEpoch_=communityEpoch_;
-#else
-            xessEngineEpoch_=1;
-#endif
+            xessEngineEpoch_=IntelSourceEpoch();
             const auto begin=xessPresentation_->BeforeSourceLoop(xessEngineSource_,xessEngineEpoch_);
             if(!begin)result=std::unexpected(begin.error());
         } else if(boundary==XessEngineHooks::Boundary::InputSampled)result=xessPresentation_->InputSampled(xessEngineSource_);
@@ -208,9 +216,10 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
         logger::info("[XeSS FG state] active={} requested={} source={} epoch={} sdk={} reason={}",frameGenerationEnabled_,requested,
             frame.sourceId,frame.sourceEpoch,static_cast<int>(status.frameGenResult),xessPresentation_->Reason());
     if((!fsrMenu_ && xessPresentTrace_++<160) || FAILED(result) || (presentCount_%600==0))
-        logger::info("[XeSS FG Present] source={} epoch={} temporal={} requested={} frames={} sdk={} orderedSources={} result=0x{:08X} reason={}",
+        logger::info("[XeSS FG Present] source={} epoch={} temporal={} requested={} frames={} sdk={} orderedSources={} drainSuspends={} skippedCycles={} result=0x{:08X} reason={}",
             frame.sourceId,frame.sourceEpoch,outcome==UpscaleOutcome::Temporal,requested,status.framesPresented,
-            static_cast<int>(status.frameGenResult),xessPresentation_->OrderedSources(),static_cast<std::uint32_t>(result),xessPresentation_->Reason());
+            static_cast<int>(status.frameGenResult),xessPresentation_->OrderedSources(),xessPresentation_->DrainSuspends(),
+            xessPresentation_->SkippedCycles(),static_cast<std::uint32_t>(result),xessPresentation_->Reason());
     fsrSourcePending_=fsrUiComplete_=false;fsrForeground_.Reset();
     return FAILED(result)?FailLifecycle(result,"Intel source Present"):result;
 #else

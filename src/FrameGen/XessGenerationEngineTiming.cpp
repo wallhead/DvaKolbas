@@ -85,6 +85,14 @@ namespace TheosRenderPipeline
         if (auto result=latency_->ResetAfterDrain(true); !result) { fault_=true;return result; }
         source_=epoch_=id_=phase_=0;sampled_=false;return {};
     }
+    Result<void> XessGenerationEngineTiming::AbandonUnsubmitted(bool noTaggedWork)
+    {
+        if (auto ready=Check(); !ready) return ready;
+        if (!noTaggedWork) return Invalid("Intel submitted cycle requires drained retirement");
+        if (auto result=latency_->AbandonUnsubmittedFrame(); !result) { fault_=true;return result; }
+        // Keep source, epoch and next SDK ID. The skipped cycle cannot be reused.
+        id_=phase_=0;sampled_=false;return {};
+    }
     Result<std::uint32_t> XessGenerationEngineTiming::CurrentRenderId(std::uint64_t source,std::uint64_t epoch) const
     {
         auto id=CurrentId(source,epoch);if(!id)return id;

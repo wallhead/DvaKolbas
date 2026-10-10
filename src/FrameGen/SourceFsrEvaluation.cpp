@@ -206,6 +206,9 @@ bool NvidiaHost::EvaluateFsrFrame(IDXGISwapChain* swapChain,bool nativeUIHandoff
     frame.depth=pipeline.mDepthBuffer.mImage;frame.motion=pipeline.mMotionVectors.mImage;
     frame.render=frame.subrect={renderWidth_,renderHeight_};frame.display={outputWidth_,outputHeight_};
     frame.sourceEpoch=1;frame.sourceId=FsrFgActive()?presentCount_+1:pipeline.mRenderedFrameCount;frame.deltaMilliseconds=pipeline.mSourceDeltaMilliseconds;
+#if defined(TRP_ENABLE_XESS_FG)
+    if(XessFgActive())frame.sourceEpoch=IntelSourceEpoch();
+#endif
     frame.jitterX=pipeline.mJitterOffsets[0];frame.jitterY=pipeline.mJitterOffsets[1];
     // Skyrim's unjittered previous/current projection motion is current-to-
     // previous UV displacement. The signed RG16_FLOAT producer is copied raw;
