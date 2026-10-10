@@ -12,6 +12,7 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <string_view>
 using namespace TheosRenderPipeline;
 namespace U=Upscaling;
 namespace N=NeuralRendering;
@@ -61,13 +62,18 @@ static void CheckHud(Interop& bridge,IDXGISwapChain4* chain) {
 }
 int wmain(int argc,wchar_t** argv) {
     std::setvbuf(stdout,nullptr,_IONBF,0);
-    if(argc!=5 || NrRuntimeResearch::GameRunningOrUnknown()){std::puts("REFUSED: args or Skyrim running/inventory unknown");return 1;}
+    const bool pacing=argc==6;
+    const bool zeroHint=pacing && std::wstring_view(argv[5])==L"--pacing-hint-zero";
+    if((argc!=5 && argc!=6) || (pacing && !zeroHint && std::wstring_view(argv[5])!=L"--pacing-hint-cadence") || NrRuntimeResearch::GameRunningOrUnknown()){
+        std::puts("REFUSED: args or Skyrim running/inventory unknown");return 1;
+    }
     Rig rig(true);DXGI_ADAPTER_DESC adapter{};Check(rig.adapter->GetDesc(&adapter),"actual adapter");
     if(adapter.VendorId!=0x10de){std::puts("NOT QUALIFIED: this NR matrix requires the actual NVIDIA model");return 77;}
     std::printf("ADAPTER vendor=%04x device=%04x LUID=%08lx:%08lx real_sdk=1\n",adapter.VendorId,adapter.DeviceId,adapter.AdapterLuid.HighPart,adapter.AdapterLuid.LowPart);
     const auto plugin=std::filesystem::absolute(argv[1]),root=std::filesystem::absolute(argv[2]),core=std::filesystem::absolute(argv[3]),fsrPlugin=std::filesystem::absolute(argv[4]);
-    const U::Extent display{640,360};
+    const U::Extent display=pacing?U::Extent{2560,1440}:U::Extent{640,360};
     for(auto backend:{U::BackendKind::Xess,U::BackendKind::Fsr})for(auto quality:{U::Quality::NativeAA,U::Quality::Performance}) {
+        if(pacing && (backend!=U::BackendKind::Fsr || quality!=U::Quality::NativeAA))continue;
         U::XessHostResources xess(plugin);U::FsrHostResources fsr(fsrPlugin);U::Extent render{};
         if(backend==U::BackendKind::Xess)render=Value(xess.Initialize(rig.device11.Get(),quality,display,U::ColorEncoding::Gamma22));
         else {U::BackendConfiguration config;config.backend=backend;config.quality=quality;config.generationBackend=0;config.generationEnabled=false;
@@ -86,25 +92,34 @@ int wmain(int argc,wchar_t** argv) {
         Accepted(nr.Inspect(rig.device11.Get(),startup,std::filesystem::absolute("intel-sr-nr-cache"),bridge->Device12()));
         auto runtime=Value(XessGenerationRuntime::Load(plugin));XessFgVisibleScene window;window.Create(display.width,display.height);
         DXGI_SWAP_CHAIN_DESC desc{};desc.OutputWindow=window.Handle();desc.Windowed=TRUE;desc.BufferDesc.Width=display.width;desc.BufferDesc.Height=display.height;desc.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;desc.SampleDesc.Count=1;desc.BufferCount=2;
+        if(pacing)desc.Flags=DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
         XessGenerationPresentation owner;Accepted(owner.Create(rig.factory.Get(),runtime,bridge,desc));Check(owner.StartupPresent(0,0),"Intel startup present");
         XessGenerationHistory history;U::SdrColorConverter encode;unsigned generated{},active{},before{},after{},nrSources{},errors{};
-        for(unsigned index=0;index<56;++index) {
-            Require(window.Pump(),"probe not interrupted");const unsigned phase=index/8;const uint32_t id=index+1+(index>=32?1:0);
-            if(index==32) {
+        auto sourceClock=std::chrono::steady_clock::now();
+        for(unsigned index=0;index<(pacing?160u:56u);++index) {
+            Require(window.Pump(),"probe not interrupted");const unsigned phase=pacing?4:index/8;const uint32_t id=index+1+(!pacing && index>=32?1:0);
+            if(!pacing && index==32) {
                 Accepted(owner.Latency()->BeginFrame(33));
                 Accepted(owner.Latency()->AbandonUnsubmittedFrame());
             }
-            Accepted(owner.Latency()->BeginFrame(id));
+            double sleepMs=-1;
+            Accepted(owner.Latency()->BeginFrame(id,pacing?&sleepMs:nullptr));
+            const auto sourceNow=std::chrono::steady_clock::now();
+            const auto sourceMs=std::chrono::duration<float,std::milli>(sourceNow-sourceClock).count();sourceClock=sourceNow;
             auto frame=XessFgFrame();frame.backend=backend;frame.render=frame.subrect=render;frame.display=display;
             frame.input=frame.color=color.Get();frame.output=encoded.texture11.Get();frame.depth=depth.Get();frame.motion=motion.Get();
-            frame.sourceId=index+1;frame.sourceEpoch=phase+1;frame.reset=index%8==0;frame.deltaMilliseconds=1000.f/30;
+            frame.sourceId=index+1;frame.sourceEpoch=pacing?1:phase+1;frame.reset=pacing?index==0:index%8==0;
+            frame.deltaMilliseconds=pacing?sourceMs:1000.f/30;
             frame.motionConvention={float(render.width),float(render.height),true,false};frame.colorIsLinear=false;
             const auto jitter=backend==U::BackendKind::Xess?Value(xess.Upscaler()->QueryJitter(index)):Value(fsr.Upscaler()->QueryJitter(index));
             frame.jitterX=-jitter[0];frame.jitterY=-jitter[1];
             for(unsigned y=0;y<render.height;++y)for(unsigned x=0;x<render.width;++x){const uint32_t v=((x/12+y/12)%2)?150:60;colors[size_t(y)*render.width+x]=v|((v/2)<<8)|((v+40)<<16)|0xff000000u;}
             Accepted(owner.Latency()->Marker(id,XELL_SIMULATION_END));Accepted(owner.Latency()->Marker(id,XELL_RENDERSUBMIT_START));
+            // Identical bounded stand-in for Skyrim's world work in both
+            // experiments. SR/NR receive their unchanged source timing.
+            if(pacing)std::this_thread::sleep_for(std::chrono::milliseconds(12));
             rig.context11->UpdateSubresource(color.Get(),0,nullptr,colors.data(),render.width*4,0);
-            N::SettingsSnapshot settings;settings.enabled=phase!=0;settings.revision=phase+1;settings.tuning.style=1;
+            N::SettingsSnapshot settings;settings.enabled=phase!=0;settings.revision=phase+1;settings.tuning.style=pacing?0:1;
             settings.placement=phase<4?N::Placement::Before:N::Placement::After;settings.passes=phase==0?1:phase<4?phase:phase-3;
             auto input=NrInput(rig,frame,encoded.texture11.Get());
             if(phase>0 && phase<4){auto pre=input.resources;pre.color=color;pre.colorExtent=pre.guideExtent;pre.motionScaleX=float(render.width);pre.motionScaleY=float(render.height);pre.colorDomain=N::ColorDomain::Unknown;
@@ -117,21 +132,29 @@ int wmain(int argc,wchar_t** argv) {
             if(phase>=4){auto delivered=Value(nr.EvaluatePost(input,settings));Require(delivered.evaluated,"actual After NR evaluated");++after;++nrSources;}
             frame=Value(CompleteXessGenerationSource(frame,encoded.texture11.Get(),U::ColorEncoding::Gamma22));
             auto admission=history.Decide(frame,U::UpscaleOutcome::Temporal,true,true,false);frame.reset=admission.reset;
-            auto prepared=Value(owner.Prepare(frame,hud.Get(),nullptr,true,id,admission.tag));
+            auto generation=frame;if(pacing && zeroHint)generation.deltaMilliseconds=0;
+            auto prepared=Value(owner.Prepare(generation,hud.Get(),nullptr,true,id,admission.tag));
             Require(prepared.render==render && prepared.display==display && prepared.depth==render && prepared.motion==render,"actual copied source/guide extents");
-            if(index%8==0)CheckHud(*bridge,owner.SwapChain());
+            if(!pacing && index%8==0)CheckHud(*bridge,owner.SwapChain());
             Accepted(owner.Latency()->Marker(id,XELL_RENDERSUBMIT_END));Accepted(owner.Latency()->Marker(id,XELL_PRESENT_START));
-            Check(owner.Present(prepared,admission.generate,0,0),"actual Intel source Present");Accepted(owner.Latency()->Marker(id,XELL_PRESENT_END));
+            double presentMs=-1;
+            Check(owner.Present(prepared,admission.generate,0,pacing?DXGI_PRESENT_ALLOW_TEARING:0,pacing?&presentMs:nullptr),"actual Intel source Present");Accepted(owner.Latency()->Marker(id,XELL_PRESENT_END));
             if(admission.tag)history.Accept(frame.sourceId,frame.sourceEpoch);const auto status=owner.Status();
             if(admission.generate){++active;generated+=status.framesPresented==2 && int(status.frameGenResult)==0;}
             else Require(status.framesPresented<=1,"NR source transition resets FG");
             errors+=int(status.frameGenResult)<0;
-            std::this_thread::sleep_for(std::chrono::milliseconds(33));
+            if(pacing)std::printf("PACING id=%u hint=%s source_ms=%.3f sdk_hint_ms=%.3f present_ms=%.3f sleep_ms=%.3f frames=%u result=%d\n",
+                id,zeroHint?"zero":"cadence",sourceMs,prepared.constants.frameRenderTime,presentMs,sleepMs,status.framesPresented,int(status.frameGenResult));
+            else std::this_thread::sleep_for(std::chrono::milliseconds(33));
         }
-        Require(nrSources==48 && before==24 && after==24 && generated==active && active==49 && errors==0,"all NR passes precede actual Intel generation without vendor errors");
+        if(pacing) {
+            CheckHud(*bridge,owner.SwapChain());
+            Require(nrSources==160 && before==0 && after==160 && generated==active && active==159 && errors==0,
+                "bounded pacing experiment retains NR, accepted generation and real HUD");
+        } else Require(nrSources==48 && before==24 && after==24 && generated==active && active==49 && errors==0,"all NR passes precede actual Intel generation without vendor errors");
         Accepted(owner.Suspend());Accepted(owner.Retire());Accepted(nr.Retire());fsrAdapter.reset();
         if(backend==U::BackendKind::Xess)Accepted(xess.Retire());else Accepted(fsr.Retire());
-        std::printf("PASS CASE backend=%d quality=%d render=%ux%u display=640x360 active=%u generated=%u nr_sources=%u before=%u after=%u errors=%u HUD_readbacks=7 clean_retirement=1\n",int(backend),int(quality),render.width,render.height,active,generated,nrSources,before,after,errors);
+        std::printf("PASS CASE backend=%d quality=%d render=%ux%u display=%ux%u active=%u generated=%u nr_sources=%u before=%u after=%u errors=%u HUD_readbacks=%u clean_retirement=1\n",int(backend),int(quality),render.width,render.height,display.width,display.height,active,generated,nrSources,before,after,errors,pacing?1:7);
     }
-    rig.ValidateDebug();std::puts("PASS actual XeSS/FSR315 Native/Performance -> NR off/Before/After 1..3 -> Intel FG -> HUD; DLSS and FSR4 actual coupling NOT RUN");return 0;
+    rig.ValidateDebug();std::puts(pacing?"PASS bounded actual FSR Native -> NR After -> Intel FG pacing experiment; no physical-display qualification":"PASS actual XeSS/FSR315 Native/Performance -> NR off/Before/After 1..3 -> Intel FG -> HUD; DLSS and FSR4 actual coupling NOT RUN");return 0;
 }

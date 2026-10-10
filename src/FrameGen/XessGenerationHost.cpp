@@ -202,6 +202,13 @@ namespace TheosRenderPipeline
             heldReason="Intel interpolation held while genuine ordered engine sources are collected";
         }
         state_->cycleTagged=admission.tag;
+        // Validate/admit the original source first. Its cadence includes the
+        // previous proxy Present/pacing wait, so it is not an independent
+        // render-time measurement. Feeding it back into Intel's non-Intel
+        // heuristic can amplify short/long oscillation. SDK contract: 0 means
+        // unavailable. Suppress only the FG hint, retaining SR/NR/simulation
+        // timing and invalid-source rejection.
+        if(measured)input.deltaMilliseconds=0;
         if(timing)timing->sdkId=*id;
         const auto start=timing?std::chrono::steady_clock::now():std::chrono::steady_clock::time_point{};
         auto prepared=state_->presentation.Prepare(input,ui,overlay,complete,*id,admission.tag);

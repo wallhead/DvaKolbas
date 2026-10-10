@@ -1,6 +1,7 @@
 # XeSS FG adjacent-frame pacing investigation
 
-Status: investigation, not a stutter fix. Milestones remain 5 of 8 complete.
+Status: SDK hint correction prepared; Skyrim confirmation pending. Milestones
+remain 5 of 8 complete.
 
 The user reports regular stutter with FSR Native -> NR After -> XeSS FG on
 RTX 4080 SUPER. The FSR FG comparison graph is flatter. Both source sessions
@@ -68,3 +69,77 @@ timing/stale identity, executed Sleep failure and post-Sleep marker failure,
 plus bounded burst reset on source, epoch and lifecycle changes. Independent
 review identified the lifecycle/failed-Sleep attribution cases; both were
 corrected. Non-S_OK (including occlusion) also drops partial bursts.
+
+## Split capture and controlled hint experiment
+
+The `4957b4b6af88` Skyrim capture confirms the alternating wait is the exact
+Intel proxy Present call. For sources 9654–9717, all 64 sources generated two
+frames with interval 0 / flags 512. Preparation median was 0.208 ms, next
+XeLL Sleep 0.023 ms; proxy Present alternated low median 0.616 ms / high
+15.497 ms with a 100% high/low transition rate. Input cadence versus current
+Present correlation was -0.992; current Present versus the next source's
+cadence was +0.995. Later bursts reproduced the pattern.
+
+`RenderPipeline::BeginSourceFrame` measures source-to-source cadence, including
+the preceding proxy wait. Host forwarded that as the optional Intel
+`frameRenderTime` pacing hint. Intel's [pinned SDK guide](https://github.com/intel/xess/blob/8fe81bdbbaf00b3c1b733fd0d830c333dc84e6f0/doc/xess_fg_developer_guide_english.md#frame-constants)
+allows zero when a reliable hint is unavailable; non-Intel pacing can consume
+the hint. This creates a candidate feedback mechanism, separate from XeLL.
+
+The existing real-SDK source probe now accepts `--pacing-hint-cadence` and
+`--pacing-hint-zero`. These opt-in diagnostic modes retain FSR 3.1.5 Native,
+2560x1440, actual one-pass NR After Style 0, guide/HUD transport, Intel FG and
+tearing flags. Each executes 160 sources. Both use an identical 12 ms CPU
+sleep as a bounded stand-in for additional Skyrim world work; neither changes
+SR/NR source time. Only the copied FG input's hint changes. No paced FPS cap
+or per-frame GPU drain is added; a final readback checks the real HUD.
+
+Initial settled samples (IDs 41–160):
+
+| Metric | Cadence hint | Unavailable (zero) hint |
+| --- | ---: | ---: |
+| Source cadence median | 24.587 ms | 22.329 ms |
+| Source cadence p95 | 27.080 ms | 24.510 ms |
+| Adjacent source difference median | 8.764 ms | 2.389 ms |
+| Adjacent source difference p95 | 9.862 ms | 4.761 ms |
+| Cadence standard deviation | 4.393 ms | 1.441 ms |
+| Proxy Present p95 | 10.092 ms | 7.529 ms |
+
+Both cases generated 159 of 159 eligible sources, SDK result 0, with the real
+HUD intact and clean retirement. Zero still had negative adjacent cadence
+correlation (-0.901); the experiment demonstrates reduction, not elimination
+of pacing oscillation. CPU sleep, checker generation, stdout, fixed NR
+timestamps and separate process runs limit extrapolation to gameplay.
+Inspect the reverse-order repeat and Skyrim capture before claiming success.
+
+The reverse-order repeat (zero first, cadence second) reproduced reduced
+variation: adjacent difference median 3.538 vs 8.067 ms, standard deviation
+2.268 vs 4.088 ms, proxy Present p95 8.558 vs 9.647 ms. Both again generated
+159/159 eligible sources with SDK result 0, HUD readback and clean retirement.
+Median cadence was essentially unchanged in that repeat (21.577 vs 21.408 ms),
+so do not claim a reliable average-FPS gain. The repeat supports reduced
+oscillation independently of run order; residual jitter remains.
+
+The Host correction validates the original source time, conventions and
+history admission first; then zeroes only the copied FG timing hint before
+preparation. Original SR/NR/simulation values and all source IDs, admission,
+resource lifetime waits, markers, Sleep mode and Present parameters remain
+unchanged. Host regression observes the actual public TagFrameConstants call,
+rejects feedback hints for alternating 17/33 ms source times, and verifies
+negative/NaN/infinite original times cannot warm qualification or tag guides.
+Both regressions were observed failing before their respective corrections.
+Independent review caught the initial invalid-time masking; the final ordering
+preserves that rejection. Test observation storage is reset to avoid vacuous
+checks after its bounded buffer fills.
+
+Artifacts: `xess-pacing-split-capture.log` and `.summary.json` in the ignored
+capture directory; `pacing-hint-cadence.log`, `pacing-hint-zero.log` and
+`pacing-hint-summary.json` in `out/research/xess-fg-reference/`. The SDK probe
+runs on the actual RTX 4080 SUPER. D3D11/D3D12 debug layers were unavailable
+in this session; runtime generation/status/readback/lifetime checks still ran,
+but these captures do not constitute graphics debug-layer validation.
+
+Final targeted validation before clean build: all 19 `^XessFg` checks passed,
+including seven GPU checks (24.73 seconds), with source, SDK constant and
+invalid-clock regressions in the rebuilt Host test. This is a candidate pacing
+fix; in-game graph/visual confirmation is still required.

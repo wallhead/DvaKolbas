@@ -4,6 +4,7 @@
 #include "fixtures/xess-fg/Control.h"
 #include "nr-runtime/GpuProbeGuard.h"
 #include <thread>
+#include <limits>
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
 using namespace InteropFixture;
@@ -31,6 +32,9 @@ int wmain(int argc,wchar_t** argv)
     auto module=GetModuleHandleW(L"libxess_fg.dll");
     auto count=reinterpret_cast<XellFixtureCount>(GetProcAddress(module,"FixtureFgCount"));
     auto read=reinterpret_cast<XessFgFixtureRead>(GetProcAddress(module,"FixtureFgRead"));
+    const auto renderTime=reinterpret_cast<float(*)()>(GetProcAddress(module,"FixtureFgRenderTime"));
+    const auto resetObservations=reinterpret_cast<XellFixtureReset>(GetProcAddress(module,"FixtureFgReset"));
+    Require(renderTime,"observe the actual SDK frame-time hint");
     auto latencyModule=GetModuleHandleW(L"libxell.dll");
     auto latencyCount=reinterpret_cast<XellFixtureCount>(GetProcAddress(latencyModule,"FixtureCount"));
     Require(count && read && latencyCount,"runtime observation controls");
@@ -167,10 +171,13 @@ int wmain(int argc,wchar_t** argv)
         bool(paced.BindTiming(true,XessGenerationEngineTiming::Mode::PresentationPacing)),"paced host owns the same measured producer bridge");
     for(std::uint64_t source=100;source<=101;++source) {
         frame.sourceId=source;frame.sourceEpoch=3;frame.reset=false;
+        frame.deltaMilliseconds=source==100?17.f:33.f;
         Require(bool(paced.BeforeSourceLoop(source,3)) && bool(paced.BeforeRender(source)),"paced render has no physical-input admission gate");
         const auto events=count();
         XessGenerationHost::PresentTiming timings;
         Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true,&timings),"paced complete temporal source presents");
+        Require(renderTime()==0 && frame.deltaMilliseconds==(source==100?17.f:33.f),
+            "SDK receives no feedback-contaminated timing hint while original source timing stays intact");
         Require(timings.sdkId && timings.prepareMs>=0 && timings.proxyPresentMs>=0,
             "completed timing sample belongs to the accepted SDK source");
         bool tagged=false,reset=true;
@@ -197,6 +204,17 @@ int wmain(int argc,wchar_t** argv)
         bool reset=true;
         for(auto i=events;i<count();++i)if(read(i).kind==9)reset=read(i).value!=0;
         Require(reset==(source==103),"missed source costs one history warmup, not a consecutive-frame qualification delay");
+    }
+    Require(resetObservations,"reset bounded fixture observation storage");resetObservations();
+    paced.RequireOrderedSources(1);
+    std::uint64_t invalidSource=105;
+    for(float invalidTime:{-1.f,std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::infinity()}) {
+        frame.sourceId=invalidSource++;frame.deltaMilliseconds=invalidTime;
+        Require(bool(paced.BeforeSourceLoop(frame.sourceId,3)) && bool(paced.BeforeRender(frame.sourceId)),"invalid-time source retains checked owner timing");
+        const auto events=count();
+        Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true),"invalid-time source retains real output");
+        Require(paced.OrderedSources()==0,"suppressing optional hint cannot qualify an invalid original source time");
+        for(auto i=events;i<count();++i)Require(read(i).kind!=8 && read(i).kind!=9,"invalid source time never reaches SDK guides/constants");
     }
     Require(bool(paced.Retire()),"paced generation and latency retire after drain");
     Rig foreign;XessGenerationHost wrong(argv[1]);

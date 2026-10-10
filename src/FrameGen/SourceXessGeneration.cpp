@@ -68,7 +68,7 @@ namespace
                     rows+=std::format("\n{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f},{:.3f},{},{},{},{}",
                         s.source,s.epoch,s.sdkId,s.nextSdkId,s.inputMs,s.prepareMs,s.presentMs,s.sleepMs,s.totalMs,
                         s.interval,s.flags,s.frames,s.requested);
-                logger::info("[XeSS pacing burst] CPU milliseconds; -1=not called; Sleep belongs to NEXT source; no physical-display claim. Columns=source,epoch,sdkId,nextSdkId,inputFrameMs,prepareMs,proxyPresentMs,nextSleepMs,sourceCallMs,interval,flags,frames,requested{}",rows);
+                logger::info("[XeSS pacing burst] CPU milliseconds; -1=not called; Sleep belongs to NEXT source; SDK frameRenderTime hint=unavailable(0); inputFrameMs retains source cadence; no physical-display claim. Columns=source,epoch,sdkId,nextSdkId,inputFrameMs,prepareMs,proxyPresentMs,nextSleepMs,sourceCallMs,interval,flags,frames,requested{}",rows);
             }
         }
     };
