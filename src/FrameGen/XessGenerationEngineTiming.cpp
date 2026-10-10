@@ -22,13 +22,15 @@ namespace TheosRenderPipeline
             return std::unexpected(RuntimeError{ErrorKind::ContextFailure,E_UNEXPECTED,"Intel FG inactive: unqualified or failed engine timing owner"});
         return {};
     }
-    Result<std::uint32_t> XessGenerationEngineTiming::BeginSourceLoop(std::uint64_t source,std::uint64_t epoch)
+    Result<std::uint32_t> XessGenerationEngineTiming::BeginSourceLoop(std::uint64_t source,std::uint64_t epoch,double* sleepMs,std::uint32_t* sleepSdkId)
     {
+        if(sleepMs)*sleepMs=-1;
+        if(sleepSdkId)*sleepSdkId=0;
         if (auto ready=Check(); !ready) return std::unexpected(ready.error());
         if (!source || !epoch || phase_ || (source_ && (epoch!=epoch_ || source<=source_)) || next_>std::numeric_limits<uint32_t>::max())
             return std::unexpected(Invalid("Intel timing needs one genuine fresh source; source/SDK epoch changes require a drained reset").error());
         const auto sdkId=static_cast<uint32_t>(next_);
-        if (auto result=latency_->BeginFrame(sdkId); !result) { fault_=true;return std::unexpected(result.error()); }
+        if (auto result=latency_->BeginFrame(sdkId,sleepMs,sleepSdkId); !result) { fault_=true;return std::unexpected(result.error()); }
         source_=source;epoch_=epoch;id_=sdkId;++next_;phase_=1;sampled_=false;return sdkId;
     }
     Result<void> XessGenerationEngineTiming::InputSampled(std::uint64_t source)

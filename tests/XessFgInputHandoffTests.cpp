@@ -1,4 +1,5 @@
 #include "FrameGen/XessGenerationInputHandoff.h"
+#include "FrameGen/XessGenerationPacingWindow.h"
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
@@ -7,6 +8,16 @@ static void Require(bool value,const char* message)
 {if(!value){std::fprintf(stderr,"FAIL: %s\n",message);std::exit(1);}}
 int main()
 {
+    TheosRenderPipeline::XessGenerationPacingWindow window;
+    for(std::uint64_t source=1;source<=64;++source) {
+        Require(window.Begin(source,1,1),"first burst retains consecutive source samples");
+        Require(window.Commit()==(source==64),"only a complete bounded burst can be emitted");
+    }
+    Require(!window.Begin(65,1,1),"completed burst enters sparse cooldown");window.Commit();
+    Require(window.Begin(66,1,2) && window.Index()==0,"lifecycle change starts a new burst even with consecutive source IDs");window.Commit();
+    Require(window.Begin(68,1,2) && window.Index()==0,"source gap drops partial adjacent burst");window.Commit();
+    Require(window.Begin(69,2,2) && window.Index()==0,"epoch change drops partial adjacent burst");window.Commit();
+    window.Reset();Require(window.Begin(70,2,2) && window.Index()==0,"diagnostics/menu reset drops partial burst");
     XessGenerationInputHandoff handoff;
     const auto unarmed=handoff.Begin(5,17);
     Require(!unarmed,"unarmed worker cannot borrow a source");

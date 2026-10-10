@@ -10,7 +10,8 @@ namespace TheosRenderPipeline
         XellSession(const XellSession&)=delete;
         XellSession& operator=(const XellSession&)=delete;
         Upscaling::Result<void> Create(ID3D12Device*, std::shared_ptr<XessGenerationRuntime>);
-        Upscaling::Result<void> BeginFrame(std::uint32_t sdkId);
+        // Optional CPU duration of the actual Sleep call; -1 means it was not called.
+        Upscaling::Result<void> BeginFrame(std::uint32_t sdkId,double* sleepMs=nullptr,std::uint32_t* sleepSdkId=nullptr);
         Upscaling::Result<void> Marker(std::uint32_t sdkId,xell_latency_marker_type_t);
         Upscaling::Result<void> SetEnabled(bool enabled,bool gpuQuiescent);
         Upscaling::Result<void> ResetAfterDrain(bool gpuQuiescent);

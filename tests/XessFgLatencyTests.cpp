@@ -18,6 +18,7 @@ int wmain(int argc,wchar_t** argv)
     const auto count=reinterpret_cast<XellFixtureCount>(GetProcAddress(module,"FixtureCount"));
     const auto read=reinterpret_cast<XellFixtureRead>(GetProcAddress(module,"FixtureRead"));
     const auto fail=reinterpret_cast<XellFixtureFailNext>(GetProcAddress(module,"FixtureFailNext"));
+    const auto failMarker=reinterpret_cast<XellFixtureFailNext>(GetProcAddress(module,"FixtureFailMarkerNext"));
     Require(reset && count && read && fail,"test-only control exports");
     Microsoft::WRL::ComPtr<ID3D12Device> device;
     Microsoft::WRL::ComPtr<IDXGIFactory4> factory;
@@ -28,9 +29,12 @@ int wmain(int argc,wchar_t** argv)
     Require(!session.BeginFrame(0),"uncreated session rejects frame");
     Require(bool(session.Create(device.Get(),*loaded)) && session.Context(),"created context retained");
     Require(count()==2 && read(0).kind==1 && read(1).kind==2 && read(1).enabled==1 && read(1).minimumIntervalUs==0,"creation enables latency without FPS cap");
-    Require(bool(session.BeginFrame(40)),"first frame arbitrary ID");
+    double sleepMs=-1;
+    Require(bool(session.BeginFrame(40,&sleepMs)) && sleepMs>=0,"accepted Sleep reports this call's CPU duration");
     Require(count()==4 && read(2).kind==3 && read(3).kind==4 && read(2).id==40 && read(3).id==40 && read(3).marker==0,"one sleep precedes simulation start with same ID");
     Require(!session.BeginFrame(40) && !session.BeginFrame(41),"duplicate or overlapping simulation cannot sleep");
+    sleepMs=123;
+    Require(!session.BeginFrame(41,&sleepMs) && sleepMs==-1,"rejected Begin reports no Sleep sample rather than a stale duration");
     Require(!session.Marker(41,XELL_SIMULATION_END) && !session.Marker(40,XELL_PRESENT_START),"mismatched and out-of-order markers rejected before SDK");
     Require(count()==4,"invalid sequence never calls SDK");Finish(session,40);
     Require(!session.Marker(40,XELL_PRESENT_END) && !session.BeginFrame(40),"extra Present cannot invent another simulation");
@@ -49,12 +53,23 @@ int wmain(int argc,wchar_t** argv)
     Require(bool(session.Marker(0,XELL_SIMULATION_END)),"failed marker did not advance phase");
     for (int marker=2;marker<=5;++marker) Require(bool(session.Marker(0,static_cast<xell_latency_marker_type_t>(marker))),"resume valid phase");
     fail(XELL_RESULT_ERROR_DEVICE);
-    const auto lost=session.BeginFrame(1);
+    std::uint32_t sleepId=123;
+    const auto lost=session.BeginFrame(1,&sleepMs,&sleepId);
+    Require(sleepId==1 && sleepMs>=0,"failed Sleep retains the exact attempted API ID and duration");
     Require(!lost && lost.error().kind==ErrorKind::DeviceLost && !session.BeginFrame(2),"device loss stops admissions");
     Require(bool(session.Retire(true,true)) && !session.Context(),"explicit proven retirement destroys context");
     Require(read(count()-1).kind==5,"destroy is final SDK call");
     XellSession failingDestroy;Require(bool(failingDestroy.Create(device.Get(),*loaded)),"new context");fail(XELL_RESULT_ERROR_UNKNOWN);
     Require(!failingDestroy.Retire(true,true) && failingDestroy.Context(),"failed destroy retains context and modules");
     Require(bool(failingDestroy.Retire(true,true)),"proven quiescent destroy retry");
+    Require(failMarker,"marker failure control");
+    XellSession failingMarker;Require(bool(failingMarker.Create(device.Get(),*loaded)),"marker-failure context");
+    failMarker(XELL_RESULT_ERROR_INVALID_ARGUMENT);
+    Require(!failingMarker.BeginFrame(70,&sleepMs,&sleepId) && sleepId==70 && sleepMs>=0,
+        "post-Sleep marker failure retains Sleep attribution without accepting the reservation");
+    sleepId=123;sleepMs=123;
+    Require(!failingMarker.BeginFrame(71,&sleepMs,&sleepId) && sleepId==0 && sleepMs==-1,
+        "early rejection clears both diagnostic outputs without repeating Sleep");
+    Require(bool(failingMarker.Retire(true,true)),"proven marker-failure cleanup");
     std::puts("PASS: XeLL sleep/marker order, checked IDs, quiescence and retained failure ownership; engine timing unqualified");
 }

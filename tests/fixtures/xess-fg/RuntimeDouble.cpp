@@ -5,17 +5,23 @@
 static XellFixtureCall calls[256];
 static uint32_t count{};
 static xell_result_t nextResult{XELL_RESULT_SUCCESS};
+static xell_result_t nextMarkerResult{XELL_RESULT_SUCCESS};
 static xell_result_t Record(XellFixtureCall call)
 { if (count<256) calls[count++]=call;const auto result=nextResult;nextResult=XELL_RESULT_SUCCESS;return result; }
-extern "C" __declspec(dllexport) void FixtureReset() { count=0;nextResult=XELL_RESULT_SUCCESS; }
+extern "C" __declspec(dllexport) void FixtureReset() { count=0;nextResult=nextMarkerResult=XELL_RESULT_SUCCESS; }
 extern "C" __declspec(dllexport) uint32_t FixtureCount() { return count; }
 extern "C" __declspec(dllexport) XellFixtureCall FixtureRead(uint32_t index) { return index<count?calls[index]:XellFixtureCall{}; }
 extern "C" __declspec(dllexport) void FixtureFailNext(int32_t result) { nextResult=static_cast<xell_result_t>(result); }
+extern "C" __declspec(dllexport) void FixtureFailMarkerNext(int32_t result) { nextMarkerResult=static_cast<xell_result_t>(result); }
 extern "C" xell_result_t xellDestroyContext(xell_context_handle_t) { return Record({5}); }
 extern "C" xell_result_t xellSetSleepMode(xell_context_handle_t, const xell_sleep_params_t* param) { return Record({2,0,0,param->bLowLatencyMode,param->minimumIntervalUs}); }
 extern "C" xell_result_t xellGetSleepMode(xell_context_handle_t context, xell_sleep_params_t* param) { return XELL_RESULT_SUCCESS; }
 extern "C" xell_result_t xellSleep(xell_context_handle_t, uint32_t frame_id) { return Record({3,frame_id}); }
-extern "C" xell_result_t xellAddMarkerData(xell_context_handle_t, uint32_t frame_id, xell_latency_marker_type_t marker) { return Record({4,frame_id,static_cast<uint32_t>(marker)}); }
+extern "C" xell_result_t xellAddMarkerData(xell_context_handle_t, uint32_t frame_id, xell_latency_marker_type_t marker) {
+    const auto result=Record({4,frame_id,static_cast<uint32_t>(marker)});
+    const auto markerResult=nextMarkerResult;nextMarkerResult=XELL_RESULT_SUCCESS;
+    return markerResult!=XELL_RESULT_SUCCESS?markerResult:result;
+}
 extern "C" xell_result_t xellGetVersion(xell_version_t* pVersion) { *pVersion={1,3,2,0};return XELL_RESULT_SUCCESS; }
 extern "C" xell_result_t xellSetLoggingCallback(xell_context_handle_t hContext, xell_logging_level_t loggingLevel, xell_app_log_callback_t loggingCallback) { return XELL_RESULT_SUCCESS; }
 extern "C" xell_result_t xellGetFramesReports(xell_context_handle_t context, xell_frame_report_t* outdata) { return XELL_RESULT_SUCCESS; }

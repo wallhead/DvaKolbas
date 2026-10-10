@@ -279,6 +279,7 @@ class NvidiaHost
     bool xessTimingBound_{};
     std::atomic<std::uint32_t> xessTimingOwnerThread_{};
     unsigned xessPresentTrace_{};
+    std::atomic<std::uint64_t> xessDiagnosticGeneration_{};
 #endif
 #if defined(TRP_ENABLE_FSR_FG) || defined(TRP_ENABLE_XESS_FG)
     // Completed source/HUD snapshot shared by the native generation presenters.

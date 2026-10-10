@@ -14,7 +14,7 @@ namespace TheosRenderPipeline
         Upscaling::Result<XessGenerationFrame> Prepare(const Upscaling::UpscaleFrame&,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool hudComplete,std::uint32_t sdkId,bool tag);
         // Real image/HUD publication with no new engine source or SDK ID.
         Upscaling::Result<XessGenerationFrame> PrepareReal(const Upscaling::UpscaleFrame&,ID3D11Texture2D* ui,ID3D11ShaderResourceView* overlay,bool hudComplete);
-        HRESULT Present(const XessGenerationFrame&,bool generate,UINT interval,UINT flags);
+        HRESULT Present(const XessGenerationFrame&,bool generate,UINT interval,UINT flags,double* proxyPresentMs=nullptr);
         HRESULT StartupPresent(UINT interval,UINT flags);
         Upscaling::Result<void> Suspend();
         Upscaling::Result<void> Resume();

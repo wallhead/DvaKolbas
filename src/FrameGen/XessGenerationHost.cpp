@@ -1,6 +1,7 @@
 #include "XessGenerationHost.h"
 #include "XessGenerationTelemetry.h"
 #include <dxgi1_4.h>
+#include <chrono>
 namespace TheosRenderPipeline
 {
     using namespace Upscaling;
@@ -96,8 +97,10 @@ namespace TheosRenderPipeline
     unsigned XessGenerationHost::OrderedSources()const{std::lock_guard lock(mutex_);return state_->ordered;}
     std::uint64_t XessGenerationHost::DrainSuspends()const{std::lock_guard lock(mutex_);return state_->drainSuspends;}
     std::uint64_t XessGenerationHost::SkippedCycles()const{std::lock_guard lock(mutex_);return state_->skippedCycles;}
-    Result<std::uint32_t> XessGenerationHost::BeforeSourceLoop(std::uint64_t source,std::uint64_t epoch)
+    Result<std::uint32_t> XessGenerationHost::BeforeSourceLoop(std::uint64_t source,std::uint64_t epoch,double* sleepMs,std::uint32_t* sleepSdkId)
     {
+        if(sleepMs)*sleepMs=-1;
+        if(sleepSdkId)*sleepSdkId=0;
         std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return std::unexpected(ready.error());
         if(!state_->bound)return std::unexpected(Invalid("Intel engine timing is unqualified").error());
@@ -124,7 +127,7 @@ namespace TheosRenderPipeline
             state_->unfinished=false;++state_->skippedCycles;
             state_->history.Invalidate();state_->ordered=0;
         }
-        auto begin=state_->timing.BeginSourceLoop(source,epoch);
+        auto begin=state_->timing.BeginSourceLoop(source,epoch,sleepMs,sleepSdkId);
         if(!begin)state_->reason=begin.error().message;
         else {state_->loopSource=source;state_->loopEpoch=epoch;state_->unfinished=true;state_->cycleTagged=false;}
         return begin;
@@ -163,17 +166,20 @@ namespace TheosRenderPipeline
         return result;
     }
     HRESULT XessGenerationHost::Present(const UpscaleFrame& frame,UpscaleOutcome outcome,ID3D11Texture2D* ui,
-        ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,bool sourceProof)
+        ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,bool sourceProof,PresentTiming* timing)
     {
+        if(timing)*timing={};
         std::lock_guard lock(mutex_);
         if(auto ready=state_->Ready();!ready)return E_UNEXPECTED;
         auto id=sourceProof && state_->bound && !state_->timingResetPending?state_->timing.CurrentRenderId(frame.sourceId,frame.sourceEpoch):Result<std::uint32_t>{std::unexpected(Invalid("no engine source").error())};
         if(!id) {
             if(outcome!=UpscaleOutcome::RepeatedOutput || !requested || menu || !complete || frame.reset || frame.camera.reset)
                 state_->history.Invalidate();
+            const auto start=timing?std::chrono::steady_clock::now():std::chrono::steady_clock::time_point{};
             auto real=state_->presentation.PrepareReal(frame,ui,overlay,complete);
+            if(timing)timing->prepareMs=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
             if(!real){state_->reason=real.error().message;return E_FAIL;}
-            const auto hr=state_->presentation.Present(*real,false,interval,flags);
+            const auto hr=state_->presentation.Present(*real,false,interval,flags,timing?&timing->proxyPresentMs:nullptr);
             const auto status=state_->presentation.Status();
             state_->output.Observe(hr,status.framesPresented,static_cast<int>(status.frameGenResult),(flags&DXGI_PRESENT_TEST)!=0);
             if(FAILED(hr)){state_->fault=hr;state_->reason="Intel real-only Present failed; retaining owners";}
@@ -196,11 +202,14 @@ namespace TheosRenderPipeline
             heldReason="Intel interpolation held while genuine ordered engine sources are collected";
         }
         state_->cycleTagged=admission.tag;
+        if(timing)timing->sdkId=*id;
+        const auto start=timing?std::chrono::steady_clock::now():std::chrono::steady_clock::time_point{};
         auto prepared=state_->presentation.Prepare(input,ui,overlay,complete,*id,admission.tag);
+        if(timing)timing->prepareMs=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
         if(!prepared){state_->Failure(prepared.error());return E_FAIL;}
         if(auto end=state_->timing.EndRender(frame.sourceId);!end){state_->Failure(end.error());return E_FAIL;}
         if(auto start=state_->timing.BeforePresent(*id);!start){state_->Failure(start.error());return E_FAIL;}
-        const auto hr=state_->presentation.Present(*prepared,admission.generate,interval,flags);
+        const auto hr=state_->presentation.Present(*prepared,admission.generate,interval,flags,timing?&timing->proxyPresentMs:nullptr);
         auto end=state_->timing.AfterPresent(*id);
         if(FAILED(hr)){state_->fault=hr;state_->reason="Intel timed Present failed; retaining native/XeLL owners";return hr;}
         if(!end){state_->Failure(end.error());return E_FAIL;}

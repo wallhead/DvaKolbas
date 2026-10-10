@@ -2,6 +2,7 @@
 #include <wrl/client.h>
 #include <optional>
 #include <limits>
+#include <chrono>
 namespace TheosRenderPipeline
 {
     namespace
@@ -53,8 +54,10 @@ namespace TheosRenderPipeline
         if (!state_->context) return std::unexpected(RuntimeError{ErrorKind::ContextFailure,0,"XeLL CreateContext returned success without a context"});
         return SetEnabled(true,true);
     }
-    Upscaling::Result<void> XellSession::BeginFrame(std::uint32_t id)
+    Upscaling::Result<void> XellSession::BeginFrame(std::uint32_t id,double* sleepMs,std::uint32_t* sleepSdkId)
     {
+        if(sleepMs)*sleepMs=-1;
+        if(sleepSdkId)*sleepSdkId=0;
         if (auto ready=state_->Ready(); !ready) return ready;
         if (state_->active) return Invalid("XeLL frame is incomplete; extra Presents cannot begin a simulation");
         if (state_->lastId && (*state_->lastId==std::numeric_limits<std::uint32_t>::max() || id!=*state_->lastId+1))
@@ -63,7 +66,11 @@ namespace TheosRenderPipeline
         // repeat sleep under that same identity without explicit drained reset.
         state_->lastId=id;state_->active=true;state_->nextMarker=0;
         const auto& api=state_->runtime->Latency();
-        if (auto sleep=state_->Check(api.Sleep(state_->context,id),"XeLL Sleep failed"); !sleep) return sleep;
+        if(sleepSdkId)*sleepSdkId=id;
+        const auto start=sleepMs?std::chrono::steady_clock::now():std::chrono::steady_clock::time_point{};
+        const auto result=api.Sleep(state_->context,id);
+        if(sleepMs)*sleepMs=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
+        if (auto sleep=state_->Check(result,"XeLL Sleep failed"); !sleep) return sleep;
         if (auto marker=state_->Check(api.AddMarkerData(state_->context,id,XELL_SIMULATION_START),"XeLL SimulationStart failed"); !marker) return marker;
         state_->nextMarker=1;
         return {};

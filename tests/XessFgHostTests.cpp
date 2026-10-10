@@ -169,7 +169,10 @@ int wmain(int argc,wchar_t** argv)
         frame.sourceId=source;frame.sourceEpoch=3;frame.reset=false;
         Require(bool(paced.BeforeSourceLoop(source,3)) && bool(paced.BeforeRender(source)),"paced render has no physical-input admission gate");
         const auto events=count();
-        Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true),"paced complete temporal source presents");
+        XessGenerationHost::PresentTiming timings;
+        Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,true,&timings),"paced complete temporal source presents");
+        Require(timings.sdkId && timings.prepareMs>=0 && timings.proxyPresentMs>=0,
+            "completed timing sample belongs to the accepted SDK source");
         bool tagged=false,reset=true;
         for(auto i=events;i<count();++i) {
             if(read(i).kind==8)tagged=true;
@@ -181,7 +184,10 @@ int wmain(int argc,wchar_t** argv)
     frame.sourceId=102;
     Require(bool(paced.BeforeSourceLoop(102,3)) && bool(paced.BeforeRender(102)),"paced source prepared before final identity rejection");
     const auto rejectedEvents=count();
-    Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,false),"pacing still needs a completed owner source proof");
+    XessGenerationHost::PresentTiming rejectedTiming{99,123,456};
+    Check(paced.Present(frame,UpscaleOutcome::Temporal,ui.Get(),nullptr,true,false,true,0,0,false,&rejectedTiming),"pacing still needs a completed owner source proof");
+    Require(!rejectedTiming.sdkId && rejectedTiming.prepareMs>=0 && rejectedTiming.proxyPresentMs>=0,
+        "untimed real output clears prior SDK identity while measuring its own preparation and Present");
     for(auto i=rejectedEvents;i<count();++i)Require(read(i).kind!=8 && read(i).kind!=9 && read(i).kind!=10,"invalid final source gets no tags or Present ID in pacing mode");
     for(std::uint64_t source=103;source<=104;++source) {
         frame.sourceId=source;

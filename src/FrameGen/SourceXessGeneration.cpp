@@ -7,6 +7,9 @@
 #include "GameSwapChain.h"
 #include "XessGenerationCompletedSource.h"
 #include "HookSafety.h"
+#include "PerformanceTuning.h"
+#include <chrono>
+#include "XessGenerationPacingWindow.h"
 
 using namespace TheosRenderPipeline;
 using namespace TheosRenderPipeline::Upscaling;
@@ -38,6 +41,37 @@ SettingsActionStatus NvidiaHost::XessFgStatus()const
 #if defined(TRP_ENABLE_XESS_FG)
 namespace
 {
+    // Fixed-size, sparse bursts retain adjacent frames without per-frame I/O.
+    // Durations are CPU API waits, never isolated GPU or display latency.
+    struct PacingBurst
+    {
+        struct Sample
+        {
+            std::uint64_t source{},epoch{};
+            std::uint32_t sdkId{},nextSdkId{};
+            double inputMs{},prepareMs{},presentMs{},sleepMs{},totalMs{};
+            UINT interval{},flags{};
+            unsigned frames{};
+            bool requested{};
+        };
+        std::array<Sample,XessGenerationPacingWindow::Size> samples{};
+        XessGenerationPacingWindow window;
+        void Reset() { window.Reset(); }
+        bool Begin(std::uint64_t source,std::uint64_t epoch,std::uint64_t generation)
+        { return window.Begin(source,epoch,generation); }
+        void Record(const Sample& sample)
+        {
+            if(window.Capturing())samples[window.Index()]=sample;
+            if(window.Commit()) {
+                std::string rows;
+                for(const auto& s:samples)
+                    rows+=std::format("\n{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f},{:.3f},{},{},{},{}",
+                        s.source,s.epoch,s.sdkId,s.nextSdkId,s.inputMs,s.prepareMs,s.presentMs,s.sleepMs,s.totalMs,
+                        s.interval,s.flags,s.frames,s.requested);
+                logger::info("[XeSS pacing burst] CPU milliseconds; -1=not called; Sleep belongs to NEXT source; no physical-display claim. Columns=source,epoch,sdkId,nextSdkId,inputFrameMs,prepareMs,proxyPresentMs,nextSleepMs,sourceCallMs,interval,flags,frames,requested{}",rows);
+            }
+        }
+    };
     XessEngineHooks::Observer& EngineObserver()
     {
         // Singleton and descriptor both outlive all hook callbacks.
@@ -48,6 +82,7 @@ namespace
 HRESULT NvidiaHost::CreateXessPresenter(IDXGIFactory* factory,ID3D11Device* producer,
     const DXGI_SWAP_CHAIN_DESC& input,IDXGISwapChain** output)
 {
+    ++xessDiagnosticGeneration_;
     if(!output)return E_POINTER;*output=nullptr;
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgi;
     Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
@@ -91,7 +126,7 @@ HRESULT NvidiaHost::CreateXessPresenter(IDXGIFactory* factory,ID3D11Device* prod
     return S_OK;
 }
 void NvidiaHost::StopXessEngineObserver()
-{ XessEngineHooks::gameplayInput.Cancel();XessEngineHooks::Unbind(&EngineObserver()); }
+{ ++xessDiagnosticGeneration_;XessEngineHooks::gameplayInput.Cancel();XessEngineHooks::Unbind(&EngineObserver()); }
 std::uint64_t NvidiaHost::IntelSourceEpoch()const
 {
 #if !defined(TRP_NO_NEURAL_RENDERING)
@@ -176,11 +211,13 @@ HRESULT NvidiaHost::UpdateXessSuspension()
     if(IsIconic(outputWindow_) || !GetClientRect(outputWindow_,&client) || client.right<=0 || client.bottom<=0) {
         XessEngineHooks::gameplayInput.Cancel();
         if(!XessPresentSuspended()) {
+            ++xessDiagnosticGeneration_;
             auto paused=xessPresentation_->Suspend();if(!paused){status_=paused.error().message;return FailLifecycle(E_FAIL,"Intel minimize retirement");}
         }
         return DXGI_STATUS_OCCLUDED;
     }
     if(XessPresentSuspended()) {
+        ++xessDiagnosticGeneration_;
         auto resumed=xessPresentation_->Resume();if(!resumed){status_=resumed.error().message;return FailLifecycle(E_FAIL,"Intel restore");}
         resetNextEvaluation_=true;nativeUIPass_.ResetEvaluation();
     }
@@ -210,10 +247,16 @@ HRESULT NvidiaHost::ResizeXessSwapChain(GameSwapChain& outer,UINT count,UINT wid
 HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
 {
 #if defined(TRP_ENABLE_XESS_FG)
-    if(FAILED(FailureResult()))return FailureResult();
-    if(!xessPresentation_)return E_UNEXPECTED;
-    if((flags&DXGI_PRESENT_TEST) || !UpscalerReady())return xessPresentation_->StartupPresent(interval,flags);
-    if(!fsrUiComplete_ || !nativeUI_.Dedicated())return FailLifecycle(DXGI_ERROR_INVALID_CALL,"Intel completed scene/HUD boundary");
+    // Include early startup/test/error paths and foreign loading callbacks,
+    // without changing the order or number of existing readiness queries.
+    if(FAILED(FailureResult())){++xessDiagnosticGeneration_;return FailureResult();}
+    if(!xessPresentation_){++xessDiagnosticGeneration_;return E_UNEXPECTED;}
+    if((flags&DXGI_PRESENT_TEST) || !UpscalerReady()){
+        ++xessDiagnosticGeneration_;return xessPresentation_->StartupPresent(interval,flags);
+    }
+    if(!fsrUiComplete_ || !nativeUI_.Dedicated()){
+        ++xessDiagnosticGeneration_;return FailLifecycle(DXGI_ERROR_INVALID_CALL,"Intel completed scene/HUD boundary");
+    }
     auto frame=fsrGenerationFrame_;
     // The final scene includes SR, NR, ReShade and fade, while the dedicated
     // game HUD/foreground remains separate for Intel interpolation.
@@ -227,7 +270,17 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
     const bool requested=SourceFrameGeneration::GetSingleton()->RuntimeInterpolationRequested();
     const bool sourceProof=frame.sourceId && frame.sourceId==xessEngineSource_ && frame.sourceEpoch==xessEngineEpoch_ &&
         xessTimingOwnerThread_.load(std::memory_order_acquire)==GetCurrentThreadId();
-    const auto result=xessPresentation_->Present(frame,outcome,nativeUI_.TaggedTexture(),fsrForeground_.Get(),true,fsrMenu_,requested,interval,flags,sourceProof);
+    static thread_local PacingBurst pacing;
+    const auto& diagnostics=PerformanceTuning::GetSingleton()->settings;
+    const bool diagnosticWorld=diagnostics.enableGPUTimings && diagnostics.diagnostics.performanceMetrics &&
+        !fsrMenu_ && outcome==UpscaleOutcome::Temporal;
+    if(!diagnosticWorld)pacing.Reset();
+    const bool capture=diagnosticWorld && pacing.Begin(frame.sourceId,frame.sourceEpoch,xessDiagnosticGeneration_.load());
+    XessGenerationHost::PresentTiming timing;
+    double nextSleepMs=-1;
+    std::uint32_t nextSdkId{};
+    const auto callStart=capture?std::chrono::steady_clock::now():std::chrono::steady_clock::time_point{};
+    const auto result=xessPresentation_->Present(frame,outcome,nativeUI_.TaggedTexture(),fsrForeground_.Get(),true,fsrMenu_,requested,interval,flags,sourceProof,capture?&timing:nullptr);
     const auto status=xessPresentation_->Status();
     const bool previouslyEnabled=frameGenerationEnabled_;
     frameGenerationEnabled_=result==S_OK && static_cast<int>(status.frameGenResult)>=0 && status.framesPresented==2;
@@ -252,7 +305,7 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
         frame.sourceId && frame.sourceId<std::numeric_limits<std::uint64_t>::max() && frame.sourceEpoch &&
         XessEngineHooks::installed.load(std::memory_order_acquire) && !XessPresentSuspended()) {
         const auto next=frame.sourceId+1;
-        const auto begin=xessPresentation_->BeforeSourceLoop(next,frame.sourceEpoch);
+        const auto begin=xessPresentation_->BeforeSourceLoop(next,frame.sourceEpoch,capture?&nextSleepMs:nullptr,capture?&nextSdkId:nullptr);
         if(begin) {
             xessEngineSource_=next;xessEngineEpoch_=frame.sourceEpoch;
             if(xessPresentTrace_<160 || presentCount_%600==0)
@@ -260,6 +313,11 @@ HRESULT NvidiaHost::PresentXessSource(UINT interval,UINT flags)
         } else if(xessPresentTrace_<160)
             logger::warn("[XeSS next source] source={} epoch={} not reserved: {}",next,frame.sourceEpoch,begin.error().message);
     }
+    if(diagnosticWorld && result==S_OK) {
+        const auto total=capture?std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-callStart).count():0;
+        pacing.Record({frame.sourceId,frame.sourceEpoch,timing.sdkId,nextSdkId,frame.deltaMilliseconds,
+            timing.prepareMs,timing.proxyPresentMs,nextSleepMs,total,interval,flags,status.framesPresented,requested});
+    } else pacing.Reset(); // Occluded/non-S_OK output cannot bridge adjacent samples.
     return FAILED(result)?FailLifecycle(result,"Intel source Present"):result;
 #else
     return E_NOTIMPL;

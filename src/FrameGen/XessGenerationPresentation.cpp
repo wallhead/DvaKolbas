@@ -1,5 +1,6 @@
 #include "XessGenerationPresentation.h"
 #include <array>
+#include <chrono>
 namespace TheosRenderPipeline
 {
     using namespace Upscaling;
@@ -141,8 +142,9 @@ namespace TheosRenderPipeline
         auto real=frame;real.sourceId=real.sourceEpoch=0;real.depth=real.motion=nullptr;
         return Prepare(real,ui,overlay,complete,0,false);
     }
-    HRESULT XessGenerationPresentation::Present(const XessGenerationFrame& frame,bool generate,UINT interval,UINT flags)
+    HRESULT XessGenerationPresentation::Present(const XessGenerationFrame& frame,bool generate,UINT interval,UINT flags,double* proxyPresentMs)
     {
+        if(proxyPresentMs)*proxyPresentMs=-1;
         if (!state_ || !state_->Ready() || !state_->hasPrepared || frame.sdkId!=state_->prepared.sdkId ||
             frame.sourceId!=state_->prepared.sourceId || frame.sourceEpoch!=state_->prepared.sourceEpoch) return E_UNEXPECTED;
         auto& state=*state_;
@@ -151,7 +153,9 @@ namespace TheosRenderPipeline
         // Reset consumes a real frame but keeps a valid tagged history warm.
         if (!state.Enabled(state.tagged && (generate || state.prepared.constants.resetHistory!=0))) return state.fault;
         if (!untimed && !state.Check(state.runtime->Generation().SetPresentId(state.context,frame.sdkId),"Intel FG Present ID failed")) return state.fault;
+        const auto start=proxyPresentMs?std::chrono::steady_clock::now():std::chrono::steady_clock::time_point{};
         const auto hr=state.proxy->Present(interval,flags);
+        if(proxyPresentMs)*proxyPresentMs=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
         state.hasPrepared=false;
         const auto status=state.runtime->Generation().GetLastPresentStatus(state.context,&state.status);
         if (FAILED(hr)) { state.fault=hr;return hr; }

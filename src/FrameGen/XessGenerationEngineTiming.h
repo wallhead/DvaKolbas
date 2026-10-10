@@ -9,7 +9,7 @@ namespace TheosRenderPipeline
     public:
         enum class Mode { VerifiedInput, PresentationPacing };
         Upscaling::Result<void> Bind(XellSession*,bool verifiedBoundaries,Mode mode=Mode::VerifiedInput);
-        Upscaling::Result<std::uint32_t> BeginSourceLoop(std::uint64_t sourceId,std::uint64_t epoch);
+        Upscaling::Result<std::uint32_t> BeginSourceLoop(std::uint64_t sourceId,std::uint64_t epoch,double* sleepMs=nullptr,std::uint32_t* sleepSdkId=nullptr);
         Upscaling::Result<void> InputSampled(std::uint64_t sourceId);
         Upscaling::Result<void> EndSimulation(std::uint64_t sourceId);
         Upscaling::Result<void> BeginRender(std::uint64_t sourceId);

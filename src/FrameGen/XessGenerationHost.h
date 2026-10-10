@@ -10,6 +10,11 @@ namespace TheosRenderPipeline
     class XessGenerationHost final
     {
     public:
+        struct PresentTiming
+        {
+            std::uint32_t sdkId{};
+            double prepareMs{-1},proxyPresentMs{-1};
+        };
         explicit XessGenerationHost(std::filesystem::path pluginDirectory);
         ~XessGenerationHost();
         XessGenerationHost(const XessGenerationHost&)=delete;
@@ -22,12 +27,12 @@ namespace TheosRenderPipeline
         unsigned OrderedSources()const;
         std::uint64_t DrainSuspends()const;
         std::uint64_t SkippedCycles()const;
-        Upscaling::Result<std::uint32_t> BeforeSourceLoop(std::uint64_t source,std::uint64_t epoch);
+        Upscaling::Result<std::uint32_t> BeforeSourceLoop(std::uint64_t source,std::uint64_t epoch,double* sleepMs=nullptr,std::uint32_t* sleepSdkId=nullptr);
         Upscaling::Result<void> InputSampled(std::uint64_t source);
         Upscaling::Result<void> BeforeRender(std::uint64_t source);
         HRESULT Present(const Upscaling::UpscaleFrame&,Upscaling::UpscaleOutcome,ID3D11Texture2D* ui,
             ID3D11ShaderResourceView* overlay,bool complete,bool menu,bool requested,UINT interval,UINT flags,
-            bool sourceProof=true);
+            bool sourceProof=true,PresentTiming* timing=nullptr);
         HRESULT WaitBeforeProducer();
         HRESULT StartupPresent(UINT interval,UINT flags);
         Upscaling::Result<void> Suspend();
