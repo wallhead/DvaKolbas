@@ -143,3 +143,39 @@ Final targeted validation before clean build: all 19 `^XessFg` checks passed,
 including seven GPU checks (24.73 seconds), with source, SDK constant and
 invalid-clock regressions in the rebuilt Host test. This is a candidate pacing
 fix; in-game graph/visual confirmation is still required.
+
+## Gameplay result for the zero-hint candidate
+
+The subsequent Skyrim capture verifies installed source `d56fea8ab659`, FSR
+Native, NR After one pass Style 0 on the RTX 4080 SUPER. The user reports
+"smoother" motion. Nine complete 64-source diagnostic bursts contained only
+requested FG with two SDK-queued frames per source and result 0 in periodic
+status records. No error/critical entries were present in the saved snapshot.
+
+The regular CPU cadence oscillation remains. In the final seven bursts,
+adjacent source-time difference medians were 12.87–14.16 ms; exact proxy
+Present lower-half medians were 0.84–2.61 ms and upper-half medians
+14.03–16.24 ms. Prepare medians remained 0.208–0.223 ms and next XeLL Sleep
+0.024–0.025 ms. The previous capture's adjacent-difference medians were
+13.38–15.41 ms. Separate sessions and differing world workload prevent a
+controlled improvement claim from those ranges. Removing the first row of
+each burst avoids the buffered logging boundary; neither capture measures
+physical display intervals.
+
+The synthetic improvement did not reproduce at the same magnitude in Skyrim.
+Retain the user-visible improvement as a partial result, not a completed
+stutter fix. Qualification stays at milestone 5 of 8. The next investigation
+must explain the remaining proxy Present alternation: compare actual SDK
+queue/presentation configuration and resource submission against AIO19,
+then test one evidenced difference at a time. Existing AIO19 static evidence
+shows the same zero-minimum-interval low-latency XeLL mode and post-Present
+next-frame Sleep schedule; it does not establish actual screen pacing or
+justify removing ownership waits or adding an arbitrary FPS cap.
+
+Saved evidence under the ignored capture directory:
+`xess-pacing-zero-gameplay-capture.log` and
+`xess-pacing-zero-gameplay-summary.json`. The local parser
+`out/research/xess-fg-reference/analyze-gameplay-pacing.py` records burst
+boundaries, requires all sampled rows to be generated, and keeps adjacent
+differences within each burst. No installed files or settings changed during
+this follow-up.
