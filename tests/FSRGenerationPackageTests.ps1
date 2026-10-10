@@ -11,7 +11,7 @@ $defaultIni=Join-Path $repository 'package/SKSE/Plugins/RaZkolbaS.ini';$defaultH
 $package=Join-Path $root ($Edition+'-FSR-FG');& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration
 $manifestPath=Join-Path $package 'manifest.json';$manifestOriginal=[IO.File]::ReadAllText($manifestPath)
 $config=Join-Path $package 'SKSE/Plugins/RaZkolbaS.ini';$configOriginal=[IO.File]::ReadAllText($config)
-foreach($field in @('frameGenerationCompiled','neuralRenderingCompiled','fsrEnabled')) {
+foreach($field in @('frameGenerationCompiled','neuralRenderingCompiled','fsrEnabled','xessFrameGenerationCompiled')) {
  $tampered=$manifestOriginal|ConvertFrom-Json;$tampered.$field=-not $tampered.$field
  $tampered|ConvertTo-Json -Depth 12|Set-Content -LiteralPath $manifestPath
  Rejected {& $validate -Edition $Edition -PackageDirectory $package -FrameGeneration} ("CompiledMetadataCannotBeForged-"+$field)

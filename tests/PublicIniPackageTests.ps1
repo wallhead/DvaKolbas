@@ -10,13 +10,14 @@ if($defaults['FrameGeneration/Backend'] -ne 'Auto' -or
    $defaults['NeuralRendering/Enabled'] -ne 'false') {
     throw 'Release defaults must use Auto presentation with FG and NR disabled'
 }
-foreach($upscaler in @('DLSS','FSR')) {
-    foreach($backend in @('Auto','NVIDIA','FSR')) {
+foreach($upscaler in @('DLSS','FSR','XeSS')) {
+    foreach($backend in @('Auto','NVIDIA','FSR','XeSS')) {
         $roundtrip = Set-PackageIniValues @('[Upscaling]',('Upscaler='+$upscaler),'[FrameGeneration]',('Backend='+$backend)) @{}
         $roundtripPath = Join-Path $Output ($upscaler+'-'+$backend+'.ini')
         [IO.File]::WriteAllLines($roundtripPath,[string[]]$roundtrip)
-        $expected = if($backend -eq 'FSR'){'2'}elseif($backend -eq 'NVIDIA'){'1'}elseif($upscaler -eq 'FSR'){'2'}else{'1'}
-        if((Read-PackageIni $roundtripPath -Raw)['FrameGeneration/Backend'] -ne $backend -or
+        $expected = if($backend -eq 'XeSS'){'3'}elseif($backend -eq 'FSR'){'2'}elseif($upscaler -eq 'XeSS'){'0'}elseif($backend -eq 'NVIDIA'){'1'}elseif($upscaler -eq 'FSR'){'2'}else{'1'}
+        $savedPreference=if($upscaler -eq 'XeSS' -and $backend -eq 'NVIDIA'){'Auto'}else{$backend}
+        if((Read-PackageIni $roundtripPath -Raw)['FrameGeneration/Backend'] -ne $savedPreference -or
            (Read-PackageIni $roundtripPath)['Experimental/FrameGenerationBackend'] -ne $expected) {
             throw 'Package round-trip must preserve independent FG preference, including Auto'
         }

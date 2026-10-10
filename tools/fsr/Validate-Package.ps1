@@ -10,6 +10,7 @@ $identity=Get-EmbeddedBuildIdentity (Join-Path $root 'SKSE/Plugins/RaZkolbaS.dll
 if($identity.edition -ne $Edition -or -not $identity.fsrCompiled -or ($FrameGeneration -and -not $identity.frameGenerationCompiled)){throw 'Compiled package capability mismatch'}
 if(($identity|ConvertTo-Json -Compress) -ne ($manifest.buildIdentity|ConvertTo-Json -Compress)){throw 'Embedded source/capability marker differs from manifest'}
 if($manifest.fsrEnabled -ne $identity.fsrCompiled -or $manifest.frameGenerationCompiled -ne $identity.frameGenerationCompiled -or $manifest.neuralRenderingCompiled -ne $identity.neuralRenderingCompiled){throw 'Manifest capability differs from compiled DLL'}
+if([bool]$manifest.xessFrameGenerationCompiled -ne $identity.xessFrameGenerationCompiled){throw 'Manifest Intel FG capability differs from compiled DLL'}
 $expectedProviders=@()
 if($FrameGeneration){$expectedProviders=@($fgPin.observedProviders)}
 if((ConvertTo-Json -InputObject @($manifest.providerVersions) -Compress) -ne (ConvertTo-Json -InputObject $expectedProviders -Compress)){throw 'Recorded provider versions differ from pinned observations'}

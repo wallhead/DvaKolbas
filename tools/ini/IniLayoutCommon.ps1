@@ -69,7 +69,8 @@ function ConvertFrom-PublicIniValues([hashtable]$Settings) {
         if($result['FrameGeneration/BackendPreference'] -eq '1'){$result['FrameGeneration/BackendPreference']='0'}
         if($result['FrameGeneration/BackendPreference'] -eq '0'){$result['FrameGeneration/Enabled']='false'}
     }
-    $result['FrameGeneration/Backend']=if(($result['Settings/UpscaleType'] -eq '5' -and $result['FrameGeneration/BackendPreference'] -eq '0') -or ($result['Settings/UpscaleType'] -eq '4' -and $result['Experimental/FsrOrdinaryPresenter'] -eq 'true')){'0'}
+    $result['FrameGeneration/Backend']=if($result['FrameGeneration/BackendPreference'] -eq '3'){'3'}
+        elseif(($result['Settings/UpscaleType'] -eq '5' -and $result['FrameGeneration/BackendPreference'] -eq '0') -or ($result['Settings/UpscaleType'] -eq '4' -and $result['Experimental/FsrOrdinaryPresenter'] -eq 'true')){'0'}
         elseif($result['FrameGeneration/BackendPreference'] -eq '1'){'1'}
         elseif($result['FrameGeneration/BackendPreference'] -eq '2' -or $result['Settings/UpscaleType'] -eq '4'){'2'}else{'1'}
     if($result['FrameGeneration/Backend'] -eq '0' -and $result['FrameGeneration/Enabled'] -eq 'true'){
@@ -198,7 +199,8 @@ function Set-PackageIniValues([string[]]$Lines,[hashtable]$Values) {
     }
     if(-not $settings.ContainsKey('Experimental/FsrOrdinaryPresenter')){$settings['Experimental/FsrOrdinaryPresenter']='false'}
     # Re-resolve after edits; the effective backend is not a saved preference.
-    $settings['FrameGeneration/Backend']=if($settings['Settings/UpscaleType'] -eq '5' -or ($settings['Settings/UpscaleType'] -eq '4' -and $settings['Experimental/FsrOrdinaryPresenter'] -eq 'true')){'0'}
+    $settings['FrameGeneration/Backend']=if($settings['FrameGeneration/BackendPreference'] -eq '3'){'3'}
+        elseif(($settings['Settings/UpscaleType'] -eq '5' -and $settings['FrameGeneration/BackendPreference'] -eq '0') -or ($settings['Settings/UpscaleType'] -eq '4' -and $settings['Experimental/FsrOrdinaryPresenter'] -eq 'true')){'0'}
         elseif($settings['FrameGeneration/BackendPreference'] -eq '1'){'1'}
         elseif($settings['FrameGeneration/BackendPreference'] -eq '2' -or $settings['Settings/UpscaleType'] -eq '4'){'2'}else{'1'}
     $public=ConvertTo-PublicIniValues $settings

@@ -61,8 +61,8 @@ function Assert-NoVendorImports([string]$Path) {
 }
 function Get-EmbeddedBuildIdentity([string]$Path) {
     $text=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($Path))
-    $matches=[regex]::Matches($text,'TRP_BUILD\|edition=(Standard|Universal)\|source=([a-z0-9-]+)\|FSR=([01])\|FG=([01])\|NR=([01])')
+    $matches=[regex]::Matches($text,'TRP_BUILD\|edition=(Standard|Universal)\|source=([a-z0-9-]+)\|FSR=([01])\|FG=([01])\|NR=([01])(?:\|XESS=([01])\|XESSFG=([01]))?')
     if($matches.Count -ne 1){throw "Missing or ambiguous embedded build identity: $Path"}
     $g=$matches[0].Groups
-    [pscustomobject]@{edition=$g[1].Value;sourceRevision=$g[2].Value;sourceClean=($g[2].Value -match '^[0-9a-f]{12}$');fsrCompiled=($g[3].Value -eq '1');frameGenerationCompiled=($g[4].Value -eq '1');neuralRenderingCompiled=($g[5].Value -eq '1')}
+    [pscustomobject]@{edition=$g[1].Value;sourceRevision=$g[2].Value;sourceClean=($g[2].Value -match '^[0-9a-f]{12}$');fsrCompiled=($g[3].Value -eq '1');frameGenerationCompiled=($g[4].Value -eq '1');neuralRenderingCompiled=($g[5].Value -eq '1');xessCompiled=($g[6].Value -eq '1');xessFrameGenerationCompiled=($g[7].Value -eq '1')}
 }

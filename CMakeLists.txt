@@ -106,7 +106,7 @@ if(TRP_GIT_ROOT STREQUAL PROJECT_SOURCE_DIR)
     endif()
 endif()
 
-foreach(capability IN ITEMS FSR FSR_FG NEURAL_RENDERING)
+foreach(capability IN ITEMS FSR FSR_FG NEURAL_RENDERING XESS XESS_FG)
     set(TRP_BUILD_${capability} 0)
     if(TRP_ENABLE_${capability})
         set(TRP_BUILD_${capability} 1)

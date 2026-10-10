@@ -57,7 +57,7 @@ $dllImports=[ordered]@{}
 foreach($file in Get-ChildItem -LiteralPath $destination -Recurse -Filter '*.dll'){$relative=[IO.Path]::GetRelativePath($destination,$file.FullName).Replace('\','/');$dllImports[$relative]=@(Get-PEImports $file.FullName)}
 $providerVersions=@()
 if($FrameGeneration){$providerVersions=@($fgPin.observedProviders)}
-[ordered]@{schema=2;edition=$Edition;fsrEnabled=$true;neuralRenderingCompiled=$nr;frameGenerationImplemented=[bool]$FrameGeneration;frameGenerationCompiled=$fgBuilt;buildIdentity=$identity;dllImports=$dllImports;providerVersions=$providerVersions;sdkRelease=$pin.release;sdkCommit=$pin.commit;files=$files} | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $destination 'manifest.json') -Encoding utf8
+[ordered]@{schema=2;edition=$Edition;fsrEnabled=$true;neuralRenderingCompiled=$nr;frameGenerationImplemented=[bool]$FrameGeneration;frameGenerationCompiled=$fgBuilt;xessFrameGenerationCompiled=$identity.xessFrameGenerationCompiled;buildIdentity=$identity;dllImports=$dllImports;providerVersions=$providerVersions;sdkRelease=$pin.release;sdkCommit=$pin.commit;files=$files} | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $destination 'manifest.json') -Encoding utf8
 & (Join-Path $PSScriptRoot 'Validate-Package.ps1') -Edition $Edition -PackageDirectory $destination -FrameGeneration:$FrameGeneration
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [IO.Compression.ZipFile]::CreateFromDirectory($destination,$zip,[IO.Compression.CompressionLevel]::Optimal,$false)
