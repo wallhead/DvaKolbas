@@ -1,0 +1,145 @@
+{
+  "utc": "2026-10-10T08:43:18.112911+00:00",
+  "exe_sha256": "c434208894f07f604b852f29b8edc3a58c4de63de783373733e72b2b73f33be9",
+  "address_library": {
+    "sha256": "c4093c569a3c83b26587f4b9ea4c55de9ae6e73b84a2af9fb3fbd30e2fe0d452",
+    "version": [
+      1,
+      6,
+      1170,
+      0
+    ],
+    "image": "SkyrimSE.exe",
+    "entries": 428461
+  },
+  "access": "QUERY_INFORMATION | VM_READ only",
+  "engine_timing_qualification": "NOT QUALIFIED; instruction capture is not per-frame ordering trace",
+  "runtime": "1.6.1170.0",
+  "sites": {
+    "update": {
+      "call_rva": "0x641bef",
+      "caller_relocation_id": 36550,
+      "offset": "0x11f",
+      "argument_and_call_bytes": "488b0dd156b402e8ac420000",
+      "instructions": [
+        {
+          "rva": "0x641bdb",
+          "bytes": "b932000000",
+          "instruction": "mov ecx, 0x32"
+        },
+        {
+          "rva": "0x641be0",
+          "bytes": "ff15dad81001",
+          "instruction": "call qword ptr [rip + 0x110d8da]"
+        },
+        {
+          "rva": "0x641be6",
+          "bytes": "eb34",
+          "instruction": "jmp 0x7ff689b11c1c"
+        },
+        {
+          "rva": "0x641be8",
+          "bytes": "488b0dd156b402",
+          "instruction": "mov rcx, qword ptr [rip + 0x2b456d1]"
+        },
+        {
+          "rva": "0x641bef",
+          "bytes": "e8ac420000",
+          "instruction": "call 0x7ff689b15ea0"
+        },
+        {
+          "rva": "0x641bf4",
+          "bytes": "84db",
+          "instruction": "test bl, bl"
+        }
+      ]
+    },
+    "input": {
+      "call_rva": "0x646407",
+      "caller_relocation_id": 36564,
+      "offset": "0x567",
+      "argument_and_call_bytes": "f30f100d8c5eb802488b0d996ab102e8342b6900",
+      "instructions": [
+        {
+          "rva": "0x6463ec",
+          "bytes": "488b0d5533b202",
+          "instruction": "mov rcx, qword ptr [rip + 0x2b23355]"
+        },
+        {
+          "rva": "0x6463f3",
+          "bytes": "e8087b4000",
+          "instruction": "call 0x7ff689f1df00"
+        },
+        {
+          "rva": "0x6463f8",
+          "bytes": "f30f100d8c5eb802",
+          "instruction": "movss xmm1, dword ptr [rip + 0x2b85e8c]"
+        },
+        {
+          "rva": "0x646400",
+          "bytes": "488b0d996ab102",
+          "instruction": "mov rcx, qword ptr [rip + 0x2b16a99]"
+        },
+        {
+          "rva": "0x646407",
+          "bytes": "e8342b6900",
+          "instruction": "call 0x7ff68a1a8f40"
+        },
+        {
+          "rva": "0x64640c",
+          "bytes": "488d4d40",
+          "instruction": "lea rcx, [rbp + 0x40]"
+        }
+      ]
+    },
+    "render": {
+      "call_rva": "0x643c47",
+      "caller_relocation_id": 36555,
+      "offset": "0x47",
+      "argument_and_call_bytes": "33d2488d0d794bc402e844098000",
+      "instructions": [
+        {
+          "rva": "0x643c32",
+          "bytes": "488d0d874bc402",
+          "instruction": "lea rcx, [rip + 0x2c44b87]"
+        },
+        {
+          "rva": "0x643c39",
+          "bytes": "e812098000",
+          "instruction": "call 0x7ff68a314550"
+        },
+        {
+          "rva": "0x643c3e",
+          "bytes": "33d2",
+          "instruction": "xor edx, edx"
+        },
+        {
+          "rva": "0x643c40",
+          "bytes": "488d0d794bc402",
+          "instruction": "lea rcx, [rip + 0x2c44b79]"
+        },
+        {
+          "rva": "0x643c47",
+          "bytes": "e844098000",
+          "instruction": "call 0x7ff68a314590"
+        },
+        {
+          "rva": "0x643c4c",
+          "bytes": "488b352585ab01",
+          "instruction": "mov rsi, qword ptr [rip + 0x1ab8525]"
+        }
+      ]
+    }
+  },
+  "main_update_render_call": {
+    "rva": "0x646937",
+    "bytes": "e8c4d2ffff",
+    "instruction": "call 0x7ff689b13c00"
+  },
+  "loading_loop": {
+    "relocation_id": 39039,
+    "render_call": "0x6d220b",
+    "input_call": "0x6d2322",
+    "policy": "No source-loop callback installed here; loading Presents cannot fabricate a main source."
+  }
+}
