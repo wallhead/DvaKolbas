@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "sourceRevision": "f088a3af7187",
+  "pluginSha256": "5b72f0d7fdc6102b34d2f34cbc2886dd7e524ce293acd40012a52d5839cf039e",
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "f088a3af7187",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true,
+    "xessCompiled": true,
+    "xessFrameGenerationCompiled": true
+  },
+  "fullReleaseBuildPassed": true,
+  "regression": {
+    "premultipliedHudPreserved": true,
+    "sceneAlphaCases": [
+      0,
+      128,
+      255
+    ],
+    "green": true,
+    "red": "FAIL: real image retains scene RGB regardless of upscaler alpha",
+    "transparentHudReadback": true
+  },
+  "selectedTests": {
+    "gpuLabeled": 7,
+    "passed": 23,
+    "actualIntelSdkIncluded": true,
+    "failed": 0,
+    "debugLayersAvailable": false
+  },
+  "independentReview": "No critical or important findings",
+  "archive": {
+    "bytes": 352098872,
+    "previousArchivePreserved": true,
+    "filename": "RaZKolbaS XeSS FG trial - f088a3af7187.zip",
+    "entries": 15,
+    "allEntryHashesVerified": true,
+    "sha256": "c05838f0210aae585b3529d8c1b7957392082f1de4e0b7f8c8df12d1a3773059"
+  },
+  "installed": {
+    "name": "RaZKolbaS XeSS FG trial - f088a3af7187",
+    "mo2LaunchSettingsPreserved": true,
+    "iniPreserved": true,
+    "rollbackBackup": "out/backups/xess-fg-black-scene-f088a3af7187",
+    "menuLayoutPreserved": true,
+    "profile": "V5.4 NO-LORE"
+  },
+  "priorBroadFailures": [
+    "NvidiaAppSettingsGpu-filtered",
+    "NvidiaAppSettingsGpu-streamline",
+    "NvidiaAppSettingsGpu-compatibility",
+    "NrFsrReShadeBefore"
+  ],
+  "gameplayImageConfirmed": false,
+  "gameplayTimingQualified": false,
+  "timingDiagnostics": "Bounded callback counts, installed-call integrity and original-callee prefix; no fabricated markers",
+  "milestonesDone": 3,
+  "milestonesTotal": 8,
+  "nextCheck": "Start Skyrim, load a save with FG/NR off, inspect image and capture 30 seconds of engine trace"
+}
