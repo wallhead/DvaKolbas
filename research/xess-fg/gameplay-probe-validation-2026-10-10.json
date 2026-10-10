@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "sourceRevision": "4c6efe59a725",
+  "sourceClean": true,
+  "plugin": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\xess-fg-reference\\gameplay-probe-4c6efe59a725\\RaZkolbaS.dll",
+  "pluginSha256": "eae833813010327034e1511d99f1c423b6238db00d62b5807e9875224bd85e1e",
+  "selectedCpuChecksPassed": 5,
+  "gpuChecksPending": false,
+  "gameplayQualified": false,
+  "diagnosticOnly": true,
+  "milestonesCompleted": 3,
+  "milestonesTotal": 8,
+  "checksPassed": 19,
+  "physicalGpuChecksPassed": 7,
+  "allChecksPassed": true
+}
