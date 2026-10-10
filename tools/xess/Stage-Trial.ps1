@@ -78,7 +78,7 @@ $lines=Set-PackageIniValues ([IO.File]::ReadAllLines([IO.Path]::GetFullPath($Sou
     'Runtime/NRDriverCore'='';'Runtime/NRRuntimeRoot'='';'Runtime/NRRuntimePath'='';
     'Debug/LogFrameDiagnostics'='false'
 }
-if($neuralTrial){
+if($neuralTrial -and -not $XessFrameGeneration){
     $lines=Set-PackageIniValues $lines @{
         'NeuralRendering/Placement'=$(if($FsrFrameGeneration){'After'}else{'Before'});'NeuralRendering/PassCount'='1';
         'NeuralRendering Advanced/Profile'='Auto';'NeuralRendering Advanced/SourceColorEncoding'='Gamma22';
