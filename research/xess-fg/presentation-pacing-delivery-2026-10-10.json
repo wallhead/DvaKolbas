@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "sourceRevision": "eae31179f682",
+  "installedMod": "RaZKolbaS XeSS FG trial - eae31179f682",
+  "profile": "V5.4 NO-LORE",
+  "pluginSha256": "082590c871bf0ec7339216cf377c7d72166cacc6ccfc5a3f784015e15ba9e0a8",
+  "iniPreserved": true,
+  "menuLayoutPreserved": true,
+  "mo2LaunchSettingsPreserved": true,
+  "rollbackBackup": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\backups\\xess-fg-presentation-pacing-eae31179f682",
+  "publishedArchivesUnchanged": true,
+  "presentationPacing": true,
+  "gameplayQualified": false
+}

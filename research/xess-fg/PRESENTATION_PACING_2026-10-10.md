@@ -18,7 +18,11 @@ The production 128-consecutive-input-frame gate is removed. Existing history inv
 
 The new CPU regression first failed at render admission without a worker input proof, then passed with the explicit pacing mode. It also covers source/epoch mismatch, foreign-thread rejection, interruption recovery and monotonic SDK IDs. The paced GPU host regression checks owned tags, reset versus subsequent generation admission, rejection of an invalid final source proof, and recovery after one history frame rather than a 128-frame streak. The public SDK double enables tagged reset frames to warm history; SetEnabled alone is not evidence of a generated frame.
 
-Release build succeeded. Initial selected validation: 20/20 Intel FG/package tests passed, seven GPU-labelled tests. Independent read-only review found no actionable defects. The refreshed full suite and clean committed build receipt will be recorded separately; these checks do not qualify Skyrim gameplay.
+Clean committed Release build `eae31179f682` succeeded. Final selected validation: 20/20 Intel FG/package tests passed in 27.17 seconds, including seven GPU-labelled tests. Independent read-only review found no actionable defects. GPU debug layers remain unavailable. These checks do not qualify Skyrim gameplay.
+
+The refreshed full suite ran 370 tests in 462 seconds: 361 passed, four skipped and five failed. `NvidiaAppSettingsGpu-filtered`, `NvidiaAppSettingsGpu-streamline`, `NvidiaAppSettingsGpu-compatibility` and `NrFsrReShadeBefore` reproduce previously recorded failures. `NrPostDlssVendorInterruptionGpu` failed its foreground prerequisite before injecting the interruption. The full suite is not marked qualified. See [the validation receipt](presentation-pacing-validation-2026-10-10.json) for the scope and limits.
+
+The validated DLL was installed in V5.4 NO-LORE as a unique trial, with a rollback backup and exact INI/menu/MO2 launch-setting hashes preserved. Published archives were not replaced. See [the delivery receipt](presentation-pacing-delivery-2026-10-10.json).
 
 ## Next acceptance
 

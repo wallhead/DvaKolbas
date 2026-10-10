@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sourceRevision": "eae31179f682",
+  "sourceClean": true,
+  "plugin": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\research\\xess-fg-reference\\presentation-pacing-eae31179f682\\RaZkolbaS.dll",
+  "pluginSha256": "082590c871bf0ec7339216cf377c7d72166cacc6ccfc5a3f784015e15ba9e0a8",
+  "checksPassed": 20,
+  "physicalGpuChecksPassed": 7,
+  "allChecksPassed": true,
+  "validationScope": "XessFg.* and PublicIniPackage: 20 passed, 27.17 seconds; clean Release build succeeded",
+  "presentationPacing": true,
+  "preInputLatencyQualified": false,
+  "gameplayQualified": false,
+  "milestonesCompleted": 3,
+  "milestonesTotal": 8,
+  "gpuDebugLayersUnavailable": true,
+  "review": "Independent read-only review: no actionable defects",
+  "broadSuite": {
+    "total": 370,
+    "passed": 361,
+    "skipped": 4,
+    "failed": 5,
+    "overallQualified": false,
+    "seconds": 462,
+    "failures": [
+      "NvidiaAppSettingsGpu-filtered",
+      "NvidiaAppSettingsGpu-streamline",
+      "NvidiaAppSettingsGpu-compatibility",
+      "NrFsrReShadeBefore",
+      "NrPostDlssVendorInterruptionGpu"
+    ],
+    "foregroundFailure": "Actual foreground unavailable before injected interruption",
+    "previouslyRecordedFailures": 4
+  }
+}
