@@ -235,7 +235,7 @@
       "section": "FrameGeneration",
       "key": "Backend",
       "default": "Auto",
-      "comment": "Presentation backend. Auto keeps the existing provider policy: NVIDIA with DLSS, FSR with FSR upscaling, ordinary SR-only with XeSS. Explicit FSR or XeSS selects that FG presenter independently of DLSS/FSR/XeSS upscaling. XeSS FG is experimental, requires the optional Intel FG/XeLL payload and verified Skyrim timing, and supports SDR with fixed dimensions only. XeSS SR with NVIDIA FG is pending; FSR upscaling cannot use NVIDIA FG.",
+      "comment": "Presentation backend. Auto keeps the existing provider policy: NVIDIA with DLSS, FSR with FSR upscaling, ordinary SR-only with XeSS. Explicit FSR or XeSS selects that FG presenter independently of DLSS/FSR/XeSS upscaling. XeSS FG is experimental, requires the optional Intel FG/XeLL payload and verified Skyrim timing, and supports SDR at Native render scale with fixed dimensions only. The current trial requires Skyrim 1.6.1170 and unchanged verified engine hook sites. XeSS SR with NVIDIA FG is pending; FSR upscaling cannot use NVIDIA FG.",
       "restart": true,
       "values": {
         "Auto": "0",
