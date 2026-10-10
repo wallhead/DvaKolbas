@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "sourceRevision": "28cebeedf606",
+  "pluginSha256": "3e21610d30fa24f08d4d68d922e8a320d996b294501a9ce316b4512840454799",
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "28cebeedf606",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true,
+    "xessCompiled": true,
+    "xessFrameGenerationCompiled": true
+  },
+  "allChecksPassed": true,
+  "cpuPassed": 213,
+  "cpuSkipped": 1,
+  "gpuPassed": 7,
+  "conditionalCases": 6,
+  "conditionalFixRevision": "2991ebe",
+  "gameplayQualified": false
+}

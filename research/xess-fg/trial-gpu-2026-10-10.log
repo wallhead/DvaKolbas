@@ -1,0 +1,179 @@
+Start testing: Oct 10 14:23 RTZ 2 (çèìà)
+----------------------------------------------------------
+39/368 Testing: XessFgRuntimeGpu
+39/368 Test: XessFgRuntimeGpu
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgRuntimeProbe.exe" "--plugin-directory" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/xess-sdk-3.0.2/SKSE/Plugins"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgRuntimeGpu" start time: Oct 10 14:23 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+API FG.GetVersion result=0
+API XeLL.GetVersion result=0
+VERSIONS FG=1.3.1 XeLL=1.3.2 SDK_bundle=3.0.2
+ADAPTER NVIDIA GeForce RTX 4080 SUPER vendor=10de device=2702 renderLUID=00000000:00011072
+CAPABILITY same_adapter=1 shader_model=64 HRESULT=00000000
+API XeLL.CreateContext result=0
+API XeLL.SetLoggingCallback result=0
+API FG.CreateContext result=0
+API FG.SetLoggingCallback result=0
+API FG.SetLatencyReduction result=0
+API FG.GetProperties result=0
+PROPERTIES max_interpolated=1 requested=1
+API FG.GetD3D12Properties result=0
+MEMORY descriptors=326 buffer=7208960 texture=41484288 constants=8978432
+API FG.Destroy result=0
+API XeLL.DestroyContext result=0
+PASS: physical same-adapter Intel FG/XeLL contexts, properties and ordered destruction; frame production NOT YET QUALIFIED
+<end of output>
+Test time =   0.22 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgRuntimeGpu" end time: Oct 10 14:23 RTZ 2 (çèìà)
+"XessFgRuntimeGpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/368 Testing: XessFgTransport
+43/368 Test: XessFgTransport
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgTransportTests.exe"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgTransport" start time: Oct 10 14:23 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+PASS: owned Intel FG copies, direct queue, ONLY_NOW tags and copy-fence lifetime; actual SDK readers unqualified
+<end of output>
+Test time =   0.41 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgTransport" end time: Oct 10 14:23 RTZ 2 (çèìà)
+"XessFgTransport" time elapsed: 00:00:00
+----------------------------------------------------------
+
+44/368 Testing: XessFgPresentation
+44/368 Test: XessFgPresentation
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgPresentationTests.exe" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/xess-fg-fixtures/good"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgPresentation" start time: Oct 10 14:23 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+PASS: public Intel proxy ownership and failure traces; real Intel interpolation unqualified
+<end of output>
+Test time =   0.35 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgPresentation" end time: Oct 10 14:23 RTZ 2 (çèìà)
+"XessFgPresentation" time elapsed: 00:00:00
+----------------------------------------------------------
+
+45/368 Testing: XessFgPresentationGpu
+45/368 Test: XessFgPresentationGpu
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgPresentationGpuTests.exe" "--plugin-directory" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/xess-sdk-3.0.2/SKSE/Plugins"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgPresentationGpu" start time: Oct 10 14:23 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+ADAPTER vendor=10de device=2702 LUID=00000000:00011072 extent=1280x720 SDK=3.0.2 real_runtime=1
+PIXEL x=0 y=0 actual=ff505050 expected=ff505050
+PIXEL x=32 y=32 actual=ff0000ff expected=ff0000ff
+PIXEL x=32 y=80 actual=ff28a828 expected=ff28a828
+PIXEL x=0 y=0 actual=ff505050 expected=ff505050
+PIXEL x=32 y=32 actual=ff0000ff expected=ff0000ff
+PIXEL x=32 y=80 actual=ff28a828 expected=ff28a828
+PIXEL x=0 y=0 actual=ff505050 expected=ff505050
+PIXEL x=32 y=32 actual=ff0000ff expected=ff0000ff
+PIXEL x=32 y=80 actual=ff28a828 expected=ff28a828
+NO_SOURCE real_presents=3 generated=0 scene_and_hud_readbacks=pass SDK_ID=none XeLL_markers=none
+PIXEL x=0 y=0 actual=ff505050 expected=ff505050
+PIXEL x=32 y=32 actual=ff0000ff expected=ff0000ff
+PIXEL x=32 y=80 actual=ff28a828 expected=ff28a828
+FRAME id=1 phase=0 focus=0 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=21 phase=0 focus=0 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=41 phase=1 focus=0 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+PIXEL x=0 y=0 actual=ff505050 expected=ff505050
+PIXEL x=32 y=32 actual=ff0000ff expected=ff0000ff
+PIXEL x=32 y=80 actual=ff28a828 expected=ff28a828
+FRAME id=61 phase=1 focus=0 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=81 phase=2 focus=0 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=101 phase=2 focus=0 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=121 phase=3 focus=0 tag=0 generate=0 sdk_frames=1 enabled=0 result=0
+FRAME id=141 phase=3 focus=1 tag=1 generate=1 sdk_frames=2 enabled=1 result=0
+SUMMARY qualified=1 visual_requested=0 interrupted=0 lost_focus_frames=117 active_sources=33 interpolated_sources=33 off_sources=127 errors=0 clean_retirement=1
+PASS: actual Intel SDK generated frames and ordered retirement; visual smoothness/HUD confirmation separate
+<end of output>
+Test time =   5.82 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgPresentationGpu" end time: Oct 10 14:23 RTZ 2 (çèìà)
+"XessFgPresentationGpu" time elapsed: 00:00:05
+----------------------------------------------------------
+
+49/368 Testing: XessFgHost
+49/368 Test: XessFgHost
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgHostTests.exe" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/xess-fg-fixtures/good"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgHost" start time: Oct 10 14:23 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+PASS: producer identity, no-source/duplicate real output, checked engine timing and fixed owner lifecycle
+<end of output>
+Test time =   0.37 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgHost" end time: Oct 10 14:23 RTZ 2 (çèìà)
+"XessFgHost" time elapsed: 00:00:00
+----------------------------------------------------------
+
+52/368 Testing: XessFgLifecycle
+52/368 Test: XessFgLifecycle
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgLifecycleTests.exe" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/xess-fg-fixtures/good"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgLifecycle" start time: Oct 10 14:23 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+PASS live request/source epochs, genuine pending reader suspend, retained resume and terminal timeout; fixture SDK only
+<end of output>
+Test time =   0.45 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgLifecycle" end time: Oct 10 14:23 RTZ 2 (çèìà)
+"XessFgLifecycle" time elapsed: 00:00:00
+----------------------------------------------------------
+
+110/368 Testing: XessFgSourceGpu
+110/368 Test: XessFgSourceGpu
+Command: "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal/Release/TRPXessFgSourceGpuTests.exe" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/xess-sdk-3.0.2/SKSE/Plugins" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/nr/host-fixture" "C:/Windows/System32/DriverStore/FileRepository/nv_dispi.inf_amd64_da865124972e1f80/_nvngx.dll" "C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/research/fsr-probe-plugin"
+Directory: C:/Users/user/.codex/worktrees/fsr-sr/DvaKolbas/out/build/fsr-fg-universal
+"XessFgSourceGpu" start time: Oct 10 14:23 RTZ 2 (çèìà)
+Output:
+----------------------------------------------------------
+SKIPPED: D3D12 debug layer unavailable
+SKIPPED: D3D11 debug layer unavailable
+ADAPTER vendor=10de device=2702 LUID=00000000:00011072 real_sdk=1
+PASS CASE backend=4 quality=3 render=640x360 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS CASE backend=4 quality=2 render=279x157 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS CASE backend=2 quality=3 render=640x360 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS CASE backend=2 quality=2 render=320x180 display=640x360 active=49 generated=49 nr_sources=48 before=24 after=24 errors=0 HUD_readbacks=7 clean_retirement=1
+PASS actual XeSS/FSR315 Native/Performance -> NR off/Before/After 1..3 -> Intel FG -> HUD; DLSS and FSR4 actual coupling NOT RUN
+<end of output>
+Test time =  15.77 sec
+----------------------------------------------------------
+Test Passed.
+"XessFgSourceGpu" end time: Oct 10 14:23 RTZ 2 (çèìà)
+"XessFgSourceGpu" time elapsed: 00:00:15
+----------------------------------------------------------
+
+End testing: Oct 10 14:23 RTZ 2 (çèìà)
+
+GPU =  23.41 sec*proc
+

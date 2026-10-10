@@ -1,0 +1,17 @@
+{
+  "profile": "V5.4 NO-LORE",
+  "installedDirectory": "D:\\TESV54BETA\\BETA_TRUEAE_V54\\mods\\RaZKolbaS XeSS FG trial - 28cebeedf606",
+  "previousMod": "RaZKolbaS XeSS FSR FG trial - 09816a0ccd16",
+  "previousModPreserved": true,
+  "backupDirectory": "C:\\Users\\user\\.codex\\worktrees\\fsr-sr\\DvaKolbas\\out\\backups\\xess-fg-install-28cebeedf606",
+  "sourceRevision": "28cebeedf606",
+  "pluginSha256": "3e21610d30fa24f08d4d68d922e8a320d996b294501a9ce316b4512840454799",
+  "archiveSha256": "29e969a403f9aa8c5e056fc456ec919e80025cd7c45a0c1616c531a6a77d2896",
+  "iniChanges": [
+    "FrameGeneration/Backend: FSR -> XeSS",
+    "FrameGeneration/Enabled: true -> false",
+    "NeuralRendering/Enabled: true -> false"
+  ],
+  "mo2LaunchSettingsUnchanged": true,
+  "gameplayQualified": false
+}
