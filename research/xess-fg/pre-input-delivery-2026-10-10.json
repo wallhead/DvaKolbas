@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "sourceRevision": "dd89f752e732",
+  "pluginSha256": "974bf5f2fba6bc2be902d1e805d8546f0871aee47fa3c2f81ee3e86e58be7e05",
+  "buildIdentity": {
+    "edition": "Universal",
+    "sourceRevision": "dd89f752e732",
+    "sourceClean": true,
+    "fsrCompiled": true,
+    "frameGenerationCompiled": true,
+    "neuralRenderingCompiled": true,
+    "xessCompiled": true,
+    "xessFrameGenerationCompiled": true
+  },
+  "fullReleaseBuildPassed": true,
+  "regression": {
+    "outerUpdateCallbackRequired": false,
+    "green": "Adapter starts source before preserved input poll and admits same-ID render/Present without outer update",
+    "red": "Adapter cannot begin a source when the outer update callback never executes",
+    "preInputSleepPreserved": true,
+    "strictSourceAndEpochMatchingPreserved": true
+  },
+  "selectedTests": {
+    "debugLayersAvailable": false,
+    "actualIntelSdkIncluded": true,
+    "failed": 0,
+    "gpuLabeled": 7,
+    "passed": 23
+  },
+  "independentReview": "No actionable important findings; static only",
+  "archive": {
+    "previousArchivePreserved": true,
+    "allEntryHashesVerified": true,
+    "sha256": "9c41b677ff7c15e98cf4f32dc9473aec0b0ef8a05e738787f913b109a962e7f4",
+    "filename": "RaZKolbaS XeSS FG trial - dd89f752e732.zip",
+    "bytes": 352098770,
+    "entries": 15
+  },
+  "installed": {
+    "mo2LaunchSettingsPreserved": true,
+    "iniPreserved": true,
+    "menuLayoutPreserved": true,
+    "name": "RaZKolbaS XeSS FG trial - dd89f752e732",
+    "profile": "V5.4 NO-LORE",
+    "rollbackBackup": "out/backups/xess-fg-pre-input-dd89f752e732"
+  },
+  "priorBroadFailures": [
+    "NvidiaAppSettingsGpu-filtered",
+    "NvidiaAppSettingsGpu-streamline",
+    "NvidiaAppSettingsGpu-compatibility",
+    "NrFsrReShadeBefore"
+  ],
+  "gameplayTimingQualified": false,
+  "milestonesDone": 3,
+  "milestonesTotal": 8,
+  "nextCheck": "Start Skyrim, load a save, enable XeSS FG in End, close menu and capture 30 seconds; inspect orderedSources, SDK IDs and two-frame output"
+}
